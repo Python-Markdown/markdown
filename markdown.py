@@ -43,7 +43,7 @@ def message(level, text) :
 # all tabs will be expanded to up to this many spaces
 TAB_LENGTH = 4
 ENABLE_ATTRIBUTES = 1
-
+SMART_EMPHASIS = 1
 
 # --------------- CONSTANTS YOU _SHOULD NOT_ HAVE TO CHANGE ----------
 
@@ -82,9 +82,11 @@ class Document :
         child.parent = self
         self.entities = {}
 
-    def createElement(self, tag) :
+    def createElement(self, tag, textNode=None) :
         el = Element(tag)
         el.doc = self
+        if textNode :
+            el.appendChild(self.createTextNode(textNode))
         return el
 
     def createTextNode(self, text) :
@@ -197,6 +199,7 @@ class Element :
         if self.nodeName in ['p', 'li', 'ul', 'ol',
                              'h1', 'h2', 'h3', 'h4'] :
             buffer += "\n"
+
         return buffer
 
 
@@ -411,17 +414,23 @@ BACKTICK_RE = r'\`([^\`]*)\`'                    # `e= m*c^2`
 DOUBLE_BACKTICK_RE =  r'\`\`(.*)\`\`'            # ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                             # \<
 EMPHASIS_RE = r'\*([^\*]*)\*'                    # *emphasis*
-EMPHASIS_2_RE = r'_([^_]*)_'                     # _emphasis_
+STRONG_RE = r'\*\*(.*)\*\*'                      # **strong**
+STRONG_EM_RE = r'\*\*\*([^_]*)\*\*\*'            # ***strong***
+
+if SMART_EMPHASIS:
+    EMPHASIS_2_RE = r'(?<!\S)_(\S[^_]*)_'        # _emphasis_
+else :
+    EMPHASIS_2_RE = r'_([^_]*)_'                 # _emphasis_
+
+STRONG_2_RE = r'__([^_]*)__'                     # __strong__
+STRONG_EM_2_RE = r'___([^_]*)___'                # ___strong___
+
 LINK_RE = BRK + r'\s*\(([^\)]*)\)'               # [text](url)
 LINK_ANGLED_RE = BRK + r'\s*\(<([^\)]*)>\)'      # [text](<url>)
 IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(([^\)]*)\)' # ![alttxt](http://x.com/)
 REFERENCE_RE = BRK+ r'\s*\[([^\]]*)\]'           # [Google][3]
 IMAGE_REFERENCE_RE = r'\!' + BRK + '\s*\[([^\]]*)\]' # ![alt text][2]
 NOT_STRONG_RE = r'( \* )'                        # stand-alone * or _
-STRONG_RE = r'\*\*(.*)\*\*'                      # **strong**
-STRONG_2_RE = r'__([^_]*)__'                     # __strong__
-STRONG_EM_RE = r'\*\*\*([^_]*)\*\*\*'            # ***strong***
-STRONG_EM_2_RE = r'___([^_]*)___'                # ___strong___
 AUTOLINK_RE = r'<(http://[^>]*)>'                # <http://www.123.com>
 AUTOMAIL_RE = r'<([^> ]*@[^> ]*)>'               # <me@example.com>
 HTML_RE = r'(\<[^\>]*\>)'                        # <...>
@@ -789,6 +798,7 @@ class Markdown:
         self.source = source
         self.blockGuru = BlockGuru()
         self.registeredExtensions = []
+        self.stripTopLevelTags = 1
 
         self.preprocessors = [ HEADER_PREPROCESSOR,
                                LINE_PREPROCESSOR,
@@ -1238,7 +1248,9 @@ class Markdown:
         xml = xml.replace(FN_BACKLINK_TEXT, "&#8617;")
 
         # And return everything but the top level tag
-        xml = xml.strip()[23:-7]
+
+        if self.stripTopLevelTags :
+            xml = xml.strip()[23:-7]
 
         return xml
 
