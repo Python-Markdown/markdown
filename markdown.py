@@ -123,8 +123,10 @@ class Document :
 
 class Element :
 
+    type = "element"
+
     def __init__ (self, tag) :
-        self.type = "element"
+
         self.nodeName = tag
         self.attributes = []
         self.attribute_values = {}
@@ -205,10 +207,11 @@ class Element :
 
 class TextNode :
 
+    type = "text"
+    attrRegExp = re.compile(r'\{@([^\}]*)=([^\}]*)}') # {@id=123}
+
     def __init__ (self, text) :
-        self.type = "text"
-        self.value = text
-        self.attrRegExp = re.compile(r'\{@([^\}]*)=([^\}]*)}') # {@id=123}
+        self.value = text        
 
     def attributeCallback(self, match) :
         self.parent.setAttribute(match.group(1), match.group(2))
@@ -230,8 +233,9 @@ class TextNode :
 
 class EntityReference:
 
+    type = "entity_ref"
+
     def __init__(self, entity):
-        self.type = "entity_ref"
         self.entity = entity
 
     def handleAttributes(self):
@@ -1277,9 +1281,10 @@ method.
 
 class FootnoteExtension :
 
+    DEF_RE = re.compile(r'(\ ?\ ?\ ?)\[\^([^\]]*)\]:\s*(.*)')
+    SHORT_USE_RE = re.compile(r'\[\^([^\]]*)\]', re.M) # [^a]
+
     def __init__ (self) :
-        self.DEF_RE = re.compile(r'(\ ?\ ?\ ?)\[\^([^\]]*)\]:\s*(.*)')
-        self.SHORT_USE_RE = re.compile(r'\[\^([^\]]*)\]', re.M) # [^a]
         self.reset()
 
     def extendMarkdown(self, md) :
@@ -1687,6 +1692,10 @@ if __name__ == '__main__':
 """
 CHANGELOG
 =========
+
+Mar. 15, 2006: Replaced some instance variables with class variables
+(a patch from Stelios Xanthakis).  Chris Clark's new regexps that do
+not trigger midword underlining.
 
 Feb. 28, 2006: Clean-up and command-line handling by Stewart
 Midwinter. (Version 1.3)
