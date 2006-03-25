@@ -972,14 +972,14 @@ class Markdown:
                     level = len(m.group(1))
                     h = self.doc.createElement("h%d" % level)
                     parent_elem.appendChild(h)
-                    for item in self._handleInline(m.group(2)) :
+                    for item in self._handleInlineWrapper(m.group(2)) :
                         h.appendChild(item)
                 else :
                     message(CRITICAL, "We've got a problem header!")
 
             elif paragraph :
 
-                list = self._handleInline("\n".join(paragraph))
+                list = self._handleInlineWrapper("\n".join(paragraph))
 
                 if ( parent_elem.nodeName == 'li'
                      and not (looseList or parent_elem.childNodes)):
@@ -1164,12 +1164,31 @@ class Markdown:
         self._processSection(parent_elem, theRest, inList)
 
 
-    def _handleInline(self,  line):
-        """Transform a Markdown line with inline elements to an XHTML fragment.
+    def _handleInlineWrapper (self, line) :
 
-        Note that this function works recursively: we look for a
-        pattern, which usually splits the paragraph in half, and then
-        call this function on the two parts.
+        # A wrapper around _handleInline to avoid recursion
+
+        strtype = type("string")
+        parts = [line]
+        dirty = 1
+
+        while dirty:
+            dirty = 0
+            for x in parts :
+                if type(x) == strtype :
+                    i = parts.index(x)
+                    parts.remove(x)
+                    result = self._handleInline(x)
+                    result.reverse()
+                    for y in result :
+                        parts.insert(i,y)
+                    dirty = 1
+
+        return parts
+
+    def _handleInline(self,  line):
+        """Transform a Markdown line with inline elements to an XHTML
+        fragment.
 
         This function uses auxiliary objects called inline patterns.
         See notes on inline patterns above.
@@ -1192,11 +1211,11 @@ class Markdown:
 
         return [self.doc.createTextNode(line)]
 
-    def _applyPattern(self,  line, pattern) :
+    def _applyPattern(self, line, pattern) :
         """ Given a pattern name, this function checks if the line
-            fits the pattern, creates the necessary elements and
-            recursively calls _handleInline (via. _inlineRecurse)
-
+        fits the pattern, creates the necessary elements, and returns
+        back a list consisting of NanoDom elements and/or strings.
+        
         @param line: the text to be processed
         @param pattern: the pattern to be checked
 
@@ -1214,22 +1233,13 @@ class Markdown:
         # if we got a match let the pattern make us a NanoDom node
         # if it doesn't, move on
         node = pattern.handleMatch(m, self.doc)
-        if not node :
+
+        if node :
+            return [m.group(1),     # the string to the right of the match
+                    node,           # the new node
+                    m.groups()[-1]] # the string to the left
+        else :
             return None
-
-        # determine what we've got to the left and to the right
-
-        left = m.group(1)      # the first match group
-        left_list = self._handleInline(left)
-        right = m.groups()[-1] # the last match group
-        right_list = self._handleInline(right)
-
-        # put the three parts together
-        left_list.append(node)
-        left_list.extend(right_list)
-
-        return left_list
-
 
     def __str__(self):
         """Return the document in XHTML format.
@@ -1692,6 +1702,10 @@ if __name__ == '__main__':
 """
 CHANGELOG
 =========
+
+
+Mar. 24, 2006: Switched to a not-so-recursive algorithm with
+_handleInline.  (Version 1.4)
 
 Mar. 15, 2006: Replaced some instance variables with class variables
 (a patch from Stelios Xanthakis).  Chris Clark's new regexps that do
