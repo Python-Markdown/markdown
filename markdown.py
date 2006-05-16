@@ -333,21 +333,70 @@ LINE_BREAKS_PREPROCESSOR = LineBreaksPreprocessor()
 
 class HtmlBlockPreprocessor :
     """Removes html blocks from self.lines"""
+    
+    def _get_left_tag(self, block):
+        return block[1:].replace(">", " ", 1).split()[0].lower()
 
+
+    def _get_right_tag(self, left_tag, block):
+        return block.rstrip()[-len(left_tag)-2:-1].strip().lower()
+
+    def _equal_tags(self, left_tag, right_tag):
+        if ("/" + left_tag) == right_tag:
+            return True
+        return False
+    
     def run (self, lines) :
         new_blocks = []
         text = "\n".join(lines)
-        for block in text.split("\n\n") :
+        text = text.split("\n\n")
+        
+        items = []
+        left_tag = ''
+        right_tag = ''
+        in_tag = False # flag
+        
+        for block in text:
             if block.startswith("\n") :
                 block = block[1:]
-            if ( (block.startswith("<") and block.rstrip().endswith(">"))
-                 and (block[1] in ["!", "?", "@", "%"]
-                      or is_block_level( block[1:].replace(">", " ")
-                                         .split()[0].lower()))) :
-                new_blocks.append(
-                    self.stash.store(block.strip()))
-            else :
-                new_blocks.append(block)
+
+            if not in_tag:
+
+                if block.startswith("<"):
+                    
+                    left_tag = self._get_left_tag(block)
+                    right_tag = self._get_right_tag(left_tag, block)
+
+                    if not (is_block_level(left_tag)
+                            or block[1] in ["!", "?", "@", "%"]):
+                        new_blocks.append(block)
+                        continue
+                    
+                    if (block.rstrip().endswith(">") and 
+                        self._equal_tags(left_tag, right_tag)):
+                        new_blocks.append(
+                            self.stash.store(block.strip()))
+                        continue
+                    else:
+                        # if is block level tag and is not complete
+                        items.append(block.strip())
+                        in_tag = True
+                        continue
+                    
+                else:
+                    new_blocks.append(block)
+
+            else:
+                items.append(block.strip())
+                
+                right_tag = self._get_right_tag(left_tag, block)
+                if self._equal_tags(left_tag, right_tag):
+                    # if find closing tag
+                    in_tag = False
+                    new_blocks.append(
+                        self.stash.store('\n\n'.join(items)))
+                    items = []
+                    
         return "\n\n".join(new_blocks).split("\n")
 
 HTML_BLOCK_PREPROCESSOR = HtmlBlockPreprocessor()
