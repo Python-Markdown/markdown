@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+SPEED_TEST = 0
+
 """
 ====================================================================
 IF YOU ARE LOOKING TO EXTEND MARKDOWN, SEE THE "FOOTNOTES" SECTION
@@ -21,7 +23,7 @@ Contact: yuri [at] freewisdom.org
 
 License: GPL 2 (http://www.gnu.org/copyleft/gpl.html) or BSD
 
-Version: 1.3 (Feb. 28, 2006)
+Version: 1.5 (May 15, 2006)
 
 For changelog, see end of file
 """
@@ -187,7 +189,7 @@ class Element :
             value = self.attribute_values[attr]
             value = self.doc.normalizeEntities(value)
             buffer += ' %s="%s"' % (attr, value)
-        if self.childNodes :
+        if self.childNodes or self.nodeName in ['blockquote']:
             buffer += ">"
             for child in self.childNodes :
                 buffer += child.toxml()
@@ -270,6 +272,9 @@ class HeaderPreprocessor :
         for i in range(len(lines)) :
             if not lines[i] :
                 continue
+
+            if lines[i].startswith("#") :
+                lines.insert(i+1, "\n")
 
             if (i+1 <= len(lines)
                   and lines[i+1]
@@ -798,7 +803,9 @@ class Markdown:
         """Creates a new Markdown instance.
 
            @param source: The text in Markdown format. """
-
+        
+        if isinstance(source, unicode):
+            source = source.encode('utf8')
         self.source = source
         self.blockGuru = BlockGuru()
         self.registeredExtensions = []
@@ -815,6 +822,9 @@ class Markdown:
 
         self.postprocessors = [] # a footnote postprocessor will get
                                  # inserted later
+
+        self.prePatterns = []
+        
 
         self.inlinePatterns = [ DOUBLE_BACKTICK_PATTERN,
                                 BACKTICK_PATTERN,
@@ -889,7 +899,18 @@ class Markdown:
             self.lines = prep.run(self.lines)
 
         # Create a NanoDom tree from the lines and attach it to Document
-        self._processSection(self.top_element, self.lines)
+
+
+        buffer = []
+        for line in self.lines :
+            if line.startswith("#") :
+                self._processSection(self.top_element, buffer)
+                buffer = [line]
+            else :
+                buffer.append(line)
+        self._processSection(self.top_element, buffer)
+        
+        #self._processSection(self.top_element, self.lines)
 
         # Not sure why I put this in but let's leave it for now.
         self.top_element.appendChild(self.doc.createTextNode('\n'))
@@ -972,14 +993,14 @@ class Markdown:
                     level = len(m.group(1))
                     h = self.doc.createElement("h%d" % level)
                     parent_elem.appendChild(h)
-                    for item in self._handleInlineWrapper(m.group(2)) :
+                    for item in self._handleInlineWrapper2(m.group(2).strip()) :
                         h.appendChild(item)
                 else :
                     message(CRITICAL, "We've got a problem header!")
 
             elif paragraph :
 
-                list = self._handleInlineWrapper("\n".join(paragraph))
+                list = self._handleInlineWrapper2("\n".join(paragraph))
 
                 if ( parent_elem.nodeName == 'li'
                      and not (looseList or parent_elem.childNodes)):
@@ -1052,7 +1073,8 @@ class Markdown:
                     break
 
                 # Check if the next non-blank line is still a part of the list
-                if ( RE.regExp[listexpr].match(next) or
+                if ( RE.regExp['ul'].match(next) or
+                     RE.regExp['ol'].match(next) or 
                      RE.regExp['tabbed'].match(next) ):
                     # get rid of any white space in the line
                     items[item].append(line.strip())
@@ -1064,11 +1086,11 @@ class Markdown:
             # Now we need to detect list items (at the current level)
             # while also detabing child elements if necessary
 
-            for expr in [listexpr, 'tabbed']:
+            for expr in ['ul', 'ol', 'tabbed']:
 
                 m = RE.regExp[expr].match(line)
                 if m :
-                    if expr == listexpr :  # We are looking at a new item
+                    if expr in ['ul', 'ol'] :  # We are looking at a new item
                         if m.group(1) :
                             items.append([m.group(1)])
                             item += 1
@@ -1164,25 +1186,65 @@ class Markdown:
         self._processSection(parent_elem, theRest, inList)
 
 
+    def _handleInlineWrapper2 (self, line) :
+
+
+        parts = [line]
+
+        #if not(line):
+        #    return [self.doc.createTextNode(' ')]
+
+        for pattern in self.inlinePatterns :
+
+            #print
+            #print self.inlinePatterns.index(pattern)
+
+            i = 0
+
+            #print parts
+            while i < len(parts) :
+                
+                x = parts[i]
+                #print i
+                if isinstance(x, (str, unicode)) :
+                    result = self._applyPattern(x, pattern)
+                    #print result
+                    #print result
+                    #print parts, i
+                    if result :
+                        i -= 1
+                        parts.remove(x)
+                        for y in result :
+                            parts.insert(i+1,y)
+                
+                i += 1
+
+        for i in range(len(parts)) :
+            x = parts[i]
+            if isinstance(x, (str, unicode)) :
+                parts[i] = self.doc.createTextNode(x)
+
+        return parts
+        
+
+
     def _handleInlineWrapper (self, line) :
 
         # A wrapper around _handleInline to avoid recursion
 
-        strtype = type("string")
         parts = [line]
-        dirty = 1
 
-        while dirty:
-            dirty = 0
-            for x in parts :
-                if type(x) == strtype :
-                    i = parts.index(x)
-                    parts.remove(x)
-                    result = self._handleInline(x)
-                    result.reverse()
-                    for y in result :
-                        parts.insert(i,y)
-                    dirty = 1
+        i = 0
+        
+        while i < len(parts) :
+            x = parts[i]
+            if isinstance(x, (str, unicode)) :
+                parts.remove(x)
+                result = self._handleInline(x)
+                for y in result :
+                    parts.insert(i,y)
+            else :
+                i += 1
 
         return parts
 
@@ -1194,16 +1256,10 @@ class Markdown:
         See notes on inline patterns above.
 
         @param item: A block of Markdown text
-        @return: A list of NanoDomnodes """
+        @return: A list of NanoDom nodes """
+
         if not(line):
             return [self.doc.createTextNode(' ')]
-        # two spaces at the end of the line denote a <br/>
-        #if line.endswith('  '):
-        #    list = self._handleInline( line.rstrip())
-        #    list.append(self.doc.createElement('br'))
-        #    return list
-        #
-        # ::TODO:: Replace with a preprocessor
 
         for pattern in self.inlinePatterns :
             list = self._applyPattern( line, pattern)
@@ -1235,9 +1291,11 @@ class Markdown:
         node = pattern.handleMatch(m, self.doc)
 
         if node :
-            return [m.group(1),     # the string to the right of the match
-                    node,           # the new node
-                    m.groups()[-1]] # the string to the left
+            # Those are in the reverse order!
+            return ( m.groups()[-1], # the string to the left
+                     node,           # the new node
+                     m.group(1))     # the string to the right of the match
+
         else :
             return None
 
@@ -1265,6 +1323,9 @@ class Markdown:
 
         if self.stripTopLevelTags :
             xml = xml.strip()[23:-7]
+
+        if isinstance(xml, unicode) :
+            xml = xml.encode("utf8")
 
         return xml
 
@@ -1294,6 +1355,8 @@ class FootnoteExtension :
     DEF_RE = re.compile(r'(\ ?\ ?\ ?)\[\^([^\]]*)\]:\s*(.*)')
     SHORT_USE_RE = re.compile(r'\[\^([^\]]*)\]', re.M) # [^a]
 
+    FN_PLACE_MARKER = "///Footnotes Go Here///"
+
     def __init__ (self) :
         self.reset()
 
@@ -1316,7 +1379,11 @@ class FootnoteExtension :
         md.inlinePatterns.insert(index, FootnotePattern(FOOTNOTE_RE, self))
 
         # Insert a post-processor that would actually add the footnote div
-        md.postprocessors.append(FootnotePostprocessor(self))
+        postprocessor = FootnotePostprocessor(self)
+        postprocessor.extension = self
+        
+        md.postprocessors.append(postprocessor)
+
 
     def reset(self) :
         # May be called by Markdown is state reset is desired
@@ -1324,6 +1391,17 @@ class FootnoteExtension :
         self.footnote_suffix = "-" + str(int(random.random()*1000000000))
         self.used_footnotes={}
         self.footnotes = {}
+
+    def findFootnotesPlaceholder(self, doc) :
+        def findFootnotePlaceholderFn(node=None, indent=0):
+            if node.type == 'text':
+                if node.value.find(self.FN_PLACE_MARKER) > -1 :
+                    return True
+
+        fn_div_list = doc.find(findFootnotePlaceholderFn)
+        if fn_div_list :
+            return fn_div_list[0]
+
 
     def setFootnote(self, id, text) :
         self.footnotes[id] = text
@@ -1475,13 +1553,17 @@ class FootnotePostprocessor :
     def run(self, doc) :
         footnotesDiv = self.footnotes.makeFootnotesDiv(doc)
         if footnotesDiv :
-            doc.documentElement.appendChild(footnotesDiv)
+            fnPlaceholder = self.extension.findFootnotesPlaceholder(doc)
+            if fnPlaceholder :
+                fnPlaceholder.parent.replaceChild(fnPlaceholder, footnotesDiv)
+            else :
+                doc.documentElement.appendChild(footnotesDiv)
 
 # ====================================================================
 
 def markdown(text) :
     message(VERBOSE, "in markdown.py, received text:\n%s" % text)
-    return str(Markdown(text))
+    return Markdown(text).toString()
 
 def markdownWithFootnotes(text):
     message(VERBOSE, "Running markdown with footnotes, "
@@ -1697,12 +1779,23 @@ if __name__ == '__main__':
     if testing:
         test_markdown(args)
     else:
+        import time
+        t0 = time.time()
+        #for x in range(10) :
         cmd_line(args)
+        #import profile
+        #profile.run('cmd_line(args)', 'profile')
+        t1 = time.time()
+        #print "Time: %f - %f = %f" % (t1, t0, t1-t0)
 
 """
 CHANGELOG
 =========
 
+May 15, 2006: A bug with lists, recursion on block-level elements,
+run-in headers, spaces before headers, unicode input (thanks to Aaron
+Swartz). Sourceforge tracker #s: 1489313, 1489312, 1489311, 1488370,
+1485178, 1485176. (v. 1.5)
 
 Mar. 24, 2006: Switched to a not-so-recursive algorithm with
 _handleInline.  (Version 1.4)
