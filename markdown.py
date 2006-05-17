@@ -339,12 +339,20 @@ class HtmlBlockPreprocessor :
 
 
     def _get_right_tag(self, left_tag, block):
-        return block.rstrip()[-len(left_tag)-2:-1].strip().lower()
+        return block.rstrip()[-len(left_tag)-2:-1].lower()
 
     def _equal_tags(self, left_tag, right_tag):
         if ("/" + left_tag) == right_tag:
             return True
-        return False
+        elif left_tag == right_tag[1:] \
+            and right_tag[0] != "<":
+            return True
+        else:
+            return False
+
+    def _is_oneliner(self, tag):
+        return (tag in ['hr', 'hr/'])
+
     
     def run (self, lines) :
         new_blocks = []
@@ -367,13 +375,22 @@ class HtmlBlockPreprocessor :
                     left_tag = self._get_left_tag(block)
                     right_tag = self._get_right_tag(left_tag, block)
 
-                    if not (is_block_level(left_tag)
-                            or block[1] in ["!", "?", "@", "%"]):
+                    if not (is_block_level(left_tag) \
+                        or block[1] in ["!", "?", "@", "%"]):
                         new_blocks.append(block)
                         continue
-                    
-                    if (block.rstrip().endswith(">") and 
-                        self._equal_tags(left_tag, right_tag)):
+
+                    if self._is_oneliner(left_tag):
+                        new_blocks.append(block.strip())
+                        continue
+                        
+                    if block[1] == "!":
+                        # is comment block
+                        left_tag = "--"
+                        right_tag = self._get_right_tag(left_tag, block)
+                        
+                    if block.rstrip().endswith(">") \
+                        and self._equal_tags(left_tag, right_tag):
                         new_blocks.append(
                             self.stash.store(block.strip()))
                         continue
