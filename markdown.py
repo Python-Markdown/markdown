@@ -270,7 +270,7 @@ class HeaderPreprocessor :
     def run (self, lines) :
 
         for i in range(len(lines)) :
-            if not lines[i] :
+            if not lines[i].strip() :
                 continue
 
             if lines[i].startswith("#") :
@@ -422,15 +422,25 @@ HTML_BLOCK_PREPROCESSOR = HtmlBlockPreprocessor()
 class ReferencePreprocessor :
 
     def run (self, lines) :
+
         new_text = [];
         for line in lines:
             m = RE.regExp['reference-def'].match(line)
             if m:
                 id = m.group(2).strip().lower()
-                title = dequote(m.group(4).strip()) #.replace('"', "&quot;")
-                self.references[id] = (m.group(3), title)
+                t = m.group(4).strip()  # potential title
+                if not t :
+                    self.references[id] = (m.group(3), t)
+                elif (len(t) >= 2
+                      and (t[0] == t[-1] == "\""
+                           or t[0] == t[-1] == "\'"
+                           or (t[0] == "(" and t[-1] == ")") ) ) :
+                    self.references[id] = (m.group(3), t[1:-1])
+                else :
+                    new_text.append(line)
             else:
                 new_text.append(line)
+
         return new_text #+ "\n"
 
 REFERENCE_PREPROCESSOR = ReferencePreprocessor()
@@ -1857,6 +1867,9 @@ if __name__ == '__main__':
 """
 CHANGELOG
 =========
+
+May 18, 2006: Stopped catching unquoted titles in reference links.
+Stopped creating blank headers.
 
 May 15, 2006: A bug with lists, recursion on block-level elements,
 run-in headers, spaces before headers, unicode input (thanks to Aaron
