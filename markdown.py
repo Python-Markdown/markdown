@@ -4,7 +4,7 @@ SPEED_TEST = 0
 
 """
 ====================================================================
-IF YOU ARE LOOKING TO EXTEND MARKDOWN, SEE THE "FOOTNOTES" SECTION
+IF YOA ARE LOOKING TO EXTEND MARKDOWN, SEE THE "FOOTNOTES" SECTION
 ====================================================================
 
 Python-Markdown
@@ -23,7 +23,7 @@ Contact: yuri [at] freewisdom.org
 
 License: GPL 2 (http://www.gnu.org/copyleft/gpl.html) or BSD
 
-Version: 1.5 (May 15, 2006)
+Version: 1.5a (July 9, 2006)
 
 For changelog, see end of file
 """
@@ -385,23 +385,23 @@ class HtmlBlockPreprocessor :
                         continue
                         
                     if block[1] == "!":
-                        # is comment block
+                        # is a comment block
                         left_tag = "--"
                         right_tag = self._get_right_tag(left_tag, block)
+                        # keep checking conditions below and maybe just append
                         
                     if block.rstrip().endswith(">") \
                         and self._equal_tags(left_tag, right_tag):
                         new_blocks.append(
                             self.stash.store(block.strip()))
                         continue
-                    else:
+                    elif not block[1] == "!":
                         # if is block level tag and is not complete
                         items.append(block.strip())
                         in_tag = True
                         continue
                     
-                else:
-                    new_blocks.append(block)
+                new_blocks.append(block)
 
             else:
                 items.append(block.strip())
@@ -517,7 +517,7 @@ REFERENCE_RE = BRK+ r'\s*\[([^\]]*)\]'           # [Google][3]
 IMAGE_REFERENCE_RE = r'\!' + BRK + '\s*\[([^\]]*)\]' # ![alt text][2]
 NOT_STRONG_RE = r'( \* )'                        # stand-alone * or _
 AUTOLINK_RE = r'<(http://[^>]*)>'                # <http://www.123.com>
-AUTOMAIL_RE = r'<([^> ]*@[^> ]*)>'               # <me@example.com>
+AUTOMAIL_RE = r'<([^> \!]*@[^> ]*)>'               # <me@example.com>
 HTML_RE = r'(\<[^\>]*\>)'                        # <...>
 ENTITY_RE = r'(&[\#a-zA-Z0-9]*;)'                # &amp;
 
@@ -1867,6 +1867,8 @@ if __name__ == '__main__':
 """
 CHANGELOG
 =========
+
+July 9, 2006: Fixed the <!--@address.com> problem (Tracker #1501354).
 
 May 18, 2006: Stopped catching unquoted titles in reference links.
 Stopped creating blank headers.
