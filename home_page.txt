@@ -12,21 +12,23 @@ features and fully passes [Markdown Test Suite
 1.0](http://six.pairlist.net/pipermail/markdown-discuss/2004-December/000909.html).  It also supports footnotes (see [this
 thread](http://six.pairlist.net/pipermail/markdown-discuss/2005-August/001480.html))
 and attributes (see [this
-thread](http://six.pairlist.net/pipermail/markdown-discuss/2005-August/001486.html)).
-
-<!--Python-Markdown defaults to ignoring middle-word emphasis through
-underscore, but this it can be switched to on.  (See [this
+thread](http://six.pairlist.net/pipermail/markdown-discuss/2005-August/001486.html)).  Python-Markdown defaults to ignoring middle-word emphasis through
+underscore, but this it can be switched off.  (See [this
 thread](http://six.pairlist.net/pipermail/markdown-discuss/2005-October/001610.html)
-for discussion.)-->
+for discussion.)
 
 If you find something missing, [submit a bug report](http://sourceforge.net/tracker/?func=add&group_id=153041&atid=790198) or send me an email (qaramazov-at-gmail.com).  Better yet, send me a patch.
 
 <a name="Installation"></a>
-<h3 class="title">Installation and Usage</h3>
+<h3 class="title">Installation</h3>
 
-If you want to install the module into your python tree, get
-[setup.py](setup.py) and run "python setup.py install" from a
-directory where you put markdown.py.
+[Download](http://sourceforge.net/project/showfiles.php?group_id=153041)
+the zip file and extract the files.  If you want to install markdown
+as as a module into your python tree, run "python setup.py install"
+from a directory where you unzip the files.
+
+<a name="Commandline"></a>
+<h3 class="title">Command Line Usage</h3>
 
 To use markdown.py by itself, run it as 
 
@@ -34,19 +36,75 @@ To use markdown.py by itself, run it as
 
 or 
 
-    python markdown.py <input_file> <output_file>
+    python markdown.py <input_file> > <output_file>
     
-To get footnotes, add a "-footnotes" option:
+If you are using Python 2.3 or higher, you can also use advanced
+command line options to specify encoding or to run extensions.
 
-    python markdown.py -footnotes <input_file> <output_file>
 
-To use it as a module:
+    $ python markdown.py
+    usage: markdown.py INPUTFILE [options]
+
+    options:
+      -h, --help            show this help message and exit
+      -f OUTPUT_FILE, --file=OUTPUT_FILE
+                            write output to OUTPUT_FILE
+      -e ENCODING, --encoding=ENCODING
+                            encoding for input and output files
+      -q, --quiet           suppress all messages
+      -v, --verbose         print info messages
+      --noisy               print debug messages
+      -x EXTENSION, --extension=EXTENSION
+                            load extension EXTENSION
+
+For an extension to be ran this way it must be provided in a module
+named ``mdx_{extensionname}.py`` which should be in your python path,
+e.g. ``mdx_footnotes.py``.  It can then be invoked as by name (the
+part after "mdx_"):
+
+    python markdown.py -x footnotes text_with_footnotes.txt output.html
+
+If the extension supports config options (see below), you can also
+pass them in as well:
+
+    python markdown.py -x "footnotes(PLACE_MARKER=~~~~~~~~)"
+
+<a name="Module"></a>
+<h3 class="title">Using the Module</h3>
+
+To use it as markdown as a module:
 
     import markdown
     html = markdown.markdown(your_text_string)
 
+Alternatively, if you want to pass more options:
+
+    import markdown
+    md = Markdown(text, 
+                  extensions=['footnotes'],	
+                  extension_configs= {'footnotes' : 
+		                       ('PLACE_MARKER','~~~~~~~~')}
+                  encoding='utf8')
+
+    return md.toString()
+
+or, if you want to process multiple strings:
+
+    md = Markdown(text=None)
+    md.toString(text)
+
+Finally, if the extensions are fully compatible, you should be able to
+get a list of extensions and their config parameters:
+
+    for x in md.getExtensions():
+
+        print x.name
+        print x.oneliner
+        print x.getConfigInfo()
+
+
 <a name="Extending"></a>
-<h3 class="title">Extending</h3>
+<h3 class="title">Writing Extensions</h3>
 
 The functionality of the script can be extended without changing the
 code, by inserting additional pre-processors, post-processors or
@@ -54,26 +112,26 @@ inline patterns into Markdown's pipeline.
 
 **Pre-processors** operate on lines of source text and are run in the
 beginning.  It is sufficient to write a class with a run() method that
-takes a list of text lines as a parameter and returns the same or a new
-list.  An instance of the preprocessor can then be inserted into
-the markdown pipeline.
+takes a list of text lines as a parameter and returns the same or a
+new list.  An instance of the preprocessor can then be inserted into
+the markdown pipeline.  Preprocessor classes must extend
+markdown.Preprocessor.
 
-
-    class SamplePreprocessor :
+    class SamplePreprocessor (markdown.Preprocessor) :
         def run(self, lines) :
             for i in range(len(lines)) :
                 if lines[i].startswith(SOMETHING) :
                     lines[i] = do_something(lines[i])
 
-        return lines
+            return lines
 
     md_instance.preprocessors.insert(SOME_INDEX, SamplePreprocessor())
 
 **Post-processors** operate on a NanoDom tree and run at the very end.
 They need to implement a "run" method that takes a pointer to a NanoDom
-document.  
+document.  Postprocessor classes must extend markdown.Postprocessor.
 
-    class SamplePostprocessor :
+    class SamplePostprocessor (markdown.Postprocessor):
         def run(self, doc) :
             doc.documentElement.appendChild(doc.createElement("new"))
     
@@ -84,7 +142,7 @@ Finally, **inline patterns** can be added.  Each inline pattern
 includes a regular expression pattern and a method for turning a match
 object into a DOM fragment
 
-    class MyCustomPattern (BasePattern) :
+    class MyCustomPattern (markdown.Pattern) :
         def handleMatch(self, m, doc) :
             el = doc.createElement('custom')
             el.setAttribute('stuff', m.group(3)) 
@@ -93,7 +151,55 @@ object into a DOM fragment
     new_pattern = MyCustomPattern(r'your regular expression here')
     md_instance.inlinePatterns.insert(SOME_INDEX, new_pattern)
 
-See the implementation of footnote support inside markdown.py for an
+Preprocessors, patterns and postprocessors need to then be wrapped
+together into an extension, which should be implemented as a class
+that extends markdown.Extension and should over-ride the
+``extendMarkdown()`` method.  ``extendMarkdown()`` is called during
+markdown construction, giving the extension a pointer to the markdown
+object (the ``md`` parameters) and markdown's global variables
+(``md_globals``), which in theory gives the extension an option of
+changing anything it cares to change.  However, what it really should
+be doing is inserting preprocessors, postprocessors and patterns into
+the markdown pipeline:
+
+
+   def extendMarkdown(self, md, md_globals) :
+
+        self.md = md
+
+        # Insert a preprocessor before ReferencePreprocessor
+        index = md.preprocessors.index(md_globals['REFERENCE_PREPROCESSOR'])
+        preprocessor = FootnotePreprocessor(self)
+        preprocessor.md = md
+        md.preprocessors.insert(index, preprocessor)
+
+
+If the extension uses any parameters that the use may want to change,
+they should be stored in self.config in the following format:
+
+        self.config = {parameter_1_name : [value1, description1],
+	               parameter_2_name : [value2, description2] }
+
+When stored this way the config parameters can be over-riden from the
+command line or at the time Markdown is instantiated:
+
+    markdown.py -x myextension(SOME_PARAM=2) inputfile.txt > output.txt
+
+Note that parameters should always be assumed to be set to string
+values, and should be converted at the run time, e.g.
+
+    i += int(self.getConfig("SOME_PARAM"))
+
+Each extension should ideally be placed in its own module starting
+with ``mdx_`` prefix (e.g. ``mdx_footnotes.py``).  The module must
+provide a module-level function called ``makeExtensions`` that takes
+as an optional parameter a list of configuration over-rides and
+returns an instance of the extension.  E.g.:
+
+    def makeExtension(configs=None) :
+	return FootnoteExtension(configs=configs)
+
+See the implementation of footnote support (mdx_footnotes.py) for an
 example of using all three in combination to provide reasonably
 complex additional functionality.  (I use a pre-processor to collect
 footnote definitions, an inline pattern to handle uses of footnotes
@@ -102,7 +208,15 @@ footnotes at the end of the document)
 
 Other extensions:
 
-* [Table-of-contents extension](extensions/markdown_with_toc.py) by Chris Clark (inserts a "title" element and a table of contents).
+* [Table-of-contents extension](extensions/mdx_toc.py) by Chris Clark
+  (inserts a table of contents), upgraded by
+  Yuri.
+
+* [Title extension](extensions/mdx_title.py) by Chris Clark (inserts a
+  title element)
+
+* [WikiLinks](http://achinghead.com/archives/67/adding-wikilinks-to-markdown-in-python/)
+  by Waylan Limberg (not yet upgraded)
 
 <a name="Credits"></a>
 <h3 class="title">Credits</h3>
@@ -137,62 +251,29 @@ Or subscribe to [python-markdown-discuss](http://lists.sourceforge.net/lists/lis
 
 
 <a name="Change"></a>
-<h3 class="title">Change Log</h3>
+<h3 class="title">Recent Changes</h3>
 
-*Feb. 28, 2006:* Clean-up and command-line handling by Stewart
-Midwinter. ([version 1.3](markdown-1.3.py))
+Oct 11, 2006: Releasing v. 1.6 with a whole bunch of changes (since
+May 15), including:
 
-*Feb. 24, 2006:* Fixed a bug with the last line of the list appearing
-again as a separate paragraph.  Incorporated Chris Clark's "mailto"
-patch.  Added support for `<br />` at the end of lines ending in two or
-more spaces.  Fixed a crashing bug when using ImageReferencePattern.
-Added "hr" and "hr/" to BLOCK\_LEVEL\_ELEMENTS and changed
-`<hr/>` to `<hr />`.  (Thanks to Sergej Chodarev.) 
-Added several utility methods to Nanodom.
-([version 1.2](markdown-1.2.py))
+- Fixed a bug that caused some text to be lost after comments.
+- Added exception for PHP tags when handling html blocks.
+- Incorporated Sergej Chodarev's patch to fix a problem with ampersand
+  normalization and html blocks.
+- Switched to using optparse.  Added proper support for unicode.
+- Fixed the <!--@address.com> problem (Tracker #1501354).  
+- Stopped catching unquoted titles in reference links.  Stopped
+  creating blank headers.
 
-*Nov. 30, 2005:* Fixed a bug with certain tabbed lines inside lists
-getting wrapped in `<pre><code>`.  Made "\<!...", "\<?...", etc. behave
-like block-level HTML tags. ([version 1.1](markdown-1.1.py))
+May 15, 2006: A bug with lists, recursion on block-level elements,
+run-in headers, spaces before headers, unicode input (thanks to Aaron
+Swartz). Sourceforge tracker #s: 1489313, 1489312, 1489311, 1488370,
+1485178, 1485176. (v. 1.5)
 
-*Nov. 14, 2005:* Added entity code and email autolink fix by Tiago
-Cogumbreiro.  Fixed some small issues with backticks to get 100
-compliance with John's test suite.  Added an unlink method for
-documents to aid with memory collection (per Doug Sauder's
-suggestion).  Restricted a set of html tags that get treated as
-block-level elements. ([version 1.0](markdown-1.0.py))
+Mar. 24, 2006: Switched to a not-so-recursive algorithm with
+_handleInline.  (v. 1.4)
 
-*Sept. 18, 2005:* Refactored the whole script to make it easier to
-customize it and made footnote functionality into an extension.
-([version 0.9](markdown-0.9.py))
-
-*Sept. 5, 2005:* Fixed a bug with multi-paragraph footnotes.  Added
-attribute support.
-
-*Sept. 1, 2005:* Changed the way headers are handled to allow inline
-syntax in headers (e.g. links) and got the lists to use p-tags
-correctly. ([version 0.8](markdown-0.8.py))
-
-*Aug. 29, 2005:* Added flexible tabs, fixed a few small issues, added
-basic support for footnotes, got rid of xml.dom.minidom and added
-pretty-printing. ([version 0.7](markdown-0.7.py))
-
-*Aug. 13, 2005:* Fixed a number of small bugs in order to conform to
-the test suite.  ([version 0.6](markdown-0.6.py))
-
-*Aug. 11, 2005:* Added support for inline html and entities, inline
-images, autolinks, underscore emphasis.  Cleaned up and refactored the
-code, added some more comments. ([version 0.5](markdown-0.5.py))
-
-*Feb. 19, 2005:* Rewrote the handling of high-level elements to allow
-multi-line list items and all sorts of nesting. ([version 0.4](markdown-0.4.py))
-
-*Feb. 3, 2005:* Reference-style links, single-line lists, backticks,
-escape, emphasis in the beginning of the paragraph.
-
-*Nov. 2004:* Added links, block quotes, html blocks to Manfred Stienstra's code.
-
-
-
+For a full list of changes see CHANGE_LOG.txt in the current version
+of markdown.
 
 <?php include("markdown-footer.php"); ?>
