@@ -1,0 +1,92 @@
+PYTHON MARKDOWN CHANGELOG
+=========================
+
+Oct 10, 2006: Fixed a bug that caused some text to be lost after
+comments.
+
+Sept 6, 2006: Added exception for PHP tags when handling html blocks.
+
+August 7, 2006: Incorporated Sergej Chodarev's patch to fix a problem
+with ampersand normalization and html blocks.
+
+July 10, 2006: Switched to using optparse.  Added proper support for
+unicode.
+
+July 9, 2006: Fixed the <!--@address.com> problem (Tracker #1501354).  
+
+May 18, 2006: Stopped catching unquoted titles in reference links.
+Stopped creating blank headers.
+
+May 15, 2006: A bug with lists, recursion on block-level elements,
+run-in headers, spaces before headers, unicode input (thanks to Aaron
+Swartz). Sourceforge tracker #s: 1489313, 1489312, 1489311, 1488370,
+1485178, 1485176. (v. 1.5)
+
+Mar. 24, 2006: Switched to a not-so-recursive algorithm with
+_handleInline.  (Version 1.4)
+
+Mar. 15, 2006: Replaced some instance variables with class variables
+(a patch from Stelios Xanthakis).  Chris Clark's new regexps that do
+not trigger midword underlining.
+
+Feb. 28, 2006: Clean-up and command-line handling by Stewart
+Midwinter. (Version 1.3)
+
+Feb. 24, 2006: Fixed a bug with the last line of the list appearing
+again as a separate paragraph.  Incorporated Chris Clark's "mailto"
+patch.  Added support for <br /> at the end of lines ending in two or
+more spaces.  Fixed a crashing bug when using ImageReferencePattern.
+Added several utility methods to Nanodom.  (Version 1.2)
+
+Jan. 31, 2006: Added "hr" and "hr/" to BLOCK_LEVEL_ELEMENTS and
+changed <hr/> to <hr />.  (Thanks to Sergej Chodarev.)
+
+Nov. 26, 2005: Fixed a bug with certain tabbed lines inside lists
+getting wrapped in <pre><code>.  (v. 1.1)
+
+Nov. 19, 2005: Made "<!...", "<?...", etc. behave like block-level
+HTML tags.
+
+Nov. 14, 2005: Added entity code and email autolink fix by Tiago
+Cogumbreiro.  Fixed some small issues with backticks to get 100%
+compliance with John's test suite.  (v. 1.0)
+
+Nov. 7, 2005: Added an unlink method for documents to aid with memory
+collection (per Doug Sauder's suggestion).
+
+Oct. 29, 2005: Restricted a set of html tags that get treated as
+block-level elements.
+
+Sept. 18, 2005: Refactored the whole script to make it easier to
+customize it and made footnote functionality into an extension.
+(v. 0.9)
+
+Sept. 5, 2005: Fixed a bug with multi-paragraph footnotes.  Added
+attribute support.
+
+Sept. 1, 2005: Changed the way headers are handled to allow inline
+syntax in headers (e.g. links) and got the lists to use p-tags
+correctly (v. 0.8)
+
+Aug. 29, 2005: Added flexible tabs, fixed a few small issues, added
+basic support for footnotes.  Got rid of xml.dom.minidom and added
+pretty-printing. (v. 0.7)
+
+Aug. 13, 2005: Fixed a number of small bugs in order to conform to the
+test suite.  (v. 0.6)
+
+Aug. 11, 2005: Added support for inline html and entities, inline
+images, autolinks, underscore emphasis. Cleaned up and refactored the
+code, added some more comments.
+
+Feb. 19, 2005: Rewrote the handling of high-level elements to allow
+multi-line list items and all sorts of nesting.
+
+Feb. 3, 2005: Reference-style links, single-line lists, backticks,
+escape, emphasis in the beginning of the paragraph.
+
+Nov. 2004: Added links, blockquotes, html blocks to Manfred
+Stienstra's code
+
+Apr. 2004: Manfred's version at http://www.dwerg.net/projects/markdown/
+
