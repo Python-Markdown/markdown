@@ -30,7 +30,8 @@ Contact: yuri [at] freewisdom.org
 
 License: GPL 2 (http://www.gnu.org/copyleft/gpl.html) or BSD
 
-Version: 1.5a (July 9, 2006)
+Version: 1.6a (October 12, 2006)
+
 
 For changelog, see end of file
 """
@@ -909,19 +910,22 @@ class Markdown:
 
 
     def __init__(self, source=None,
-                 extensions=None,
+                 extensions=[],
                  extension_configs=None,
-                 encoding=None, ):
+                 encoding=None,
+                 safe_mode = True):
         """Creates a new Markdown instance.
 
            @param source: The text in Markdown format.
            @param encoding: The character encoding of <text>. """
 
+        self.safeMode = safe_mode
         self.encoding = encoding
         self.source = source
         self.blockGuru = BlockGuru()
         self.registeredExtensions = []
         self.stripTopLevelTags = 1
+        self.docType = ""
 
         self.preprocessors = [ HEADER_PREPROCESSOR,
                                LINE_PREPROCESSOR,
@@ -1465,10 +1469,14 @@ class Markdown:
         # Let's stick in all the raw html pieces
 
         for i in range(self.htmlStash.html_counter) :
+            html = self.htmlStash.rawHtmlBlocks[i]
+            if self.safeMode :
+                html = "[HTML_REMOVED]"
+                
             xml = xml.replace("<p>%s\n</p>" % (HTML_PLACEHOLDER % i),
-                              self.htmlStash.rawHtmlBlocks[i] + "\n")
+                              html + "\n")
             xml = xml.replace(HTML_PLACEHOLDER % i,
-                              self.htmlStash.rawHtmlBlocks[i])
+                              html)
 
         # And return everything but the top level tag
 
@@ -1478,7 +1486,7 @@ class Markdown:
         for pp in self.textPostprocessors :
             xml = pp.run(xml)
 
-        return xml
+        return self.docType + xml
 
 
     toString = __str__
@@ -1501,7 +1509,8 @@ def markdownFromFile(input = None,
                      output = None,
                      extensions = [],
                      encoding = None,
-                     message_threshold = CRITICAL) :
+                     message_threshold = CRITICAL,
+                     safe = False) :
 
     global MESSAGE_THRESHOLD
     MESSAGE_THRESHOLD = message_threshold
@@ -1516,7 +1525,7 @@ def markdownFromFile(input = None,
     text = input_file.read()
     input_file.close()
 
-    new_text = markdown(text, extensions, encoding)
+    new_text = markdown(text, extensions, encoding, safe_mode = safe)
 
     if output :
         output_file = codecs.open(output, "w", encoding=encoding)
@@ -1528,7 +1537,8 @@ def markdownFromFile(input = None,
 
 def markdown(text,
              extensions = [],
-             encoding = None) :
+             encoding = None,
+             safe_mode = False) :
     
     message(VERBOSE, "in markdown.markdown(), received text:\n%s" % text)
 
@@ -1548,15 +1558,16 @@ def markdown(text,
             #print configs
 
     md = Markdown(text, extensions=extension_names,
-                  extension_configs=extension_configs)
+                  extension_configs=extension_configs,
+                  safe_mode = safe_mode)
 
     return md.toString()
         
 
 class Extension :
 
-    def __init__(self) :
-        self.config = {}
+    def __init__(self, configs = {}) :
+        self.config = configs
 
     def getConfig(self, key) :
         if self.config.has_key(key) :
@@ -1589,6 +1600,7 @@ def parse_options() :
             return {'input' : sys.argv[1],
                     'output' : None,
                     'message_threshold' : CRITICAL,
+                    'safe' : False,
                     'extensions' : [],
                     'encoding' : None }
 
@@ -1609,6 +1621,10 @@ def parse_options() :
     parser.add_option("-v", "--verbose",
                       action="store_const", const=INFO, dest="verbose",
                       help="print info messages")
+    parser.add_option("-s", "--safe",
+                      action="store_const", const=True, dest="safe",
+                      help="same mode (strip user's HTML tag)")
+    
     parser.add_option("--noisy",
                       action="store_const", const=VERBOSE, dest="verbose",
                       help="print debug messages")
@@ -1629,6 +1645,7 @@ def parse_options() :
     return {'input' : input_file,
             'output' : options.filename,
             'message_threshold' : options.verbose,
+            'safe' : options.safe,
             'extensions' : options.extensions,
             'encoding' : options.encoding }
 
