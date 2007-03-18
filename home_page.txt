@@ -24,8 +24,12 @@ If you find something missing, [submit a bug report](http://sourceforge.net/trac
 
 [Download](http://sourceforge.net/project/showfiles.php?group_id=153041)
 the zip file and extract the files.  If you want to install markdown
-as as a module into your python tree, run "python setup.py install"
-from a directory where you unzip the files.
+as as a module into your python tree, run "sudo python setup.py
+install" from a directory where you unzip the files.  (You typically
+need to be root to install modules this way - hence use of "sudo".  If
+you don't have root access, it probably doesn't make sense for you to
+"install" markdown this way - just put the markdown.py file somewhere
+and make sure that directory is in your path later.)
 
 <a name="Commandline"></a>
 <h3 class="title">Command Line Usage</h3>
@@ -53,6 +57,7 @@ command line options to specify encoding or to run extensions.
                             encoding for input and output files
       -q, --quiet           suppress all messages
       -v, --verbose         print info messages
+      -s, --safe            same mode (strip user's HTML tag)
       --noisy               print debug messages
       -x EXTENSION, --extension=EXTENSION
                             load extension EXTENSION
@@ -72,7 +77,7 @@ pass them in as well:
 <a name="Module"></a>
 <h3 class="title">Using the Module</h3>
 
-To use it as markdown as a module:
+To use markdown as a module:
 
     import markdown
     html = markdown.markdown(your_text_string)
@@ -84,7 +89,8 @@ Alternatively, if you want to pass more options:
                   extensions=['footnotes'],	
                   extension_configs= {'footnotes' : 
 		                       ('PLACE_MARKER','~~~~~~~~')}
-                  encoding='utf8')
+                  encoding='utf8',
+                  safe_mode = True)
 
     return md.toString()
 
@@ -93,15 +99,10 @@ or, if you want to process multiple strings:
     md = Markdown(text=None)
     md.toString(text)
 
-Finally, if the extensions are fully compatible, you should be able to
-get a list of extensions and their config parameters:
-
-    for x in md.getExtensions():
-
-        print x.name
-        print x.oneliner
-        print x.getConfigInfo()
-
+Note that if you are using Markdown on a web system which will
+transform text provided by untrusted users, you may want to use
+"safe_mode=True" option (see above) which ensures that user's HTML tags are
+removed. (They can still create links using Markdown syntax.)
 
 <a name="Extending"></a>
 <h3 class="title">Writing Extensions</h3>
@@ -115,7 +116,7 @@ beginning.  It is sufficient to write a class with a run() method that
 takes a list of text lines as a parameter and returns the same or a
 new list.  An instance of the preprocessor can then be inserted into
 the markdown pipeline.  Preprocessor classes must extend
-markdown.Preprocessor.
+``markdown.Preprocessor``.
 
     class SamplePreprocessor (markdown.Preprocessor) :
         def run(self, lines) :
@@ -129,7 +130,7 @@ markdown.Preprocessor.
 
 **Post-processors** operate on a NanoDom tree and run at the very end.
 They need to implement a "run" method that takes a pointer to a NanoDom
-document.  Postprocessor classes must extend markdown.Postprocessor.
+document.  Postprocessor classes must extend ``markdown.Postprocessor``.
 
     class SamplePostprocessor (markdown.Postprocessor):
         def run(self, doc) :
@@ -163,7 +164,7 @@ be doing is inserting preprocessors, postprocessors and patterns into
 the markdown pipeline:
 
 
-   def extendMarkdown(self, md, md_globals) :
+    def extendMarkdown(self, md, md_globals) :
 
         self.md = md
 
@@ -177,8 +178,8 @@ the markdown pipeline:
 If the extension uses any parameters that the use may want to change,
 they should be stored in self.config in the following format:
 
-        self.config = {parameter_1_name : [value1, description1],
-	               parameter_2_name : [value2, description2] }
+    self.config = {parameter_1_name : [value1, description1],
+                   parameter_2_name : [value2, description2] }
 
 When stored this way the config parameters can be over-riden from the
 command line or at the time Markdown is instantiated:
@@ -199,12 +200,17 @@ returns an instance of the extension.  E.g.:
     def makeExtension(configs=None) :
 	return FootnoteExtension(configs=configs)
 
-See the implementation of footnote support (mdx_footnotes.py) for an
-example of using all three in combination to provide reasonably
-complex additional functionality.  (I use a pre-processor to collect
-footnote definitions, an inline pattern to handle uses of footnotes
-inside the text and a post-processor to attach the HTML of the actual
-footnotes at the end of the document)
+See the implementation of footnote support distributed with the
+markdown script (mdx_footnotes.py) for an example of using all three
+in combination to provide reasonably complex additional functionality.
+(I use a pre-processor to collect footnote definitions, an inline
+pattern to handle uses of footnotes inside the text and a
+post-processor to attach the HTML of the actual footnotes at the end
+of the document) The RSS extension (mdx_rss.py, also included), which
+generates an RSS file from markdown source is a simpler extension but
+provides an example of extending markdown to generate arbitrary XML
+rather than HTML. 
+
 
 Other extensions:
 
@@ -217,6 +223,59 @@ Other extensions:
 
 * [WikiLinks](http://achinghead.com/archives/67/adding-wikilinks-to-markdown-in-python/)
   by Waylan Limberg (not yet upgraded)
+
+
+<a name="Django"></a>
+<h3 class="title">Using Markdown with Django</h3>
+
+Install markdown and make sure it is in your path.
+Include 'django.contrib.markup' in INSTALLED_APPS in your settings.py.
+You will then need to load the markup module in a template:
+
+    {% load markup %}
+
+After that, you should be able to use markdown filter in that template
+as follows by putting "|markdown" after a variable, e.g.:
+
+    {{ post.body|markdown }}
+
+If you want to use markdown with extensions or want an option of
+disabling HTML (e.g., in comments) edit
+django/contrib/markup/templatetags/markup.py file in your django tree
+replacing the definition of markdown() function with the following:
+
+    def markdown(value, arg=''):
+
+        try:
+            import markdown
+        except ImportError:
+            if settings.DEBUG:
+                raise (template.TemplateSyntaxError, 
+                       "Error in {% markdown %} filter: " 
+                       + "The markdown library isn't installed.")
+            else :
+                from django.utils.html import escape, linebreaks
+                return linebreaks(escape(value))
+        else:
+            extensions=arg.split(",")
+            if len(extensions) > 0 and extensions[0] == "safe" :
+                extensions = extensions[1:]
+                safe_mode = True
+            else :
+                safe_mode = False
+            return markdown.markdown(value, extensions, safe_mode=safe_mode)
+
+(This code snippet has been adapted from one proposed by [Waylan
+Limberg](http://achinghead.com/).)
+
+You should then be able to load extensions by listing them in quotes
+separated by comas:
+
+    {{ post.body|markdown:"imagelinks,footnotes" }}
+
+If you want to disable HTML, include "safe" as the first argument:
+
+    {{ post.body|markdown:"safe" }}
 
 <a name="Credits"></a>
 <h3 class="title">Credits</h3>

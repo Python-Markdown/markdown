@@ -1,8 +1,12 @@
 PYTHON MARKDOWN CHANGELOG
 =========================
 
+March 18, 2007: Fixed or merged a bunch of minor bugs, including
+multi-line comments and markup inside links. (Tracker #s: 1683066,
+1671153, 1661751, 1627935, 1544371, 1458139.) -> v. 1.6b
+
 Oct 10, 2006: Fixed a bug that caused some text to be lost after
-comments.
+comments.  Added "safe mode" (user's html tags are removed).
 
 Sept 6, 2006: Added exception for PHP tags when handling html blocks.
 
