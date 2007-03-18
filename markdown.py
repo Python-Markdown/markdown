@@ -11,7 +11,7 @@ SPEED_TEST = 0
 
 """
 ====================================================================
-IF YOA ARE LOOKING TO EXTEND MARKDOWN, SEE THE "FOOTNOTES" SECTION
+IF YOU ARE LOOKING TO EXTEND MARKDOWN, SEE THE "FOOTNOTES" SECTION
 ====================================================================
 
 Python-Markdown
@@ -33,12 +33,12 @@ License: GPL 2 (http://www.gnu.org/copyleft/gpl.html) or BSD
 Version: 1.6a (October 12, 2006)
 
 
-For changelog, see end of file
+For changelog, see the end of file
 """
 
 import re, sys, os, random, codecs
 
-# set debug level: 3 none, 2 critical, 1 informative, 0 all
+# Set debug level: 3 none, 2 critical, 1 informative, 0 all
 (VERBOSE, INFO, CRITICAL, NONE) = range(4)
 
 MESSAGE_THRESHOLD = CRITICAL
@@ -50,10 +50,11 @@ def message(level, text) :
 
 # --------------- CONSTANTS YOU MIGHT WANT TO MODIFY -----------------
 
-# all tabs will be expanded to up to this many spaces
-TAB_LENGTH = 4
-ENABLE_ATTRIBUTES = 1
-SMART_EMPHASIS = 1
+TAB_LENGTH = 4         # expand tabs to this many spaces
+ENABLE_ATTRIBUTES = 1  # @id = xyz -> <... id="xyz">
+SMART_EMPHASIS = 1     # this_or_that does not become this<i>or</i>that
+HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
+
 
 # --------------- CONSTANTS YOU _SHOULD NOT_ HAVE TO CHANGE ----------
 
@@ -113,7 +114,7 @@ class Document :
 
     def normalizeEntities(self, text) :
 
-        pairs = [ ("&", "&amp;"),
+        pairs = [ ("&(?!#)", "&amp;"),
                   ("<", "&lt;"),
                   (">", "&gt;"),
                   ("\"", "&quot;")]
@@ -263,10 +264,10 @@ class EntityReference:
 Preprocessors munge source text before we start doing anything too
 complicated.
 
-Each preprocessor implements a "run" method that takes a pointer to a list of lines of the document,
-modifies it as necessary and returns either the same pointer or a
-pointer to a new list.  Preprocessors must extend
-markdown.Preprocessor.
+Each preprocessor implements a "run" method that takes a pointer to a
+list of lines of the document, modifies it as necessary and returns
+either the same pointer or a pointer to a new list.  Preprocessors
+must extend markdown.Preprocessor.
 
 """
 
@@ -363,9 +364,12 @@ class HtmlBlockPreprocessor (Preprocessor):
         return block.rstrip()[-len(left_tag)-2:-1].lower()
 
     def _equal_tags(self, left_tag, right_tag):
+        
         if left_tag in ['?', '?php', 'div'] : # handle PHP, etc.
             return True
         if ("/" + left_tag) == right_tag:
+            return True
+        if (right_tag == "--" and left_tag == "--") :
             return True
         elif left_tag == right_tag[1:] \
             and right_tag[0] != "<":
@@ -418,18 +422,19 @@ class HtmlBlockPreprocessor (Preprocessor):
                         new_blocks.append(
                             self.stash.store(block.strip()))
                         continue
-                    elif not block[1] == "!":
+                    else: #if not block[1] == "!":
                         # if is block level tag and is not complete
                         items.append(block.strip())
                         in_tag = True
                         continue
-                    
+
                 new_blocks.append(block)
 
             else:
                 items.append(block.strip())
                 
                 right_tag = self._get_right_tag(left_tag, block)
+                
                 if self._equal_tags(left_tag, right_tag):
                     # if find closing tag
                     in_tag = False
@@ -610,7 +615,7 @@ class LinkPattern (Pattern):
     def handleMatch(self, m, doc) :
         el = doc.createElement('a')
         el.appendChild(doc.createTextNode(m.group(2)))
-        parts = m.group(9).split()
+        parts = m.group(9).split('"')
         # We should now have [], [href], or [href, title]
         if parts :
             el.setAttribute('href', parts[0])
@@ -927,9 +932,9 @@ class Markdown:
         self.stripTopLevelTags = 1
         self.docType = ""
 
-        self.preprocessors = [ HEADER_PREPROCESSOR,
+        self.preprocessors = [ HTML_BLOCK_PREPROCESSOR,
+                               HEADER_PREPROCESSOR,
                                LINE_PREPROCESSOR,
-                               HTML_BLOCK_PREPROCESSOR,
                                LINE_BREAKS_PREPROCESSOR,
                                # A footnote preprocessor will
                                # get inserted here
@@ -1145,14 +1150,14 @@ class Markdown:
                     level = len(m.group(1))
                     h = self.doc.createElement("h%d" % level)
                     parent_elem.appendChild(h)
-                    for item in self._handleInlineWrapper2(m.group(2).strip()) :
+                    for item in self._handleInlineWrapper(m.group(2).strip()) :
                         h.appendChild(item)
                 else :
                     message(CRITICAL, "We've got a problem header!")
 
             elif paragraph :
 
-                list = self._handleInlineWrapper2("\n".join(paragraph))
+                list = self._handleInlineWrapper("\n".join(paragraph))
 
                 if ( parent_elem.nodeName == 'li'
                      and not (looseList or parent_elem.childNodes)):
@@ -1338,36 +1343,66 @@ class Markdown:
         self._processSection(parent_elem, theRest, inList)
 
 
-    def _handleInlineWrapper2 (self, line) :
-
+    def _handleInlineWrapper (self, line) :
 
         parts = [line]
 
-        #if not(line):
-        #    return [self.doc.createTextNode(' ')]
-
         for pattern in self.inlinePatterns :
-
-            #print
-            #print self.inlinePatterns.index(pattern)
 
             i = 0
 
-            #print parts
             while i < len(parts) :
                 
                 x = parts[i]
-                #print i
+
                 if isinstance(x, (str, unicode)) :
                     result = self._applyPattern(x, pattern)
-                    #print result
-                    #print result
-                    #print parts, i
+
                     if result :
                         i -= 1
                         parts.remove(x)
                         for y in result :
                             parts.insert(i+1,y)
+
+
+                elif isinstance(x, Element):
+
+                    # check if the child nodes need to be processed.
+                    # (ideally this should be recursive.
+                    # here we only go one level deep)
+
+                    j = 0
+                    while j < len(x.childNodes):
+                        child = x.childNodes[j]
+                        if isinstance(child, TextNode):
+                            result = self._applyPattern(child.value,pattern)
+
+                            if result:
+                                x.removeChild(child) #remove the TextNode
+                                list(result).reverse() #to make insertion easier
+
+                                for item in result:
+                                    
+                                    # we must now insert the new
+                                    # resultant nodes where the old
+                                    # TextNode was.  convert strings
+                                    # to TextNodese if necessary.
+                                    
+                                    if isinstance(item, (str, unicode)):
+                                        if len(item) > 0:
+
+                                            # only add a new text node
+                                            # if there is actual
+                                            # characters there.
+                                            
+                                            x.insertChild(j,
+                                                          self.doc.createTextNode(item))
+                                    else:
+                                        x.insertChild(j, item)
+                        
+                        j += 1
+
+                        #-----------------------
                 
                 i += 1
 
@@ -1378,27 +1413,6 @@ class Markdown:
 
         return parts
         
-
-
-    def _handleInlineWrapper (self, line) :
-
-        # A wrapper around _handleInline to avoid recursion
-
-        parts = [line]
-
-        i = 0
-        
-        while i < len(parts) :
-            x = parts[i]
-            if isinstance(x, (str, unicode)) :
-                parts.remove(x)
-                result = self._handleInline(x)
-                for y in result :
-                    parts.insert(i,y)
-            else :
-                i += 1
-
-        return parts
 
     def _handleInline(self,  line):
         """Transform a Markdown line with inline elements to an XHTML
@@ -1471,7 +1485,7 @@ class Markdown:
         for i in range(self.htmlStash.html_counter) :
             html = self.htmlStash.rawHtmlBlocks[i]
             if self.safeMode :
-                html = "[HTML_REMOVED]"
+                html = HTML_REMOVED_TEXT
                 
             xml = xml.replace("<p>%s\n</p>" % (HTML_PLACEHOLDER % i),
                               html + "\n")
