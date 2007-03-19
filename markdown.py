@@ -84,7 +84,12 @@ Importantly, NanoDom does not do normalization, which is what we
 want. It also adds extra white space when converting DOM to string
 """
 
-ENTITY_NORMALIZATION_EXPRESSIONS = [ (re.compile("&(?!\#)"), "&amp;"),
+ENTITY_NORMALIZATION_EXPRESSIONS = [ (re.compile("&"), "&amp;"),
+                                     (re.compile("<"), "&lt;"),
+                                     (re.compile(">"), "&gt;"),
+                                     (re.compile("\""), "&quot;")]
+
+ENTITY_NORMALIZATION_EXPRESSIONS_SOFT = [ (re.compile("&(?!\#)"), "&amp;"),
                                      (re.compile("<"), "&lt;"),
                                      (re.compile(">"), "&gt;"),
                                      (re.compile("\""), "&quot;")]
@@ -122,9 +127,14 @@ class Document :
     def toxml (self) :
         return self.documentElement.toxml()
 
-    def normalizeEntities(self, text) :
+    def normalizeEntities(self, text, avoidDoubleNormalizing=False) :
 
-        for regexp, substitution in ENTITY_NORMALIZATION_EXPRESSIONS :
+        if avoidDoubleNormalizing :
+            regexps = ENTITY_NORMALIZATION_EXPRESSIONS_SOFT
+        else :
+            regexps = ENTITY_NORMALIZATION_EXPRESSIONS
+
+        for regexp, substitution in regexps :
             text = regexp.sub(substitution, text)
         return text
 
@@ -213,7 +223,7 @@ class Element :
         buffer += "<" + self.nodeName
         for attr in self.attributes :
             value = self.attribute_values[attr]
-            value = self.doc.normalizeEntities(value)
+            value = self.doc.normalizeEntities(value, avoidDoubleNormalizing=True)
             buffer += ' %s="%s"' % (attr, value)
         if self.childNodes or self.nodeName in ['blockquote']:
             buffer += ">"
@@ -399,6 +409,7 @@ class HtmlBlockPreprocessor (Preprocessor):
 
     
     def run (self, lines) :
+
         new_blocks = []
         text = "\n".join(lines)
         text = text.split("\n\n")
@@ -635,12 +646,12 @@ class LinkPattern (Pattern):
         parts = m.group(9).split('"')
         # We should now have [], [href], or [href, title]
         if parts :
-            el.setAttribute('href', parts[0])
+            el.setAttribute('href', parts[0].strip())
         else :
             el.setAttribute('href', "")
         if len(parts) > 1 :
             # we also got a title
-            title = " ".join(parts[1:]).strip()
+            title = '"' + '"'.join(parts[1:]).strip()
             title = dequote(title) #.replace('"', "&quot;")
             el.setAttribute('title', title)
         return el
@@ -1387,6 +1398,9 @@ class Markdown:
                     # check if the child nodes need to be processed.
                     # (ideally this should be recursive.
                     # here we only go one level deep)
+
+                    if x.nodeName in ["code", "pre"] :
+                        break
 
                     j = 0
                     while j < len(x.childNodes):
