@@ -92,7 +92,12 @@ class RssPostProcessor (markdown.Postprocessor):
                                                        self.ext.getConfig("URL")))
 
                     item.appendChild(doc.createElement("title", heading))
-                    item.appendChild(doc.createElement("guid", heading))
+
+                    guid = ''.join([x for x in heading if x.isalnum()])
+
+                    guidElem = doc.createElement("guid", guid)
+                    guidElem.setAttribute("isPermaLink", "false")
+                    item.appendChild(guidElem)
 
                 elif child.nodeName in ["p"] :
 
