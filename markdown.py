@@ -84,6 +84,11 @@ Importantly, NanoDom does not do normalization, which is what we
 want. It also adds extra white space when converting DOM to string
 """
 
+ENTITY_NORMALIZATION_EXPRESSIONS = [ (re.compile("&(?!\#)"), "&amp;"),
+                                     (re.compile("<"), "&lt;"),
+                                     (re.compile(">"), "&gt;"),
+                                     (re.compile("\""), "&quot;")]
+
 
 class Document :
 
@@ -109,19 +114,18 @@ class Document :
             self.entities[entity] = EntityReference(entity)
         return self.entities[entity]
 
+    def createCDATA(self, text) :
+        node = CDATA(text)
+        node.doc = self
+        return node
+
     def toxml (self) :
         return self.documentElement.toxml()
 
     def normalizeEntities(self, text) :
 
-        pairs = [ ("&(?!#)", "&amp;"),
-                  ("<", "&lt;"),
-                  (">", "&gt;"),
-                  ("\"", "&quot;")]
-
-
-        for old, new in pairs :
-            text = text.replace(old, new)
+        for regexp, substitution in ENTITY_NORMALIZATION_EXPRESSIONS :
+            text = regexp.sub(substitution, text)
         return text
 
     def find(self, test) :
@@ -131,6 +135,19 @@ class Document :
         self.documentElement.unlink()
         self.documentElement = None
 
+
+class CDATA :
+
+    type = "cdata"
+
+    def __init__ (self, text) :
+        self.text = text
+
+    def handleAttributes(self) :
+        pass
+
+    def toxml (self) :
+        return "<![CDATA[" + self.text + "]]>"
 
 class Element :
 
