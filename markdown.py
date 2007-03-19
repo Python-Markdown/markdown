@@ -942,7 +942,7 @@ class Markdown:
         Markdown text """
 
 
-    def __init__(self, source=None,
+    def __init__(self, source=None,  # deprecated
                  extensions=[],
                  extension_configs=None,
                  encoding=None,
@@ -1496,7 +1496,7 @@ class Markdown:
         else :
             return None
 
-    def __str__(self, source = None):
+    def convert (self, source = None):
         """Return the document in XHTML format.
 
         @returns: A serialized XHTML body."""
@@ -1534,7 +1534,10 @@ class Markdown:
         return self.docType + xml
 
 
-    toString = __str__
+    __str__ = convert   # deprecated - will be changed in 1.7 to report
+                        # information about the MD instance
+    
+    toString = __str__  # toString() method is deprecated
 
 
     def __unicode__(self):
@@ -1543,7 +1546,7 @@ class Markdown:
         return str(self)#.decode(self.encoding)
 
 
-    toUnicode = __unicode__
+    toUnicode = __unicode__  # deprecated - will be removed in 1.7
 
 
 
@@ -1602,11 +1605,11 @@ def markdown(text,
             extension_configs[name] = configs
             #print configs
 
-    md = Markdown(text, extensions=extension_names,
+    md = Markdown(extensions=extension_names,
                   extension_configs=extension_configs,
                   safe_mode = safe_mode)
 
-    return md.toString()
+    return md.convert(text)
         
 
 class Extension :
