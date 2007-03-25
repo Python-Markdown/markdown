@@ -50,11 +50,38 @@ def message(level, text) :
 
 # --------------- CONSTANTS YOU MIGHT WANT TO MODIFY -----------------
 
-TAB_LENGTH = 4         # expand tabs to this many spaces
-ENABLE_ATTRIBUTES = 1  # @id = xyz -> <... id="xyz">
-SMART_EMPHASIS = 1     # this_or_that does not become this<i>or</i>that
+TAB_LENGTH = 4            # expand tabs to this many spaces
+ENABLE_ATTRIBUTES = True  # @id = xyz -> <... id="xyz">
+SMART_EMPHASIS = 1        # this_or_that does not become this<i>or</i>that
 HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
 
+RTL_BIDI_RANGES = ( (u'\u0590', u'\u07FF'),
+                    # from Hebrew to Nko (includes Arabic, Syriac and Thaana)
+                    (u'\u2D30', u'\u2D7F'),
+                    # Tifinagh
+                    )
+
+# Unicode Reference Table:
+# 0590-05FF - Hebrew
+# 0600-06FF - Arabic
+# 0700-074F - Syriac
+# 0750-077F - Arabic Supplement
+# 0780-07BF - Thaana
+# 07C0-07FF - Nko
+
+BOMS = { 'utf-8' : (unicode(codecs.BOM_UTF8, "utf-8"), ),
+         'utf-16' : (unicode(codecs.BOM_UTF16_LE, "utf-16"),
+                     unicode(codecs.BOM_UTF16_BE, "utf-16")),
+         #'utf-32' : (unicode(codecs.BOM_UTF32_LE, "utf-32"),
+         #            unicode(codecs.BOM_UTF32_BE, "utf-32")),
+         }
+
+def removeBOM(text, encoding):
+    for bom in BOMS[encoding]:
+        if text.startswith(bom):
+            return text.lstrip(bom)
+    return text
+                    
 
 # --------------- CONSTANTS YOU _SHOULD NOT_ HAVE TO CHANGE ----------
 
@@ -95,12 +122,38 @@ ENTITY_NORMALIZATION_EXPRESSIONS_SOFT = [ (re.compile("&(?!\#)"), "&amp;"),
                                      (re.compile("\""), "&quot;")]
 
 
+def getBidiType(text) :
+
+    if not text : return None
+
+    ch = text[0]
+
+    if not isinstance(ch, unicode) or not ch.isalpha():
+        return None
+
+    else :
+
+        for min, max in RTL_BIDI_RANGES :
+            if ( ch >= min and ch <= max ) :
+                return "rtl"
+        else :
+            return "ltr"
+
+
 class Document :
+
+    def __init__ (self) :
+        self.bidi = "ltr"
 
     def appendChild(self, child) :
         self.documentElement = child
+        child.isDocumentElement = True
         child.parent = self
         self.entities = {}
+
+    def setBidi(self, bidi) :
+        if bidi :
+            self.bidi = bidi
 
     def createElement(self, tag, textNode=None) :
         el = Element(tag)
@@ -169,6 +222,20 @@ class Element :
         self.attributes = []
         self.attribute_values = {}
         self.childNodes = []
+        self.bidi = None
+        self.isDocumentElement = False
+
+    def setBidi(self, bidi) :
+
+        if bidi :
+
+            orig_bidi = self.bidi
+
+            if not self.bidi or self.isDocumentElement:
+                # Once the bidi is set don't change it (except for doc element)
+                self.bidi = bidi
+                self.parent.setBidi(bidi)
+
 
     def unlink(self) :
         for child in self.childNodes :
@@ -215,27 +282,56 @@ class Element :
         if ENABLE_ATTRIBUTES :
             for child in self.childNodes:
                 child.handleAttributes()
+
         buffer = ""
         if self.nodeName in ['h1', 'h2', 'h3', 'h4'] :
             buffer += "\n"
         elif self.nodeName in ['li'] :
             buffer += "\n "
+
+        # Process children FIRST, then do the attributes
+
+        childBuffer = ""
+
+        if self.childNodes or self.nodeName in ['blockquote']:
+            childBuffer += ">"
+            for child in self.childNodes :
+                childBuffer += child.toxml()
+            if self.nodeName == 'p' :
+                childBuffer += "\n"
+            elif self.nodeName == 'li' :
+                childBuffer += "\n "
+            childBuffer += "</%s>" % self.nodeName
+        else :
+            childBuffer += "/>"
+
+
+            
         buffer += "<" + self.nodeName
+
+        if self.nodeName in ['p', 'li', 'ul', 'ol',
+                             'h1', 'h2', 'h3', 'h4', 'h5', 'h6'] :
+
+            if not self.attribute_values.has_key("dir"):
+                if self.bidi :
+                    bidi = self.bidi
+                else :
+                    bidi = self.doc.bidi
+                    
+                if bidi=="rtl" :
+                    self.setAttribute("dir", "rtl")
+        
         for attr in self.attributes :
             value = self.attribute_values[attr]
-            value = self.doc.normalizeEntities(value, avoidDoubleNormalizing=True)
+            value = self.doc.normalizeEntities(value,
+                                               avoidDoubleNormalizing=True)
             buffer += ' %s="%s"' % (attr, value)
-        if self.childNodes or self.nodeName in ['blockquote']:
-            buffer += ">"
-            for child in self.childNodes :
-                buffer += child.toxml()
-            if self.nodeName == 'p' :
-                buffer += "\n"
-            elif self.nodeName == 'li' :
-                buffer += "\n "
-            buffer += "</%s>" % self.nodeName
-        else :
-            buffer += "/>"
+
+
+        # Now let's actually append the children
+
+        buffer += childBuffer
+
         if self.nodeName in ['p', 'li', 'ul', 'ol',
                              'h1', 'h2', 'h3', 'h4'] :
             buffer += "\n"
@@ -252,13 +348,18 @@ class TextNode :
         self.value = text        
 
     def attributeCallback(self, match) :
+
         self.parent.setAttribute(match.group(1), match.group(2))
 
     def handleAttributes(self) :
         self.value = self.attrRegExp.sub(self.attributeCallback, self.value)
 
     def toxml(self) :
+
         text = self.value
+
+        self.parent.setBidi(getBidiType(text))
+        
         if not text.startswith(HTML_PLACEHOLDER_PREFIX):
             if self.parent.nodeName == "p" :
                 text = text.replace("\n", "\n   ")
@@ -333,10 +434,6 @@ class HeaderPreprocessor (Preprocessor):
                 elif underline == "-"*len(underline) :
                     lines[i] = "## " + lines[i].strip()
                     lines[i+1] = ""
-
-        #for l in lines :
-        #    print l.encode('utf8')
-        #sys.exit(0)
 
         return lines
 
@@ -679,12 +776,14 @@ class ImagePattern (Pattern):
 class ReferencePattern (Pattern):
 
     def handleMatch(self, m, doc):
+
         if m.group(9) :
             id = m.group(9).lower()
         else :
             # if we got something like "[Google][]"
             # we'll use "google" as the id
             id = m.group(2).lower()
+
         if not self.references.has_key(id) : # ignore undefined refs
             return None
         href, title = self.references[id]
@@ -945,8 +1044,8 @@ class Markdown:
     def __init__(self, source=None,  # deprecated
                  extensions=[],
                  extension_configs=None,
-                 encoding=None,
-                 safe_mode = True):
+                 encoding="utf-8",
+                 safe_mode = False):
         """Creates a new Markdown instance.
 
            @param source: The text in Markdown format.
@@ -1371,6 +1470,7 @@ class Markdown:
         self._processSection(parent_elem, theRest, inList)
 
 
+
     def _handleInlineWrapper (self, line) :
 
         parts = [line]
@@ -1392,49 +1492,6 @@ class Markdown:
                         for y in result :
                             parts.insert(i+1,y)
 
-
-                elif isinstance(x, Element):
-
-                    # check if the child nodes need to be processed.
-                    # (ideally this should be recursive.
-                    # here we only go one level deep)
-
-                    if x.nodeName in ["code", "pre"] :
-                        break
-
-                    j = 0
-                    while j < len(x.childNodes):
-                        child = x.childNodes[j]
-                        if isinstance(child, TextNode):
-                            result = self._applyPattern(child.value,pattern)
-
-                            if result:
-                                x.removeChild(child) #remove the TextNode
-                                list(result).reverse() #to make insertion easier
-
-                                for item in result:
-                                    
-                                    # we must now insert the new
-                                    # resultant nodes where the old
-                                    # TextNode was.  convert strings
-                                    # to TextNodese if necessary.
-                                    
-                                    if isinstance(item, (str, unicode)):
-                                        if len(item) > 0:
-
-                                            # only add a new text node
-                                            # if there is actual
-                                            # characters there.
-                                            
-                                            x.insertChild(j,
-                                                          self.doc.createTextNode(item))
-                                    else:
-                                        x.insertChild(j, item)
-                        
-                        j += 1
-
-                        #-----------------------
-                
                 i += 1
 
         for i in range(len(parts)) :
@@ -1465,6 +1522,7 @@ class Markdown:
         return [self.doc.createTextNode(line)]
 
     def _applyPattern(self, line, pattern) :
+
         """ Given a pattern name, this function checks if the line
         fits the pattern, creates the necessary elements, and returns
         back a list consisting of NanoDom elements and/or strings.
@@ -1479,6 +1537,8 @@ class Markdown:
         # match the line to pattern's pre-compiled reg exp.
         # if no match, move on.
 
+
+
         m = pattern.getCompiledRegExp().match(line)
         if not m :
             return None
@@ -1486,6 +1546,40 @@ class Markdown:
         # if we got a match let the pattern make us a NanoDom node
         # if it doesn't, move on
         node = pattern.handleMatch(m, self.doc)
+
+        # check if any of this nodes have children that need processing
+
+        if isinstance(node, Element):
+
+            if not node.nodeName in ["code", "pre"] :
+                for child in node.childNodes :
+                    if isinstance(child, TextNode):
+                        
+                        result = self._handleInlineWrapper(child.value)
+                        
+                        if result:
+
+                            if result == [child] :
+                                continue
+                                
+                            result.reverse()
+                            #to make insertion easier
+
+                            position = node.childNodes.index(child)
+                            
+                            node.removeChild(child)
+
+                            for item in result:
+
+                                if isinstance(item, (str, unicode)):
+                                    if len(item) > 0:
+                                        node.insertChild(position,
+                                             self.doc.createTextNode(item))
+                                else:
+                                    node.insertChild(position, item)
+                
+
+
 
         if node :
             # Those are in the reverse order!
@@ -1504,6 +1598,9 @@ class Markdown:
 
         if source :
             self.source = source
+
+        self.source = removeBOM(self.source, self.encoding)
+
         
         doc = self._transform()
         xml = doc.toxml()
@@ -1569,7 +1666,7 @@ def markdownFromFile(input = None,
     if not encoding :
         encoding = "utf-8"
 
-    input_file = codecs.open(input, mode="r", encoding="utf-8")
+    input_file = codecs.open(input, mode="r", encoding=encoding)
     text = input_file.read()
     input_file.close()
 
@@ -1603,7 +1700,6 @@ def markdown(text,
             pairs = [x.split("=") for x in ext[pos+1:-1].split(",")]
             configs = [(x.strip(), y.strip()) for (x, y) in pairs]
             extension_configs[name] = configs
-            #print configs
 
     md = Markdown(extensions=extension_names,
                   extension_configs=extension_configs,
@@ -1619,7 +1715,6 @@ class Extension :
 
     def getConfig(self, key) :
         if self.config.has_key(key) :
-            #print self.config[key][0]
             return self.config[key][0]
         else :
             return ""
