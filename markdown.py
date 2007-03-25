@@ -566,7 +566,11 @@ class HtmlBlockPreprocessor (Preprocessor):
                     new_blocks.append(
                         self.stash.store('\n\n'.join(items)))
                     items = []
-                    
+
+        if items :
+            new_blocks.append(self.stash.store('\n\n'.join(items)))
+            new_blocks.append('\n')
+            
         return "\n\n".join(new_blocks).split("\n")
 
 HTML_BLOCK_PREPROCESSOR = HtmlBlockPreprocessor()
@@ -1598,6 +1602,9 @@ class Markdown:
 
         if source :
             self.source = source
+
+        if not self.source :
+            return ""
 
         self.source = removeBOM(self.source, self.encoding)
 
