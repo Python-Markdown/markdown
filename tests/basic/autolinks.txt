@@ -1,0 +1,2 @@
+Auto-links should not occur here: `<http://example.com/>`
+

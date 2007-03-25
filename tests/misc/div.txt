@@ -1,0 +1,5 @@
+<div id="sidebar">
+
+   _foo_
+
+</div>

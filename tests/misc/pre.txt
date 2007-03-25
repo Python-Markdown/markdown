@@ -1,0 +1,14 @@
+<pre>
+
+aaa
+
+bbb
+</pre>
+
+<pre>
+* and this is pre-formatted content
+* and it should be printed just like this
+* and not formatted as a list
+
+</pre>
+

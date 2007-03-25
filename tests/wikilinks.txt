@@ -1,0 +1,6 @@
+Some text with a WikiLink.
+
+And a <a href="http://example.com/RealLink">RealLink</a>.
+
+And a [MarkdownLink](/MarkdownLink/ "A MarkdownLink") for
+completeness.
