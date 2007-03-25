@@ -1379,9 +1379,11 @@ class Markdown:
                 m = RE.regExp[expr].match(line)
                 if m :
                     if expr in ['ul', 'ol'] :  # We are looking at a new item
-                        if m.group(1) :
-                            items.append([m.group(1)])
-                            item += 1
+                        #if m.group(1) :
+                        # Removed the check to allow for a blank line
+                        # at the beginning of the list item
+                        items.append([m.group(1)])
+                        item += 1
                     elif expr == 'tabbed' :  # This line needs to be detabbed
                         items[item].append(m.group(4)) #after the 'tab'
 
