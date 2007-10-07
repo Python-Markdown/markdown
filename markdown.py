@@ -1477,11 +1477,11 @@ class Markdown:
 
 
 
-    def _handleInlineWrapper (self, line) :
+    def _handleInlineWrapper (self, line, patternIndex=0) :
 
         parts = [line]
 
-        for pattern in self.inlinePatterns :
+        while patternIndex < len(self.inlinePatterns) :
 
             i = 0
 
@@ -1490,7 +1490,9 @@ class Markdown:
                 x = parts[i]
 
                 if isinstance(x, (str, unicode)) :
-                    result = self._applyPattern(x, pattern)
+                    result = self._applyPattern(x, \
+                                self.inlinePatterns[patternIndex], \
+                                patternIndex )
 
                     if result :
                         i -= 1
@@ -1499,6 +1501,7 @@ class Markdown:
                             parts.insert(i+1,y)
 
                 i += 1
+            patternIndex += 1
 
         for i in range(len(parts)) :
             x = parts[i]
@@ -1527,7 +1530,7 @@ class Markdown:
 
         return [self.doc.createTextNode(line)]
 
-    def _applyPattern(self, line, pattern) :
+    def _applyPattern(self, line, pattern, patternIndex) :
 
         """ Given a pattern name, this function checks if the line
         fits the pattern, creates the necessary elements, and returns
@@ -1561,7 +1564,7 @@ class Markdown:
                 for child in node.childNodes :
                     if isinstance(child, TextNode):
                         
-                        result = self._handleInlineWrapper(child.value)
+                        result = self._handleInlineWrapper(child.value, patternIndex+1)
                         
                         if result:
 
