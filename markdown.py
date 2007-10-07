@@ -445,7 +445,7 @@ class LinePreprocessor (Preprocessor):
     def run (self, lines) :
         for i in range(len(lines)) :
             if self._isLine(lines[i]) :
-                lines[i] = "<hr />"
+                lines[i] = self.stash.store("<hr />", safe=True)
         return lines
 
     def _isLine(self, block) :
@@ -471,7 +471,7 @@ class LineBreaksPreprocessor (Preprocessor):
         for i in range(len(lines)) :
             if (lines[i].endswith("  ")
                 and not RE.regExp['tabbed'].match(lines[i]) ):
-                lines[i] += "<br />"
+                lines[i] += self.stash.store("<br />", safe=True)
         return lines
 
 LINE_BREAKS_PREPROCESSOR = LineBreaksPreprocessor()
@@ -735,7 +735,11 @@ class DoubleTagPattern (SimpleTagPattern) :
 class HtmlPattern (Pattern):
 
     def handleMatch (self, m, doc) :
-        place_holder = self.stash.store(m.group(2))
+        rawhtml = m.group(2)
+        inline = True
+        if rawhtml.startswith("<hr") or rawhtml.startswith("</") :
+            inline = False
+        place_holder = self.stash.store(rawhtml, inline=inline)
         return doc.createTextNode(place_holder)
 
 
@@ -897,14 +901,16 @@ class HtmlStash :
         self.html_counter = 0 # for counting inline html segments
         self.rawHtmlBlocks=[]
 
-    def store(self, html) :
+    def store(self, html, safe=False, inline=False) :
         """Saves an HTML segment for later reinsertion.  Returns a
            placeholder string that needs to be inserted into the
            document.
 
            @param html: an html segment
+           @param safe: label an html segment as safe for safemode
+           @param inline: label a segmant as inline html
            @returns : a placeholder string """
-        self.rawHtmlBlocks.append(html)
+        self.rawHtmlBlocks.append((html, safe, inline))
         placeholder = HTML_PLACEHOLDER % self.html_counter
         self.html_counter += 1
         return placeholder
@@ -1148,6 +1154,8 @@ class Markdown:
         self.htmlStash = HtmlStash()
 
         HTML_BLOCK_PREPROCESSOR.stash = self.htmlStash
+        LINE_PREPROCESSOR.stash = self.htmlStash
+        LINE_BREAKS_PREPROCESSOR.stash = self.htmlStash
         REFERENCE_PREPROCESSOR.references = self.references
         HTML_PATTERN.stash = self.htmlStash
         ENTITY_PATTERN.stash = self.htmlStash
@@ -1623,12 +1631,15 @@ class Markdown:
         # Let's stick in all the raw html pieces
 
         for i in range(self.htmlStash.html_counter) :
-            html = self.htmlStash.rawHtmlBlocks[i]
-            if self.safeMode :
+            html = self.htmlStash.rawHtmlBlocks[i][0]
+            safe = self.htmlStash.rawHtmlBlocks[i][1]
+            inline = self.htmlStash.rawHtmlBlocks[i][2]
+            if self.safeMode and not safe:
                 html = HTML_REMOVED_TEXT
                 
-            xml = xml.replace("<p>%s\n</p>" % (HTML_PLACEHOLDER % i),
-                              html + "\n")
+            if not inline:
+                xml = xml.replace("<p>%s\n</p>" % (HTML_PLACEHOLDER % i),
+                                  html + "\n")
             xml = xml.replace(HTML_PLACEHOLDER % i,
                               html)
 
