@@ -767,7 +767,10 @@ class ImagePattern (Pattern):
     def handleMatch(self, m, doc):
         el = doc.createElement('img')
         src_parts = m.group(9).split()
-        el.setAttribute('src', src_parts[0])
+        if src_parts :
+            el.setAttribute('src', src_parts[0])
+        else:
+            el.setAttribute('src', "")
         if len(src_parts) > 1 :
             el.setAttribute('title', dequote(" ".join(src_parts[1:])))
         if ENABLE_ATTRIBUTES :
