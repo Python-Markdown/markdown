@@ -1180,7 +1180,7 @@ class Markdown:
         self.doc.appendChild(self.top_element)
 
         # Fixup the source text
-        text = self.source.strip()
+        text = self.source
         text = text.replace("\r\n", "\n").replace("\r", "\n")
         text += "\n\n"
         text = text.expandtabs(TAB_LENGTH)
@@ -1658,7 +1658,7 @@ class Markdown:
         for pp in self.textPostprocessors :
             xml = pp.run(xml)
 
-        return self.docType + xml
+        return (self.docType + xml).strip()
 
 
     __str__ = convert   # deprecated - will be changed in 1.7 to report
