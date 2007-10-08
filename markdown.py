@@ -1442,15 +1442,22 @@ class Markdown:
 
         dequoted = []
         i = 0
+        blank_line = False # allow one blank line between paragraphs
         for line in lines :
             m = RE.regExp['quoted'].match(line)
             if m :
                 dequoted.append(m.group(1))
                 i += 1
+                blank_line = False
+            elif not blank_line and line.strip() != '' :
+                dequoted.append(line)
+                i += 1
+            elif not blank_line and line.strip() == '' :
+                dequoted.append(line)
+                i += 1
+                blank_line = True
             else :
                 break
-        else :
-            i += 1
 
         blockquote = self.doc.createElement('blockquote')
         parent_elem.appendChild(blockquote)
