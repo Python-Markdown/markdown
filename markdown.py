@@ -505,10 +505,9 @@ class HtmlBlockPreprocessor (Preprocessor):
         return (tag in ['hr', 'hr/'])
 
     
-    def run (self, lines) :
+    def run (self, text) :
 
         new_blocks = []
-        text = "\n".join(lines)
         text = text.split("\n\n")
         
         items = []
@@ -571,7 +570,7 @@ class HtmlBlockPreprocessor (Preprocessor):
             new_blocks.append(self.stash.store('\n\n'.join(items)))
             new_blocks.append('\n')
             
-        return "\n\n".join(new_blocks).split("\n")
+        return "\n\n".join(new_blocks)
 
 HTML_BLOCK_PREPROCESSOR = HtmlBlockPreprocessor()
 
@@ -1072,8 +1071,9 @@ class Markdown:
         self.stripTopLevelTags = 1
         self.docType = ""
 
-        self.preprocessors = [ HTML_BLOCK_PREPROCESSOR,
-                               HEADER_PREPROCESSOR,
+        self.textPreprocessors = [ HTML_BLOCK_PREPROCESSOR]
+
+        self.preprocessors = [ HEADER_PREPROCESSOR,
                                LINE_PREPROCESSOR,
                                LINE_BREAKS_PREPROCESSOR,
                                # A footnote preprocessor will
@@ -1631,7 +1631,9 @@ class Markdown:
 
         self.source = removeBOM(self.source, self.encoding)
 
-        
+        for pp in self.textPreprocessors :
+            self.source = pp.run(self.source)
+
         doc = self._transform()
         xml = doc.toxml()
 
