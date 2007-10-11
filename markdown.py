@@ -730,9 +730,7 @@ class HtmlPattern (Pattern):
     def handleMatch (self, m, doc) :
         rawhtml = m.group(2)
         inline = True
-        if rawhtml.startswith("<hr") or rawhtml.startswith("</") :
-            inline = False
-        place_holder = self.stash.store(rawhtml, inline=inline)
+        place_holder = self.stash.store(rawhtml)
         return doc.createTextNode(place_holder)
 
 
@@ -900,7 +898,7 @@ class HtmlStash :
         self.html_counter = 0 # for counting inline html segments
         self.rawHtmlBlocks=[]
 
-    def store(self, html, safe=False, inline=False) :
+    def store(self, html, safe=False) :
         """Saves an HTML segment for later reinsertion.  Returns a
            placeholder string that needs to be inserted into the
            document.
@@ -909,7 +907,7 @@ class HtmlStash :
            @param safe: label an html segment as safe for safemode
            @param inline: label a segmant as inline html
            @returns : a placeholder string """
-        self.rawHtmlBlocks.append((html, safe, inline))
+        self.rawHtmlBlocks.append((html, safe))
         placeholder = HTML_PLACEHOLDER % self.html_counter
         self.html_counter += 1
         return placeholder
@@ -1642,13 +1640,11 @@ class Markdown:
         for i in range(self.htmlStash.html_counter) :
             html = self.htmlStash.rawHtmlBlocks[i][0]
             safe = self.htmlStash.rawHtmlBlocks[i][1]
-            inline = self.htmlStash.rawHtmlBlocks[i][2]
             if self.safeMode and not safe:
                 html = HTML_REMOVED_TEXT
                 
-            if not inline:
-                xml = xml.replace("<p>%s\n</p>" % (HTML_PLACEHOLDER % i),
-                                  html + "\n")
+            xml = xml.replace("<p>%s\n</p>" % (HTML_PLACEHOLDER % i),
+                              html + "\n")
             xml = xml.replace(HTML_PLACEHOLDER % i,
                               html)
 
