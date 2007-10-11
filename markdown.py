@@ -332,7 +332,7 @@ class Element :
 
         buffer += childBuffer
 
-        if self.nodeName in ['p', 'li', 'ul', 'ol',
+        if self.nodeName in ['p', 'br ', 'li', 'ul', 'ol',
                              'h1', 'h2', 'h3', 'h4'] :
             buffer += "\n"
 
@@ -462,19 +462,6 @@ class LinePreprocessor (Preprocessor):
             return 0
 
 LINE_PREPROCESSOR = LinePreprocessor()
-
-
-class LineBreaksPreprocessor (Preprocessor):
-    """Replaces double spaces at the end of the lines with <br/ >."""
-
-    def run (self, lines) :
-        for i in range(len(lines)) :
-            if (lines[i].endswith("  ")
-                and not RE.regExp['tabbed'].match(lines[i]) ):
-                lines[i] += self.stash.store("<br />", safe=True)
-        return lines
-
-LINE_BREAKS_PREPROCESSOR = LineBreaksPreprocessor()
 
 
 class HtmlBlockPreprocessor (Preprocessor):
@@ -678,6 +665,8 @@ AUTOMAIL_RE = r'<([^> \!]*@[^> ]*)>'               # <me@example.com>
 #HTML_RE = r'(\<[^\>]*\>)'                        # <...>
 HTML_RE = r'(\<[a-zA-Z/][^\>]*\>)'               # <...>
 ENTITY_RE = r'(&[\#a-zA-Z0-9]*;)'                # &amp;
+LINE_BREAK_RE = r'  \n'                     # two spaces at end of line
+LINE_BREAK_2_RE = r'  $'                    # two spaces at end of text
 
 class Pattern:
 
@@ -705,6 +694,11 @@ class SimpleTagPattern (Pattern):
         el = doc.createElement(self.tag)
         el.appendChild(doc.createTextNode(m.group(2)))
         return el
+
+class SubstituteTagPattern (SimpleTagPattern):
+
+    def handleMatch (self, m, doc) :
+        return doc.createElement(self.tag)
 
 class BacktickPattern (Pattern):
 
@@ -855,6 +849,9 @@ EMPHASIS_PATTERN_2      = SimpleTagPattern(EMPHASIS_2_RE, 'em')
 
 STRONG_EM_PATTERN       = DoubleTagPattern(STRONG_EM_RE, 'strong,em')
 STRONG_EM_PATTERN_2     = DoubleTagPattern(STRONG_EM_2_RE, 'strong,em')
+
+LINE_BREAK_PATTERN      = SubstituteTagPattern(LINE_BREAK_RE, 'br ')
+LINE_BREAK_PATTERN_2    = SubstituteTagPattern(LINE_BREAK_2_RE, 'br ')
 
 LINK_PATTERN            = LinkPattern(LINK_RE)
 LINK_ANGLED_PATTERN     = LinkPattern(LINK_ANGLED_RE)
@@ -1023,7 +1020,7 @@ class CorePatterns :
         effort."""
 
     patterns = {
-        'header':          r'(#*)([^#]*)(#*)', # # A title
+        'header':          r'(#*)\s*([^#]*)(#*)', # # A title
         'reference-def' :  r'(\ ?\ ?\ ?)\[([^\]]*)\]:\s*([^ ]*)(.*)',
                            # [Google]: http://www.google.com/
         'containsline':    r'([-]*)$|^([=]*)', # -----, =====, etc.
@@ -1075,7 +1072,6 @@ class Markdown:
 
         self.preprocessors = [ HEADER_PREPROCESSOR,
                                LINE_PREPROCESSOR,
-                               LINE_BREAKS_PREPROCESSOR,
                                # A footnote preprocessor will
                                # get inserted here
                                REFERENCE_PREPROCESSOR ]
@@ -1100,6 +1096,8 @@ class Markdown:
                                 LINK_PATTERN,
                                 AUTOLINK_PATTERN,
                                 AUTOMAIL_PATTERN,
+                                LINE_BREAK_PATTERN_2,
+                                LINE_BREAK_PATTERN,
                                 HTML_PATTERN,
                                 ENTITY_PATTERN,
                                 NOT_STRONG_PATTERN,
@@ -1158,7 +1156,6 @@ class Markdown:
 
         HTML_BLOCK_PREPROCESSOR.stash = self.htmlStash
         LINE_PREPROCESSOR.stash = self.htmlStash
-        LINE_BREAKS_PREPROCESSOR.stash = self.htmlStash
         REFERENCE_PREPROCESSOR.references = self.references
         HTML_PATTERN.stash = self.htmlStash
         ENTITY_PATTERN.stash = self.htmlStash
