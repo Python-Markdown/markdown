@@ -442,10 +442,15 @@ HEADER_PREPROCESSOR = HeaderPreprocessor()
 class LinePreprocessor (Preprocessor):
     """Deals with HR lines (needs to be done before processing lists)"""
 
+    blockquote_re = re.compile(r'^(> )+')
+
     def run (self, lines) :
         for i in range(len(lines)) :
-            if self._isLine(lines[i]) :
-                lines[i] = self.stash.store("<hr />", safe=True)
+            prefix = ''
+            m = self.blockquote_re.search(lines[i])
+            if m : prefix = m.group(0)
+            if self._isLine(lines[i][len(prefix):]) :
+                lines[i] = prefix + self.stash.store("<hr />", safe=True)
         return lines
 
     def _isLine(self, block) :

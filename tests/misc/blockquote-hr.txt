@@ -1,0 +1,21 @@
+This is a paragraph.
+
+---
+
+> Block quote with horizontal lines.
+
+> ---
+
+> > Double block quote.
+
+> > ---
+
+> > End of the double block quote.
+
+> A new paragraph.
+> With multiple lines.
+Even a lazy line.
+
+> ---
+
+> The last line.
