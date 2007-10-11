@@ -1023,7 +1023,7 @@ class CorePatterns :
         effort."""
 
     patterns = {
-        'header':          r'(#*)\s*([^#]*)(#*)', # # A title
+        'header':          r'(#*)([^#]*)(#*)', # # A title
         'reference-def' :  r'(\ ?\ ?\ ?)\[([^\]]*)\]:\s*([^ ]*)(.*)',
                            # [Google]: http://www.google.com/
         'containsline':    r'([-]*)$|^([=]*)', # -----, =====, etc.
@@ -1287,35 +1287,11 @@ class Markdown:
                                                  not line.strip())
 
             if len(paragraph) and paragraph[0].startswith('#') :
-                m = RE.regExp['header'].match(paragraph[0])
-                if m :
-                    level = len(m.group(1))
-                    h = self.doc.createElement("h%d" % level)
-                    parent_elem.appendChild(h)
-                    for item in self._handleInlineWrapper(m.group(2).strip()) :
-                        h.appendChild(item)
-                else :
-                    message(CRITICAL, "We've got a problem header!")
+                self._processHeader(parent_elem, paragraph)
 
             elif paragraph :
-
-                list = self._handleInlineWrapper("\n".join(paragraph))
-
-                if ( parent_elem.nodeName == 'li'
-                     and not (looseList or parent_elem.childNodes)):
-
-                    #and not parent_elem.childNodes) :
-                    # If this is the first paragraph inside "li", don't
-                    # put <p> around it - append the paragraph bits directly
-                    # onto parent_elem
-                    el = parent_elem
-                else :
-                    # Otherwise make a "p" element
-                    el = self.doc.createElement("p")
-                    parent_elem.appendChild(el)
-
-                for item in list :
-                    el.appendChild(item)
+                self._processParagraph(parent_elem, paragraph,
+                                      inList, looseList)
 
             if theRest :
                 theRest = theRest[1:]  # skip the first (blank) line
@@ -1323,6 +1299,35 @@ class Markdown:
             self._processSection(parent_elem, theRest, inList)
 
 
+    def _processHeader(self, parent_elem, paragraph) :
+        m = RE.regExp['header'].match(paragraph[0])
+        if m :
+            level = len(m.group(1))
+            h = self.doc.createElement("h%d" % level)
+            parent_elem.appendChild(h)
+            for item in self._handleInlineWrapper(m.group(2).strip()) :
+                h.appendChild(item)
+        else :
+            message(CRITICAL, "We've got a problem header!")
+
+    def _processParagraph(self, parent_elem, paragraph, inList, looseList) :
+        list = self._handleInlineWrapper("\n".join(paragraph))
+
+        if ( parent_elem.nodeName == 'li'
+                and not (looseList or parent_elem.childNodes)):
+
+            # If this is the first paragraph inside "li", don't
+            # put <p> around it - append the paragraph bits directly
+            # onto parent_elem
+            el = parent_elem
+        else :
+            # Otherwise make a "p" element
+            el = self.doc.createElement("p")
+            parent_elem.appendChild(el)
+
+        for item in list :
+            el.appendChild(item)
+ 
 
     def _processUList(self, parent_elem, lines, inList) :
         self._processList(parent_elem, lines, inList,
