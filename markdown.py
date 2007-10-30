@@ -62,15 +62,15 @@ RTL_BIDI_RANGES = ( (u'\u0590', u'\u07FF'),
 # 0780-07BF - Thaana
 # 07C0-07FF - Nko
 
-BOMS = { 'utf-8' : (unicode(codecs.BOM_UTF8, "utf-8"), ),
-         'utf-16' : (unicode(codecs.BOM_UTF16_LE, "utf-16"),
-                     unicode(codecs.BOM_UTF16_BE, "utf-16")),
-         #'utf-32' : (unicode(codecs.BOM_UTF32_LE, "utf-32"),
-         #            unicode(codecs.BOM_UTF32_BE, "utf-32")),
+BOMS = { 'utf-8' : (codecs.BOM_UTF8, ),
+         'utf-16' : (codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE),
+         #'utf-32' : (codecs.BOM_UTF32_LE, codecs.BOM_UTF32_BE)
          }
 
 def removeBOM(text, encoding):
+    convert = isinstance(text, unicode)
     for bom in BOMS[encoding]:
+        bom = convert and bom.decode(encoding) or bom
         if text.startswith(bom):
             return text.lstrip(bom)
     return text
@@ -454,7 +454,7 @@ class LinePreprocessor (Preprocessor):
         return lines
 
     def _isLine(self, block) :
-        """Determines if a block should be replaced with an <HR>"""
+        """Determines if a block should be replaced with an <:wHR>"""
         if block.startswith("    ") : return 0  # a code block
         text = "".join([x for x in block if not x.isspace()])
         if len(text) <= 2 :
