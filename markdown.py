@@ -12,7 +12,7 @@ Converts Markdown to HTML.  Basic usage as a module:
 
     import markdown
     md = Markdown()
-    html = markdown.convert(your_text_string)
+    html = md.convert(your_text_string)
 
 See http://www.freewisdom.org/projects/python-markdown/ for more
 information and instructions on how to extend the functionality of the
