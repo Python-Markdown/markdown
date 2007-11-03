@@ -1628,7 +1628,7 @@ class Markdown:
         @returns: A serialized XHTML body."""
         #try :
 
-        if source :
+        if source is not None: #Allow blank string
             self.source = source
 
         if not self.source :

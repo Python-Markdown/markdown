@@ -232,7 +232,7 @@ def testDirectory(dir, measure_time = False) :
 
         actual_output = ""
         actual_lines = []
-        md.source = ""
+        #md.source = ""
         gc.collect()
         mem = memory()
         t = time.clock()
@@ -348,7 +348,7 @@ markdown = __import__(MARKDOWN_FILE)
 
 
 #testDirectory("tests/basic")
-#testDirectory("tests/markdown-test", measure_time=True)
+testDirectory("tests/markdown-test", measure_time=True)
 
 testDirectory("tests/misc", measure_time=True)
 #testDirectory("tests/extensions-x-footnotes-toc")
