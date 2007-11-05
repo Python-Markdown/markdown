@@ -889,6 +889,21 @@ class Postprocessor :
     pass
 
 
+"""
+======================================================================
+======================== TEXT-POST-PROCESSORS ========================
+======================================================================
+
+Markdown also allows text-post-processors, which are similar to
+textpreprocessors in that they need to implement a "run" method.  
+Unlike post-processors, they take a text string as a parameter and 
+should return a string.
+
+Text-Post-Processors should extend markdown.Postprocessor.
+
+"""
+
+
 class RawHtmlTextPostprocessor(Postprocessor) :
 
     def __init__(self):
@@ -896,8 +911,7 @@ class RawHtmlTextPostprocessor(Postprocessor) :
 
     def run(self, text):
         for i in range(self.stash.html_counter) :
-            html = self.stash.rawHtmlBlocks[i][0]
-            safe = self.stash.rawHtmlBlocks[i][1]
+            html, safe  = self.stash.rawHtmlBlocks[i]
             if self.safeMode and not safe:
                 html = HTML_REMOVED_TEXT
                 
