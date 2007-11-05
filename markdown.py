@@ -889,6 +889,25 @@ class Postprocessor :
     pass
 
 
+class RawHtmlTextPostprocessor(Postprocessor) :
+
+    def __init__(self):
+        pass
+
+    def run(self, text):
+        for i in range(self.stash.html_counter) :
+            html = self.stash.rawHtmlBlocks[i][0]
+            safe = self.stash.rawHtmlBlocks[i][1]
+            if self.safeMode and not safe:
+                html = HTML_REMOVED_TEXT
+                
+            text = text.replace("<p>%s\n</p>" % (HTML_PLACEHOLDER % i),
+                              html + "\n")
+            text =  text.replace(HTML_PLACEHOLDER % i, html)
+        return text
+
+RAWHTMLTEXTPOSTPROCESSOR = RawHtmlTextPostprocessor()
+
 """
 ======================================================================
 ========================== MISC AUXILIARY CLASSES ====================
@@ -1083,8 +1102,9 @@ class Markdown:
         self.postprocessors = [] # a footnote postprocessor will get
                                  # inserted later
 
-        self.textPostprocessors = [] # a footnote postprocessor will get
-                                     # inserted later                                 
+        self.textPostprocessors = [ # a footnote postprocessor will get
+                                    # inserted here
+                                    RAWHTMLTEXTPOSTPROCESSOR ]
 
         self.prePatterns = []
         
@@ -1164,6 +1184,8 @@ class Markdown:
         ENTITY_PATTERN.stash = self.htmlStash
         REFERENCE_PATTERN.references = self.references
         IMAGE_REFERENCE_PATTERN.references = self.references
+        RAWHTMLTEXTPOSTPROCESSOR.stash = self.htmlStash
+        RAWHTMLTEXTPOSTPROCESSOR.safeMode = self.safeMode
 
         for extension in self.registeredExtensions :
             extension.reset()
@@ -1645,20 +1667,7 @@ class Markdown:
         #finally:
         #    doc.unlink()
 
-        # Let's stick in all the raw html pieces
-
-        for i in range(self.htmlStash.html_counter) :
-            html = self.htmlStash.rawHtmlBlocks[i][0]
-            safe = self.htmlStash.rawHtmlBlocks[i][1]
-            if self.safeMode and not safe:
-                html = HTML_REMOVED_TEXT
-                
-            xml = xml.replace("<p>%s\n</p>" % (HTML_PLACEHOLDER % i),
-                              html + "\n")
-            xml = xml.replace(HTML_PLACEHOLDER % i,
-                              html)
-
-        # And return everything but the top level tag
+        # Return everything but the top level tag
 
         if self.stripTopLevelTags :
             xml = xml.strip()[23:-7] + "\n"
