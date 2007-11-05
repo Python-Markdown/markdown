@@ -1837,9 +1837,9 @@ def parse_options() :
     parser.add_option("-v", "--verbose",
                       action="store_const", const=INFO, dest="verbose",
                       help="print info messages")
-    parser.add_option("-s", "--safe",
-                      action="store_const", const=True, dest="safe",
-                      help="same mode (strip user's HTML tag)")
+    parser.add_option("-s", "--safe", dest="safe", default=False,
+                      metavar="SAFE_MODE",
+                      help="same mode ('replace', 'remove' or 'escape'  user's HTML tag)")
     
     parser.add_option("--noisy",
                       action="store_const", const=VERBOSE, dest="verbose",
