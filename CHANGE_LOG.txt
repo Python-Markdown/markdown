@@ -1,6 +1,20 @@
 PYTHON MARKDOWN CHANGELOG
 =========================
 
+Nov 5, 2007: Moved safe_mode code to a textPostprocessor and added escaping option.
+
+Nov 3, 2007: Fixed convert method to accept empty strings.
+
+Oct 30, 2007: Fixed BOM removal (thanks Malcolm Tredinnick). Fixed infinite loop in bracket regex for inline links.
+
+Oct 11, 2007: LineBreaks is now an inlinePattern. Fixed HR in blockquotes. Refactored _processSection method (see tracker #1793419).
+
+Oct 9, 2007: Added textPreprocessor (from 1.6b).
+
+Oct 8, 2008: Fixed Lazy Blockquote. Fixed code block on first line. Fixed empty inline image link.
+
+Oct 7, 2007: Limit recursion on inlinePatterns. Added a 'safe' tag to htmlStash.
+
 March 18, 2007: Fixed or merged a bunch of minor bugs, including
 multi-line comments and markup inside links. (Tracker #s: 1683066,
 1671153, 1661751, 1627935, 1544371, 1458139.) -> v. 1.6b
