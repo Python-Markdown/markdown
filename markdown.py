@@ -47,7 +47,7 @@ TAB_LENGTH = 4            # expand tabs to this many spaces
 ENABLE_ATTRIBUTES = True  # @id = xyz -> <... id="xyz">
 SMART_EMPHASIS = 1        # this_or_that does not become this<i>or</i>that
 HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
-
+                                     # If blank, html will be escaped.
 RTL_BIDI_RANGES = ( (u'\u0590', u'\u07FF'),
                     # from Hebrew to Nko (includes Arabic, Syriac and Thaana)
                     (u'\u2D30', u'\u2D7F'),
@@ -913,12 +913,22 @@ class RawHtmlTextPostprocessor(Postprocessor) :
         for i in range(self.stash.html_counter) :
             html, safe  = self.stash.rawHtmlBlocks[i]
             if self.safeMode and not safe:
-                html = HTML_REMOVED_TEXT
+                if HTML_REMOVED_TEXT:
+                    html = HTML_REMOVED_TEXT
+                else:
+                    html = self.escape(html)
                 
             text = text.replace("<p>%s\n</p>" % (HTML_PLACEHOLDER % i),
                               html + "\n")
             text =  text.replace(HTML_PLACEHOLDER % i, html)
         return text
+
+    def escape(self, html):
+        ''' Basic html escaping '''
+        html = html.replace('&', '&amp;')
+        html = html.replace('<', '&lt;')
+        html = html.replace('>', '&gt;')
+        return html.replace('"', '&quot;')
 
 RAWHTMLTEXTPOSTPROCESSOR = RawHtmlTextPostprocessor()
 
