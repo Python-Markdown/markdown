@@ -31,14 +31,26 @@ License: GPL 2 (http://www.gnu.org/copyleft/gpl.html) or BSD
 
 import re, sys, os, random, codecs
 
-# Set debug level: 3 none, 2 critical, 1 informative, 0 all
-(VERBOSE, INFO, CRITICAL, NONE) = range(4)
+from logging import getLogger, StreamHandler, Formatter, \
+                    DEBUG, INFO, WARN, ERROR, CRITICAL
+
 
 MESSAGE_THRESHOLD = CRITICAL
 
+
+# Configure debug message logger (the hard way - to support python 2.3)
+logger = getLogger('MARKDOWN')
+logger.setLevel(DEBUG) # This is restricted by handlers later
+console_hndlr = StreamHandler()
+formatter = Formatter('%(name)s-%(levelname)s: "%(message)s"')
+console_hndlr.setFormatter(formatter)
+console_hndlr.setLevel(MESSAGE_THRESHOLD)
+logger.addHandler(console_hndlr)
+
+
 def message(level, text) :
-    if level >= MESSAGE_THRESHOLD :
-        print_error(text)
+    ''' A wrapper method for logging debug messages. '''
+    logger.log(level, text)
 
 
 # --------------- CONSTANTS YOU MIGHT WANT TO MODIFY -----------------
@@ -1727,11 +1739,10 @@ def markdownFromFile(input = None,
                      message_threshold = CRITICAL,
                      safe = False) :
 
-    global MESSAGE_THRESHOLD
-    MESSAGE_THRESHOLD = message_threshold
+    global console_hndlr
+    console_hndlr.setLevel(message_threshold)
 
-    message(VERBOSE, "input file: %s" % input)
-
+    message(DEBUG, "input file: %s" % input)
 
     if not encoding :
         encoding = "utf-8"
@@ -1755,7 +1766,7 @@ def markdown(text,
              encoding = None,
              safe_mode = False) :
     
-    message(VERBOSE, "in markdown.markdown(), received text:\n%s" % text)
+    message(DEBUG, "in markdown.markdown(), received text:\n%s" % text)
 
     extension_names = []
     extension_configs = {}
@@ -1829,7 +1840,7 @@ def parse_options() :
     parser.add_option("-e", "--encoding", dest="encoding",
                       help="encoding for input and output files",)
     parser.add_option("-q", "--quiet", default = CRITICAL,
-                      action="store_const", const=NONE, dest="verbose",
+                      action="store_const", const=60, dest="verbose",
                       help="suppress all messages")
     parser.add_option("-v", "--verbose",
                       action="store_const", const=INFO, dest="verbose",
@@ -1839,7 +1850,7 @@ def parse_options() :
                       help="same mode ('replace', 'remove' or 'escape'  user's HTML tag)")
     
     parser.add_option("--noisy",
-                      action="store_const", const=VERBOSE, dest="verbose",
+                      action="store_const", const=DEBUG, dest="verbose",
                       help="print debug messages")
     parser.add_option("-x", "--extension", action="append", dest="extensions",
                       help = "load extension EXTENSION", metavar="EXTENSION")
