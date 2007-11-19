@@ -38,7 +38,7 @@ MESSAGE_THRESHOLD = CRITICAL
 
 def message(level, text) :
     if level >= MESSAGE_THRESHOLD :
-        print text
+        print_error(text)
 
 
 # --------------- CONSTANTS YOU MIGHT WANT TO MODIFY -----------------
@@ -1284,67 +1284,63 @@ class Markdown:
            @param inList: a level
            @returns: None"""
 
-        if not lines :
-            return
+        # Loop through lines until none left.
+        while lines :
 
-        # Check if this section starts with a list, a blockquote or
-        # a code block
+            # Check if this section starts with a list, a blockquote or
+            # a code block
 
-        processFn = { 'ul' :     self._processUList,
-                      'ol' :     self._processOList,
-                      'quoted' : self._processQuote,
-                      'tabbed' : self._processCodeBlock }
+            processFn = { 'ul' :     self._processUList,
+                          'ol' :     self._processOList,
+                          'quoted' : self._processQuote,
+                          'tabbed' : self._processCodeBlock }
 
-        for regexp in ['ul', 'ol', 'quoted', 'tabbed'] :
-            m = RE.regExp[regexp].match(lines[0])
-            if m :
-                processFn[regexp](parent_elem, lines, inList)
-                return
+            for regexp in ['ul', 'ol', 'quoted', 'tabbed'] :
+                m = RE.regExp[regexp].match(lines[0])
+                if m :
+                    processFn[regexp](parent_elem, lines, inList)
+                    return
 
-        # We are NOT looking at one of the high-level structures like
-        # lists or blockquotes.  So, it's just a regular paragraph
-        # (though perhaps nested inside a list or something else).  If
-        # we are NOT inside a list, we just need to look for a blank
-        # line to find the end of the block.  If we ARE inside a
-        # list, however, we need to consider that a sublist does not
-        # need to be separated by a blank line.  Rather, the following
-        # markup is legal:
-        #
-        # * The top level list item
-        #
-        #     Another paragraph of the list.  This is where we are now.
-        #     * Underneath we might have a sublist.
-        #
+            # We are NOT looking at one of the high-level structures like
+            # lists or blockquotes.  So, it's just a regular paragraph
+            # (though perhaps nested inside a list or something else).  If
+            # we are NOT inside a list, we just need to look for a blank
+            # line to find the end of the block.  If we ARE inside a
+            # list, however, we need to consider that a sublist does not
+            # need to be separated by a blank line.  Rather, the following
+            # markup is legal:
+            #
+            # * The top level list item
+            #
+            #     Another paragraph of the list.  This is where we are now.
+            #     * Underneath we might have a sublist.
+            #
 
-        if inList :
+            if inList :
 
-            start, theRest = self._linesUntil(lines, (lambda line:
-                             RE.regExp['ul'].match(line)
-                             or RE.regExp['ol'].match(line)
-                                              or not line.strip()))
+                start, lines  = self._linesUntil(lines, (lambda line:
+                                 RE.regExp['ul'].match(line)
+                                 or RE.regExp['ol'].match(line)
+                                                  or not line.strip()))
 
-            self._processSection(parent_elem, start,
-                                 inList - 1, looseList = looseList)
-            self._processSection(parent_elem, theRest,
-                                 inList - 1, looseList = looseList)
+                self._processSection(parent_elem, start,
+                                     inList - 1, looseList = looseList)
+                inList = inList-1
 
+            else : # Ok, so it's just a simple block
 
-        else : # Ok, so it's just a simple block
+                paragraph, lines = self._linesUntil(lines, lambda line:
+                                                     not line.strip())
 
-            paragraph, theRest = self._linesUntil(lines, lambda line:
-                                                 not line.strip())
+                if len(paragraph) and paragraph[0].startswith('#') :
+                    self._processHeader(parent_elem, paragraph)
 
-            if len(paragraph) and paragraph[0].startswith('#') :
-                self._processHeader(parent_elem, paragraph)
+                elif paragraph :
+                    self._processParagraph(parent_elem, paragraph,
+                                          inList, looseList)
 
-            elif paragraph :
-                self._processParagraph(parent_elem, paragraph,
-                                      inList, looseList)
-
-            if theRest :
-                theRest = theRest[1:]  # skip the first (blank) line
-
-            self._processSection(parent_elem, theRest, inList)
+            if lines and not lines[0].strip() :
+                lines = lines[1:]  # skip the first (blank) line
 
 
     def _processHeader(self, parent_elem, paragraph) :
@@ -1357,6 +1353,7 @@ class Markdown:
                 h.appendChild(item)
         else :
             message(CRITICAL, "We've got a problem header!")
+
 
     def _processParagraph(self, parent_elem, paragraph, inList, looseList) :
         list = self._handleInlineWrapper("\n".join(paragraph))
