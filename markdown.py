@@ -655,6 +655,7 @@ BRK = ( r'\[('
         + (NOBRACKET + r'(\[')*6
         + (NOBRACKET+ r'\])*')*6
         + NOBRACKET + r')\]' )
+NOIMG = r'(?<!\!)'
 
 BACKTICK_RE = r'\`([^\`]*)\`'                    # `e= m*c^2`
 DOUBLE_BACKTICK_RE =  r'\`\`(.*)\`\`'            # ``e=f("`")``
@@ -671,10 +672,10 @@ else:
 STRONG_2_RE = r'__([^_]*)__'                     # __strong__
 STRONG_EM_2_RE = r'___([^_]*)___'                # ___strong___
 
-LINK_RE = BRK + r'\s*\(([^\)]*)\)'               # [text](url)
-LINK_ANGLED_RE = BRK + r'\s*\(<([^\)]*)>\)'      # [text](<url>)
+LINK_RE = NOIMG + BRK + r'\s*\(([^\)]*)\)'               # [text](url)
+LINK_ANGLED_RE = NOIMG + BRK + r'\s*\(<([^\)]*)>\)'      # [text](<url>)
 IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(([^\)]*)\)' # ![alttxt](http://x.com/)
-REFERENCE_RE = BRK+ r'\s*\[([^\]]*)\]'           # [Google][3]
+REFERENCE_RE = NOIMG + BRK+ r'\s*\[([^\]]*)\]'           # [Google][3]
 IMAGE_REFERENCE_RE = r'\!' + BRK + '\s*\[([^\]]*)\]' # ![alt text][2]
 NOT_STRONG_RE = r'( \* )'                        # stand-alone * or _
 AUTOLINK_RE = r'<(http://[^>]*)>'                # <http://www.123.com>
@@ -1150,12 +1151,12 @@ class Markdown:
         self.inlinePatterns = [DOUBLE_BACKTICK_PATTERN,
                                BACKTICK_PATTERN,
                                ESCAPE_PATTERN,
-                               IMAGE_LINK_PATTERN,
-                               IMAGE_REFERENCE_PATTERN,
                                REFERENCE_PATTERN,
                                LINK_ANGLED_PATTERN,
                                LINK_PATTERN,
-                               AUTOLINK_PATTERN,
+                               IMAGE_LINK_PATTERN,
+			       IMAGE_REFERENCE_PATTERN,
+			       AUTOLINK_PATTERN,
                                AUTOMAIL_PATTERN,
                                LINE_BREAK_PATTERN_2,
                                LINE_BREAK_PATTERN,
