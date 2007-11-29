@@ -1,19 +1,31 @@
 PYTHON MARKDOWN CHANGELOG
 =========================
 
-Nov 5, 2007: Moved safe_mode code to a textPostprocessor and added escaping option.
+Nov 29, 2007: Added support for images inside links. Also fixed
+a few bugs in the footnote extension.
+
+Nov 19, 2007: `message` now uses python's logging module. Also removed 
+limit imposed by recursion in _process_section(). You can now parse as 
+long of a document as your memory can handle.
+
+Nov 5, 2007: Moved safe_mode code to a textPostprocessor and added 
+escaping option.
 
 Nov 3, 2007: Fixed convert method to accept empty strings.
 
-Oct 30, 2007: Fixed BOM removal (thanks Malcolm Tredinnick). Fixed infinite loop in bracket regex for inline links.
+Oct 30, 2007: Fixed BOM removal (thanks Malcolm Tredinnick). Fixed 
+infinite loop in bracket regex for inline links.
 
-Oct 11, 2007: LineBreaks is now an inlinePattern. Fixed HR in blockquotes. Refactored _processSection method (see tracker #1793419).
+Oct 11, 2007: LineBreaks is now an inlinePattern. Fixed HR in 
+blockquotes. Refactored _processSection method (see tracker #1793419).
 
 Oct 9, 2007: Added textPreprocessor (from 1.6b).
 
-Oct 8, 2008: Fixed Lazy Blockquote. Fixed code block on first line. Fixed empty inline image link.
+Oct 8, 2008: Fixed Lazy Blockquote. Fixed code block on first line. 
+Fixed empty inline image link.
 
-Oct 7, 2007: Limit recursion on inlinePatterns. Added a 'safe' tag to htmlStash.
+Oct 7, 2007: Limit recursion on inlinePatterns. Added a 'safe' tag 
+to htmlStash.
 
 March 18, 2007: Fixed or merged a bunch of minor bugs, including
 multi-line comments and markup inside links. (Tracker #s: 1683066,
