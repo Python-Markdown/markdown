@@ -1,7 +1,8 @@
 PYTHON MARKDOWN CHANGELOG
 =========================
 
-Dec 12, 2007: Updated docs.
+Dec 12, 2007: Updated docs. Removed encoding arg from Markdown
+and markdown as per list discussion. Clean up in prep for 1.7.
 
 Nov 29, 2007: Added support for images inside links. Also fixed
 a few bugs in the footnote extension.
