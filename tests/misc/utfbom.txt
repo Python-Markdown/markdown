@@ -1,4 +1,0 @@
-﻿A heading.
-==========
-
-text text text text text text.

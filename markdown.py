@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-version = "1.6b"
-version_info = (1,6,2,"rc-2")
+version = "1.7"
+version_info = (1,7,0,"rc-1")
 __revision__ = "$Rev$"
 
 """
@@ -20,9 +20,11 @@ script.  (You might want to read that before you try modifying this
 file.)
 
 Started by [Manfred Stienstra](http://www.dwerg.net/).  Continued and
-maintained  by [Yuri Takhteyev](http://www.freewisdom.org).
+maintained  by [Yuri Takhteyev](http://www.freewisdom.org) and [Waylan
+Limberg](http://achinghead.com/).
 
 Contact: yuri [at] freewisdom.org
+         waylan [at] gmail.com
 
 License: GPL 2 (http://www.gnu.org/copyleft/gpl.html) or BSD
 
@@ -1111,19 +1113,21 @@ class Markdown:
         Markdown text """
 
 
-    def __init__(self, source=None,  # deprecated
+    def __init__(self, source=None,  # depreciated
                  extensions=[],
                  extension_configs=None,
-                 encoding="utf-8",
                  safe_mode = False):
         """Creates a new Markdown instance.
 
-           @param source: The text in Markdown format.
-           @param encoding: The character encoding of <text>. """
+           @param source: The text in Markdown format. Depreciated!
+           @param extensions: A list if extensions.
+           @param extension-configs: Configuration setting for extensions.
+           @param safe_mode: Disallow raw html. """
 
-        self.safeMode = safe_mode
-        self.encoding = encoding
         self.source = source
+        if source is not None:
+            message(WARN, "The `source` arg of Markdown.__init__() is depreciated and will be removed in the future. Use `instance.convert(source)` instead.")
+        self.safeMode = safe_mode
         self.blockGuru = BlockGuru()
         self.registeredExtensions = []
         self.stripTopLevelTags = 1
@@ -1155,8 +1159,8 @@ class Markdown:
                                LINK_ANGLED_PATTERN,
                                LINK_PATTERN,
                                IMAGE_LINK_PATTERN,
-			       IMAGE_REFERENCE_PATTERN,
-			       AUTOLINK_PATTERN,
+			                   IMAGE_REFERENCE_PATTERN,
+			                   AUTOLINK_PATTERN,
                                AUTOMAIL_PATTERN,
                                LINE_BREAK_PATTERN_2,
                                LINE_BREAK_PATTERN,
@@ -1684,15 +1688,18 @@ class Markdown:
         """Return the document in XHTML format.
 
         @returns: A serialized XHTML body."""
-        #try :
 
         if source is not None: #Allow blank string
             self.source = source
 
         if not self.source:
-            return ""
+            return u""
 
-        self.source = removeBOM(self.source, self.encoding)
+        try:
+            self.source = unicode(self.source)
+        except UnicodeDecodeError:
+            message(CRITICAL, 'UnicodeDecodeError: Markdown only accepts unicode or ascii  input.')
+            return u""
 
         for pp in self.textPreprocessors:
             self.source = pp.run(self.source)
@@ -1700,8 +1707,6 @@ class Markdown:
         doc = self._transform()
         xml = doc.toxml()
 
-        #finally:
-        #    doc.unlink()
 
         # Return everything but the top level tag
 
@@ -1714,19 +1719,17 @@ class Markdown:
         return (self.docType + xml).strip()
 
 
-    __str__ = convert   # deprecated - will be changed in 1.7 to report
-                        # information about the MD instance
-    
-    toString = __str__  # toString() method is deprecated
+    def __str__(self):
+        ''' Report info about instance. Markdown always returns unicode. '''
+        if self.source is None:
+            status = 'in which no source text has been assinged.'
+        else:
+            status = 'which contains %d chars and %d line(s) of source.'%\
+                     (len(self.source), self.source.count('\n')+1)
+        return 'An instance of "%s" %s'% (self.__class__, status)
 
+    __unicode__ = convert # markdown should always return a unicode string
 
-    def __unicode__(self):
-        """Return the document in XHTML format as a Unicode object.
-        """
-        return str(self)#.decode(self.encoding)
-
-
-    toUnicode = __unicode__  # deprecated - will be removed in 1.7
 
 
 
@@ -1752,7 +1755,9 @@ def markdownFromFile(input = None,
     text = input_file.read()
     input_file.close()
 
-    new_text = markdown(text, extensions, encoding, safe_mode = safe)
+    text = removeBOM(text, encoding)
+
+    new_text = markdown(text, extensions, safe_mode = safe)
 
     if output:
         output_file = codecs.open(output, "w", encoding=encoding)
@@ -1764,7 +1769,6 @@ def markdownFromFile(input = None,
 
 def markdown(text,
              extensions = [],
-             encoding = None,
              safe_mode = False):
     
     message(DEBUG, "in markdown.markdown(), received text:\n%s" % text)

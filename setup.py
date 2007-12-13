@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name = 'markdown',
-    version = '1.3',
+    version = '1.7',
     description = "Python implementation of Markdown.",
     author = "Manfred Stienstra and Yuri takhteyev",
     maintainer = "Yuri Takhteyev",
