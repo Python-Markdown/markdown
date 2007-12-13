@@ -1,0 +1,91 @@
+<h1><a href="http://freewisdom.org/projects/python-markdown">Python-Markdown</a></h1>
+<p>This is a Python implementation of John Gruber's <a href="http://daringfireball.net/projects/markdown/">Markdown</a>. 
+   It is almost completely compliant with the reference implementation,
+   though there are a few known issues. See <a href="http://www.freewisdom.org/projects/python-markdown/Features">Features</a> for information 
+   on what exactly is supported and what is not. Additional features are 
+   supported by the <a href="http://www.freewisdom.org/projects/python-markdown/Available_Extensions">Available Extensions</a>.
+</p>
+
+<h2>Installation</h2>
+<p>To install Python Markdown <a href="http://sourceforge.net/project/showfiles.php?group_id=153041">download</a> the zip file and extract the 
+   files.  If you want to install markdown as a module into your python 
+   tree, run <code>sudo python setup.py install</code> from a directory where you 
+   unzip the files.
+</p>
+
+<h2>Command Line Usage</h2>
+<p>To use markdown.py from the command line, run it as 
+</p>
+<pre><code>python markdown.py &lt;input_file&gt;
+</code></pre><p>or 
+</p>
+<pre><code>python markdown.py &lt;input_file&gt; &gt; &lt;output_file&gt;
+</code></pre><p>For more details, use the <code>-h</code> or <code>--help</code> options from the command line 
+   or read the <a href="http://www.freewisdom.org/projects/python-markdown/Command_Line">Command Line Docs</a> available online.
+</p>
+
+<h2>Using as a Python Module</h2>
+<p>To use markdown as a module:
+</p>
+<pre><code>import markdown
+html = markdown.markdown(your_text_string)
+</code></pre><p>For more details see the <a href="http://www.freewisdom.org/projects/python-markdown/Using_as_a_Module">Module Docs</a>.
+</p>
+
+<h2>Support</h2>
+<p>You may ask for help and discuss various other issues on the <a href="http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss">mailing list</a> and report bugs on the <a href="http://sourceforge.net/tracker/?func=add&amp;group_id=153041&amp;atid=790198">bug tracker</a>.
+</p>
+
+<h2>Credits</h2>
+<ul>
+ <li>
+     Most of the code currently in the module was written by <a href="http://www.freewisdom.org">Yuri Takhteyev</a>
+  while procrastinating from his Ph.D.
+ </li>
+
+ <li>
+     The original version of this script was written by <a href="http://www.dwerg.net/">Manfred Stienstra</a>,
+  who is responsible for about a quarter of the code.
+ </li>
+
+ <li>
+     Many recent bugs are being fixed by <a href="http://achinghead.com/">Waylan Limberg</a>.
+ </li>
+</ul>
+<p>Other contributions:
+</p>
+<ul>
+ <li>
+     Daniel Krech provided the setup.py script.
+ </li>
+
+ <li>
+     G. Clark Haynes submitted a patch for indented lists.
+ </li>
+
+ <li>
+     Tiago Cogumbreiro submitted an email autolink fix.
+ </li>
+
+ <li>
+     Sergej Chodarev submitted a patch for treatment of <code>&lt;hr/&gt;</code> tags.
+ </li>
+
+ <li>
+     Chris Clark submitted a patch to handle <code>&lt;mailto:...&gt;</code> syntax and a reg ex 
+  for &quot;smart&quot; emphasis (ignoring underscores within a word).
+ </li>
+
+ <li>
+     Steward Midwinter wrote command-line parser and cleaned up comments.
+ </li>
+
+ <li>
+     Many other people helped by reporting bugs.
+ </li>
+</ul>
+
+<h2>License</h2>
+<p>The code is dual-licensed under <a href="http://www.gnu.org/copyleft/gpl.html)">GPL</a> and <a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a>.  Other
+   licensing arrangements can be discussed.
+</p>
