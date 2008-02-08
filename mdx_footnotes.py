@@ -130,13 +130,13 @@ class FootnoteExtension (markdown.Extension):
             if li.childNodes :
                 node = li.childNodes[-1]
                 if node.type == "text" :
-		    li.appendChild(backlink)
-		elif node.nodeName == "p":
+		            li.appendChild(backlink)
+                elif node.nodeName == "p":
                     node.appendChild(backlink)
-		else:
-		    p = doc.createElement('p')
-		    p.appendChild(backlink)
-		    li.appendChild(p)
+                else:
+                    p = doc.createElement('p')
+                    p.appendChild(backlink)
+                    li.appendChild(p)
 
             ol.appendChild(li)
 
