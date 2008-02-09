@@ -32,7 +32,7 @@
 </p>
 <p>Markdown offers two styles of headers: <em>Setext</em> and <em>atx</em>.
    Setext-style headers for <code>&lt;h1&gt;</code> and <code>&lt;h2&gt;</code> are created by
-   &quot;underlining&quot; with equal signs (<code>=</code>) and hyphens (<code>-</code>), respectively.
+   "underlining" with equal signs (<code>=</code>) and hyphens (<code>-</code>), respectively.
    To create an atx-style header, you put 1-6 hash marks (<code>#</code>) at the
    beginning of the line -- the number of hashes equals the resulting
    HTML header level.
@@ -168,14 +168,14 @@ Or, if you prefer, &lt;strong&gt;use two underscores instead&lt;/strong&gt;.&lt;
 <pre><code>This is an [example link](http://example.com/).
 </code></pre><p>Output:
 </p>
-<pre><code>&lt;p&gt;This is an &lt;a href=&quot;http://example.com/&quot;&gt;
+<pre><code>&lt;p&gt;This is an &lt;a href="http://example.com/"&gt;
 example link&lt;/a&gt;.&lt;/p&gt;
 </code></pre><p>Optionally, you may include a title attribute in the parentheses:
 </p>
-<pre><code>This is an [example link](http://example.com/ &quot;With a Title&quot;).
+<pre><code>This is an [example link](http://example.com/ "With a Title").
 </code></pre><p>Output:
 </p>
-<pre><code>&lt;p&gt;This is an &lt;a href=&quot;http://example.com/&quot; title=&quot;With a Title&quot;&gt;
+<pre><code>&lt;p&gt;This is an &lt;a href="http://example.com/" title="With a Title"&gt;
 example link&lt;/a&gt;.&lt;/p&gt;
 </code></pre><p>Reference-style links allow you to refer to your links by names, which
    you define elsewhere in your document:
@@ -183,15 +183,15 @@ example link&lt;/a&gt;.&lt;/p&gt;
 <pre><code>I get 10 times more traffic from [Google][1] than from
 [Yahoo][2] or [MSN][3].
 
-[1]: http://google.com/        &quot;Google&quot;
-[2]: http://search.yahoo.com/  &quot;Yahoo Search&quot;
-[3]: http://search.msn.com/    &quot;MSN Search&quot;
+[1]: http://google.com/        "Google"
+[2]: http://search.yahoo.com/  "Yahoo Search"
+[3]: http://search.msn.com/    "MSN Search"
 </code></pre><p>Output:
 </p>
-<pre><code>&lt;p&gt;I get 10 times more traffic from &lt;a href=&quot;http://google.com/&quot;
-title=&quot;Google&quot;&gt;Google&lt;/a&gt; than from &lt;a href=&quot;http://search.yahoo.com/&quot;
-title=&quot;Yahoo Search&quot;&gt;Yahoo&lt;/a&gt; or &lt;a href=&quot;http://search.msn.com/&quot;
-title=&quot;MSN Search&quot;&gt;MSN&lt;/a&gt;.&lt;/p&gt;
+<pre><code>&lt;p&gt;I get 10 times more traffic from &lt;a href="http://google.com/"
+title="Google"&gt;Google&lt;/a&gt; than from &lt;a href="http://search.yahoo.com/"
+title="Yahoo Search"&gt;Yahoo&lt;/a&gt; or &lt;a href="http://search.msn.com/"
+title="MSN Search"&gt;MSN&lt;/a&gt;.&lt;/p&gt;
 </code></pre><p>The title attribute is optional. Link names may contain letters,
    numbers and spaces, but are <em>not</em> case sensitive:
 </p>
@@ -202,22 +202,22 @@ title=&quot;MSN Search&quot;&gt;MSN&lt;/a&gt;.&lt;/p&gt;
 </code></pre><p>Output:
 </p>
 <pre><code>&lt;p&gt;I start my morning with a cup of coffee and
-&lt;a href=&quot;http://www.nytimes.com/&quot;&gt;The New York Times&lt;/a&gt;.&lt;/p&gt;
+&lt;a href="http://www.nytimes.com/"&gt;The New York Times&lt;/a&gt;.&lt;/p&gt;
 </code></pre>
 <h3>Images</h3>
 <p>Image syntax is very much like link syntax.
 </p>
 <p>Inline (titles are optional):
 </p>
-<pre><code>![alt text](/path/to/img.jpg &quot;Title&quot;)
+<pre><code>![alt text](/path/to/img.jpg "Title")
 </code></pre><p>Reference-style:
 </p>
 <pre><code>![alt text][id]
 
-[id]: /path/to/img.jpg &quot;Title&quot;
+[id]: /path/to/img.jpg "Title"
 </code></pre><p>Both of the above examples produce the same output:
 </p>
-<pre><code>&lt;img src=&quot;/path/to/img.jpg&quot; alt=&quot;alt text&quot; title=&quot;Title&quot; /&gt;
+<pre><code>&lt;img src="/path/to/img.jpg" alt="alt text" title="Title" /&gt;
 </code></pre>
 <h3>Code</h3>
 <p>In a regular paragraph, you can create code span by wrapping text in

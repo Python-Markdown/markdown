@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 version = "1.7"
-version_info = (1,7,0,"rc-1")
+version_info = (1,7,0,"rc-2")
 __revision__ = "$Rev$"
 
 """
@@ -127,8 +127,7 @@ want. It also adds extra white space when converting DOM to string
 
 ENTITY_NORMALIZATION_EXPRESSIONS = [ (re.compile("&"), "&amp;"),
                                      (re.compile("<"), "&lt;"),
-                                     (re.compile(">"), "&gt;"),
-                                     (re.compile("\""), "&quot;")]
+                                     (re.compile(">"), "&gt;")]
 
 ENTITY_NORMALIZATION_EXPRESSIONS_SOFT = [ (re.compile("&(?!\#)"), "&amp;"),
                                      (re.compile("<"), "&lt;"),

@@ -1,5 +1,3 @@
-
-
 <h1>Markdown: Syntax</h1>
 <ul id="ProjectSubmenu">
     <li><a href="/projects/markdown/" title="Markdown Project Page">Main</a></li>
@@ -224,17 +222,17 @@ This is another regular paragraph.
    blank line -- a line containing nothing but spaces or tabs is considered
    blank.) Normal paragraphs should not be intended with spaces or tabs.
 </p>
-<p>The implication of the &quot;one or more consecutive lines of text&quot; rule is
-   that Markdown supports &quot;hard-wrapped&quot; text paragraphs. This differs
+<p>The implication of the "one or more consecutive lines of text" rule is
+   that Markdown supports "hard-wrapped" text paragraphs. This differs
    significantly from most other text-to-HTML formatters (including Movable
-   Type's &quot;Convert Line Breaks&quot; option) which translate every line break
+   Type's "Convert Line Breaks" option) which translate every line break
    character in a paragraph into a <code>&lt;br /&gt;</code> tag.
 </p>
 <p>When you <em>do</em> want to insert a <code>&lt;br /&gt;</code> break tag using Markdown, you
    end a line with two or more spaces, then type return.
 </p>
 <p>Yes, this takes a tad more effort to create a <code>&lt;br /&gt;</code>, but a simplistic
-   &quot;every line break is a <code>&lt;br /&gt;</code>&quot; rule wouldn't work for Markdown.
+   "every line break is a <code>&lt;br /&gt;</code>" rule wouldn't work for Markdown.
    Markdown's email-style <a href="#blockquote">blockquoting</a> and multi-paragraph <a href="#list">list items</a>
    work best -- and look better -- when you format them with hard breaks.
 </p>
@@ -242,7 +240,7 @@ This is another regular paragraph.
 
 <p>Markdown supports two styles of headers, <a href="http://docutils.sourceforge.net/mirror/setext.html">Setext</a> and <a href="http://www.aaronsw.com/2002/atx/">atx</a>.
 </p>
-<p>Setext-style headers are &quot;underlined&quot; using equal signs (for first-level
+<p>Setext-style headers are "underlined" using equal signs (for first-level
    headers) and dashes (for second-level headers). For example:
 </p>
 <pre><code>This is an H1
@@ -260,7 +258,7 @@ This is an H2
 ## This is an H2
 
 ###### This is an H6
-</code></pre><p>Optionally, you may &quot;close&quot; atx-style headers. This is purely
+</code></pre><p>Optionally, you may "close" atx-style headers. This is purely
    cosmetic -- you can use this if you think it looks better. The
    closing hashes don't even need to match the number of hashes
    used to open the header. (The number of opening hashes
@@ -311,7 +309,7 @@ id sem consectetuer libero luctus adipiscing.
 &gt; 
 &gt; Here's some example code:
 &gt; 
-&gt;     return shell_exec(&quot;echo $input | $markdown_script&quot;);
+&gt;     return shell_exec("echo $input | $markdown_script");
 </code></pre><p>Any decent text editor should make email-style quoting easy. For
    example, with BBEdit, you can make a selection and choose Increase
    Quote Level from the Text menu.
@@ -478,14 +476,14 @@ sit amet, consectetuer adipiscing elit.
 </p>
 <pre><code>Here is an example of AppleScript:
 
-    tell application &quot;Foo&quot;
+    tell application "Foo"
         beep
     end tell
 </code></pre><p>will turn into:
 </p>
 <pre><code>&lt;p&gt;Here is an example of AppleScript:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;tell application &quot;Foo&quot;
+&lt;pre&gt;&lt;code&gt;tell application "Foo"
     beep
 end tell
 &lt;/code&gt;&lt;/pre&gt;
@@ -498,12 +496,12 @@ end tell
    it and indent it, and Markdown will handle the hassle of encoding the
    ampersands and angle brackets. For example, this:
 </p>
-<pre><code>    &lt;div class=&quot;footer&quot;&gt;
+<pre><code>    &lt;div class="footer"&gt;
         &amp;copy; 2004 Foo Corporation
     &lt;/div&gt;
 </code></pre><p>will turn into:
 </p>
-<pre><code>&lt;pre&gt;&lt;code&gt;&amp;lt;div class=&quot;footer&quot;&amp;gt;
+<pre><code>&lt;pre&gt;&lt;code&gt;&amp;lt;div class="footer"&amp;gt;
     &amp;amp;copy; 2004 Foo Corporation
 &amp;lt;/div&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
@@ -544,15 +542,15 @@ _ _ _
    put the URL where you want the link to point, along with an <em>optional</em>
    title for the link, surrounded in quotes. For example:
 </p>
-<pre><code>This is [an example](http://example.com/ &quot;Title&quot;) inline link.
+<pre><code>This is [an example](http://example.com/ "Title") inline link.
 
 [This link](http://example.net/) has no title attribute.
 </code></pre><p>Will produce:
 </p>
-<pre><code>&lt;p&gt;This is &lt;a href=&quot;http://example.com/&quot; title=&quot;Title&quot;&gt;
+<pre><code>&lt;p&gt;This is &lt;a href="http://example.com/" title="Title"&gt;
 an example&lt;/a&gt; inline link.&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://example.net/&quot;&gt;This link&lt;/a&gt; has no
+&lt;p&gt;&lt;a href="http://example.net/"&gt;This link&lt;/a&gt; has no
 title attribute.&lt;/p&gt;
 </code></pre><p>If you're referring to a local resource on the same server, you can
    use relative paths:
@@ -568,7 +566,7 @@ title attribute.&lt;/p&gt;
 </code></pre><p>Then, anywhere in the document, you define your link label like this,
    on a line by itself:
 </p>
-<pre><code>[id]: http://example.com/  &quot;Optional Title Here&quot;
+<pre><code>[id]: http://example.com/  "Optional Title Here"
 </code></pre><p>That is:
 </p>
 <ul>
@@ -596,12 +594,12 @@ title attribute.&lt;/p&gt;
 </ul>
 <p>The link URL may, optionally, be surrounded by angle brackets:
 </p>
-<pre><code>[id]: &lt;http://example.com/&gt;  &quot;Optional Title Here&quot;
+<pre><code>[id]: &lt;http://example.com/&gt;  "Optional Title Here"
 </code></pre><p>You can put the title attribute on the next line and use extra spaces
    or tabs for padding, which tends to look better with longer URLs:
 </p>
 <pre><code>[id]: http://example.com/longish/path/to/resource/here
-    &quot;Optional Title Here&quot;
+    "Optional Title Here"
 </code></pre><p>Link definitions are only used for creating links during Markdown
    processing, and are stripped from your document in the HTML output.
 </p>
@@ -614,7 +612,7 @@ title attribute.&lt;/p&gt;
 <p>The <em>implicit link name</em> shortcut allows you to omit the name of the
    link, in which case the link text itself is used as the name.
    Just use an empty set of square brackets -- e.g., to link the word
-   &quot;Google&quot; to the google.com web site, you could simply write:
+   "Google" to the google.com web site, you could simply write:
 </p>
 <pre><code>[Google][]
 </code></pre><p>And then define the link:
@@ -637,29 +635,29 @@ title attribute.&lt;/p&gt;
 <pre><code>I get 10 times more traffic from [Google] [1] than from
 [Yahoo] [2] or [MSN] [3].
 
-  [1]: http://google.com/        &quot;Google&quot;
-  [2]: http://search.yahoo.com/  &quot;Yahoo Search&quot;
-  [3]: http://search.msn.com/    &quot;MSN Search&quot;
+  [1]: http://google.com/        "Google"
+  [2]: http://search.yahoo.com/  "Yahoo Search"
+  [3]: http://search.msn.com/    "MSN Search"
 </code></pre><p>Using the implicit link name shortcut, you could instead write:
 </p>
 <pre><code>I get 10 times more traffic from [Google][] than from
 [Yahoo][] or [MSN][].
 
-  [google]: http://google.com/        &quot;Google&quot;
-  [yahoo]:  http://search.yahoo.com/  &quot;Yahoo Search&quot;
-  [msn]:    http://search.msn.com/    &quot;MSN Search&quot;
+  [google]: http://google.com/        "Google"
+  [yahoo]:  http://search.yahoo.com/  "Yahoo Search"
+  [msn]:    http://search.msn.com/    "MSN Search"
 </code></pre><p>Both of the above examples will produce the following HTML output:
 </p>
-<pre><code>&lt;p&gt;I get 10 times more traffic from &lt;a href=&quot;http://google.com/&quot;
-title=&quot;Google&quot;&gt;Google&lt;/a&gt; than from
-&lt;a href=&quot;http://search.yahoo.com/&quot; title=&quot;Yahoo Search&quot;&gt;Yahoo&lt;/a&gt;
-or &lt;a href=&quot;http://search.msn.com/&quot; title=&quot;MSN Search&quot;&gt;MSN&lt;/a&gt;.&lt;/p&gt;
+<pre><code>&lt;p&gt;I get 10 times more traffic from &lt;a href="http://google.com/"
+title="Google"&gt;Google&lt;/a&gt; than from
+&lt;a href="http://search.yahoo.com/" title="Yahoo Search"&gt;Yahoo&lt;/a&gt;
+or &lt;a href="http://search.msn.com/" title="MSN Search"&gt;MSN&lt;/a&gt;.&lt;/p&gt;
 </code></pre><p>For comparison, here is the same paragraph written using
    Markdown's inline link style:
 </p>
-<pre><code>I get 10 times more traffic from [Google](http://google.com/ &quot;Google&quot;)
-than from [Yahoo](http://search.yahoo.com/ &quot;Yahoo Search&quot;) or
-[MSN](http://search.msn.com/ &quot;MSN Search&quot;).
+<pre><code>I get 10 times more traffic from [Google](http://google.com/ "Google")
+than from [Yahoo](http://search.yahoo.com/ "Yahoo Search") or
+[MSN](http://search.msn.com/ "MSN Search").
 </code></pre><p>The point of reference-style links is not that they're easier to
    write. The point is that with reference-style links, your document
    source is vastly more readable. Compare the above examples: using
@@ -757,7 +755,7 @@ A backtick-delimited string in a code span: `` `foo` ``
 equivalent of &lt;code&gt;&amp;amp;mdash;&lt;/code&gt;.&lt;/p&gt;
 </code></pre><h3 id="img">Images</h3>
 
-<p>Admittedly, it's fairly difficult to devise a &quot;natural&quot; syntax for
+<p>Admittedly, it's fairly difficult to devise a "natural" syntax for
    placing images into a plain text document format.
 </p>
 <p>Markdown uses an image syntax that is intended to resemble the syntax
@@ -767,7 +765,7 @@ equivalent of &lt;code&gt;&amp;amp;mdash;&lt;/code&gt;.&lt;/p&gt;
 </p>
 <pre><code>![Alt text](/path/to/img.jpg)
 
-![Alt text](/path/to/img.jpg &quot;Optional title&quot;)
+![Alt text](/path/to/img.jpg "Optional title")
 </code></pre><p>That is:
 </p>
 <ul>
@@ -789,10 +787,10 @@ or single quotes.
 <p>Reference-style image syntax looks like this:
 </p>
 <pre><code>![Alt text][id]
-</code></pre><p>Where &quot;id&quot; is the name of a defined image reference. Image references
+</code></pre><p>Where "id" is the name of a defined image reference. Image references
    are defined using syntax identical to link references:
 </p>
-<pre><code>[id]: url/to/image  &quot;Optional title attribute&quot;
+<pre><code>[id]: url/to/image  "Optional title attribute"
 </code></pre><p>As of this writing, Markdown has no syntax for specifying the
    dimensions of an image; if this is important to you, you can simply
    use regular HTML <code>&lt;img&gt;</code> tags.
@@ -803,12 +801,12 @@ or single quotes.
 
 <h3 id="autolink">Automatic Links</h3>
 
-<p>Markdown supports a shortcut style for creating &quot;automatic&quot; links for URLs and email addresses: simply surround the URL or email address with angle brackets. What this means is that if you want to show the actual text of a URL or email address, and also have it be a clickable link, you can do this:
+<p>Markdown supports a shortcut style for creating "automatic" links for URLs and email addresses: simply surround the URL or email address with angle brackets. What this means is that if you want to show the actual text of a URL or email address, and also have it be a clickable link, you can do this:
 </p>
 <pre><code>&lt;http://example.com/&gt;
 </code></pre><p>Markdown will turn this into:
 </p>
-<pre><code>&lt;a href=&quot;http://example.com/&quot;&gt;http://example.com/&lt;/a&gt;
+<pre><code>&lt;a href="http://example.com/"&gt;http://example.com/&lt;/a&gt;
 </code></pre><p>Automatic links for email addresses work similarly, except that
    Markdown will also perform a bit of randomized decimal and hex
    entity-encoding to help obscure your address from address-harvesting
@@ -817,11 +815,11 @@ or single quotes.
 <pre><code>&lt;address@example.com&gt;
 </code></pre><p>into something like this:
 </p>
-<pre><code>&lt;a href=&quot;&amp;#x6D;&amp;#x61;i&amp;#x6C;&amp;#x74;&amp;#x6F;:&amp;#x61;&amp;#x64;&amp;#x64;&amp;#x72;&amp;#x65;
+<pre><code>&lt;a href="&amp;#x6D;&amp;#x61;i&amp;#x6C;&amp;#x74;&amp;#x6F;:&amp;#x61;&amp;#x64;&amp;#x64;&amp;#x72;&amp;#x65;
 &amp;#115;&amp;#115;&amp;#64;&amp;#101;&amp;#120;&amp;#x61;&amp;#109;&amp;#x70;&amp;#x6C;e&amp;#x2E;&amp;#99;&amp;#111;
-&amp;#109;&quot;&gt;&amp;#x61;&amp;#x64;&amp;#x64;&amp;#x72;&amp;#x65;&amp;#115;&amp;#115;&amp;#64;&amp;#101;&amp;#120;&amp;#x61;
+&amp;#109;"&gt;&amp;#x61;&amp;#x64;&amp;#x64;&amp;#x72;&amp;#x65;&amp;#115;&amp;#115;&amp;#64;&amp;#101;&amp;#120;&amp;#x61;
 &amp;#109;&amp;#x70;&amp;#x6C;e&amp;#x2E;&amp;#99;&amp;#111;&amp;#109;&lt;/a&gt;
-</code></pre><p>which will render in a browser as a clickable link to &quot;address@example.com&quot;.
+</code></pre><p>which will render in a browser as a clickable link to "address@example.com".
 </p>
 <p>(This sort of entity-encoding trick will indeed fool many, if not
    most, address-harvesting bots, but it definitely won't fool all of
@@ -852,4 +850,3 @@ _   underscore
 .   dot
 !   exclamation mark
 </code></pre>
-
