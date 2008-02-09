@@ -494,7 +494,7 @@ class HtmlBlockPreprocessor (Preprocessor):
 
     def _equal_tags(self, left_tag, right_tag):
         
-        if left_tag in ['?', '?php', 'div']: # handle PHP, etc.
+        if left_tag == 'div' or left_tag[0] in ['?', '@', '%']: # handle PHP, etc.
             return True
         if ("/" + left_tag) == right_tag:
             return True
