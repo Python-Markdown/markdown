@@ -405,85 +405,43 @@ class EntityReference:
 Preprocessors munge source text before we start doing anything too
 complicated.
 
-Each preprocessor implements a "run" method that takes a pointer to a
-list of lines of the document, modifies it as necessary and returns
-either the same pointer or a pointer to a new list.  Preprocessors
-must extend markdown.Preprocessor.
+There are two types of preprocessors: TextPreprocessor and Preprocessor.
 
 """
 
 
+class TextPreprocessor:
+    '''
+    TextPreprocessors are run before the text is broken into lines.
+    
+    Each TextPreprocessor implements a "run" method that takes a pointer to a
+    text string of the document, modifies it as necessary and returns
+    either the same pointer or a pointer to a new string.  
+    
+    TextPreprocessors must extend markdown.TextPreprocessor.
+    '''
+
+    def run(self, text):
+        pass
+
+
 class Preprocessor:
-    pass
+    '''
+    Preprocessors are run after the text is broken into lines.
 
+    Each preprocessor implements a "run" method that takes a pointer to a
+    list of lines of the document, modifies it as necessary and returns
+    either the same pointer or a pointer to a new list.  
+    
+    Preprocessors must extend markdown.Preprocessor.
+    '''
 
-class HeaderPreprocessor (Preprocessor):
+    def run(self, lines):
+        pass
+ 
 
-    """
-       Replaces underlined headers with hashed headers to avoid
-       the nead for lookahead later.
-    """
-
-    def run (self, lines):
-
-        i = -1
-        while i+1 < len(lines):
-            i = i+1
-            if not lines[i].strip():
-                continue
-
-            if lines[i].startswith("#"):
-                lines.insert(i+1, "\n")
-
-            if (i+1 <= len(lines)
-                  and lines[i+1]
-                  and lines[i+1][0] in ['-', '=']):
-
-                underline = lines[i+1].strip()
-
-                if underline == "="*len(underline):
-                    lines[i] = "# " + lines[i].strip()
-                    lines[i+1] = ""
-                elif underline == "-"*len(underline):
-                    lines[i] = "## " + lines[i].strip()
-                    lines[i+1] = ""
-
-        return lines
-
-HEADER_PREPROCESSOR = HeaderPreprocessor()
-
-class LinePreprocessor (Preprocessor):
-    """Deals with HR lines (needs to be done before processing lists)"""
-
-    blockquote_re = re.compile(r'^(> )+')
-
-    def run (self, lines):
-        for i in range(len(lines)):
-            prefix = ''
-            m = self.blockquote_re.search(lines[i])
-            if m : prefix = m.group(0)
-            if self._isLine(lines[i][len(prefix):]):
-                lines[i] = prefix + self.stash.store("<hr />", safe=True)
-        return lines
-
-    def _isLine(self, block):
-        """Determines if a block should be replaced with an <HR>"""
-        if block.startswith("    "): return 0  # a code block
-        text = "".join([x for x in block if not x.isspace()])
-        if len(text) <= 2:
-            return 0
-        for pattern in ['isline1', 'isline2', 'isline3']:
-            m = RE.regExp[pattern].match(text)
-            if (m and m.group(1)):
-                return 1
-        else:
-            return 0
-
-LINE_PREPROCESSOR = LinePreprocessor()
-
-
-class HtmlBlockPreprocessor (Preprocessor):
-    """Removes html blocks from self.lines"""
+class HtmlBlockPreprocessor(TextPreprocessor):
+    """Removes html blocks from the source text and stores it."""
     
     def _get_left_tag(self, block):
         return block[1:].replace(">", " ", 1).split()[0].lower()
@@ -510,7 +468,7 @@ class HtmlBlockPreprocessor (Preprocessor):
         return (tag in ['hr', 'hr/'])
 
     
-    def run (self, text):
+    def run(self, text):
 
         new_blocks = []
         text = text.split("\n\n")
@@ -580,7 +538,76 @@ class HtmlBlockPreprocessor (Preprocessor):
 HTML_BLOCK_PREPROCESSOR = HtmlBlockPreprocessor()
 
 
-class ReferencePreprocessor (Preprocessor):
+class HeaderPreprocessor(Preprocessor):
+
+    """
+       Replaces underlined headers with hashed headers to avoid
+       the nead for lookahead later.
+    """
+
+    def run (self, lines):
+
+        i = -1
+        while i+1 < len(lines):
+            i = i+1
+            if not lines[i].strip():
+                continue
+
+            if lines[i].startswith("#"):
+                lines.insert(i+1, "\n")
+
+            if (i+1 <= len(lines)
+                  and lines[i+1]
+                  and lines[i+1][0] in ['-', '=']):
+
+                underline = lines[i+1].strip()
+
+                if underline == "="*len(underline):
+                    lines[i] = "# " + lines[i].strip()
+                    lines[i+1] = ""
+                elif underline == "-"*len(underline):
+                    lines[i] = "## " + lines[i].strip()
+                    lines[i+1] = ""
+
+        return lines
+
+HEADER_PREPROCESSOR = HeaderPreprocessor()
+
+
+class LinePreprocessor(Preprocessor):
+    """Deals with HR lines (needs to be done before processing lists)"""
+
+    blockquote_re = re.compile(r'^(> )+')
+
+    def run (self, lines):
+        for i in range(len(lines)):
+            prefix = ''
+            m = self.blockquote_re.search(lines[i])
+            if m : prefix = m.group(0)
+            if self._isLine(lines[i][len(prefix):]):
+                lines[i] = prefix + self.stash.store("<hr />", safe=True)
+        return lines
+
+    def _isLine(self, block):
+        """Determines if a block should be replaced with an <HR>"""
+        if block.startswith("    "): return 0  # a code block
+        text = "".join([x for x in block if not x.isspace()])
+        if len(text) <= 2:
+            return 0
+        for pattern in ['isline1', 'isline2', 'isline3']:
+            m = RE.regExp[pattern].match(text)
+            if (m and m.group(1)):
+                return 1
+        else:
+            return 0
+
+LINE_PREPROCESSOR = LinePreprocessor()
+
+
+class ReferencePreprocessor(Preprocessor):
+    ''' 
+    Removes reference definitions from the text and stores them for later use.
+    '''
 
     def run (self, lines):
 
@@ -889,36 +916,47 @@ AUTOMAIL_PATTERN        = AutomailPattern(AUTOMAIL_RE)
 ======================================================================
 
 Markdown also allows post-processors, which are similar to
-preprocessors in that they need to implement a "run" method.  Unlike
-pre-processors, they take a NanoDom document as a parameter and work
-with that.
+preprocessors in that they need to implement a "run" method. However,
+they are run after core processing.
 
-Post-Processor should extend markdown.Postprocessor.
-
-There are currently no standard post-processors, but the footnote
-extension below uses one.
+There are two types of post-processors: Postprocessor and TextPostprocessor
 """
+
 
 class Postprocessor:
-    pass
+    '''
+    Postprocessors are run before the dom it converted back into text.
+    
+    Each Postprocessor implements a "run" method that takes a pointer to a
+    NanoDom document, modifies it as necessary and returns a NanoDom 
+    document.
+    
+    Postprocessors must extend markdown.Postprocessor.
+
+    There are currently no standard post-processors, but the footnote
+    extension uses one.
+    '''
+
+    def run(self, dom):
+        pass
 
 
-"""
-======================================================================
-======================== TEXT-POST-PROCESSORS ========================
-======================================================================
 
-Markdown also allows text-post-processors, which are similar to
-textpreprocessors in that they need to implement a "run" method.  
-Unlike post-processors, they take a text string as a parameter and 
-should return a string.
+class TextPostprocessor:
+    '''
+    TextPostprocessors are run after the dom it converted back into text.
+    
+    Each TextPostprocessor implements a "run" method that takes a pointer to a
+    text string, modifies it as necessary and returns a text string.
+    
+    TextPostprocessors must extend markdown.TextPostprocessor.
+    '''
 
-Text-Post-Processors should extend markdown.Postprocessor.
+    def run(self, text):
+        pass
 
-"""
 
-
-class RawHtmlTextPostprocessor(Postprocessor):
+class RawHtmlTextPostprocessor(TextPostprocessor):
 
     def __init__(self):
         pass
