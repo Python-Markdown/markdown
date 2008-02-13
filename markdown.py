@@ -31,7 +31,7 @@ License: GPL 2 (http://www.gnu.org/copyleft/gpl.html) or BSD
 """
 
 
-import re, sys, os, random, codecs
+import re, sys, codecs
 
 from logging import getLogger, StreamHandler, Formatter, \
                     DEBUG, INFO, WARN, ERROR, CRITICAL
@@ -108,7 +108,7 @@ BLOCK_LEVEL_ELEMENTS = ['p', 'div', 'blockquote', 'pre', 'table',
                         'form', 'fieldset', 'iframe', 'math', 'ins',
                         'del', 'hr', 'hr/', 'style']
 
-def is_block_level (tag):
+def isBlockLevel (tag):
     return ( (tag in BLOCK_LEVEL_ELEMENTS) or
              (tag[0] == 'h' and tag[1] in "0123456789") )
 
@@ -467,7 +467,7 @@ class LinePreprocessor (Preprocessor):
         return lines
 
     def _isLine(self, block):
-        """Determines if a block should be replaced with an <:wHR>"""
+        """Determines if a block should be replaced with an <HR>"""
         if block.startswith("    "): return 0  # a code block
         text = "".join([x for x in block if not x.isspace()])
         if len(text) <= 2:
@@ -531,7 +531,7 @@ class HtmlBlockPreprocessor (Preprocessor):
                     left_tag = self._get_left_tag(block)
                     right_tag = self._get_right_tag(left_tag, block)
 
-                    if not (is_block_level(left_tag) \
+                    if not (isBlockLevel(left_tag) \
                         or block[1] in ["!", "?", "@", "%"]):
                         new_blocks.append(block)
                         continue
@@ -1365,14 +1365,14 @@ class Markdown:
             level = len(m.group(1))
             h = self.doc.createElement("h%d" % level)
             parent_elem.appendChild(h)
-            for item in self._handleInlineWrapper(m.group(2).strip()):
+            for item in self._handleInline(m.group(2).strip()):
                 h.appendChild(item)
         else:
             message(CRITICAL, "We've got a problem header!")
 
 
     def _processParagraph(self, parent_elem, paragraph, inList, looseList):
-        list = self._handleInlineWrapper("\n".join(paragraph))
+        list = self._handleInline("\n".join(paragraph))
 
         if ( parent_elem.nodeName == 'li'
                 and not (looseList or parent_elem.childNodes)):
@@ -1561,7 +1561,17 @@ class Markdown:
 
 
 
-    def _handleInlineWrapper (self, line, patternIndex=0):
+    def _handleInline (self, line, patternIndex=0):
+        """Transform a Markdown line with inline elements to an XHTML
+        fragment.
+
+        This function uses auxiliary objects called inline patterns.
+        See notes on inline patterns above.
+
+        @param line: A line of Markdown text
+        @param patternIndex: The index of the inlinePattern to start with
+        @return: A list of NanoDom nodes """
+
 
         parts = [line]
 
@@ -1594,25 +1604,6 @@ class Markdown:
 
         return parts
         
-
-    def _handleInline(self,  line):
-        """Transform a Markdown line with inline elements to an XHTML
-        fragment.
-
-        This function uses auxiliary objects called inline patterns.
-        See notes on inline patterns above.
-
-        @param item: A block of Markdown text
-        @return: A list of NanoDom nodes """
-
-        if not(line):
-            return [self.doc.createTextNode(' ')]
-
-        for pattern in self.inlinePatterns:
-            list = self._applyPattern( line, pattern)
-            if list: return list
-
-        return [self.doc.createTextNode(line)]
 
     def _applyPattern(self, line, pattern, patternIndex):
 
@@ -1648,7 +1639,7 @@ class Markdown:
                 for child in node.childNodes:
                     if isinstance(child, TextNode):
                         
-                        result = self._handleInlineWrapper(child.value, patternIndex+1)
+                        result = self._handleInline(child.value, patternIndex+1)
                         
                         if result:
 
