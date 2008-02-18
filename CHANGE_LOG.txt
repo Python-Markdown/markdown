@@ -1,6 +1,13 @@
 PYTHON MARKDOWN CHANGELOG
 =========================
 
+Feb 13, 2008: A little code cleanup and better documentation
+and inheritance for pre/post proccessors.
+
+Feb 9, 2008: Doublequotes no longer html escaped and rawhtml
+honors <?foo>, <@foo>, and <%foo> for those who run markdown on
+template syntax.
+
 Dec 12, 2007: Updated docs. Removed encoding arg from Markdown
 and markdown as per list discussion. Clean up in prep for 1.7.
 
