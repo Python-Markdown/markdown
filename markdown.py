@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 version = "1.7"
-version_info = (1,7,0,"rc-2")
+version_info = (1,7,0)
 __revision__ = "$Rev$"
 
 """
