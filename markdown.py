@@ -1130,7 +1130,7 @@ class CorePatterns:
         'isline2':         r'(\-*)', # ---
         'isline3':         r'(\_*)', # ___
         'tabbed':          r'((\t)|(    ))(.*)', # an indented line
-        'quoted':          r'> ?(.*)', # a quoted block ("> ...")
+        'quoted':          r'[ ]{0,2}> ?(.*)', # a quoted block ("> ...")
     }
 
     def __init__ (self):
