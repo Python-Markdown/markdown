@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 version = "1.7"
-version_info = (1,7,0)
+version_info = (1,7,0,"rc-2")
 __revision__ = "$Rev$"
 
 """
@@ -1152,12 +1152,16 @@ class Markdown:
 
     def __init__(self, source=None,  # depreciated
                  extensions=[],
-                 extension_configs=None,
+                 extension_configs={},
                  safe_mode = False):
         """Creates a new Markdown instance.
 
            @param source: The text in Markdown format. Depreciated!
-           @param extensions: A list if extensions.
+           @param extensions: A list of extensions.
+                              If they are of type string, the module
+                                mdx_name.py will be loaded
+                              If they are a subclass of markdown.Extension,
+                                they will be used as-is
            @param extension-configs: Configuration setting for extensions.
            @param safe_mode: Disallow raw html. """
 
@@ -1220,32 +1224,24 @@ class Markdown:
 
 
     def registerExtensions(self, extensions, configs):
+        """ Register extensions with this instance of Markdown.
 
-        if not configs:
-            configs = {}
+            @param extensions A list of extensions, which can either
+                              be strings or objects.  See the docstring
+                              on Markdown.
+            @param configs    A dictionary mapping module names to config
+                              options. """
 
         for ext in extensions:
-
-            extension_module_name = "mdx_" + ext
-
-            try:
-                module = __import__(extension_module_name)
-
-            except:
-                message(CRITICAL,
-                        "couldn't load extension %s (looking for %s module)"
-                        % (ext, extension_module_name) )
+            if isinstance(ext, basestring):
+                ext = load_extension(ext, configs.get(ext, []))
+            elif isinstance(ext, Extension):
+                pass # nothing to do here
             else:
-
-                if configs.has_key(ext):
-                    configs_for_ext = configs[ext]
-                else:
-                    configs_for_ext = []
-                extension = module.makeExtension(configs_for_ext)    
-                extension.extendMarkdown(self, globals())
-
-
-
+                message(ERROR, "Incorrect type! Extension %s is "
+                               "neither a string or an Extension.")
+                continue
+            ext.extendMarkdown(self, globals())
 
     def registerExtension(self, extension):
         """ This gets called by the extension """
@@ -1801,22 +1797,9 @@ def markdown(text,
     
     message(DEBUG, "in markdown.markdown(), received text:\n%s" % text)
 
-    extension_names = []
-    extension_configs = {}
-    
-    for ext in extensions:
-        pos = ext.find("(") 
-        if pos == -1:
-            extension_names.append(ext)
-        else:
-            name = ext[:pos]
-            extension_names.append(name)
-            pairs = [x.split("=") for x in ext[pos+1:-1].split(",")]
-            configs = [(x.strip(), y.strip()) for (x, y) in pairs]
-            extension_configs[name] = configs
+    extensions = [load_extension(e) for e in extensions]
 
-    md = Markdown(extensions=extension_names,
-                  extension_configs=extension_configs,
+    md = Markdown(extensions=extensions,
                   safe_mode = safe_mode)
 
     return md.convert(text)
@@ -1840,6 +1823,35 @@ class Extension:
         self.config[key][0] = value
 
 
+def load_extension(ext_name, configs = []):
+    """ Load extention by name, then return the module.
+        The name may contain arguments.
+        Print an error message and exit on failure. """
+
+    # I am making the assumption that the order of config options
+    # does not matter.
+    configs = dict(configs)
+    pos = ext_name.find("(") 
+    if pos > 0:
+        ext_args = ext_name[pos+1:-1]
+        ext_name = ext_name[:pos]
+        pairs = [x.split("=") for x in ext_args.split(",")]
+        configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
+
+    extension_module_name = "mdx_" + ext_name
+
+    try:
+        module = __import__(extension_module_name)
+
+    except:
+        message(CRITICAL,
+                "couldn't load extension %s (looking for %s module)"
+                % (ext_name, extension_module_name) )
+        sys.exit(1)
+
+    return module.makeExtension(configs.items())    
+
+
 OPTPARSE_WARNING = """
 Python 2.3 or higher required for advanced command line options.
 For lower versions of Python use:
@@ -1849,7 +1861,6 @@ For lower versions of Python use:
 """ % EXECUTABLE_NAME_FOR_USAGE
 
 def parse_options():
-
     try:
         optparse = __import__("optparse")
     except:
@@ -1917,13 +1928,3 @@ if __name__ == '__main__':
         sys.exit(0)
     
     markdownFromFile(**options)
-
-
-
-
-
-
-
-
-
-
