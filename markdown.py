@@ -1238,8 +1238,8 @@ class Markdown:
             elif isinstance(ext, Extension):
                 pass # nothing to do here
             else:
-                message(ERROR, "Incorrect type! Extension %s is "
-                               "neither a string or an Extension.")
+                message(ERROR, "Incorrect type! Extension '%s' is "
+                               "neither a string or an Extension." %(repr(ext)))
                 continue
             ext.extendMarkdown(self, globals())
 
