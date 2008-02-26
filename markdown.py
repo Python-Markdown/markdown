@@ -1235,8 +1235,10 @@ class Markdown:
         for ext in extensions:
             if isinstance(ext, basestring):
                 ext = load_extension(ext, configs.get(ext, []))
-            elif isinstance(ext, Extension):
-                pass # nothing to do here
+            elif hasattr(ext, 'extendMarkdown'):
+                # Looks like an Extension.
+                # Nothing to do here.
+                pass
             else:
                 message(ERROR, "Incorrect type! Extension '%s' is "
                                "neither a string or an Extension." %(repr(ext)))
