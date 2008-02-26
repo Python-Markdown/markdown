@@ -13,6 +13,14 @@ Footnote functionality is attached by calling extendMarkdown()
 method of FootnoteExtension.  The method also registers the
 extension to allow it's state to be reset by a call to reset()
 method.
+
+Example:
+    Footnotes[^1] have a label[^label] and a definition[^!DEF].
+
+    [^1]: This is a footnote
+    [^label]: A footnote on "label"
+    [^!DEF]: The footnote for definition
+
 """
 
 FN_BACKLINK_TEXT = "zz1337820767766393qq"
@@ -124,7 +132,7 @@ class FootnoteExtension (markdown.Extension):
             backlink.setAttribute('href', '#' + self.makeFootnoteRefId(i))
             backlink.setAttribute('class', 'footnoteBackLink')
             backlink.setAttribute('title',
-                                  'Jump back to footnote %d in the text' % 1)
+                                  'Jump back to footnote %d in the text' % i)
             backlink.appendChild(doc.createTextNode(FN_BACKLINK_TEXT))
 
             if li.childNodes :
