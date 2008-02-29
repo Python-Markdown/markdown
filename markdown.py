@@ -686,19 +686,19 @@ BRK = ( r'\[('
 NOIMG = r'(?<!\!)'
 
 BACKTICK_RE = r'\`([^\`]*)\`'                    # `e= m*c^2`
-DOUBLE_BACKTICK_RE =  r'\`\`(.*)\`\`'            # ``e=f("`")``
+DOUBLE_BACKTICK_RE =  r'\`\`(.*?)\`\`'            # ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                             # \<
 EMPHASIS_RE = r'\*([^\*]*)\*'                    # *emphasis*
-STRONG_RE = r'\*\*(.*)\*\*'                      # **strong**
-STRONG_EM_RE = r'\*\*\*([^_]*)\*\*\*'            # ***strong***
+STRONG_RE = r'\*\*(.*?)\*\*'                      # **strong**
+STRONG_EM_RE = r'\*\*\*(.*?)\*\*\*'            # ***strong***
 
 if SMART_EMPHASIS:
     EMPHASIS_2_RE = r'(?<!\S)_(\S[^_]*)_'        # _emphasis_
 else:
     EMPHASIS_2_RE = r'_([^_]*)_'                 # _emphasis_
 
-STRONG_2_RE = r'__([^_]*)__'                     # __strong__
-STRONG_EM_2_RE = r'___([^_]*)___'                # ___strong___
+STRONG_2_RE = r'__(.*?)__'                     # __strong__
+STRONG_EM_2_RE = r'___(.*?)___'                # ___strong___
 
 LINK_RE = NOIMG + BRK + r'\s*\(([^\)]*)\)'               # [text](url)
 LINK_ANGLED_RE = NOIMG + BRK + r'\s*\(<([^\)]*)>\)'      # [text](<url>)
@@ -718,7 +718,7 @@ class Pattern:
 
     def __init__ (self, pattern):
         self.pattern = pattern
-        self.compiled_re = re.compile("^(.*)%s(.*)$" % pattern, re.DOTALL)
+        self.compiled_re = re.compile("^(.*?)%s(.*?)$" % pattern, re.DOTALL)
 
     def getCompiledRegExp (self):
         return self.compiled_re
