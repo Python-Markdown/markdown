@@ -1,5 +1,9 @@
 Link: <http://example.com/>.
 
+Https link: <https://example.com>
+
+Ftp link: <ftp://example.com>
+
 With an ampersand: <http://example.com/?foo=1&bar=2>
 
 * In a list?
