@@ -1282,16 +1282,10 @@ class Markdown:
         self.top_element.setAttribute('class', 'markdown')
         self.doc.appendChild(self.top_element)
 
-        # Fixup the source text
-        text = self.source
-        text = text.replace("\r\n", "\n").replace("\r", "\n")
-        text += "\n\n"
-        text = text.expandtabs(TAB_LENGTH)
-
         # Split into lines and run the preprocessors that will work with
         # self.lines
 
-        self.lines = text.split("\n")
+        self.lines = self.source.split("\n")
 
         # Run the pre-processors on the lines
         for prep in self.preprocessors :
@@ -1726,6 +1720,11 @@ class Markdown:
         except UnicodeDecodeError:
             message(CRITICAL, 'UnicodeDecodeError: Markdown only accepts unicode or ascii  input.')
             return u""
+
+        # Fixup the source text
+        self.source = self.source.replace("\r\n", "\n").replace("\r", "\n")
+        self.source += "\n\n"
+        self.source = self.source.expandtabs(TAB_LENGTH)
 
         for pp in self.textPreprocessors:
             self.source = pp.run(self.source)
