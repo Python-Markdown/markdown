@@ -1,9 +1,4 @@
-#!/usr/bin/env python
-
-version = "1.7"
-version_info = (1,7,0,"rc-2")
-__revision__ = "$Rev$"
-
+#!/usr/bin/python
 """
 Python-Markdown
 ===============
@@ -23,12 +18,19 @@ Started by [Manfred Stienstra](http://www.dwerg.net/).  Continued and
 maintained  by [Yuri Takhteyev](http://www.freewisdom.org) and [Waylan
 Limberg](http://achinghead.com/).
 
-Contact: yuri [at] freewisdom.org
-         waylan [at] gmail.com
+Contact: 
 
-License: GPL 2 (http://www.gnu.org/copyleft/gpl.html) or BSD
+* <yuri@freewisdom.org>
+* <waylan@gmail.com>
+
+License: [GPL 2](http://www.gnu.org/copyleft/gpl.html) or BSD
 
 """
+
+version = "1.7"
+version_info = (1,7,0,"rc-2")
+__revision__ = "$Rev$"
+
 
 
 import re, sys, codecs
@@ -419,6 +421,7 @@ class TextPreprocessor:
     either the same pointer or a pointer to a new string.  
     
     TextPreprocessors must extend markdown.TextPreprocessor.
+
     '''
 
     def run(self, text):
@@ -434,6 +437,7 @@ class Preprocessor:
     either the same pointer or a pointer to a new list.  
     
     Preprocessors must extend markdown.Preprocessor.
+    
     '''
 
     def run(self, lines):
@@ -541,8 +545,8 @@ HTML_BLOCK_PREPROCESSOR = HtmlBlockPreprocessor()
 class HeaderPreprocessor(Preprocessor):
 
     """
-       Replaces underlined headers with hashed headers to avoid
-       the nead for lookahead later.
+    Replaces underlined headers with hashed headers to avoid
+    the nead for lookahead later.
     """
 
     def run (self, lines):
@@ -935,6 +939,7 @@ class Postprocessor:
 
     There are currently no standard post-processors, but the footnote
     extension uses one.
+    
     '''
 
     def run(self, dom):
@@ -950,6 +955,7 @@ class TextPostprocessor:
     text string, modifies it as necessary and returns a text string.
     
     TextPostprocessors must extend markdown.TextPostprocessor.
+    
     '''
 
     def run(self, text):
@@ -993,22 +999,29 @@ RAWHTMLTEXTPOSTPROCESSOR = RawHtmlTextPostprocessor()
 """
 
 class HtmlStash:
-    """This class is used for stashing HTML objects that we extract
-        in the beginning and replace with place-holders."""
+    """
+    This class is used for stashing HTML objects that we extract
+    in the beginning and replace with place-holders.
+    """
 
     def __init__ (self):
         self.html_counter = 0 # for counting inline html segments
         self.rawHtmlBlocks=[]
 
     def store(self, html, safe=False):
-        """Saves an HTML segment for later reinsertion.  Returns a
-           placeholder string that needs to be inserted into the
-           document.
+        """
+        Saves an HTML segment for later reinsertion.  Returns a
+        placeholder string that needs to be inserted into the
+        document.
 
-           @param html: an html segment
-           @param safe: label an html segment as safe for safemode
-           @param inline: label a segmant as inline html
-           @returns : a placeholder string """
+        Keyword arguments:
+        
+        * html: an html segment
+        * safe: label an html segment as safe for safemode
+        
+        Returns : a placeholder string 
+        
+        """
         self.rawHtmlBlocks.append((html, safe))
         placeholder = HTML_PLACEHOLDER % self.html_counter
         self.html_counter += 1
@@ -1019,16 +1032,22 @@ class BlockGuru:
 
     def _findHead(self, lines, fn, allowBlank=0):
 
-        """Functional magic to help determine boundaries of indented
-           blocks.
+        """
+        Functional magic to help determine boundaries of indented
+        blocks.
 
-           @param lines: an array of strings
-           @param fn: a function that returns a substring of a string
-                      if the string matches the necessary criteria
-           @param allowBlank: specifies whether it's ok to have blank
-                      lines between matching functions
-           @returns: a list of post processes items and the unused
-                      remainder of the original list"""
+        Keyword arguments:
+        
+        * lines: an array of strings
+        * fn: a function that returns a substring of a string
+           if the string matches the necessary criteria
+        * allowBlank: specifies whether it's ok to have blank
+           lines between matching functions
+        
+        Returns: a list of post processes items and the unused
+        remainder of the original list
+        
+        """
 
         items = []
         item = -1
@@ -1116,8 +1135,9 @@ inline patterns or a combination of the three.
 """
 
 class CorePatterns:
-    """This class is scheduled for removal as part of a refactoring
-        effort."""
+    """
+    This class is scheduled for removal as part of a refactoring effort.
+    """
 
     patterns = {
         'header':          r'(#*)([^#]*)(#*)', # # A title
@@ -1146,24 +1166,29 @@ RE = CorePatterns()
 
 
 class Markdown:
-    """ Markdown formatter class for creating an html document from
-        Markdown text """
+    """ 
+    Markdown formatter class for creating an html document from Markdown text.
+    """
 
 
     def __init__(self, source=None,  # depreciated
                  extensions=[],
                  extension_configs={},
                  safe_mode = False):
-        """Creates a new Markdown instance.
+        """
+        Creates a new Markdown instance.
 
-           @param source: The text in Markdown format. Depreciated!
-           @param extensions: A list of extensions.
-                              If they are of type string, the module
-                                mdx_name.py will be loaded
-                              If they are a subclass of markdown.Extension,
-                                they will be used as-is
-           @param extension-configs: Configuration setting for extensions.
-           @param safe_mode: Disallow raw html. """
+        Keyword arguments:
+        
+        * source: The text in Markdown format. Depreciated!
+        * extensions: A list of extensions.  
+           If they are of type string, the module mdx_name.py will be loaded.  
+           If they are a subclass of markdown.Extension, they will be used 
+           as-is.
+        * extension-configs: Configuration setting for extensions.
+        * safe_mode: Disallow raw html. 
+        
+        """
 
         self.source = source
         if source is not None:
@@ -1224,13 +1249,16 @@ class Markdown:
 
 
     def registerExtensions(self, extensions, configs):
-        """ Register extensions with this instance of Markdown.
+        """ 
+        Register extensions with this instance of Markdown.
 
-            @param extensions A list of extensions, which can either
-                              be strings or objects.  See the docstring
-                              on Markdown.
-            @param configs    A dictionary mapping module names to config
-                              options. """
+        Keyword aurguments:
+        
+        * extensions: A list of extensions, which can either
+           be strings or objects.  See the docstring on Markdown.
+        * configs: A dictionary mapping module names to config options. 
+        
+        """
 
         for ext in extensions:
             if isinstance(ext, basestring):
@@ -1250,8 +1278,9 @@ class Markdown:
         self.registeredExtensions.append(extension)
 
     def reset(self):
-        """Resets all state variables so that we can start
-            with a new text."""
+        """
+        Resets all state variables so that we can start with a new text.
+        """
         self.references={}
         self.htmlStash = HtmlStash()
 
@@ -1272,7 +1301,9 @@ class Markdown:
     def _transform(self):
         """Transforms the Markdown text into a XHTML body document
 
-           @returns: A NanoDom Document """
+        Returns: A NanoDom Document 
+        
+        """
 
         # Setup the document
 
@@ -1317,18 +1348,22 @@ class Markdown:
 
     def _processSection(self, parent_elem, lines,
                         inList = 0, looseList = 0):
+        """
+        Process a section of a source document, looking for high
+        level structural elements like lists, block quotes, code
+        segments, html blocks, etc.  Some those then get stripped
+        of their high level markup (e.g. get unindented) and the
+        lower-level markup is processed recursively.
 
-        """Process a section of a source document, looking for high
-           level structural elements like lists, block quotes, code
-           segments, html blocks, etc.  Some those then get stripped
-           of their high level markup (e.g. get unindented) and the
-           lower-level markup is processed recursively.
-
-           @param parent_elem: A NanoDom element to which the content
-                               will be added
-           @param lines: a list of lines
-           @param inList: a level
-           @returns: None"""
+        Keyword arguments:
+        
+        * parent_elem: A NanoDom element to which the content will be added.
+        * lines: a list of lines
+        * inList: a level
+        
+        Returns: None
+        
+        """
 
         # Loop through lines until none left.
         while lines:
@@ -1430,14 +1465,20 @@ class Markdown:
 
 
     def _processList(self, parent_elem, lines, inList, listexpr, tag):
-        """Given a list of document lines starting with a list item,
-           finds the end of the list, breaks it up, and recursively
-           processes each list item and the remainder of the text file.
+        """
+        Given a list of document lines starting with a list item,
+        finds the end of the list, breaks it up, and recursively
+        processes each list item and the remainder of the text file.
 
-           @param parent_elem: A dom element to which the content will be added
-           @param lines: a list of lines
-           @param inList: a level
-           @returns: None"""
+        Keyword arguments:
+        
+        * parent_elem: A dom element to which the content will be added
+        * lines: a list of lines
+        * inList: a level
+        
+        Returns: None
+        
+        """
 
         ul = self.doc.createElement(tag)  # ul might actually be '<ol>'
         parent_elem.appendChild(ul)
@@ -1515,10 +1556,12 @@ class Markdown:
 
 
     def _linesUntil(self, lines, condition):
-        """ A utility function to break a list of lines upon the
-            first line that satisfied a condition.  The condition
-            argument should be a predicate function.
-            """
+        """ 
+        A utility function to break a list of lines upon the
+        first line that satisfied a condition.  The condition
+        argument should be a predicate function.
+        
+        """
 
         i = -1
         for line in lines:
@@ -1529,15 +1572,21 @@ class Markdown:
         return lines[:i], lines[i:]
 
     def _processQuote(self, parent_elem, lines, inList):
-        """Given a list of document lines starting with a quote finds
-           the end of the quote, unindents it and recursively
-           processes the body of the quote and the remainder of the
-           text file.
+        """
+        Given a list of document lines starting with a quote finds
+        the end of the quote, unindents it and recursively
+        processes the body of the quote and the remainder of the
+        text file.
 
-           @param parent_elem: DOM element to which the content will be added
-           @param lines: a list of lines
-           @param inList: a level
-           @returns: None """
+        Keyword arguments:
+        
+        * parent_elem: DOM element to which the content will be added
+        * lines: a list of lines
+        * inList: a level
+        
+        Returns: None 
+        
+        """
 
         dequoted = []
         i = 0
@@ -1568,15 +1617,21 @@ class Markdown:
 
 
     def _processCodeBlock(self, parent_elem, lines, inList):
-        """Given a list of document lines starting with a code block
-           finds the end of the block, puts it into the dom verbatim
-           wrapped in ("<pre><code>") and recursively processes the
-           the remainder of the text file.
+        """
+        Given a list of document lines starting with a code block
+        finds the end of the block, puts it into the dom verbatim
+        wrapped in ("<pre><code>") and recursively processes the
+        the remainder of the text file.
 
-           @param parent_elem: DOM element to which the content will be added
-           @param lines: a list of lines
-           @param inList: a level
-           @returns: None"""
+        Keyword arguments:
+        
+        * parent_elem: DOM element to which the content will be added
+        * lines: a list of lines
+        * inList: a level
+        
+        Returns: None
+        
+        """
 
         detabbed, theRest = self.blockGuru.detectTabbed(lines)
 
@@ -1592,15 +1647,21 @@ class Markdown:
 
 
     def _handleInline (self, line, patternIndex=0):
-        """Transform a Markdown line with inline elements to an XHTML
+        """
+        Transform a Markdown line with inline elements to an XHTML
         fragment.
 
         This function uses auxiliary objects called inline patterns.
         See notes on inline patterns above.
 
-        @param line: A line of Markdown text
-        @param patternIndex: The index of the inlinePattern to start with
-        @return: A list of NanoDom nodes """
+        Keyword arguments:
+        
+        * line: A line of Markdown text
+        * patternIndex: The index of the inlinePattern to start with
+        
+        Return: A list of NanoDom nodes 
+        
+        """
 
 
         parts = [line]
@@ -1637,15 +1698,18 @@ class Markdown:
 
     def _applyPattern(self, line, pattern, patternIndex):
 
-        """ Given a pattern name, this function checks if the line
+        """ 
+        Given a pattern name, this function checks if the line
         fits the pattern, creates the necessary elements, and returns
         back a list consisting of NanoDom elements and/or strings.
         
-        @param line: the text to be processed
-        @param pattern: the pattern to be checked
+        Keyword arguments:
+        
+        * line: the text to be processed
+        * pattern: the pattern to be checked
 
-        @returns: the appropriate newly created NanoDom element if the
-                  pattern matches, None otherwise.
+        Returns: The appropriate newly created NanoDom element if the
+           pattern matches, None otherwise.
         """
 
         # match the line to pattern's pre-compiled reg exp.
@@ -1704,10 +1768,17 @@ class Markdown:
         else:
             return None
 
-    def convert (self, source = None):
-        """Return the document in XHTML format.
+    def convert (self, source=None):
+        """
+        Return the document in XHTML format.
 
-        @returns: A serialized XHTML body."""
+        Keyword arguments:
+        
+        * source: An ascii or unicode string of Markdown formated text.
+
+        Returns: A serialized XHTML body.
+
+        """
 
         if source is not None: #Allow blank string
             self.source = source
@@ -1825,9 +1896,12 @@ class Extension:
 
 
 def load_extension(ext_name, configs = []):
-    """ Load extention by name, then return the module.
-        The name may contain arguments.
-        Print an error message and exit on failure. """
+    """ 
+    Load extention by name, then return the module.
+    The name may contain arguments.
+    Print an error message and exit on failure. 
+    
+    """
 
     # I am making the assumption that the order of config options
     # does not matter.
@@ -1892,7 +1966,7 @@ def parse_options():
                       help="print info messages")
     parser.add_option("-s", "--safe", dest="safe", default=False,
                       metavar="SAFE_MODE",
-                      help="same mode ('replace', 'remove' or 'escape'  user's HTML tag)")
+                      help="safe mode ('replace', 'remove' or 'escape'  user's HTML tag)")
     
     parser.add_option("--noisy",
                       action="store_const", const=DEBUG, dest="verbose",
