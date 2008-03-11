@@ -1123,11 +1123,6 @@ class BlockGuru:
                               allowBlank = 1)
 
 
-def print_error(string):
-    """Print an error string to stderr"""
-    sys.stderr.write(string +'\n')
-
-
 def dequote(string):
     """ Removes quotes from around a string """
     if ( ( string.startswith('"') and string.endswith('"'))
