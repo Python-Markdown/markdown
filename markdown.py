@@ -168,21 +168,29 @@ def getBidiType(text):
 
 
 class Document:
+    """
+    Document root of the NanoDom. An instance stores DOM elements as children.
+
+    """
 
     def __init__ (self):
+        """ Create a NanoDom document. """
         self.bidi = "ltr"
 
     def appendChild(self, child):
+        """ Add a dom element as a child of the document root. """
         self.documentElement = child
         child.isDocumentElement = True
         child.parent = self
         self.entities = {}
 
     def setBidi(self, bidi):
+        """ Set text direction (right-left or left-right)."""
         if bidi:
             self.bidi = bidi
 
     def createElement(self, tag, textNode=None):
+        """ Given a tag or textNode, return a dom element. """
         el = Element(tag)
         el.doc = self
         if textNode:
@@ -190,25 +198,29 @@ class Document:
         return el
 
     def createTextNode(self, text):
+        """ Return given text as a TextNode. """
         node = TextNode(text)
         node.doc = self
         return node
 
     def createEntityReference(self, entity):
+        """ Return an html entitry reference (i.e.: `&amp;`). """
         if entity not in self.entities:
             self.entities[entity] = EntityReference(entity)
         return self.entities[entity]
 
     def createCDATA(self, text):
+        """ Return the given text as a CDATA node. """
         node = CDATA(text)
         node.doc = self
         return node
 
     def toxml (self):
+        """ Convert document to xml and return a string. """
         return self.documentElement.toxml()
 
     def normalizeEntities(self, text, avoidDoubleNormalizing=False):
-
+        """ Return the given text as an html entity (i.e.: `<` => `&gt;`). """
         if avoidDoubleNormalizing:
             regexps = ENTITY_NORMALIZATION_EXPRESSIONS_SOFT
         else:
@@ -219,32 +231,42 @@ class Document:
         return text
 
     def find(self, test):
+        """ Return a list of descendants that pass the test function """
         return self.documentElement.find(test)
 
     def unlink(self):
+        """ Cleanup: Remove all children from the document. """
         self.documentElement.unlink()
         self.documentElement = None
 
 
 class CDATA:
-
+    """ CDATA node type of NanoDom. """
     type = "cdata"
 
     def __init__ (self, text):
+        """ Create a CDATA node with given text. """
         self.text = text
 
     def handleAttributes(self):
+        """ Not implemented for CDATA node type. """
         pass
 
     def toxml (self):
+        """ Return CDATA node as a string. """
         return "<![CDATA[" + self.text + "]]>"
 
 class Element:
+    """ 
+    Element node type of Nanodom. 
+    
+    All html tags would most likely be represented as Elements.
 
+    """
     type = "element"
 
     def __init__ (self, tag):
-
+        """ Create an Element node instance. """
         self.nodeName = tag
         self.attributes = []
         self.attribute_values = {}
@@ -253,7 +275,7 @@ class Element:
         self.isDocumentElement = False
 
     def setBidi(self, bidi):
-
+        """ Set text direction (i.e.: right-left or left-right). """
         if bidi:
 
             orig_bidi = self.bidi
@@ -265,34 +287,43 @@ class Element:
 
 
     def unlink(self):
+        """ Cleanup: Remove all children of the Element. """
         for child in self.childNodes:
             if child.type == "element":
                 child.unlink()
         self.childNodes = None
 
     def setAttribute(self, attr, value):
+        """ 
+        Assign an html/xml attribute to the Element (i.e.: id, class, href). 
+        """
         if not attr in self.attributes:
             self.attributes.append(attr)
 
         self.attribute_values[attr] = value
 
     def insertChild(self, position, child):
+        """ Insert a child Element at the given position. """
         self.childNodes.insert(position, child)
         child.parent = self
 
     def removeChild(self, child):
+        """ Remove the given child from the Element. """
         self.childNodes.remove(child)
 
     def replaceChild(self, oldChild, newChild):
+        """ Replace an old child Element with a new child Element. """
         position = self.childNodes.index(oldChild)
         self.removeChild(oldChild)
         self.insertChild(position, newChild)
 
     def appendChild(self, child):
+        """ Append a new child Element to the end of the child Elements. """
         self.childNodes.append(child)
         child.parent = self
 
     def handleAttributes(self):
+        """ Not implemented for Element node type. """
         pass
 
     def find(self, test, depth=0):
@@ -306,6 +337,7 @@ class Element:
         return matched_nodes
 
     def toxml(self):
+        """ Return the Element and all children as a string. """
         if ENABLE_ATTRIBUTES:
             for child in self.childNodes:
                 child.handleAttributes()
@@ -367,22 +399,24 @@ class Element:
 
 
 class TextNode:
-
+    """ A Text node type of the NanoDom. """
     type = "text"
     attrRegExp = re.compile(r'\{@([^\}]*)=([^\}]*)}') # {@id=123}
 
     def __init__ (self, text):
+        """ Create a TextNode with the given text. """
         self.value = text        
 
     def attributeCallback(self, match):
-
+        """ Regex callback method to set attribute on parent. """
         self.parent.setAttribute(match.group(1), match.group(2))
 
     def handleAttributes(self):
+        """ Parse and assign attributes to the parent Element. """
         self.value = self.attrRegExp.sub(self.attributeCallback, self.value)
 
     def toxml(self):
-
+        """ Return the TextNode as a string. """
         text = self.value
 
         self.parent.setBidi(getBidiType(text))
@@ -398,16 +432,19 @@ class TextNode:
 
 
 class EntityReference:
-
+    """ EntityReference node type of NanoDom. """
     type = "entity_ref"
 
     def __init__(self, entity):
+        """ Create an EntityReference of the given entity. """
         self.entity = entity
 
     def handleAttributes(self):
+        """ Not implemented for EntityReference. """
         pass
 
     def toxml(self):
+        """ Return the EntityReference as a string. """
         return "&" + self.entity + ";"
 
 
