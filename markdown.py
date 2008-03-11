@@ -9,7 +9,7 @@ Converts Markdown to HTML.  Basic usage as a module:
     md = Markdown()
     html = md.convert(your_text_string)
 
-See http://www.freewisdom.org/projects/python-markdown/ for more
+See <http://www.freewisdom.org/projects/python-markdown/> for more
 information and instructions on how to extend the functionality of the
 script.  (You might want to read that before you try modifying this
 file.)
@@ -84,6 +84,11 @@ BOMS = { 'utf-8': (codecs.BOM_UTF8, ),
          }
 
 def removeBOM(text, encoding):
+    """
+    Used by `markdownFromFile` to remove a "byte order mark" from the begining
+    of an utf-8, utf-16 or utf-32 encoded file.
+    """
+    
     convert = isinstance(text, unicode)
     for bom in BOMS[encoding]:
         bom = convert and bom.decode(encoding) or bom
@@ -111,6 +116,10 @@ BLOCK_LEVEL_ELEMENTS = ['p', 'div', 'blockquote', 'pre', 'table',
                         'del', 'hr', 'hr/', 'style']
 
 def isBlockLevel (tag):
+    """
+    Used by HTMLBlockPreprocessor to check if a given tag is a block level 
+    element.
+    """
     return ( (tag in BLOCK_LEVEL_ELEMENTS) or
              (tag[0] == 'h' and tag[1] in "0123456789") )
 
@@ -138,6 +147,9 @@ ENTITY_NORMALIZATION_EXPRESSIONS_SOFT = [ (re.compile("&(?!\#)"), "&amp;"),
 
 
 def getBidiType(text):
+    """
+    Get Bi-directional text type. Used by TextNode to determine text direction.
+    """
 
     if not text: return None
 
@@ -1817,6 +1829,7 @@ class Markdown:
 
     def __str__(self):
         ''' Report info about instance. Markdown always returns unicode. '''
+
         if self.source is None:
             status = 'in which no source text has been assinged.'
         else:
@@ -1838,6 +1851,29 @@ def markdownFromFile(input = None,
                      encoding = None,
                      message_threshold = CRITICAL,
                      safe = False):
+    """
+    Convenience wrapper function that takes a filename as input.
+
+    Used from the command-line, although may be useful in other situations. 
+    Decodes the file using the provided encoding (defaults to utf-8), passes 
+    the file content to markdown, and outputs the html to either the provided
+    filename or stdout in the same encoding as the source file.
+
+    **Note:** This is the only place that decoding and encoding takes place
+    in Python-Markdown.
+
+    Keyword arguments:
+
+    * input: Name of source text file.
+    * output: Name of output file. Writes to stdout if `None`.
+    * extensions: A list of extension names (may contain config args).  
+    * encoding: Encoding of input and output files. Defaults to utf-8.
+    * message_threshold: Error reporting level.
+    * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
+
+    Returns: An HTML document as a string.
+
+    """
 
     global console_hndlr
     console_hndlr.setLevel(message_threshold)
@@ -1866,7 +1902,21 @@ def markdownFromFile(input = None,
 def markdown(text,
              extensions = [],
              safe_mode = False):
-    
+    """
+    Convenience wrapper function for `Markdown` class.
+
+    Useful in a typical use case. Initializes an instance of the `Markdown` 
+    class, loads any extensions and runs the parser on the given text. 
+
+    Keyword arguments:
+
+    * text: An ascii or Unicode string of Markdown formatted text.
+    * extensions: A list of extension names (may contain config args).  
+    * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
+
+    Returns: An HTML document as a string.
+
+    """
     message(DEBUG, "in markdown.markdown(), received text:\n%s" % text)
 
     extensions = [load_extension(e) for e in extensions]
@@ -1897,8 +1947,13 @@ class Extension:
 
 def load_extension(ext_name, configs = []):
     """ 
-    Load extention by name, then return the module.
-    The name may contain arguments.
+    Load extension by name, then return the module.
+    
+    The extension name may contain arguments as part of the string in the 
+    following format:
+
+        "extname(key1=value1,key2=value2)"
+    
     Print an error message and exit on failure. 
     
     """
@@ -1936,6 +1991,10 @@ For lower versions of Python use:
 """ % EXECUTABLE_NAME_FOR_USAGE
 
 def parse_options():
+    """
+    Define and parse `optparse` options for command-line usage.
+    """
+
     try:
         optparse = __import__("optparse")
     except:
