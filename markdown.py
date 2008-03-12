@@ -462,7 +462,7 @@ There are two types of preprocessors: TextPreprocessor and Preprocessor.
 
 
 class TextPreprocessor:
-    '''
+    """
     TextPreprocessors are run before the text is broken into lines.
     
     Each TextPreprocessor implements a "run" method that takes a pointer to a
@@ -471,14 +471,20 @@ class TextPreprocessor:
     
     TextPreprocessors must extend markdown.TextPreprocessor.
 
-    '''
+    """
 
     def run(self, text):
+        """ 
+        Each subclass of TextPreprocessor should override the `run` method, 
+        which takes the document text as a single string and returns the 
+        (possibly modified) document as a single string.
+        
+        """
         pass
 
 
 class Preprocessor:
-    '''
+    """
     Preprocessors are run after the text is broken into lines.
 
     Each preprocessor implements a "run" method that takes a pointer to a
@@ -487,14 +493,22 @@ class Preprocessor:
     
     Preprocessors must extend markdown.Preprocessor.
     
-    '''
+    """
 
     def run(self, lines):
+        """
+        Each subclass of Preprocessor should override the `run` method, which
+        takes the document as a list of strings split by newlines and returns
+        the (possibly modified) list of lines.
+
+        """
         pass
  
 
 class HtmlBlockPreprocessor(TextPreprocessor):
-    """Removes html blocks from the source text and stores it."""
+    """
+    Remove html blocks from the source text and store them for later retrieval.
+    """
     
     def _get_left_tag(self, block):
         return block[1:].replace(">", " ", 1).split()[0].lower()
@@ -522,6 +536,7 @@ class HtmlBlockPreprocessor(TextPreprocessor):
 
     
     def run(self, text):
+        """ Find and remove raw html from text. """
 
         new_blocks = []
         text = text.split("\n\n")
@@ -594,11 +609,12 @@ HTML_BLOCK_PREPROCESSOR = HtmlBlockPreprocessor()
 class HeaderPreprocessor(Preprocessor):
 
     """
-    Replaces underlined headers with hashed headers to avoid
+    Replace underlined headers with hashed headers to avoid
     the nead for lookahead later.
     """
 
     def run (self, lines):
+        """ Find and replace underlined headers. """
 
         i = -1
         while i+1 < len(lines):
@@ -628,11 +644,17 @@ HEADER_PREPROCESSOR = HeaderPreprocessor()
 
 
 class LinePreprocessor(Preprocessor):
-    """Deals with HR lines (needs to be done before processing lists)"""
+    """ 
+    Convert HR lines to raw html and store (needs to be done before 
+    processing lists).
+    
+    """
 
     blockquote_re = re.compile(r'^(> )+')
 
     def run (self, lines):
+        """ Find a store HR lines. """
+
         for i in range(len(lines)):
             prefix = ''
             m = self.blockquote_re.search(lines[i])
@@ -642,7 +664,8 @@ class LinePreprocessor(Preprocessor):
         return lines
 
     def _isLine(self, block):
-        """Determines if a block should be replaced with an <HR>"""
+        """Determine if a block should be replaced with an <HR>"""
+
         if block.startswith("    "): return 0  # a code block
         text = "".join([x for x in block if not x.isspace()])
         if len(text) <= 2:
@@ -658,12 +681,13 @@ LINE_PREPROCESSOR = LinePreprocessor()
 
 
 class ReferencePreprocessor(Preprocessor):
-    ''' 
-    Removes reference definitions from the text and stores them for later use.
-    '''
+    """
+    Remove reference definitions from the text and store them for later use.
+    
+    """
 
     def run (self, lines):
-
+        """ Remove and store reference defs. """
         new_text = [];
         for line in lines:
             m = RE.regExp['reference-def'].match(line)
@@ -977,7 +1001,7 @@ There are two types of post-processors: Postprocessor and TextPostprocessor
 
 
 class Postprocessor:
-    '''
+    """
     Postprocessors are run before the dom it converted back into text.
     
     Each Postprocessor implements a "run" method that takes a pointer to a
@@ -989,15 +1013,21 @@ class Postprocessor:
     There are currently no standard post-processors, but the footnote
     extension uses one.
     
-    '''
+    """
 
     def run(self, dom):
+        """
+        Subclasses of Postprocessor should implement a `run` method, which
+        takes a NanoDOm document and returns a (possably modified) NanoDom
+        document.
+
+        """
         pass
 
 
 
 class TextPostprocessor:
-    '''
+    """
     TextPostprocessors are run after the dom it converted back into text.
     
     Each TextPostprocessor implements a "run" method that takes a pointer to a
@@ -1005,18 +1035,26 @@ class TextPostprocessor:
     
     TextPostprocessors must extend markdown.TextPostprocessor.
     
-    '''
+    """
 
     def run(self, text):
+        """
+        Subclasses of TextPostprocessor should implement a `run` method, which
+        takes the html document as a single text string and returns a 
+        (possably modified) string.
+
+        """
         pass
 
 
 class RawHtmlTextPostprocessor(TextPostprocessor):
-
+    """ Restore raw html to the document. """
     def __init__(self):
         pass
 
     def run(self, text):
+        """ Iterate over html stash and restore "safe" html. """
+
         for i in range(self.stash.html_counter):
             html, safe  = self.stash.rawHtmlBlocks[i]
             if self.safeMode and not safe:
@@ -1033,7 +1071,7 @@ class RawHtmlTextPostprocessor(TextPostprocessor):
         return text
 
     def escape(self, html):
-        ''' Basic html escaping '''
+        """ Basic html escaping """
         html = html.replace('&', '&amp;')
         html = html.replace('<', '&lt;')
         html = html.replace('>', '&gt;')
@@ -1054,6 +1092,7 @@ class HtmlStash:
     """
 
     def __init__ (self):
+        """ Create a HtmlStash. """
         self.html_counter = 0 # for counting inline html segments
         self.rawHtmlBlocks=[]
 
@@ -1078,6 +1117,7 @@ class HtmlStash:
 
 
 class BlockGuru:
+    """ Parse document for block level constructs (paragraphs, lists, etc.)."""
 
     def _findHead(self, lines, fn, allowBlank=0):
 
@@ -1155,7 +1195,7 @@ class BlockGuru:
 
 
     def detectTabbed(self, lines):
-
+        """ Find indented text and remove indent before further proccesing. """
         return self._findHead(lines, self.detabbed_fn,
                               allowBlank = 1)
 
