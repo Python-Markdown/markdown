@@ -726,7 +726,7 @@ expression and needs support the following methods:
                                 a NanoDom node (as a part of the provided
                                 doc) or None
 
-All of python markdown's built-in patterns subclass from Patter,
+All of python markdown's built-in patterns subclass from Pattern,
 but you can add additional patterns that don't.
 
 Also note that all the regular expressions used by inline must
@@ -792,23 +792,51 @@ LINE_BREAK_RE = r'  \n'                     # two spaces at end of line
 LINE_BREAK_2_RE = r'  $'                    # two spaces at end of text
 
 class Pattern:
+    """Base class that inline patterns subclass. """
 
     def __init__ (self, pattern):
+        """
+        Create an instant of an inline pattern.
+
+        Keyword arguments:
+
+        * pattern: A regular expression that matches a pattern
+
+        """
         self.pattern = pattern
         self.compiled_re = re.compile("^(.*?)%s(.*?)$" % pattern, re.DOTALL)
 
     def getCompiledRegExp (self):
+        """ Return a compiled regular expression. """
         return self.compiled_re
+
+    def handleMatch(self, m, doc):
+        """
+        Return a NanoDom element from the given match. Subclasses should 
+        override this method.
+
+        Keyword arguments:
+
+        * m: A re match object containing a match of the pattern.
+
+        * doc: An instance of a NanoDom Document.
+
+        """
+        pass
 
 BasePattern = Pattern # for backward compatibility
 
 class SimpleTextPattern (Pattern):
-
+    """ Return a simple TextNode of group(2) of a Pattern. """
     def handleMatch(self, m, doc):
         return doc.createTextNode(m.group(2))
 
 class SimpleTagPattern (Pattern):
-
+    """ 
+    Return NanoDom Element of type `tag` with a child  TextNode of group(2) 
+    of a Pattern. 
+    
+    """
     def __init__ (self, pattern, tag):
         Pattern.__init__(self, pattern)
         self.tag = tag
@@ -819,12 +847,12 @@ class SimpleTagPattern (Pattern):
         return el
 
 class SubstituteTagPattern (SimpleTagPattern):
-
+    """ Return a NanoDom ELement of type `tag` with no children. """
     def handleMatch (self, m, doc):
         return doc.createElement(self.tag)
 
 class BacktickPattern (Pattern):
-
+    """ Return a NanoDom `<code>` Element containing the matching text. """
     def __init__ (self, pattern):
         Pattern.__init__(self, pattern)
         self.tag = "code"
@@ -838,7 +866,11 @@ class BacktickPattern (Pattern):
 
 
 class DoubleTagPattern (SimpleTagPattern): 
+    """ 
+    Return a TextNode nested in tag2 nested in tag1. 
+    Usefull for strong emphasis etc.
 
+    """
     def handleMatch(self, m, doc):
         tag1, tag2 = self.tag.split(",")
         el1 = doc.createElement(tag1)
@@ -849,7 +881,7 @@ class DoubleTagPattern (SimpleTagPattern):
 
 
 class HtmlPattern (Pattern):
-
+    """ Store raw inline html and return a placeholder. """
     def handleMatch (self, m, doc):
         rawhtml = m.group(2)
         inline = True
@@ -858,7 +890,7 @@ class HtmlPattern (Pattern):
 
 
 class LinkPattern (Pattern):
-
+    """ Return a NanoDom link Element from the given match. """
     def handleMatch(self, m, doc):
         el = doc.createElement('a')
         el.appendChild(doc.createTextNode(m.group(2)))
@@ -877,7 +909,7 @@ class LinkPattern (Pattern):
 
 
 class ImagePattern (Pattern):
-
+    """ Return a NanoDom img Element from the given match. """
     def handleMatch(self, m, doc):
         el = doc.createElement('img')
         src_parts = m.group(9).split()
@@ -899,7 +931,7 @@ class ImagePattern (Pattern):
         return el
 
 class ReferencePattern (Pattern):
-
+    """ Match to a stored reference and return a NanoDom link Element. """
     def handleMatch(self, m, doc):
 
         if m.group(9):
@@ -925,7 +957,7 @@ class ReferencePattern (Pattern):
 
 
 class ImageReferencePattern (ReferencePattern):
-
+    """ Match to a stored reference and return a NanoDom img Element. """
     def makeTag(self, href, title, text, doc):
         el = doc.createElement('img')
         el.setAttribute('src', href)
@@ -936,7 +968,7 @@ class ImageReferencePattern (ReferencePattern):
 
 
 class AutolinkPattern (Pattern):
-
+    """ Return a link Element given an autolink (`<http://example/com>`). """
     def handleMatch(self, m, doc):
         el = doc.createElement('a')
         el.setAttribute('href', m.group(2))
@@ -944,7 +976,10 @@ class AutolinkPattern (Pattern):
         return el
 
 class AutomailPattern (Pattern):
-
+    """ 
+    Return a mailto link Element given an automail link (`<foo@example.com>`). 
+    
+    """
     def handleMatch(self, m, doc):
         el = doc.createElement('a')
         email = m.group(2)
@@ -1213,7 +1248,7 @@ def dequote(string):
 ========================== CORE MARKDOWN =============================
 ======================================================================
 
-This stuff is ugly, so if you are thinking of extending the syntax,
+This stuff is hard, so if you are thinking of extending the syntax,
 see first if you can do it via pre-processors, post-processors,
 inline patterns or a combination of the three.
 """
@@ -1270,7 +1305,7 @@ class Markdown:
            If they are a subclass of markdown.Extension, they will be used 
            as-is.
         * extension-configs: Configuration setting for extensions.
-        * safe_mode: Disallow raw html. 
+        * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
         
         """
 
@@ -1383,7 +1418,7 @@ class Markdown:
 
 
     def _transform(self):
-        """Transforms the Markdown text into a XHTML body document
+        """Transform the Markdown text into a XHTML body document.
 
         Returns: A NanoDom Document 
         
@@ -2000,20 +2035,30 @@ def markdown(text,
         
 
 class Extension:
-
+    """ Base class for extensions to subclass. """
     def __init__(self, configs = {}):
+        """ 
+        Create an instance of an Extention. 
+        
+        Keyword arguments:
+
+        * configs: A dict of configuration setting used by an Extension.
+        """
         self.config = configs
 
     def getConfig(self, key):
+        """ Return a setting for the given key or an empty string. """
         if self.config.has_key(key):
             return self.config[key][0]
         else:
             return ""
 
     def getConfigInfo(self):
+        """ Return all config settings as a list of tuples. """
         return [(key, self.config[key][1]) for key in self.config.keys()]
 
     def setConfig(self, key, value):
+        """ Set a config setting for `key` with the given `value`. """
         self.config[key][0] = value
 
 
