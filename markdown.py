@@ -34,6 +34,7 @@ __revision__ = "$Rev$"
 
 
 import re, sys, codecs
+from urlparse import urlparse
 
 from logging import getLogger, StreamHandler, Formatter, \
                     DEBUG, INFO, WARN, ERROR, CRITICAL
@@ -806,6 +807,9 @@ class Pattern:
         self.pattern = pattern
         self.compiled_re = re.compile("^(.*?)%s(.*?)$" % pattern, re.DOTALL)
 
+        # Api for Markdown to pass safe_mode into instance
+        self.safe_mode = False
+
     def getCompiledRegExp (self):
         """ Return a compiled regular expression. """
         return self.compiled_re
@@ -889,6 +893,7 @@ class HtmlPattern (Pattern):
         return doc.createTextNode(place_holder)
 
 
+
 class LinkPattern (Pattern):
     """ Return a NanoDom link Element from the given match. """
     def handleMatch(self, m, doc):
@@ -897,7 +902,7 @@ class LinkPattern (Pattern):
         parts = m.group(9).split('"')
         # We should now have [], [href], or [href, title]
         if parts:
-            el.setAttribute('href', parts[0].strip())
+            el.setAttribute('href', self.sanatize_url(parts[0].strip()))
         else:
             el.setAttribute('href', "")
         if len(parts) > 1:
@@ -907,14 +912,45 @@ class LinkPattern (Pattern):
             el.setAttribute('title', title)
         return el
 
+    def sanatize_url(self, url):
+        """ 
+        Sanitize a url against xss attacks in "safe_mode".
 
-class ImagePattern (Pattern):
+        Rather than specifically blacklisting `javascript:alert("XSS")` and all
+        its aliases (see <http://ha.ckers.org/xss.html>), we whitelist known
+        safe url formats. Most urls contain a network location, however some 
+        are known not to (i.e.: mailto links). Script urls do not contain a 
+        location. Additionally, for `javascript:...`, the scheme would be 
+        "javascript" but some aliases will appear to `urlparse()` to have no 
+        scheme. On top of that relative links (i.e.: "foo/bar.html") have no 
+        scheme. Therefore we must check "path", "parameters", "query" and 
+        "fragment" for any literal colons. We don't check "scheme" for colons 
+        because it *should* never have any and "netloc" must allow the form:
+        `username:password@host:port`.
+        
+        """
+        locless_schemes = ['', 'mailto', 'news']
+        url = urlparse(url)
+        safe_url = False
+        if url.netloc != '' or url.scheme in locless_schemes:
+            safe_url = True
+
+        for part in url[2:]:
+            if ":" in part:
+                safe_url = False
+
+        if self.safe_mode and not safe_url:
+            return ''
+        else:
+            return url.geturl()
+
+class ImagePattern(LinkPattern):
     """ Return a NanoDom img Element from the given match. """
     def handleMatch(self, m, doc):
         el = doc.createElement('img')
         src_parts = m.group(9).split()
         if src_parts:
-            el.setAttribute('src', src_parts[0])
+            el.setAttribute('src', self.sanatize_url(src_parts[0]))
         else:
             el.setAttribute('src', "")
         if len(src_parts) > 1:
@@ -930,7 +966,7 @@ class ImagePattern (Pattern):
         el.setAttribute('alt', truealt)
         return el
 
-class ReferencePattern (Pattern):
+class ReferencePattern(LinkPattern):
     """ Match to a stored reference and return a NanoDom link Element. """
     def handleMatch(self, m, doc):
 
@@ -949,7 +985,7 @@ class ReferencePattern (Pattern):
 
     def makeTag(self, href, title, text, doc):
         el = doc.createElement('a')
-        el.setAttribute('href', href)
+        el.setAttribute('href', self.sanatize_url(href))
         if title:
             el.setAttribute('title', title)
         el.appendChild(doc.createTextNode(text))
@@ -960,7 +996,7 @@ class ImageReferencePattern (ReferencePattern):
     """ Match to a stored reference and return a NanoDom img Element. """
     def makeTag(self, href, title, text, doc):
         el = doc.createElement('img')
-        el.setAttribute('src', href)
+        el.setAttribute('src', self.sanatize_url(href))
         if title:
             el.setAttribute('title', title)
         el.setAttribute('alt', text)
@@ -1415,6 +1451,9 @@ class Markdown:
 
         for extension in self.registeredExtensions:
             extension.reset()
+
+        for pattern in self.inlinePatterns:
+            pattern.safe_mode = self.safeMode
 
 
     def _transform(self):
