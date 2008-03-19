@@ -5,7 +5,7 @@ import textwrap
 markdown = None
 
 TEST_DIR = "tests"
-TMP_DIR = "/tmp/"
+TMP_DIR = "./tmp/"
 WRITE_BENCHMARK = True
 WRITE_BENCHMARK = False
 ACTUALLY_MEASURE_MEMORY = True
@@ -162,7 +162,7 @@ def smart_split(text) :
 
 
 
-def testDirectory(dir, measure_time = False) :
+def testDirectory(dir, measure_time=False, safe_mode=False) :
 
     encoding = "utf8"
 
@@ -197,7 +197,7 @@ def testDirectory(dir, measure_time = False) :
 
     mem = memory()
     t = time.clock()
-    md = markdown.Markdown(extensions=extensions)
+    md = markdown.Markdown(extensions=extensions, safe_mode = safe_mode)
     construction_time = time.clock() - t
     construction_mem = memory(mem)
 
@@ -353,4 +353,4 @@ testDirectory("tests/markdown-test", measure_time=True)
 testDirectory("tests/misc", measure_time=True)
 #testDirectory("tests/extensions-x-footnotes")
 # testDirectory("tests/extensions-x-ext1-ext2")
-    
+testDirectory("tests/safe_mode", measure_time=True, safe_mode="escape")    
