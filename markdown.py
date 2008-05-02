@@ -28,7 +28,7 @@ License: [GPL 2](http://www.gnu.org/copyleft/gpl.html) or BSD
 """
 
 version = "1.7"
-version_info = (1,7,0,"rc-2")
+version_info = (1,7,0,"final")
 __revision__ = "$Rev$"
 
 
