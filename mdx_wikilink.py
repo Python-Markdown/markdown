@@ -12,7 +12,7 @@ Basic usage:
     >>> text = "Some text with a WikiLink."
     >>> md = markdown.markdown(text, ['wikilink'])
     >>> md
-    '\\n<p>Some text with a <a href="/WikiLink/" class="wikilink">WikiLink</a>.\\n</p>\\n\\n\\n'
+    u'<p>Some text with a <a href="/WikiLink/" class="wikilink">WikiLink</a>.\\n</p>'
 
 To define custom settings the simple way:
 
@@ -20,20 +20,35 @@ To define custom settings the simple way:
     ...     ['wikilink(base_url=/wiki/,end_url=.html,html_class=foo)']
     ... )
     >>> md
-    '\\n<p>Some text with a <a href="/wiki/WikiLink.html" class="foo">WikiLink</a>.\\n</p>\\n\\n\\n'
+    u'<p>Some text with a <a href="/wiki/WikiLink.html" class="foo">WikiLink</a>.\\n</p>'
     
 Custom settings the complex way:
 
-    >>> md = markdown.Markdown(text, 
+    >>> md = markdown.Markdown(
     ...     extensions = ['wikilink'], 
     ...     extension_configs = {'wikilink': [
     ...                                 ('base_url', 'http://example.com/'), 
     ...                                 ('end_url', '.html'),
     ...                                 ('html_class', '') ]},
-    ...     encoding='utf8',
     ...     safe_mode = True)
-    >>> str(md)
-    '\\n<p>Some text with a <a href="http://example.com/WikiLink.html">WikiLink</a>.\\n</p>\\n\\n\\n'
+    >>> md.convert(text)
+    u'<p>Some text with a <a href="http://example.com/WikiLink.html">WikiLink</a>.\\n</p>'
+
+Use MetaData with mdx_meta.py (Note the blank html_class in MetaData):
+
+    >>> text = """wiki_base_url: http://example.com/
+    ... wiki_end_url:   .html
+    ... wiki_html_class:
+    ...
+    ... Some text with a WikiLink."""
+    >>> md = markdown.Markdown(extensions=['meta', 'wikilink'])
+    >>> md.convert(text)
+    u'<p>Some text with a <a href="http://example.com/WikiLink.html">WikiLink</a>.\\n</p>'
+
+MetaData should not carry over to next document:
+
+    >>> md.convert("No MetaData here.")
+    u'<p>No <a href="/MetaData/" class="wikilink">MetaData</a> here.\\n</p>'
 
 From the command line:
 
@@ -46,13 +61,11 @@ Contact: waylan [at] gmail [dot] com
 
 License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
 
-Version: 0.4 (Oct 14, 2006)
+Version: 0.6 (May 2, 2008)
 
 Dependencies:
 * [Python 2.3+](http://python.org)
 * [Markdown 1.6+](http://www.freewisdom.org/projects/python-markdown/)
-* For older dependencies use [WikiLink Version 0.3]
-(http://code.limberg.name/svn/projects/py-markdown-ext/wikilinks/tags/release-0.3/)
 '''
 
 import markdown
@@ -68,16 +81,16 @@ class WikiLinkExtension (markdown.Extension) :
         
         # Override defaults with user settings
         for key, value in configs :
-            # self.config[key][0] = value
             self.setConfig(key, value)
         
     def extendMarkdown(self, md, md_globals):
         self.md = md
-        #md.registerExtension(self) #???
     
         # append to end of inline patterns
         WIKILINK_RE = r'''(?P<escape>\\|\b)(?P<camelcase>([A-Z]+[a-z-_]+){2,})\b'''
-        md.inlinePatterns.append(WikiLinks(WIKILINK_RE, self.config))  
+        WIKILINK_PATTERN = WikiLinks(WIKILINK_RE, self.config)
+        WIKILINK_PATTERN.md = md
+        md.inlinePatterns.append(WIKILINK_PATTERN)  
 
 class WikiLinks (markdown.BasePattern) :
     def __init__(self, pattern, config):
@@ -87,19 +100,36 @@ class WikiLinks (markdown.BasePattern) :
     def handleMatch(self, m, doc) :
         if  m.group('escape') == '\\':
             a = doc.createTextNode(m.group('camelcase'))
-        else :
-            url = '%s%s%s'% (self.config['base_url'][0], m.group('camelcase'), self.config['end_url'][0])
+        else:
+            base_url, end_url, html_class = self._getMeta()
+            url = '%s%s%s'% (base_url, m.group('camelcase'), end_url)
             label = m.group('camelcase').replace('_', ' ')
             a = doc.createElement('a')
             a.appendChild(doc.createTextNode(label))
             a.setAttribute('href', url)
-            if self.config['html_class'][0] :
-                a.setAttribute('class', self.config['html_class'][0])
+            if html_class:
+                a.setAttribute('class', html_class)
         return a
-    
+
+    def _getMeta(self):
+        """ Return meta data or config data. """
+        base_url = self.config['base_url'][0]
+        end_url = self.config['end_url'][0]
+        html_class = self.config['html_class'][0]
+        if hasattr(self.md, 'Meta'):
+            if self.md.Meta.has_key('wiki_base_url'):
+                base_url = self.md.Meta['wiki_base_url'][0]
+            if self.md.Meta.has_key('wiki_end_url'):
+                end_url = self.md.Meta['wiki_end_url'][0]
+            if self.md.Meta.has_key('wiki_html_class'):
+                html_class = self.md.Meta['wiki_html_class'][0]
+        return base_url, end_url, html_class
+
+
 def makeExtension(configs=None) :
     return WikiLinkExtension(configs=configs)
 
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+
