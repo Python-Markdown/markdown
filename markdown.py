@@ -1295,7 +1295,7 @@ class CorePatterns:
     """
 
     patterns = {
-        'header':          r'(#*)([^#]*)(#*)', # # A title
+        'header':          r'(#{1,6})[ \t]*(.*?)[ \t]*(#*)', # # A title
         'reference-def':   r'(\ ?\ ?\ ?)\[([^\]]*)\]:\s*([^ ]*)(.*)',
                            # [Google]: http://www.google.com/
         'containsline':    r'([-]*)$|^([=]*)', # -----, =====, etc.
