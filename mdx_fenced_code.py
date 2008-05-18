@@ -16,12 +16,12 @@ This extension adds Fenced Code Blocks to Python-Markdown.
     ... '''
     >>> html = markdown.markdown(text, extensions=['fenced_code'])
     >>> html
-    u'<p>A paragraph before a fenced code block:\\n</p>\\n<pre><code>Fenced code block\\n<code><pre>'
+    u'<p>A paragraph before a fenced code block:\\n</p>\\n<pre><code>Fenced code block\\n</code></pre>'
 
 Works with safe_mode also (we check this because we are using the HtmlStash):
 
     >>> markdown.markdown(text, extensions=['fenced_code'], safe_mode='replace')
-    u'<p>A paragraph before a fenced code block:\\n</p>\\n<pre><code>Fenced code block\\n<code><pre>'
+    u'<p>A paragraph before a fenced code block:\\n</p>\\n<pre><code>Fenced code block\\n</code></pre>'
     
 Include tilde's in a code block and wrap with blank lines:
 
@@ -32,7 +32,7 @@ Include tilde's in a code block and wrap with blank lines:
     ... 
     ... ~~~~~~~~'''
     >>> markdown.markdown(text, extensions=['fenced_code'])
-    u'<pre><code>\\n~~~~\\n\\n<code><pre>'
+    u'<pre><code>\\n~~~~\\n\\n</code></pre>'
 
 Multiple blocks and language tags:
 
@@ -45,7 +45,7 @@ Multiple blocks and language tags:
     ... <p>block two</p>
     ... ~~~~{.html}'''
     >>> markdown.markdown(text, extensions=['fenced_code'])
-    u'<pre><code class="python">block one\\n<code><pre>\\n\\n<pre><code class="html">&lt;p&gt;block two&lt;/p&gt;\\n<code><pre>'
+    u'<pre><code class="python">block one\\n</code></pre>\\n\\n<pre><code class="html">&lt;p&gt;block two&lt;/p&gt;\\n</code></pre>'
 
 """
 
@@ -56,7 +56,7 @@ FENCED_BLOCK_RE = re.compile( \
     r'(?P<fence>^~{3,})[ ]*\n(?P<code>.*?)(?P=fence)[ ]*(\{\.(?P<lang>[a-zA-Z0-9_-]*)\})?[ ]*$', 
     re.MULTILINE|re.DOTALL
     )
-CODE_WRAP = '<pre><code%s>%s<code><pre>'
+CODE_WRAP = '<pre><code%s>%s</code></pre>'
 LANG_TAG = ' class="%s"'
 
 
