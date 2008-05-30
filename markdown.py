@@ -34,7 +34,7 @@ __revision__ = "$Rev$"
 
 
 import re, sys, codecs
-from urlparse import urlparse
+from urlparse import urlparse, urlunparse
 
 from logging import getLogger, StreamHandler, Formatter, \
                     DEBUG, INFO, WARN, ERROR, CRITICAL
@@ -930,9 +930,9 @@ class LinkPattern (Pattern):
         
         """
         locless_schemes = ['', 'mailto', 'news']
-        url = urlparse(url)
+        scheme, netloc, path, params, query, fragment = url = urlparse(url)
         safe_url = False
-        if url.netloc != '' or url.scheme in locless_schemes:
+        if netloc != '' or scheme in locless_schemes:
             safe_url = True
 
         for part in url[2:]:
@@ -942,7 +942,7 @@ class LinkPattern (Pattern):
         if self.safe_mode and not safe_url:
             return ''
         else:
-            return url.geturl()
+            return urlunparse(url)
 
 class ImagePattern(LinkPattern):
     """ Return a NanoDom img Element from the given match. """
