@@ -214,6 +214,9 @@ def testDirectory(dir, measure_time=False, safe_mode=False) :
     except: 
         hd = None
 
+    if not os.path.exists(TMP_DIR):
+        os.mkdir(TMP_DIR)
+
     htmlDiffFilePath = os.path.join(TMP_DIR, os.path.split(dir)[-1]) + ".html"
     htmlDiffFile = codecs.open(htmlDiffFilePath, "w", encoding=encoding)
     htmlDiffFile.write(DIFF_FILE_TEMPLATE)
