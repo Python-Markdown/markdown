@@ -209,7 +209,10 @@ def testDirectory(dir, measure_time=False, safe_mode=False) :
     tests.sort()
 
     d = difflib.Differ()
-    hd = difflib.HtmlDiff()
+    try :
+        hd = difflib.HtmlDiff()
+    except: 
+        ht = None
 
     htmlDiffFilePath = os.path.join(TMP_DIR, os.path.split(dir)[-1]) + ".html"
     htmlDiffFile = codecs.open(htmlDiffFilePath, "w", encoding=encoding)
@@ -271,14 +274,15 @@ def testDirectory(dir, measure_time=False, safe_mode=False) :
             for line in diff :
                 print line
 
-            htmlDiff = hd.make_table(expected_lines, actual_lines,
-                                    context=True)
+            if hd!=None :
+                htmlDiff = hd.make_table(expected_lines, actual_lines,
+                                        context=True)
 
-            htmlDiff = "\n".join( [x for x in htmlDiff.splitlines()
-                                   if x.strip().startswith("<tr>")] )
+                htmlDiff = "\n".join( [x for x in htmlDiff.splitlines()
+                                       if x.strip().startswith("<tr>")] )
 
-            diffsBuffer += "<a name='diff-%s'/><h2>%s</h2>" % (test, test)
-            diffsBuffer += DIFF_TABLE_TEMPLATE % htmlDiff
+                diffsBuffer += "<a name='diff-%s'/><h2>%s</h2>" % (test, test)
+                diffsBuffer += DIFF_TABLE_TEMPLATE % htmlDiff
 
         expected_time, expected_mem = saved_benchmarks.get(test, ("na", "na"))
 
