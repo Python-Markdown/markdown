@@ -212,7 +212,7 @@ def testDirectory(dir, measure_time=False, safe_mode=False) :
     try :
         hd = difflib.HtmlDiff()
     except: 
-        ht = None
+        hd = None
 
     htmlDiffFilePath = os.path.join(TMP_DIR, os.path.split(dir)[-1]) + ".html"
     htmlDiffFile = codecs.open(htmlDiffFilePath, "w", encoding=encoding)
