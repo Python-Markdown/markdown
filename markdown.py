@@ -152,7 +152,9 @@ def getBidiType(text):
     Get Bi-directional text type. Used by TextNode to determine text direction.
     """
 
-    if not text: return None
+    if not text: 
+        return None
+
 
     ch = text[0]
 
@@ -182,7 +184,8 @@ class Document:
         """ Add a dom element as a child of the document root. """
         self.documentElement = child
         child.isDocumentElement = True
-        child.parent = self
+        child.parentNode = self
+
         self.entities = {}
 
     def setBidi(self, bidi):
@@ -284,7 +287,8 @@ class Element:
             if not self.bidi or self.isDocumentElement:
                 # Once the bidi is set don't change it (except for doc element)
                 self.bidi = bidi
-                self.parent.setBidi(bidi)
+                self.parentNode.setBidi(bidi)
+
 
 
     def unlink(self):
@@ -306,13 +310,13 @@ class Element:
     def insertChild(self, position, child):
         """ Insert a child Element at the given position. """
         self.childNodes.insert(position, child)
-        child.parent = self
+        child.parentNode = self
 
     def removeChild(self, child):
         """ Remove the given child from the Element. """
         self.childNodes.remove(child)
 
-    def replaceChild(self, oldChild, newChild):
+    def replaceChild(self, newChild, oldChild):
         """ Replace an old child Element with a new child Element. """
         position = self.childNodes.index(oldChild)
         self.removeChild(oldChild)
@@ -321,7 +325,7 @@ class Element:
     def appendChild(self, child):
         """ Append a new child Element to the end of the child Elements. """
         self.childNodes.append(child)
-        child.parent = self
+        child.parentNode = self
 
     def handleAttributes(self):
         """ Not implemented for Element node type. """
@@ -410,7 +414,7 @@ class TextNode:
 
     def attributeCallback(self, match):
         """ Regex callback method to set attribute on parent. """
-        self.parent.setAttribute(match.group(1), match.group(2))
+        self.parentNode.setAttribute(match.group(1), match.group(2))
 
     def handleAttributes(self):
         """ Parse and assign attributes to the parent Element. """
@@ -420,13 +424,16 @@ class TextNode:
         """ Return the TextNode as a string. """
         text = self.value
 
-        self.parent.setBidi(getBidiType(text))
-        
+        self.parentNode.setBidi(getBidiType(text))
+
         if not text.startswith(HTML_PLACEHOLDER_PREFIX):
-            if self.parent.nodeName == "p":
+            if self.parentNode.nodeName == "p":
+
                 text = text.replace("\n", "\n   ")
-            elif (self.parent.nodeName == "li"
-                  and self.parent.childNodes[0]==self):
+
+            elif (self.parentNode.nodeName == "li"
+                  and self.parentNode.childNodes[0]==self):
+
                 text = "\n     " + text.replace("\n", "\n     ")
         text = self.doc.normalizeEntities(text)
         return text
@@ -447,7 +454,6 @@ class EntityReference:
     def toxml(self):
         """ Return the EntityReference as a string. """
         return "&" + self.entity + ";"
-
 
 """
 ======================================================================
