@@ -179,6 +179,7 @@ class Document:
     def __init__ (self):
         """ Create a NanoDom document. """
         self.bidi = "ltr"
+        self.stripTopLevelTags = True
 
     def appendChild(self, child):
         """ Add a dom element as a child of the document root. """
@@ -221,7 +222,10 @@ class Document:
 
     def toxml (self):
         """ Convert document to xml and return a string. """
-        return self.documentElement.toxml()
+        xml = self.documentElement.toxml()
+        if self.stripTopLevelTags:
+            xml = xml.strip()[23:-7] + "\n"
+        return xml
 
     def normalizeEntities(self, text, avoidDoubleNormalizing=False):
         """ Return the given text as an html entity (i.e.: `<` => `&gt;`). """
@@ -340,6 +344,8 @@ class Element:
             if child.type == "element":
                 matched_nodes += child.find(test, depth+1)
         return matched_nodes
+    
+
 
     def toxml(self):
         """ Return the Element and all children as a string. """
@@ -423,6 +429,7 @@ class TextNode:
     def toxml(self):
         """ Return the TextNode as a string. """
         text = self.value
+        
 
         self.parentNode.setBidi(getBidiType(text))
 
@@ -435,6 +442,7 @@ class TextNode:
                   and self.parentNode.childNodes[0]==self):
 
                 text = "\n     " + text.replace("\n", "\n     ")
+    
         text = self.doc.normalizeEntities(text)
         return text
 
@@ -1357,7 +1365,6 @@ class Markdown:
         self.safeMode = safe_mode
         self.blockGuru = BlockGuru()
         self.registeredExtensions = []
-        self.stripTopLevelTags = 1
         self.docType = ""
 
         self.textPreprocessors = [HTML_BLOCK_PREPROCESSOR]
@@ -1492,10 +1499,12 @@ class Markdown:
         buffer = []
         for line in self.lines:
             if line.startswith("#"):
+
                 self._processSection(self.top_element, buffer)
                 buffer = [line]
             else:
                 buffer.append(line)
+
         self._processSection(self.top_element, buffer)
         
         #self._processSection(self.top_element, self.lines)
@@ -1511,7 +1520,7 @@ class Markdown:
 
 
     def _processSection(self, parent_elem, lines,
-                        inList = 0, looseList = 0):
+                        inList=0, looseList=0):
         """
         Process a section of a source document, looking for high
         level structural elements like lists, block quotes, code
@@ -1594,14 +1603,16 @@ class Markdown:
             level = len(m.group(1))
             h = self.doc.createElement("h%d" % level)
             parent_elem.appendChild(h)
-            for item in self._handleInline(m.group(2).strip()):
-                h.appendChild(item)
+            h.appendChild(self.doc.createTextNode(m.group(2).strip()))
         else:
             message(CRITICAL, "We've got a problem header!")
 
 
     def _processParagraph(self, parent_elem, paragraph, inList, looseList):
-        list = self._handleInline("\n".join(paragraph))
+        #list = self._handleInline("\n".join(paragraph))
+        
+        
+
 
         if ( parent_elem.nodeName == 'li'
                 and not (looseList or parent_elem.childNodes)):
@@ -1615,8 +1626,10 @@ class Markdown:
             el = self.doc.createElement("p")
             parent_elem.appendChild(el)
 
-        for item in list:
-            el.appendChild(item)
+        el.appendChild(self.doc.createTextNode("\n".join(paragraph)))
+        
+        #for item in list:
+            #el.appendChild(item)
  
 
     def _processUList(self, parent_elem, lines, inList):
@@ -1804,6 +1817,7 @@ class Markdown:
         parent_elem.appendChild(pre)
         pre.appendChild(code)
         text = "\n".join(detabbed).rstrip()+"\n"
+
         #text = text.replace("&", "&amp;")
         code.appendChild(self.doc.createTextNode(text))
         self._processSection(parent_elem, theRest, inList)
@@ -1931,6 +1945,94 @@ class Markdown:
 
         else:
             return None
+        
+    
+    def _processTree(self, el):
+        
+        stack = [el]
+        while stack:
+            currElement = stack.pop()
+            insertQueue = []
+            for child in currElement.childNodes:
+                
+                if child.type == "text":
+
+                    lst = self._handleInline(child.value)
+             
+                    pos = currElement.childNodes.index(child)
+                    
+                    insertQueue.append((pos, lst))
+                    
+                else:
+                    stack.append(child)   
+            for pos, lst in insertQueue:
+                del currElement.childNodes[pos]
+                for newChild in lst:
+                    currElement.insertChild(pos, newChild)
+                    pos += 1             
+
+    def applyInlinePatterns(self, markdownTree):
+        """
+        Retrun NanoDOM markdown tree, with applied
+        inline paterns
+        
+        Keyword arguments:
+        
+        * markdownTree: NanoDOM Document object, reppresenting Markdown tree.
+
+        Returns: NanoDOM Document object.
+        """
+        
+        self.doc = markdownTree
+        
+        el = markdownTree.documentElement
+                
+        self._processTree(el)
+            
+        return self.doc
+    
+                    
+        
+        
+        
+        
+    def markdownToTree(self, source=None):
+        """
+        Retrun NanoDOM markdown tree, without applying
+        inline paterns
+        
+        Keyword arguments:
+        
+        * source: An ascii or unicode string of Markdown formated text.
+
+        Returns: NanoDOM document.
+        """
+        if source is not None: #Allow blank string
+            self.source = source
+            
+        if not self.source:
+            return u""
+        
+        try:
+            self.source = unicode(self.source)
+        except UnicodeDecodeError:
+            message(CRITICAL, 'UnicodeDecodeError: Markdown only accepts unicode or ascii  input.')
+            return u""
+        
+        # Fixup the source text
+        self.source = self.source.replace("\r\n", "\n").replace("\r", "\n")
+        self.source += "\n\n"
+        self.source = self.source.expandtabs(TAB_LENGTH)
+
+        for pp in self.textPreprocessors:
+            self.source = pp.run(self.source)
+        
+        markdownTree = self._transform()
+        
+        
+        return markdownTree
+        
+        
 
     def convert (self, source=None):
         """
@@ -1944,34 +2046,9 @@ class Markdown:
 
         """
 
-        if source is not None: #Allow blank string
-            self.source = source
-
-        if not self.source:
-            return u""
-
-        try:
-            self.source = unicode(self.source)
-        except UnicodeDecodeError:
-            message(CRITICAL, 'UnicodeDecodeError: Markdown only accepts unicode or ascii  input.')
-            return u""
-
-        # Fixup the source text
-        self.source = self.source.replace("\r\n", "\n").replace("\r", "\n")
-        self.source += "\n\n"
-        self.source = self.source.expandtabs(TAB_LENGTH)
-
-        for pp in self.textPreprocessors:
-            self.source = pp.run(self.source)
-
-        doc = self._transform()
-        xml = doc.toxml()
-
-
-        # Return everything but the top level tag
-
-        if self.stripTopLevelTags:
-            xml = xml.strip()[23:-7] + "\n"
+        tree = self.markdownToTree(source)
+ 
+        xml = self.applyInlinePatterns(tree).toxml()
 
         for pp in self.textPostprocessors:
             xml = pp.run(xml)
