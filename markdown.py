@@ -202,10 +202,11 @@ class Document:
             el.appendChild(self.createTextNode(textNode))
         return el
 
-    def createTextNode(self, text):
+    def createTextNode(self, text, type="text"):
         """ Return given text as a TextNode. """
         node = TextNode(text)
         node.doc = self
+        node.type = type
         return node
 
     def createEntityReference(self, entity):
@@ -218,6 +219,7 @@ class Document:
         """ Return the given text as a CDATA node. """
         node = CDATA(text)
         node.doc = self
+        
         return node
 
     def toxml (self):
@@ -430,7 +432,7 @@ class TextNode:
         """ Return the TextNode as a string. """
         text = self.value
         
-
+        
         self.parentNode.setBidi(getBidiType(text))
 
         if not text.startswith(HTML_PLACEHOLDER_PREFIX):
@@ -1603,7 +1605,7 @@ class Markdown:
             level = len(m.group(1))
             h = self.doc.createElement("h%d" % level)
             parent_elem.appendChild(h)
-            h.appendChild(self.doc.createTextNode(m.group(2).strip()))
+            h.appendChild(self.doc.createTextNode(m.group(2).strip(), "inline"))
         else:
             message(CRITICAL, "We've got a problem header!")
 
@@ -1626,7 +1628,7 @@ class Markdown:
             el = self.doc.createElement("p")
             parent_elem.appendChild(el)
 
-        el.appendChild(self.doc.createTextNode("\n".join(paragraph)))
+        el.appendChild(self.doc.createTextNode("\n".join(paragraph), "inline"))
         
         #for item in list:
             #el.appendChild(item)
@@ -1817,7 +1819,6 @@ class Markdown:
         parent_elem.appendChild(pre)
         pre.appendChild(code)
         text = "\n".join(detabbed).rstrip()+"\n"
-
         #text = text.replace("&", "&amp;")
         code.appendChild(self.doc.createTextNode(text))
         self._processSection(parent_elem, theRest, inList)
@@ -1955,7 +1956,7 @@ class Markdown:
             insertQueue = []
             for child in currElement.childNodes:
                 
-                if child.type == "text":
+                if child.type == "inline":
 
                     lst = self._handleInline(child.value)
              
@@ -1963,8 +1964,9 @@ class Markdown:
                     
                     insertQueue.append((pos, lst))
                     
-                else:
-                    stack.append(child)   
+                elif child.type == "element":
+                    stack.append(child) 
+                      
             for pos, lst in insertQueue:
                 del currElement.childNodes[pos]
                 for newChild in lst:
@@ -1990,11 +1992,7 @@ class Markdown:
         self._processTree(el)
             
         return self.doc
-    
-                    
-        
-        
-        
+
         
     def markdownToTree(self, source=None):
         """
