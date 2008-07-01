@@ -33,7 +33,7 @@ __revision__ = "$Rev$"
 
 
 
-import re, sys, codecs
+import re, sys, codecs, copy
 from urlparse import urlparse, urlunparse
 
 from logging import getLogger, StreamHandler, Formatter, \
@@ -123,6 +123,7 @@ def isBlockLevel (tag):
     """
     return ( (tag in BLOCK_LEVEL_ELEMENTS) or
              (tag[0] == 'h' and tag[1] in "0123456789") )
+
 
 """
 ======================================================================
@@ -783,16 +784,18 @@ BACKTICK_RE = r'\`([^\`]*)\`'                    # `e= m*c^2`
 DOUBLE_BACKTICK_RE =  r'\`\`(.*?)\`\`'            # ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                             # \<
 EMPHASIS_RE = r'\*([^\*]*)\*'                    # *emphasis*
-STRONG_RE = r'\*\*(.*?)\*\*'                      # **strong**
-STRONG_EM_RE = r'\*\*\*(.*?)\*\*\*'            # ***strong***
+STRONG_RE = r'\*\*(.*?|[^**]+?)\*\*'                      # **strong**
+STRONG_EM_RE = r'\*\*\*(.*?|[^***]+?)\*\*\*'            # ***strong***
+
+
 
 if SMART_EMPHASIS:
     EMPHASIS_2_RE = r'(?<!\S)_(\S[^_]*)_'        # _emphasis_
 else:
     EMPHASIS_2_RE = r'_([^_]*)_'                 # _emphasis_
 
-STRONG_2_RE = r'__(.*?)__'                     # __strong__
-STRONG_EM_2_RE = r'___(.*?)___'                # ___strong___
+STRONG_2_RE = r'__(.*?|[^__]+?)__'                     # __strong__
+STRONG_EM_2_RE = r'___(.*?|[^___]+?)___'                # ___strong___
 
 LINK_RE = NOIMG + BRK + r'\s*\(([^\)]*)\)'               # [text](url)
 LINK_ANGLED_RE = NOIMG + BRK + r'\s*\(<([^\)]*)>\)'      # [text](<url>)
@@ -1294,7 +1297,31 @@ def dequote(string):
         return string[1:-1]
     else:
         return string
-
+    
+    
+class InlineStash:
+    
+    def __init__(self):
+        self.prefix = "k@J!}"
+        self.suffix = "lL5Qt"
+        self._nodes = {}
+        self.phLength = 4 + len(self.prefix) + len(self.suffix)
+        
+    def _genPlaceholder(self):
+        hash = "%s%04d%s" % (self.prefix, len(self._nodes), self.suffix) 
+        return hash
+    
+    def isin(self, placeholder):
+        return self._nodes.has_key(placeholder)
+    
+    def get(self, placeholder):
+        return self._nodes.get(placeholder)
+    
+    def add(self, node):
+        pholder = self._genPlaceholder()
+        self._nodes[pholder] = node
+        return pholder
+    
 """
 ======================================================================
 ========================== CORE MARKDOWN =============================
@@ -1387,7 +1414,33 @@ class Markdown:
 
         self.prePatterns = []
         
-
+        # temporarily disabled patterns
+        '''DOUBLE_BACKTICK_PATTERN,
+           BACKTICK_PATTERN,
+           ESCAPE_PATTERN,
+           REFERENCE_PATTERN,
+           LINK_ANGLED_PATTERN,
+           LINK_PATTERN,
+           IMAGE_LINK_PATTERN,
+           IMAGE_REFERENCE_PATTERN,
+           AUTOLINK_PATTERN,
+           AUTOMAIL_PATTERN,
+           LINE_BREAK_PATTERN_2,
+           LINE_BREAK_PATTERN,
+           HTML_PATTERN,
+           ENTITY_PATTERN,
+           NOT_STRONG_PATTERN,
+           STRONG_EM_PATTERN,
+           STRONG_EM_PATTERN_2,'''
+                                       
+        '''self.inlinePatterns = [LINK_PATTERN,
+                               STRONG_PATTERN,
+                               STRONG_PATTERN_2,
+                               EMPHASIS_PATTERN,
+                               EMPHASIS_PATTERN_2
+                               # The order of the handlers matters!!!
+                               ]'''
+                               
         self.inlinePatterns = [DOUBLE_BACKTICK_PATTERN,
                                BACKTICK_PATTERN,
                                ESCAPE_PATTERN,
@@ -1395,8 +1448,8 @@ class Markdown:
                                LINK_ANGLED_PATTERN,
                                LINK_PATTERN,
                                IMAGE_LINK_PATTERN,
-			                   IMAGE_REFERENCE_PATTERN,
-			                   AUTOLINK_PATTERN,
+                               IMAGE_REFERENCE_PATTERN,
+                               AUTOLINK_PATTERN,
                                AUTOMAIL_PATTERN,
                                LINE_BREAK_PATTERN_2,
                                LINE_BREAK_PATTERN,
@@ -1411,6 +1464,8 @@ class Markdown:
                                EMPHASIS_PATTERN_2
                                # The order of the handlers matters!!!
                                ]
+        
+        self.inlineStash = InlineStash()
 
         self.registerExtensions(extensions = extensions,
                                 configs = extension_configs)
@@ -1453,6 +1508,7 @@ class Markdown:
         """
         self.references={}
         self.htmlStash = HtmlStash()
+        self.inlineStash = InlineStash()
 
         HTML_BLOCK_PREPROCESSOR.stash = self.htmlStash
         LINE_PREPROCESSOR.stash = self.htmlStash
@@ -1485,6 +1541,7 @@ class Markdown:
         self.top_element.appendChild(self.doc.createTextNode('\n'))
         self.top_element.setAttribute('class', 'markdown')
         self.doc.appendChild(self.top_element)
+
 
         # Split into lines and run the preprocessors that will work with
         # self.lines
@@ -1821,134 +1878,133 @@ class Markdown:
         text = "\n".join(detabbed).rstrip()+"\n"
         #text = text.replace("&", "&amp;")
         code.appendChild(self.doc.createTextNode(text))
-        self._processSection(parent_elem, theRest, inList)
-
-
-
-    def _handleInline (self, line, patternIndex=0):
+        self._processSection(parent_elem, theRest, inList)        
+        
+    def _handleInline(self, data, patternIndex=0):
         """
-        Transform a Markdown line with inline elements to an XHTML
-        fragment.
-
-        This function uses auxiliary objects called inline patterns.
-        See notes on inline patterns above.
+        Processinf string with inline patterns and replasing it
+        with placeholders
 
         Keyword arguments:
         
-        * line: A line of Markdown text
+        * data: A line of Markdown text
         * patternIndex: The index of the inlinePattern to start with
         
-        Return: A list of NanoDom nodes 
+        Return: String with placeholders. 
         
         """
-
-
-        parts = [line]
-
-        while patternIndex < len(self.inlinePatterns):
-
-            i = 0
-
-            while i < len(parts):
-                
-                x = parts[i]
-
-                if isinstance(x, (str, unicode)):
-                    result = self._applyPattern(x, \
-                                self.inlinePatterns[patternIndex], \
-                                patternIndex)
-
-                    if result:
-                        i -= 1
-                        parts.remove(x)
-                        for y in result:
-                            parts.insert(i+1,y)
-
-                i += 1
-            patternIndex += 1
-
-        for i in range(len(parts)):
-            x = parts[i]
-            if isinstance(x, (str, unicode)):
-                parts[i] = self.doc.createTextNode(x)
-
-        return parts
         
+        while patternIndex < len(self.inlinePatterns):
+            
+            data, matched = self._applyInline(self.inlinePatterns[patternIndex],
+                                     data, patternIndex)
+            if not matched:
+                patternIndex += 1
+        
+        return data
+        #return self._processPlaceholders(data)
+   
+    
+    def _processPlaceholders(self, data):
+        """
+        Processes string with placeholders and generates DOM tree.
+        
+        * data: string with placeholders instead of DOM elements.
 
-    def _applyPattern(self, line, pattern, patternIndex):
+        Returns: NanoDOM Document object with applied inline patterns.
+        """
+ 
+        result = []
+        prefix = self.inlineStash.prefix
+        strartIndex = 0
+        while data:
+            
+            index = data.find(prefix, strartIndex)
+            if index != -1:
+                
+                phEndIndex = index + self.inlineStash.phLength
+                placeHolder = data[index: phEndIndex]
+                
+                if self.inlineStash.isin(placeHolder):
+                    
+                    if index > 0:
+                        
+                        textNode = self.doc.createTextNode(data[strartIndex:index])
+    
+                        result.append(textNode)
+                        
+                    node = self.inlineStash.get(placeHolder)
 
+                    if isinstance(node, Element):
+        
+                        for child in node.childNodes:
+                            if isinstance(child, TextNode):
+                                childResult = self._processPlaceholders(child.value)
+                                pos = node.childNodes.index(child)
+                                node.removeChild(child)
+                                for newChild in childResult:
+                                    node.insertChild(pos, newChild)
+                                    
+                        result.append(node)
+                        
+                    strartIndex = phEndIndex
+   
+                else:
+            
+                    strartIndex = index + len(prefix)
+            else:
+                text = self.doc.createTextNode(data[strartIndex:])
+                result.append(text)
+                data = ""
+                    
+        return result
+        
+   
+
+    def _applyInline(self, pattern, data, patternIndex):
         """ 
         Given a pattern name, this function checks if the line
-        fits the pattern, creates the necessary elements, and returns
-        back a list consisting of NanoDom elements and/or strings.
+        fits the pattern, creates the necessary elements, adds it 
+        to InlineStash, and returns string with placeholders,
+        instead of DOM elements.
         
         Keyword arguments:
         
-        * line: the text to be processed
+        * data: the text to be processed
         * pattern: the pattern to be checked
+        * patternIndex: index of current pattern
 
-        Returns: The appropriate newly created NanoDom element if the
-           pattern matches, None otherwise.
+        Returns: String with placeholders.
         """
+        
+        match = pattern.getCompiledRegExp().match(data)
+ 
+        if not match:
+            return data, False
 
-        # match the line to pattern's pre-compiled reg exp.
-        # if no match, move on.
-
-
-
-        m = pattern.getCompiledRegExp().match(line)
-        if not m:
-            return None
-
-        # if we got a match let the pattern make us a NanoDom node
-        # if it doesn't, move on
-        node = pattern.handleMatch(m, self.doc)
-
-        # check if any of this nodes have children that need processing
-
+        node = pattern.handleMatch(match, self.doc)
+        
         if isinstance(node, Element):
+            for child in node.childNodes:
+                if isinstance(child, TextNode):
+                    child.value = self._handleInline(child.value, patternIndex)
+        
+        
+        pholder = self.inlineStash.add(node)
 
-            if not node.nodeName in ["code", "pre"]:
-                for child in node.childNodes:
-                    if isinstance(child, TextNode):
-                        
-                        result = self._handleInline(child.value, patternIndex+1)
-                        
-                        if result:
-
-                            if result == [child]:
-                                continue
-                                
-                            result.reverse()
-                            #to make insertion easier
-
-                            position = node.childNodes.index(child)
-                            
-                            node.removeChild(child)
-
-                            for item in result:
-
-                                if isinstance(item, (str, unicode)):
-                                    if len(item) > 0:
-                                        node.insertChild(position,
-                                             self.doc.createTextNode(item))
-                                else:
-                                    node.insertChild(position, item)
-                
-
-
-
-        if node:
-            # Those are in the reverse order!
-            return ( m.groups()[-1], # the string to the left
-                     node,           # the new node
-                     m.group(1))     # the string to the right of the match
-
-        else:
-            return None
+        return "%s%s%s" % (match.group(1), pholder, match.groups()[-1]), True
         
     
     def _processTree(self, el):
+        """
+        Processing NanoDOM markdown tree, and applying inline patterns
+        
+        Keyword arguments:
+        
+        * el - parent element of Document.
+
+        Returns: NanoDOM Document object with applied inline patterns.
+        """
         
         stack = [el]
         while stack:
@@ -1958,7 +2014,8 @@ class Markdown:
                 
                 if child.type == "inline":
 
-                    lst = self._handleInline(child.value)
+                    lst = self._processPlaceholders(self._handleInline(
+                                                    child.value))
              
                     pos = currElement.childNodes.index(child)
                     
@@ -1971,7 +2028,7 @@ class Markdown:
                 del currElement.childNodes[pos]
                 for newChild in lst:
                     currElement.insertChild(pos, newChild)
-                    pos += 1             
+                    pos += 1 
 
     def applyInlinePatterns(self, markdownTree):
         """
@@ -2003,7 +2060,7 @@ class Markdown:
         
         * source: An ascii or unicode string of Markdown formated text.
 
-        Returns: NanoDOM document.
+        Returns: NanoDOM Document object.
         """
         if source is not None: #Allow blank string
             self.source = source
