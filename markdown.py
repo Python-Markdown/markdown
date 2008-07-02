@@ -108,8 +108,11 @@ EXECUTABLE_NAME_FOR_USAGE = "python markdown.py"
 # --------------- CONSTANTS YOU _SHOULD NOT_ HAVE TO CHANGE ----------
 
 # a template for html placeholders
-HTML_PLACEHOLDER_PREFIX = "qaodmasdkwaspemas"
-HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%dajkqlsmdqpakldnzsdfls"
+START = u'\u0001'
+END = u'\u0002'
+NULL = u'\u0001'
+HTML_PLACEHOLDER_PREFIX = START+"html"+NULL
+HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d"+END+"html"+NULL
 
 BLOCK_LEVEL_ELEMENTS = ['p', 'div', 'blockquote', 'pre', 'table',
                         'dl', 'ol', 'ul', 'script', 'noscript',
@@ -1951,6 +1954,10 @@ class Markdown:
             return u""
 
         # Fixup the source text
+
+        for controlChar in (START, END, NULL) :
+            self.source = self.source.replace(controlChar, "")
+
         self.source = self.source.replace("\r\n", "\n").replace("\r", "\n")
         self.source += "\n\n"
         self.source = self.source.expandtabs(TAB_LENGTH)
