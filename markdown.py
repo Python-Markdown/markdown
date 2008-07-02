@@ -33,7 +33,7 @@ __revision__ = "$Rev$"
 
 
 
-import re, sys, codecs, copy
+import re, sys, codecs
 from urlparse import urlparse, urlunparse
 
 from logging import getLogger, StreamHandler, Formatter, \
@@ -846,6 +846,10 @@ class Pattern:
 
         """
         pass
+    
+    def type(self):
+        """ Return class name, to define pattern type """
+        return self.__class__.__name__
 
 BasePattern = Pattern # for backward compatibility
 
@@ -995,6 +999,7 @@ class ReferencePattern(LinkPattern):
             # if we got something like "[Google][]"
             # we'll use "google" as the id
             id = m.group(2).lower()
+
 
         if not self.references.has_key(id): # ignore undefined refs
             return None
@@ -1302,24 +1307,40 @@ def dequote(string):
 class InlineStash:
     
     def __init__(self):
-        self.prefix = "k@J!}"
-        self.suffix = "lL5Qt"
+        self.prefix = u'\u0001'
+        self.suffix = u'\u0002'
         self._nodes = {}
         self.phLength = 4 + len(self.prefix) + len(self.suffix)
         
-    def _genPlaceholder(self):
-        hash = "%s%04d%s" % (self.prefix, len(self._nodes), self.suffix) 
-        return hash
+    def _genPlaceholder(self, type):
+        """ Generates placeholder """
+        id = "%04d" % len(self._nodes)
+        hash = "%s%s:%s%s" % (self.prefix, type[0:3], id, 
+                                self.suffix) 
+        return hash, id
     
-    def isin(self, placeholder):
-        return self._nodes.has_key(placeholder)
+    def extractId(self, data, index):
+        """ Extracting id from data string, starting from index """
+        endIndex = data.find(self.suffix, index+1)
+        if endIndex == -1:
+            return None, index + 1 
+        else:
+            pair = data[index + len(self.prefix): endIndex].split(":")
+            if len(pair) == 2:
+                return pair[1], endIndex + len(self.suffix)
+            else:
+                return None, index + 1
     
-    def get(self, placeholder):
-        return self._nodes.get(placeholder)
+    def isin(self, id):
+        return self._nodes.has_key(id)
     
-    def add(self, node):
-        pholder = self._genPlaceholder()
-        self._nodes[pholder] = node
+    def get(self, id):
+        """ Returns node by id """
+        return self._nodes.get(id)
+    
+    def add(self, node, type):
+        pholder, id = self._genPlaceholder(type)
+        self._nodes[id] = node
         return pholder
     
 """
@@ -1413,33 +1434,6 @@ class Markdown:
                                    RAWHTMLTEXTPOSTPROCESSOR]
 
         self.prePatterns = []
-        
-        # temporarily disabled patterns
-        '''DOUBLE_BACKTICK_PATTERN,
-           BACKTICK_PATTERN,
-           ESCAPE_PATTERN,
-           REFERENCE_PATTERN,
-           LINK_ANGLED_PATTERN,
-           LINK_PATTERN,
-           IMAGE_LINK_PATTERN,
-           IMAGE_REFERENCE_PATTERN,
-           AUTOLINK_PATTERN,
-           AUTOMAIL_PATTERN,
-           LINE_BREAK_PATTERN_2,
-           LINE_BREAK_PATTERN,
-           HTML_PATTERN,
-           ENTITY_PATTERN,
-           NOT_STRONG_PATTERN,
-           STRONG_EM_PATTERN,
-           STRONG_EM_PATTERN_2,'''
-                                       
-        '''self.inlinePatterns = [LINK_PATTERN,
-                               STRONG_PATTERN,
-                               STRONG_PATTERN_2,
-                               EMPHASIS_PATTERN,
-                               EMPHASIS_PATTERN_2
-                               # The order of the handlers matters!!!
-                               ]'''
                                
         self.inlinePatterns = [DOUBLE_BACKTICK_PATTERN,
                                BACKTICK_PATTERN,
@@ -1897,12 +1891,11 @@ class Markdown:
         while patternIndex < len(self.inlinePatterns):
             
             data, matched = self._applyInline(self.inlinePatterns[patternIndex],
-                                     data, patternIndex)
+                                              data, patternIndex)
             if not matched:
                 patternIndex += 1
         
         return data
-        #return self._processPlaceholders(data)
    
     
     def _processPlaceholders(self, data):
@@ -1917,41 +1910,47 @@ class Markdown:
         result = []
         prefix = self.inlineStash.prefix
         strartIndex = 0
+  
         while data:
             
             index = data.find(prefix, strartIndex)
             if index != -1:
                 
-                phEndIndex = index + self.inlineStash.phLength
-                placeHolder = data[index: phEndIndex]
-                
-                if self.inlineStash.isin(placeHolder):
+                id, phEndIndex = self.inlineStash.extractId(data, index)
+    
+                if self.inlineStash.isin(id):
                     
                     if index > 0:
                         
-                        textNode = self.doc.createTextNode(data[strartIndex:index])
+                        textNode = self.doc.createTextNode(data[strartIndex:
+                                                                index])
     
                         result.append(textNode)
                         
-                    node = self.inlineStash.get(placeHolder)
+                    node = self.inlineStash.get(id)
 
                     if isinstance(node, Element):
         
                         for child in node.childNodes:
                             if isinstance(child, TextNode):
-                                childResult = self._processPlaceholders(child.value)
+                            
+                                childResult = self._processPlaceholders(
+                                                                child.value)
                                 pos = node.childNodes.index(child)
                                 node.removeChild(child)
                                 for newChild in childResult:
                                     node.insertChild(pos, newChild)
-                                    
-                        result.append(node)
+                                
+              
+                    result.append(node)
                         
                     strartIndex = phEndIndex
    
                 else:
-            
-                    strartIndex = index + len(prefix)
+                    end = index + len(prefix)
+                    text = self.doc.createTextNode(data[strartIndex:end])
+                    strartIndex = end
+                    
             else:
                 text = self.doc.createTextNode(data[strartIndex:])
                 result.append(text)
@@ -1981,8 +1980,11 @@ class Markdown:
  
         if not match:
             return data, False
-
+        
         node = pattern.handleMatch(match, self.doc)
+        
+        if not node:
+            return data, False
         
         if isinstance(node, Element):
             for child in node.childNodes:
@@ -1990,7 +1992,7 @@ class Markdown:
                     child.value = self._handleInline(child.value, patternIndex)
         
         
-        pholder = self.inlineStash.add(node)
+        pholder = self.inlineStash.add(node, pattern.type())
 
         return "%s%s%s" % (match.group(1), pholder, match.groups()[-1]), True
         
