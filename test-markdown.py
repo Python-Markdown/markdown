@@ -244,9 +244,9 @@ def testDirectory(dir, measure_time=False, safe_mode=False) :
         t = time.clock()
         for x in repeat: 
             actual_output = md.convert(input)
-
         conversion_time = time.clock() - t
         conversion_mem = memory(mem)
+        md.reset()
         
         expected_lines = [x.encode("utf8") for x in smart_split(expected_output)]
         actual_lines = [x.encode("utf8") for x in smart_split(actual_output)]

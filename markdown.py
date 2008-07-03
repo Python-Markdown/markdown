@@ -1315,7 +1315,7 @@ class InlineStash:
     def _genPlaceholder(self, type):
         """ Generates placeholder """
         id = "%04d" % len(self._nodes)
-        hash = "%s%s:%s%s" % (self.prefix, type[0:3], id, 
+        hash = "%s%s:%s%s" % (self.prefix, type, id, 
                                 self.suffix) 
         return hash, id
     
@@ -1910,7 +1910,6 @@ class Markdown:
         result = []
         prefix = self.inlineStash.prefix
         strartIndex = 0
-  
         while data:
             
             index = data.find(prefix, strartIndex)
@@ -1938,6 +1937,7 @@ class Markdown:
                                                                 child.value)
                                 pos = node.childNodes.index(child)
                                 node.removeChild(child)
+                                childResult.reverse()
                                 for newChild in childResult:
                                     node.insertChild(pos, newChild)
                                 
@@ -1986,7 +1986,7 @@ class Markdown:
         if not node:
             return data, False
         
-        if isinstance(node, Element):
+        if isinstance(node, Element) and not node.nodeName in ["code", "pre"]:
             for child in node.childNodes:
                 if isinstance(child, TextNode):
                     child.value = self._handleInline(child.value, patternIndex)
