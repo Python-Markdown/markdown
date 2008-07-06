@@ -33,12 +33,14 @@ __revision__ = "$Rev$"
 
 
 
-import re, sys, codecs
+import re, sys, codecs, StringIO
 from urlparse import urlparse, urlunparse
 
 from logging import getLogger, StreamHandler, Formatter, \
                     DEBUG, INFO, WARN, ERROR, CRITICAL
 
+
+         
 
 MESSAGE_THRESHOLD = CRITICAL
 
@@ -56,6 +58,51 @@ logger.addHandler(console_hndlr)
 def message(level, text):
     ''' A wrapper method for logging debug messages. '''
     logger.log(level, text)
+    
+def isstr(s):
+    return isinstance(s, unicode) or isinstance(s, str)
+ 
+'''try:
+    # running with lxml.etree
+    from lxml import etree 
+except ImportError:
+    try:
+        # Python 2.5+
+        import xml.etree.cElementTree as etree
+    except ImportError:
+        try:
+            # Python 2.5+
+            import xml.etree.ElementTree as etree
+        except ImportError:
+            try:
+                # normal cElementTree install
+                import cElementTree as etree
+            except ImportError:
+                try:
+                    # normal ElementTree install
+                    import elementtree.ElementTree as etree
+                except ImportError:
+                    message(CRITICAL, 
+                           "Failed to import ElementTree from any known place")
+                    sys.exit(1)'''
+                    
+import xml.etree.cElementTree as etree
+
+def indentETree(elem, level=0):
+    i = "\n" + level*"  "
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + "  "
+        for child in elem:
+            indentETree(child, level+1)
+        if not child.tail or not child.tail.strip():
+            child.tail = i
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = i
 
 
 # --------------- CONSTANTS YOU MIGHT WANT TO MODIFY -----------------
@@ -833,7 +880,7 @@ class Pattern:
         """ Return a compiled regular expression. """
         return self.compiled_re
 
-    def handleMatch(self, m, doc):
+    def handleMatch(self, m):
         """
         Return a NanoDom element from the given match. Subclasses should 
         override this method.
@@ -855,8 +902,8 @@ BasePattern = Pattern # for backward compatibility
 
 class SimpleTextPattern (Pattern):
     """ Return a simple TextNode of group(2) of a Pattern. """
-    def handleMatch(self, m, doc):
-        return doc.createTextNode(m.group(2))
+    def handleMatch(self, m):
+        return m.group(2)
 
 class SimpleTagPattern (Pattern):
     """ 
@@ -868,15 +915,15 @@ class SimpleTagPattern (Pattern):
         Pattern.__init__(self, pattern)
         self.tag = tag
 
-    def handleMatch(self, m, doc):
-        el = doc.createElement(self.tag)
-        el.appendChild(doc.createTextNode(m.group(2)))
+    def handleMatch(self, m):
+        el = etree.Element(self.tag)
+        el.text = m.group(2)
         return el
 
 class SubstituteTagPattern (SimpleTagPattern):
     """ Return a NanoDom ELement of type `tag` with no children. """
-    def handleMatch (self, m, doc):
-        return doc.createElement(self.tag)
+    def handleMatch (self, m):
+        return etree.Element(self.tag)
 
 class BacktickPattern (Pattern):
     """ Return a NanoDom `<code>` Element containing the matching text. """
@@ -884,11 +931,9 @@ class BacktickPattern (Pattern):
         Pattern.__init__(self, pattern)
         self.tag = "code"
 
-    def handleMatch(self, m, doc):
-        el = doc.createElement(self.tag)
-        text = m.group(2).strip()
-        #text = text.replace("&", "&amp;")
-        el.appendChild(doc.createTextNode(text))
+    def handleMatch(self, m):
+        el = etree.Element(self.tag)
+        el.text = m.group(2).strip()
         return el
 
 
@@ -898,41 +943,44 @@ class DoubleTagPattern (SimpleTagPattern):
     Usefull for strong emphasis etc.
 
     """
-    def handleMatch(self, m, doc):
+    def handleMatch(self, m):
         tag1, tag2 = self.tag.split(",")
-        el1 = doc.createElement(tag1)
-        el2 = doc.createElement(tag2)
-        el1.appendChild(el2)
-        el2.appendChild(doc.createTextNode(m.group(2)))
+        el1 = etree.Element(tag1)
+        el2 = etree.SubElement(el1, tag2)
+        el2.text = m.group(2)
         return el1
 
 
 class HtmlPattern (Pattern):
     """ Store raw inline html and return a placeholder. """
-    def handleMatch (self, m, doc):
+    def handleMatch (self, m):
         rawhtml = m.group(2)
         inline = True
         place_holder = self.stash.store(rawhtml)
-        return doc.createTextNode(place_holder)
+        return place_holder
 
 
 
 class LinkPattern (Pattern):
     """ Return a NanoDom link Element from the given match. """
-    def handleMatch(self, m, doc):
-        el = doc.createElement('a')
-        el.appendChild(doc.createTextNode(m.group(2)))
+    def handleMatch(self, m):
+
+        el = etree.Element("a")
+
+        el.text = m.group(2)
         parts = m.group(9).split('"')
         # We should now have [], [href], or [href, title]
         if parts:
-            el.setAttribute('href', self.sanatize_url(parts[0].strip()))
+ 
+            el.set("href", self.sanatize_url(parts[0].strip()))
         else:
-            el.setAttribute('href', "")
+
+            el.set("href", "")
         if len(parts) > 1:
             # we also got a title
             title = '"' + '"'.join(parts[1:]).strip()
-            title = dequote(title) #.replace('"', "&quot;")
-            el.setAttribute('title', title)
+            #title = dequote(title) #.replace('"', "&quot;")
+            el.set("title", title)
         return el
 
     def sanatize_url(self, url):
@@ -969,29 +1017,29 @@ class LinkPattern (Pattern):
 
 class ImagePattern(LinkPattern):
     """ Return a NanoDom img Element from the given match. """
-    def handleMatch(self, m, doc):
-        el = doc.createElement('img')
+    def handleMatch(self, m):
+        el = etree.Element("img")
         src_parts = m.group(9).split()
         if src_parts:
-            el.setAttribute('src', self.sanatize_url(src_parts[0]))
+            el.set('src', self.sanatize_url(src_parts[0]))
         else:
-            el.setAttribute('src', "")
+            el.set('src', "")
         if len(src_parts) > 1:
-            el.setAttribute('title', dequote(" ".join(src_parts[1:])))
-        if ENABLE_ATTRIBUTES:
-            text = doc.createTextNode(m.group(2))
-            el.appendChild(text)
-            text.handleAttributes()
+            el.set('title', dequote(" ".join(src_parts[1:])))
+        '''if ENABLE_ATTRIBUTES:
+            el.text = m.group(2)
             truealt = text.value
             el.childNodes.remove(text)
         else:
-            truealt = m.group(2)
-        el.setAttribute('alt', truealt)
+            truealt = m.group(2)'''
+            
+        truealt = m.group(2)
+        el.set('alt', truealt)
         return el
 
 class ReferencePattern(LinkPattern):
     """ Match to a stored reference and return a NanoDom link Element. """
-    def handleMatch(self, m, doc):
+    def handleMatch(self, m):
 
         if m.group(9):
             id = m.group(9).lower()
@@ -1000,48 +1048,49 @@ class ReferencePattern(LinkPattern):
             # we'll use "google" as the id
             id = m.group(2).lower()
 
-
         if not self.references.has_key(id): # ignore undefined refs
             return None
         href, title = self.references[id]
         text = m.group(2)
-        return self.makeTag(href, title, text, doc)
+        return self.makeTag(href, title, text)
 
-    def makeTag(self, href, title, text, doc):
-        el = doc.createElement('a')
-        el.setAttribute('href', self.sanatize_url(href))
+    def makeTag(self, href, title, text):
+        el = etree.Element('a')
+        
+        el.set('href', self.sanatize_url(href))
         if title:
-            el.setAttribute('title', title)
-        el.appendChild(doc.createTextNode(text))
+            el.set('title', title)
+        el.text = text
         return el
 
 
 class ImageReferencePattern (ReferencePattern):
     """ Match to a stored reference and return a NanoDom img Element. """
-    def makeTag(self, href, title, text, doc):
-        el = doc.createElement('img')
-        el.setAttribute('src', self.sanatize_url(href))
+    def makeTag(self, href, title, text):
+        el = etree.Element("img")
+        el.set("src", self.sanatize_url(href))
         if title:
-            el.setAttribute('title', title)
-        el.setAttribute('alt', text)
+            el.set("title", title)
+        el.set("alt", text)
         return el
 
 
 class AutolinkPattern (Pattern):
     """ Return a link Element given an autolink (`<http://example/com>`). """
-    def handleMatch(self, m, doc):
-        el = doc.createElement('a')
-        el.setAttribute('href', m.group(2))
-        el.appendChild(doc.createTextNode(m.group(2)))
+    def handleMatch(self, m):
+        el = etree.Element("a")
+        el.set('href', m.group(2))
+        el.text = m.group(2)
         return el
 
+#FIXME: Add ElementTree support
 class AutomailPattern (Pattern):
     """ 
     Return a mailto link Element given an automail link (`<foo@example.com>`). 
     
     """
-    def handleMatch(self, m, doc):
-        el = doc.createElement('a')
+    def handleMatch(self, m):
+        el = etree.Element('a')
         email = m.group(2)
         if email.startswith("mailto:"):
             email = email[len("mailto:"):]
@@ -1050,7 +1099,7 @@ class AutomailPattern (Pattern):
             el.appendChild(entity)
         mailto = "mailto:" + email
         mailto = "".join(['&#%d;' % ord(letter) for letter in mailto])
-        el.setAttribute('href', mailto)
+        el.set('href', mailto)
         return el
 
 ESCAPE_PATTERN          = SimpleTextPattern(ESCAPE_RE)
@@ -1416,6 +1465,7 @@ class Markdown:
         self.blockGuru = BlockGuru()
         self.registeredExtensions = []
         self.docType = ""
+        self.stripTopLevelTags = True
 
         self.textPreprocessors = [HTML_BLOCK_PREPROCESSOR]
 
@@ -1444,7 +1494,7 @@ class Markdown:
                                IMAGE_LINK_PATTERN,
                                IMAGE_REFERENCE_PATTERN,
                                AUTOLINK_PATTERN,
-                               AUTOMAIL_PATTERN,
+                               #AUTOMAIL_PATTERN,
                                LINE_BREAK_PATTERN_2,
                                LINE_BREAK_PATTERN,
                                HTML_PATTERN,
@@ -1529,13 +1579,8 @@ class Markdown:
         """
 
         # Setup the document
-
-        self.doc = Document()
-        self.top_element = self.doc.createElement("span")
-        self.top_element.appendChild(self.doc.createTextNode('\n'))
-        self.top_element.setAttribute('class', 'markdown')
-        self.doc.appendChild(self.top_element)
-
+        
+        self.root = etree.Element("span")
 
         # Split into lines and run the preprocessors that will work with
         # self.lines
@@ -1553,23 +1598,23 @@ class Markdown:
         for line in self.lines:
             if line.startswith("#"):
 
-                self._processSection(self.top_element, buffer)
+                self._processSection(self.root, buffer)
                 buffer = [line]
             else:
                 buffer.append(line)
 
-        self._processSection(self.top_element, buffer)
+        self._processSection(self.root, buffer)
         
         #self._processSection(self.top_element, self.lines)
 
         # Not sure why I put this in but let's leave it for now.
-        self.top_element.appendChild(self.doc.createTextNode('\n'))
+        #self.top_element.appendChild(self.doc.createTextNode('\n'))
 
         # Run the post-processors
         for postprocessor in self.postprocessors:
             postprocessor.run(self.doc)
 
-        return self.doc
+        return etree.ElementTree(self.root)
 
 
     def _processSection(self, parent_elem, lines,
@@ -1654,9 +1699,9 @@ class Markdown:
         m = RE.regExp['header'].match(paragraph[0])
         if m:
             level = len(m.group(1))
-            h = self.doc.createElement("h%d" % level)
-            parent_elem.appendChild(h)
-            h.appendChild(self.doc.createTextNode(m.group(2).strip(), "inline"))
+            h = etree.SubElement(parent_elem, "h%d" % level)
+            inline = etree.SubElement(h, "inline")
+            inline.text = m.group(2).strip()
         else:
             message(CRITICAL, "We've got a problem header!")
 
@@ -1667,8 +1712,8 @@ class Markdown:
         
 
 
-        if ( parent_elem.nodeName == 'li'
-                and not (looseList or parent_elem.childNodes)):
+        if ( parent_elem.tag == 'li'
+                and not (looseList or parent_elem.getchildren())):
 
             # If this is the first paragraph inside "li", don't
             # put <p> around it - append the paragraph bits directly
@@ -1676,10 +1721,11 @@ class Markdown:
             el = parent_elem
         else:
             # Otherwise make a "p" element
-            el = self.doc.createElement("p")
-            parent_elem.appendChild(el)
+            el = etree.SubElement(parent_elem, "p")
 
-        el.appendChild(self.doc.createTextNode("\n".join(paragraph), "inline"))
+        #el.appendChild(self.doc.createTextNode("\n".join(paragraph), "inline"))
+        inline = etree.SubElement(el, "inline")
+        inline.text = "\n".join(paragraph)
         
         #for item in list:
             #el.appendChild(item)
@@ -1710,8 +1756,7 @@ class Markdown:
         
         """
 
-        ul = self.doc.createElement(tag)  # ul might actually be '<ol>'
-        parent_elem.appendChild(ul)
+        ul = etree.SubElement(parent_elem, tag) # ul might actually be '<ol>'
 
         looseList = 0
 
@@ -1775,8 +1820,7 @@ class Markdown:
 
         # Add the dom elements
         for item in items:
-            li = self.doc.createElement("li")
-            ul.appendChild(li)
+            li = etree.SubElement(ul, "li")
 
             self._processSection(li, item, inList + 1, looseList = looseList)
 
@@ -1837,8 +1881,7 @@ class Markdown:
             else:
                 break
 
-        blockquote = self.doc.createElement('blockquote')
-        parent_elem.appendChild(blockquote)
+        blockquote = etree.SubElement(parent_elem, "blockquote")
 
         self._processSection(blockquote, dequoted, inList)
         self._processSection(parent_elem, lines[i:], inList)
@@ -1865,13 +1908,12 @@ class Markdown:
 
         detabbed, theRest = self.blockGuru.detectTabbed(lines)
 
-        pre = self.doc.createElement('pre')
-        code = self.doc.createElement('code')
-        parent_elem.appendChild(pre)
-        pre.appendChild(code)
+        pre = etree.SubElement(parent_elem, "pre")
+        code = etree.SubElement(pre, "code")
+        
         text = "\n".join(detabbed).rstrip()+"\n"
         #text = text.replace("&", "&amp;")
-        code.appendChild(self.doc.createTextNode(text))
+        code.text = text
         self._processSection(parent_elem, theRest, inList)        
         
     def _handleInline(self, data, patternIndex=0):
@@ -1897,8 +1939,28 @@ class Markdown:
         
         return data
    
+    def _processElementText(self, node, subnode, isText=True):
+        
+        if isText:
+            text = subnode.text
+            subnode.text = None
+        else:
+            text = subnode.tail
+            subnode.tail = None
+        
+        childResult = self._processPlaceholders(text, subnode)
+        
+        if not isText and node is not subnode:
+            pos = node.getchildren().index(subnode)
+            node.remove(subnode)
+        else:
+            pos = 0
+            
+        childResult.reverse()
+        for newChild in childResult:
+            node.insert(pos, newChild)
     
-    def _processPlaceholders(self, data):
+    def _processPlaceholders(self, data, parent):
         """
         Processes string with placeholders and generates DOM tree.
         
@@ -1906,10 +1968,17 @@ class Markdown:
 
         Returns: NanoDOM Document object with applied inline patterns.
         """
- 
+        
+        def linkText(text):
+            if result:
+                result[-1].tail = text
+            else:
+                parent.text = text
+            
         result = []
         prefix = self.inlineStash.prefix
         strartIndex = 0
+     
         while data:
             
             index = data.find(prefix, strartIndex)
@@ -1918,42 +1987,37 @@ class Markdown:
                 id, phEndIndex = self.inlineStash.extractId(data, index)
     
                 if self.inlineStash.isin(id):
-                    
-                    if index > 0:
-                        
-                        textNode = self.doc.createTextNode(data[strartIndex:
-                                                                index])
-    
-                        result.append(textNode)
-                        
+                  
                     node = self.inlineStash.get(id)
-
-                    if isinstance(node, Element):
-        
-                        for child in node.childNodes:
-                            if isinstance(child, TextNode):
-                            
-                                childResult = self._processPlaceholders(
-                                                                child.value)
-                                pos = node.childNodes.index(child)
-                                node.removeChild(child)
-                                childResult.reverse()
-                                for newChild in childResult:
-                                    node.insertChild(pos, newChild)
-                                
-              
-                    result.append(node)
+          
+                    if not isstr(node):
                         
-                    strartIndex = phEndIndex
-   
+                        if index > 0:
+                            text = data[strartIndex:index]
+                            linkText(text)
+        
+                        for child in [node] + node.getchildren():
+            
+                            if child.tail:
+                                self._processElementText(node, child, False)
+                            
+                            if child.text:
+                                self._processElementText(node, child)
+                    else:
+                        linkText(node)
+                        strartIndex = phEndIndex
+                        continue
+                    
+                    strartIndex = phEndIndex    
+                    result.append(node)
+                       
                 else:
                     end = index + len(prefix)
-                    text = self.doc.createTextNode(data[strartIndex:end])
+                    linkText(data[strartIndex:end])
                     strartIndex = end
                     
             else:
-                text = self.doc.createTextNode(data[strartIndex:])
-                result.append(text)
+                linkText(data[strartIndex:])
                 data = ""
                     
         return result
@@ -1981,17 +2045,20 @@ class Markdown:
         if not match:
             return data, False
         
-        node = pattern.handleMatch(match, self.doc)
-        
-        if not node:
+        node = pattern.handleMatch(match)
+     
+        if node is None:
             return data, False
-        
-        if isinstance(node, Element) and not node.nodeName in ["code", "pre"]:
-            for child in node.childNodes:
-                if isinstance(child, TextNode):
-                    child.value = self._handleInline(child.value, patternIndex)
-        
-        
+        if not isstr(node):            
+            if not node.tag in ["code", "pre"]:
+                # We need to process current node too
+                for child in [node] + node.getchildren():
+                    if not isstr(node):
+                        if child.text:
+                            child.text = self._handleInline(child.text, patternIndex)
+                        if child.tail:
+                            child.tail = self._handleInline(child.tail, patternIndex)
+   
         pholder = self.inlineStash.add(node, pattern.type())
 
         return "%s%s%s" % (match.group(1), pholder, match.groups()[-1]), True
@@ -2012,25 +2079,26 @@ class Markdown:
         while stack:
             currElement = stack.pop()
             insertQueue = []
-            for child in currElement.childNodes:
+            for child in currElement.getchildren():
                 
-                if child.type == "inline":
-
+                if child.tag == "inline":
+                 
                     lst = self._processPlaceholders(self._handleInline(
-                                                    child.value))
+                                                    child.text), currElement)
              
-                    pos = currElement.childNodes.index(child)
+                    pos = currElement.getchildren().index(child)
                     
-                    insertQueue.append((pos, lst))
+                    insertQueue.append((child, pos, lst))
                     
-                elif child.type == "element":
+                else:
                     stack.append(child) 
                       
-            for pos, lst in insertQueue:
-                del currElement.childNodes[pos]
+            for element, pos, lst in insertQueue:
+                currElement.remove(element)
                 for newChild in lst:
-                    currElement.insertChild(pos, newChild)
+                    currElement.insert(pos, newChild)
                     pos += 1 
+
 
     def applyInlinePatterns(self, markdownTree):
         """
@@ -2044,13 +2112,13 @@ class Markdown:
         Returns: NanoDOM Document object.
         """
         
-        self.doc = markdownTree
+      
         
-        el = markdownTree.documentElement
+        el = markdownTree.getroot()
                 
         self._processTree(el)
             
-        return self.doc
+        return markdownTree
 
         
     def markdownToTree(self, source=None):
@@ -2104,8 +2172,20 @@ class Markdown:
         """
 
         tree = self.markdownToTree(source)
- 
-        xml = self.applyInlinePatterns(tree).toxml()
+        
+        output = StringIO.StringIO()
+    
+        newTree = self.applyInlinePatterns(tree)
+        
+        #indentETree(newTree.getroot())
+        newTree.write(output, "utf8")
+        
+        xml = output.getvalue()
+        
+        if self.stripTopLevelTags:
+            xml = xml.strip()[44:-7] + "\n"
+        
+        #xml = etree.tostring(self.applyInlinePatterns(tree).getroot(), "utf8")
 
         for pp in self.textPostprocessors:
             xml = pp.run(xml)
