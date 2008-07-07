@@ -33,7 +33,7 @@ __revision__ = "$Rev$"
 
 
 
-import re, sys, codecs, StringIO
+import re, sys, codecs, htmlentitydefs
 from urlparse import urlparse, urlunparse
 
 from logging import getLogger, StreamHandler, Formatter, \
@@ -87,23 +87,23 @@ except ImportError:
                     sys.exit(1)'''
                     
 import xml.etree.cElementTree as etree
+#from lxml import etree 
+
 
 def indentETree(elem, level=0):
-    i = "\n" + level*"  "
+    if level > 1:
+        i = "\n" + level*"  "
+    else:
+        i = "\n"
     if len(elem):
         if not elem.text or not elem.text.strip():
             elem.text = i + "  "
-        for child in elem:
-            indentETree(child, level+1)
-        if not child.tail or not child.tail.strip():
-            child.tail = i
-        if not elem.tail or not elem.tail.strip():
-            elem.tail = i
-
-    else:
-        if level and (not elem.tail or not elem.tail.strip()):
-            elem.tail = i
-
+        for e in elem:
+            indentETree(e, level+1)
+        if not e.tail or not e.tail.strip():
+            e.tail = i
+    if level and (not elem.tail or not elem.tail.strip()):
+        elem.tail = i
 
 # --------------- CONSTANTS YOU MIGHT WANT TO MODIFY -----------------
 
@@ -154,6 +154,8 @@ EXECUTABLE_NAME_FOR_USAGE = "python markdown.py"
 
 # --------------- CONSTANTS YOU _SHOULD NOT_ HAVE TO CHANGE ----------
 
+AND_SUBSTITUTE = unichr(2) + unichr(4) + unichr(3) 
+
 # a template for html placeholders
 HTML_PLACEHOLDER_PREFIX = "qaodmasdkwaspemas"
 HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%dajkqlsmdqpakldnzsdfls"
@@ -172,346 +174,15 @@ def isBlockLevel (tag):
              (tag[0] == 'h' and tag[1] in "0123456789") )
 
 
-"""
-======================================================================
-========================== NANODOM ===================================
-======================================================================
-
-The three classes below implement some of the most basic DOM
-methods.  I use this instead of minidom because I need a simpler
-functionality and do not want to require additional libraries.
-
-Importantly, NanoDom does not do normalization, which is what we
-want. It also adds extra white space when converting DOM to string
-"""
-
-ENTITY_NORMALIZATION_EXPRESSIONS = [ (re.compile("&"), "&amp;"),
-                                     (re.compile("<"), "&lt;"),
-                                     (re.compile(">"), "&gt;")]
-
-ENTITY_NORMALIZATION_EXPRESSIONS_SOFT = [ (re.compile("&(?!\#)"), "&amp;"),
-                                     (re.compile("<"), "&lt;"),
-                                     (re.compile(">"), "&gt;"),
-                                     (re.compile("\""), "&quot;")]
-
-
-def getBidiType(text):
-    """
-    Get Bi-directional text type. Used by TextNode to determine text direction.
-    """
-
-    if not text: 
-        return None
-
-
-    ch = text[0]
-
-    if not isinstance(ch, unicode) or not ch.isalpha():
-        return None
-
+def codepoint2name(code):
+    """ Returns entity defenition by code, or code 
+    if there is no such entity defenition"""
+    entity = htmlentitydefs.codepoint2name.get(code)
+    if entity:
+        return "%s%s;" % (AND_SUBSTITUTE, entity)
     else:
-
-        for min, max in RTL_BIDI_RANGES:
-            if ( ch >= min and ch <= max ):
-                return "rtl"
-        else:
-            return "ltr"
-
-
-class Document:
-    """
-    Document root of the NanoDom. An instance stores DOM elements as children.
-
-    """
-
-    def __init__ (self):
-        """ Create a NanoDom document. """
-        self.bidi = "ltr"
-        self.stripTopLevelTags = True
-
-    def appendChild(self, child):
-        """ Add a dom element as a child of the document root. """
-        self.documentElement = child
-        child.isDocumentElement = True
-        child.parentNode = self
-
-        self.entities = {}
-
-    def setBidi(self, bidi):
-        """ Set text direction (right-left or left-right)."""
-        if bidi:
-            self.bidi = bidi
-
-    def createElement(self, tag, textNode=None):
-        """ Given a tag or textNode, return a dom element. """
-        el = Element(tag)
-        el.doc = self
-        if textNode:
-            el.appendChild(self.createTextNode(textNode))
-        return el
-
-    def createTextNode(self, text, type="text"):
-        """ Return given text as a TextNode. """
-        node = TextNode(text)
-        node.doc = self
-        node.type = type
-        return node
-
-    def createEntityReference(self, entity):
-        """ Return an html entitry reference (i.e.: `&amp;`). """
-        if entity not in self.entities:
-            self.entities[entity] = EntityReference(entity)
-        return self.entities[entity]
-
-    def createCDATA(self, text):
-        """ Return the given text as a CDATA node. """
-        node = CDATA(text)
-        node.doc = self
-        
-        return node
-
-    def toxml (self):
-        """ Convert document to xml and return a string. """
-        xml = self.documentElement.toxml()
-        if self.stripTopLevelTags:
-            xml = xml.strip()[23:-7] + "\n"
-        return xml
-
-    def normalizeEntities(self, text, avoidDoubleNormalizing=False):
-        """ Return the given text as an html entity (i.e.: `<` => `&gt;`). """
-        if avoidDoubleNormalizing:
-            regexps = ENTITY_NORMALIZATION_EXPRESSIONS_SOFT
-        else:
-            regexps = ENTITY_NORMALIZATION_EXPRESSIONS
-
-        for regexp, substitution in regexps:
-            text = regexp.sub(substitution, text)
-        return text
-
-    def find(self, test):
-        """ Return a list of descendants that pass the test function """
-        return self.documentElement.find(test)
-
-    def unlink(self):
-        """ Cleanup: Remove all children from the document. """
-        self.documentElement.unlink()
-        self.documentElement = None
-
-
-class CDATA:
-    """ CDATA node type of NanoDom. """
-    type = "cdata"
-
-    def __init__ (self, text):
-        """ Create a CDATA node with given text. """
-        self.text = text
-
-    def handleAttributes(self):
-        """ Not implemented for CDATA node type. """
-        pass
-
-    def toxml (self):
-        """ Return CDATA node as a string. """
-        return "<![CDATA[" + self.text + "]]>"
-
-class Element:
-    """ 
-    Element node type of Nanodom. 
+        return "%s#%d;" % (AND_SUBSTITUTE, code)
     
-    All html tags would most likely be represented as Elements.
-
-    """
-    type = "element"
-
-    def __init__ (self, tag):
-        """ Create an Element node instance. """
-        self.nodeName = tag
-        self.attributes = []
-        self.attribute_values = {}
-        self.childNodes = []
-        self.bidi = None
-        self.isDocumentElement = False
-
-    def setBidi(self, bidi):
-        """ Set text direction (i.e.: right-left or left-right). """
-        if bidi:
-
-            orig_bidi = self.bidi
-
-            if not self.bidi or self.isDocumentElement:
-                # Once the bidi is set don't change it (except for doc element)
-                self.bidi = bidi
-                self.parentNode.setBidi(bidi)
-
-
-
-    def unlink(self):
-        """ Cleanup: Remove all children of the Element. """
-        for child in self.childNodes:
-            if child.type == "element":
-                child.unlink()
-        self.childNodes = None
-
-    def setAttribute(self, attr, value):
-        """ 
-        Assign an html/xml attribute to the Element (i.e.: id, class, href). 
-        """
-        if not attr in self.attributes:
-            self.attributes.append(attr)
-
-        self.attribute_values[attr] = value
-
-    def insertChild(self, position, child):
-        """ Insert a child Element at the given position. """
-        self.childNodes.insert(position, child)
-        child.parentNode = self
-
-    def removeChild(self, child):
-        """ Remove the given child from the Element. """
-        self.childNodes.remove(child)
-
-    def replaceChild(self, newChild, oldChild):
-        """ Replace an old child Element with a new child Element. """
-        position = self.childNodes.index(oldChild)
-        self.removeChild(oldChild)
-        self.insertChild(position, newChild)
-
-    def appendChild(self, child):
-        """ Append a new child Element to the end of the child Elements. """
-        self.childNodes.append(child)
-        child.parentNode = self
-
-    def handleAttributes(self):
-        """ Not implemented for Element node type. """
-        pass
-
-    def find(self, test, depth=0):
-        """ Returns a list of descendants that pass the test function """
-        matched_nodes = []
-        for child in self.childNodes:
-            if test(child):
-                matched_nodes.append(child)
-            if child.type == "element":
-                matched_nodes += child.find(test, depth+1)
-        return matched_nodes
-    
-
-
-    def toxml(self):
-        """ Return the Element and all children as a string. """
-        if ENABLE_ATTRIBUTES:
-            for child in self.childNodes:
-                child.handleAttributes()
-
-        buffer = ""
-        if self.nodeName in ['h1', 'h2', 'h3', 'h4']:
-            buffer += "\n"
-        elif self.nodeName in ['li']:
-            buffer += "\n "
-
-        # Process children FIRST, then do the attributes
-
-        childBuffer = ""
-
-        if self.childNodes or self.nodeName in ['blockquote']:
-            childBuffer += ">"
-            for child in self.childNodes:
-                childBuffer += child.toxml()
-            if self.nodeName == 'p':
-                childBuffer += "\n"
-            elif self.nodeName == 'li':
-                childBuffer += "\n "
-            childBuffer += "</%s>" % self.nodeName
-        else:
-            childBuffer += "/>"
-
-
-            
-        buffer += "<" + self.nodeName
-
-        if self.nodeName in ['p', 'li', 'ul', 'ol',
-                             'h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
-
-            if not self.attribute_values.has_key("dir"):
-                if self.bidi:
-                    bidi = self.bidi
-                else:
-                    bidi = self.doc.bidi
-                    
-                if bidi=="rtl":
-                    self.setAttribute("dir", "rtl")
-        
-        for attr in self.attributes:
-            value = self.attribute_values[attr]
-            value = self.doc.normalizeEntities(value,
-                                               avoidDoubleNormalizing=True)
-            buffer += ' %s="%s"' % (attr, value)
-
-
-        # Now let's actually append the children
-
-        buffer += childBuffer
-
-        if self.nodeName in ['p', 'br ', 'li', 'ul', 'ol',
-                             'h1', 'h2', 'h3', 'h4'] :
-            buffer += "\n"
-
-        return buffer
-
-
-class TextNode:
-    """ A Text node type of the NanoDom. """
-    type = "text"
-    attrRegExp = re.compile(r'\{@([^\}]*)=([^\}]*)}') # {@id=123}
-
-    def __init__ (self, text):
-        """ Create a TextNode with the given text. """
-        self.value = text        
-
-    def attributeCallback(self, match):
-        """ Regex callback method to set attribute on parent. """
-        self.parentNode.setAttribute(match.group(1), match.group(2))
-
-    def handleAttributes(self):
-        """ Parse and assign attributes to the parent Element. """
-        self.value = self.attrRegExp.sub(self.attributeCallback, self.value)
-
-    def toxml(self):
-        """ Return the TextNode as a string. """
-        text = self.value
-        
-        
-        self.parentNode.setBidi(getBidiType(text))
-
-        if not text.startswith(HTML_PLACEHOLDER_PREFIX):
-            if self.parentNode.nodeName == "p":
-
-                text = text.replace("\n", "\n   ")
-
-            elif (self.parentNode.nodeName == "li"
-                  and self.parentNode.childNodes[0]==self):
-
-                text = "\n     " + text.replace("\n", "\n     ")
-    
-        text = self.doc.normalizeEntities(text)
-        return text
-
-
-class EntityReference:
-    """ EntityReference node type of NanoDom. """
-    type = "entity_ref"
-
-    def __init__(self, entity):
-        """ Create an EntityReference of the given entity. """
-        self.entity = entity
-
-    def handleAttributes(self):
-        """ Not implemented for EntityReference. """
-        pass
-
-    def toxml(self):
-        """ Return the EntityReference as a string. """
-        return "&" + self.entity + ";"
 
 """
 ======================================================================
@@ -775,6 +446,7 @@ class ReferencePreprocessor(Preprocessor):
 
 REFERENCE_PREPROCESSOR = ReferencePreprocessor()
 
+
 """
 ======================================================================
 ========================== INLINE PATTERNS ===========================
@@ -854,7 +526,7 @@ AUTOLINK_RE = r'<((?:f|ht)tps?://[^>]*)>'        # <http://www.123.com>
 AUTOMAIL_RE = r'<([^> \!]*@[^> ]*)>'               # <me@example.com>
 #HTML_RE = r'(\<[^\>]*\>)'                        # <...>
 HTML_RE = r'(\<[a-zA-Z/][^\>]*\>)'               # <...>
-ENTITY_RE = r'(&[\#a-zA-Z0-9]*;)'                # &amp;
+ENTITY_RE = r'(&[\#a-zA-Z0-9]*;)'               # &amp;
 LINE_BREAK_RE = r'  \n'                     # two spaces at end of line
 LINE_BREAK_2_RE = r'  $'                    # two spaces at end of text
 
@@ -1026,10 +698,23 @@ class ImagePattern(LinkPattern):
             el.set('src', "")
         if len(src_parts) > 1:
             el.set('title', dequote(" ".join(src_parts[1:])))
+            
+        # Need to be reimplemented
         '''if ENABLE_ATTRIBUTES:
             el.text = m.group(2)
             truealt = text.value
             el.childNodes.remove(text)
+
+            self.attrRegExp.sub(self.attributeCallback, self.value)
+            
+        
+            text = doc.createTextNode(m.group(2))
+            el.appendChild(text)
+            text.handleAttributes()
+            truealt = text.value
+            el.childNodes.remove(text)
+            
+            
         else:
             truealt = m.group(2)'''
             
@@ -1083,7 +768,6 @@ class AutolinkPattern (Pattern):
         el.text = m.group(2)
         return el
 
-#FIXME: Add ElementTree support
 class AutomailPattern (Pattern):
     """ 
     Return a mailto link Element given an automail link (`<foo@example.com>`). 
@@ -1094,11 +778,13 @@ class AutomailPattern (Pattern):
         email = m.group(2)
         if email.startswith("mailto:"):
             email = email[len("mailto:"):]
+        el.text = ""
         for letter in email:
-            entity = doc.createEntityReference("#%d" % ord(letter))
-            el.appendChild(entity)
+            el.text += codepoint2name(ord(letter))
+
         mailto = "mailto:" + email
-        mailto = "".join(['&#%d;' % ord(letter) for letter in mailto])
+        mailto = "".join([AND_SUBSTITUTE + '#%d;' % 
+                          ord(letter) for letter in mailto])
         el.set('href', mailto)
         return el
 
@@ -1222,6 +908,20 @@ class RawHtmlTextPostprocessor(TextPostprocessor):
         return html.replace('"', '&quot;')
 
 RAWHTMLTEXTPOSTPROCESSOR = RawHtmlTextPostprocessor()
+
+
+class AndSubstitutePostprocessor(TextPostprocessor):
+    """ Restore valid entities """
+    def __init__(self):
+        pass
+
+    def run(self, text):
+
+        text =  text.replace(AND_SUBSTITUTE, "&")
+        return text
+
+ANDSUBSTITUTETEXTPOSTPROCESSOR = AndSubstitutePostprocessor()
+
 
 """
 ======================================================================
@@ -1481,11 +1181,13 @@ class Markdown:
 
         self.textPostprocessors = [# a footnote postprocessor will get
                                    # inserted here
-                                   RAWHTMLTEXTPOSTPROCESSOR]
+                                   RAWHTMLTEXTPOSTPROCESSOR,
+                                   ANDSUBSTITUTETEXTPOSTPROCESSOR]
 
         self.prePatterns = []
                                
-        self.inlinePatterns = [DOUBLE_BACKTICK_PATTERN,
+        self.inlinePatterns = [
+                               DOUBLE_BACKTICK_PATTERN,
                                BACKTICK_PATTERN,
                                ESCAPE_PATTERN,
                                REFERENCE_PATTERN,
@@ -1494,7 +1196,7 @@ class Markdown:
                                IMAGE_LINK_PATTERN,
                                IMAGE_REFERENCE_PATTERN,
                                AUTOLINK_PATTERN,
-                               #AUTOMAIL_PATTERN,
+                               AUTOMAIL_PATTERN,
                                LINE_BREAK_PATTERN_2,
                                LINE_BREAK_PATTERN,
                                HTML_PATTERN,
@@ -1978,7 +1680,7 @@ class Markdown:
         result = []
         prefix = self.inlineStash.prefix
         strartIndex = 0
-     
+      
         while data:
             
             index = data.find(prefix, strartIndex)
@@ -1989,8 +1691,9 @@ class Markdown:
                 if self.inlineStash.isin(id):
                   
                     node = self.inlineStash.get(id)
+             
           
-                    if not isstr(node):
+                    if not isstr(node): # it's Element
                         
                         if index > 0:
                             text = data[strartIndex:index]
@@ -2003,7 +1706,9 @@ class Markdown:
                             
                             if child.text:
                                 self._processElementText(node, child)
-                    else:
+                                
+                    else: # it's just a string
+                
                         linkText(node)
                         strartIndex = phEndIndex
                         continue
@@ -2011,15 +1716,17 @@ class Markdown:
                     strartIndex = phEndIndex    
                     result.append(node)
                        
-                else:
+                else: # wrong placeholder
                     end = index + len(prefix)
                     linkText(data[strartIndex:end])
-                    strartIndex = end
-                    
+                    strartIndex = end 
             else:
-                linkText(data[strartIndex:])
+                
+                text = data[strartIndex:].strip()
+                if text:
+                    linkText(text)
                 data = ""
-                    
+
         return result
         
    
@@ -2055,9 +1762,11 @@ class Markdown:
                 for child in [node] + node.getchildren():
                     if not isstr(node):
                         if child.text:
-                            child.text = self._handleInline(child.text, patternIndex)
+                            child.text = self._handleInline(child.text, 
+                                                            patternIndex)
                         if child.tail:
-                            child.tail = self._handleInline(child.tail, patternIndex)
+                            child.tail = self._handleInline(child.tail, 
+                                                            patternIndex)
    
         pholder = self.inlineStash.add(node, pattern.type())
 
@@ -2173,24 +1882,19 @@ class Markdown:
 
         tree = self.markdownToTree(source)
         
-        output = StringIO.StringIO()
-    
-        newTree = self.applyInlinePatterns(tree)
+        root = self.applyInlinePatterns(tree).getroot()
         
-        #indentETree(newTree.getroot())
-        newTree.write(output, "utf8")
+        indentETree(root)
         
-        xml = output.getvalue()
+        xml = etree.tostring(root, encoding="utf8")
         
-        if self.stripTopLevelTags:
-            xml = xml.strip()[44:-7] + "\n"
-        
-        #xml = etree.tostring(self.applyInlinePatterns(tree).getroot(), "utf8")
+        '''if self.stripTopLevelTags:
+            xml = xml.strip()[44:-7] + "\n"'''
 
         for pp in self.textPostprocessors:
             xml = pp.run(xml)
 
-        return (self.docType + xml).strip()
+        return xml.strip()
 
 
     def __str__(self):
