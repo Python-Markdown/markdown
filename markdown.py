@@ -86,15 +86,16 @@ except ImportError:
                            "Failed to import ElementTree from any known place")
                     sys.exit(1)'''
                     
-import xml.etree.cElementTree as etree
-#from lxml import etree 
+import xml.etree.cElementTree as etree 
 
 
 def indentETree(elem, level=0):
+     
     if level > 1:
-        i = "\n" + level*"  "
+        i = "\n" + (level-1)*"  "
     else:
         i = "\n"
+
     if len(elem):
         if not elem.text or not elem.text.strip():
             elem.text = i + "  "
@@ -1885,11 +1886,11 @@ class Markdown:
         root = self.applyInlinePatterns(tree).getroot()
         
         indentETree(root)
+
+        xml = codecs.decode(etree.tostring(root, encoding="utf8"), "utf8")
         
-        xml = etree.tostring(root, encoding="utf8")
-        
-        '''if self.stripTopLevelTags:
-            xml = xml.strip()[44:-7] + "\n"'''
+        if self.stripTopLevelTags:
+            xml = xml.strip()[44:-7] + "\n"
 
         for pp in self.textPostprocessors:
             xml = pp.run(xml)
