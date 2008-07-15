@@ -151,6 +151,9 @@ EXECUTABLE_NAME_FOR_USAGE = "python markdown.py"
 
 AND_SUBSTITUTE = unichr(2) + unichr(4) + unichr(3) 
 
+INLINE_PLACEHOLDER_PREFIX = u'\u0001'
+INLINE_PLACEHOLDER_SUFFIX = u'\u0002'
+
 # a template for html placeholders
 HTML_PLACEHOLDER_PREFIX = "qaodmasdkwaspemas"
 HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%dajkqlsmdqpakldnzsdfls"
@@ -504,7 +507,7 @@ BRK = ( r'\[('
         + NOBRACKET + r')\]' )
 NOIMG = r'(?<!\!)'
 
-BACKTICK_RE = r'\`([^\`]*)\`'                    # `e= m*c^2`
+BACKTICK_RE = r'([^\\])\`([^\`]*[^\\]{0,1})\`'                    # `e= m*c^2`
 DOUBLE_BACKTICK_RE =  r'\`\`(.*?)\`\`'            # ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                             # \<
 EMPHASIS_RE = r'\*([^\*]*)\*'                    # *emphasis*
@@ -538,13 +541,14 @@ LINE_BREAK_2_RE = r'  $'                    # two spaces at end of text
 class Pattern:
     """Base class that inline patterns subclass. """
 
-    def __init__ (self, pattern):
+    def __init__ (self, pattern, contentGroup=2):
         """
         Create an instant of an inline pattern.
 
         Keyword arguments:
 
         * pattern: A regular expression that matches a pattern
+        * contentGroup: Index of group with content, that will be replaced
 
         """
         self.pattern = pattern
@@ -552,6 +556,7 @@ class Pattern:
 
         # Api for Markdown to pass safe_mode into instance
         self.safe_mode = False
+        self.contentGroup = contentGroup
 
     def getCompiledRegExp (self):
         """ Return a compiled regular expression. """
@@ -580,7 +585,10 @@ BasePattern = Pattern # for backward compatibility
 class SimpleTextPattern (Pattern):
     """ Return a simple TextNode of group(2) of a Pattern. """
     def handleMatch(self, m):
-        return m.group(2)
+        text = m.group(2)
+        if text == INLINE_PLACEHOLDER_PREFIX:
+            return None
+        return text
 
 class SimpleTagPattern (Pattern):
     """ 
@@ -604,13 +612,13 @@ class SubstituteTagPattern (SimpleTagPattern):
 
 class BacktickPattern (Pattern):
     """ Return a NanoDom `<code>` Element containing the matching text. """
-    def __init__ (self, pattern):
-        Pattern.__init__(self, pattern)
+    def __init__ (self, pattern, contentGroup=2):
+        Pattern.__init__(self, pattern, contentGroup)
         self.tag = "code"
 
     def handleMatch(self, m):
         el = etree.Element(self.tag)
-        el.text = m.group(2).strip()
+        el.text = m.group(self.contentGroup).strip()
         return el
 
 
@@ -783,7 +791,7 @@ class AutomailPattern (Pattern):
 ESCAPE_PATTERN          = SimpleTextPattern(ESCAPE_RE)
 NOT_STRONG_PATTERN      = SimpleTextPattern(NOT_STRONG_RE)
 
-BACKTICK_PATTERN        = BacktickPattern(BACKTICK_RE)
+BACKTICK_PATTERN        = BacktickPattern(BACKTICK_RE, 3)
 DOUBLE_BACKTICK_PATTERN = BacktickPattern(DOUBLE_BACKTICK_RE)
 STRONG_PATTERN          = SimpleTagPattern(STRONG_RE, 'strong')
 STRONG_PATTERN_2        = SimpleTagPattern(STRONG_2_RE, 'strong')
@@ -1048,8 +1056,8 @@ def dequote(string):
 class InlineStash:
     
     def __init__(self):
-        self.prefix = u'\u0001'
-        self.suffix = u'\u0002'
+        self.prefix = INLINE_PLACEHOLDER_PREFIX
+        self.suffix = INLINE_PLACEHOLDER_SUFFIX
         self._nodes = {}
         self.phLength = 4 + len(self.prefix) + len(self.suffix)
         
@@ -1645,6 +1653,49 @@ class Markdown:
                 patternIndex += 1
         
         return data
+    
+    def _applyInline(self, pattern, data, patternIndex):
+        """ 
+        Given a pattern name, this function checks if the line
+        fits the pattern, creates the necessary elements, adds it 
+        to InlineStash, and returns string with placeholders,
+        instead of ElementTree elements.
+        
+        Keyword arguments:
+        
+        * data: the text to be processed
+        * pattern: the pattern to be checked
+        * patternIndex: index of current pattern
+
+        Returns: String with placeholders.
+        """
+        
+        match = pattern.getCompiledRegExp().match(data)
+ 
+        if not match:
+            return data, False
+        
+        node = pattern.handleMatch(match)
+     
+        if node is None:
+            return data, False
+        if not isstr(node):            
+            if not node.tag in ["code", "pre"]:
+                # We need to process current node too
+                for child in [node] + node.getchildren():
+                    if not isstr(node):
+                        if child.text:
+                            child.text = self._handleInline(child.text, 
+                                                            patternIndex)
+                        if child.tail:
+                            child.tail = self._handleInline(child.tail, 
+                                                            patternIndex)
+   
+        pholder = self.inlineStash.add(node, pattern.type())
+        left = "".join([match.group(i) for i in xrange(1, 
+                                                       pattern.contentGroup)])
+
+        return "%s%s%s" % (left, pholder, match.groups()[-1]), True
    
     def _processElementText(self, node, subnode, isText=True):
         
@@ -1692,16 +1743,16 @@ class Markdown:
         result = []
         prefix = self.inlineStash.prefix
         strartIndex = 0
-   
+
         while data:
             
             index = data.find(prefix, strartIndex)
             if index != -1:
                 
                 id, phEndIndex = self.inlineStash.extractId(data, index)
-    
+                
                 if self.inlineStash.isin(id):
-                  
+   
                     node = self.inlineStash.get(id)
              
                     if index > 0:
@@ -1733,55 +1784,12 @@ class Markdown:
                     strartIndex = end 
             else:
                 
-                text = data[strartIndex:].strip()
+                text = data[strartIndex:]
                 linkText(text)
                 data = ""
 
         return result
         
-   
-
-    def _applyInline(self, pattern, data, patternIndex):
-        """ 
-        Given a pattern name, this function checks if the line
-        fits the pattern, creates the necessary elements, adds it 
-        to InlineStash, and returns string with placeholders,
-        instead of ElementTree elements.
-        
-        Keyword arguments:
-        
-        * data: the text to be processed
-        * pattern: the pattern to be checked
-        * patternIndex: index of current pattern
-
-        Returns: String with placeholders.
-        """
-        
-        match = pattern.getCompiledRegExp().match(data)
- 
-        if not match:
-            return data, False
-        
-        node = pattern.handleMatch(match)
-     
-        if node is None:
-            return data, False
-        if not isstr(node):            
-            if not node.tag in ["code", "pre"]:
-                # We need to process current node too
-                for child in [node] + node.getchildren():
-                    if not isstr(node):
-                        if child.text:
-                            child.text = self._handleInline(child.text, 
-                                                            patternIndex)
-                        if child.tail:
-                            child.tail = self._handleInline(child.tail, 
-                                                            patternIndex)
-   
-        pholder = self.inlineStash.add(node, pattern.type())
-
-        return "%s%s%s" % (match.group(1), pholder, match.groups()[-1]), True
-    
     def _processTree(self, el):
         """
         Processing ElementTree, and applying inline patterns
