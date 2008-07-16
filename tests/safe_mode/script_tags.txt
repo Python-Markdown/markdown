@@ -16,7 +16,7 @@ Now with some weirdness
 
 ``<script <!--
 alert("Hello world!")
-</script <>```
+</script <>`` `
 
 Try another way.
 

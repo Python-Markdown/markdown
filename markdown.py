@@ -507,8 +507,7 @@ BRK = ( r'\[('
         + NOBRACKET + r')\]' )
 NOIMG = r'(?<!\!)'
 
-BACKTICK_RE = r'(?<!\\)(?:`+)(?!`)(.+?)(?<!`)(`+)(?!`)'
-DOUBLE_BACKTICK_RE =  r'\`\`(.*?)\`\`'            # ``e=f("`")``
+BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)' # `e=f()` or ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                             # \<
 EMPHASIS_RE = r'\*([^\*]*)\*'                    # *emphasis*
 STRONG_RE = r'\*\*(.*?|[^**]+?)\*\*'                      # **strong**
@@ -791,8 +790,7 @@ class AutomailPattern (Pattern):
 ESCAPE_PATTERN          = SimpleTextPattern(ESCAPE_RE)
 NOT_STRONG_PATTERN      = SimpleTextPattern(NOT_STRONG_RE)
 
-BACKTICK_PATTERN        = BacktickPattern(BACKTICK_RE)
-DOUBLE_BACKTICK_PATTERN = BacktickPattern(DOUBLE_BACKTICK_RE)
+BACKTICK_PATTERN        = BacktickPattern(BACKTICK_RE, 3)
 STRONG_PATTERN          = SimpleTagPattern(STRONG_RE, 'strong')
 STRONG_PATTERN_2        = SimpleTagPattern(STRONG_2_RE, 'strong')
 EMPHASIS_PATTERN        = SimpleTagPattern(EMPHASIS_RE, 'em')
@@ -1188,7 +1186,6 @@ class Markdown:
         self.prePatterns = []
                                
         self.inlinePatterns = [
-                               DOUBLE_BACKTICK_PATTERN,
                                BACKTICK_PATTERN,
                                ESCAPE_PATTERN,
                                REFERENCE_PATTERN,
@@ -1674,7 +1671,7 @@ class Markdown:
  
         if not match:
             return data, False
-        
+
         node = pattern.handleMatch(match)
      
         if node is None:
@@ -1692,10 +1689,8 @@ class Markdown:
                                                             patternIndex)
    
         pholder = self.inlineStash.add(node, pattern.type())
-        left = "".join([match.group(i) for i in xrange(1, 
-                                                       pattern.contentGroup)])
 
-        return "%s%s%s" % (left, pholder, match.groups()[-1]), True
+        return "%s%s%s" % (match.group(1), pholder, match.groups()[-1]), True
    
     def _processElementText(self, node, subnode, isText=True):
         
