@@ -507,7 +507,7 @@ BRK = ( r'\[('
         + NOBRACKET + r')\]' )
 NOIMG = r'(?<!\!)'
 
-BACKTICK_RE = r'([^\\])\`([^\`]*[^\\]{0,1})\`'                    # `e= m*c^2`
+BACKTICK_RE = r'(?<!\\)(?:`+)(?!`)(.+?)(?<!`)(`+)(?!`)'
 DOUBLE_BACKTICK_RE =  r'\`\`(.*?)\`\`'            # ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                             # \<
 EMPHASIS_RE = r'\*([^\*]*)\*'                    # *emphasis*
@@ -791,7 +791,7 @@ class AutomailPattern (Pattern):
 ESCAPE_PATTERN          = SimpleTextPattern(ESCAPE_RE)
 NOT_STRONG_PATTERN      = SimpleTextPattern(NOT_STRONG_RE)
 
-BACKTICK_PATTERN        = BacktickPattern(BACKTICK_RE, 3)
+BACKTICK_PATTERN        = BacktickPattern(BACKTICK_RE)
 DOUBLE_BACKTICK_PATTERN = BacktickPattern(DOUBLE_BACKTICK_RE)
 STRONG_PATTERN          = SimpleTagPattern(STRONG_RE, 'strong')
 STRONG_PATTERN_2        = SimpleTagPattern(STRONG_2_RE, 'strong')
@@ -1277,7 +1277,7 @@ class Markdown:
     def _transform(self):
         """Transform the Markdown text into a XHTML body document.
 
-        Returns: A NanoDom Document 
+        Returns: ElementTree object 
         
         """
 
@@ -1331,7 +1331,7 @@ class Markdown:
 
         Keyword arguments:
         
-        * parent_elem: A NanoDom element to which the content will be added.
+        * parent_elem: A ElementTree element to which the content will be added.
         * lines: a list of lines
         * inList: a level
         
