@@ -2106,6 +2106,22 @@ class Extension:
         """ Set a config setting for `key` with the given `value`. """
         self.config[key][0] = value
 
+    def extendMarkdown(self, md, md_globals):
+        """ 
+        Add the various proccesors and patterns to the Markdown Instance. 
+        
+        This method must be overriden by every extension.
+
+        Ketword arguments:
+
+        * md: The Markdown instance.
+
+        * md_globals: All global variables availabel in the markdown module
+        namespace.
+
+        """
+        pass
+
 
 def load_extension(ext_name, configs = []):
     """ 
@@ -2135,11 +2151,12 @@ def load_extension(ext_name, configs = []):
     try:
         module = __import__(extension_module_name)
 
-    except:
-        message(CRITICAL,
-                "couldn't load extension %s (looking for %s module)"
+    except ImportError:
+        message(WARN,
+                "Couldn't load extension '%s' from \"%s\" - continuing without."
                 % (ext_name, extension_module_name) )
-        sys.exit(1)
+        # Return a dummy (do nothing) Extension as silent failure
+        return Extension(configs={})
 
     return module.makeExtension(configs.items())    
 
