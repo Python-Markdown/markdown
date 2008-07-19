@@ -523,8 +523,11 @@ else:
 STRONG_2_RE = r'__(.*?|[^__]+?)__'                     # __strong__
 STRONG_EM_2_RE = r'___(.*?|[^___]+?)___'                # ___strong___
 
-LINK_RE = NOIMG + BRK + r'\s*\(([^\)]*)\)'               # [text](url)
-LINK_ANGLED_RE = NOIMG + BRK + r'\s*\(<([^\)]*)>\)'      # [text](<url>)
+#LINK_RE = NOIMG + BRK + r'\s*\(([^\)]*)\)'               # [text](url)
+
+LINK_RE = NOIMG + BRK + \
+r'''\(\s*(((?:(?:\(.*?\))|[^\(\)]))*?|<\10*?>)\s*((['"])(.*)\12)?\)''' # [text](url) or [text](<url>)
+
 IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(([^\)]*)\)' # ![alttxt](http://x.com/)
 REFERENCE_RE = NOIMG + BRK+ r'\s*\[([^\]]*)\]'           # [Google][3]
 IMAGE_REFERENCE_RE = r'\!' + BRK + '\s*\[([^\]]*)\]' # ![alt text][2]
@@ -540,14 +543,13 @@ LINE_BREAK_2_RE = r'  $'                    # two spaces at end of text
 class Pattern:
     """Base class that inline patterns subclass. """
 
-    def __init__ (self, pattern, contentGroup=2):
+    def __init__ (self, pattern):
         """
         Create an instant of an inline pattern.
 
         Keyword arguments:
 
         * pattern: A regular expression that matches a pattern
-        * contentGroup: Index of group with content, that will be replaced
 
         """
         self.pattern = pattern
@@ -555,7 +557,6 @@ class Pattern:
 
         # Api for Markdown to pass safe_mode into instance
         self.safe_mode = False
-        self.contentGroup = contentGroup
 
     def getCompiledRegExp (self):
         """ Return a compiled regular expression. """
@@ -611,13 +612,13 @@ class SubstituteTagPattern (SimpleTagPattern):
 
 class BacktickPattern (Pattern):
     """ Return a NanoDom `<code>` Element containing the matching text. """
-    def __init__ (self, pattern, contentGroup=2):
-        Pattern.__init__(self, pattern, contentGroup)
+    def __init__ (self, pattern):
+        Pattern.__init__(self, pattern)
         self.tag = "code"
 
     def handleMatch(self, m):
         el = etree.Element(self.tag)
-        el.text = m.group(self.contentGroup).strip()
+        el.text = m.group(3).strip()
         return el
 
 
@@ -648,21 +649,19 @@ class HtmlPattern (Pattern):
 class LinkPattern (Pattern):
     """ Return a NanoDom link Element from the given match. """
     def handleMatch(self, m):
-
         el = etree.Element("a")
-
         el.text = m.group(2)
-        parts = m.group(9).split('"')
-        # We should now have [], [href], or [href, title]
-        if parts:
-            el.set("href", self.sanatize_url(parts[0].strip()))
+        title = m.group(11)
+        href = m.group(9)
+        if href:
+            if href[0] == "<":
+                href = href[1:-1]
+            el.set("href", self.sanatize_url(href.strip()))
         else:
-
             el.set("href", "")
-        if len(parts) > 1:
-            # we also got a title
-            title = ('"' + '"'.join(parts[1:]).strip())[1:-1]
-            #title = dequote(title) #.replace('"', "&quot;")
+            
+        if title:
+            title = dequote(title) #.replace('"', "&quot;")
             el.set("title", title)
         return el
 
@@ -790,7 +789,7 @@ class AutomailPattern (Pattern):
 ESCAPE_PATTERN          = SimpleTextPattern(ESCAPE_RE)
 NOT_STRONG_PATTERN      = SimpleTextPattern(NOT_STRONG_RE)
 
-BACKTICK_PATTERN        = BacktickPattern(BACKTICK_RE, 3)
+BACKTICK_PATTERN        = BacktickPattern(BACKTICK_RE)
 STRONG_PATTERN          = SimpleTagPattern(STRONG_RE, 'strong')
 STRONG_PATTERN_2        = SimpleTagPattern(STRONG_2_RE, 'strong')
 EMPHASIS_PATTERN        = SimpleTagPattern(EMPHASIS_RE, 'em')
@@ -803,7 +802,6 @@ LINE_BREAK_PATTERN      = SubstituteTagPattern(LINE_BREAK_RE, 'br ')
 LINE_BREAK_PATTERN_2    = SubstituteTagPattern(LINE_BREAK_2_RE, 'br ')
 
 LINK_PATTERN            = LinkPattern(LINK_RE)
-LINK_ANGLED_PATTERN     = LinkPattern(LINK_ANGLED_RE)
 IMAGE_LINK_PATTERN      = ImagePattern(IMAGE_LINK_RE)
 IMAGE_REFERENCE_PATTERN = ImageReferencePattern(IMAGE_REFERENCE_RE)
 REFERENCE_PATTERN       = ReferencePattern(REFERENCE_RE)
@@ -1189,7 +1187,6 @@ class Markdown:
                                BACKTICK_PATTERN,
                                ESCAPE_PATTERN,
                                REFERENCE_PATTERN,
-                               LINK_ANGLED_PATTERN,
                                LINK_PATTERN,
                                IMAGE_LINK_PATTERN,
                                IMAGE_REFERENCE_PATTERN,
