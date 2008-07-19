@@ -509,19 +509,14 @@ NOIMG = r'(?<!\!)'
 
 BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)' # `e=f()` or ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                             # \<
-EMPHASIS_RE = r'\*([^\*]*)\*'                    # *emphasis*
-STRONG_RE = r'\*\*(.*?|[^**]+?)\*\*'                      # **strong**
-STRONG_EM_RE = r'\*\*\*(.*?|[^***]+?)\*\*\*'            # ***strong***
-
-
+EMPHASIS_RE = r'(\*)([^\*]*)\2'                    # *emphasis*
+STRONG_RE = r'(\*{2}|_{2})(.*?)\2'                      # **strong**
+STRONG_EM_RE = r'(\*{3}|_{3})(.*?)\2'            # ***strong***
 
 if SMART_EMPHASIS:
-    EMPHASIS_2_RE = r'(?<!\S)_(\S[^_]+)_'        # _emphasis_
+    EMPHASIS_2_RE = r'(?<!\S)(_)(\S.*?)\2'        # _emphasis_
 else:
-    EMPHASIS_2_RE = r'_([^_]*)_'                 # _emphasis_
-
-STRONG_2_RE = r'__(.*?|[^__]+?)__'                     # __strong__
-STRONG_EM_2_RE = r'___(.*?|[^___]+?)___'                # ___strong___
+    EMPHASIS_2_RE = r'(_)(.*?)\2'                 # _emphasis_
 
 #LINK_RE = NOIMG + BRK + r'\s*\(([^\)]*)\)'               # [text](url)
 
@@ -602,7 +597,7 @@ class SimpleTagPattern (Pattern):
 
     def handleMatch(self, m):
         el = etree.Element(self.tag)
-        el.text = m.group(2)
+        el.text = m.group(3)
         return el
 
 class SubstituteTagPattern (SimpleTagPattern):
@@ -632,7 +627,7 @@ class DoubleTagPattern (SimpleTagPattern):
         tag1, tag2 = self.tag.split(",")
         el1 = etree.Element(tag1)
         el2 = etree.SubElement(el1, tag2)
-        el2.text = m.group(2)
+        el2.text = m.group(3)
         return el1
 
 
@@ -791,12 +786,10 @@ NOT_STRONG_PATTERN      = SimpleTextPattern(NOT_STRONG_RE)
 
 BACKTICK_PATTERN        = BacktickPattern(BACKTICK_RE)
 STRONG_PATTERN          = SimpleTagPattern(STRONG_RE, 'strong')
-STRONG_PATTERN_2        = SimpleTagPattern(STRONG_2_RE, 'strong')
 EMPHASIS_PATTERN        = SimpleTagPattern(EMPHASIS_RE, 'em')
 EMPHASIS_PATTERN_2      = SimpleTagPattern(EMPHASIS_2_RE, 'em')
 
 STRONG_EM_PATTERN       = DoubleTagPattern(STRONG_EM_RE, 'strong,em')
-STRONG_EM_PATTERN_2     = DoubleTagPattern(STRONG_EM_2_RE, 'strong,em')
 
 LINE_BREAK_PATTERN      = SubstituteTagPattern(LINE_BREAK_RE, 'br ')
 LINE_BREAK_PATTERN_2    = SubstituteTagPattern(LINE_BREAK_2_RE, 'br ')
@@ -1198,9 +1191,7 @@ class Markdown:
                                ENTITY_PATTERN,
                                NOT_STRONG_PATTERN,
                                STRONG_EM_PATTERN,
-                               STRONG_EM_PATTERN_2,
                                STRONG_PATTERN,
-                               STRONG_PATTERN_2,
                                EMPHASIS_PATTERN,
                                EMPHASIS_PATTERN_2
                                # The order of the handlers matters!!!
@@ -1735,7 +1726,6 @@ class Markdown:
         result = []
         prefix = self.inlineStash.prefix
         strartIndex = 0
-
         while data:
             
             index = data.find(prefix, strartIndex)
@@ -1759,7 +1749,7 @@ class Markdown:
                                 self._processElementText(node, child, False)
                             
                             if child.text:
-                                self._processElementText(node, child)
+                                self._processElementText(child, child)
                                 
                     else: # it's just a string
                 
