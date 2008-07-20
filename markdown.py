@@ -1669,8 +1669,7 @@ class Markdown:
                     break
 
                 # Check if the next non-blank line is still a part of the list
-                if ( RE.regExp['ul'].match(next) or
-                     RE.regExp['ol'].match(next) or 
+                if ( RE.regExp[listexpr].match(next) or
                      RE.regExp['tabbed'].match(next) ):
                     # get rid of any white space in the line
                     items[item].append(line.strip())
