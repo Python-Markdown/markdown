@@ -1629,17 +1629,18 @@ class Markdown:
         Return: String with placeholders. 
         
         """
-        
+        startIndex = 0
         while patternIndex < len(self.inlinePatterns):
             
-            data, matched = self._applyInline(self.inlinePatterns[patternIndex],
-                                              data, patternIndex)
+            data, matched, startIndex = self._applyInline(
+                                             self.inlinePatterns[patternIndex],
+                                             data, patternIndex, startIndex)
             if not matched:
                 patternIndex += 1
         
         return data
     
-    def _applyInline(self, pattern, data, patternIndex):
+    def _applyInline(self, pattern, data, patternIndex, startIndex=0):
         """ 
         Given a pattern name, this function checks if the line
         fits the pattern, creates the necessary elements, adds it 
@@ -1651,19 +1652,23 @@ class Markdown:
         * data: the text to be processed
         * pattern: the pattern to be checked
         * patternIndex: index of current pattern
+        * startIndex: string index, from wich we starting search
 
         Returns: String with placeholders.
         """
         
-        match = pattern.getCompiledRegExp().match(data)
+        match = pattern.getCompiledRegExp().match(data[startIndex:])
+        leftData = data[:startIndex]
  
         if not match:
-            return data, False
+            return data, False, 0
+
 
         node = pattern.handleMatch(match)
      
         if node is None:
-            return data, False
+            return data, True, len(leftData) + match.span(len(match.groups()))[0]
+        
         if not isstr(node):            
             if not node.tag in ["code", "pre"]:
                 # We need to process current node too
@@ -1678,7 +1683,9 @@ class Markdown:
    
         pholder = self.inlineStash.add(node, pattern.type())
 
-        return "%s%s%s" % (match.group(1), pholder, match.groups()[-1]), True
+        return "%s%s%s%s" % (leftData, 
+                             match.group(1), 
+                             pholder, match.groups()[-1]), True, 0
    
     def _processElementText(self, node, subnode, isText=True):
         
