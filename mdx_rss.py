@@ -78,6 +78,7 @@ class RssPostProcessor (markdown.Postprocessor):
                           ("description", None)):
             channel.appendChild(doc.createElement(tag, textNode = text))
 
+        item = None
         for child in oldDocElement.childNodes :
 
             if child.type == "element" :
