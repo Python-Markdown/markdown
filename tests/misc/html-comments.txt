@@ -1,0 +1,2 @@
+Here is HTML <!-- **comment** -->
+and once more <p><!--comment--></p>

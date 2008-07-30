@@ -27,6 +27,7 @@ FN_BACKLINK_TEXT = "zz1337820767766393qq"
 
 
 import re, markdown, random
+from markdown import etree
 
 class FootnoteExtension (markdown.Extension):
 
@@ -80,15 +81,21 @@ class FootnoteExtension (markdown.Extension):
         self.used_footnotes={}
         self.footnotes = {}
 
-    def findFootnotesPlaceholder(self, doc) :
-        def findFootnotePlaceholderFn(node=None, indent=0):
-            if node.type == 'text':
-                if node.value.find(self.getConfig("PLACE_MARKER")) > -1 :
-                    return True
-
-        fn_div_list = doc.find(findFootnotePlaceholderFn)
-        if fn_div_list :
-            return fn_div_list[0]
+    def findFootnotesPlaceholder(self, root):
+        
+        def finder(element):
+            for child in element:
+                if child.text:
+                    if child.text.find(self.getConfig("PLACE_MARKER")) > -1:
+                        return child, True
+                if child.tail:
+                    if child.tail.find(self.getConfig("PLACE_MARKER")) > -1:
+                        return (child, element), False
+                finder(child)
+            return None
+                
+        res = finder(root)
+        return res
 
 
     def setFootnote(self, id, text) :
@@ -100,7 +107,7 @@ class FootnoteExtension (markdown.Extension):
     def makeFootnoteRefId(self, num) :
         return 'fnr%d%s' % (num, self.footnote_suffix)
 
-    def makeFootnotesDiv (self, doc) :
+    def makeFootnotesDiv (self, root) :
         """Creates the div with class='footnote' and populates it with
            the text of the footnotes.
 
@@ -109,45 +116,39 @@ class FootnoteExtension (markdown.Extension):
         if not self.footnotes.keys() :
             return None
 
-        div = doc.createElement("div")
-        div.setAttribute('class', 'footnote')
-        hr = doc.createElement("hr")
-        div.appendChild(hr)
-        ol = doc.createElement("ol")
-        div.appendChild(ol)
+        div = etree.Element("div")
+        div.set('class', 'footnote')
+        hr = etree.SubElement(div, "hr")
+        ol = etree.SubElement(div, "ol")
+        
 
         footnotes = [(self.used_footnotes[id], id)
                      for id in self.footnotes.keys()]
         footnotes.sort()
 
         for i, id in footnotes :
-            li = doc.createElement('li')
-            li.setAttribute('id', self.makeFootnoteId(i))
+            li = etree.SubElement(ol, "li")
+            li.set("id", self.makeFootnoteId(i))
 
             self.md._processSection(li, self.footnotes[id].split("\n"), looseList=1)
 
-            #li.appendChild(doc.createTextNode(self.footnotes[id]))
+            backlink = etree.Element("a")
+            backlink.set("href", "#" + self.makeFootnoteRefId(i))
+            backlink.set("class", "footnoteBackLink")
+            backlink.set("title",
+                                  "Jump back to footnote %d in the text" % i)
+            backlink.text = FN_BACKLINK_TEXT
 
-            backlink = doc.createElement('a')
-            backlink.setAttribute('href', '#' + self.makeFootnoteRefId(i))
-            backlink.setAttribute('class', 'footnoteBackLink')
-            backlink.setAttribute('title',
-                                  'Jump back to footnote %d in the text' % i)
-            backlink.appendChild(doc.createTextNode(FN_BACKLINK_TEXT))
-
-            if li.childNodes :
-                node = li.childNodes[-1]
-                if node.type == "text" :
-		            li.appendChild(backlink)
-                elif node.nodeName == "p":
-                    node.appendChild(backlink)
+            if li.getchildren():
+                node = li[-1]
+                if node.text:
+		            li.append(backlink)
+                elif node.tag == "p":
+                    node.append(backlink)
                 else:
-                    p = doc.createElement('p')
-                    p.appendChild(backlink)
-                    li.appendChild(p)
-
-            ol.appendChild(li)
-
+                    p = etree.SubElement(li, "p")
+                    p.append(backlink)
+        div = self.md.applyInlinePatterns(etree.ElementTree(div)).getroot()
         return div
 
 
@@ -194,7 +195,7 @@ class FootnotePreprocessor :
             plain = lines[:i]
 
             detabbed, theRest = self.blockGuru.detectTabbed(lines[i+1:])
-
+   
             self.footnotes.setFootnote(id,
                                        footnote + "\n"
                                        + "\n".join(detabbed))
@@ -227,15 +228,14 @@ class FootnotePattern (markdown.Pattern) :
         markdown.Pattern.__init__(self, pattern)
         self.footnotes = footnotes
 
-    def handleMatch(self, m, doc) :
-        sup = doc.createElement('sup')
-        a = doc.createElement('a')
-        sup.appendChild(a)
+    def handleMatch(self, m) :
+        sup = etree.Element("sup")
+        a = etree.SubElement(sup, "a")
         id = m.group(2)
         num = self.footnotes.used_footnotes[id]
-        sup.setAttribute('id', self.footnotes.makeFootnoteRefId(num))
-        a.setAttribute('href', '#' + self.footnotes.makeFootnoteId(num))
-        a.appendChild(doc.createTextNode(str(num)))
+        sup.set('id', self.footnotes.makeFootnoteRefId(num))
+        a.set('href', '#' + self.footnotes.makeFootnoteId(num))
+        a.text = str(num)
         return sup
 
 class FootnotePostprocessor (markdown.Postprocessor):
@@ -243,14 +243,25 @@ class FootnotePostprocessor (markdown.Postprocessor):
     def __init__ (self, footnotes) :
         self.footnotes = footnotes
 
-    def run(self, doc) :
-        footnotesDiv = self.footnotes.makeFootnotesDiv(doc)
-        if footnotesDiv :
-            fnPlaceholder = self.extension.findFootnotesPlaceholder(doc)
-            if fnPlaceholder :
+    def run(self, root):
+        footnotesDiv = self.footnotes.makeFootnotesDiv(root)
+        if footnotesDiv:
+            result = self.extension.findFootnotesPlaceholder(root)
+
+            if result:
+                node, isText = result
+                if isText:
+                    node.text = None
+                    node.getchildren().insert(0, footnotesDiv)
+                else:
+                    child, element = node
+                    ind = element.getchildren().find(child)
+                    element.getchildren().insert(ind + 1, footnotesDiv)
+                    child.tail = None
+                    
                 fnPlaceholder.parent.replaceChild(fnPlaceholder, footnotesDiv)
             else :
-                doc.documentElement.appendChild(footnotesDiv)
+                root.append(footnotesDiv)
 
 class FootnoteTextPostprocessor (markdown.Postprocessor):
 

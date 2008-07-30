@@ -62,26 +62,32 @@ def message(level, text):
 def isstr(s):
     return isinstance(s, unicode) or isinstance(s, str)
  
-try:
-    # Python 2.5+
-    import xml.etree.cElementTree as etree
-except ImportError:
+def importETree(): 
+    """ Importing best variant of ElementTree
+     and returning module object """
+     
     try:
         # Python 2.5+
-        import xml.etree.ElementTree as etree
+        import xml.etree.cElementTree as etree
     except ImportError:
         try:
-            # normal cElementTree install
-            import cElementTree as etree
+            # Python 2.5+
+            import xml.etree.ElementTree as etree
         except ImportError:
             try:
-                # normal ElementTree install
-                import elementtree.ElementTree as etree
+                # normal cElementTree install
+                import cElementTree as etree
             except ImportError:
-                message(CRITICAL, 
-                       "Failed to import ElementTree from any known place")
-                sys.exit(1)
+                try:
+                    # normal ElementTree install
+                    import elementtree.ElementTree as etree
+                except ImportError:
+                    message(CRITICAL, 
+                           "Failed to import ElementTree from any known place")
+                    sys.exit(1)
+    return etree
 
+etree = importETree()
 
 def indentETree(elem, level=0):
      
@@ -173,8 +179,8 @@ def isBlockLevel (tag):
 
 
 def codepoint2name(code):
-    """ Returns entity defenition by code, or code 
-    if there is no such entity defenition"""
+    """ Returns entity definition by code, or code 
+    if there is no such entity definition"""
     entity = htmlentitydefs.codepoint2name.get(code)
     if entity:
         return "%s%s;" % (AND_SUBSTITUTE, entity)
@@ -351,7 +357,7 @@ class HeaderPreprocessor(Preprocessor):
 
     """
     Replace underlined headers with hashed headers to avoid
-    the nead for lookahead later.
+    the need for lookahead later.
     """
 
     def run (self, lines):
@@ -394,7 +400,7 @@ class LinePreprocessor(Preprocessor):
     blockquote_re = re.compile(r'^(> )+')
 
     def run (self, lines):
-        """ Find a store HR lines. """
+        """ Find and replace HR lines. """
 
         for i in range(len(lines)):
             prefix = ''
@@ -467,9 +473,8 @@ expression and needs support the following methods:
 
   pattern.getCompiledRegExp() - returns a regular expression
 
-  pattern.handleMatch(m, doc) - takes a match object and returns
-                                a NanoDom node (as a part of the provided
-                                doc) or None
+  pattern.handleMatch(m) - takes a match object and returns
+                                a ElementTree element or just plain text
 
 All of python markdown's built-in patterns subclass from Pattern,
 but you can add additional patterns that don't.
@@ -521,16 +526,20 @@ else:
 #LINK_RE = NOIMG + BRK + r'\s*\(([^\)]*)\)'               # [text](url)
 
 LINK_RE = NOIMG + BRK + \
-r'''\(\s*(((?:(?:\(.*?\))|[^\(\)]))*?|<\10*?>)\s*((['"])(.*)\12)?\)''' # [text](url) or [text](<url>)
+r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*)\12)?\)''' # [text](url) or [text](<url>)
+#r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*)\s*((['"])(.*)\12)?\)''' # [text](url) or [text](<url>)
 
-IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(([^\)]*)\)' # ![alttxt](http://x.com/)
+#LINK_RE2 = NOIMG + BRK + \
+#r'''\(\s*(((?:(?:\(.*?\))|[^\(\)]))*?|<\10*?>)\s*((['"])(.*)\12)?\)''' # [text](url) or [text](<url>)
+
+IMAGE_LINK_RE = r'\!' + BRK + r'\s*\((<.*?>|([^\)]*))\)' # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
 REFERENCE_RE = NOIMG + BRK+ r'\s*\[([^\]]*)\]'           # [Google][3]
 IMAGE_REFERENCE_RE = r'\!' + BRK + '\s*\[([^\]]*)\]' # ![alt text][2]
 NOT_STRONG_RE = r'( \* )'                        # stand-alone * or _
 AUTOLINK_RE = r'<((?:f|ht)tps?://[^>]*)>'        # <http://www.123.com>
 AUTOMAIL_RE = r'<([^> \!]*@[^> ]*)>'               # <me@example.com>
 #HTML_RE = r'(\<[^\>]*\>)'                        # <...>
-HTML_RE = r'(\<[a-zA-Z/][^\>]*\>)'               # <...>
+HTML_RE = r'(\<([a-zA-Z/][^\>]*?|\!--.*?--)\>)'               # <...>
 ENTITY_RE = r'(&[\#a-zA-Z0-9]*;)'               # &amp;
 LINE_BREAK_RE = r'  \n'                     # two spaces at end of line
 LINE_BREAK_2_RE = r'  $'                    # two spaces at end of text
@@ -559,14 +568,12 @@ class Pattern:
 
     def handleMatch(self, m):
         """
-        Return a NanoDom element from the given match. Subclasses should 
+        Return a ElementTree element from the given match. Subclasses should 
         override this method.
 
         Keyword arguments:
 
         * m: A re match object containing a match of the pattern.
-
-        * doc: An instance of a NanoDom Document.
 
         """
         pass
@@ -578,7 +585,7 @@ class Pattern:
 BasePattern = Pattern # for backward compatibility
 
 class SimpleTextPattern (Pattern):
-    """ Return a simple TextNode of group(2) of a Pattern. """
+    """ Return a simple text of group(2) of a Pattern. """
     def handleMatch(self, m):
         text = m.group(2)
         if text == INLINE_PLACEHOLDER_PREFIX:
@@ -587,7 +594,7 @@ class SimpleTextPattern (Pattern):
 
 class SimpleTagPattern (Pattern):
     """ 
-    Return NanoDom Element of type `tag` with a child  TextNode of group(2) 
+    Return element of type `tag` with a text attribute of group(3) 
     of a Pattern. 
     
     """
@@ -601,12 +608,12 @@ class SimpleTagPattern (Pattern):
         return el
 
 class SubstituteTagPattern (SimpleTagPattern):
-    """ Return a NanoDom ELement of type `tag` with no children. """
+    """ Return a eLement of type `tag` with no children. """
     def handleMatch (self, m):
         return etree.Element(self.tag)
 
 class BacktickPattern (Pattern):
-    """ Return a NanoDom `<code>` Element containing the matching text. """
+    """ Return a `<code>` element containing the matching text. """
     def __init__ (self, pattern):
         Pattern.__init__(self, pattern)
         self.tag = "code"
@@ -619,7 +626,7 @@ class BacktickPattern (Pattern):
 
 class DoubleTagPattern (SimpleTagPattern): 
     """ 
-    Return a TextNode nested in tag2 nested in tag1. 
+    Return a ElementTree element nested in tag2 nested in tag1. 
     Usefull for strong emphasis etc.
 
     """
@@ -642,7 +649,7 @@ class HtmlPattern (Pattern):
 
 
 class LinkPattern (Pattern):
-    """ Return a NanoDom link Element from the given match. """
+    """ Return a link element from the given match. """
     def handleMatch(self, m):
         el = etree.Element("a")
         el.text = m.group(2)
@@ -693,13 +700,16 @@ class LinkPattern (Pattern):
             return urlunparse(url)
 
 class ImagePattern(LinkPattern):
-    """ Return a NanoDom img Element from the given match. """
+    """ Return a img element from the given match. """
         
     def handleMatch(self, m):
         el = etree.Element("img")
         src_parts = m.group(9).split()
         if src_parts:
-            el.set('src', self.sanatize_url(src_parts[0]))
+            src = src_parts[0]
+            if src[0] == "<" and src[-1] == ">":
+                src = src[1:-1]
+            el.set('src', self.sanatize_url(src))
         else:
             el.set('src', "")
         if len(src_parts) > 1:
@@ -714,7 +724,7 @@ class ImagePattern(LinkPattern):
         return el
 
 class ReferencePattern(LinkPattern):
-    """ Match to a stored reference and return a NanoDom link Element. """
+    """ Match to a stored reference and return link element. """
     def handleMatch(self, m):
 
         if m.group(9):
@@ -743,7 +753,7 @@ class ReferencePattern(LinkPattern):
 
 
 class ImageReferencePattern (ReferencePattern):
-    """ Match to a stored reference and return a NanoDom img Element. """
+    """ Match to a stored reference and return img element. """
     def makeTag(self, href, title, text):
         el = etree.Element("img")
         el.set("src", self.sanatize_url(href))
@@ -821,10 +831,10 @@ There are two types of post-processors: Postprocessor and TextPostprocessor
 
 class Postprocessor:
     """
-    Postprocessors are run before the dom it converted back into text.
+    Postprocessors are run before the ElementTree serialization.
     
     Each Postprocessor implements a "run" method that takes a pointer to a
-    NanoDom document, modifies it as necessary and returns a NanoDom 
+    ElementTree, modifies it as necessary and returns a ElementTree 
     document.
     
     Postprocessors must extend markdown.Postprocessor.
@@ -834,11 +844,10 @@ class Postprocessor:
     
     """
 
-    def run(self, dom):
+    def run(self, et):
         """
         Subclasses of Postprocessor should implement a `run` method, which
-        takes a NanoDOm document and returns a (possably modified) NanoDom
-        document.
+        takes a ElementTree and returns a (possably modified) ElementTree.
 
         """
         pass
@@ -847,7 +856,7 @@ class Postprocessor:
 
 class TextPostprocessor:
     """
-    TextPostprocessors are run after the dom it converted back into text.
+    TextPostprocessors are run after the ElementTree it converted back into text.
     
     Each TextPostprocessor implements a "run" method that takes a pointer to a
     text string, modifies it as necessary and returns a text string.
@@ -1107,6 +1116,7 @@ class CorePatterns:
         'isline2':         r'(\-*)', # ---
         'isline3':         r'(\_*)', # ___
         'tabbed':          r'((\t)|(    ))(.*)', # an indented line
+        'tabbed2':         r'(()(  ))(.*)', # an indented line
         'quoted':          r'[ ]{0,2}> ?(.*)', # a quoted block ("> ...")
     }
 
@@ -1279,8 +1289,7 @@ class Markdown:
         for prep in self.preprocessors :
             self.lines = prep.run(self.lines)
 
-        # Create a NanoDom tree from the lines and attach it to Document
-
+        # Create a ElementTree from the lines
 
         buffer = []
         for line in self.lines:
@@ -1292,16 +1301,7 @@ class Markdown:
                 buffer.append(line)
 
         self._processSection(self.root, buffer)
-        
-        #self._processSection(self.top_element, self.lines)
-
-        # Not sure why I put this in but let's leave it for now.
-        #self.top_element.appendChild(self.doc.createTextNode('\n'))
-
-        # Run the post-processors
-        for postprocessor in self.postprocessors:
-            postprocessor.run(self.doc)
-
+    
         return etree.ElementTree(self.root)
 
 
@@ -1323,10 +1323,15 @@ class Markdown:
         Returns: None
         
         """
-
+ 
         # Loop through lines until none left.
         while lines:
-
+            
+            # Skipping empty line
+            if not lines[0]:
+                lines = lines[1:]
+                continue
+            
             # Check if this section starts with a list, a blockquote or
             # a code block
 
@@ -1370,7 +1375,7 @@ class Markdown:
             else: # Ok, so it's just a simple block
 
                 paragraph, lines = self._linesUntil(lines, lambda line:
-                                                     not line.strip())
+                                                     not line.strip() or line[0] == '>')
 
                 if len(paragraph) and paragraph[0].startswith('#'):
                     self._processHeader(parent_elem, paragraph)
@@ -1448,7 +1453,7 @@ class Markdown:
 
         Keyword arguments:
         
-        * parent_elem: A dom element to which the content will be added
+        * parent_elem: A ElementTree element to which the content will be added
         * lines: a list of lines
         * inList: a level
         
@@ -1486,7 +1491,7 @@ class Markdown:
                 # Check if the next non-blank line is still a part of the list
                 if ( RE.regExp['ul'].match(next) or
                      RE.regExp['ol'].match(next) or 
-                     RE.regExp['tabbed'].match(next) ):
+                     RE.regExp['tabbed'].match(next)):
                     # get rid of any white space in the line
                     items[item].append(line.strip())
                     looseList = loose or looseList
@@ -1497,7 +1502,7 @@ class Markdown:
             # Now we need to detect list items (at the current level)
             # while also detabing child elements if necessary
 
-            for expr in ['ul', 'ol', 'tabbed']:
+            for expr in ['ul', 'ol', 'tabbed', 'tabbed2']:
 
                 m = RE.regExp[expr].match(line)
                 if m:
@@ -1507,7 +1512,7 @@ class Markdown:
                         # at the beginning of the list item
                         items.append([m.group(1)])
                         item += 1
-                    elif expr == 'tabbed':  # This line needs to be detabbed
+                    elif expr == 'tabbed' or expr == 'tabbed2':  # This line needs to be detabbed
                         items[item].append(m.group(4)) #after the 'tab'
 
                     i += 1
@@ -1518,7 +1523,7 @@ class Markdown:
         else:
             i += 1
 
-        # Add the dom elements
+        # Add the ElementTree elements
         for item in items:
             li = etree.SubElement(ul, "li")
 
@@ -1540,7 +1545,8 @@ class Markdown:
         i = -1
         for line in lines:
             i += 1
-            if condition(line): break
+            if condition(line): 
+                break
         else:
             i += 1
         return lines[:i], lines[i:]
@@ -1554,7 +1560,7 @@ class Markdown:
 
         Keyword arguments:
         
-        * parent_elem: DOM element to which the content will be added
+        * parent_elem: ElementTree element to which the content will be added
         * lines: a list of lines
         * inList: a level
         
@@ -1592,13 +1598,13 @@ class Markdown:
     def _processCodeBlock(self, parent_elem, lines, inList):
         """
         Given a list of document lines starting with a code block
-        finds the end of the block, puts it into the dom verbatim
+        finds the end of the block, puts it into the ElementTree verbatim
         wrapped in ("<pre><code>") and recursively processes the
         the remainder of the text file.
 
         Keyword arguments:
         
-        * parent_elem: DOM element to which the content will be added
+        * parent_elem: ElementTree element to which the content will be added
         * lines: a list of lines
         * inList: a level
         
@@ -1710,11 +1716,11 @@ class Markdown:
     
     def _processPlaceholders(self, data, parent):
         """
-        Processes string with placeholders and generates DOM tree.
+        Processes string with placeholders and generates ElementTree tree.
         
-        * data: string with placeholders instead of DOM elements.
+        * data: string with placeholders instead of ElementTree elements.
 
-        Returns: NanoDOM Document object with applied inline patterns.
+        Returns: list with ElementTree elements with applied inline patterns.
         """
         
         def linkText(text):
@@ -1880,7 +1886,6 @@ class Markdown:
         
         markdownTree = self._transform()
         
-        
         return markdownTree
         
         
@@ -1898,9 +1903,16 @@ class Markdown:
         """
 
         tree = self.markdownToTree(source)
-        
+
         root = self.applyInlinePatterns(tree).getroot()
-        
+
+        # Run the post-processors
+        for postprocessor in self.postprocessors:
+            postprocessor.stash = self.htmlStash
+            newRoot = postprocessor.run(root)
+            if newRoot:
+                root = newRoot
+
         indentETree(root)
 
         xml = codecs.decode(etree.tostring(root, encoding="utf8"), "utf8")

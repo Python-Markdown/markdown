@@ -1,4 +1,5 @@
 import markdown
+from markdown import etree
 
 DEFAULT_URL = "http://www.freewisdom.org/projects/python-markdown/"
 DEFAULT_CREATOR = "Yuri Takhteyev"
@@ -18,7 +19,7 @@ month_map = { "Jan" : "01",
               "November" : "11",
               "December" : "12" }
 
-def get_time(heading) :
+def get_time(heading):
 
     heading = heading.split("-")[0]
     heading = heading.strip().replace(",", " ").replace(".", " ")
@@ -28,7 +29,7 @@ def get_time(heading) :
 
     return rdftime(" ".join((month, date, year, "12:00:00 AM")))
 
-def rdftime(time) :
+def rdftime(time):
 
     time = time.replace(":", " ")
     time = time.replace("/", " ")
@@ -37,12 +38,12 @@ def rdftime(time) :
                                         time[3], time[4], time[5])
 
 
-def get_date(text) :
+def get_date(text):
     return "date"
 
 class RssExtension (markdown.Extension):
 
-    def extendMarkdown(self, md, md_globals) :
+    def extendMarkdown(self, md, md_globals):
 
         self.config = { 'URL' : [DEFAULT_URL, "Main URL"],
                         'CREATOR' : [DEFAULT_CREATOR, "Feed creator's name"],
@@ -59,62 +60,59 @@ class RssExtension (markdown.Extension):
 
 class RssPostProcessor (markdown.Postprocessor):
 
-    def __init__(self, md) :
+    def __init__(self, md):
         
         pass
 
-    def run (self, doc) :
+    def run (self, root):
 
-        oldDocElement = doc.documentElement
-        rss = doc.createElement("rss")
-        rss.setAttribute('version', '2.0')
+        rss = etree.Element("rss")
+        rss.set("version", "2.0")
 
-        doc.appendChild(rss)
+        channel = etree.SubElement(rss, "channel")
 
-        channel = doc.createElement("channel")
-        rss.appendChild(channel)
         for tag, text in (("title", self.ext.getConfig("TITLE")),
                           ("link", self.ext.getConfig("URL")),
                           ("description", None)):
-            channel.appendChild(doc.createElement(tag, textNode = text))
+            
+            element = etree.SubElement(channel, tag)
+            element.text = text
 
-        for child in oldDocElement.childNodes :
-
-            if child.type == "element" :
-
-                if child.nodeName in ["h1", "h2", "h3", "h4", "h5"] :
-
-                    heading = child.childNodes[0].value.strip()
-                    
-                    item = doc.createElement("item")
-                    channel.appendChild(item)
-                    item.appendChild(doc.createElement("link",
-                                                       self.ext.getConfig("URL")))
-
-                    item.appendChild(doc.createElement("title", heading))
-
-                    guid = ''.join([x for x in heading if x.isalnum()])
-
-                    guidElem = doc.createElement("guid", guid)
-                    guidElem.setAttribute("isPermaLink", "false")
-                    item.appendChild(guidElem)
-
-                elif child.nodeName in ["p"] :
-
-                    description = doc.createElement("description")
-
-                    
-                    content = "\n".join([node.toxml()
-                                         for node in child.childNodes])
-
-                    cdata = doc.createCDATA(content)
-
-                    description.appendChild(cdata)
-
-                    if item :
-                        item.appendChild(description)
+        for child in root:
 
 
-def makeExtension(configs) :
+            if child.tag in ["h1", "h2", "h3", "h4", "h5"] :
+      
+                heading = child.text.strip()
+                
+                item = etree.SubElement(channel, "item")
+  
+                link = etree.SubElement(item, "link")
+                link.text = self.ext.getConfig("URL")
+
+                title = etree.SubElement(item, "title")
+                title.text = heading
+
+                guid = ''.join([x for x in heading if x.isalnum()])
+
+                guidElem = etree.SubElement(item, "guid")
+                guidElem.text = guid
+                guidElem.set("isPermaLink", "false")
+
+            elif child.tag in ["p"] :
+                if item:
+                    description = etree.SubElement(item, "description")
+                    if len(child):
+                        content = "\n".join([etree.tostring(node)
+                                             for node in child])
+                    else:
+                        content = child.text
+                    pholder = self.stash.store("<![CDATA[ %s]]>" % content)
+                    description.text = pholder
+    
+        return rss
+
+
+def makeExtension(configs):
 
     return RssExtension(configs)
