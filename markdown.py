@@ -63,8 +63,8 @@ def isstr(s):
     return isinstance(s, unicode) or isinstance(s, str)
  
 def importETree(): 
-    """ Importing best variant of ElementTree
-     and returning module object """
+    """ Imports best variant of ElementTree
+     and returns module object """
      
     try:
         # Python 2.5+
@@ -527,10 +527,6 @@ else:
 
 LINK_RE = NOIMG + BRK + \
 r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*)\12)?\)''' # [text](url) or [text](<url>)
-#r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*)\s*((['"])(.*)\12)?\)''' # [text](url) or [text](<url>)
-
-#LINK_RE2 = NOIMG + BRK + \
-#r'''\(\s*(((?:(?:\(.*?\))|[^\(\)]))*?|<\10*?>)\s*((['"])(.*)\12)?\)''' # [text](url) or [text](<url>)
 
 IMAGE_LINK_RE = r'\!' + BRK + r'\s*\((<.*?>|([^\)]*))\)' # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
 REFERENCE_RE = NOIMG + BRK+ r'\s*\[([^\]]*)\]'           # [Google][3]
@@ -1116,7 +1112,6 @@ class CorePatterns:
         'isline2':         r'(\-*)', # ---
         'isline3':         r'(\_*)', # ___
         'tabbed':          r'((\t)|(    ))(.*)', # an indented line
-        'tabbed2':         r'(()(  ))(.*)', # an indented line
         'quoted':          r'[ ]{0,2}> ?(.*)', # a quoted block ("> ...")
     }
 
@@ -1393,32 +1388,32 @@ class Markdown:
             if lines and not lines[0].strip():
                 lines = lines[1:]  # skip the first (blank) line
 
-    def _processHR(self, parent_elem):
-        hr = etree.SubElement(parent_elem, "hr")
+    def _processHR(self, parentElem):
+        hr = etree.SubElement(parentElem, "hr")
     
-    def _processHeader(self, parent_elem, paragraph):
+    def _processHeader(self, parentElem, paragraph):
         m = RE.regExp['header'].match(paragraph[0])
         if m:
             level = len(m.group(1))
-            h = etree.SubElement(parent_elem, "h%d" % level)
+            h = etree.SubElement(parentElem, "h%d" % level)
             inline = etree.SubElement(h, "inline")
             inline.text = m.group(2).strip()
         else:
             message(CRITICAL, "We've got a problem header!")
 
 
-    def _processParagraph(self, parent_elem, paragraph, inList, looseList):
+    def _processParagraph(self, parentElem, paragraph, inList, looseList):
 
-        if ( parent_elem.tag == 'li'
-                and not (looseList or parent_elem.getchildren())):
+        if ( parentElem.tag == 'li'
+                and not (looseList or parentElem.getchildren())):
 
             # If this is the first paragraph inside "li", don't
             # put <p> around it - append the paragraph bits directly
-            # onto parent_elem
-            el = parent_elem
+            # onto parentElem
+            el = parentElem
         else:
             # Otherwise make a "p" element
-            el = etree.SubElement(parent_elem, "p")
+            el = etree.SubElement(parentElem, "p")
 
         dump = []
         
@@ -1436,16 +1431,16 @@ class Markdown:
             inline = etree.SubElement(el, "inline")
             inline.text = text
 
-    def _processUList(self, parent_elem, lines, inList):
-        self._processList(parent_elem, lines, inList,
+    def _processUList(self, parentElem, lines, inList):
+        self._processList(parentElem, lines, inList,
                          listexpr='ul', tag = 'ul')
 
-    def _processOList(self, parent_elem, lines, inList):
-        self._processList(parent_elem, lines, inList,
+    def _processOList(self, parentElem, lines, inList):
+        self._processList(parentElem, lines, inList,
                          listexpr='ol', tag = 'ol')
 
 
-    def _processList(self, parent_elem, lines, inList, listexpr, tag):
+    def _processList(self, parentElem, lines, inList, listexpr, tag):
         """
         Given a list of document lines starting with a list item,
         finds the end of the list, breaks it up, and recursively
@@ -1453,7 +1448,7 @@ class Markdown:
 
         Keyword arguments:
         
-        * parent_elem: A ElementTree element to which the content will be added
+        * parentElem: A ElementTree element to which the content will be added
         * lines: a list of lines
         * inList: a level
         
@@ -1461,7 +1456,7 @@ class Markdown:
         
         """
 
-        ul = etree.SubElement(parent_elem, tag) # ul might actually be '<ol>'
+        ul = etree.SubElement(parentElem, tag) # ul might actually be '<ol>'
 
         looseList = 0
 
@@ -1502,7 +1497,7 @@ class Markdown:
             # Now we need to detect list items (at the current level)
             # while also detabing child elements if necessary
 
-            for expr in ['ul', 'ol', 'tabbed', 'tabbed2']:
+            for expr in ['ul', 'ol', 'tabbed']:
 
                 m = RE.regExp[expr].match(line)
                 if m:
@@ -1512,7 +1507,7 @@ class Markdown:
                         # at the beginning of the list item
                         items.append([m.group(1)])
                         item += 1
-                    elif expr == 'tabbed' or expr == 'tabbed2':  # This line needs to be detabbed
+                    elif expr == 'tabbed':  # This line needs to be detabbed
                         items[item].append(m.group(4)) #after the 'tab'
 
                     i += 1
@@ -1531,7 +1526,7 @@ class Markdown:
 
         # Process the remaining part of the section
 
-        self._processSection(parent_elem, lines[i:], inList)
+        self._processSection(parentElem, lines[i:], inList)
 
 
     def _linesUntil(self, lines, condition):
@@ -1551,7 +1546,7 @@ class Markdown:
             i += 1
         return lines[:i], lines[i:]
 
-    def _processQuote(self, parent_elem, lines, inList):
+    def _processQuote(self, parentElem, lines, inList):
         """
         Given a list of document lines starting with a quote finds
         the end of the quote, unindents it and recursively
@@ -1560,7 +1555,7 @@ class Markdown:
 
         Keyword arguments:
         
-        * parent_elem: ElementTree element to which the content will be added
+        * parentElem: ElementTree element to which the content will be added
         * lines: a list of lines
         * inList: a level
         
@@ -1587,15 +1582,15 @@ class Markdown:
             else:
                 break
 
-        blockquote = etree.SubElement(parent_elem, "blockquote")
+        blockquote = etree.SubElement(parentElem, "blockquote")
 
         self._processSection(blockquote, dequoted, inList)
-        self._processSection(parent_elem, lines[i:], inList)
+        self._processSection(parentElem, lines[i:], inList)
 
 
 
 
-    def _processCodeBlock(self, parent_elem, lines, inList):
+    def _processCodeBlock(self, parentElem, lines, inList):
         """
         Given a list of document lines starting with a code block
         finds the end of the block, puts it into the ElementTree verbatim
@@ -1604,7 +1599,7 @@ class Markdown:
 
         Keyword arguments:
         
-        * parent_elem: ElementTree element to which the content will be added
+        * parentElem: ElementTree element to which the content will be added
         * lines: a list of lines
         * inList: a level
         
@@ -1614,13 +1609,12 @@ class Markdown:
 
         detabbed, theRest = self.blockGuru.detectTabbed(lines)
 
-        pre = etree.SubElement(parent_elem, "pre")
+        pre = etree.SubElement(parentElem, "pre")
         code = etree.SubElement(pre, "code")
         
         text = "\n".join(detabbed).rstrip()+"\n"
-        #text = text.replace("&", "&amp;")
         code.text = text
-        self._processSection(parent_elem, theRest, inList)        
+        self._processSection(parentElem, theRest, inList)        
         
     def _handleInline(self, data, patternIndex=0):
         """
@@ -1791,7 +1785,7 @@ class Markdown:
         
         Keyword arguments:
         
-        * el - parent element of Document.
+        * el - parent element of ElementTree.
 
         Returns: ElementTree object with applied inline patterns.
         """
@@ -1843,9 +1837,7 @@ class Markdown:
 
         Returns: ElementTree object.
         """
-        
-      
-        
+ 
         el = markdownTree.getroot()
                 
         self._processTree(el)
@@ -1855,8 +1847,9 @@ class Markdown:
         
     def markdownToTree(self, source=None):
         """
-        Retrun ElementTree, without applying
-        inline paterns
+        Retrun ElementTree, without applying inline paterns, 
+        all data, that should be processed with
+        inline patterns included in <inline></inline> sections.
         
         Keyword arguments:
         
@@ -1920,6 +1913,7 @@ class Markdown:
         if self.stripTopLevelTags:
             xml = xml.strip()[44:-7] + "\n"
 
+        # Run the text post-processors
         for pp in self.textPostprocessors:
             xml = pp.run(xml)
 
