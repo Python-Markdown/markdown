@@ -80,10 +80,11 @@ class CodeHilite:
         except ImportError:
             # just escape and pass through
             txt = self._escape(self.src)
-            if num:
+            '''if num:
                 txt = self._number(txt)
             else :
-                txt = '<div class="codehilite"><pre>%s</pre></div>\n'% txt
+                txt = '<div class="codehilite"><pre>%s</pre></div>\n'% txt'''
+            txt = self._number(txt)    
             return txt
         else:
             try:
@@ -204,7 +205,10 @@ class CodeHiliteExtention(markdown.Extension):
             text = "\n".join(detabbed).rstrip()+"\n"
             code = CodeHilite(text, linenos=self.config['force_linenos'][0]) 
             placeholder = md.htmlStash.store(code.hilite(), safe=True)
-            parent_elem.appendChild(md.doc.createTextNode(placeholder))
+            if parent_elem.text:
+                parent_elem.text += placeholder
+            else:
+                parent_elem.text = placeholder
             md._processSection(parent_elem, theRest, inList)
             
         md._processCodeBlock = _hiliteCodeBlock

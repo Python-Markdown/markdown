@@ -1203,6 +1203,8 @@ class Markdown:
                                ]
         
         self.inlineStash = InlineStash()
+        
+        self._inlineOperationID = None
 
         self.registerExtensions(extensions = extensions,
                                 configs = extension_configs)
@@ -1630,6 +1632,7 @@ class Markdown:
         
         """
         startIndex = 0
+        
         while patternIndex < len(self.inlinePatterns):
             
             data, matched, startIndex = self._applyInline(
@@ -1637,7 +1640,6 @@ class Markdown:
                                              data, patternIndex, startIndex)
             if not matched:
                 patternIndex += 1
-        
         return data
     
     def _applyInline(self, pattern, data, patternIndex, startIndex=0):
@@ -1656,13 +1658,11 @@ class Markdown:
 
         Returns: String with placeholders.
         """
-        
         match = pattern.getCompiledRegExp().match(data[startIndex:])
         leftData = data[:startIndex]
  
         if not match:
             return data, False, 0
-
 
         node = pattern.handleMatch(match)
      
@@ -1676,7 +1676,7 @@ class Markdown:
                     if not isstr(node):
                         if child.text:
                             child.text = self._handleInline(child.text, 
-                                                            patternIndex)
+                                                            patternIndex + 1)
                         if child.tail:
                             child.tail = self._handleInline(child.tail, 
                                                             patternIndex)

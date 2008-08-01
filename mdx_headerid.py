@@ -68,6 +68,7 @@ Dependencies:
 """
 
 import markdown
+from markdown import etree
 import re
 from string import ascii_lowercase, digits, punctuation
 
@@ -106,15 +107,16 @@ class HeaderIdExtension (markdown.Extension) :
             if m :
                 start_level, force_id = _get_meta()
                 level = len(m.group(1)) + start_level
-                if level > 6: level = 6
-                h = md.doc.createElement("h%d" % level)
-                parent_elem.appendChild(h)
-                for item in md._handleInline(m.group(2).strip()) :
-                    h.appendChild(item)
+                if level > 6: 
+                    level = 6
+                h = etree.Element("h%d" % level)
+                parent_elem.append(h)
+                inline = etree.SubElement(h, "inline")
+                inline.text = m.group(2).strip()
                 if m.group(3) :
-                    h.setAttribute('id', _unique_id(m.group(3)))
+                    h.set('id', _unique_id(m.group(3)))
                 elif force_id:
-                    h.setAttribute('id', _create_id(m.group(2).strip()))
+                    h.set('id', _create_id(m.group(2).strip()))
             else :
                 message(CRITICAL, "We've got a problem header!")
         

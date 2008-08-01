@@ -69,6 +69,7 @@ Dependencies:
 '''
 
 import markdown
+from markdown import etree
 
 class WikiLinkExtension (markdown.Extension) :
     def __init__(self, configs):
@@ -91,24 +92,25 @@ class WikiLinkExtension (markdown.Extension) :
         WIKILINK_PATTERN = WikiLinks(WIKILINK_RE, self.config)
         WIKILINK_PATTERN.md = md
         md.inlinePatterns.append(WIKILINK_PATTERN)  
+        
 
 class WikiLinks (markdown.BasePattern) :
     def __init__(self, pattern, config):
         markdown.BasePattern.__init__(self, pattern)
         self.config = config
   
-    def handleMatch(self, m, doc) :
+    def handleMatch(self, m):
         if  m.group('escape') == '\\':
-            a = doc.createTextNode(m.group('camelcase'))
+            a = m.group('camelcase')
         else:
             base_url, end_url, html_class = self._getMeta()
             url = '%s%s%s'% (base_url, m.group('camelcase'), end_url)
             label = m.group('camelcase').replace('_', ' ')
-            a = doc.createElement('a')
-            a.appendChild(doc.createTextNode(label))
-            a.setAttribute('href', url)
+            a = etree.Element('a')
+            a.text = label
+            a.set('href', url)
             if html_class:
-                a.setAttribute('class', html_class)
+                a.set('class', html_class)
         return a
 
     def _getMeta(self):
@@ -124,6 +126,9 @@ class WikiLinks (markdown.BasePattern) :
             if self.md.Meta.has_key('wiki_html_class'):
                 html_class = self.md.Meta['wiki_html_class'][0]
         return base_url, end_url, html_class
+    
+    def type(self):
+        return "WLink"
 
 
 def makeExtension(configs=None) :
