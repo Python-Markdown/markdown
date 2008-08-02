@@ -1,0 +1,15 @@
+Before
+
+| a |* b *|
+| [c](#) | *d* |
+
+Another
+
+| a | b |
+| _a_ | b |
+| a | b |
+| a | b |
+| c | *d* |
+
+After
+

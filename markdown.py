@@ -161,8 +161,10 @@ INLINE_PLACEHOLDER_PREFIX = u'\u0001'
 INLINE_PLACEHOLDER_SUFFIX = u'\u0002'
 
 # a template for html placeholders
-HTML_PLACEHOLDER_PREFIX = "qaodmasdkwaspemas"
-HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%dajkqlsmdqpakldnzsdfls"
+START = u'\u0001'
+END = u'\u0002'
+HTML_PLACEHOLDER_PREFIX = START+"html:"
+HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d"+END
 
 BLOCK_LEVEL_ELEMENTS = ['p', 'div', 'blockquote', 'pre', 'table',
                         'dl', 'ol', 'ul', 'script', 'noscript',
@@ -1486,9 +1488,9 @@ class Markdown:
                     break
 
                 # Check if the next non-blank line is still a part of the list
-                if ( RE.regExp['ul'].match(next) or
-                     RE.regExp['ol'].match(next) or 
-                     RE.regExp['tabbed'].match(next)):
+
+                if ( RE.regExp[listexpr].match(next) or
+                     RE.regExp['tabbed'].match(next) ):
                     # get rid of any white space in the line
                     items[item].append(line.strip())
                     looseList = loose or looseList
@@ -1870,6 +1872,10 @@ class Markdown:
             return u""
         
         # Fixup the source text
+
+        self.source = self.source.replace(START, "")
+        self.source = self.source.replace(END, "")
+
         self.source = self.source.replace("\r\n", "\n").replace("\r", "\n")
         self.source += "\n\n"
         self.source = self.source.expandtabs(TAB_LENGTH)
@@ -2047,6 +2053,22 @@ class Extension:
         """ Set a config setting for `key` with the given `value`. """
         self.config[key][0] = value
 
+    def extendMarkdown(self, md, md_globals):
+        """ 
+        Add the various proccesors and patterns to the Markdown Instance. 
+        
+        This method must be overriden by every extension.
+
+        Ketword arguments:
+
+        * md: The Markdown instance.
+
+        * md_globals: All global variables availabel in the markdown module
+        namespace.
+
+        """
+        pass
+
 
 def load_extension(ext_name, configs = []):
     """ 
@@ -2076,11 +2098,12 @@ def load_extension(ext_name, configs = []):
     try:
         module = __import__(extension_module_name)
 
-    except:
-        message(CRITICAL,
-                "couldn't load extension %s (looking for %s module)"
+    except ImportError:
+        message(WARN,
+                "Couldn't load extension '%s' from \"%s\" - continuing without."
                 % (ext_name, extension_module_name) )
-        sys.exit(1)
+        # Return a dummy (do nothing) Extension as silent failure
+        return Extension(configs={})
 
     return module.makeExtension(configs.items())    
 
