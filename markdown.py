@@ -27,8 +27,8 @@ License: [GPL 2](http://www.gnu.org/copyleft/gpl.html) or BSD
 
 """
 
-version = "2.0"
-version_info = (2,0,0, "beta")
+version = "2.0-alpha"
+version_info = (2,0,0, "alpha")
 __revision__ = "$Rev$"
 
 
