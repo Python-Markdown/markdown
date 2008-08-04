@@ -27,8 +27,8 @@ License: [GPL 2](http://www.gnu.org/copyleft/gpl.html) or BSD
 
 """
 
-version = "1.7"
-version_info = (1,7,0,"final")
+version = "2.0"
+version_info = (2,0,0, "beta")
 __revision__ = "$Rev$"
 
 
@@ -92,7 +92,7 @@ etree = importETree()
 def indentETree(elem, level=0):
      
     if level > 1:
-        i = "\n" + (level-1)*"  "
+        i = "\n" + (level-1) * "  "
     else:
         i = "\n"
 
@@ -394,9 +394,7 @@ HEADER_PREPROCESSOR = HeaderPreprocessor()
 
 class LinePreprocessor(Preprocessor):
     """ 
-    Convert HR lines to raw html and store (needs to be done before 
-    processing lists).
-    
+    Convert HR lines to "___" format 
     """
 
     blockquote_re = re.compile(r'^(> )+')
@@ -410,7 +408,6 @@ class LinePreprocessor(Preprocessor):
             if m: 
                 prefix = m.group(0)
             if self._isLine(lines[i][len(prefix):]):
-                #lines[i] = prefix + self.stash.store("<hr />", safe=True)
                 lines[i] = prefix + "___"
         return lines
 
@@ -525,8 +522,6 @@ if SMART_EMPHASIS:
 else:
     EMPHASIS_2_RE = r'(_)(.*?)\2'                 # _emphasis_
 
-#LINK_RE = NOIMG + BRK + r'\s*\(([^\)]*)\)'               # [text](url)
-
 LINK_RE = NOIMG + BRK + \
 r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*)\12)?\)''' # [text](url) or [text](<url>)
 
@@ -536,7 +531,7 @@ IMAGE_REFERENCE_RE = r'\!' + BRK + '\s*\[([^\]]*)\]' # ![alt text][2]
 NOT_STRONG_RE = r'( \* )'                        # stand-alone * or _
 AUTOLINK_RE = r'<((?:f|ht)tps?://[^>]*)>'        # <http://www.123.com>
 AUTOMAIL_RE = r'<([^> \!]*@[^> ]*)>'               # <me@example.com>
-#HTML_RE = r'(\<[^\>]*\>)'                        # <...>
+
 HTML_RE = r'(\<([a-zA-Z/][^\>]*?|\!--.*?--)\>)'               # <...>
 ENTITY_RE = r'(&[\#a-zA-Z0-9]*;)'               # &amp;
 LINE_BREAK_RE = r'  \n'                     # two spaces at end of line
@@ -844,11 +839,11 @@ class Postprocessor:
     
     """
 
-    def run(self, et):
+    def run(self, root):
         """
         Subclasses of Postprocessor should implement a `run` method, which
-        takes a ElementTree and returns a (possably modified) ElementTree.
-
+        takes a root Element. Method can return another Element, and global
+        root Element will be replaced, or just mnodify current and return None.
         """
         pass
 
@@ -956,6 +951,10 @@ class HtmlStash:
         placeholder = HTML_PLACEHOLDER % self.html_counter
         self.html_counter += 1
         return placeholder
+    
+    def rest(self):
+        self.html_counter = 0
+        self.rawHtmlBlocks = []
 
 
 class BlockGuru:
@@ -1090,6 +1089,9 @@ class InlineStash:
         self._nodes[id] = node
         return pholder
     
+    def rest(self):
+        self._nodes = {}
+    
 """
 ======================================================================
 ========================== CORE MARKDOWN =============================
@@ -1207,8 +1209,9 @@ class Markdown:
                                ]
         
         self.inlineStash = InlineStash()
-        
-        self._inlineOperationID = None
+        self.references = {}
+        self.htmlStash = HtmlStash()
+
 
         self.registerExtensions(extensions = extensions,
                                 configs = extension_configs)
@@ -1249,9 +1252,9 @@ class Markdown:
         """
         Resets all state variables so that we can start with a new text.
         """
-        self.references={}
-        self.htmlStash = HtmlStash()
-        self.inlineStash = InlineStash()
+        self.inlineStash.rest()
+        self.htmlStash.rest()
+        self.references.clear()
 
         HTML_BLOCK_PREPROCESSOR.stash = self.htmlStash
         LINE_PREPROCESSOR.stash = self.htmlStash

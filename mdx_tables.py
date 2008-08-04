@@ -29,19 +29,14 @@ class TablePattern(markdown.Pattern) :
                 # otherwise it is a <td>
                 td = etree.Element('td')
             
-            # apply inline patterns on chunks
-            '''for n in self.md._handleInline(t):
-                if(type(n) == unicode):
-                    td.text = n
-                else:
-                    td.appendChild(n)'''
+            # add text ot inline section, later it will be
+            # processed by core
             inline = etree.SubElement(td, "inline")
             inline.text = t
                     
             tr.append(td)
             tr.tail = "\n"
  
-        #print etree.tostring(tr)
         return tr
 
 
