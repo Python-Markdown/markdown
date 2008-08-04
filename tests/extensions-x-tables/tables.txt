@@ -1,7 +1,7 @@
 Before
 
 | a |* b *|
-| [c](#) | *d* |
+| [c](#link) | *d* |
 
 Another
 

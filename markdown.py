@@ -649,10 +649,12 @@ class HtmlPattern (Pattern):
 class LinkPattern (Pattern):
     """ Return a link element from the given match. """
     def handleMatch(self, m):
+
         el = etree.Element("a")
         el.text = m.group(2)
         title = m.group(11)
         href = m.group(9)
+
         if href:
             if href[0] == "<":
                 href = href[1:-1]
@@ -1640,8 +1642,10 @@ class Markdown:
             data, matched, startIndex = self._applyInline(
                                              self.inlinePatterns[patternIndex],
                                              data, patternIndex, startIndex)
+            
             if not matched:
                 patternIndex += 1
+
         return data
     
     def _applyInline(self, pattern, data, patternIndex, startIndex=0):
@@ -1735,6 +1739,7 @@ class Markdown:
         result = []
         prefix = self.inlineStash.prefix
         strartIndex = 0
+    
         while data:
             
             index = data.find(prefix, strartIndex)
@@ -1751,15 +1756,17 @@ class Markdown:
                         linkText(text)
           
                     if not isstr(node): # it's Element
-
+                        
                         for child in [node] + node.getchildren():
             
                             if child.tail:
-                                self._processElementText(node, child, False)
+                                if child.tail.strip():
+                                    self._processElementText(node, child, False)
                             
                             if child.text:
-                                self._processElementText(child, child)
-                                
+                                if child.text.strip():
+                                    self._processElementText(child, child)
+                        
                     else: # it's just a string
                 
                         linkText(node)
@@ -1793,16 +1800,18 @@ class Markdown:
         """
 
         stack = [el]
+
         while stack:
             currElement = stack.pop()
             insertQueue = []
             for child in currElement.getchildren():
                 
                 if child.tag == "inline":
-                    
+
                     lst = self._processPlaceholders(self._handleInline(
                                                     child.text), currElement)
-   
+                    stack += lst
+                    
                     pos = currElement.getchildren().index(child)
                     
                     insertQueue.append((child, pos, lst))
