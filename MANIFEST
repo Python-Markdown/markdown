@@ -2,6 +2,14 @@ README.txt
 README.html
 CHANGE_LOG.txt
 markdown.py
+mdx_codehilite.py
+mdx_fenced_code.py
 mdx_footnotes.py
+mdx_headerid.py
+mdx_imagelinks.py
+mdx_meta.py
 mdx_rss.py
+mdx_tables.py
+mdx_wikilink.py
 setup.py
+scripts/pymarkdown.py

@@ -21,4 +21,5 @@ setup(
                 "mdx_tables",
                 "mdx_wikilink",
                 ],
+    scripts = ['scripts/pymarkdown.py'],
     ) 

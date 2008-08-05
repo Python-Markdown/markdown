@@ -1,6 +1,26 @@
 PYTHON MARKDOWN CHANGELOG
 =========================
 
+August 2008: Updated included extensions to ElementTree. Added a 
+seperate commanline script. (v2.0-alpha)
+
+July 2008: Switched from home-grown NanoDOM to ElementTree and
+various related bugs (thanks Artem Yunusov).
+
+June 2008: Fixed issues with nested inline patterns and cleaned 
+up testing framework (thanks Artem Yunusov).
+
+May 2008: Added a number of additional extensions to the
+distribution and other minor changes. Moved repo to git from svn.
+
+Mar 2008: Refactored extension api to accept either an 
+extension name (as a string) or an instance of an extension
+(Thanks David Wolever). Fixed various bugs and added doc strings.
+
+Feb 2008: Various bugfixes mostly regarding extensions.
+
+Feb 18, 2008: Version 1.7.
+
 Feb 13, 2008: A little code cleanup and better documentation
 and inheritance for pre/post proccessors.
 
