@@ -1919,7 +1919,7 @@ class Markdown:
 
         indentETree(root)
 
-        xml = codecs.decode(etree.tostring(root, encoding="utf8"), "utf8")
+        xml, length = codecs.utf_8_decode(etree.tostring(root, encoding="utf8"))
         
         if self.stripTopLevelTags:
             xml = xml.strip()[44:-7] + "\n"
