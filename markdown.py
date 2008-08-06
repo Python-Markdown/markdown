@@ -29,9 +29,6 @@ License: [GPL 2](http://www.gnu.org/copyleft/gpl.html) or BSD
 
 version = "2.0-alpha"
 version_info = (2,0,0, "alpha")
-__revision__ = "$Rev$"
-
-
 
 import re, sys, codecs, htmlentitydefs
 from urlparse import urlparse, urlunparse
@@ -39,11 +36,7 @@ from urlparse import urlparse, urlunparse
 from logging import getLogger, StreamHandler, Formatter, \
                     DEBUG, INFO, WARN, ERROR, CRITICAL
 
-
-         
-
 MESSAGE_THRESHOLD = CRITICAL
-
 
 # Configure debug message logger (the hard way - to support python 2.3)
 logger = getLogger('MARKDOWN')
