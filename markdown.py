@@ -150,14 +150,14 @@ EXECUTABLE_NAME_FOR_USAGE = "python markdown.py"
 
 AND_SUBSTITUTE = unichr(2) + unichr(4) + unichr(3) 
 
-INLINE_PLACEHOLDER_PREFIX = u'\u0001'
-INLINE_PLACEHOLDER_SUFFIX = u'\u0002'
+# placeholders
+STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
+ETX = u'\u0003'  # Use ETX ("End of text") for end-of-placeholder
+HTML_PLACEHOLDER_PREFIX = STX+"html:"
+HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d"+ETX
+INLINE_PLACEHOLDER_PREFIX = STX+"inline:"
+INLINE_PLACEHOLDER_SUFFIX = ETX
 
-# a template for html placeholders
-START = u'\u0001'
-END = u'\u0002'
-HTML_PLACEHOLDER_PREFIX = START+"html:"
-HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d"+END
 
 BLOCK_LEVEL_ELEMENTS = ['p', 'div', 'blockquote', 'pre', 'table',
                         'dl', 'ol', 'ul', 'script', 'noscript',
@@ -1878,8 +1878,8 @@ class Markdown:
         
         # Fixup the source text
 
-        self.source = self.source.replace(START, "")
-        self.source = self.source.replace(END, "")
+        self.source = self.source.replace(STX, "")
+        self.source = self.source.replace(ETX, "")
 
         self.source = self.source.replace("\r\n", "\n").replace("\r", "\n")
         self.source += "\n\n"
