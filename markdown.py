@@ -58,10 +58,10 @@ def isstr(s):
 def importETree(): 
     """ Imports best variant of ElementTree
      and returns module object """
-     
+    cetree = None  
     try:
         # Python 2.5+
-        import xml.etree.cElementTree as etree
+        import xml.etree.cElementTree as cetree
     except ImportError:
         try:
             # Python 2.5+
@@ -69,7 +69,7 @@ def importETree():
         except ImportError:
             try:
                 # normal cElementTree install
-                import cElementTree as etree
+                import cElementTree as cetree
             except ImportError:
                 try:
                     # normal ElementTree install
@@ -78,6 +78,19 @@ def importETree():
                     message(CRITICAL, 
                            "Failed to import ElementTree from any known place")
                     sys.exit(1)
+    if cetree:
+        if cetree.VERSION < "1.0":
+            message(CRITICAL, 
+                           "cElementTree version is too old, 1.0 and upper required")
+            sys.exit(1)
+            
+        etree = cetree
+    else:
+        if etree.VERSION < "1.1":
+            message(CRITICAL, 
+                           "ElementTree version is too old, 1.1 and upper required")
+            sys.exit(1)
+            
     return etree
 
 etree = importETree()
