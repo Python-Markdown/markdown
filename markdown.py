@@ -15,8 +15,8 @@ script.  (You might want to read that before you try modifying this
 file.)
 
 Started by [Manfred Stienstra](http://www.dwerg.net/).  Continued and
-maintained  by [Yuri Takhteyev](http://www.freewisdom.org) and [Waylan
-Limberg](http://achinghead.com/).
+maintained  by [Yuri Takhteyev](http://www.freewisdom.org), [Waylan
+Limberg](http://achinghead.com/) and [Artem Yunusov](http://blog.splyer.com).
 
 Contact: 
 
@@ -93,7 +93,10 @@ def importETree():
             
     return etree
 
-etree = importETree()
+"""ElementTree module
+in extensions use: `from markdown import etree`
+to access to the ElemetTree module, do not import it by yourself"""
+etree = importETree() 
 
 def indentETree(elem, level=0):
     """ Indent ElementTree before serialization """
@@ -162,7 +165,6 @@ EXECUTABLE_NAME_FOR_USAGE = "python markdown.py"
 
 # --------------- CONSTANTS YOU _SHOULD NOT_ HAVE TO CHANGE ----------
 
-AND_SUBSTITUTE = unichr(2) + unichr(4) + unichr(3) 
 
 # placeholders
 STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
@@ -171,6 +173,8 @@ HTML_PLACEHOLDER_PREFIX = STX+"html:"
 HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d"+ETX
 INLINE_PLACEHOLDER_PREFIX = STX+"inline:"
 INLINE_PLACEHOLDER_SUFFIX = ETX
+
+AMP_SUBSTITUTE = STX+"amp"+ETX 
 
 
 BLOCK_LEVEL_ELEMENTS = ['p', 'div', 'blockquote', 'pre', 'table',
@@ -188,13 +192,15 @@ def isBlockLevel (tag):
 
 
 def codepoint2name(code):
-    """ Return entity definition by code, or code 
-    if there is no such entity definition"""
+    """ 
+    Return entity definition by code, or code 
+    if there is no such entity definition
+    """
     entity = htmlentitydefs.codepoint2name.get(code)
     if entity:
-        return "%s%s;" % (AND_SUBSTITUTE, entity)
+        return "%s%s;" % (AMP_SUBSTITUTE, entity)
     else:
-        return "%s#%d;" % (AND_SUBSTITUTE, code)
+        return "%s#%d;" % (AMP_SUBSTITUTE, code)
     
 def handleAttributes(text, parent):
     """ Handale attributes, e.g {@id=123} """
@@ -788,7 +794,7 @@ class AutomailPattern (Pattern):
             el.text += codepoint2name(ord(letter))
 
         mailto = "mailto:" + email
-        mailto = "".join([AND_SUBSTITUTE + '#%d;' % 
+        mailto = "".join([AMP_SUBSTITUTE + '#%d;' % 
                           ord(letter) for letter in mailto])
         el.set('href', mailto)
         return el
@@ -917,10 +923,10 @@ class AndSubstitutePostprocessor(TextPostprocessor):
 
     def run(self, text):
 
-        text =  text.replace(AND_SUBSTITUTE, "&")
+        text =  text.replace(AMP_SUBSTITUTE, "&")
         return text
 
-ANDSUBSTITUTETEXTPOSTPROCESSOR = AndSubstitutePostprocessor()
+AMPSUBSTITUTETEXTPOSTPROCESSOR = AndSubstitutePostprocessor()
 
 
 """
@@ -1203,7 +1209,7 @@ class Markdown:
         self.textPostprocessors = [# a footnote postprocessor will get
                                    # inserted here
                                    RAWHTMLTEXTPOSTPROCESSOR,
-                                   ANDSUBSTITUTETEXTPOSTPROCESSOR]
+                                   AMPSUBSTITUTETEXTPOSTPROCESSOR]
 
         self.prePatterns = []
                                
