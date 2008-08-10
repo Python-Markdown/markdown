@@ -1,6 +1,3 @@
-README.txt
-README.html
-CHANGE_LOG.txt
 markdown.py
 mdx_codehilite.py
 mdx_fenced_code.py
@@ -13,3 +10,10 @@ mdx_tables.py
 mdx_wikilink.py
 setup.py
 scripts/pymarkdown.py
+docs/README
+docs/README.html
+docs/CHANGE_LOG
+docs/INSTALL
+docs/AUTHORS
+docs/writing_extensions.txt
+
