@@ -12,6 +12,5 @@ setup(
     license = "BSD License, GNU Public License (GPL)",
     py_modules = ["markdown"],
     packages = ['mdx'],
-    #package_dir = {'mdx': 'lib'},
     scripts = ['scripts/pymarkdown.py'],
     ) 
