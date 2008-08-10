@@ -2135,11 +2135,14 @@ def load_extension(ext_name, configs = []):
         module = __import__(extension_module_name)
 
     except ImportError:
-        message(WARN,
+        try:
+            module = __import__('.'.join(['mdx', extension_module_name]), {}, {}, ['mdx'])
+        except:
+            message(WARN,
                 "Couldn't load extension '%s' from \"%s\" - continuing without."
                 % (ext_name, extension_module_name) )
-        # Return a dummy (do nothing) Extension as silent failure
-        return Extension(configs={})
+            # Return a dummy (do nothing) Extension as silent failure
+            return Extension(configs={})
 
     return module.makeExtension(configs.items())    
 
