@@ -7,9 +7,9 @@ inline patterns which allow you to add, remove or override the syntax of
 any inline elements, and postprocessors which allow munging of the
 output of the parser before it is returned.
 
-As the parser builds an [ElementTree][] DOM object which is later rendered 
+As the parser builds an [ElementTree][] object which is later rendered 
 as Unicode text, there are also some helpers provided to make manipulation of 
-the DOM tree easier. Each part of the API is discussed in its respective 
+the tree easier. Each part of the API is discussed in its respective 
 section below. You may find reading the source of some [[existing extensions]] 
 helpful as well. For example, the [[footnote]] extension uses most of the 
 features documented here.
@@ -19,9 +19,9 @@ features documented here.
     * [Line Preprocessors][]
 * [InlinePatterns][]
 * [Postprocessors][]
-    * [DOM Postprocessors][]
+    * [ElementTree Postprocessors][]
     * [TextProstprocessors][]
-* [Working with the DOM][]
+* [Working with the ElementTree][]
 * [Integrating your code into Markdown][]
     * [extendMarkdown][]
     * [Config Settings][]
@@ -147,12 +147,12 @@ Postprocessors manipulate a document after it has passed through the Markdown
 core. This is were stored text gets added back in such as a list of footnotes, 
 a table of contents or raw html.
 
-There are two types of postprocessors: [DOM Postprocessors][] and 
+There are two types of postprocessors: [ElementTree Postprocessors][] and 
 [TextPostprocessors][].
 
-<h4 id="dompostprocessors">DOM Postprocessors</h4>
+<h4 id="etpostprocessors">ElementTree Postprocessors</h4>
 
-A DOM Postprocessor should inherit from `markdown.Postprocessor` and over-ride
+A ElementTree Postprocessor should inherit from `markdown.Postprocessor` and over-ride
 the `run` method which takes one argument `root` and should return either
 that root element or a modified root element.
 
@@ -163,7 +163,7 @@ A pseudo example:
         #do stufff
         return my_modified_root
 
-For specifics on manipulating the DOM, see [Working with the DOM][] below.
+For specifics on manipulating the ElementTree, see [Working with the ElementTree][] below.
 
 <h4 id="textpostprocessors">TextPostprocessors</h4>
 
@@ -171,7 +171,7 @@ A TextPostprocessor should inherit from `markdown.TextPostprocessor` and
 over-ride the `run` method which takes one argument `text` and returns a
 Unicode string.
 
-TextPostprocessors are run after the DOM has been serialized back into Unicode
+TextPostprocessors are run after the ElementTree has been serialized back into Unicode
 text.  For example, this may be an appropriate place to add a table of contents
 to a document:
 
@@ -179,12 +179,63 @@ to a document:
     def run(self, text):
         return MYMARKERRE.sub(MyToc, text)
 
-<h3 id="working_with_dom">Working with the DOM</h3>
+<h3 id="working_with_et">Working with the ElementTree</h3>
 
 As mentioned, the Markdown parser converts a source document to an 
-[ElementTree][] DOM object before serializing that back to Unicode text. 
+[ElementTree][] ElementTree object before serializing that back to Unicode text. 
 Markdown has provided some helpers to ease that manipulation within the context 
-of the Markdown module...
+of the Markdown module.
+First of all, to get access to the ElementTree module object you should use: 
+
+    import markdown
+    etree = markdown.etree
+    
+It's try to import ElementTree from any known places, first as standard Python 
+cElementTree/ElementTree module, then as separately installed cElementTree/ElementTree.
+Another thing you need to know is that all text data, included in <inline> tag will be
+processed later with [InlinePatterns][].
+
+Example below show basic ElementTree functionality:
+
+    table = etree.Element("table") 
+    table.set("cellpadding", "2") # Set cellpadding to 2
+    tr = etree.SubElement(table, "tr") # Added child tr to table
+    td = etree.SubElement(tr, "td") # Added child td to tr
+    td.text = "Cell content" # Added text content to td element
+    table.tail = "Text after table" # Added text after table Element
+    print etree.tostring(table) # Serialized our table    
+
+Now let's write a simple ElementTree Postprocessor, that will add "class" attribute
+to all "a" elements:
+
+	class AttrPostprocessor(markdown.Postprocessor):
+	    
+	    def _findElement(self, element, name):
+	    """ 
+		find elements with @name and return list 
+		
+		Keyword arguments:
+		
+		* element: ElementTree Element
+		* name: tag name to search
+		
+		""" 
+		result = []
+		for child in element: 
+		    if child.tag == name:
+			result.append(child)
+		    result += self._findElement(child, name)
+		return result
+	    
+	    def run(self, root):
+
+		for element in self._findElement(root, "a"):
+		     element.set("class", "MyClass") # Set "class" atribute
+		     
+		retrun root
+
+For more information about working with ElementTree visit 
+ElementTree [official site](http://effbot.org/zone/element-index.htm).
 
 <h3 id="integrating_into_markdown">Integrating Your Code Into Markdown
 
@@ -288,9 +339,9 @@ than one residing in a module.
 [Line Preprocessors]: #linepreprocessors
 [InlinePatterns]: #inlinepatterns
 [Postprocessors]: #postprocessors
-[DOM Postprocessors]: #dompostprocessors
+[ElementTree Postprocessors]: #etpostprocessors
 [TextProstprocessors]: #textpostprocessors
-[Working with the DOM]: #working_with_dom
+[Working with the ElementTree]: #working_with_et
 [Integrating your code into Markdown]: #integrating_into_markdown
 [extendMarkdown]: #extendmarkdown
 [Config Settings]: #configsettings
