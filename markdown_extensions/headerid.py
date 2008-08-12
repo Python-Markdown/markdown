@@ -87,9 +87,7 @@ class HeaderIdExtension (markdown.Extension) :
         # set defaults
         self.config = {
                 'level' : ['1', 'Base level for headers.'],
-                'forceid' : ['True', 'Force all headers to have an id.'],
-                'toc_id' : ['toc', 'Set html id of wrapper div for TOC.'],
-                'toc_marker': ['///TOC///', 'Marker to identify position of TOC.']
+                'forceid' : ['True', 'Force all headers to have an id.']
             }
 
         for key, value in configs:
@@ -99,7 +97,6 @@ class HeaderIdExtension (markdown.Extension) :
     def extendMarkdown(self, md, md_globals) :
 
         md.IDs = []
-        md.toc = Toc(self.getConfig('toc_id'), self.getConfig('toc_marker'))
 
         def _processHeaderId(parent_elem, paragraph) :
             ''' 
@@ -116,14 +113,10 @@ class HeaderIdExtension (markdown.Extension) :
                 parent_elem.append(h)
                 inline = etree.SubElement(h, "inline")
                 inline.text = m.group(2).strip()
-                i = ''
-                if m.group(3):
-                    i = _unique_id(m.group(3))
+                if m.group(3) :
+                    h.set('id', _unique_id(m.group(3)))
                 elif force_id:
-                    i = _create_id(m.group(2).strip())
-                if i:
-                    h.set('id', i)
-                    md.toc.append(i, inline.text)
+                    h.set('id', _create_id(m.group(2).strip()))
             else :
                 message(CRITICAL, "We've got a problem header!")
         
@@ -171,27 +164,7 @@ class HeaderIdExtension (markdown.Extension) :
                     h += '+'
             return _unique_id(h)
 
-class Toc():
-    """ Store a Table of Contents from a documents Headers. """
-    def __init__(self, html_id, marker):
-        self.html_id = html_id
-        self.marker = marker
-        self.ids = []
-        self.labels = []
-
-    def append(self, id, label):
-        """ Append an item to the store. """
-        self.ids.append(id)
-        self.labels.append(label)
-
-    def render(self):
-        """ Render the TOC as HTML and return unicode. """
-        out = u'<div id="%s"><ul>\n' % self.html_id
-        for c in range(len(self.ids)):
-            out += u'<li><a href="#%s">%s</a></li>\n'%(self.ids[c], self.labels[c])
-        out += u'</ul></div>'
-        return out
-
+            
 
 def makeExtension(configs=None) :
     return HeaderIdExtension(configs=configs)
