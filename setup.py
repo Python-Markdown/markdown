@@ -11,6 +11,6 @@ setup(
     url = "http://www.freewisdom.org/projects/python-markdown",
     license = "BSD License, GNU Public License (GPL)",
     py_modules = ["markdown"],
-    packages = ['mdx'],
+    packages = ['markdown_extensions'],
     scripts = ['scripts/pymarkdown.py'],
     ) 
