@@ -1166,7 +1166,7 @@ class Markdown:
     """
 
 
-    def __init__(self, source=None,  # depreciated
+    def __init__(self, 
                  extensions=[],
                  extension_configs={},
                  safe_mode = False):
@@ -1175,7 +1175,6 @@ class Markdown:
 
         Keyword arguments:
         
-        * source: The text in Markdown format. Depreciated!
         * extensions: A list of extensions.  
            If they are of type string, the module mdx_name.py will be loaded.  
            If they are a subclass of markdown.Extension, they will be used 
@@ -1185,9 +1184,7 @@ class Markdown:
         
         """
 
-        self.source = source
-        if source is not None:
-            message(WARN, "The `source` arg of Markdown.__init__() is depreciated and will be removed in the future. Use `instance.convert(source)` instead.")
+        self.source = None
         self.safeMode = safe_mode
         self.blockGuru = BlockGuru()
         self.registeredExtensions = []
