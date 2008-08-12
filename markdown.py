@@ -2129,17 +2129,22 @@ def load_extension(ext_name, configs = []):
         pairs = [x.split("=") for x in ext_args.split(",")]
         configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
 
-    extension_module_name = "mdx_" + ext_name
+    ext_module = 'markdown_extensions'
+    module_name = '.'.join([ext_module, ext_name])
+    extension_module_name = '_'.join(['mdx', ext_name])
 
     try:
-        module = __import__(extension_module_name)
-
+            module = __import__(module_name, {}, {}, [ext_module])
     except ImportError:
-        message(WARN,
-                "Couldn't load extension '%s' from \"%s\" - continuing without."
-                % (ext_name, extension_module_name) )
-        # Return a dummy (do nothing) Extension as silent failure
-        return Extension(configs={})
+        try:
+            module = __import__(extension_module_name)
+        except:
+            message(WARN,
+                "Failed loading extension '%s' from '%s' or '%s' "
+                "- continuing without."
+                % (ext_name, module_name, extension_module_name) )
+            # Return a dummy (do nothing) Extension as silent failure
+            return Extension(configs={})
 
     return module.makeExtension(configs.items())    
 
