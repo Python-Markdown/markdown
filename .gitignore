@@ -2,5 +2,5 @@
 *.bak
 *.tmp
 tmp/*
-__init__.py
-markdown_old.py
+build/*
+dist/*

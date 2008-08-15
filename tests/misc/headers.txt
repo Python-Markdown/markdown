@@ -9,3 +9,7 @@ Line 3
 # [5]: http://foo.com/
 
 # Issue #1: Markdown
+
+Text
+# Header
+Some other text

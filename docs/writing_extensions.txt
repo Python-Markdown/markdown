@@ -1,0 +1,388 @@
+### Overview
+
+Python-Markdown includes an API for extension writers to plug their own 
+custom functionality and/or syntax into the parser. There are preprocessors
+which allow you to alter the source before it is passed to the parser, 
+inline patterns which allow you to add, remove or override the syntax of
+any inline elements, and postprocessors which allow munging of the
+output of the parser before it is returned.
+
+As the parser builds an [ElementTree][] object which is later rendered 
+as Unicode text, there are also some helpers provided to make manipulation of 
+the tree easier. Each part of the API is discussed in its respective 
+section below. You may find reading the source of some [[Available Extensions]] 
+helpful as well. For example, the [[Footnotes]] extension uses most of the 
+features documented here.
+
+* [Preprocessors][]
+    * [TextPreprocessors][]
+    * [Line Preprocessors][]
+* [InlinePatterns][]
+* [Postprocessors][]
+    * [ElementTree Postprocessors][]
+    * [TextProstprocessors][]
+* [Working with the ElementTree][]
+* [Integrating your code into Markdown][]
+    * [extendMarkdown][]
+    * [registerExtension][]
+    * [Config Settings][]
+    * [makeExtension][]
+
+<h3 id="preprocessors">Preprocessors</h3>
+
+Preprocessors munge the source text before it is passed into the Markdown 
+core. This is an excellent place to clean up bad syntax, extract things the 
+parser may otherwise choke on and perhaps even store it for later retrieval.
+
+There are two types of preprocessors: [TextPreprocessors][] and 
+[Line Preprocessors][].
+
+<h4 id="textpreprocessors">TextPreprocessors</h4>
+
+TextPreprocessors should inherit from `markdown.TextPreprocessor` and implement
+a `run` method with one argument `text`. The `run` method of each 
+TextPreprocessor will be passed the entire source text as a single Unicode
+string and should either return that single Unicode string, or an altered
+version of it.
+
+For example, a simple TextPreprocessor that normalizes newlines [^1] might look
+like this:
+
+    class NormalizePreprocessor(markdown.TextPreprocessor):
+        def run(self, text):
+            return text.replace("\r\n", "\n").replace("\r", "\n")
+
+[^1]: It should be noted that Markdown already normalizes newlines. This 
+example is for illustrative purposes only.
+
+<h4 id="linepreprocessors">Line Preprocessors</h4>
+
+Line Preprocessors should inherit from `markdown.Preprocessor` and implement 
+a `run` method with one argument `lines`. The `run` method of each Line
+Preprocessor will be passed the entire source text as a list of Unicode strings.
+Each string will contain one line of text. The `run` method should return
+either that list, or an altered list of Unicode strings.
+
+A pseudo example:
+
+    class MyPreprocessor(markdown.Preprocessor):
+        def run(self, lines):
+            new_lines = []
+            for line in lines:
+                m = MYREGEX.match(line)
+                if m:
+                    # do stuff
+                else:
+                    new_lines.append(line)
+            return new_lines
+
+<h3 id="inlinepatterns">Inline Patterns</h3>
+
+Inline Patterns implement the inline HTML element syntax for Markdown such as
+`*emphasis*` or `[links](http://example.com)`. Pattern objects should be 
+instances of classes that inherit from `markdown.Pattern` or one of its 
+children. Each pattern object uses a single regular expression and must have 
+the following methods:
+
+* `getCompiledRegExp()`: Returns a compiled regular expression.
+* `handleMatch(m)`: Accepts a match object and returns an ElementTree
+element of a plain Unicode string.
+
+Note that any regular expression returned by `getCompiledRegExp` must capture
+the whole block. Therefore, they should all start with `r'^(.*?)'` and end
+with `r'(.*?)!'. When using the default `getCompiledRegExp()` method provided 
+in the `Pattern` you can pass in a regular expression without that and 
+`getCompiledRegExp` will wrap your expression for you. This means that the first
+group of your match will be `m.group(2)` as `m.group(1)` will match everything 
+before the pattern.
+
+For an example, consider this simplified emphasis pattern:
+
+    class EmphasisPattern(markdown.Pattern):
+        def handleMatch(self, m):
+            el = markdown.etree.Element('em')
+            el.text = m.group(3)
+            return el
+
+As discussed in [Integrating Your Code Into Markdown][], an instance of this
+class will need to be provided to Markdown. That instance would be created
+like so:
+
+    # an oversimplified regex
+    MYPATTERN = r'\*([^*]+)\*'
+    # pass in pattern and create instance
+    emphasis = EmphasisPattern(MYPATTERN)
+
+Actually it would not be necessary to create that pattern (and not just because
+a more sophisticated emphasis pattern already exists in Markdown). The fact is,
+that example pattern is not very DRY. A pattern for `**strong**` text would
+be almost identical, with the exception that it would create a 'strong' element.
+Therefore, Markdown provides a number of generic pattern classes that can 
+provide some common functionality. For example, both emphasis and strong are
+implemented with separate instances of the `SimpleTagPettern` listed below. 
+Feel free to use or extend any of these Pattern classes.
+
+**Generic Pattern Classes**
+
+* `SimpleTextPattern(pattern)`:
+
+    Returns simple text of `group(2)` of a `pattern`.
+
+* `SimpleTagPattern(pattern, tag)`:
+
+    Returns an element of type "`tag`" with a text attribute of `group(3)`
+    of a `pattern`. `tag` should be a string of a HTML element (i.e.: 'em').
+
+* `SubstituteTagPattern(pattern, tag)`:
+
+    Returns an element of type "`tag`" with no children or text (i.e.: 'br').
+
+There may be other Pattern classes in the Markdown source that you could extend
+or use as well. Read through the source and see if there is anything you can 
+use. You might even get a few ideas for different approaches to your specific
+situation.
+
+<h3 id="postprocessors">Postprocessors</h3>
+
+Postprocessors manipulate a document after it has passed through the Markdown 
+core. This is were stored text gets added back in such as a list of footnotes, 
+a table of contents or raw html.
+
+There are two types of postprocessors: [ElementTree Postprocessors][] and 
+[TextPostprocessors][].
+
+<h4 id="etpostprocessors">ElementTree Postprocessors</h4>
+
+An ElementTree Postprocessor should inherit from `markdown.Postprocessor`,
+over-ride the `run` method which takes one argument `root` and return either
+that root element or a modified root element.
+
+A pseudo example:
+
+    class MyPostprocessor(markdown.Postprocessor):
+    def run(self, root):
+        #do stufff
+        return my_modified_root
+
+For specifics on manipulating the ElementTree, see 
+[Working with the ElementTree][] below.
+
+<h4 id="textpostprocessors">TextPostprocessors</h4>
+
+A TextPostprocessor should inherit from `markdown.TextPostprocessor` and
+over-ride the `run` method which takes one argument `text` and returns a
+Unicode string.
+
+TextPostprocessors are run after the ElementTree has been serialized back into 
+Unicode text.  For example, this may be an appropriate place to add a table of 
+contents to a document:
+
+    class TocTextPostprocessor(markdown.TextPostprocessor):
+    def run(self, text):
+        return MYMARKERRE.sub(MyToc, text)
+
+<h3 id="working_with_et">Working with the ElementTree</h3>
+
+As mentioned, the Markdown parser converts a source document to an 
+[ElementTree][] object before serializing that back to Unicode text. 
+Markdown has provided some helpers to ease that manipulation within the context 
+of the Markdown module.
+
+First, to get access to the ElementTree module import ElementTree from 
+``markdown`` rather than importing it directly. This will ensure you are using 
+the same version of ElementTree as markdown. The module is named ``etree`` 
+within Markdown.
+
+    from markdown import etree
+    
+``markdown.etree`` tries to import ElementTree from any known location, first 
+as a standard library module (from ``xml.etree`` in Python 2.5), then as a third
+party package (``Elementree``). In each instance, ``cElementTree`` is tried 
+first, then ``ElementTree`` if the faster C implementation is not available on 
+your system.
+
+Sometimes you may want text inserted into an element to be parsed by 
+[InlinePatterns][]. In such a situation, simply insert the text into an 
+`inline` tag and the text will be automatically run through the InlinePatterns.
+
+Here's a basic example which creates an HTML table (note that the contents of 
+the second cell (``td2``) will be run through InlinePatterns latter):
+
+    table = etree.Element("table") 
+    table.set("cellpadding", "2") # Set cellpadding to 2
+    tr = etree.SubElement(table, "tr") # Add child tr to table
+    td1 = etree.SubElement(tr, "td") # Add child td1 to tr
+    td1.text = "Cell content" # Add plain text content to td1 element
+    td2 = etree.SubElement(tr, "td") # Add second td to tr
+    inline = etree.SubElement(td2, "inline") # Add an inline element to td2
+    inline.text = "Some *text* with **inline** formatting." # Add markup text
+    table.tail = "Text after table" # Added text after table Element
+
+You can also manipulate an existing tree. Consider the following example which 
+adds a ``class`` attribute to all ``a`` elements:
+
+	def set_link_class(self, element):
+		for child in element: 
+		    if child.tag == "a":
+                child.set("class", "myclass") #set the class attribute
+            set_link_class(child) # run recursively on children
+
+For more information about working with ElementTree see the ElementTree
+[Documentation](http://effbot.org/zone/element-index.htm) 
+([Python Docs](http://docs.python.org/lib/module-xml.etree.ElementTree.html)).
+
+<h3 id="integrating_into_markdown">Integrating Your Code Into Markdown
+
+Once you have the various pieces of your extension built, you need to tell 
+Markdown about them and ensure that they are run in the proper sequence. 
+Markdown accepts a `Extension` instance for each extension. Therefore, you
+will need to define a class that extends `markdown.Extension` and over-rides
+the `extendMarkdown` method. Within this class you will manage configuration 
+options for your extension and attach the various processors and patterns to 
+the Markdown instance. 
+
+It is important to note that the order of the various processors and patterns 
+matters. For example, if we replace `http://...` links with <a> elements, and 
+*then* try to deal with  inline html, we will end up with a mess. Therefore, 
+the various types of processors and patterns are stored within an instance of 
+the Markdown class within lists. Your `Extension` class will need to manipulate
+those lists appropriately. You may insert instances of your processors and
+patterns into the appropriate location in a list, remove a built-in instances,
+or replace a built-in instance with your own.
+
+<h4 id="extendmarkdown">`extendMarkdown`</h4>
+
+The `extendMarkdown` method of a `markdown.Extension` class accepts two 
+arguments:
+
+* `md`:
+
+    A pointer to the instance of the Markdown class. You should use this to 
+    access the lists of processors and patterns. They are found under the 
+    following attributes:
+
+    * `md.textPreprocessors`
+    * `md.preprocessors`
+    * `md.inlinePatterns`
+    * `md.postpreprocessors`
+    * `md.textPostprocessors`
+
+    Some other things you may want to access in the markdown instance are:
+
+    * `md.inlineStash`
+    * `md.htmlStash`
+    * `md.registerExtension()`
+
+* `md_globals`
+
+    Contains all the various global variables within the markdown module.
+
+Of course, with access to those items, theoretically you have the option to 
+changing anything through various [monkey_patching][] techniques. In fact, this
+is how both the [[HeaderId]] and [[CodeHilite]] extensions work. However, you 
+should be aware that the various undocumented or private parts of markdown may 
+change without notice and your monkey_patches may break with a new release. 
+Therefore, what you really should be doing is inserting processors and patterns
+into the markdown pipeline. Consider yourself warned.
+
+[monkey_patching]: http://en.wikipedia.org/wiki/Monkey_patch
+
+<h4 id="registerextension">registerExtension</h4>
+
+Some extensions may need to have their state reset between multiple runs of the
+Markdown class. For example, consider the following use of the [[Footnotes]] 
+extension:
+
+    md = markdown.Markdown(extensions=['footnotes'])
+    html1 = md.convert(text_with_footnote)
+    md.reset()
+    html2 = md.convert(text_without_footnote)
+
+Without calling ``reset``, the footnote definitions from the first document will
+be inserted into the second document as they are still stored within the class
+instance. Therefore the ``Extension`` class needs to define a ``reset`` method
+that will reset the state of the extension (i.e.: ``self.footnotes = {}``).
+However, as many extensions do not have a need for ``reset``, ``reset`` is only
+called on extensions that are registered.
+
+To register an extension, call ``md.registerExtension`` from within your 
+``extendMarkdown`` method:
+
+
+    def extendMarkdown(self, md, md_globals):
+        md.registerExtension(self)
+        # insert processors and patterns here
+
+Then, each time ``reset`` is called on the Markdown instance, the ``reset`` 
+method of each registered extension will be called as well. You should also
+note that ``reset`` will be called on each registered extension after it is
+initialized the first time. Keep that in mind when over-riding the extension's
+``reset`` method.
+
+<h4 id="configsettings">Config Settings</h4>
+
+If an extension uses any parameters that the user may want to change,
+those parameters should be stored in `self.config` of your `markdown.Extension`
+class in the following format:
+
+    self.config = {parameter_1_name : [value1, description1],
+                   parameter_2_name : [value2, description2] }
+
+When stored this way the config parameters can be over-ridden from the
+command line or at the time Markdown is initiated:
+
+    markdown.py -x myextension(SOME_PARAM=2) inputfile.txt > output.txt
+
+Note that parameters should always be assumed to be set to string
+values, and should be converted at run time. For example:
+
+    i = int(self.getConfig("SOME_PARAM"))
+
+<h4 id="makeextension">`makeExtension`</h4>
+
+Each extension should ideally be placed in its own module starting
+with the  ``mdx_`` prefix (e.g. ``mdx_footnotes.py``).  The module must
+provide a module-level function called ``makeExtension`` that takes
+an optional parameter consisting of a dictionary of configuration over-rides 
+and returns an instance of the extension.  An example from the footnote 
+extension:
+
+    def makeExtension(configs=None) :
+        return FootnoteExtension(configs=configs)
+
+By following the above example, when Markdown is passed the name of your 
+extension as a string (i.e.: ``'footnotes'``), it will automatically import
+the module and call the ``makeExtension`` function initiating your extension.
+
+You may have noted that the extensions packaged with Python-Markdown do not
+use the ``mdx_`` prefix in their module names. This is because they are all
+part of the ``markdown_extensions`` package. Markdown will first try to import
+from ``markdown_extensions.extname`` and upon failure, ``mdx_extname``. If both
+fail, Markdown will continue without the extension.
+
+However, Markdown will also accept an already existing instance of an extension.
+For example:
+
+    import markdown
+    import myextension
+    configs = {...}
+    myext = myextension.MyExtension(configs=configs)
+    md = markdown.Markdown(extensions=[myext])
+
+This is useful if you need to implement a large number of extensions with more
+than one residing in a module.
+
+[Preprocessors]: #preprocessors
+[TextPreprocessors]: #textpreprocessors
+[Line Preprocessors]: #linepreprocessors
+[InlinePatterns]: #inlinepatterns
+[Postprocessors]: #postprocessors
+[ElementTree Postprocessors]: #etpostprocessors
+[TextProstprocessors]: #textpostprocessors
+[Working with the ElementTree]: #working_with_et
+[Integrating your code into Markdown]: #integrating_into_markdown
+[extendMarkdown]: #extendmarkdown
+[registerExtension]: #registerextension
+[Config Settings]: #configsettings
+[makeExtension]: #makeextension
+[ElementTree]: http://effbot.org/zone/element-index.htm

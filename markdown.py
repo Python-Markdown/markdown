@@ -15,8 +15,8 @@ script.  (You might want to read that before you try modifying this
 file.)
 
 Started by [Manfred Stienstra](http://www.dwerg.net/).  Continued and
-maintained  by [Yuri Takhteyev](http://www.freewisdom.org) and [Waylan
-Limberg](http://achinghead.com/).
+maintained  by [Yuri Takhteyev](http://www.freewisdom.org), [Waylan
+Limberg](http://achinghead.com/) and [Artem Yunusov](http://blog.splyer.com).
 
 Contact: 
 
@@ -53,15 +53,15 @@ def message(level, text):
     logger.log(level, text)
     
 def isstr(s):
+    """ Check if it's string """
     return isinstance(s, unicode) or isinstance(s, str)
  
 def importETree(): 
-    """ Imports best variant of ElementTree
-     and returns module object """
-     
+    """ Import best variant of ElementTree and return module object """
+    cetree = None  
     try:
         # Python 2.5+
-        import xml.etree.cElementTree as etree
+        import xml.etree.cElementTree as cetree
     except ImportError:
         try:
             # Python 2.5+
@@ -69,7 +69,7 @@ def importETree():
         except ImportError:
             try:
                 # normal cElementTree install
-                import cElementTree as etree
+                import cElementTree as cetree
             except ImportError:
                 try:
                     # normal ElementTree install
@@ -78,11 +78,28 @@ def importETree():
                     message(CRITICAL, 
                            "Failed to import ElementTree from any known place")
                     sys.exit(1)
+    if cetree:
+        if cetree.VERSION < "1.0":
+            message(CRITICAL, 
+                           "cElementTree version is too old, 1.0 and upper required")
+            sys.exit(1)
+            
+        etree = cetree
+    else:
+        if etree.VERSION < "1.1":
+            message(CRITICAL, 
+                           "ElementTree version is too old, 1.1 and upper required")
+            sys.exit(1)
+            
     return etree
 
-etree = importETree()
+"""ElementTree module
+in extensions use: `from markdown import etree`
+to access to the ElemetTree module, do not import it by yourself"""
+etree = importETree() 
 
 def indentETree(elem, level=0):
+    """ Indent ElementTree before serialization """
      
     if level > 1:
         i = "\n" + (level-1) * "  "
@@ -148,7 +165,6 @@ EXECUTABLE_NAME_FOR_USAGE = "python markdown.py"
 
 # --------------- CONSTANTS YOU _SHOULD NOT_ HAVE TO CHANGE ----------
 
-AND_SUBSTITUTE = unichr(2) + unichr(4) + unichr(3) 
 
 # placeholders
 STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
@@ -157,6 +173,8 @@ HTML_PLACEHOLDER_PREFIX = STX+"html:"
 HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d"+ETX
 INLINE_PLACEHOLDER_PREFIX = STX+"inline:"
 INLINE_PLACEHOLDER_SUFFIX = ETX
+
+AMP_SUBSTITUTE = STX+"amp"+ETX 
 
 
 BLOCK_LEVEL_ELEMENTS = ['p', 'div', 'blockquote', 'pre', 'table',
@@ -174,16 +192,18 @@ def isBlockLevel (tag):
 
 
 def codepoint2name(code):
-    """ Returns entity definition by code, or code 
-    if there is no such entity definition"""
+    """ 
+    Return entity definition by code, or code 
+    if there is no such entity definition
+    """
     entity = htmlentitydefs.codepoint2name.get(code)
     if entity:
-        return "%s%s;" % (AND_SUBSTITUTE, entity)
+        return "%s%s;" % (AMP_SUBSTITUTE, entity)
     else:
-        return "%s#%d;" % (AND_SUBSTITUTE, code)
+        return "%s#%d;" % (AMP_SUBSTITUTE, code)
     
 def handleAttributes(text, parent):
-        
+    """ Handale attributes, e.g {@id=123} """
     def attributeCallback(match):
         parent.set(match.group(1), match.group(2))
 
@@ -613,7 +633,7 @@ class BacktickPattern (Pattern):
 class DoubleTagPattern (SimpleTagPattern): 
     """ 
     Return a ElementTree element nested in tag2 nested in tag1. 
-    Usefull for strong emphasis etc.
+    Useful for strong emphasis etc.
 
     """
     def handleMatch(self, m):
@@ -774,7 +794,7 @@ class AutomailPattern (Pattern):
             el.text += codepoint2name(ord(letter))
 
         mailto = "mailto:" + email
-        mailto = "".join([AND_SUBSTITUTE + '#%d;' % 
+        mailto = "".join([AMP_SUBSTITUTE + '#%d;' % 
                           ord(letter) for letter in mailto])
         el.set('href', mailto)
         return el
@@ -836,7 +856,7 @@ class Postprocessor:
         """
         Subclasses of Postprocessor should implement a `run` method, which
         takes a root Element. Method can return another Element, and global
-        root Element will be replaced, or just mnodify current and return None.
+        root Element will be replaced, or just modify current and return None.
         """
         pass
 
@@ -857,7 +877,7 @@ class TextPostprocessor:
         """
         Subclasses of TextPostprocessor should implement a `run` method, which
         takes the html document as a single text string and returns a 
-        (possably modified) string.
+        (possibly modified) string.
 
         """
         pass
@@ -903,10 +923,10 @@ class AndSubstitutePostprocessor(TextPostprocessor):
 
     def run(self, text):
 
-        text =  text.replace(AND_SUBSTITUTE, "&")
+        text =  text.replace(AMP_SUBSTITUTE, "&")
         return text
 
-ANDSUBSTITUTETEXTPOSTPROCESSOR = AndSubstitutePostprocessor()
+AMPSUBSTITUTETEXTPOSTPROCESSOR = AndSubstitutePostprocessor()
 
 
 """
@@ -1046,20 +1066,31 @@ def dequote(string):
 class InlineStash:
     
     def __init__(self):
+        """ Create a InlineStash. """
         self.prefix = INLINE_PLACEHOLDER_PREFIX
         self.suffix = INLINE_PLACEHOLDER_SUFFIX
         self._nodes = {}
         self.phLength = 4 + len(self.prefix) + len(self.suffix)
         
     def _genPlaceholder(self, type):
-        """ Generates placeholder """
+        """ Generate a placeholder """
         id = "%04d" % len(self._nodes)
         hash = "%s%s:%s%s" % (self.prefix, type, id, 
                                 self.suffix) 
         return hash, id
     
     def extractId(self, data, index):
-        """ Extracting id from data string, starting from index """
+        """ 
+        Extract id from data string, start from index
+        
+        Keyword arguments:
+        
+        * data: string
+        * index: index, from which we start search 
+        
+        Returns: placeholder id and  string index, after 
+        found placeholder
+        """
         endIndex = data.find(self.suffix, index+1)
         if endIndex == -1:
             return None, index + 1 
@@ -1074,15 +1105,17 @@ class InlineStash:
         return self._nodes.has_key(id)
     
     def get(self, id):
-        """ Returns node by id """
+        """ Return node by id """
         return self._nodes.get(id)
     
     def add(self, node, type):
+        """ Add node to stash """
         pholder, id = self._genPlaceholder(type)
         self._nodes[id] = node
         return pholder
     
     def rest(self):
+        """ Reset instance """
         self._nodes = {}
     
 """
@@ -1133,7 +1166,7 @@ class Markdown:
     """
 
 
-    def __init__(self, source=None,  # depreciated
+    def __init__(self, 
                  extensions=[],
                  extension_configs={},
                  safe_mode = False):
@@ -1142,7 +1175,6 @@ class Markdown:
 
         Keyword arguments:
         
-        * source: The text in Markdown format. Depreciated!
         * extensions: A list of extensions.  
            If they are of type string, the module mdx_name.py will be loaded.  
            If they are a subclass of markdown.Extension, they will be used 
@@ -1152,9 +1184,7 @@ class Markdown:
         
         """
 
-        self.source = source
-        if source is not None:
-            message(WARN, "The `source` arg of Markdown.__init__() is depreciated and will be removed in the future. Use `instance.convert(source)` instead.")
+        self.source = None
         self.safeMode = safe_mode
         self.blockGuru = BlockGuru()
         self.registeredExtensions = []
@@ -1176,7 +1206,7 @@ class Markdown:
         self.textPostprocessors = [# a footnote postprocessor will get
                                    # inserted here
                                    RAWHTMLTEXTPOSTPROCESSOR,
-                                   ANDSUBSTITUTETEXTPOSTPROCESSOR]
+                                   AMPSUBSTITUTETEXTPOSTPROCESSOR]
 
         self.prePatterns = []
                                
@@ -1620,7 +1650,7 @@ class Markdown:
         
     def _handleInline(self, data, patternIndex=0):
         """
-        Processinf string with inline patterns and replasing it
+        Process string with inline patterns and replace it
         with placeholders
 
         Keyword arguments:
@@ -1628,7 +1658,7 @@ class Markdown:
         * data: A line of Markdown text
         * patternIndex: The index of the inlinePattern to start with
         
-        Return: String with placeholders. 
+        Returns: String with placeholders. 
         
         """
         startIndex = 0
@@ -1646,19 +1676,17 @@ class Markdown:
     
     def _applyInline(self, pattern, data, patternIndex, startIndex=0):
         """ 
-        Given a pattern name, this function checks if the line
-        fits the pattern, creates the necessary elements, adds it 
-        to InlineStash, and returns string with placeholders,
-        instead of ElementTree elements.
+        Check if the line fits the pattern, create the necessary 
+        elements, add it to InlineStash
         
         Keyword arguments:
         
         * data: the text to be processed
         * pattern: the pattern to be checked
         * patternIndex: index of current pattern
-        * startIndex: string index, from wich we starting search
+        * startIndex: string index, from which we starting search
 
-        Returns: String with placeholders.
+        Returns: String with placeholders instead of ElementTree elements.
         """
         match = pattern.getCompiledRegExp().match(data[startIndex:])
         leftData = data[:startIndex]
@@ -1690,7 +1718,19 @@ class Markdown:
                              pholder, match.groups()[-1]), True, 0
    
     def _processElementText(self, node, subnode, isText=True):
+        """
+        Process placeholders in Element.text or Element.tail
+        of Elements popped from InlineStash
         
+        Keywords arguments:
+        
+        * node: parent node
+        * subnode: processing node
+        * isText: bool variable, True - it's text, False - it's tail
+        
+        Returns: None
+        
+        """       
         if isText:
             text = subnode.text
             subnode.text = None
@@ -1712,9 +1752,12 @@ class Markdown:
     
     def _processPlaceholders(self, data, parent):
         """
-        Processes string with placeholders and generates ElementTree tree.
+        Process string with placeholders and generate ElementTree tree.
+        
+        Keyword arguments:
         
         * data: string with placeholders instead of ElementTree elements.
+        * parent: Element, which contains processing inline data
 
         Returns: list with ElementTree elements with applied inline patterns.
         """
@@ -1783,18 +1826,22 @@ class Markdown:
                 data = ""
 
         return result
-        
-    def _processTree(self, el):
+    
+    
+    def applyInlinePatterns(self, markdownTree):
         """
-        Processing ElementTree, and applying inline patterns
+        Iterate over ElementTree, find elements with inline tag, 
+        apply inline patterns and append newly created Elements to tree 
         
         Keyword arguments:
         
-        * el - parent element of ElementTree.
+        * markdownTree: ElementTree object, representing Markdown tree.
 
         Returns: ElementTree object with applied inline patterns.
         """
-
+ 
+        el = markdownTree.getroot()
+                
         stack = [el]
 
         while stack:
@@ -1831,32 +1878,15 @@ class Markdown:
                                                          newChild)
                     currElement.insert(pos, newChild)
                     pos += 1 
-
-
-    def applyInlinePatterns(self, markdownTree):
-        """
-        Retrun ElementTree, with applied
-        inline paterns
-        
-        Keyword arguments:
-        
-        * markdownTree: ElementTree object, reppresenting Markdown tree.
-
-        Returns: ElementTree object.
-        """
- 
-        el = markdownTree.getroot()
-                
-        self._processTree(el)
             
         return markdownTree
 
         
     def markdownToTree(self, source=None):
         """
-        Retrun ElementTree, without applying inline paterns, 
-        all data, that should be processed with
-        inline patterns included in <inline></inline> sections.
+        Create ElementTree, without applying inline paterns, 
+        all data, include all data, that must be procesed wit inline 
+        patterns in <inline></inline> sections.
         
         Keyword arguments:
         
@@ -1890,13 +1920,11 @@ class Markdown:
         
         markdownTree = self._transform()
         
-        return markdownTree
-        
-        
+        return markdownTree      
 
     def convert (self, source=None):
         """
-        Return the document in XHTML format.
+        Create the document in XHTML format.
 
         Keyword arguments:
         
@@ -2098,17 +2126,22 @@ def load_extension(ext_name, configs = []):
         pairs = [x.split("=") for x in ext_args.split(",")]
         configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
 
-    extension_module_name = "mdx_" + ext_name
+    ext_module = 'markdown_extensions'
+    module_name = '.'.join([ext_module, ext_name])
+    extension_module_name = '_'.join(['mdx', ext_name])
 
     try:
-        module = __import__(extension_module_name)
-
+            module = __import__(module_name, {}, {}, [ext_module])
     except ImportError:
-        message(WARN,
-                "Couldn't load extension '%s' from \"%s\" - continuing without."
-                % (ext_name, extension_module_name) )
-        # Return a dummy (do nothing) Extension as silent failure
-        return Extension(configs={})
+        try:
+            module = __import__(extension_module_name)
+        except:
+            message(WARN,
+                "Failed loading extension '%s' from '%s' or '%s' "
+                "- continuing without."
+                % (ext_name, module_name, extension_module_name) )
+            # Return a dummy (do nothing) Extension as silent failure
+            return Extension(configs={})
 
     return module.makeExtension(configs.items())    
 
