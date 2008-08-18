@@ -24,6 +24,7 @@ features documented here.
 * [Working with the ElementTree][]
 * [Integrating your code into Markdown][]
     * [extendMarkdown][]
+    * [registerExtension][]
     * [Config Settings][]
     * [makeExtension][]
 
@@ -277,11 +278,46 @@ arguments:
     Contains all the various global variables within the markdown module.
 
 Of course, with access to those items, theoretically you have the option to 
-changing anything through various monkeypatching techniques. However, you should
-be aware that the various undocumented or private parts of markdown may change
-without notice and your monkeypatches may no longer work. Therefore, what you
-really should be doing is inserting processors and patterns into the markdown
-pipeline.
+changing anything through various [monkey_patching][] techniques. In fact, this
+is how both the [[HeaderId]] and [[CodeHilite]] extensions work. However, you 
+should be aware that the various undocumented or private parts of markdown may 
+change without notice and your monkey_patches may break with a new release. 
+Therefore, what you really should be doing is inserting processors and patterns
+into the markdown pipeline. Consider yourself warned.
+
+[monkey_patching]: http://en.wikipedia.org/wiki/Monkey_patch
+
+<h4 id="registerextension">registerExtension</h4>
+
+Some extensions may need to have their state reset between multiple runs of the
+Markdown class. For example, consider the following use of the [[Footnotes]] 
+extension:
+
+    md = markdown.Markdown(extensions=['footnotes'])
+    html1 = md.convert(text_with_footnote)
+    md.reset()
+    html2 = md.convert(text_without_footnote)
+
+Without calling ``reset``, the footnote definitions from the first document will
+be inserted into the second document as they are still stored within the class
+instance. Therefore the ``Extension`` class needs to define a ``reset`` method
+that will reset the state of the extension (i.e.: ``self.footnotes = {}``).
+However, as many extensions do not have a need for ``reset``, ``reset`` is only
+called on extensions that are registered.
+
+To register an extension, call ``md.registerExtension`` from within your 
+``extendMarkdown`` method:
+
+
+    def extendMarkdown(self, md, md_globals):
+        md.registerExtension(self)
+        # insert processors and patterns here
+
+Then, each time ``reset`` is called on the Markdown instance, the ``reset`` 
+method of each registered extension will be called as well. You should also
+note that ``reset`` will be called on each registered extension after it is
+initialized the first time. Keep that in mind when over-riding the extension's
+``reset`` method.
 
 <h4 id="configsettings">Config Settings</h4>
 
@@ -308,7 +344,8 @@ Each extension should ideally be placed in its own module starting
 with the  ``mdx_`` prefix (e.g. ``mdx_footnotes.py``).  The module must
 provide a module-level function called ``makeExtension`` that takes
 an optional parameter consisting of a dictionary of configuration over-rides 
-and returns an instance of the extension.  An example from the footnote extension:
+and returns an instance of the extension.  An example from the footnote 
+extension:
 
     def makeExtension(configs=None) :
         return FootnoteExtension(configs=configs)
@@ -317,11 +354,19 @@ By following the above example, when Markdown is passed the name of your
 extension as a string (i.e.: ``'footnotes'``), it will automatically import
 the module and call the ``makeExtension`` function initiating your extension.
 
-However, Markdown will also accept an already existing instance of an extension.For example:
+You may have noted that the extensions packaged with Python-Markdown do not
+use the ``mdx_`` prefix in their module names. This is because they are all
+part of the ``markdown_extensions`` package. Markdown will first try to import
+from ``markdown_extensions.extname`` and upon failure, ``mdx_extname``. If both
+fail, Markdown will continue without the extension.
 
-    import markdown, mdx_myextension
+However, Markdown will also accept an already existing instance of an extension.
+For example:
+
+    import markdown
+    import myextension
     configs = {...}
-    myext = mdx_myextension.MyExtension(configs=configs)
+    myext = myextension.MyExtension(configs=configs)
     md = markdown.Markdown(extensions=[myext])
 
 This is useful if you need to implement a large number of extensions with more
@@ -337,6 +382,7 @@ than one residing in a module.
 [Working with the ElementTree]: #working_with_et
 [Integrating your code into Markdown]: #integrating_into_markdown
 [extendMarkdown]: #extendmarkdown
+[registerExtension]: #registerextension
 [Config Settings]: #configsettings
 [makeExtension]: #makeextension
 [ElementTree]: http://effbot.org/zone/element-index.htm
