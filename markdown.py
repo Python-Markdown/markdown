@@ -210,6 +210,11 @@ def handleAttributes(text, parent):
     return RE.regExp['attr'].sub(attributeCallback, text)
     
 
+class AtomicString(str):
+    "A string which should not be further processed."
+    pass
+
+
 """
 ======================================================================
 ========================== PRE-PROCESSORS ============================
@@ -776,7 +781,7 @@ class AutolinkPattern (Pattern):
     def handleMatch(self, m):
         el = etree.Element("a")
         el.set('href', m.group(2))
-        el.text = m.group(2)
+        el.text = AtomicString(m.group(2))
         return el
 
 class AutomailPattern (Pattern):
@@ -789,9 +794,9 @@ class AutomailPattern (Pattern):
         email = m.group(2)
         if email.startswith("mailto:"):
             email = email[len("mailto:"):]
-        el.text = ""
-        for letter in email:
-            el.text += codepoint2name(ord(letter))
+
+        letters = [codepoint2name(ord(letter)) for letter in email]
+        el.text = AtomicString(''.join(letters))
 
         mailto = "mailto:" + email
         mailto = "".join([AMP_SUBSTITUTE + '#%d;' % 
@@ -1661,6 +1666,10 @@ class Markdown:
         Returns: String with placeholders. 
         
         """
+
+        if isinstance(data, AtomicString):
+            return data
+
         startIndex = 0
         
         while patternIndex < len(self.inlinePatterns):
