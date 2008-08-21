@@ -1,5 +1,5 @@
 markdown.py
-markdown_extnesions/__init__.py
+markdown_extensions/__init__.py
 markdown_extensions/codehilite.py
 markdown_extensions/fenced_code.py
 markdown_extensions/footnotes.py
@@ -16,5 +16,6 @@ docs/README.html
 docs/CHANGE_LOG
 docs/INSTALL
 docs/AUTHORS
+docs/LICENSE
 docs/writing_extensions.txt
 

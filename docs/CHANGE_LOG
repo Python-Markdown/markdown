@@ -1,7 +1,11 @@
 PYTHON MARKDOWN CHANGELOG
 =========================
 
-August 2008: Updated included extensions to ElementTree. Added a 
+August 18 2008: Reorganized directory structure. Added a 'docs' dir
+and moved all extensions into a 'markdown-extensions' package.
+Added additional documentation and a few bug fixes. (v2.0-beta)
+
+August 4 2008: Updated included extensions to ElementTree. Added a 
 seperate commanline script. (v2.0-alpha)
 
 July 2008: Switched from home-grown NanoDOM to ElementTree and
