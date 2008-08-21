@@ -671,7 +671,7 @@ class LinkPattern (Pattern):
         if href:
             if href[0] == "<":
                 href = href[1:-1]
-            el.set("href", self.sanatize_url(href.strip()))
+            el.set("href", self.sanitize_url(href.strip()))
         else:
             el.set("href", "")
             
@@ -680,7 +680,7 @@ class LinkPattern (Pattern):
             el.set("title", title)
         return el
 
-    def sanatize_url(self, url):
+    def sanitize_url(self, url):
         """ 
         Sanitize a url against xss attacks in "safe_mode".
 
@@ -722,7 +722,7 @@ class ImagePattern(LinkPattern):
             src = src_parts[0]
             if src[0] == "<" and src[-1] == ">":
                 src = src[1:-1]
-            el.set('src', self.sanatize_url(src))
+            el.set('src', self.sanitize_url(src))
         else:
             el.set('src', "")
         if len(src_parts) > 1:
@@ -757,7 +757,7 @@ class ReferencePattern(LinkPattern):
     def makeTag(self, href, title, text):
         el = etree.Element('a')
         
-        el.set('href', self.sanatize_url(href))
+        el.set('href', self.sanitize_url(href))
         if title:
             el.set('title', title)
 
@@ -769,7 +769,7 @@ class ImageReferencePattern (ReferencePattern):
     """ Match to a stored reference and return img element. """
     def makeTag(self, href, title, text):
         el = etree.Element("img")
-        el.set("src", self.sanatize_url(href))
+        el.set("src", self.sanitize_url(href))
         if title:
             el.set("title", title)
         el.set("alt", text)
