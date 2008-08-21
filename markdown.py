@@ -210,7 +210,7 @@ def handleAttributes(text, parent):
     return RE.regExp['attr'].sub(attributeCallback, text)
     
 
-class AtomicString(str):
+class AtomicString(unicode):
     "A string which should not be further processed."
     pass
 
