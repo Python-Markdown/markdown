@@ -1927,11 +1927,7 @@ class Markdown:
 
         Returns: ElementTree object.
         """
-        if source is not None: #Allow blank string
-            self.source = source
-            
-        if not self.source:
-            return u""
+        
         
         try:
             self.source = unicode(self.source)
@@ -1966,6 +1962,12 @@ class Markdown:
         Returns: A serialized XHTML body.
 
         """
+        
+        if source is not None: #Allow blank string
+            self.source = source
+            
+        if not self.source:
+            return u""
 
         tree = self.markdownToTree(source)
 
