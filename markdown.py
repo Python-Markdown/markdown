@@ -115,6 +115,10 @@ def indentETree(elem, level=0):
             e.tail = i
     if level and (not elem.tail or not elem.tail.strip()):
         elem.tail = i
+        
+class AtomicString(unicode):
+    "A string which should not be further processed."
+    pass
 
 # --------------- CONSTANTS YOU MIGHT WANT TO MODIFY -----------------
 
@@ -154,6 +158,7 @@ def removeBOM(text, encoding):
         if text.startswith(bom):
             return text.lstrip(bom)
     return text
+
 
 # The following constant specifies the name used in the usage
 # statement displayed for python versions lower than 2.3.  (With
@@ -1428,8 +1433,9 @@ class Markdown:
         if m:
             level = len(m.group(1))
             h = etree.SubElement(parentElem, "h%d" % level)
-            inline = etree.SubElement(h, "inline")
-            inline.text = m.group(2).strip()
+            h.text = m.group(2).strip()
+            #inline = etree.SubElement(h, "inline")
+            #inline.text = m.group(2).strip()
         else:
             message(CRITICAL, "We've got a problem header!")
 
@@ -1449,19 +1455,30 @@ class Markdown:
 
         dump = []
         
-        # Searching for hr
+        # Searching for hr or header
         for line in paragraph:
+            # it's hr
             if RE.regExp["isline3"].match(line):
-                inline = etree.SubElement(el, "inline")
-                inline.text = "\n".join(dump)
-                etree.SubElement(el, "hr")
-                dump.clear()
+                #inline = etree.SubElement(el, "inline")
+                #inline.text = "\n".join(dump)
+                el.text = "\n".join(dump)
+                #etree.SubElement(el, "hr")
+                self._processHR(el)
+                dump = []
+            # it's header
+            elif line.startswith("#"):
+                #inline = etree.SubElement(el, "inline")
+                #inline.text = "\n".join(dump)
+                el.text = "\n".join(dump)   
+                self._processHeader(parentElem, [line])
+                dump = [] 
             else:
                 dump.append(line)
         if dump:
             text = "\n".join(dump)    
-            inline = etree.SubElement(el, "inline")
-            inline.text = text
+            #inline = etree.SubElement(el, "inline")
+            #inline.text = text
+            el.text = text
 
     def _processUList(self, parentElem, lines, inList):
         self._processList(parentElem, lines, inList,
@@ -1661,6 +1678,9 @@ class Markdown:
         Returns: String with placeholders. 
         
         """
+        if isinstance(data, AtomicString):
+            return data
+        
         startIndex = 0
         
         while patternIndex < len(self.inlinePatterns):
@@ -1688,6 +1708,7 @@ class Markdown:
 
         Returns: String with placeholders instead of ElementTree elements.
         """
+        
         match = pattern.getCompiledRegExp().match(data[startIndex:])
         leftData = data[:startIndex]
  
@@ -1849,35 +1870,41 @@ class Markdown:
             insertQueue = []
             for child in currElement.getchildren():
                 
-                if child.tag == "inline":
-
+            #if child.tag == "inline":
+                if not isinstance(child.text, AtomicString) and child.text \
+                and not child.tag in ["code", "pre"]:
+                    
+                    text = child.text
+                    child.text = None
                     lst = self._processPlaceholders(self._handleInline(
-                                                    child.text), currElement)
+                                                    text), child)
                     stack += lst
                     
-                    pos = currElement.getchildren().index(child)
+
+                    insertQueue.append((child, lst))
                     
-                    insertQueue.append((child, pos, lst))
-                    
-                else:
+                
+                if child.getchildren():
                     stack.append(child) 
 
                       
-            for element, pos, lst in insertQueue:
-                currElement.remove(element)
-                if currElement.text:
-                    currElement.text = handleAttributes(currElement.text, 
-                                                        currElement)
+            for element, lst in insertQueue:
+                #currElement.remove(element)
+                if element.text:
+                    element.text = handleAttributes(element.text, 
+                                                        element)
+                i = 0
                 for newChild in lst:
                     # Processing attributes
                     if newChild.tail:
                         newChild.tail = handleAttributes(newChild.tail, 
-                                                         currElement)
+                                                         element)
                     if newChild.text:
                         newChild.text = handleAttributes(newChild.text, 
                                                          newChild)
-                    currElement.insert(pos, newChild)
-                    pos += 1 
+                    element.insert(i, newChild)
+                    i += 1
+               
             
         return markdownTree
 

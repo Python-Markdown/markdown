@@ -31,9 +31,8 @@ class TablePattern(markdown.Pattern) :
             
             # add text ot inline section, later it will be
             # processed by core
-            inline = etree.SubElement(td, "inline")
-            inline.text = t
-                    
+
+            td.text = t
             tr.append(td)
             tr.tail = "\n"
  
