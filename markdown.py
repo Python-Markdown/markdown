@@ -911,7 +911,7 @@ class RawHtmlTextPostprocessor(TextPostprocessor):
                 else:
                     html = HTML_REMOVED_TEXT
                                    
-            text = text.replace("<p>%s\n</p>" % (HTML_PLACEHOLDER % i),
+            text = text.replace("<p>%s</p>" % (HTML_PLACEHOLDER % i),
                               html + "\n")
             text =  text.replace(HTML_PLACEHOLDER % i, html)
         return text
