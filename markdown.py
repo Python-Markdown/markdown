@@ -636,7 +636,7 @@ class BacktickPattern (Pattern):
 
     def handleMatch(self, m):
         el = etree.Element(self.tag)
-        el.text = m.group(3).strip()
+        el.text = AtomicString(m.group(3).strip())
         return el
 
 
@@ -1439,8 +1439,6 @@ class Markdown:
             level = len(m.group(1))
             h = etree.SubElement(parentElem, "h%d" % level)
             h.text = m.group(2).strip()
-            #inline = etree.SubElement(h, "inline")
-            #inline.text = m.group(2).strip()
         else:
             message(CRITICAL, "We've got a problem header!")
 
@@ -1464,16 +1462,11 @@ class Markdown:
         for line in paragraph:
             # it's hr
             if RE.regExp["isline3"].match(line):
-                #inline = etree.SubElement(el, "inline")
-                #inline.text = "\n".join(dump)
                 el.text = "\n".join(dump)
-                #etree.SubElement(el, "hr")
                 self._processHR(el)
                 dump = []
             # it's header
             elif line.startswith("#"):
-                #inline = etree.SubElement(el, "inline")
-                #inline.text = "\n".join(dump)
                 el.text = "\n".join(dump)   
                 self._processHeader(parentElem, [line])
                 dump = [] 
@@ -1481,8 +1474,6 @@ class Markdown:
                 dump.append(line)
         if dump:
             text = "\n".join(dump)    
-            #inline = etree.SubElement(el, "inline")
-            #inline.text = text
             el.text = text
 
     def _processUList(self, parentElem, lines, inList):
@@ -1667,7 +1658,7 @@ class Markdown:
         code = etree.SubElement(pre, "code")
         
         text = "\n".join(detabbed).rstrip()+"\n"
-        code.text = text
+        code.text = AtomicString(text)
         self._processSection(parentElem, theRest, inList)        
         
     def _handleInline(self, data, patternIndex=0):
@@ -1726,8 +1717,8 @@ class Markdown:
         if node is None:
             return data, True, len(leftData) + match.span(len(match.groups()))[0]
         
-        if not isstr(node):            
-            if not node.tag in ["code", "pre"]:
+        if not isstr(node):         
+            if not isinstance(node.text, AtomicString):
                 # We need to process current node too
                 for child in [node] + node.getchildren():
                     if not isstr(node):
@@ -1875,11 +1866,9 @@ class Markdown:
             currElement = stack.pop()
             insertQueue = []
             for child in currElement.getchildren():
-                
-            #if child.tag == "inline":
-                if not isinstance(child.text, AtomicString) and child.text \
-                and not child.tag in ["code", "pre"]:
-                    
+
+                if not isinstance(child.text, AtomicString) and child.text:
+
                     text = child.text
                     child.text = None
                     lst = self._processPlaceholders(self._handleInline(
@@ -1895,7 +1884,6 @@ class Markdown:
 
                       
             for element, lst in insertQueue:
-                #currElement.remove(element)
                 if element.text:
                     element.text = handleAttributes(element.text, 
                                                         element)
