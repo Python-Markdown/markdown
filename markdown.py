@@ -910,8 +910,7 @@ class RawHtmlTextPostprocessor(TextPostprocessor):
                     html = ''
                 else:
                     html = HTML_REMOVED_TEXT
-                                   
-            if not self.safeMode:
+            if safe or not self.safeMode:
                 text = text.replace("<p>%s</p>" % (HTML_PLACEHOLDER % i),
                                     html + "\n")
             text =  text.replace(HTML_PLACEHOLDER % i, html)
