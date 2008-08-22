@@ -69,7 +69,6 @@ Dependencies:
 '''
 
 import markdown
-from markdown import etree
 
 class WikiLinkExtension (markdown.Extension) :
     def __init__(self, configs):
@@ -106,8 +105,8 @@ class WikiLinks (markdown.BasePattern) :
             base_url, end_url, html_class = self._getMeta()
             url = '%s%s%s'% (base_url, m.group('camelcase'), end_url)
             label = m.group('camelcase').replace('_', ' ')
-            a = etree.Element('a')
-            a.text = label
+            a = markdown.etree.Element('a')
+            a.text = markdown.AtomicString(label)
             a.set('href', url)
             if html_class:
                 a.set('class', html_class)
