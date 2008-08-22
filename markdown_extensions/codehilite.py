@@ -80,11 +80,10 @@ class CodeHilite:
         except ImportError:
             # just escape and pass through
             txt = self._escape(self.src)
-            '''if num:
+            if self.linenos:
                 txt = self._number(txt)
             else :
-                txt = '<div class="codehilite"><pre>%s</pre></div>\n'% txt'''
-            txt = self._number(txt)    
+                txt = '<div class="codehilite"><pre>%s</pre></div>\n'% txt
             return txt
         else:
             try:
