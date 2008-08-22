@@ -1951,7 +1951,7 @@ class Markdown:
         
         return markdownTree      
 
-    def convert (self, source=None):
+    def convert (self, source):
         """
         Create the document in XHTML format.
 
@@ -1962,10 +1962,7 @@ class Markdown:
         Returns: A serialized XHTML body.
 
         """
-        
-        if source is not None: #Allow blank string
-            self.source = source
-            
+        self.source = source
         if not self.source:
             return u""
 
