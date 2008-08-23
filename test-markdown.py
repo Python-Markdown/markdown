@@ -1,4 +1,4 @@
-import os, difflib, time, gc, codecs
+import os, difflib, time, gc, codecs, platform
 from pprint import pprint
 import textwrap
         
@@ -12,7 +12,10 @@ ACTUALLY_MEASURE_MEMORY = True
 
 ######################################################################
 
-_proc_status = '/proc/%d/status' % os.getpid()
+if platform.system().lower() == "darwin": # Darwin
+    _proc_status = '/proc/%d/stat' % os.getpid()
+else: # Linux
+    _proc_status = '/proc/%d/status' % os.getpid()
 
 _scale = {'kB': 1024.0, 'mB': 1024.0*1024.0,
           'KB': 1024.0, 'MB': 1024.0*1024.0}
