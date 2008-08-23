@@ -282,12 +282,21 @@ class HtmlBlockPreprocessor(TextPreprocessor):
     Remove html blocks from the source text and store them for later retrieval.
     """
     
+    right_tag_patterns = ["</%s>", "%s>"]
+    
     def _get_left_tag(self, block):
         return block[1:].replace(">", " ", 1).split()[0].lower()
 
 
     def _get_right_tag(self, left_tag, block):
-        return block.rstrip()[-len(left_tag)-2:-1].lower()
+        
+        for p in self.right_tag_patterns:
+            tag = p % left_tag
+            i = block.rfind(tag)
+            if i > 2:
+                return tag.lstrip("<").rstrip(">"), i + len(p)-2 + len(left_tag)
+            
+        return block.rstrip()[-len(left_tag)-2:-1].lower(), len(block)
 
     def _equal_tags(self, left_tag, right_tag):
         
@@ -318,7 +327,12 @@ class HtmlBlockPreprocessor(TextPreprocessor):
         right_tag = ''
         in_tag = False # flag
         
-        for block in text:
+        while text:
+            block = text[0]
+            if block.startswith("\n"):
+                block = block[1:]
+            text = text[1:]
+            
             if block.startswith("\n"):
                 block = block[1:]
 
@@ -327,7 +341,11 @@ class HtmlBlockPreprocessor(TextPreprocessor):
                 if block.startswith("<"):
                     
                     left_tag = self._get_left_tag(block)
-                    right_tag = self._get_right_tag(left_tag, block)
+                    right_tag, data_index = self._get_right_tag(left_tag, block)
+                    
+                    if data_index < len(block):
+                        text.insert(0, block[data_index:])
+                        block = block[:data_index]
 
                     if not (isBlockLevel(left_tag) \
                         or block[1] in ["!", "?", "@", "%"]):
@@ -341,7 +359,7 @@ class HtmlBlockPreprocessor(TextPreprocessor):
                     if block[1] == "!":
                         # is a comment block
                         left_tag = "--"
-                        right_tag = self._get_right_tag(left_tag, block)
+                        right_tag, data_index = self._get_right_tag(left_tag, block)
                         # keep checking conditions below and maybe just append
                         
                     if block.rstrip().endswith(">") \
@@ -360,7 +378,7 @@ class HtmlBlockPreprocessor(TextPreprocessor):
             else:
                 items.append(block.strip())
                 
-                right_tag = self._get_right_tag(left_tag, block)
+                right_tag, data_index = self._get_right_tag(left_tag, block)
                 
                 if self._equal_tags(left_tag, right_tag):
                     # if find closing tag
