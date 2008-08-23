@@ -181,19 +181,14 @@ INLINE_PLACEHOLDER_SUFFIX = ETX
 
 AMP_SUBSTITUTE = STX+"amp"+ETX 
 
+BLOCK_LEVEL_ELEMENTS = re.compile('p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del|hr|hr/|style')
 
-BLOCK_LEVEL_ELEMENTS = ['p', 'div', 'blockquote', 'pre', 'table',
-                        'dl', 'ol', 'ul', 'script', 'noscript',
-                        'form', 'fieldset', 'iframe', 'math', 'ins',
-                        'del', 'hr', 'hr/', 'style']
-
-def isBlockLevel (tag):
+def isBlockLevel(tag):
     """
     Used by HTMLBlockPreprocessor to check if a given tag is a block level 
     element.
     """
-    return ( (tag in BLOCK_LEVEL_ELEMENTS) or
-             (tag[0] == 'h' and tag[1] in "0123456789") )
+    return BLOCK_LEVEL_ELEMENTS.match(tag)
 
 
 def codepoint2name(code):
@@ -369,8 +364,14 @@ class HtmlBlockPreprocessor(TextPreprocessor):
                         continue
                     else: #if not block[1] == "!":
                         # if is block level tag and is not complete
-                        items.append(block.strip())
-                        in_tag = True
+                        
+                        if isBlockLevel(left_tag):
+                            items.append(block.strip())
+                            in_tag = True
+                        else:
+                            new_blocks.append(
+                            self.stash.store(block.strip()))
+                            
                         continue
 
                 new_blocks.append(block)
