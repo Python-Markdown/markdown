@@ -106,7 +106,7 @@ def indentETree(elem, level=0):
     else:
         i = "\n"
 
-    if len(elem):
+    if len(elem) and elem.tag not in ['code', 'pre']:
         if not elem.text or not elem.text.strip():
             elem.text = i + "  "
         for e in elem:
