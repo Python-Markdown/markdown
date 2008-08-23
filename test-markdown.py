@@ -223,6 +223,7 @@ def testDirectory(dir, measure_time=False, safe_mode=False) :
 
     diffsBuffer = ""
 
+    
     for test in tests :
 
         print "--- %s ---" % test
@@ -268,7 +269,8 @@ def testDirectory(dir, measure_time=False, safe_mode=False) :
             htmlDiffFile.write("<td class='ok'>OK</td>")
 
         else :
-
+            
+            failedTests.append(test)
             htmlDiffFile.write("<td class='failed'>" +
                                "<a href='#diff-%s'>FAILED</a></td>" % test)
             
@@ -312,6 +314,7 @@ def testDirectory(dir, measure_time=False, safe_mode=False) :
     benchmark_file = open(benchmark_output_file_name, "w")
     benchmark_file.write(benchmark_buffer)
     benchmark_file.close()
+    
 
 
 def get_benchmark_html (actual, expected) :
@@ -353,6 +356,7 @@ print MARKDOWN_FILE
 
 markdown = __import__(MARKDOWN_FILE)
 
+failedTests = []
 
 #testDirectory("tests/basic")
 testDirectory("tests/markdown-test", measure_time=True)
@@ -365,4 +369,10 @@ testDirectory("tests/extensions-x-tables")
 testDirectory("tests/safe_mode", measure_time=True, safe_mode="escape")
 testDirectory("tests/extensions-x-codehilite")
 testDirectory("tests/extensions-x-wikilink")
+
+print "\n### Final result ###"
+if len(failedTests):
+    print "%d failed tests: %s" % (len(failedTests), str(failedTests))
+else:
+    print "All tests passed, no errors!"
 
