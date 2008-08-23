@@ -365,7 +365,8 @@ class HtmlBlockPreprocessor(TextPreprocessor):
                     else: #if not block[1] == "!":
                         # if is block level tag and is not complete
                         
-                        if isBlockLevel(left_tag):
+                        if isBlockLevel(left_tag) or left_tag == "--" \
+                        and not block.rstrip().endswith(">"):
                             items.append(block.strip())
                             in_tag = True
                         else:
