@@ -276,7 +276,6 @@ class HtmlBlockPreprocessor(TextPreprocessor):
     """
     Remove html blocks from the source text and store them for later retrieval.
     """
-    
     right_tag_patterns = ["</%s>", "%s>"]
     
     def _get_left_tag(self, block):
@@ -313,7 +312,6 @@ class HtmlBlockPreprocessor(TextPreprocessor):
     
     def run(self, text):
         """ Find and remove raw html from text. """
-
         new_blocks = []
         text = text.split("\n\n")
         
@@ -439,7 +437,6 @@ class LinePreprocessor(Preprocessor):
     """ 
     Convert HR lines to "___" format 
     """
-
     blockquote_re = re.compile(r'^(> )+')
 
     def run (self, lines):
@@ -456,7 +453,6 @@ class LinePreprocessor(Preprocessor):
 
     def _isLine(self, block):
         """Determine if a block should be replaced with an <HR>"""
-
         if block.startswith("    "): 
             return False  # a code block
         text = "".join([x for x in block if not x.isspace()])
@@ -477,7 +473,7 @@ class ReferencePreprocessor(Preprocessor):
     Remove reference definitions from the text and store them for later use.
     
     """
-
+    
     def run (self, lines):
         """ Remove and store reference defs. """
         new_text = [];
@@ -739,7 +735,6 @@ class LinkPattern (Pattern):
 
 class ImagePattern(LinkPattern):
     """ Return a img element from the given match. """
-        
     def handleMatch(self, m):
         el = etree.Element("img")
         src_parts = m.group(9).split()
@@ -812,7 +807,6 @@ class AutolinkPattern (Pattern):
 class AutomailPattern (Pattern):
     """ 
     Return a mailto link Element given an automail link (`<foo@example.com>`). 
-    
     """
     def handleMatch(self, m):
         el = etree.Element('a')
@@ -881,7 +875,6 @@ class Postprocessor:
     extension uses one.
     
     """
-
     def run(self, root):
         """
         Subclasses of Postprocessor should implement a `run` method, which
@@ -920,7 +913,6 @@ class RawHtmlTextPostprocessor(TextPostprocessor):
 
     def run(self, text):
         """ Iterate over html stash and restore "safe" html. """
-
         for i in range(self.stash.html_counter):
             html, safe  = self.stash.rawHtmlBlocks[i]
             if self.safeMode and not safe:
@@ -1021,7 +1013,6 @@ class BlockGuru:
         remainder of the original list
         
         """
-
         items = []
         item = -1
 
@@ -1132,6 +1123,7 @@ class InlineStash:
                 return None, index + 1
     
     def isin(self, id):
+        """ Check if node with given id exists in stash """
         return self._nodes.has_key(id)
     
     def get(self, id):
@@ -1213,7 +1205,6 @@ class Markdown:
         * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
         
         """
-
         self.source = None
         self.safeMode = safe_mode
         self.blockGuru = BlockGuru()
@@ -1283,7 +1274,6 @@ class Markdown:
         * configs: A dictionary mapping module names to config options. 
         
         """
-
         for ext in extensions:
             if isinstance(ext, basestring):
                 ext = load_extension(ext, configs.get(ext, []))
@@ -1332,7 +1322,6 @@ class Markdown:
         Returns: ElementTree object 
         
         """
-
         # Setup the document
         
         self.root = etree.Element("span")
@@ -1380,7 +1369,6 @@ class Markdown:
         Returns: None
         
         """
- 
         # Loop through lines until none left.
         while lines:
             
@@ -1520,7 +1508,6 @@ class Markdown:
         Returns: None
         
         """
-
         ul = etree.SubElement(parentElem, tag) # ul might actually be '<ol>'
 
         looseList = 0
@@ -1601,7 +1588,6 @@ class Markdown:
         argument should be a predicate function.
         
         """
-
         i = -1
         for line in lines:
             i += 1
@@ -1627,7 +1613,6 @@ class Markdown:
         Returns: None 
         
         """
-
         dequoted = []
         i = 0
         blank_line = False # allow one blank line between paragraphs
@@ -1671,7 +1656,6 @@ class Markdown:
         Returns: None
         
         """
-
         detabbed, theRest = self.blockGuru.detectTabbed(lines)
 
         pre = etree.SubElement(parentElem, "pre")
@@ -1694,7 +1678,6 @@ class Markdown:
         Returns: String with placeholders. 
         
         """
-
         if isinstance(data, AtomicString):
             return data
 
@@ -1725,7 +1708,6 @@ class Markdown:
 
         Returns: String with placeholders instead of ElementTree elements.
         """
-        
         match = pattern.getCompiledRegExp().match(data[startIndex:])
         leftData = data[:startIndex]
  
@@ -1799,7 +1781,6 @@ class Markdown:
 
         Returns: list with ElementTree elements with applied inline patterns.
         """
-        
         def linkText(text):
             if text:
                 if result:
@@ -1869,7 +1850,10 @@ class Markdown:
     def applyInlinePatterns(self, markdownTree):
         """
         Iterate over ElementTree, find elements with inline tag, 
-        apply inline patterns and append newly created Elements to tree 
+        apply inline patterns and append newly created Elements to tree.
+        If you don't whant process your data with inline paterns, 
+        instead of normal string, use subclass AtomicString:
+        `node.text = AtomicString("data won't be processed with inline patterns")` 
         
         Keyword arguments:
         
@@ -1877,7 +1861,6 @@ class Markdown:
 
         Returns: ElementTree object with applied inline patterns.
         """
- 
         el = markdownTree.getroot()
                 
         stack = [el]
@@ -1925,9 +1908,7 @@ class Markdown:
         
     def markdownToTree(self, source=None):
         """
-        Create ElementTree, without applying inline paterns, 
-        all data, include all data, that must be procesed wit inline 
-        patterns in <inline></inline> sections.
+        Create ElementTree, without applying inline paterns.
         
         Keyword arguments:
         
@@ -1935,8 +1916,6 @@ class Markdown:
 
         Returns: ElementTree object.
         """
-        
-        
         try:
             self.source = unicode(self.source)
         except UnicodeDecodeError:
