@@ -204,10 +204,9 @@ class CodeHiliteExtention(markdown.Extension):
             text = "\n".join(detabbed).rstrip()+"\n"
             code = CodeHilite(text, linenos=self.config['force_linenos'][0]) 
             placeholder = md.htmlStash.store(code.hilite(), safe=True)
-            if parent_elem.text:
-                parent_elem.text += placeholder
-            else:
-                parent_elem.text = placeholder
+            # This wrapping p element will be removed when inserting raw html
+            p = markdown.etree.SubElement(parent_elem, 'p')
+            p.text = placeholder
             md._processSection(parent_elem, theRest, inList)
             
         md._processCodeBlock = _hiliteCodeBlock
