@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="generator" content=
+"HTML Tidy for Linux/x86 (vers 1 September 2005), see www.w3.org">
+<title></title>
+</head>
+<body>
+<p>Foo <a href="/url/" title="Title">bar</a>.</p>
+<p>Foo <a href="/url/" title="Title">bar</a>.</p>
+<p>Foo <a href="/url/" title="Title">bar</a>.</p>
+<p>With <a href="/url/">embedded [brackets]</a>.</p>
+<p>Indented <a href="/url">once</a>.</p>
+<p>Indented <a href="/url">twice</a>.</p>
+<p>Indented <a href="/url">thrice</a>.</p>
+<p>Indented [four][] times.</p>
+<pre>
+<code>[four]: /url
+</code>
+</pre>
+</body>
+</html>

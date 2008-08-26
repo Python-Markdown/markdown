@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="generator" content=
+"HTML Tidy for Linux/x86 (vers 1 September 2005), see www.w3.org">
+<title></title>
+</head>
+<body>
+<p>Paragraph one.</p>
+<!-- This is a simple comment -->
+<!--
+    This is another comment.
+-->
+<p>Paragraph two.</p>
+<!-- one comment block == == with two comments -->
+<p>The end.</p>
+</body>
+</html>

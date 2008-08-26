@@ -1,0 +1,17 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="generator" content=
+"HTML Tidy for Linux/x86 (vers 1 September 2005), see www.w3.org">
+<title></title>
+</head>
+<body>
+<p>Lorem ipsum <a href=
+"mailto:yuri@domain.org">yuri@domain.org</a>, etc.</p>
+<ul>
+<li>An email address in a list</li>
+<li><a href="mailto:yuri@domain.org">yuri@domain.org</a></li>
+<li>Another item.</li>
+</ul>
+</body>
+</html>

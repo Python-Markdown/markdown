@@ -1,0 +1,17 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="generator" content=
+"HTML Tidy for Linux/x86 (vers 1 September 2005), see www.w3.org">
+<title></title>
+</head>
+<body>
+<p>Just a <a href="/url/">URL</a>.</p>
+<p><a href="/url/" title="title">URL and title</a>.</p>
+<p><a href="/url/" title="title preceded by two spaces">URL and
+title</a>.</p>
+<p><a href="/url/" title="title preceded by a tab">URL and
+title</a>.</p>
+<p><a href="">Empty</a>.</p>
+</body>
+</html>
