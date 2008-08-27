@@ -113,10 +113,7 @@ def prettifyETree(elem):
             elem.tail = i
     if not elem.tail or not elem.tail.strip():
         elem.tail = i
-        
-class AtomicString(unicode):
-    "A string which should not be further processed."
-    pass
+
 
 # --------------- CONSTANTS YOU MIGHT WANT TO MODIFY -----------------
 
@@ -172,10 +169,10 @@ EXECUTABLE_NAME_FOR_USAGE = "python markdown.py"
 # placeholders
 STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
 ETX = u'\u0003'  # Use ETX ("End of text") for end-of-placeholder
-HTML_PLACEHOLDER_PREFIX = STX+"html:"
-HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d"+ETX
-INLINE_PLACEHOLDER_PREFIX = STX+"inline:"
-INLINE_PLACEHOLDER_SUFFIX = ETX
+HTML_PLACEHOLDER_PREFIX = STX+"wzxhzdk:"
+HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d" + ETX
+INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
+INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 
 AMP_SUBSTITUTE = STX+"amp"+ETX 
 
@@ -1087,15 +1084,15 @@ class InlineStash:
     def __init__(self):
         """ Create a InlineStash. """
         self.prefix = INLINE_PLACEHOLDER_PREFIX
-        self.suffix = INLINE_PLACEHOLDER_SUFFIX
+        self.suffix = ETX
         self._nodes = {}
         self.phLength = 4 + len(self.prefix) + len(self.suffix)
+        self._placeholder_re = re.compile(INLINE_PLACEHOLDER % r'([0-9]{4})')
         
     def _genPlaceholder(self, type):
         """ Generate a placeholder """
         id = "%04d" % len(self._nodes)
-        hash = "%s%s:%s%s" % (self.prefix, type, id, 
-                                self.suffix) 
+        hash = INLINE_PLACEHOLDER % id 
         return hash, id
     
     def extractId(self, data, index):
@@ -1110,15 +1107,11 @@ class InlineStash:
         Returns: placeholder id and  string index, after 
         found placeholder
         """
-        endIndex = data.find(self.suffix, index+1)
-        if endIndex == -1:
-            return None, index + 1 
+        m = self._placeholder_re.search(data, index)
+        if m:
+            return m.group(1), m.end()
         else:
-            pair = data[index + len(self.prefix): endIndex].split(":")
-            if len(pair) == 2:
-                return pair[1], endIndex + len(self.suffix)
-            else:
-                return None, index + 1
+            return None, index + 1 
     
     def isin(self, id):
         """ Check if node with given id exists in stash """
