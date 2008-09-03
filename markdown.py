@@ -98,22 +98,20 @@ in extensions use: `from markdown import etree`
 to access to the ElemetTree module, do not import it by yourself"""
 etree = importETree() 
 
-def indentETree(elem, level=0):
-    """ Indent ElementTree before serialization """
+def prettifyETree(elem):
+    """ Add linebreaks to  ElementTree before serialization """
      
-    if level > 1:
-        i = "\n" + (level-1) * "  "
-    else:
-        i = "\n"
-
-    if len(elem) and elem.tag not in ['code', 'pre']:
-        if not elem.text or not elem.text.strip():
-            elem.text = i + "  "
+    i = "\n"
+    if isBlockLevel(elem.tag) and elem.tag not in ['code', 'pre']:
+        if (not elem.text or not elem.text.strip()) \
+                and len(elem) and isBlockLevel(elem[0].tag):
+            elem.text = i
         for e in elem:
-            indentETree(e, level+1)
-        if not e.tail or not e.tail.strip():
-            e.tail = i
-    if level and (not elem.tail or not elem.tail.strip()):
+            if isBlockLevel(e.tag):
+                prettifyETree(e)
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+    if not elem.tail or not elem.tail.strip():
         elem.tail = i
         
 class AtomicString(unicode):
@@ -181,7 +179,7 @@ INLINE_PLACEHOLDER_SUFFIX = ETX
 
 AMP_SUBSTITUTE = STX+"amp"+ETX 
 
-BLOCK_LEVEL_ELEMENTS = re.compile('p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del|hr|hr/|style')
+BLOCK_LEVEL_ELEMENTS = re.compile('p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del|hr|hr/|style|li|tr')
 
 def isBlockLevel(tag):
     """
@@ -1324,7 +1322,7 @@ class Markdown:
         """
         # Setup the document
         
-        self.root = etree.Element("span")
+        self.root = etree.Element("div")
 
         # Split into lines and run the preprocessors that will work with
         # self.lines
@@ -1964,7 +1962,7 @@ class Markdown:
             if newRoot:
                 root = newRoot
 
-        indentETree(root)
+        prettifyETree(root)
 
         xml, length = codecs.utf_8_decode(etree.tostring(root, encoding="utf8"))
         
