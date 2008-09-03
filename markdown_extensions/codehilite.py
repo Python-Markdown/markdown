@@ -41,9 +41,11 @@ class CodeHilite:
         >>> code = CodeHilite(src = text)
         >>> html = code.hilite()
     
-    * src: Can be a string or any object with a .readline attribute.
+    * src: Source string or any object with a .readline attribute.
       
-    * linenos: (Boolen) Turns line numbering 'on' or 'off' (off by default).
+    * linenos: (Boolen) Turn line numbering 'on' or 'off' (off by default).
+
+    * css_class: Set class name of wrapper div ('codehilite' by default).
       
     Low Level Usage:
         >>> code = CodeHilite()
@@ -53,10 +55,11 @@ class CodeHilite:
     
     """
 
-    def __init__(self, src=None, linenos = False):
+    def __init__(self, src=None, linenos=False, css_class="codehilite"):
         self.src = src
         self.lang = None
         self.linenos = linenos
+        self.css_class = css_class
 
     def hilite(self):
         """
@@ -75,7 +78,8 @@ class CodeHilite:
 
         try:
             from pygments import highlight
-            from pygments.lexers import get_lexer_by_name, guess_lexer, TextLexer
+            from pygments.lexers import get_lexer_by_name, guess_lexer, \
+                                        TextLexer
             from pygments.formatters import HtmlFormatter
         except ImportError:
             # just escape and pass through
@@ -83,7 +87,8 @@ class CodeHilite:
             if self.linenos:
                 txt = self._number(txt)
             else :
-                txt = '<div class="codehilite"><pre>%s</pre></div>\n'% txt
+                txt = '<div class="%s"><pre>%s</pre></div>\n'% \
+                        (txt, self.css_class)
             return txt
         else:
             try:
@@ -93,7 +98,8 @@ class CodeHilite:
                     lexer = guess_lexer(self.src)
                 except ValueError:
                     lexer = TextLexer()
-            formatter = HtmlFormatter(linenos=self.linenos, cssclass="codehilite")
+            formatter = HtmlFormatter(linenos=self.linenos, 
+                                      cssclass=self.css_class)
             return highlight(self.src, lexer, formatter)
 
     def _escape(self, txt):
@@ -144,9 +150,11 @@ class CodeHilite:
         fl = lines.pop(0)
     
         c = re.compile(r'''
-            (?:(?:::+)|(?P<shebang>[#]!))	#shebang or 2 or more colons
-            (?P<path>(?:/\w+)*[/ ])? # zero or 1 path ending in either a / or a single space
-            (?P<lang>\w*)	# the language (a single /  or space before lang is a path)
+            (?:(?:::+)|(?P<shebang>[#]!))	# Shebang or 2 or more colons.
+            (?P<path>(?:/\w+)*[/ ])?        # Zero or 1 path ending in either 
+                                            #   a / or a single space.
+            (?P<lang>\w*)	                # The language (a single /  or 
+                                            #   space before lang is a path).
             ''',  re.VERBOSE)
         # search first line for shebang
         m = c.search(fl)
@@ -175,7 +183,9 @@ class CodeHiliteExtention(markdown.Extension):
     def __init__(self, configs):
         # define default configs
         self.config = {
-            'force_linenos' : [False, "Force line numbers - Default: False"] 
+            'force_linenos' : [False, "Force line numbers - Default: False"],
+            'css_class' : ["codehilite", 
+                           "Set class name for wrapper <div> - Default: codehilite"],
             }
         
         # Override defaults with user settings
@@ -202,7 +212,8 @@ class CodeHiliteExtention(markdown.Extension):
 
             detabbed, theRest = md.blockGuru.detectTabbed(lines)
             text = "\n".join(detabbed).rstrip()+"\n"
-            code = CodeHilite(text, linenos=self.config['force_linenos'][0]) 
+            code = CodeHilite(text, linenos=self.config['force_linenos'][0],
+                              css_class=self.config['css_class'][0]) 
             placeholder = md.htmlStash.store(code.hilite(), safe=True)
             # This wrapping p element will be removed when inserting raw html
             p = markdown.etree.SubElement(parent_elem, 'p')
