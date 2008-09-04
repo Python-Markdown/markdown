@@ -22,7 +22,7 @@ All header IDs are unique:
     ... #Third Header {#header}'''
     >>> md = markdown.markdown(text, ['headerid'])
     >>> md
-    u'<h1 id="header">Header</h1>\\n\\n<h1 id="header_1">Another Header</h1>\\n\\n<h1 id="header_2">Third Header</h1>'
+    u'<h1 id="header">Header</h1>\\n<h1 id="header_1">Another Header</h1>\\n<h1 id="header_2">Third Header</h1>'
 
 To fit within a html template's hierarchy, set the header base level:
 
@@ -31,7 +31,7 @@ To fit within a html template's hierarchy, set the header base level:
     ... ## Next Level'''
     >>> md = markdown.markdown(text, ['headerid(level=3)'])
     >>> md
-    u'<h3 id="some_header">Some Header</h3>\\n\\n<h4 id="next_level">Next Level</h4>'
+    u'<h3 id="some_header">Some Header</h3>\\n<h4 id="next_level">Next Level</h4>'
 
 Turn off auto generated IDs:
 
@@ -40,7 +40,7 @@ Turn off auto generated IDs:
     ... # Header with ID # { #foo }'''
     >>> md = markdown.markdown(text, ['headerid(forceid=False)'])
     >>> md
-    u'<h1>Some Header</h1>\\n\\n<h1 id="foo">Header with ID</h1>'
+    u'<h1>Some Header</h1>\\n<h1 id="foo">Header with ID</h1>'
 
 Use with MetaData extension:
 
@@ -111,8 +111,7 @@ class HeaderIdExtension (markdown.Extension) :
                     level = 6
                 h = etree.Element("h%d" % level)
                 parent_elem.append(h)
-                inline = etree.SubElement(h, "inline")
-                inline.text = m.group(2).strip()
+                h.text = m.group(2).strip()
                 if m.group(3) :
                     h.set('id', _unique_id(m.group(3)))
                 elif force_id:
