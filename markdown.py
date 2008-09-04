@@ -894,7 +894,7 @@ class PrettifyPostprocessor(Postprocessor):
                 elem.text = i
             for e in elem:
                 if isBlockLevel(e.tag):
-                    prettifyETree(e)
+                    self._prettifyETree(e)
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
         if not elem.tail or not elem.tail.strip():
