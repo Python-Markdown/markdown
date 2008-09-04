@@ -98,22 +98,6 @@ in extensions use: `from markdown import etree`
 to access to the ElemetTree module, do not import it by yourself"""
 etree = importETree() 
 
-def prettifyETree(elem):
-    """ Add linebreaks to  ElementTree before serialization """
-     
-    i = "\n"
-    if isBlockLevel(elem.tag) and elem.tag not in ['code', 'pre']:
-        if (not elem.text or not elem.text.strip()) \
-                and len(elem) and isBlockLevel(elem[0].tag):
-            elem.text = i
-        for e in elem:
-            if isBlockLevel(e.tag):
-                prettifyETree(e)
-        if not elem.tail or not elem.tail.strip():
-            elem.tail = i
-    if not elem.tail or not elem.tail.strip():
-        elem.tail = i
-
 
 # --------------- CONSTANTS YOU MIGHT WANT TO MODIFY -----------------
 
@@ -828,8 +812,8 @@ EMPHASIS_PATTERN_2      = SimpleTagPattern(EMPHASIS_2_RE, 'em')
 
 STRONG_EM_PATTERN       = DoubleTagPattern(STRONG_EM_RE, 'strong,em')
 
-LINE_BREAK_PATTERN      = SubstituteTagPattern(LINE_BREAK_RE, 'br ')
-LINE_BREAK_PATTERN_2    = SubstituteTagPattern(LINE_BREAK_2_RE, 'br ')
+LINE_BREAK_PATTERN      = SubstituteTagPattern(LINE_BREAK_RE, 'br')
+LINE_BREAK_PATTERN_2    = SubstituteTagPattern(LINE_BREAK_2_RE, 'br')
 
 LINK_PATTERN            = LinkPattern(LINK_RE)
 IMAGE_LINK_PATTERN      = ImagePattern(IMAGE_LINK_RE)
@@ -866,9 +850,6 @@ class Postprocessor:
     
     Postprocessors must extend markdown.Postprocessor.
 
-    There are currently no standard post-processors, but the footnote
-    extension uses one.
-    
     """
     def run(self, root):
         """
@@ -899,6 +880,40 @@ class TextPostprocessor:
 
         """
         pass
+
+class PrettifyPostprocessor(Postprocessor):
+    """ Add linebreaks to the html document. """
+
+    def _prettifyETree(self, elem):
+        """ Recursively add linebreaks to ElementTree children. """
+     
+        i = "\n"
+        if isBlockLevel(elem.tag) and elem.tag not in ['code', 'pre']:
+            if (not elem.text or not elem.text.strip()) \
+                    and len(elem) and isBlockLevel(elem[0].tag):
+                elem.text = i
+            for e in elem:
+                if isBlockLevel(e.tag):
+                    prettifyETree(e)
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+
+    def run(self, root):
+        """ Add linebreaks to ElementTree root object """
+        
+        self._prettifyETree(root)
+        # Do <br />'s seperately as they are often in the middle of
+        # inline content and missed by _prettifyETree.
+        brs = root.getiterator('br')
+        for br in brs:
+            if not br.tail or not br.tail.strip():
+                br.tail = '\n'
+            else:
+                br.tail = '\n%s' % br.tail
+
+PRETTIFYPOSTPROCESSOR = PrettifyPostprocessor()
 
 
 class RawHtmlTextPostprocessor(TextPostprocessor):
@@ -1212,8 +1227,10 @@ class Markdown:
                               REFERENCE_PREPROCESSOR]
 
 
-        self.postprocessors = [] # a footnote postprocessor will get
-                                 # inserted later
+        self.postprocessors = [PRETTIFYPOSTPROCESSOR,
+                               # a footnote postprocessor will get
+                               # inserted later
+                               ]
 
         self.textPostprocessors = [# a footnote postprocessor will get
                                    # inserted here
@@ -1954,8 +1971,6 @@ class Markdown:
             newRoot = postprocessor.run(root)
             if newRoot:
                 root = newRoot
-
-        prettifyETree(root)
 
         xml, length = codecs.utf_8_decode(etree.tostring(root, encoding="utf8"))
         
