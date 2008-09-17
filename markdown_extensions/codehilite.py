@@ -88,7 +88,7 @@ class CodeHilite:
                 txt = self._number(txt)
             else :
                 txt = '<div class="%s"><pre>%s</pre></div>\n'% \
-                        (txt, self.css_class)
+                        (self.css_class, txt)
             return txt
         else:
             try:
