@@ -151,10 +151,8 @@ class CodeHilite:
     
         c = re.compile(r'''
             (?:(?:::+)|(?P<shebang>[#]!))	# Shebang or 2 or more colons.
-            (?P<path>(?:/\w+)*[/ ])?        # Zero or 1 path ending in either 
-                                            #   a / or a single space.
-            (?P<lang>\w*)	                # The language (a single /  or 
-                                            #   space before lang is a path).
+            (?P<path>(?:/\w+)*[/ ])?        # Zero or 1 path 
+            (?P<lang>[\w+-]*)               # The language 
             ''',  re.VERBOSE)
         # search first line for shebang
         m = c.search(fl)
