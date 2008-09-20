@@ -88,8 +88,7 @@ class WikiLinkExtension (markdown.Extension) :
         self.md = md
     
         # append to end of inline patterns
-        WIKILINK_RE = r'\[\[([^\]]+)\]\]'
-        #r'''(?P<escape>\\|\b)(?P<camelcase>([A-Z]+[a-z-_]+){2,})\b'''
+        WIKILINK_RE = r'\[\[([A-Za-z0-9_ -]+)\]\]'
         WIKILINK_PATTERN = WikiLinks(WIKILINK_RE, self.config)
         WIKILINK_PATTERN.md = md
         md.inlinePatterns.append(WIKILINK_PATTERN)  
