@@ -1,0 +1,10 @@
+Some text with a [[WikiLink]].
+
+A link with [[ white space and_underscores ]] and a empty [[ ]] one.
+
+And a <a href="http://example.com/RealLink">RealLink</a>.
+
+<http://example.com/And_A_AutoLink>
+
+And a [MarkdownLink](/MarkdownLink/ "A MarkdownLink") for
+completeness.
