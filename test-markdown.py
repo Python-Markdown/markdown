@@ -371,7 +371,7 @@ testDirectory("tests/extensions-x-tables")
 #testDirectory("tests/extensions-x-ext1-ext2")
 testDirectory("tests/safe_mode", measure_time=True, safe_mode="escape")
 testDirectory("tests/extensions-x-codehilite")
-testDirectory("tests/extensions-x-wikilink")
+testDirectory("tests/extensions-x-wikilinks")
 
 print "\n### Final result ###"
 if len(failedTests):
