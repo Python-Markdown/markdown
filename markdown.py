@@ -34,13 +34,14 @@ import re, sys, codecs, htmlentitydefs
 from urlparse import urlparse, urlunparse
 
 from logging import getLogger, StreamHandler, Formatter, \
-                    DEBUG, INFO, WARN, ERROR, CRITICAL
+                    NOTSET, DEBUG, INFO, WARN, ERROR, CRITICAL
 
 MESSAGE_THRESHOLD = CRITICAL
 
 # Configure debug message logger (the hard way - to support python 2.3)
 logger = getLogger('MARKDOWN')
-logger.setLevel(DEBUG) # This is restricted by handlers later
+if logger.level == NOTSET :
+    logger.setLevel(DEBUG) # This is restricted by handlers later
 console_hndlr = StreamHandler()
 formatter = Formatter('%(name)s-%(levelname)s: "%(message)s"')
 console_hndlr.setFormatter(formatter)
