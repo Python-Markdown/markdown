@@ -1172,42 +1172,6 @@ class Markdown:
         for pattern in self.inlinePatterns:
             pattern.safe_mode = self.safeMode
 
-
-    def _transform(self):
-        """Transform the Markdown text into a XHTML body document.
-
-        Returns: ElementTree object 
-        
-        """
-        # Setup the document
-        
-        self.root = etree.Element("div")
-
-        # Split into lines and run the preprocessors that will work with
-        # self.lines
-
-        self.lines = self.source.split("\n")
-
-        # Run the pre-processors on the lines
-        for prep in self.preprocessors :
-            self.lines = prep.run(self.lines)
-
-        # Create a ElementTree from the lines
-
-        buffer = []
-        for line in self.lines:
-            if line.startswith("#"):
-
-                self._processSection(self.root, buffer)
-                buffer = [line]
-            else:
-                buffer.append(line)
-
-        self._processSection(self.root, buffer)
-    
-        return etree.ElementTree(self.root)
-
-
     def _processSection(self, parent_elem, lines,
                         inList=0, looseList=0):
         """
@@ -1591,17 +1555,13 @@ class Markdown:
         if isinstance(data, AtomicString):
             return data
 
-        startIndex = 0
-        
+        startIndex = 0        
         while patternIndex < len(self.inlinePatterns):
-            
             data, matched, startIndex = self._applyInline(
                                              self.inlinePatterns[patternIndex],
                                              data, patternIndex, startIndex)
-            
             if not matched:
                 patternIndex += 1
-
         return data
     
     def _applyInline(self, pattern, data, patternIndex, startIndex=0):
@@ -1709,14 +1669,11 @@ class Markdown:
         strartIndex = 0
     
         while data:
-            
             index = data.find(prefix, strartIndex)
             if index != -1:
-                
                 id, phEndIndex = self.inlineStash.extractId(data, index)
-                
+
                 if self.inlineStash.isin(id):
-   
                     node = self.inlineStash.get(id)
              
                     if index > 0:
@@ -1724,19 +1681,14 @@ class Markdown:
                         linkText(text)
           
                     if not isString(node): # it's Element
-                        
                         for child in [node] + node.getchildren():
-            
                             if child.tail:
                                 if child.tail.strip():
                                     self._processElementText(node, child, False)
-
                             if child.text:
                                 if child.text.strip():
                                     self._processElementText(child, child)
-                        
                     else: # it's just a string
-                
                         linkText(node)
                         strartIndex = phEndIndex
                         continue
@@ -1749,23 +1701,22 @@ class Markdown:
                     linkText(data[strartIndex:end])
                     strartIndex = end 
             else:
-                
                 text = data[strartIndex:]
                 linkText(text)
                 data = ""
 
         return result
     
-    
     def applyInlinePatterns(self, markdownTree):
         """
-        Iterate over ElementTree, find elements with inline tag, 
-        apply inline patterns and append newly created Elements to tree.
-        If you don't whant process your data with inline paterns, 
-        instead of normal string, use subclass AtomicString:
-        `node.text = AtomicString("data won't be processed with inline patterns")` 
+        Iterate over ElementTree, find elements with inline tag, apply inline
+        patterns and append newly created Elements to tree.  If you don't
+        want process your data with inline paterns, instead of normal string,
+        use subclass AtomicString:
+
+            node.text = AtomicString("data won't be processed with inline patterns")
         
-        Keyword arguments:
+        Arguments:
         
         * markdownTree: ElementTree object, representing Markdown tree.
 
@@ -1829,27 +1780,42 @@ class Markdown:
 
         for pp in self.textPreprocessors:
             self.source = pp.run(self.source)
-        
-        markdownTree = self._transform()
-        
-        return markdownTree      
+
+        # Split into lines and run the preprocessors that will work with 
+        # self.lines
+        self.lines = self.source.split("\n")
+        for prep in self.preprocessors :
+            self.lines = prep.run(self.lines)
+
+        # Create a ElementTree from the lines
+        self.root = etree.Element("div")
+        buffer = []
+        for line in self.lines:
+            if line.startswith("#"):
+                self._processSection(self.root, buffer)
+                buffer = [line]
+            else:
+                buffer.append(line)
+
+        self._processSection(self.root, buffer)
+    
+        return etree.ElementTree(self.root)
+
 
     def convert (self, source):
-        """Create the document in XHTML format.
+        """Convert markdown to serialized XHTML.
 
         Keyword arguments:
         
         * source: An ascii or unicode string of Markdown formated text.
 
-        Returns: A serialized XHTML body.
-
         """
         self.source = source
         if not self.source:
-            return u""
+            return u""  # a blank unicode string
 
+        # Build a tree from the Markdown source and get its root.
         tree = self.markdownToTree(source)
-
         root = self.applyInlinePatterns(tree).getroot()
 
         # Run the post-processors
@@ -1859,8 +1825,8 @@ class Markdown:
             if newRoot:
                 root = newRoot
 
+        # Serialize _properly_.  Strip top-level tags.
         xml, length = codecs.utf_8_decode(etree.tostring(root, encoding="utf8"))
-        
         if self.stripTopLevelTags:
             xml = xml.strip()[44:-7] + "\n"
 
