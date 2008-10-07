@@ -208,7 +208,7 @@ class CodeHiliteExtention(markdown.Extension):
 
             """
 
-            detabbed, theRest = md.blockGuru.detectTabbed(lines)
+            detabbed, theRest = md.detectTabbed(lines)
             text = "\n".join(detabbed).rstrip()+"\n"
             code = CodeHilite(text, linenos=self.config['force_linenos'][0],
                               css_class=self.config['css_class'][0]) 
