@@ -1,62 +1,72 @@
 #!/usr/bin/env python
 """
-Python-Markdown
+Python Markdown
 ===============
 
-Converts Markdown to HTML.  Basic usage as a module:
+Python Markdown converts Markdown to HTML and can be used as a library or
+called from the command line.
+
+## Basic usage as a module:
 
     import markdown
     md = Markdown()
     html = md.convert(your_text_string)
 
+## Basic use from the command line:
+
+    python markdown.py source.txt > destination.html
+
+Run "python markdown.py --help" to see more options.
+
+## Extensions
+
 See <http://www.freewisdom.org/projects/python-markdown/> for more
-information and instructions on how to extend the functionality of the
-script.  (You might want to read that before you try modifying this
-file.)
+information and instructions on how to extend the functionality of
+Python Markdown.  Read that before you try modifying this file.
+
+## Authors and License
 
 Started by [Manfred Stienstra](http://www.dwerg.net/).  Continued and
 maintained  by [Yuri Takhteyev](http://www.freewisdom.org), [Waylan
 Limberg](http://achinghead.com/) and [Artem Yunusov](http://blog.splyer.com).
 
-Contact: 
+Contact: markdown@freewisdom.org
 
-* <yuri@freewisdom.org>
-* <waylan@gmail.com>
+Copyright 2007, 2008 The Python Markdown Project (v. 1.7 and later)  
+Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)  
+Copyright 2004 Manfred Stienstra (the original version)  
 
-License: [GPL 2](http://www.gnu.org/copyleft/gpl.html) or BSD
-
+License: BSD (see docs/LICENSE for details).
 """
 
 version = "2.0-alpha"
 version_info = (2,0,0, "beta")
 
 import re, sys, codecs, htmlentitydefs
+import logging
+from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
 from urlparse import urlparse, urlunparse
 
-from logging import getLogger, StreamHandler, Formatter, \
-                    NOTSET, DEBUG, INFO, WARN, ERROR, CRITICAL
 
-MESSAGE_THRESHOLD = CRITICAL
+# --------------- Constants you might want to modify ------------------------
+COMMAND_LINE_LOGGING_LEVEL = CRITICAL
+TAB_LENGTH = 4            # expand tabs to this many spaces
+ENABLE_ATTRIBUTES = True  # @id = xyz -> <... id="xyz">
+SMART_EMPHASIS = True        # this_or_that does not become this<i>or</i>that
+HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
 
-# Configure debug message logger (the hard way - to support python 2.3)
-logger = getLogger('MARKDOWN')
-if logger.level == NOTSET :
-    logger.setLevel(DEBUG) # This is restricted by handlers later
-console_hndlr = StreamHandler()
-formatter = Formatter('%(name)s-%(levelname)s: "%(message)s"')
-console_hndlr.setFormatter(formatter)
-console_hndlr.setLevel(MESSAGE_THRESHOLD)
-logger.addHandler(console_hndlr)
 
+# --------------- Auxiliary functions ---------------------------------------
 
 def message(level, text):
     ''' A wrapper method for logging debug messages. '''
-    logger.log(level, text)
+    logging.getLogger('MARKDOWN').log(level, text)
     
 def isstr(s):
     """ Check if it's string """
     return isinstance(s, unicode) or isinstance(s, str)
- 
+
+## Import 
 def importETree(): 
     """ Import best variant of ElementTree and return module object """
     cetree = None  
@@ -98,14 +108,6 @@ def importETree():
 in extensions use: `from markdown import etree`
 to access to the ElemetTree module, do not import it by yourself"""
 etree = importETree() 
-
-
-# --------------- CONSTANTS YOU MIGHT WANT TO MODIFY -----------------
-
-TAB_LENGTH = 4            # expand tabs to this many spaces
-ENABLE_ATTRIBUTES = True  # @id = xyz -> <... id="xyz">
-SMART_EMPHASIS = True        # this_or_that does not become this<i>or</i>that
-HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
 
 RTL_BIDI_RANGES = ( (u'\u0590', u'\u07FF'),
                     # from Hebrew to Nko (includes Arabic, Syriac and Thaana)
@@ -2007,7 +2009,6 @@ def markdownFromFile(input = None,
                      output = None,
                      extensions = [],
                      encoding = None,
-                     message_threshold = CRITICAL,
                      safe = False):
     """
     Convenience wrapper function that takes a filename as input.
@@ -2026,15 +2027,11 @@ def markdownFromFile(input = None,
     * output: Name of output file. Writes to stdout if `None`.
     * extensions: A list of extension names (may contain config args).  
     * encoding: Encoding of input and output files. Defaults to utf-8.
-    * message_threshold: Error reporting level.
     * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
 
     Returns: An HTML document as a string.
 
     """
-
-    global console_hndlr
-    console_hndlr.setLevel(message_threshold)
 
     message(DEBUG, "input file: %s" % input)
 
@@ -2172,6 +2169,10 @@ def load_extension(ext_name, configs = []):
     return module.makeExtension(configs.items())    
 
 
+#############################################################################
+##    Only command-line specific stuff from here down.
+#############################################################################
+
 OPTPARSE_WARNING = """
 Python 2.3 or higher required for advanced command line options.
 For lower versions of Python use:
@@ -2191,24 +2192,21 @@ def parse_options():
         if len(sys.argv) == 2:
             return {'input': sys.argv[1],
                     'output': None,
-                    'message_threshold': CRITICAL,
                     'safe': False,
                     'extensions': [],
-                    'encoding': None }
-
+                    'encoding': None }, CRITICAL
         else:
             print OPTPARSE_WARNING
-            return None
+            return None, None
 
     parser = optparse.OptionParser(usage="%prog INPUTFILE [options]")
-
     parser.add_option("-f", "--file", dest="filename",
-                      help="write output to OUTPUT_FILE",
+                      help="write output to OUTPUT_FILE", 
                       metavar="OUTPUT_FILE")
     parser.add_option("-e", "--encoding", dest="encoding",
                       help="encoding for input and output files",)
     parser.add_option("-q", "--quiet", default = CRITICAL,
-                      action="store_const", const=60, dest="verbose",
+                      action="store_const", const=CRITICAL+10, dest="verbose",
                       help="suppress all messages")
     parser.add_option("-v", "--verbose",
                       action="store_const", const=INFO, dest="verbose",
@@ -2216,7 +2214,6 @@ def parse_options():
     parser.add_option("-s", "--safe", dest="safe", default=False,
                       metavar="SAFE_MODE",
                       help="safe mode ('replace', 'remove' or 'escape'  user's HTML tag)")
-    
     parser.add_option("--noisy",
                       action="store_const", const=DEBUG, dest="verbose",
                       help="print debug messages")
@@ -2227,7 +2224,7 @@ def parse_options():
 
     if not len(args) == 1:
         parser.print_help()
-        return None
+        return None, None
     else:
         input_file = args[0]
 
@@ -2236,20 +2233,26 @@ def parse_options():
 
     return {'input': input_file,
             'output': options.filename,
-            'message_threshold': options.verbose,
             'safe': options.safe,
             'extensions': options.extensions,
-            'encoding': options.encoding }
+            'encoding': options.encoding }, options.verbose
 
-def main():
-    """ Run Markdown from the command line. """
 
-    options = parse_options()
+def command_line_run():
+    """Run Markdown from the command line."""
 
-    if not options:
-        sys.exit(0)
-    
+    # Setup a logger manually for compatibility with Python 2.3
+    logger = logging.getLogger('MARKDOWN')
+    logger.setLevel(COMMAND_LINE_LOGGING_LEVEL)
+    logger.addHandler(logging.StreamHandler())
+
+    # Parse options and adjust logging level if necessary
+    options, logging_level = parse_options()
+    if not options: sys.exit(0)
+    if logging_level: logging.getLogger('MARKDOWN').setLevel(logging_level)
+
+    # Run
     markdownFromFile(**options)
 
 if __name__ == '__main__':
-    main()
+    command_line_run()
