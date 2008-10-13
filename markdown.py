@@ -1401,28 +1401,32 @@ class HtmlStash:
         self.html_counter += 1
         return placeholder
     
-    def rest(self):
+    def reset(self):
         self.html_counter = 0
         self.rawHtmlBlocks = []
 
-    
-class InlineStash:
-    
-    def __init__(self):
-        """ Create a InlineStash. """
-        self.prefix = INLINE_PLACEHOLDER_PREFIX
-        self.suffix = ETX
-        self._nodes = {}
-        self.phLength = 4 + len(self.prefix) + len(self.suffix)
-        self._placeholder_re = re.compile(INLINE_PLACEHOLDER % r'([0-9]{4})')
+
+class InlineProcessor:
+    """
+    An auxiliary class to traverse a Markdown tree, applying inline patterns.
+    """
+
+    def __init__ (self, patterns):
+        self.inlinePatterns = patterns
+
+        self.__placeholder_prefix = INLINE_PLACEHOLDER_PREFIX
+        self.__placeholder_suffix = ETX
+        self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
+                                      + len(self.__placeholder_suffix)
+        self.__placeholder_re = re.compile(INLINE_PLACEHOLDER % r'([0-9]{4})')
         
-    def _genPlaceholder(self, type):
+    def __makePlaceholder(self, type):
         """ Generate a placeholder """
-        id = "%04d" % len(self._nodes)
+        id = "%04d" % len(self.stashed_nodes)
         hash = INLINE_PLACEHOLDER % id 
         return hash, id
     
-    def extractId(self, data, index):
+    def __findPlaceholder(self, data, index):
         """ 
         Extract id from data string, start from index
         
@@ -1434,30 +1438,236 @@ class InlineStash:
         Returns: placeholder id and  string index, after 
         found placeholder
         """
-        m = self._placeholder_re.search(data, index)
+        m = self.__placeholder_re.search(data, index)
         if m:
             return m.group(1), m.end()
         else:
             return None, index + 1 
     
-    def isin(self, id):
-        """ Check if node with given id exists in stash """
-        return self._nodes.has_key(id)
-    
-    def get(self, id):
-        """ Return node by id """
-        return self._nodes.get(id)
-    
-    def add(self, node, type):
+    def __stashNode(self, node, type):
         """ Add node to stash """
-        pholder, id = self._genPlaceholder(type)
-        self._nodes[id] = node
-        return pholder
+        placeholder, id = self.__makePlaceholder(type)
+        self.stashed_nodes[id] = node
+        return placeholder
     
-    def rest(self):
-        """ Reset instance """
-        self._nodes = {}
+    def __handleInline(self, data, patternIndex=0):
+        """
+        Process string with inline patterns and replace it
+        with placeholders
+
+        Keyword arguments:
+        
+        * data: A line of Markdown text
+        * patternIndex: The index of the inlinePattern to start with
+        
+        Returns: String with placeholders. 
+        
+        """
+        if not isinstance(data, AtomicString):
+            startIndex = 0        
+            while patternIndex < len(self.inlinePatterns):
+                data, matched, startIndex = self.__applyPattern(
+                                                 self.inlinePatterns[patternIndex],
+                                                 data, patternIndex, startIndex)
+                if not matched:
+                    patternIndex += 1
+        return data
+
+    def __processElementText(self, node, subnode, isText=True):
+        """
+        Process placeholders in Element.text or Element.tail
+        of Elements popped from self.stashed_nodes.
+        
+        Keywords arguments:
+        
+        * node: parent node
+        * subnode: processing node
+        * isText: bool variable, True - it's text, False - it's tail
+        
+        Returns: None
+        
+        """       
+        if isText:
+            text = subnode.text
+            subnode.text = None
+        else:
+            text = subnode.tail
+            subnode.tail = None
+        
+        childResult = self.__processPlaceholders(text, subnode)
+        
+        if not isText and node is not subnode:
+            pos = node.getchildren().index(subnode)
+            node.remove(subnode)
+        else:
+            pos = 0
+            
+        childResult.reverse()
+        for newChild in childResult:
+            node.insert(pos, newChild)
     
+    def __processPlaceholders(self, data, parent):
+        """
+        Process string with placeholders and generate ElementTree tree.
+        
+        Keyword arguments:
+        
+        * data: string with placeholders instead of ElementTree elements.
+        * parent: Element, which contains processing inline data
+
+        Returns: list with ElementTree elements with applied inline patterns.
+        """
+        def linkText(text):
+            if text:
+                if result:
+                    if result[-1].tail:
+                        result[-1].tail += text
+                    else:
+                        result[-1].tail = text
+                else:
+                    if parent.text:
+                        parent.text += text
+                    else:
+                        parent.text = text
+            
+        result = []
+        strartIndex = 0    
+        while data:
+            index = data.find(self.__placeholder_prefix, strartIndex)
+            if index != -1:
+                id, phEndIndex = self.__findPlaceholder(data, index)
+
+                if self.stashed_nodes.has_key(id):
+                    node = self.stashed_nodes.get(id)
+             
+                    if index > 0:
+                        text = data[strartIndex:index]
+                        linkText(text)
+          
+                    if not isString(node): # it's Element
+                        for child in [node] + node.getchildren():
+                            if child.tail:
+                                if child.tail.strip():
+                                    self.__processElementText(node, child, False)
+                            if child.text:
+                                if child.text.strip():
+                                    self.__processElementText(child, child)
+                    else: # it's just a string
+                        linkText(node)
+                        strartIndex = phEndIndex
+                        continue
+                    
+                    strartIndex = phEndIndex    
+                    result.append(node)
+                       
+                else: # wrong placeholder
+                    end = index + len(prefix)
+                    linkText(data[strartIndex:end])
+                    strartIndex = end 
+            else:
+                text = data[strartIndex:]
+                linkText(text)
+                data = ""
+
+        return result
+
+    
+    def __applyPattern(self, pattern, data, patternIndex, startIndex=0):
+        """ 
+        Check if the line fits the pattern, create the necessary 
+        elements, add it to stashed_nodes.
+        
+        Keyword arguments:
+        
+        * data: the text to be processed
+        * pattern: the pattern to be checked
+        * patternIndex: index of current pattern
+        * startIndex: string index, from which we starting search
+
+        Returns: String with placeholders instead of ElementTree elements.
+        """
+        match = pattern.getCompiledRegExp().match(data[startIndex:])
+        leftData = data[:startIndex]
+ 
+        if not match:
+            return data, False, 0
+
+        node = pattern.handleMatch(match)
+     
+        if node is None:
+            return data, True, len(leftData) + match.span(len(match.groups()))[0]
+        
+        if not isString(node):         
+            if not isinstance(node.text, AtomicString):
+                # We need to process current node too
+                for child in [node] + node.getchildren():
+                    if not isString(node):
+                        if child.text:
+                            child.text = self.__handleInline(child.text, 
+                                                            patternIndex + 1)
+                        if child.tail:
+                            child.tail = self.__handleInline(child.tail, 
+                                                            patternIndex)
+   
+        placeholder = self.__stashNode(node, pattern.type())
+
+        return "%s%s%s%s" % (leftData, 
+                             match.group(1), 
+                             placeholder, match.groups()[-1]), True, 0
+
+    
+    def applyInlinePatterns(self, markdownTree):
+        """
+        Iterate over ElementTree, find elements with inline tag, apply inline
+        patterns and append newly created Elements to tree.  If you don't
+        want process your data with inline paterns, instead of normal string,
+        use subclass AtomicString:
+
+            node.text = AtomicString("data won't be processed with inline patterns")
+        
+        Arguments:
+        
+        * markdownTree: ElementTree object, representing Markdown tree.
+
+        Returns: ElementTree object with applied inline patterns.
+        """
+        self.stashed_nodes = {}
+
+        stack = [markdownTree.getroot()]
+
+        while stack:
+            currElement = stack.pop()
+            insertQueue = []
+            for child in currElement.getchildren():
+                if child.text and not isinstance(child.text, AtomicString):
+                    text = child.text
+                    child.text = None
+                    lst = self.__processPlaceholders(self.__handleInline(
+                                                    text), child)
+                    stack += lst
+                    insertQueue.append((child, lst))
+                    
+                if child.getchildren():
+                    stack.append(child) 
+
+            for element, lst in insertQueue:
+                if element.text:
+                    element.text = handleAttributes(element.text, element)
+                i = 0
+                for newChild in lst:
+                    # Processing attributes
+                    if newChild.tail:
+                        newChild.tail = handleAttributes(newChild.tail, 
+                                                         element)
+                    if newChild.text:
+                        newChild.text = handleAttributes(newChild.text, 
+                                                         newChild)
+                    element.insert(i, newChild)
+                    i += 1
+               
+        return markdownTree
+
+
            
 
 class Markdown:
@@ -1528,7 +1738,7 @@ class Markdown:
                                # The order of the handlers matters!!!
                                ]
         
-        self.inlineStash = InlineStash()
+        self.inlineProcessor = InlineProcessor(self.inlinePatterns)
         self.references = {}
         self.htmlStash = HtmlStash()
 
@@ -1571,8 +1781,7 @@ class Markdown:
         """
         Resets all state variables so that we can start with a new text.
         """
-        self.inlineStash.rest()
-        self.htmlStash.rest()
+        self.htmlStash.reset()
         self.references.clear()
 
         HTML_BLOCK_PREPROCESSOR.stash = self.htmlStash
@@ -1591,226 +1800,6 @@ class Markdown:
         for pattern in self.inlinePatterns:
             pattern.safe_mode = self.safeMode
 
-    def _handleInline(self, data, patternIndex=0):
-        """
-        Process string with inline patterns and replace it
-        with placeholders
-
-        Keyword arguments:
-        
-        * data: A line of Markdown text
-        * patternIndex: The index of the inlinePattern to start with
-        
-        Returns: String with placeholders. 
-        
-        """
-        if isinstance(data, AtomicString):
-            return data
-
-        startIndex = 0        
-        while patternIndex < len(self.inlinePatterns):
-            data, matched, startIndex = self._applyInline(
-                                             self.inlinePatterns[patternIndex],
-                                             data, patternIndex, startIndex)
-            if not matched:
-                patternIndex += 1
-        return data
-
-
-    def _processElementText(self, node, subnode, isText=True):
-        """
-        Process placeholders in Element.text or Element.tail
-        of Elements popped from InlineStash
-        
-        Keywords arguments:
-        
-        * node: parent node
-        * subnode: processing node
-        * isText: bool variable, True - it's text, False - it's tail
-        
-        Returns: None
-        
-        """       
-        if isText:
-            text = subnode.text
-            subnode.text = None
-        else:
-            text = subnode.tail
-            subnode.tail = None
-        
-        childResult = self._processPlaceholders(text, subnode)
-        
-        if not isText and node is not subnode:
-            pos = node.getchildren().index(subnode)
-            node.remove(subnode)
-        else:
-            pos = 0
-            
-        childResult.reverse()
-        for newChild in childResult:
-            node.insert(pos, newChild)
-    
-    def _processPlaceholders(self, data, parent):
-        """
-        Process string with placeholders and generate ElementTree tree.
-        
-        Keyword arguments:
-        
-        * data: string with placeholders instead of ElementTree elements.
-        * parent: Element, which contains processing inline data
-
-        Returns: list with ElementTree elements with applied inline patterns.
-        """
-        def linkText(text):
-            if text:
-                if result:
-                    if result[-1].tail:
-                        result[-1].tail += text
-                    else:
-                        result[-1].tail = text
-                else:
-                    if parent.text:
-                        parent.text += text
-                    else:
-                        parent.text = text
-            
-        result = []
-        prefix = self.inlineStash.prefix
-        strartIndex = 0
-    
-        while data:
-            index = data.find(prefix, strartIndex)
-            if index != -1:
-                id, phEndIndex = self.inlineStash.extractId(data, index)
-
-                if self.inlineStash.isin(id):
-                    node = self.inlineStash.get(id)
-             
-                    if index > 0:
-                        text = data[strartIndex:index]
-                        linkText(text)
-          
-                    if not isString(node): # it's Element
-                        for child in [node] + node.getchildren():
-                            if child.tail:
-                                if child.tail.strip():
-                                    self._processElementText(node, child, False)
-                            if child.text:
-                                if child.text.strip():
-                                    self._processElementText(child, child)
-                    else: # it's just a string
-                        linkText(node)
-                        strartIndex = phEndIndex
-                        continue
-                    
-                    strartIndex = phEndIndex    
-                    result.append(node)
-                       
-                else: # wrong placeholder
-                    end = index + len(prefix)
-                    linkText(data[strartIndex:end])
-                    strartIndex = end 
-            else:
-                text = data[strartIndex:]
-                linkText(text)
-                data = ""
-
-        return result
-
-    
-    def _applyInline(self, pattern, data, patternIndex, startIndex=0):
-        """ 
-        Check if the line fits the pattern, create the necessary 
-        elements, add it to InlineStash
-        
-        Keyword arguments:
-        
-        * data: the text to be processed
-        * pattern: the pattern to be checked
-        * patternIndex: index of current pattern
-        * startIndex: string index, from which we starting search
-
-        Returns: String with placeholders instead of ElementTree elements.
-        """
-        match = pattern.getCompiledRegExp().match(data[startIndex:])
-        leftData = data[:startIndex]
- 
-        if not match:
-            return data, False, 0
-
-        node = pattern.handleMatch(match)
-     
-        if node is None:
-            return data, True, len(leftData) + match.span(len(match.groups()))[0]
-        
-        if not isString(node):         
-            if not isinstance(node.text, AtomicString):
-                # We need to process current node too
-                for child in [node] + node.getchildren():
-                    if not isString(node):
-                        if child.text:
-                            child.text = self._handleInline(child.text, 
-                                                            patternIndex + 1)
-                        if child.tail:
-                            child.tail = self._handleInline(child.tail, 
-                                                            patternIndex)
-   
-        pholder = self.inlineStash.add(node, pattern.type())
-
-        return "%s%s%s%s" % (leftData, 
-                             match.group(1), 
-                             pholder, match.groups()[-1]), True, 0
-
-    
-    def applyInlinePatterns(self, markdownTree):
-        """
-        Iterate over ElementTree, find elements with inline tag, apply inline
-        patterns and append newly created Elements to tree.  If you don't
-        want process your data with inline paterns, instead of normal string,
-        use subclass AtomicString:
-
-            node.text = AtomicString("data won't be processed with inline patterns")
-        
-        Arguments:
-        
-        * markdownTree: ElementTree object, representing Markdown tree.
-
-        Returns: ElementTree object with applied inline patterns.
-        """
-        stack = [markdownTree.getroot()]
-
-        while stack:
-            currElement = stack.pop()
-            insertQueue = []
-            for child in currElement.getchildren():
-                if child.text and not isinstance(child.text, AtomicString):
-                    text = child.text
-                    child.text = None
-                    lst = self._processPlaceholders(self._handleInline(
-                                                    text), child)
-                    stack += lst
-                    insertQueue.append((child, lst))
-                    
-                if child.getchildren():
-                    stack.append(child) 
-
-            for element, lst in insertQueue:
-                if element.text:
-                    element.text = handleAttributes(element.text, element)
-                i = 0
-                for newChild in lst:
-                    # Processing attributes
-                    if newChild.tail:
-                        newChild.tail = handleAttributes(newChild.tail, 
-                                                         element)
-                    if newChild.text:
-                        newChild.text = handleAttributes(newChild.text, 
-                                                         newChild)
-                    element.insert(i, newChild)
-                    i += 1
-               
-        return markdownTree
-
     def convert (self, source):
         """Convert markdown to serialized XHTML."""
 
@@ -1823,10 +1812,8 @@ class Markdown:
             message(CRITICAL, 'UnicodeDecodeError: Markdown only accepts unicode or ascii input.')
             return u""
 
-        source = source.replace(STX, "")
-        source = source.replace(ETX, "")
-        source = source.replace("\r\n", "\n").replace("\r", "\n")
-        source += "\n\n"
+        source = source.replace(STX, "").replace(ETX, "")
+        source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
         source = source.expandtabs(TAB_LENGTH)
 
         # Run the text preprocessors
@@ -1841,7 +1828,8 @@ class Markdown:
         # Parse the high-level elements.
         tree = self.parser.parseDocument(self.lines)
 
-        root = self.applyInlinePatterns(tree).getroot()
+        # Apply inline patterns
+        root = self.inlineProcessor.applyInlinePatterns(tree).getroot()
 
         # Run the post-processors
         for postprocessor in self.postprocessors:
@@ -2041,7 +2029,6 @@ def markdownFromFile(input = None,
                      extensions = [],
                      encoding = None,
                      safe = False):
-
 
     md = Markdown(extensions=load_extensions(extensions),
                   safe_mode = safe_mode)
