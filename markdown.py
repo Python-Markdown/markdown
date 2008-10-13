@@ -32,9 +32,9 @@ Limberg](http://achinghead.com/) and [Artem Yunusov](http://blog.splyer.com).
 
 Contact: markdown@freewisdom.org
 
-Copyright 2007, 2008 The Python Markdown Project (v. 1.7 and later)  
-Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)  
-Copyright 2004 Manfred Stienstra (the original version)  
+Copyright 2007, 2008 The Python Markdown Project (v. 1.7 and later)
+Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
+Copyright 2004 Manfred Stienstra (the original version)
 
 License: BSD (see docs/LICENSE for details).
 """
@@ -62,7 +62,7 @@ Constants you might want to modify
 """
 
 # default logging level for command-line use
-COMMAND_LINE_LOGGING_LEVEL = CRITICAL  
+COMMAND_LINE_LOGGING_LEVEL = CRITICAL
 TAB_LENGTH = 4               # expand tabs to this many spaces
 ENABLE_ATTRIBUTES = True     # @id = xyz -> <... id="xyz">
 SMART_EMPHASIS = True        # this_or_that does not become this<i>or</i>that
@@ -95,7 +95,7 @@ HTML_PLACEHOLDER_PREFIX = STX+"wzxhzdk:"
 HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d" + ETX
 INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
-AMP_SUBSTITUTE = STX+"amp"+ETX 
+AMP_SUBSTITUTE = STX+"amp"+ETX
 
 def wrapRe(raw_re) : return re.compile("^%s$" % raw_re, re.DOTALL)
 CORE_RE = {
@@ -124,15 +124,15 @@ AUXILIARY GLOBAL FUNCTIONS
 def message(level, text):
     """ A wrapper method for logging debug messages. """
     logging.getLogger('MARKDOWN').log(level, text)
-    
+
 def isString(s):
     """ Check if it's string """
     return isinstance(s, unicode) or isinstance(s, str)
 
-## Import 
-def importETree(): 
+## Import
+def importETree():
     """Import the best implementation of ElementTree, return a module object."""
-    etree_in_c = None  
+    etree_in_c = None
     try: # Is it Python 2.5+ with C implemenation of ElementTree installed?
         import xml.etree.cElementTree as etree_in_c
     except ImportError:
@@ -155,9 +155,9 @@ def importETree():
     elif etree.VERSION < "1.1":
         message(CRITICAL, "For ElementTree version 1.1 or higher is required")
         sys.exit(1)
-    else :        
+    else :
         return etree
-    
+
 def isBlockLevel(tag):
     """Check if the tag is a block level HTML tag."""
     return BLOCK_LEVEL_ELEMENTS.match(tag)
@@ -229,9 +229,8 @@ class MarkdownParser:
                 buffer.append(line)
 
         self.parseChunk(root, buffer)
-    
-        return etree.ElementTree(root)
 
+        return etree.ElementTree(root)
 
     def parseChunk(self, parent_elem, lines, inList=0, looseList=0):
         """Process a chunk of markdown-formatted text and attach the parse to
@@ -244,30 +243,28 @@ class MarkdownParser:
         lower-level markup is processed recursively.
 
         Keyword arguments:
-        
-        * parent_elem: A ElementTree element to which the content will be added.
+
+        * parent_elem: The ElementTree element to which the content will be
+                       added.
         * lines: a list of lines
         * inList: a level
-        
+
         Returns: None
-        
+
         """
         # Loop through lines until none left.
         while lines:
-            
             # Skipping empty line
             if not lines[0]:
                 lines = lines[1:]
                 continue
-            
+
             # Check if this section starts with a list, a blockquote or
-            # a code block
-
-            processFn = { 'ul':     self._processUList,
-                          'ol':     self._processOList,
-                          'quoted': self._processQuote,
-                          'tabbed': self._processCodeBlock}
-
+            # a code block.  If so, process them.
+            processFn = { 'ul':     self.__processUList,
+                          'ol':     self.__processOList,
+                          'quoted': self.__processQuote,
+                          'tabbed': self.__processCodeBlock}
             for regexp in ['ul', 'ol', 'quoted', 'tabbed']:
                 m = CORE_RE[regexp].match(lines[0])
                 if m:
@@ -290,40 +287,33 @@ class MarkdownParser:
             #
 
             if inList:
-
-                start, lines  = self._linesUntil(lines, (lambda line:
+                start, lines  = self.__linesUntil(lines, (lambda line:
                                  CORE_RE['ul'].match(line)
                                  or CORE_RE['ol'].match(line)
                                                   or not line.strip()))
-
-                self.parseChunk(parent_elem, start, inList-1, looseList=looseList)
+                self.parseChunk(parent_elem, start, inList-1,
+                                looseList=looseList)
                 inList = inList-1
 
             else: # Ok, so it's just a simple block
-
-                paragraph, lines = self._linesUntil(lines, lambda line:
-                                                     not line.strip() or line[0] == '>')
-
+                test = lambda line: not line.strip() or line[0] == '>'
+                paragraph, lines = self.__linesUntil(lines, test)
                 if len(paragraph) and paragraph[0].startswith('#'):
-                    self._processHeader(parent_elem, paragraph)
-                    
-                elif len(paragraph) and \
-                CORE_RE["isline3"].match(paragraph[0]):
-
-                    self._processHR(parent_elem)
+                    self.__processHeader(parent_elem, paragraph)
+                elif len(paragraph) and CORE_RE["isline3"].match(paragraph[0]):
+                    self.__processHR(parent_elem)
                     lines = paragraph[1:] + lines
-                    
                 elif paragraph:
-                    self._processParagraph(parent_elem, paragraph,
+                    self.__processParagraph(parent_elem, paragraph,
                                           inList, looseList)
 
             if lines and not lines[0].strip():
                 lines = lines[1:]  # skip the first (blank) line
 
-    def _processHR(self, parentElem):
+    def __processHR(self, parentElem):
         hr = etree.SubElement(parentElem, "hr")
-    
-    def _processHeader(self, parentElem, paragraph):
+
+    def __processHeader(self, parentElem, paragraph):
         m = CORE_RE['header'].match(paragraph[0])
         if m:
             level = len(m.group(1))
@@ -332,8 +322,7 @@ class MarkdownParser:
         else:
             message(CRITICAL, "We've got a problem header!")
 
-
-    def _processParagraph(self, parentElem, paragraph, inList, looseList):
+    def __processParagraph(self, parentElem, paragraph, inList, looseList):
 
         if ( parentElem.tag == 'li'
                 and not (looseList or parentElem.getchildren())):
@@ -347,48 +336,45 @@ class MarkdownParser:
             el = etree.SubElement(parentElem, "p")
 
         dump = []
-        
+
         # Searching for hr or header
         for line in paragraph:
             # it's hr
             if CORE_RE["isline3"].match(line):
                 el.text = "\n".join(dump)
-                self._processHR(el)
+                self.__processHR(el)
                 dump = []
             # it's header
             elif line.startswith("#"):
-                el.text = "\n".join(dump)   
-                self._processHeader(parentElem, [line])
-                dump = [] 
+                el.text = "\n".join(dump)
+                self.__processHeader(parentElem, [line])
+                dump = []
             else:
                 dump.append(line)
         if dump:
-            text = "\n".join(dump)    
+            text = "\n".join(dump)
             el.text = text
 
-    def _processUList(self, parentElem, lines, inList):
-        self._processList(parentElem, lines, inList,
-                         listexpr='ul', tag = 'ul')
+    def __processUList(self, parentElem, lines, inList):
+        self.__processList(parentElem, lines, inList, listexpr='ul', tag='ul')
 
-    def _processOList(self, parentElem, lines, inList):
-        self._processList(parentElem, lines, inList,
-                         listexpr='ol', tag = 'ol')
+    def __processOList(self, parentElem, lines, inList):
+        self.__processList(parentElem, lines, inList, listexpr='ol', tag='ol')
 
-
-    def _processList(self, parentElem, lines, inList, listexpr, tag):
+    def __processList(self, parentElem, lines, inList, listexpr, tag):
         """
         Given a list of document lines starting with a list item,
         finds the end of the list, breaks it up, and recursively
         processes each list item and the remainder of the text file.
 
         Keyword arguments:
-        
+
         * parentElem: A ElementTree element to which the content will be added
         * lines: a list of lines
         * inList: a level
-        
+
         Returns: None
-        
+
         """
         ul = etree.SubElement(parentElem, tag) # ul might actually be '<ol>'
 
@@ -399,9 +385,7 @@ class MarkdownParser:
         item = -1
 
         i = 0  # a counter to keep track of where we are
-
-        for line in lines: 
-
+        for line in lines:
             loose = 0
             if not line.strip():
                 # If we see a blank line, this _might_ be the end of the list
@@ -432,7 +416,6 @@ class MarkdownParser:
             # while also detabing child elements if necessary
 
             for expr in ['ul', 'ol', 'tabbed']:
-
                 m = CORE_RE[expr].match(line)
                 if m:
                     if expr in ['ul', 'ol']:  # We are looking at a new item
@@ -443,7 +426,6 @@ class MarkdownParser:
                         item += 1
                     elif expr == 'tabbed':  # This line needs to be detabbed
                         items[item].append(m.group(4)) #after the 'tab'
-
                     i += 1
                     break
             else:
@@ -455,31 +437,28 @@ class MarkdownParser:
         # Add the ElementTree elements
         for item in items:
             li = etree.SubElement(ul, "li")
-
             self.parseChunk(li, item, inList + 1, looseList = looseList)
 
         # Process the remaining part of the section
-
         self.parseChunk(parentElem, lines[i:], inList)
 
-
-    def _linesUntil(self, lines, condition):
-        """ 
+    def __linesUntil(self, lines, condition):
+        """
         A utility function to break a list of lines upon the
         first line that satisfied a condition.  The condition
         argument should be a predicate function.
-        
+
         """
         i = -1
         for line in lines:
             i += 1
-            if condition(line): 
+            if condition(line):
                 break
         else:
             i += 1
         return lines[:i], lines[i:]
 
-    def _processQuote(self, parentElem, lines, inList):
+    def __processQuote(self, parentElem, lines, inList):
         """
         Given a list of document lines starting with a quote finds
         the end of the quote, unindents it and recursively
@@ -487,13 +466,13 @@ class MarkdownParser:
         text file.
 
         Keyword arguments:
-        
+
         * parentElem: ElementTree element to which the content will be added
         * lines: a list of lines
         * inList: a level
-        
-        Returns: None 
-        
+
+        Returns: None
+
         """
         dequoted = []
         i = 0
@@ -519,10 +498,7 @@ class MarkdownParser:
         self.parseChunk(blockquote, dequoted, inList)
         self.parseChunk(parentElem, lines[i:], inList)
 
-
-
-
-    def _processCodeBlock(self, parentElem, lines, inList):
+    def __processCodeBlock(self, parentElem, lines, inList):
         """
         Given a list of document lines starting with a code block
         finds the end of the block, puts it into the ElementTree verbatim
@@ -530,35 +506,33 @@ class MarkdownParser:
         the remainder of the text file.
 
         Keyword arguments:
-        
+
         * parentElem: ElementTree element to which the content will be added
         * lines: a list of lines
         * inList: a level
-        
-        Returns: None
-        
-        """
-        detabbed, theRest = self.detectTabbed(lines)
 
+        Returns: None
+
+        """
+        detabbed, theRest = self.__detectTabbed(lines)
         pre = etree.SubElement(parentElem, "pre")
         code = etree.SubElement(pre, "code")
-        
         text = "\n".join(detabbed).rstrip()+"\n"
         code.text = AtomicString(text)
-        self.parseChunk(parentElem, theRest, inList)        
+        self.parseChunk(parentElem, theRest, inList)
 
-    def detectTabbed(self, lines):
+    def __detectTabbed(self, lines):
         """ Find indented text and remove indent before further proccesing.
 
         Keyword arguments:
-        
+
         * lines: an array of strings
         * fn: a function that returns a substring of a string
            if the string matches the necessary criteria
-        
+
         Returns: a list of post processes items and the unused
         remainder of the original list
-        
+
         """
         items = []
         item = -1
@@ -583,7 +557,7 @@ class MarkdownParser:
                 i += 1 # advance
 
                 # Find the next non-blank line
-                for j in range(i, len(lines)):  
+                for j in range(i, len(lines)):
                     if lines[j].strip():
                         next_line = lines[j]; break
                 else:
@@ -601,6 +575,275 @@ class MarkdownParser:
         return items, lines[i:]
 
 
+"""
+INLINE PROCESSOR
+=============================================================================
+
+This class handles basic Markdown parsing.  It doesn't concern itself with
+inline elements such as **bold** or *italics*, but rather just catches blocks,
+lists, quotes, etc.
+"""
+
+class InlineProcessor:
+    """
+    An auxiliary class to traverse a Markdown tree, applying inline patterns.
+    """
+
+    def __init__ (self, patterns):
+        self.__inlinePatterns = patterns
+        self.__placeholder_prefix = INLINE_PLACEHOLDER_PREFIX
+        self.__placeholder_suffix = ETX
+        self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
+                                      + len(self.__placeholder_suffix)
+        self.__placeholder_re = re.compile(INLINE_PLACEHOLDER % r'([0-9]{4})')
+
+    def __makePlaceholder(self, type):
+        """ Generate a placeholder """
+        id = "%04d" % len(self.stashed_nodes)
+        hash = INLINE_PLACEHOLDER % id
+        return hash, id
+
+    def __findPlaceholder(self, data, index):
+        """
+        Extract id from data string, start from index
+
+        Keyword arguments:
+
+        * data: string
+        * index: index, from which we start search
+
+        Returns: placeholder id and string index, after the found placeholder.
+        """
+
+        m = self.__placeholder_re.search(data, index)
+        if m:
+            return m.group(1), m.end()
+        else:
+            return None, index + 1
+
+    def __stashNode(self, node, type):
+        """ Add node to stash """
+        placeholder, id = self.__makePlaceholder(type)
+        self.stashed_nodes[id] = node
+        return placeholder
+
+    def __handleInline(self, data, patternIndex=0):
+        """
+        Process string with inline patterns and replace it
+        with placeholders
+
+        Keyword arguments:
+
+        * data: A line of Markdown text
+        * patternIndex: The index of the inlinePattern to start with
+
+        Returns: String with placeholders.
+
+        """
+        if not isinstance(data, AtomicString):
+            startIndex = 0
+            while patternIndex < len(self.__inlinePatterns):
+                data, matched, startIndex = self.__applyPattern(
+                                                 self.__inlinePatterns[patternIndex],
+                                                 data, patternIndex, startIndex)
+                if not matched:
+                    patternIndex += 1
+        return data
+
+    def __processElementText(self, node, subnode, isText=True):
+        """
+        Process placeholders in Element.text or Element.tail
+        of Elements popped from self.stashed_nodes.
+
+        Keywords arguments:
+
+        * node: parent node
+        * subnode: processing node
+        * isText: bool variable, True - it's text, False - it's tail
+
+        Returns: None
+
+        """
+        if isText:
+            text = subnode.text
+            subnode.text = None
+        else:
+            text = subnode.tail
+            subnode.tail = None
+
+        childResult = self.__processPlaceholders(text, subnode)
+
+        if not isText and node is not subnode:
+            pos = node.getchildren().index(subnode)
+            node.remove(subnode)
+        else:
+            pos = 0
+
+        childResult.reverse()
+        for newChild in childResult:
+            node.insert(pos, newChild)
+
+    def __processPlaceholders(self, data, parent):
+        """
+        Process string with placeholders and generate ElementTree tree.
+
+        Keyword arguments:
+
+        * data: string with placeholders instead of ElementTree elements.
+        * parent: Element, which contains processing inline data
+
+        Returns: list with ElementTree elements with applied inline patterns.
+        """
+        def linkText(text):
+            if text:
+                if result:
+                    if result[-1].tail:
+                        result[-1].tail += text
+                    else:
+                        result[-1].tail = text
+                else:
+                    if parent.text:
+                        parent.text += text
+                    else:
+                        parent.text = text
+
+        result = []
+        strartIndex = 0
+        while data:
+            index = data.find(self.__placeholder_prefix, strartIndex)
+            if index != -1:
+                id, phEndIndex = self.__findPlaceholder(data, index)
+
+                if self.stashed_nodes.has_key(id):
+                    node = self.stashed_nodes.get(id)
+
+                    if index > 0:
+                        text = data[strartIndex:index]
+                        linkText(text)
+
+                    if not isString(node): # it's Element
+                        for child in [node] + node.getchildren():
+                            if child.tail:
+                                if child.tail.strip():
+                                    self.__processElementText(node, child, False)
+                            if child.text:
+                                if child.text.strip():
+                                    self.__processElementText(child, child)
+                    else: # it's just a string
+                        linkText(node)
+                        strartIndex = phEndIndex
+                        continue
+
+                    strartIndex = phEndIndex
+                    result.append(node)
+
+                else: # wrong placeholder
+                    end = index + len(prefix)
+                    linkText(data[strartIndex:end])
+                    strartIndex = end
+            else:
+                text = data[strartIndex:]
+                linkText(text)
+                data = ""
+
+        return result
+
+    def __applyPattern(self, pattern, data, patternIndex, startIndex=0):
+        """
+        Check if the line fits the pattern, create the necessary
+        elements, add it to stashed_nodes.
+
+        Keyword arguments:
+
+        * data: the text to be processed
+        * pattern: the pattern to be checked
+        * patternIndex: index of current pattern
+        * startIndex: string index, from which we starting search
+
+        Returns: String with placeholders instead of ElementTree elements.
+
+        """
+        match = pattern.getCompiledRegExp().match(data[startIndex:])
+        leftData = data[:startIndex]
+
+        if not match:
+            return data, False, 0
+
+        node = pattern.handleMatch(match)
+
+        if node is None:
+            return data, True, len(leftData) + match.span(len(match.groups()))[0]
+
+        if not isString(node):
+            if not isinstance(node.text, AtomicString):
+                # We need to process current node too
+                for child in [node] + node.getchildren():
+                    if not isString(node):
+                        if child.text:
+                            child.text = self.__handleInline(child.text,
+                                                            patternIndex + 1)
+                        if child.tail:
+                            child.tail = self.__handleInline(child.tail,
+                                                            patternIndex)
+
+        placeholder = self.__stashNode(node, pattern.type())
+
+        return "%s%s%s%s" % (leftData,
+                             match.group(1),
+                             placeholder, match.groups()[-1]), True, 0
+
+    def applyInlinePatterns(self, markdownTree):
+        """Apply inline patterns to a parsed Markdown tree.
+
+        Iterate over ElementTree, find elements with inline tag, apply inline
+        patterns and append newly created Elements to tree.  If you don't
+        want process your data with inline paterns, instead of normal string,
+        use subclass AtomicString:
+
+            node.text = AtomicString("data won't be processed with inline patterns")
+
+        Arguments:
+
+        * markdownTree: ElementTree object, representing Markdown tree.
+
+        Returns: ElementTree object with applied inline patterns.
+
+        """
+        self.stashed_nodes = {}
+
+        stack = [markdownTree.getroot()]
+
+        while stack:
+            currElement = stack.pop()
+            insertQueue = []
+            for child in currElement.getchildren():
+                if child.text and not isinstance(child.text, AtomicString):
+                    text = child.text
+                    child.text = None
+                    lst = self.__processPlaceholders(self.__handleInline(
+                                                    text), child)
+                    stack += lst
+                    insertQueue.append((child, lst))
+
+                if child.getchildren():
+                    stack.append(child)
+
+            for element, lst in insertQueue:
+                if element.text:
+                    element.text = handleAttributes(element.text, element)
+                i = 0
+                for newChild in lst:
+                    # Processing attributes
+                    if newChild.tail:
+                        newChild.tail = handleAttributes(newChild.tail,
+                                                         element)
+                    if newChild.text:
+                        newChild.text = handleAttributes(newChild.text,
+                                                         newChild)
+                    element.insert(i, newChild)
+                    i += 1
+
+        return markdownTree
 
 
 """
@@ -615,21 +858,21 @@ Preprocessor.
 class TextPreprocessor:
     """
     TextPreprocessors are run before the text is broken into lines.
-    
+
     Each TextPreprocessor implements a "run" method that takes a pointer to a
     text string of the document, modifies it as necessary and returns
-    either the same pointer or a pointer to a new string.  
-    
+    either the same pointer or a pointer to a new string.
+
     TextPreprocessors must extend markdown.TextPreprocessor.
 
     """
 
     def run(self, text):
-        """ 
-        Each subclass of TextPreprocessor should override the `run` method, 
-        which takes the document text as a single string and returns the 
+        """
+        Each subclass of TextPreprocessor should override the `run` method,
+        which takes the document text as a single string and returns the
         (possibly modified) document as a single string.
-        
+
         """
         pass
 
@@ -640,10 +883,10 @@ class Preprocessor:
 
     Each preprocessor implements a "run" method that takes a pointer to a
     list of lines of the document, modifies it as necessary and returns
-    either the same pointer or a pointer to a new list.  
-    
+    either the same pointer or a pointer to a new list.
+
     Preprocessors must extend markdown.Preprocessor.
-    
+
     """
 
     def run(self, lines):
@@ -654,17 +897,17 @@ class Preprocessor:
 
         """
         pass
- 
+
 
 class HtmlBlockPreprocessor(TextPreprocessor):
     """Remove html blocks from the text and store them for later retrieval."""
 
     right_tag_patterns = ["</%s>", "%s>"]
-    
+
     def _get_left_tag(self, block):
         return block[1:].replace(">", " ", 1).split()[0].lower()
 
-    def _get_right_tag(self, left_tag, block):        
+    def _get_right_tag(self, left_tag, block):
         for p in self.right_tag_patterns:
             tag = p % left_tag
             i = block.rfind(tag)
@@ -690,7 +933,7 @@ class HtmlBlockPreprocessor(TextPreprocessor):
 
     def run(self, text):
         new_blocks = []
-        text = text.split("\n\n")        
+        text = text.split("\n\n")
         items = []
         left_tag = ''
         right_tag = ''
@@ -701,7 +944,7 @@ class HtmlBlockPreprocessor(TextPreprocessor):
             if block.startswith("\n"):
                 block = block[1:]
             text = text[1:]
-            
+
             if block.startswith("\n"):
                 block = block[1:]
 
@@ -709,7 +952,7 @@ class HtmlBlockPreprocessor(TextPreprocessor):
                 if block.startswith("<"):
                     left_tag = self._get_left_tag(block)
                     right_tag, data_index = self._get_right_tag(left_tag, block)
-                    
+
                     if data_index < len(block):
                         text.insert(0, block[data_index:])
                         block = block[:data_index]
@@ -722,13 +965,13 @@ class HtmlBlockPreprocessor(TextPreprocessor):
                     if self._is_oneliner(left_tag):
                         new_blocks.append(block.strip())
                         continue
-                        
+
                     if block[1] == "!":
                         # is a comment block
                         left_tag = "--"
                         right_tag, data_index = self._get_right_tag(left_tag, block)
                         # keep checking conditions below and maybe just append
-                        
+
                     if block.rstrip().endswith(">") \
                         and self._equal_tags(left_tag, right_tag):
                         new_blocks.append(
@@ -736,7 +979,7 @@ class HtmlBlockPreprocessor(TextPreprocessor):
                         continue
                     else: #if not block[1] == "!":
                         # if is block level tag and is not complete
-                        
+
                         if isBlockLevel(left_tag) or left_tag == "--" \
                         and not block.rstrip().endswith(">"):
                             items.append(block.strip())
@@ -744,16 +987,16 @@ class HtmlBlockPreprocessor(TextPreprocessor):
                         else:
                             new_blocks.append(
                             self.stash.store(block.strip()))
-                            
+
                         continue
 
                 new_blocks.append(block)
 
             else:
                 items.append(block.strip())
-                
+
                 right_tag, data_index = self._get_right_tag(left_tag, block)
-                
+
                 if self._equal_tags(left_tag, right_tag):
                     # if find closing tag
                     in_tag = False
@@ -764,7 +1007,7 @@ class HtmlBlockPreprocessor(TextPreprocessor):
         if items:
             new_blocks.append(self.stash.store('\n\n'.join(items)))
             new_blocks.append('\n')
-            
+
         return "\n\n".join(new_blocks)
 
 HTML_BLOCK_PREPROCESSOR = HtmlBlockPreprocessor()
@@ -814,7 +1057,7 @@ class LinePreprocessor(Preprocessor):
         for i in range(len(lines)):
             prefix = ''
             m = self.blockquote_re.search(lines[i])
-            if m: 
+            if m:
                 prefix = m.group(0)
             if self._isLine(lines[i][len(prefix):]):
                 lines[i] = prefix + "___"
@@ -822,7 +1065,7 @@ class LinePreprocessor(Preprocessor):
 
     def _isLine(self, block):
         """Determine if a block should be replaced with an <HR>"""
-        if block.startswith("    "): 
+        if block.startswith("    "):
             return False  # a code block
         text = "".join([x for x in block if not x.isspace()])
         if len(text) <= 2:
@@ -838,7 +1081,7 @@ LINE_PREPROCESSOR = LinePreprocessor()
 
 
 class ReferencePreprocessor(Preprocessor):
-    """Remove reference definitions from the text and store them for later use."""    
+    """Remove reference definitions from the text and store them for later use."""
     def run (self, lines):
         new_text = [];
         for line in lines:
@@ -861,8 +1104,6 @@ class ReferencePreprocessor(Preprocessor):
         return new_text #+ "\n"
 
 REFERENCE_PREPROCESSOR = ReferencePreprocessor()
-
-
 
 
 """
@@ -986,7 +1227,7 @@ class Pattern:
 
         """
         pass
-    
+
     def type(self):
         """ Return class name, to define pattern type """
         return self.__class__.__name__
@@ -1002,10 +1243,10 @@ class SimpleTextPattern (Pattern):
         return text
 
 class SimpleTagPattern (Pattern):
-    """ 
-    Return element of type `tag` with a text attribute of group(3) 
-    of a Pattern. 
-    
+    """
+    Return element of type `tag` with a text attribute of group(3)
+    of a Pattern.
+
     """
     def __init__ (self, pattern, tag):
         Pattern.__init__(self, pattern)
@@ -1033,7 +1274,7 @@ class BacktickPattern (Pattern):
         return el
 
 
-class DoubleTagPattern (SimpleTagPattern): 
+class DoubleTagPattern (SimpleTagPattern):
     """Return a ElementTree element nested in tag2 nested in tag1.
 
     Useful for strong emphasis etc.
@@ -1071,28 +1312,28 @@ class LinkPattern (Pattern):
             el.set("href", self.sanitize_url(href.strip()))
         else:
             el.set("href", "")
-            
+
         if title:
             title = dequote(title) #.replace('"', "&quot;")
             el.set("title", title)
         return el
 
     def sanitize_url(self, url):
-        """ 
+        """
         Sanitize a url against xss attacks in "safe_mode".
 
         Rather than specifically blacklisting `javascript:alert("XSS")` and all
         its aliases (see <http://ha.ckers.org/xss.html>), we whitelist known
-        safe url formats. Most urls contain a network location, however some 
-        are known not to (i.e.: mailto links). Script urls do not contain a 
-        location. Additionally, for `javascript:...`, the scheme would be 
-        "javascript" but some aliases will appear to `urlparse()` to have no 
-        scheme. On top of that relative links (i.e.: "foo/bar.html") have no 
-        scheme. Therefore we must check "path", "parameters", "query" and 
-        "fragment" for any literal colons. We don't check "scheme" for colons 
+        safe url formats. Most urls contain a network location, however some
+        are known not to (i.e.: mailto links). Script urls do not contain a
+        location. Additionally, for `javascript:...`, the scheme would be
+        "javascript" but some aliases will appear to `urlparse()` to have no
+        scheme. On top of that relative links (i.e.: "foo/bar.html") have no
+        scheme. Therefore we must check "path", "parameters", "query" and
+        "fragment" for any literal colons. We don't check "scheme" for colons
         because it *should* never have any and "netloc" must allow the form:
         `username:password@host:port`.
-        
+
         """
         locless_schemes = ['', 'mailto', 'news']
         scheme, netloc, path, params, query, fragment = url = urlparse(url)
@@ -1123,12 +1364,12 @@ class ImagePattern(LinkPattern):
             el.set('src', "")
         if len(src_parts) > 1:
             el.set('title', dequote(" ".join(src_parts[1:])))
-  
+
         if ENABLE_ATTRIBUTES:
             truealt = handleAttributes(m.group(2), el)
         else:
             truealt = m.group(2)
-            
+
         el.set('alt', truealt)
         return el
 
@@ -1152,7 +1393,7 @@ class ReferencePattern(LinkPattern):
 
     def makeTag(self, href, title, text):
         el = etree.Element('a')
-        
+
         el.set('href', self.sanitize_url(href))
         if title:
             el.set('title', title)
@@ -1181,8 +1422,8 @@ class AutolinkPattern (Pattern):
         return el
 
 class AutomailPattern (Pattern):
-    """ 
-    Return a mailto link Element given an automail link (`<foo@example.com>`). 
+    """
+    Return a mailto link Element given an automail link (`<foo@example.com>`).
     """
     def handleMatch(self, m):
         el = etree.Element('a')
@@ -1202,7 +1443,7 @@ class AutomailPattern (Pattern):
         el.text = AtomicString(''.join(letters))
 
         mailto = "mailto:" + email
-        mailto = "".join([AMP_SUBSTITUTE + '#%d;' % 
+        mailto = "".join([AMP_SUBSTITUTE + '#%d;' %
                           ord(letter) for letter in mailto])
         el.set('href', mailto)
         return el
@@ -1246,11 +1487,11 @@ There are two types of post-processors: Postprocessor and TextPostprocessor
 class Postprocessor:
     """
     Postprocessors are run before the ElementTree serialization.
-    
+
     Each Postprocessor implements a "run" method that takes a pointer to a
-    ElementTree, modifies it as necessary and returns a ElementTree 
+    ElementTree, modifies it as necessary and returns a ElementTree
     document.
-    
+
     Postprocessors must extend markdown.Postprocessor.
 
     """
@@ -1266,18 +1507,18 @@ class Postprocessor:
 class TextPostprocessor:
     """
     TextPostprocessors are run after the ElementTree it converted back into text.
-    
+
     Each TextPostprocessor implements a "run" method that takes a pointer to a
     text string, modifies it as necessary and returns a text string.
-    
+
     TextPostprocessors must extend markdown.TextPostprocessor.
-    
+
     """
 
     def run(self, text):
         """
         Subclasses of TextPostprocessor should implement a `run` method, which
-        takes the html document as a single text string and returns a 
+        takes the html document as a single text string and returns a
         (possibly modified) string.
 
         """
@@ -1389,291 +1630,27 @@ class HtmlStash:
         document.
 
         Keyword arguments:
-        
+
         * html: an html segment
         * safe: label an html segment as safe for safemode
-        
-        Returns : a placeholder string 
-        
+
+        Returns : a placeholder string
+
         """
         self.rawHtmlBlocks.append((html, safe))
         placeholder = HTML_PLACEHOLDER % self.html_counter
         self.html_counter += 1
         return placeholder
-    
+
     def reset(self):
         self.html_counter = 0
         self.rawHtmlBlocks = []
 
 
-class InlineProcessor:
-    """
-    An auxiliary class to traverse a Markdown tree, applying inline patterns.
-    """
-
-    def __init__ (self, patterns):
-        self.inlinePatterns = patterns
-
-        self.__placeholder_prefix = INLINE_PLACEHOLDER_PREFIX
-        self.__placeholder_suffix = ETX
-        self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
-                                      + len(self.__placeholder_suffix)
-        self.__placeholder_re = re.compile(INLINE_PLACEHOLDER % r'([0-9]{4})')
-        
-    def __makePlaceholder(self, type):
-        """ Generate a placeholder """
-        id = "%04d" % len(self.stashed_nodes)
-        hash = INLINE_PLACEHOLDER % id 
-        return hash, id
-    
-    def __findPlaceholder(self, data, index):
-        """ 
-        Extract id from data string, start from index
-        
-        Keyword arguments:
-        
-        * data: string
-        * index: index, from which we start search 
-        
-        Returns: placeholder id and  string index, after 
-        found placeholder
-        """
-        m = self.__placeholder_re.search(data, index)
-        if m:
-            return m.group(1), m.end()
-        else:
-            return None, index + 1 
-    
-    def __stashNode(self, node, type):
-        """ Add node to stash """
-        placeholder, id = self.__makePlaceholder(type)
-        self.stashed_nodes[id] = node
-        return placeholder
-    
-    def __handleInline(self, data, patternIndex=0):
-        """
-        Process string with inline patterns and replace it
-        with placeholders
-
-        Keyword arguments:
-        
-        * data: A line of Markdown text
-        * patternIndex: The index of the inlinePattern to start with
-        
-        Returns: String with placeholders. 
-        
-        """
-        if not isinstance(data, AtomicString):
-            startIndex = 0        
-            while patternIndex < len(self.inlinePatterns):
-                data, matched, startIndex = self.__applyPattern(
-                                                 self.inlinePatterns[patternIndex],
-                                                 data, patternIndex, startIndex)
-                if not matched:
-                    patternIndex += 1
-        return data
-
-    def __processElementText(self, node, subnode, isText=True):
-        """
-        Process placeholders in Element.text or Element.tail
-        of Elements popped from self.stashed_nodes.
-        
-        Keywords arguments:
-        
-        * node: parent node
-        * subnode: processing node
-        * isText: bool variable, True - it's text, False - it's tail
-        
-        Returns: None
-        
-        """       
-        if isText:
-            text = subnode.text
-            subnode.text = None
-        else:
-            text = subnode.tail
-            subnode.tail = None
-        
-        childResult = self.__processPlaceholders(text, subnode)
-        
-        if not isText and node is not subnode:
-            pos = node.getchildren().index(subnode)
-            node.remove(subnode)
-        else:
-            pos = 0
-            
-        childResult.reverse()
-        for newChild in childResult:
-            node.insert(pos, newChild)
-    
-    def __processPlaceholders(self, data, parent):
-        """
-        Process string with placeholders and generate ElementTree tree.
-        
-        Keyword arguments:
-        
-        * data: string with placeholders instead of ElementTree elements.
-        * parent: Element, which contains processing inline data
-
-        Returns: list with ElementTree elements with applied inline patterns.
-        """
-        def linkText(text):
-            if text:
-                if result:
-                    if result[-1].tail:
-                        result[-1].tail += text
-                    else:
-                        result[-1].tail = text
-                else:
-                    if parent.text:
-                        parent.text += text
-                    else:
-                        parent.text = text
-            
-        result = []
-        strartIndex = 0    
-        while data:
-            index = data.find(self.__placeholder_prefix, strartIndex)
-            if index != -1:
-                id, phEndIndex = self.__findPlaceholder(data, index)
-
-                if self.stashed_nodes.has_key(id):
-                    node = self.stashed_nodes.get(id)
-             
-                    if index > 0:
-                        text = data[strartIndex:index]
-                        linkText(text)
-          
-                    if not isString(node): # it's Element
-                        for child in [node] + node.getchildren():
-                            if child.tail:
-                                if child.tail.strip():
-                                    self.__processElementText(node, child, False)
-                            if child.text:
-                                if child.text.strip():
-                                    self.__processElementText(child, child)
-                    else: # it's just a string
-                        linkText(node)
-                        strartIndex = phEndIndex
-                        continue
-                    
-                    strartIndex = phEndIndex    
-                    result.append(node)
-                       
-                else: # wrong placeholder
-                    end = index + len(prefix)
-                    linkText(data[strartIndex:end])
-                    strartIndex = end 
-            else:
-                text = data[strartIndex:]
-                linkText(text)
-                data = ""
-
-        return result
-
-    
-    def __applyPattern(self, pattern, data, patternIndex, startIndex=0):
-        """ 
-        Check if the line fits the pattern, create the necessary 
-        elements, add it to stashed_nodes.
-        
-        Keyword arguments:
-        
-        * data: the text to be processed
-        * pattern: the pattern to be checked
-        * patternIndex: index of current pattern
-        * startIndex: string index, from which we starting search
-
-        Returns: String with placeholders instead of ElementTree elements.
-        """
-        match = pattern.getCompiledRegExp().match(data[startIndex:])
-        leftData = data[:startIndex]
- 
-        if not match:
-            return data, False, 0
-
-        node = pattern.handleMatch(match)
-     
-        if node is None:
-            return data, True, len(leftData) + match.span(len(match.groups()))[0]
-        
-        if not isString(node):         
-            if not isinstance(node.text, AtomicString):
-                # We need to process current node too
-                for child in [node] + node.getchildren():
-                    if not isString(node):
-                        if child.text:
-                            child.text = self.__handleInline(child.text, 
-                                                            patternIndex + 1)
-                        if child.tail:
-                            child.tail = self.__handleInline(child.tail, 
-                                                            patternIndex)
-   
-        placeholder = self.__stashNode(node, pattern.type())
-
-        return "%s%s%s%s" % (leftData, 
-                             match.group(1), 
-                             placeholder, match.groups()[-1]), True, 0
-
-    
-    def applyInlinePatterns(self, markdownTree):
-        """
-        Iterate over ElementTree, find elements with inline tag, apply inline
-        patterns and append newly created Elements to tree.  If you don't
-        want process your data with inline paterns, instead of normal string,
-        use subclass AtomicString:
-
-            node.text = AtomicString("data won't be processed with inline patterns")
-        
-        Arguments:
-        
-        * markdownTree: ElementTree object, representing Markdown tree.
-
-        Returns: ElementTree object with applied inline patterns.
-        """
-        self.stashed_nodes = {}
-
-        stack = [markdownTree.getroot()]
-
-        while stack:
-            currElement = stack.pop()
-            insertQueue = []
-            for child in currElement.getchildren():
-                if child.text and not isinstance(child.text, AtomicString):
-                    text = child.text
-                    child.text = None
-                    lst = self.__processPlaceholders(self.__handleInline(
-                                                    text), child)
-                    stack += lst
-                    insertQueue.append((child, lst))
-                    
-                if child.getchildren():
-                    stack.append(child) 
-
-            for element, lst in insertQueue:
-                if element.text:
-                    element.text = handleAttributes(element.text, element)
-                i = 0
-                for newChild in lst:
-                    # Processing attributes
-                    if newChild.tail:
-                        newChild.tail = handleAttributes(newChild.tail, 
-                                                         element)
-                    if newChild.text:
-                        newChild.text = handleAttributes(newChild.text, 
-                                                         newChild)
-                    element.insert(i, newChild)
-                    i += 1
-               
-        return markdownTree
-
-
-           
-
 class Markdown:
     """Convert Markdown to HTML."""
 
-    def __init__(self, 
+    def __init__(self,
                  extensions=[],
                  extension_configs={},
                  safe_mode = False):
@@ -1681,14 +1658,14 @@ class Markdown:
         Creates a new Markdown instance.
 
         Keyword arguments:
-        
-        * extensions: A list of extensions.  
-           If they are of type string, the module mdx_name.py will be loaded.  
-           If they are a subclass of markdown.Extension, they will be used 
+
+        * extensions: A list of extensions.
+           If they are of type string, the module mdx_name.py will be loaded.
+           If they are a subclass of markdown.Extension, they will be used
            as-is.
         * extension-configs: Configuration setting for extensions.
         * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
-        
+
         """
         self.parser = MarkdownParser()
         self.safeMode = safe_mode
@@ -1716,7 +1693,7 @@ class Markdown:
                                    AMPSUBSTITUTETEXTPOSTPROCESSOR]
 
         self.prePatterns = []
-                               
+
         self.inlinePatterns = [
                                BACKTICK_PATTERN,
                                ESCAPE_PATTERN,
@@ -1737,28 +1714,25 @@ class Markdown:
                                EMPHASIS_PATTERN_2
                                # The order of the handlers matters!!!
                                ]
-        
+
         self.inlineProcessor = InlineProcessor(self.inlinePatterns)
         self.references = {}
         self.htmlStash = HtmlStash()
-
-
         self.registerExtensions(extensions = extensions,
                                 configs = extension_configs)
-
         self.reset()
 
 
     def registerExtensions(self, extensions, configs):
-        """ 
+        """
         Register extensions with this instance of Markdown.
 
         Keyword aurguments:
-        
+
         * extensions: A list of extensions, which can either
            be strings or objects.  See the docstring on Markdown.
-        * configs: A dictionary mapping module names to config options. 
-        
+        * configs: A dictionary mapping module names to config options.
+
         """
         for ext in extensions:
             if isinstance(ext, basestring):
@@ -1865,12 +1839,12 @@ class Markdown:
 
         * input: Name of source text file.
         * output: Name of output file. Writes to stdout if `None`.
-        * extensions: A list of extension names (may contain config args).  
+        * extensions: A list of extension names (may contain config args).
         * encoding: Encoding of input and output files. Defaults to utf-8.
         * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
 
         """
-        
+
         encoding = encoding or "utf-8"
 
         # Read the source
@@ -1899,8 +1873,8 @@ Extensions
 class Extension:
     """ Base class for extensions to subclass. """
     def __init__(self, configs = {}):
-        """Create an instance of an Extention. 
-        
+        """Create an instance of an Extention.
+
         Keyword arguments:
 
         * configs: A dict of configuration setting used by an Extension.
@@ -1923,9 +1897,9 @@ class Extension:
         self.config[key][0] = value
 
     def extendMarkdown(self, md, md_globals):
-        """ 
-        Add the various proccesors and patterns to the Markdown Instance. 
-        
+        """
+        Add the various proccesors and patterns to the Markdown Instance.
+
         This method must be overriden by every extension.
 
         Keyword arguments:
@@ -1940,10 +1914,10 @@ class Extension:
 
 def load_extension(ext_name, configs = []):
     """Load extension by name, then return the module.
-    
-    The extension name may contain arguments as part of the string in the 
+
+    The extension name may contain arguments as part of the string in the
     following format: "extname(key1=value1,key2=value2)"
-    
+
     """
 
     # Parse extensions config params (ignore the order)
@@ -1991,7 +1965,7 @@ def load_extensions(ext_names):
 # Extensions should use "markdown.etree" instead of "etree" (or do `from
 # markdown import etree`).  Do not import it by yourself.
 
-etree = importETree() 
+etree = importETree()
 
 """
 EXPORTED FUNCTIONS
@@ -2008,12 +1982,12 @@ def markdown(text,
 
     This is a shortcut function for `Markdown` class to cover the most
     basic use case.  It initializes an instance of Markdown, loads the
-    necessary extensions and runs the parser on the given text. 
+    necessary extensions and runs the parser on the given text.
 
     Keyword arguments:
 
     * text: Markdown formatted text as Unicode or ASCII string.
-    * extensions: A list of extensions or extension names (may contain config args).  
+    * extensions: A list of extensions or extension names (may contain config args).
     * safe_mode: Disallow raw html.  One of "remove", "replace" or "escape".
 
     Returns: An HTML document as a string.
@@ -2048,7 +2022,7 @@ Python 2.3 or higher required for advanced command line options.
 For lower versions of Python use:
 
       %s INPUT_FILE > OUTPUT_FILE
-    
+
 """ % EXECUTABLE_NAME_FOR_USAGE
 
 def parse_options():
@@ -2071,7 +2045,7 @@ def parse_options():
 
     parser = optparse.OptionParser(usage="%prog INPUTFILE [options]")
     parser.add_option("-f", "--file", dest="filename",
-                      help="write output to OUTPUT_FILE", 
+                      help="write output to OUTPUT_FILE",
                       metavar="OUTPUT_FILE")
     parser.add_option("-e", "--encoding", dest="encoding",
                       help="encoding for input and output files",)
