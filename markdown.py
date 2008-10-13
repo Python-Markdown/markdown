@@ -515,14 +515,14 @@ class MarkdownParser:
         Returns: None
 
         """
-        detabbed, theRest = self.__detectTabbed(lines)
+        detabbed, theRest = self.detectTabbed(lines)
         pre = etree.SubElement(parentElem, "pre")
         code = etree.SubElement(pre, "code")
         text = "\n".join(detabbed).rstrip()+"\n"
         code.text = AtomicString(text)
         self.parseChunk(parentElem, theRest, inList)
 
-    def __detectTabbed(self, lines):
+    def detectTabbed(self, lines):
         """ Find indented text and remove indent before further proccesing.
 
         Keyword arguments:
@@ -1848,8 +1848,7 @@ class Markdown:
                                 SimpleTagPattern(EMPHASIS_2_RE, 'em'),
                                 ">emphasis")
         # The order of the handlers matters!!!
-        
-        self.inlineProcessor = InlineProcessor(self.inlinePatterns.heapsorted())
+
         self.references = {}
         self.htmlStash = HtmlStash()
         self.registerExtensions(extensions = extensions,
@@ -1933,7 +1932,8 @@ class Markdown:
         tree = self.parser.parseDocument(self.lines)
 
         # Apply inline patterns
-        root = self.inlineProcessor.applyInlinePatterns(tree).getroot()
+        inlineProcessor = InlineProcessor(self.inlinePatterns.heapsorted())
+        root = inlineProcessor.applyInlinePatterns(tree).getroot()
 
         # Run the post-processors
         for postprocessor in self.postprocessors.heapsorted():
@@ -2077,9 +2077,9 @@ def load_extension(ext_name, configs = []):
         try:
             return module.makeExtension(configs.items())
         except:
-            message(WARN, "Failed to instantiate extension '%s'" % ext_name)
+            message(CRITICAL, "Failed to instantiate extension '%s'" % ext_name)
     else:
-       message(WARN, "Failed loading extension '%s' from '%s' or '%s'"
+       message(CRITICAL, "Failed loading extension '%s' from '%s' or '%s'"
                % (ext_name, module_name_new_style, module_name_old_style))
 
 def load_extensions(ext_names):
