@@ -193,7 +193,7 @@ class CodeHiliteExtention(markdown.Extension):
             
     def extendMarkdown(self, md, md_globals):
   
-        def _hiliteCodeBlock(parent_elem, lines, inList):
+        def __hiliteCodeBlock(parent_elem, lines, inList):
             """
             Overrides `_processCodeBlock` method in standard Markdown class 
             and sends code blocks to a code highlighting proccessor. The result
@@ -208,7 +208,7 @@ class CodeHiliteExtention(markdown.Extension):
 
             """
 
-            detabbed, theRest = md.detectTabbed(lines)
+            detabbed, theRest = md.parser.detectTabbed(lines)
             text = "\n".join(detabbed).rstrip()+"\n"
             code = CodeHilite(text, linenos=self.config['force_linenos'][0],
                               css_class=self.config['css_class'][0]) 
@@ -216,9 +216,9 @@ class CodeHiliteExtention(markdown.Extension):
             # This wrapping p element will be removed when inserting raw html
             p = markdown.etree.SubElement(parent_elem, 'p')
             p.text = placeholder
-            md._processSection(parent_elem, theRest, inList)
+            md.parser.parseChunk(parent_elem, theRest, inList)
             
-        md._processCodeBlock = _hiliteCodeBlock
+        md.parser._MarkdownParser__processCodeBlock = __hiliteCodeBlock
 
 def makeExtension(configs={}):
   return CodeHiliteExtention(configs=configs)
