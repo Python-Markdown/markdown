@@ -33,6 +33,7 @@ Limberg](http://achinghead.com/) and [Artem Yunusov](http://blog.splyer.com).
 Contact: markdown@freewisdom.org
 
 Copyright 2007, 2008 The Python Markdown Project (v. 1.7 and later)
+Copyright 2007 Benjamin C. Wilson (Treap implementation)
 Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 Copyright 2004 Manfred Stienstra (the original version)
 
@@ -855,7 +856,12 @@ complicated.  There are two types of preprocessors: TextPreprocessor and
 Preprocessor.
 """
 
-class TextPreprocessor:
+class Processor:
+    def __init__(self, markdown_instance=None):
+        if markdown_instance:
+            self.markdown = markdown_instance
+
+class TextPreprocessor (Processor):
     """
     TextPreprocessors are run before the text is broken into lines.
 
@@ -877,7 +883,7 @@ class TextPreprocessor:
         pass
 
 
-class Preprocessor:
+class Preprocessor (Processor):
     """
     Preprocessors are run after the text is broken into lines.
 
@@ -888,7 +894,6 @@ class Preprocessor:
     Preprocessors must extend markdown.Preprocessor.
 
     """
-
     def run(self, lines):
         """
         Each subclass of Preprocessor should override the `run` method, which
@@ -975,7 +980,7 @@ class HtmlBlockPreprocessor(TextPreprocessor):
                     if block.rstrip().endswith(">") \
                         and self._equal_tags(left_tag, right_tag):
                         new_blocks.append(
-                            self.stash.store(block.strip()))
+                            self.markdown.htmlStash.store(block.strip()))
                         continue
                     else: #if not block[1] == "!":
                         # if is block level tag and is not complete
@@ -986,7 +991,7 @@ class HtmlBlockPreprocessor(TextPreprocessor):
                             in_tag = True
                         else:
                             new_blocks.append(
-                            self.stash.store(block.strip()))
+                            self.markdown.htmlStash.store(block.strip()))
 
                         continue
 
@@ -1001,16 +1006,14 @@ class HtmlBlockPreprocessor(TextPreprocessor):
                     # if find closing tag
                     in_tag = False
                     new_blocks.append(
-                        self.stash.store('\n\n'.join(items)))
+                        self.markdown.htmlStash.store('\n\n'.join(items)))
                     items = []
 
         if items:
-            new_blocks.append(self.stash.store('\n\n'.join(items)))
+            new_blocks.append(self.markdown.htmlStash.store('\n\n'.join(items)))
             new_blocks.append('\n')
 
         return "\n\n".join(new_blocks)
-
-HTML_BLOCK_PREPROCESSOR = HtmlBlockPreprocessor()
 
 
 class HeaderPreprocessor(Preprocessor):
@@ -1046,8 +1049,6 @@ class HeaderPreprocessor(Preprocessor):
 
         return lines
 
-HEADER_PREPROCESSOR = HeaderPreprocessor()
-
 
 class LinePreprocessor(Preprocessor):
     """Convert HR lines to "___" format."""
@@ -1077,8 +1078,6 @@ class LinePreprocessor(Preprocessor):
         else:
             return False
 
-LINE_PREPROCESSOR = LinePreprocessor()
-
 
 class ReferencePreprocessor(Preprocessor):
     """Remove reference definitions from the text and store them for later use."""
@@ -1090,20 +1089,18 @@ class ReferencePreprocessor(Preprocessor):
                 id = m.group(2).strip().lower()
                 t = m.group(4).strip()  # potential title
                 if not t:
-                    self.references[id] = (m.group(3), t)
+                    self.markdown.references[id] = (m.group(3), t)
                 elif (len(t) >= 2
                       and (t[0] == t[-1] == "\""
                            or t[0] == t[-1] == "\'"
                            or (t[0] == "(" and t[-1] == ")") ) ):
-                    self.references[id] = (m.group(3), t[1:-1])
+                    self.markdown.references[id] = (m.group(3), t[1:-1])
                 else:
                     new_text.append(line)
             else:
                 new_text.append(line)
 
         return new_text #+ "\n"
-
-REFERENCE_PREPROCESSOR = ReferencePreprocessor()
 
 
 """
@@ -1174,9 +1171,11 @@ else:
     EMPHASIS_2_RE = r'(_)(.*?)\2'                 # _emphasis_
 
 LINK_RE = NOIMG + BRK + \
-r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*)\12)?\)''' # [text](url) or [text](<url>)
+r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*)\12)?\)'''
+# [text](url) or [text](<url>)
 
-IMAGE_LINK_RE = r'\!' + BRK + r'\s*\((<.*?>|([^\)]*))\)' # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
+IMAGE_LINK_RE = r'\!' + BRK + r'\s*\((<.*?>|([^\)]*))\)'
+# ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
 REFERENCE_RE = NOIMG + BRK+ r'\s*\[([^\]]*)\]'           # [Google][3]
 IMAGE_REFERENCE_RE = r'\!' + BRK + '\s*\[([^\]]*)\]' # ![alt text][2]
 NOT_STRONG_RE = r'( \* )'                        # stand-alone * or _
@@ -1197,7 +1196,7 @@ The pattern classes
 class Pattern:
     """Base class that inline patterns subclass. """
 
-    def __init__ (self, pattern):
+    def __init__ (self, pattern, markdown_instance=None):
         """
         Create an instant of an inline pattern.
 
@@ -1211,6 +1210,8 @@ class Pattern:
 
         # Api for Markdown to pass safe_mode into instance
         self.safe_mode = False
+        if markdown_instance:
+            self.markdown = markdown_instance
 
     def getCompiledRegExp (self):
         """ Return a compiled regular expression. """
@@ -1257,10 +1258,12 @@ class SimpleTagPattern (Pattern):
         el.text = m.group(3)
         return el
 
+
 class SubstituteTagPattern (SimpleTagPattern):
     """ Return a eLement of type `tag` with no children. """
     def handleMatch (self, m):
         return etree.Element(self.tag)
+
 
 class BacktickPattern (Pattern):
     """ Return a `<code>` element containing the matching text. """
@@ -1293,9 +1296,8 @@ class HtmlPattern (Pattern):
     def handleMatch (self, m):
         rawhtml = m.group(2)
         inline = True
-        place_holder = self.stash.store(rawhtml)
+        place_holder = self.markdown.htmlStash.store(rawhtml)
         return place_holder
-
 
 
 class LinkPattern (Pattern):
@@ -1376,7 +1378,6 @@ class ImagePattern(LinkPattern):
 class ReferencePattern(LinkPattern):
     """ Match to a stored reference and return link element. """
     def handleMatch(self, m):
-
         if m.group(9):
             id = m.group(9).lower()
         else:
@@ -1384,9 +1385,9 @@ class ReferencePattern(LinkPattern):
             # we'll use "google" as the id
             id = m.group(2).lower()
 
-        if not self.references.has_key(id): # ignore undefined refs
+        if not self.markdown.references.has_key(id): # ignore undefined refs
             return None
-        href, title = self.references[id]
+        href, title = self.markdown.references[id]
 
         text = m.group(2)
         return self.makeTag(href, title, text)
@@ -1448,30 +1449,6 @@ class AutomailPattern (Pattern):
         el.set('href', mailto)
         return el
 
-ESCAPE_PATTERN          = SimpleTextPattern(ESCAPE_RE)
-NOT_STRONG_PATTERN      = SimpleTextPattern(NOT_STRONG_RE)
-
-BACKTICK_PATTERN        = BacktickPattern(BACKTICK_RE)
-STRONG_PATTERN          = SimpleTagPattern(STRONG_RE, 'strong')
-EMPHASIS_PATTERN        = SimpleTagPattern(EMPHASIS_RE, 'em')
-EMPHASIS_PATTERN_2      = SimpleTagPattern(EMPHASIS_2_RE, 'em')
-
-STRONG_EM_PATTERN       = DoubleTagPattern(STRONG_EM_RE, 'strong,em')
-
-LINE_BREAK_PATTERN      = SubstituteTagPattern(LINE_BREAK_RE, 'br')
-LINE_BREAK_PATTERN_2    = SubstituteTagPattern(LINE_BREAK_2_RE, 'br')
-
-LINK_PATTERN            = LinkPattern(LINK_RE)
-IMAGE_LINK_PATTERN      = ImagePattern(IMAGE_LINK_RE)
-IMAGE_REFERENCE_PATTERN = ImageReferencePattern(IMAGE_REFERENCE_RE)
-REFERENCE_PATTERN       = ReferencePattern(REFERENCE_RE)
-
-HTML_PATTERN            = HtmlPattern(HTML_RE)
-ENTITY_PATTERN          = HtmlPattern(ENTITY_RE)
-
-AUTOLINK_PATTERN        = AutolinkPattern(AUTOLINK_RE)
-AUTOMAIL_PATTERN        = AutomailPattern(AUTOMAIL_RE)
-
 
 """
 POST-PROCESSORS
@@ -1484,7 +1461,7 @@ processing.
 There are two types of post-processors: Postprocessor and TextPostprocessor
 """
 
-class Postprocessor:
+class Postprocessor (Processor):
     """
     Postprocessors are run before the ElementTree serialization.
 
@@ -1504,7 +1481,7 @@ class Postprocessor:
         pass
 
 
-class TextPostprocessor:
+class TextPostprocessor (Processor):
     """
     TextPostprocessors are run after the ElementTree it converted back into text.
 
@@ -1554,26 +1531,22 @@ class PrettifyPostprocessor(Postprocessor):
             else:
                 br.tail = '\n%s' % br.tail
 
-PRETTIFYPOSTPROCESSOR = PrettifyPostprocessor()
-
 
 class RawHtmlTextPostprocessor(TextPostprocessor):
     """ Restore raw html to the document. """
-    def __init__(self):
-        pass
 
     def run(self, text):
         """ Iterate over html stash and restore "safe" html. """
-        for i in range(self.stash.html_counter):
-            html, safe  = self.stash.rawHtmlBlocks[i]
-            if self.safeMode and not safe:
-                if str(self.safeMode).lower() == 'escape':
+        for i in range(self.markdown.htmlStash.html_counter):
+            html, safe  = self.markdown.htmlStash.rawHtmlBlocks[i]
+            if self.markdown.safeMode and not safe:
+                if str(self.markdown.safeMode).lower() == 'escape':
                     html = self.escape(html)
-                elif str(self.safeMode).lower() == 'remove':
+                elif str(self.markdown.safeMode).lower() == 'remove':
                     html = ''
                 else:
                     html = HTML_REMOVED_TEXT
-            if safe or not self.safeMode:
+            if safe or not self.markdown.safeMode:
                 text = text.replace("<p>%s</p>" % (HTML_PLACEHOLDER % i),
                                     html + "\n")
             text =  text.replace(HTML_PLACEHOLDER % i, html)
@@ -1586,8 +1559,6 @@ class RawHtmlTextPostprocessor(TextPostprocessor):
         html = html.replace('>', '&gt;')
         return html.replace('"', '&quot;')
 
-RAWHTMLTEXTPOSTPROCESSOR = RawHtmlTextPostprocessor()
-
 
 class AndSubstitutePostprocessor(TextPostprocessor):
     """ Restore valid entities """
@@ -1595,11 +1566,8 @@ class AndSubstitutePostprocessor(TextPostprocessor):
         pass
 
     def run(self, text):
-
         text =  text.replace(AMP_SUBSTITUTE, "&")
         return text
-
-AMPSUBSTITUTETEXTPOSTPROCESSOR = AndSubstitutePostprocessor()
 
 
 """
@@ -1647,6 +1615,150 @@ class HtmlStash:
         self.rawHtmlBlocks = []
 
 
+from operator import itemgetter
+
+class Treap(dict):
+    """Extends dict to allow assignment of priority. 
+
+    A treap is a binary search tree that orders the nodes by adding a priority
+    attribute to a node, as well as a key. The nodes are ordered so that the
+    keys form a binary search tree and the priorities obey the min heap order
+    property. The name treap is a composition of tree and heap.
+
+    The priority determines the node's location in the heap, which allows
+    extracting the dictionary's nodes in a prioritized order. Each new node
+    entry causes the heap to re-balance.
+
+    Keyword Argument:
+      default -- begin/end, determines where unprioritized dict entry is ordered. (Default: begin.)
+
+    """
+    _r_BRACE = re.compile(r'^([<>])?(.+)')
+    def __init__(self, default='end'):
+        self.default = '_'+('begin',default)[default in ('begin','end')]
+        self.priority = None
+        self._tree  = { 
+            '_begin' : {'heap':('_begin','B'),'kids' : {},'prio' : 'B'}
+            ,'_end' : {'heap':('_end','E'),'kids' : {},'prio' : 'E'}
+        }
+        self._reset()
+        dict.__setitem__(self, '_begin', None)
+        dict.__setitem__(self, '_end', None)
+
+    def __delitem__(self, key):
+        # Remove item from hash-tree and linking its kids to its parent
+        parn, brace = self._prior(self._tree[key]['prio'])
+        self._tree[parn]['kids'].pop(key, None)
+        for k, b in self._tree[key]['kids'].items(): 
+            self.link(k, b + parn)
+        del self._tree[key]
+        dict.__delitem__(self, key)
+
+    def __setitem__(self, key, val, *args):
+        if key not in self._tree:
+            if len(args): 
+                prio = args[0]
+            else:
+                prio = (self.default, self.priority)[self.priority != None]
+
+            self._tree.setdefault(key, {'kids' : {},'prio' : prio})
+            self.link(key, prio)
+        self._reset()
+        dict.__setitem__(self, key, val)
+
+    def add(self, k, v, p): 
+        """Adds key/value to dict and sets priority."""
+        self.__setitem__(k, v, p)
+
+    def _reset(self): self._heap=[];self._keys=[];self._vals=[];self._items=[];
+
+    def _prior(self, p):
+        m = self._r_BRACE.match(p)
+        if m.group(1) is None: b = '='
+        else: b = m.group(1)
+        return m.group(2), b
+
+    def link(self, key, priority):
+        """Sets priority for already-existing key/value pair."""
+        self._reset()
+        parn, brace = self._prior(priority)
+        #if parn in self._tree:
+        try:
+            self._tree[parn]['kids'][key] = brace
+            if 'heap' in self._tree[parn]:
+                self._tree[key]['heap']=(
+                    key,
+                    self._tree[parn]['heap'][1]+brace
+                )
+                for k,v in self._tree[key]['kids'].iteritems(): 
+                    self.link(k, v+key)
+            self._tree[key]['prio'] = priority
+
+        except: 
+            message(CRITICAL, 
+                    "Key (%s)'s parent (%s) missing." % (key, priority))
+
+    def items(self):
+        """Returns list of unsorted key/value tuples."""
+        if not len(self._items):
+            dic = dict.copy(self)
+            del dic['_begin']
+            del dic['_end']
+            self._items = dic.items()
+        return self._items
+    
+    def values(self): 
+        """Returns list of unsorted values."""
+        if not len(self._vals):
+            dic = dict.copy(self)
+            del dic['_begin']
+            del dic['_end']
+            self._vals = dic.values()
+        return self._vals
+
+    def keys(self):
+        """Returns list of unsorted keys."""
+        if not len(self._keys):
+            self._keys = dict.keys(self)
+            self._keys.remove('_begin')
+            self._keys.remove('_end')
+            
+        return self._keys
+
+    def heapsorted(self, keys=0, items=0):
+        """Do heap sort and return list. (Default returns values.)
+
+        Keyword Arguments:
+          keys -- when true, returns heap-sorted list of keys. (default: false)
+          items -- when true, returns heap-sorted list of key/value tuples. (default: false)
+          (if both set, items have precedent.)
+
+        """
+        if not len(self._heap):
+            self._heap = [
+                (k, dict.__getitem__(self,k)) for k in [
+                    s[0] for s in sorted( 
+                        [v['heap'] for v in self._tree.values()]
+                        ,key=itemgetter(1)
+                    )
+                ]
+            ]
+            for h in self._heap:
+                if h[0] in ('_begin','_end'):
+                    self._heap.remove(h)
+
+        if items:
+            return self._heap
+        elif keys:
+            return [ h[0] for h in self._heap ]
+
+        return [ h[1] for h in self._heap ]
+
+"""
+Markdown
+=============================================================================
+"""
+
 class Markdown:
     """Convert Markdown to HTML."""
 
@@ -1673,49 +1785,71 @@ class Markdown:
         self.docType = ""
         self.stripTopLevelTags = True
 
-        self.textPreprocessors = [HTML_BLOCK_PREPROCESSOR]
+        self.textPreprocessors = Treap()
+        self.textPreprocessors.add("html_block",
+                                   HtmlBlockPreprocessor(self), "_begin")
+        self.preprocessors = Treap()
+        self.preprocessors.add("header", HeaderPreprocessor(self), "_begin")
+        self.preprocessors.add("line", LinePreprocessor(self), ">header")
+        self.preprocessors.add("reference", ReferencePreprocessor(self),
+                               ">line")
+        # footnote preprocessor will be inserted with "<reference"
 
-        self.preprocessors = [HEADER_PREPROCESSOR,
-                              LINE_PREPROCESSOR,
-                              # A footnote preprocessor will
-                              # get inserted here
-                              REFERENCE_PREPROCESSOR]
+        self.postprocessors = Treap()
+        self.postprocessors.add("prettify", PrettifyPostprocessor(self),
+                                "_begin")
 
-
-        self.postprocessors = [PRETTIFYPOSTPROCESSOR,
-                               # a footnote postprocessor will get
-                               # inserted later
-                               ]
-
-        self.textPostprocessors = [# a footnote postprocessor will get
-                                   # inserted here
-                                   RAWHTMLTEXTPOSTPROCESSOR,
-                                   AMPSUBSTITUTETEXTPOSTPROCESSOR]
+        self.textPostprocessors = Treap()
+        self.textPostprocessors.add("raw_html", RawHtmlTextPostprocessor(self),
+                                    "_begin")
+        self.textPostprocessors.add("amp_substitute", AndSubstitutePostprocessor(),
+                                    ">raw_html")
+        # footnote postprocessor will be inserted with ">amp_substitute"
 
         self.prePatterns = []
 
-        self.inlinePatterns = [
-                               BACKTICK_PATTERN,
-                               ESCAPE_PATTERN,
-                               REFERENCE_PATTERN,
-                               LINK_PATTERN,
-                               IMAGE_LINK_PATTERN,
-                               IMAGE_REFERENCE_PATTERN,
-                               AUTOLINK_PATTERN,
-                               AUTOMAIL_PATTERN,
-                               LINE_BREAK_PATTERN_2,
-                               LINE_BREAK_PATTERN,
-                               HTML_PATTERN,
-                               ENTITY_PATTERN,
-                               NOT_STRONG_PATTERN,
-                               STRONG_EM_PATTERN,
-                               STRONG_PATTERN,
-                               EMPHASIS_PATTERN,
-                               EMPHASIS_PATTERN_2
-                               # The order of the handlers matters!!!
-                               ]
-
-        self.inlineProcessor = InlineProcessor(self.inlinePatterns)
+        self.inlinePatterns = Treap()
+        self.inlinePatterns.add("backtick", BacktickPattern(BACKTICK_RE),
+                                "_begin")
+        self.inlinePatterns.add("escape", SimpleTextPattern(ESCAPE_RE),
+                                ">backtick")
+        self.inlinePatterns.add("reference",
+                                ReferencePattern(REFERENCE_RE, self), ">escape")
+        self.inlinePatterns.add("link", LinkPattern(LINK_RE), ">reference")
+        self.inlinePatterns.add("image_link", ImagePattern(IMAGE_LINK_RE),
+                                ">link")
+        self.inlinePatterns.add("image_reference",
+                                ImageReferencePattern(IMAGE_REFERENCE_RE, self),
+                                ">image_link")
+        self.inlinePatterns.add("autolink", AutolinkPattern(AUTOLINK_RE),
+                                ">image_reference")
+        self.inlinePatterns.add("automail", AutomailPattern(AUTOMAIL_RE),
+                                ">autolink")
+        self.inlinePatterns.add("linebreak2",
+                                SubstituteTagPattern(LINE_BREAK_2_RE, 'br'),
+                                ">automail")
+        self.inlinePatterns.add("linebreak",
+                                SubstituteTagPattern(LINE_BREAK_RE, 'br'),
+                                ">linebreak2")
+        self.inlinePatterns.add("html", HtmlPattern(HTML_RE, self),
+                                ">linebreak")
+        self.inlinePatterns.add("entity", HtmlPattern(ENTITY_RE, self),
+                                ">html")
+        self.inlinePatterns.add("not_strong", SimpleTextPattern(NOT_STRONG_RE),
+                                ">entity")
+        self.inlinePatterns.add("strong_em",
+                                DoubleTagPattern(STRONG_EM_RE, 'strong,em'),
+                                ">not_strong")
+        self.inlinePatterns.add("strong", SimpleTagPattern(STRONG_RE, 'strong'),
+                                ">strong_em")
+        self.inlinePatterns.add("emphasis", SimpleTagPattern(EMPHASIS_RE, 'em'),
+                                ">strong")
+        self.inlinePatterns.add("emphasis2",
+                                SimpleTagPattern(EMPHASIS_2_RE, 'em'),
+                                ">emphasis")
+        # The order of the handlers matters!!!
+        
+        self.inlineProcessor = InlineProcessor(self.inlinePatterns.heapsorted())
         self.references = {}
         self.htmlStash = HtmlStash()
         self.registerExtensions(extensions = extensions,
@@ -1758,21 +1892,18 @@ class Markdown:
         self.htmlStash.reset()
         self.references.clear()
 
-        HTML_BLOCK_PREPROCESSOR.stash = self.htmlStash
-        LINE_PREPROCESSOR.stash = self.htmlStash
-        REFERENCE_PREPROCESSOR.references = self.references
-        HTML_PATTERN.stash = self.htmlStash
-        ENTITY_PATTERN.stash = self.htmlStash
-        REFERENCE_PATTERN.references = self.references
-        IMAGE_REFERENCE_PATTERN.references = self.references
-        RAWHTMLTEXTPOSTPROCESSOR.stash = self.htmlStash
-        RAWHTMLTEXTPOSTPROCESSOR.safeMode = self.safeMode
+        #HTML_BLOCK_PREPROCESSOR.stash = self.htmlStash
+        #LINE_PREPROCESSOR.stash = self.htmlStash
+        #REFERENCE_PREPROCESSOR.references = self.references
+        #HTML_PATTERN.stash = self.htmlStash
+        #ENTITY_PATTERN.stash = self.htmlStash
+        #REFERENCE_PATTERN.references = self.references
+        #IMAGE_REFERENCE_PATTERN.references = self.references
+        #RAWHTMLTEXTPOSTPROCESSOR.stash = self.htmlStash
+        #RAWHTMLTEXTPOSTPROCESSOR.safeMode = self.safeMode
 
         for extension in self.registeredExtensions:
             extension.reset()
-
-        for pattern in self.inlinePatterns:
-            pattern.safe_mode = self.safeMode
 
     def convert (self, source):
         """Convert markdown to serialized XHTML."""
@@ -1791,12 +1922,12 @@ class Markdown:
         source = source.expandtabs(TAB_LENGTH)
 
         # Run the text preprocessors
-        for pp in self.textPreprocessors:
+        for pp in self.textPreprocessors.heapsorted():
             source = pp.run(source)
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
-        for prep in self.preprocessors :
+        for prep in self.preprocessors.heapsorted():
             self.lines = prep.run(self.lines)
 
         # Parse the high-level elements.
@@ -1806,8 +1937,7 @@ class Markdown:
         root = self.inlineProcessor.applyInlinePatterns(tree).getroot()
 
         # Run the post-processors
-        for postprocessor in self.postprocessors:
-            postprocessor.stash = self.htmlStash
+        for postprocessor in self.postprocessors.heapsorted():
             newRoot = postprocessor.run(root)
             if newRoot:
                 root = newRoot
@@ -1818,7 +1948,7 @@ class Markdown:
             xml = xml.strip()[44:-7] + "\n"
 
         # Run the text post-processors
-        for pp in self.textPostprocessors:
+        for pp in self.textPostprocessors.heapsorted():
             xml = pp.run(xml)
 
         return xml.strip()

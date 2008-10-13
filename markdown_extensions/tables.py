@@ -38,7 +38,6 @@ class TablePattern(markdown.Pattern) :
  
         return tr
 
-
 class TablePostprocessor:
     
     def _findElement(self, element, name):
@@ -62,8 +61,8 @@ class TablePostprocessor:
 
 class TableExtension(markdown.Extension):
     def extendMarkdown(self, md, md_globals):
-        md.inlinePatterns.insert(0, TablePattern(md))
-        md.postprocessors.append(TablePostprocessor())
+        md.inlinePatterns.add('table', TablePattern(md), "<backtick")
+        md.postprocessors['table'] = TablePostprocessor()
 
 
 def makeExtension(configs):
