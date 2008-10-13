@@ -177,7 +177,31 @@ class CodeHilite:
 
 
 # ------------------ The Markdown Extension -------------------------------
-class CodeHiliteExtention(markdown.Extension):
+class HilitePostprocessor(markdown.Postprocessor):
+    """ Hilight source code in code blocks. """
+
+    def run(self, root):
+        """ Find code blocks and store in htmlStash. """
+        blocks = root.getiterator('pre')
+        for block in blocks:
+            children = block.getchildren()
+            if len(children) == 1 and children[0].tag == 'code':
+                code = CodeHilite(children[0].text, 
+                            linenos=self.config['force_linenos'][0],
+                            css_class=self.config['css_class'][0])
+                placeholder = self.markdown.htmlStash.store(code.hilite(), 
+                                                            safe=True)
+                # Clear codeblock in etree instance
+                block.clear()
+                # Change to p element which will later 
+                # be removed when inserting raw html
+                block.tag = 'p'
+                block.text = placeholder
+
+
+class CodeHiliteExtension(markdown.Extension):
+    """ Add source code hilighting to markdown codeblocks. """
+
     def __init__(self, configs):
         # define default configs
         self.config = {
@@ -188,38 +212,15 @@ class CodeHiliteExtention(markdown.Extension):
         
         # Override defaults with user settings
         for key, value in configs:
-            # self.config[key][0] = value
             self.setConfig(key, value) 
-            
+
     def extendMarkdown(self, md, md_globals):
-  
-        def __hiliteCodeBlock(parent_elem, lines, inList):
-            """
-            Overrides `_processCodeBlock` method in standard Markdown class 
-            and sends code blocks to a code highlighting proccessor. The result
-            is then stored in the HtmlStash, a placeholder is inserted into
-            the dom and the remainder of the text file is processed recursively.
+        """ Add HilitePostprocessor to Markdown instance. """
+        hiliter = HilitePostprocessor(md)
+        hiliter.config = self.config
+        md.postprocessors.add("hilite", hiliter, "_begin") 
 
-            * parent_elem: DOM element to which the content will be added
-            * lines: a list of lines
-            * inList: a level
-            
-            returns: None
-
-            """
-
-            detabbed, theRest = md.parser.detectTabbed(lines)
-            text = "\n".join(detabbed).rstrip()+"\n"
-            code = CodeHilite(text, linenos=self.config['force_linenos'][0],
-                              css_class=self.config['css_class'][0]) 
-            placeholder = md.htmlStash.store(code.hilite(), safe=True)
-            # This wrapping p element will be removed when inserting raw html
-            p = markdown.etree.SubElement(parent_elem, 'p')
-            p.text = placeholder
-            md.parser.parseChunk(parent_elem, theRest, inList)
-            
-        md.parser._MarkdownParser__processCodeBlock = __hiliteCodeBlock
 
 def makeExtension(configs={}):
-  return CodeHiliteExtention(configs=configs)
+  return CodeHiliteExtension(configs=configs)
 
