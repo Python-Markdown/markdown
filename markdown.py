@@ -97,6 +97,24 @@ INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 AMP_SUBSTITUTE = STX+"amp"+ETX 
 
+def wrapRe(raw_re) : return re.compile("^%s$" % raw_re, re.DOTALL)
+CORE_RE = {
+    'header':          wrapRe(r'(#{1,6})[ \t]*(.*?)[ \t]*(#*)'), # # A title
+    'reference-def':   wrapRe(r'(\ ?\ ?\ ?)\[([^\]]*)\]:\s*([^ ]*)(.*)'),
+                               # [Google]: http://www.google.com/
+    'containsline':    wrapRe(r'([-]*)$|^([=]*)'), # -----, =====, etc.
+    'ol':              wrapRe(r'[ ]{0,3}[\d]*\.\s+(.*)'), # 1. text
+    'ul':              wrapRe(r'[ ]{0,3}[*+-]\s+(.*)'), # "* text"
+    'isline1':         wrapRe(r'(\**)'), # ***
+    'isline2':         wrapRe(r'(\-*)'), # ---
+    'isline3':         wrapRe(r'(\_*)'), # ___
+    'tabbed':          wrapRe(r'((\t)|(    ))(.*)'), # an indented line
+    'quoted':          wrapRe(r'[ ]{0,2}> ?(.*)'), # a quoted block ("> ...")
+    'containsline':    re.compile(r'^([-]*)$|^([=]*)$', re.M),
+    'attr':            re.compile("\{@([^\}]*)=([^\}]*)}") # {@id=123}
+}
+"""Basic and reusable regular expressions."""
+
 
 """
 AUXILIARY GLOBAL FUNCTIONS
@@ -157,6 +175,432 @@ def dequote(string):
         return string[1:-1]
     else:
         return string
+
+
+"""
+OVERALL DESIGN
+=============================================================================
+
+Markdown processing takes place in three steps:
+
+1. A bunch of "preprocessors" munge the input text.
+2. MarkdownParser() parses the high-level structural elements of the
+   pre-processed text into an ElementTree.
+3. A bunch of Patterns are run against the ElementTree, detecting inline
+   markup.
+4. Some extra use-defined post-processors are run.
+5. The output is written to a string.
+
+Those steps are put together by the Markdown() class.
+
+The code below is organized as follows:
+
+1. MarkdownParser class - does basic parsing.
+2. All the post-processors, patterns, etc.
+3. Markdown class - does the high-level wrapping.
+"""
+
+
+"""
+CORE MARKDOWN PARSER
+=============================================================================
+
+This class handles basic Markdown parsing.  It doesn't concern itself with
+inline elements such as **bold** or *italics*, but rather just catches blocks,
+lists, quotes, etc.
+"""
+
+class MarkdownParser:
+    """Parser Markdown into a ElementTree."""
+
+    def __init__(self):
+        pass
+
+    def parseDocument(self, lines):
+        """Parse a markdown string into an ElementTree."""
+        # Create a ElementTree from the lines
+        root = etree.Element("div")
+        buffer = []
+        for line in lines:
+            if line.startswith("#"):
+                self.parseChunk(root, buffer)
+                buffer = [line]
+            else:
+                buffer.append(line)
+
+        self.parseChunk(root, buffer)
+    
+        return etree.ElementTree(root)
+
+
+    def parseChunk(self, parent_elem, lines, inList=0, looseList=0):
+        """Process a chunk of markdown-formatted text and attach the parse to
+        an ElementTree node.
+
+        Process a section of a source document, looking for high
+        level structural elements like lists, block quotes, code
+        segments, html blocks, etc.  Some those then get stripped
+        of their high level markup (e.g. get unindented) and the
+        lower-level markup is processed recursively.
+
+        Keyword arguments:
+        
+        * parent_elem: A ElementTree element to which the content will be added.
+        * lines: a list of lines
+        * inList: a level
+        
+        Returns: None
+        
+        """
+        # Loop through lines until none left.
+        while lines:
+            
+            # Skipping empty line
+            if not lines[0]:
+                lines = lines[1:]
+                continue
+            
+            # Check if this section starts with a list, a blockquote or
+            # a code block
+
+            processFn = { 'ul':     self._processUList,
+                          'ol':     self._processOList,
+                          'quoted': self._processQuote,
+                          'tabbed': self._processCodeBlock}
+
+            for regexp in ['ul', 'ol', 'quoted', 'tabbed']:
+                m = CORE_RE[regexp].match(lines[0])
+                if m:
+                    processFn[regexp](parent_elem, lines, inList)
+                    return
+
+            # We are NOT looking at one of the high-level structures like
+            # lists or blockquotes.  So, it's just a regular paragraph
+            # (though perhaps nested inside a list or something else).  If
+            # we are NOT inside a list, we just need to look for a blank
+            # line to find the end of the block.  If we ARE inside a
+            # list, however, we need to consider that a sublist does not
+            # need to be separated by a blank line.  Rather, the following
+            # markup is legal:
+            #
+            # * The top level list item
+            #
+            #     Another paragraph of the list.  This is where we are now.
+            #     * Underneath we might have a sublist.
+            #
+
+            if inList:
+
+                start, lines  = self._linesUntil(lines, (lambda line:
+                                 CORE_RE['ul'].match(line)
+                                 or CORE_RE['ol'].match(line)
+                                                  or not line.strip()))
+
+                self.parseChunk(parent_elem, start, inList-1, looseList=looseList)
+                inList = inList-1
+
+            else: # Ok, so it's just a simple block
+
+                paragraph, lines = self._linesUntil(lines, lambda line:
+                                                     not line.strip() or line[0] == '>')
+
+                if len(paragraph) and paragraph[0].startswith('#'):
+                    self._processHeader(parent_elem, paragraph)
+                    
+                elif len(paragraph) and \
+                CORE_RE["isline3"].match(paragraph[0]):
+
+                    self._processHR(parent_elem)
+                    lines = paragraph[1:] + lines
+                    
+                elif paragraph:
+                    self._processParagraph(parent_elem, paragraph,
+                                          inList, looseList)
+
+            if lines and not lines[0].strip():
+                lines = lines[1:]  # skip the first (blank) line
+
+    def _processHR(self, parentElem):
+        hr = etree.SubElement(parentElem, "hr")
+    
+    def _processHeader(self, parentElem, paragraph):
+        m = CORE_RE['header'].match(paragraph[0])
+        if m:
+            level = len(m.group(1))
+            h = etree.SubElement(parentElem, "h%d" % level)
+            h.text = m.group(2).strip()
+        else:
+            message(CRITICAL, "We've got a problem header!")
+
+
+    def _processParagraph(self, parentElem, paragraph, inList, looseList):
+
+        if ( parentElem.tag == 'li'
+                and not (looseList or parentElem.getchildren())):
+
+            # If this is the first paragraph inside "li", don't
+            # put <p> around it - append the paragraph bits directly
+            # onto parentElem
+            el = parentElem
+        else:
+            # Otherwise make a "p" element
+            el = etree.SubElement(parentElem, "p")
+
+        dump = []
+        
+        # Searching for hr or header
+        for line in paragraph:
+            # it's hr
+            if CORE_RE["isline3"].match(line):
+                el.text = "\n".join(dump)
+                self._processHR(el)
+                dump = []
+            # it's header
+            elif line.startswith("#"):
+                el.text = "\n".join(dump)   
+                self._processHeader(parentElem, [line])
+                dump = [] 
+            else:
+                dump.append(line)
+        if dump:
+            text = "\n".join(dump)    
+            el.text = text
+
+    def _processUList(self, parentElem, lines, inList):
+        self._processList(parentElem, lines, inList,
+                         listexpr='ul', tag = 'ul')
+
+    def _processOList(self, parentElem, lines, inList):
+        self._processList(parentElem, lines, inList,
+                         listexpr='ol', tag = 'ol')
+
+
+    def _processList(self, parentElem, lines, inList, listexpr, tag):
+        """
+        Given a list of document lines starting with a list item,
+        finds the end of the list, breaks it up, and recursively
+        processes each list item and the remainder of the text file.
+
+        Keyword arguments:
+        
+        * parentElem: A ElementTree element to which the content will be added
+        * lines: a list of lines
+        * inList: a level
+        
+        Returns: None
+        
+        """
+        ul = etree.SubElement(parentElem, tag) # ul might actually be '<ol>'
+
+        looseList = 0
+
+        # Make a list of list items
+        items = []
+        item = -1
+
+        i = 0  # a counter to keep track of where we are
+
+        for line in lines: 
+
+            loose = 0
+            if not line.strip():
+                # If we see a blank line, this _might_ be the end of the list
+                i += 1
+                loose = 1
+
+                # Find the next non-blank line
+                for j in range(i, len(lines)):
+                    if lines[j].strip():
+                        next = lines[j]
+                        break
+                else:
+                    # There is no more text => end of the list
+                    break
+
+                # Check if the next non-blank line is still a part of the list
+
+                if ( CORE_RE[listexpr].match(next) or
+                     CORE_RE['tabbed'].match(next) ):
+                    # get rid of any white space in the line
+                    items[item].append(line.strip())
+                    looseList = loose or looseList
+                    continue
+                else:
+                    break # found end of the list
+
+            # Now we need to detect list items (at the current level)
+            # while also detabing child elements if necessary
+
+            for expr in ['ul', 'ol', 'tabbed']:
+
+                m = CORE_RE[expr].match(line)
+                if m:
+                    if expr in ['ul', 'ol']:  # We are looking at a new item
+                        #if m.group(1) :
+                        # Removed the check to allow for a blank line
+                        # at the beginning of the list item
+                        items.append([m.group(1)])
+                        item += 1
+                    elif expr == 'tabbed':  # This line needs to be detabbed
+                        items[item].append(m.group(4)) #after the 'tab'
+
+                    i += 1
+                    break
+            else:
+                items[item].append(line)  # Just regular continuation
+                i += 1 # added on 2006.02.25
+        else:
+            i += 1
+
+        # Add the ElementTree elements
+        for item in items:
+            li = etree.SubElement(ul, "li")
+
+            self.parseChunk(li, item, inList + 1, looseList = looseList)
+
+        # Process the remaining part of the section
+
+        self.parseChunk(parentElem, lines[i:], inList)
+
+
+    def _linesUntil(self, lines, condition):
+        """ 
+        A utility function to break a list of lines upon the
+        first line that satisfied a condition.  The condition
+        argument should be a predicate function.
+        
+        """
+        i = -1
+        for line in lines:
+            i += 1
+            if condition(line): 
+                break
+        else:
+            i += 1
+        return lines[:i], lines[i:]
+
+    def _processQuote(self, parentElem, lines, inList):
+        """
+        Given a list of document lines starting with a quote finds
+        the end of the quote, unindents it and recursively
+        processes the body of the quote and the remainder of the
+        text file.
+
+        Keyword arguments:
+        
+        * parentElem: ElementTree element to which the content will be added
+        * lines: a list of lines
+        * inList: a level
+        
+        Returns: None 
+        
+        """
+        dequoted = []
+        i = 0
+        blank_line = False # allow one blank line between paragraphs
+        for line in lines:
+            m = CORE_RE['quoted'].match(line)
+            if m:
+                dequoted.append(m.group(1))
+                i += 1
+                blank_line = False
+            elif not blank_line and line.strip() != '':
+                dequoted.append(line)
+                i += 1
+            elif not blank_line and line.strip() == '':
+                dequoted.append(line)
+                i += 1
+                blank_line = True
+            else:
+                break
+
+        blockquote = etree.SubElement(parentElem, "blockquote")
+
+        self.parseChunk(blockquote, dequoted, inList)
+        self.parseChunk(parentElem, lines[i:], inList)
+
+
+
+
+    def _processCodeBlock(self, parentElem, lines, inList):
+        """
+        Given a list of document lines starting with a code block
+        finds the end of the block, puts it into the ElementTree verbatim
+        wrapped in ("<pre><code>") and recursively processes the
+        the remainder of the text file.
+
+        Keyword arguments:
+        
+        * parentElem: ElementTree element to which the content will be added
+        * lines: a list of lines
+        * inList: a level
+        
+        Returns: None
+        
+        """
+        detabbed, theRest = self.detectTabbed(lines)
+
+        pre = etree.SubElement(parentElem, "pre")
+        code = etree.SubElement(pre, "code")
+        
+        text = "\n".join(detabbed).rstrip()+"\n"
+        code.text = AtomicString(text)
+        self.parseChunk(parentElem, theRest, inList)        
+
+    def detectTabbed(self, lines):
+        """ Find indented text and remove indent before further proccesing.
+
+        Keyword arguments:
+        
+        * lines: an array of strings
+        * fn: a function that returns a substring of a string
+           if the string matches the necessary criteria
+        
+        Returns: a list of post processes items and the unused
+        remainder of the original list
+        
+        """
+        items = []
+        item = -1
+        i = 0 # to keep track of where we are
+
+        def detab(line):
+            match = CORE_RE['tabbed'].match(line)
+            if match:
+               return match.group(4)
+
+        for line in lines:
+            if line.strip(): # Non-blank line
+                line = detab(line)
+                if line:
+                    items.append(line)
+                    i += 1
+                    continue
+                else:
+                    return items, lines[i:]
+
+            else: # Blank line: _maybe_ we are done.
+                i += 1 # advance
+
+                # Find the next non-blank line
+                for j in range(i, len(lines)):  
+                    if lines[j].strip():
+                        next_line = lines[j]; break
+                else:
+                    break # There is no more text; we are done.
+
+                # Check if the next non-blank line is tabbed
+                if detab(next_line): # Yes, more work to do.
+                    items.append("")
+                    continue
+                else:
+                    break # No, we are done.
+        else:
+            i += 1
+
+        return items, lines[i:]
+
+
 
 
 """
@@ -1014,35 +1458,10 @@ class InlineStash:
         """ Reset instance """
         self._nodes = {}
     
-"""
-CORE MARKDOWN
-=============================================================================
-
-The core part is still quite messy, despite substantial refactoring.  If you
-are thinking of extending the syntax, see first if you can do it through
-pre-processors, post-processors, inline patterns or a combination of the three.
-"""
-
-def _wrapRe(raw_re) : return re.compile("^%s$" % raw_re, re.DOTALL)
-CORE_RE = {
-    'header':          _wrapRe(r'(#{1,6})[ \t]*(.*?)[ \t]*(#*)'), # # A title
-    'reference-def':   _wrapRe(r'(\ ?\ ?\ ?)\[([^\]]*)\]:\s*([^ ]*)(.*)'),
-                               # [Google]: http://www.google.com/
-    'containsline':    _wrapRe(r'([-]*)$|^([=]*)'), # -----, =====, etc.
-    'ol':              _wrapRe(r'[ ]{0,3}[\d]*\.\s+(.*)'), # 1. text
-    'ul':              _wrapRe(r'[ ]{0,3}[*+-]\s+(.*)'), # "* text"
-    'isline1':         _wrapRe(r'(\**)'), # ***
-    'isline2':         _wrapRe(r'(\-*)'), # ---
-    'isline3':         _wrapRe(r'(\_*)'), # ___
-    'tabbed':          _wrapRe(r'((\t)|(    ))(.*)'), # an indented line
-    'quoted':          _wrapRe(r'[ ]{0,2}> ?(.*)'), # a quoted block ("> ...")
-    'containsline':    re.compile(r'^([-]*)$|^([=]*)$', re.M),
-    'attr':            re.compile("\{@([^\}]*)=([^\}]*)}") # {@id=123}
-}
-
+           
 
 class Markdown:
-    """Converts markdown to HTML."""
+    """Convert Markdown to HTML."""
 
     def __init__(self, 
                  extensions=[],
@@ -1061,7 +1480,7 @@ class Markdown:
         * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
         
         """
-        self.source = None
+        self.parser = MarkdownParser()
         self.safeMode = safe_mode
         self.registeredExtensions = []
         self.docType = ""
@@ -1172,373 +1591,6 @@ class Markdown:
         for pattern in self.inlinePatterns:
             pattern.safe_mode = self.safeMode
 
-    def _processSection(self, parent_elem, lines,
-                        inList=0, looseList=0):
-        """
-        Process a section of a source document, looking for high
-        level structural elements like lists, block quotes, code
-        segments, html blocks, etc.  Some those then get stripped
-        of their high level markup (e.g. get unindented) and the
-        lower-level markup is processed recursively.
-
-        Keyword arguments:
-        
-        * parent_elem: A ElementTree element to which the content will be added.
-        * lines: a list of lines
-        * inList: a level
-        
-        Returns: None
-        
-        """
-        # Loop through lines until none left.
-        while lines:
-            
-            # Skipping empty line
-            if not lines[0]:
-                lines = lines[1:]
-                continue
-            
-            # Check if this section starts with a list, a blockquote or
-            # a code block
-
-            processFn = { 'ul':     self._processUList,
-                          'ol':     self._processOList,
-                          'quoted': self._processQuote,
-                          'tabbed': self._processCodeBlock}
-
-            for regexp in ['ul', 'ol', 'quoted', 'tabbed']:
-                m = CORE_RE[regexp].match(lines[0])
-                if m:
-                    processFn[regexp](parent_elem, lines, inList)
-                    return
-
-            # We are NOT looking at one of the high-level structures like
-            # lists or blockquotes.  So, it's just a regular paragraph
-            # (though perhaps nested inside a list or something else).  If
-            # we are NOT inside a list, we just need to look for a blank
-            # line to find the end of the block.  If we ARE inside a
-            # list, however, we need to consider that a sublist does not
-            # need to be separated by a blank line.  Rather, the following
-            # markup is legal:
-            #
-            # * The top level list item
-            #
-            #     Another paragraph of the list.  This is where we are now.
-            #     * Underneath we might have a sublist.
-            #
-
-            if inList:
-
-                start, lines  = self._linesUntil(lines, (lambda line:
-                                 CORE_RE['ul'].match(line)
-                                 or CORE_RE['ol'].match(line)
-                                                  or not line.strip()))
-
-                self._processSection(parent_elem, start,
-                                     inList - 1, looseList = looseList)
-                inList = inList-1
-
-            else: # Ok, so it's just a simple block
-
-                paragraph, lines = self._linesUntil(lines, lambda line:
-                                                     not line.strip() or line[0] == '>')
-
-                if len(paragraph) and paragraph[0].startswith('#'):
-                    self._processHeader(parent_elem, paragraph)
-                    
-                elif len(paragraph) and \
-                CORE_RE["isline3"].match(paragraph[0]):
-
-                    self._processHR(parent_elem)
-                    lines = paragraph[1:] + lines
-                    
-                elif paragraph:
-                    self._processParagraph(parent_elem, paragraph,
-                                          inList, looseList)
-
-            if lines and not lines[0].strip():
-                lines = lines[1:]  # skip the first (blank) line
-
-    def _processHR(self, parentElem):
-        hr = etree.SubElement(parentElem, "hr")
-    
-    def _processHeader(self, parentElem, paragraph):
-        m = CORE_RE['header'].match(paragraph[0])
-        if m:
-            level = len(m.group(1))
-            h = etree.SubElement(parentElem, "h%d" % level)
-            h.text = m.group(2).strip()
-        else:
-            message(CRITICAL, "We've got a problem header!")
-
-
-    def _processParagraph(self, parentElem, paragraph, inList, looseList):
-
-        if ( parentElem.tag == 'li'
-                and not (looseList or parentElem.getchildren())):
-
-            # If this is the first paragraph inside "li", don't
-            # put <p> around it - append the paragraph bits directly
-            # onto parentElem
-            el = parentElem
-        else:
-            # Otherwise make a "p" element
-            el = etree.SubElement(parentElem, "p")
-
-        dump = []
-        
-        # Searching for hr or header
-        for line in paragraph:
-            # it's hr
-            if CORE_RE["isline3"].match(line):
-                el.text = "\n".join(dump)
-                self._processHR(el)
-                dump = []
-            # it's header
-            elif line.startswith("#"):
-                el.text = "\n".join(dump)   
-                self._processHeader(parentElem, [line])
-                dump = [] 
-            else:
-                dump.append(line)
-        if dump:
-            text = "\n".join(dump)    
-            el.text = text
-
-    def _processUList(self, parentElem, lines, inList):
-        self._processList(parentElem, lines, inList,
-                         listexpr='ul', tag = 'ul')
-
-    def _processOList(self, parentElem, lines, inList):
-        self._processList(parentElem, lines, inList,
-                         listexpr='ol', tag = 'ol')
-
-
-    def _processList(self, parentElem, lines, inList, listexpr, tag):
-        """
-        Given a list of document lines starting with a list item,
-        finds the end of the list, breaks it up, and recursively
-        processes each list item and the remainder of the text file.
-
-        Keyword arguments:
-        
-        * parentElem: A ElementTree element to which the content will be added
-        * lines: a list of lines
-        * inList: a level
-        
-        Returns: None
-        
-        """
-        ul = etree.SubElement(parentElem, tag) # ul might actually be '<ol>'
-
-        looseList = 0
-
-        # Make a list of list items
-        items = []
-        item = -1
-
-        i = 0  # a counter to keep track of where we are
-
-        for line in lines: 
-
-            loose = 0
-            if not line.strip():
-                # If we see a blank line, this _might_ be the end of the list
-                i += 1
-                loose = 1
-
-                # Find the next non-blank line
-                for j in range(i, len(lines)):
-                    if lines[j].strip():
-                        next = lines[j]
-                        break
-                else:
-                    # There is no more text => end of the list
-                    break
-
-                # Check if the next non-blank line is still a part of the list
-
-                if ( CORE_RE[listexpr].match(next) or
-                     CORE_RE['tabbed'].match(next) ):
-                    # get rid of any white space in the line
-                    items[item].append(line.strip())
-                    looseList = loose or looseList
-                    continue
-                else:
-                    break # found end of the list
-
-            # Now we need to detect list items (at the current level)
-            # while also detabing child elements if necessary
-
-            for expr in ['ul', 'ol', 'tabbed']:
-
-                m = CORE_RE[expr].match(line)
-                if m:
-                    if expr in ['ul', 'ol']:  # We are looking at a new item
-                        #if m.group(1) :
-                        # Removed the check to allow for a blank line
-                        # at the beginning of the list item
-                        items.append([m.group(1)])
-                        item += 1
-                    elif expr == 'tabbed':  # This line needs to be detabbed
-                        items[item].append(m.group(4)) #after the 'tab'
-
-                    i += 1
-                    break
-            else:
-                items[item].append(line)  # Just regular continuation
-                i += 1 # added on 2006.02.25
-        else:
-            i += 1
-
-        # Add the ElementTree elements
-        for item in items:
-            li = etree.SubElement(ul, "li")
-
-            self._processSection(li, item, inList + 1, looseList = looseList)
-
-        # Process the remaining part of the section
-
-        self._processSection(parentElem, lines[i:], inList)
-
-
-    def _linesUntil(self, lines, condition):
-        """ 
-        A utility function to break a list of lines upon the
-        first line that satisfied a condition.  The condition
-        argument should be a predicate function.
-        
-        """
-        i = -1
-        for line in lines:
-            i += 1
-            if condition(line): 
-                break
-        else:
-            i += 1
-        return lines[:i], lines[i:]
-
-    def _processQuote(self, parentElem, lines, inList):
-        """
-        Given a list of document lines starting with a quote finds
-        the end of the quote, unindents it and recursively
-        processes the body of the quote and the remainder of the
-        text file.
-
-        Keyword arguments:
-        
-        * parentElem: ElementTree element to which the content will be added
-        * lines: a list of lines
-        * inList: a level
-        
-        Returns: None 
-        
-        """
-        dequoted = []
-        i = 0
-        blank_line = False # allow one blank line between paragraphs
-        for line in lines:
-            m = CORE_RE['quoted'].match(line)
-            if m:
-                dequoted.append(m.group(1))
-                i += 1
-                blank_line = False
-            elif not blank_line and line.strip() != '':
-                dequoted.append(line)
-                i += 1
-            elif not blank_line and line.strip() == '':
-                dequoted.append(line)
-                i += 1
-                blank_line = True
-            else:
-                break
-
-        blockquote = etree.SubElement(parentElem, "blockquote")
-
-        self._processSection(blockquote, dequoted, inList)
-        self._processSection(parentElem, lines[i:], inList)
-
-
-
-
-    def _processCodeBlock(self, parentElem, lines, inList):
-        """
-        Given a list of document lines starting with a code block
-        finds the end of the block, puts it into the ElementTree verbatim
-        wrapped in ("<pre><code>") and recursively processes the
-        the remainder of the text file.
-
-        Keyword arguments:
-        
-        * parentElem: ElementTree element to which the content will be added
-        * lines: a list of lines
-        * inList: a level
-        
-        Returns: None
-        
-        """
-        detabbed, theRest = self.detectTabbed(lines)
-
-        pre = etree.SubElement(parentElem, "pre")
-        code = etree.SubElement(pre, "code")
-        
-        text = "\n".join(detabbed).rstrip()+"\n"
-        code.text = AtomicString(text)
-        self._processSection(parentElem, theRest, inList)        
-
-    def detectTabbed(self, lines):
-        """ Find indented text and remove indent before further proccesing.
-
-        Keyword arguments:
-        
-        * lines: an array of strings
-        * fn: a function that returns a substring of a string
-           if the string matches the necessary criteria
-        
-        Returns: a list of post processes items and the unused
-        remainder of the original list
-        
-        """
-        items = []
-        item = -1
-        i = 0 # to keep track of where we are
-
-        def detab(line):
-            match = CORE_RE['tabbed'].match(line)
-            if match:
-               return match.group(4)
-
-        for line in lines:
-            if line.strip(): # Non-blank line
-                line = detab(line)
-                if line:
-                    items.append(line)
-                    i += 1
-                    continue
-                else:
-                    return items, lines[i:]
-
-            else: # Blank line: _maybe_ we are done.
-                i += 1 # advance
-
-                # Find the next non-blank line
-                for j in range(i, len(lines)):  
-                    if lines[j].strip():
-                        next_line = lines[j]; break
-                else:
-                    break # There is no more text; we are done.
-
-                # Check if the next non-blank line is tabbed
-                if detab(next_line): # Yes, more work to do.
-                    items.append("")
-                    continue
-                else:
-                    break # No, we are done.
-        else:
-            i += 1
-
-        return items, lines[i:]
-        
     def _handleInline(self, data, patternIndex=0):
         """
         Process string with inline patterns and replace it
@@ -1563,50 +1615,8 @@ class Markdown:
             if not matched:
                 patternIndex += 1
         return data
-    
-    def _applyInline(self, pattern, data, patternIndex, startIndex=0):
-        """ 
-        Check if the line fits the pattern, create the necessary 
-        elements, add it to InlineStash
-        
-        Keyword arguments:
-        
-        * data: the text to be processed
-        * pattern: the pattern to be checked
-        * patternIndex: index of current pattern
-        * startIndex: string index, from which we starting search
 
-        Returns: String with placeholders instead of ElementTree elements.
-        """
-        match = pattern.getCompiledRegExp().match(data[startIndex:])
-        leftData = data[:startIndex]
- 
-        if not match:
-            return data, False, 0
 
-        node = pattern.handleMatch(match)
-     
-        if node is None:
-            return data, True, len(leftData) + match.span(len(match.groups()))[0]
-        
-        if not isString(node):         
-            if not isinstance(node.text, AtomicString):
-                # We need to process current node too
-                for child in [node] + node.getchildren():
-                    if not isString(node):
-                        if child.text:
-                            child.text = self._handleInline(child.text, 
-                                                            patternIndex + 1)
-                        if child.tail:
-                            child.tail = self._handleInline(child.tail, 
-                                                            patternIndex)
-   
-        pholder = self.inlineStash.add(node, pattern.type())
-
-        return "%s%s%s%s" % (leftData, 
-                             match.group(1), 
-                             pholder, match.groups()[-1]), True, 0
-   
     def _processElementText(self, node, subnode, isText=True):
         """
         Process placeholders in Element.text or Element.tail
@@ -1706,6 +1716,51 @@ class Markdown:
                 data = ""
 
         return result
+
+    
+    def _applyInline(self, pattern, data, patternIndex, startIndex=0):
+        """ 
+        Check if the line fits the pattern, create the necessary 
+        elements, add it to InlineStash
+        
+        Keyword arguments:
+        
+        * data: the text to be processed
+        * pattern: the pattern to be checked
+        * patternIndex: index of current pattern
+        * startIndex: string index, from which we starting search
+
+        Returns: String with placeholders instead of ElementTree elements.
+        """
+        match = pattern.getCompiledRegExp().match(data[startIndex:])
+        leftData = data[:startIndex]
+ 
+        if not match:
+            return data, False, 0
+
+        node = pattern.handleMatch(match)
+     
+        if node is None:
+            return data, True, len(leftData) + match.span(len(match.groups()))[0]
+        
+        if not isString(node):         
+            if not isinstance(node.text, AtomicString):
+                # We need to process current node too
+                for child in [node] + node.getchildren():
+                    if not isString(node):
+                        if child.text:
+                            child.text = self._handleInline(child.text, 
+                                                            patternIndex + 1)
+                        if child.tail:
+                            child.tail = self._handleInline(child.tail, 
+                                                            patternIndex)
+   
+        pholder = self.inlineStash.add(node, pattern.type())
+
+        return "%s%s%s%s" % (leftData, 
+                             match.group(1), 
+                             pholder, match.groups()[-1]), True, 0
+
     
     def applyInlinePatterns(self, markdownTree):
         """
@@ -1756,66 +1811,36 @@ class Markdown:
                
         return markdownTree
 
-    def markdownToTree(self, source=None):
-        """Create ElementTree, without applying inline paterns.
-        
-        Keyword arguments:
-        
-        * source: An ascii or unicode string of Markdown formated text.
+    def convert (self, source):
+        """Convert markdown to serialized XHTML."""
 
-        Returns: ElementTree object.
-        """
-        try:
-            self.source = unicode(self.source)
-        except UnicodeDecodeError:
-            message(CRITICAL, 'UnicodeDecodeError: Markdown only accepts unicode or ascii  input.')
-            return u""
-        
         # Fixup the source text
-        self.source = self.source.replace(STX, "")
-        self.source = self.source.replace(ETX, "")
-        self.source = self.source.replace("\r\n", "\n").replace("\r", "\n")
-        self.source += "\n\n"
-        self.source = self.source.expandtabs(TAB_LENGTH)
+        if not source:
+            return u""  # a blank unicode string
+        try:
+            source = unicode(source)
+        except UnicodeDecodeError:
+            message(CRITICAL, 'UnicodeDecodeError: Markdown only accepts unicode or ascii input.')
+            return u""
 
+        source = source.replace(STX, "")
+        source = source.replace(ETX, "")
+        source = source.replace("\r\n", "\n").replace("\r", "\n")
+        source += "\n\n"
+        source = source.expandtabs(TAB_LENGTH)
+
+        # Run the text preprocessors
         for pp in self.textPreprocessors:
-            self.source = pp.run(self.source)
+            source = pp.run(source)
 
-        # Split into lines and run the preprocessors that will work with 
-        # self.lines
-        self.lines = self.source.split("\n")
+        # Split into lines and run the line preprocessors.
+        self.lines = source.split("\n")
         for prep in self.preprocessors :
             self.lines = prep.run(self.lines)
 
-        # Create a ElementTree from the lines
-        self.root = etree.Element("div")
-        buffer = []
-        for line in self.lines:
-            if line.startswith("#"):
-                self._processSection(self.root, buffer)
-                buffer = [line]
-            else:
-                buffer.append(line)
+        # Parse the high-level elements.
+        tree = self.parser.parseDocument(self.lines)
 
-        self._processSection(self.root, buffer)
-    
-        return etree.ElementTree(self.root)
-
-
-    def convert (self, source):
-        """Convert markdown to serialized XHTML.
-
-        Keyword arguments:
-        
-        * source: An ascii or unicode string of Markdown formated text.
-
-        """
-        self.source = source
-        if not self.source:
-            return u""  # a blank unicode string
-
-        # Build a tree from the Markdown source and get its root.
-        tree = self.markdownToTree(source)
         root = self.applyInlinePatterns(tree).getroot()
 
         # Run the post-processors
@@ -1836,98 +1861,47 @@ class Markdown:
 
         return xml.strip()
 
-    def __str__(self):
-        """ Report info about instance. Markdown always returns unicode."""
-        if self.source is None:
-            status = 'in which no source text has been assinged.'
-        else:
-            status = 'which contains %d chars and %d line(s) of source.'%\
-                     (len(self.source), self.source.count('\n')+1)
-        return 'An instance of "%s" %s'% (self.__class__, status)
+    def convertFile(input = None, output = None, encoding = None):
+        """Converts a markdown file and returns the HTML as a unicode string.
 
-    __unicode__ = convert # markdown should always return a unicode string
+        Decodes the file using the provided encoding (defaults to utf-8),
+        passes the file content to markdown, and outputs the html to either
+        the provided stream or the file with provided name, using the same
+        encoding as the source file.
 
+        **Note:** This is the only place that decoding and encoding of unicode
+        takes place in Python-Markdown.  (All other code is unicode-in /
+        unicode-out.)
 
-"""
-EXPORTED FUNCTIONS
-=============================================================================
+        Keyword arguments:
 
-Those are the two functions we really mean to export: markdown() and
-markdownFromFile().
-"""
+        * input: Name of source text file.
+        * output: Name of output file. Writes to stdout if `None`.
+        * extensions: A list of extension names (may contain config args).  
+        * encoding: Encoding of input and output files. Defaults to utf-8.
+        * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
 
-def markdownFromFile(input = None,
-                     output = None,
-                     extensions = [],
-                     encoding = None,
-                     safe = False):
-    """Converts a markdown file and returns the HTML as a unicode string.
-
-    Used from the command-line, although may be useful in other situations. 
-    Decodes the file using the provided encoding (defaults to utf-8), passes 
-    the file content to markdown, and outputs the html to either the provided
-    filename or stdout in the same encoding as the source file.
-
-    **Note:** This is the only place that decoding and encoding of unicode
-    takes place in Python-Markdown.  (All other code is unicode-in /
-    unicode-out.)
-
-    Keyword arguments:
-
-    * input: Name of source text file.
-    * output: Name of output file. Writes to stdout if `None`.
-    * extensions: A list of extension names (may contain config args).  
-    * encoding: Encoding of input and output files. Defaults to utf-8.
-    * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
-
-    """
-    
-    encoding = encoding or "utf-8"
-
-    # Read the source
-    input_file = codecs.open(input, mode="r", encoding=encoding)
-    text = input_file.read()
-    input_file.close()
-    text = text.lstrip(u'\ufeff') # remove the byte-order mark
-
-    # Convert
-    html = markdown(text, extensions, safe_mode = safe)
-
-    # Write to file or stdout
-    if output:
-        output_file = codecs.open(output, "w", encoding=encoding)
-        output_file.write(html)
-        output_file.close()
-    else:
-        sys.stdout.write(html.encode(encoding))
-
-def markdown(text,
-             extensions = [],
-             safe_mode = False):
-    """
-    Convenience wrapper function for `Markdown` class.
-
-    Useful in a typical use case. Initializes an instance of the `Markdown` 
-    class, loads any extensions and runs the parser on the given text. 
-
-    Keyword arguments:
-
-    * text: An ascii or Unicode string of Markdown formatted text.
-    * extensions: A list of extension names (may contain config args).  
-    * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
-
-    Returns: An HTML document as a string.
-
-    """
-    message(DEBUG, "in markdown.markdown(), received text:\n%s" % text)
-
-    extensions = [load_extension(e) for e in extensions]
-
-    md = Markdown(extensions=extensions,
-                  safe_mode = safe_mode)
-
-    return md.convert(text)
+        """
         
+        encoding = encoding or "utf-8"
+
+        # Read the source
+        input_file = codecs.open(input, mode="r", encoding=encoding)
+        text = input_file.read()
+        input_file.close()
+        text = text.lstrip(u'\ufeff') # remove the byte-order mark
+
+        # Convert
+        html = self.convert(text)
+
+        # Write to file or stdout
+        if type(output) == type("string"):
+            output_file = codecs.open(output, "w", encoding=encoding)
+            output_file.write(html)
+            output_file.close()
+        else:
+            output.write(html.encode(encoding))
+
 
 """
 Extensions
@@ -1966,64 +1940,112 @@ class Extension:
         
         This method must be overriden by every extension.
 
-        Ketword arguments:
+        Keyword arguments:
 
         * md: The Markdown instance.
 
-        * md_globals: All global variables availabel in the markdown module
-        namespace.
+        * md_globals: Global variables in the markdown module namespace.
 
         """
         pass
 
 
 def load_extension(ext_name, configs = []):
-    """ 
-    Load extension by name, then return the module.
+    """Load extension by name, then return the module.
     
     The extension name may contain arguments as part of the string in the 
-    following format:
-
-        "extname(key1=value1,key2=value2)"
-    
-    Print an error message and exit on failure. 
+    following format: "extname(key1=value1,key2=value2)"
     
     """
 
-    # I am making the assumption that the order of config options
-    # does not matter.
+    # Parse extensions config params (ignore the order)
     configs = dict(configs)
-    pos = ext_name.find("(") 
+    pos = ext_name.find("(") # find the first "("
     if pos > 0:
         ext_args = ext_name[pos+1:-1]
         ext_name = ext_name[:pos]
         pairs = [x.split("=") for x in ext_args.split(",")]
         configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
 
+    # Setup the module names
     ext_module = 'markdown_extensions'
-    module_name = '.'.join([ext_module, ext_name])
-    extension_module_name = '_'.join(['mdx', ext_name])
+    module_name_new_style = '.'.join([ext_module, ext_name])
+    module_name_old_style = '_'.join(['mdx', ext_name])
 
-    try:
-            module = __import__(module_name, {}, {}, [ext_module])
+    # Try loading the extention first from one place, then another
+    try: # New style (markdown_extensons.<extension>)
+        module = __import__(module_name_new_style, {}, {}, [ext_module])
     except ImportError:
+        try: # Old style (mdx.<extension>)
+            module = __import__(module_name_old_style)
+        except ImportError:
+            pass
+
+    if module :
+        # If the module is loaded successfully, we expect it to define a
+        # function called makeExtension()
         try:
-            module = __import__(extension_module_name)
+            return module.makeExtension(configs.items())
         except:
-            message(WARN,
-                "Failed loading extension '%s' from '%s' or '%s' "
-                "- continuing without."
-                % (ext_name, module_name, extension_module_name) )
-            # Return a dummy (do nothing) Extension as silent failure
-            return Extension(configs={})
+            message(WARN, "Failed to instantiate extension '%s'" % ext_name)
+    else:
+       message(WARN, "Failed loading extension '%s' from '%s' or '%s'"
+               % (ext_name, module_name_new_style, module_name_old_style))
 
-    return module.makeExtension(configs.items())    
-
+def load_extensions(ext_names):
+    """Loads multiple extensions"""
+    extensions = []
+    for ext_name in ext_names:
+        extension = load_extension(ext_name)
+        if extension:
+            extensions.append(extension)
 
 # Extensions should use "markdown.etree" instead of "etree" (or do `from
 # markdown import etree`).  Do not import it by yourself.
 
 etree = importETree() 
+
+"""
+EXPORTED FUNCTIONS
+=============================================================================
+
+Those are the two functions we really mean to export: markdown() and
+markdownFromFile().
+"""
+
+def markdown(text,
+             extensions = [],
+             safe_mode = False):
+    """Convert a markdown string to HTML and return HTML as a unicode string.
+
+    This is a shortcut function for `Markdown` class to cover the most
+    basic use case.  It initializes an instance of Markdown, loads the
+    necessary extensions and runs the parser on the given text. 
+
+    Keyword arguments:
+
+    * text: Markdown formatted text as Unicode or ASCII string.
+    * extensions: A list of extensions or extension names (may contain config args).  
+    * safe_mode: Disallow raw html.  One of "remove", "replace" or "escape".
+
+    Returns: An HTML document as a string.
+
+    """
+    md = Markdown(extensions=load_extensions(extensions),
+                  safe_mode = safe_mode)
+    return md.convert(text)
+
+
+def markdownFromFile(input = None,
+                     output = None,
+                     extensions = [],
+                     encoding = None,
+                     safe = False):
+
+
+    md = Markdown(extensions=load_extensions(extensions),
+                  safe_mode = safe_mode)
+    md.convertFile(input, output, encoding)
 
 
 """
