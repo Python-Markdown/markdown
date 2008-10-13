@@ -1347,7 +1347,7 @@ class LinkPattern (Pattern):
             if ":" in part:
                 safe_url = False
 
-        if self.safe_mode and not safe_url:
+        if self.markdown.safeMode and not safe_url:
             return ''
         else:
             return urlunparse(url)
@@ -1815,15 +1815,16 @@ class Markdown:
                                 ">backtick")
         self.inlinePatterns.add("reference",
                                 ReferencePattern(REFERENCE_RE, self), ">escape")
-        self.inlinePatterns.add("link", LinkPattern(LINK_RE), ">reference")
-        self.inlinePatterns.add("image_link", ImagePattern(IMAGE_LINK_RE),
+        self.inlinePatterns.add("link", LinkPattern(LINK_RE, self), 
+                                ">reference")
+        self.inlinePatterns.add("image_link", ImagePattern(IMAGE_LINK_RE, self),
                                 ">link")
         self.inlinePatterns.add("image_reference",
                                 ImageReferencePattern(IMAGE_REFERENCE_RE, self),
                                 ">image_link")
-        self.inlinePatterns.add("autolink", AutolinkPattern(AUTOLINK_RE),
+        self.inlinePatterns.add("autolink", AutolinkPattern(AUTOLINK_RE, self),
                                 ">image_reference")
-        self.inlinePatterns.add("automail", AutomailPattern(AUTOMAIL_RE),
+        self.inlinePatterns.add("automail", AutomailPattern(AUTOMAIL_RE, self),
                                 ">autolink")
         self.inlinePatterns.add("linebreak2",
                                 SubstituteTagPattern(LINE_BREAK_2_RE, 'br'),
