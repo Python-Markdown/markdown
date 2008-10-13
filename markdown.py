@@ -1856,7 +1856,6 @@ class Markdown:
                                 configs = extension_configs)
         self.reset()
 
-
     def registerExtensions(self, extensions, configs):
         """
         Register extensions with this instance of Markdown.
@@ -1953,7 +1952,7 @@ class Markdown:
 
         return xml.strip()
 
-    def convertFile(input = None, output = None, encoding = None):
+    def convertFile(self, input = None, output = None, encoding = None):
         """Converts a markdown file and returns the HTML as a unicode string.
 
         Decodes the file using the provided encoding (defaults to utf-8),
@@ -2041,7 +2040,6 @@ class Extension:
         """
         pass
 
-
 def load_extension(ext_name, configs = []):
     """Load extension by name, then return the module.
 
@@ -2091,6 +2089,7 @@ def load_extensions(ext_names):
         extension = load_extension(ext_name)
         if extension:
             extensions.append(extension)
+    return extensions
 
 # Extensions should use "markdown.etree" instead of "etree" (or do `from
 # markdown import etree`).  Do not import it by yourself.
@@ -2133,9 +2132,8 @@ def markdownFromFile(input = None,
                      extensions = [],
                      encoding = None,
                      safe = False):
-
-    md = Markdown(extensions=load_extensions(extensions),
-                  safe_mode = safe_mode)
+    """Read markdown code from a file and write it to a file or a stream."""
+    md = Markdown(extensions=load_extensions(extensions), safe_mode = safe)
     md.convertFile(input, output, encoding)
 
 
@@ -2174,7 +2172,7 @@ def parse_options():
             return None, None
 
     parser = optparse.OptionParser(usage="%prog INPUTFILE [options]")
-    parser.add_option("-f", "--file", dest="filename",
+    parser.add_option("-f", "--file", dest="filename", default=sys.stdout,
                       help="write output to OUTPUT_FILE",
                       metavar="OUTPUT_FILE")
     parser.add_option("-e", "--encoding", dest="encoding",
@@ -2210,7 +2208,6 @@ def parse_options():
             'safe': options.safe,
             'extensions': options.extensions,
             'encoding': options.encoding }, options.verbose
-
 
 def command_line_run():
     """Run Markdown from the command line."""
