@@ -29,25 +29,9 @@ ALBUM_LINK = """&nbsp;<a href="%s">[%s]</a>"""
 
 class ImageLinksExtension (markdown.Extension):
 
-    def __init__ (self) :
-        self.reset()
-
     def extendMarkdown(self, md, md_globals) :
 
-        self.md = md
-
-        # Stateless extensions do not need to be registered
-        md.registerExtension(self)
-
-        # Insert a preprocessor before all preprocessors
-
-        preprocessor = ImageLinkPreprocessor()
-        preprocessor.md = md
-        md.preprocessors.insert(0, preprocessor)
-
-    def reset(self) :
-        # May be called by Markdown is state reset is desired
-        pass
+        md.preprocessors.add("imagelink", ImageLinkPreprocessor(self), "_begin")
 
 
 class ImageLinkPreprocessor (markdown.Preprocessor):
