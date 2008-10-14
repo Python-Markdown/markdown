@@ -31,7 +31,7 @@ class ImageLinksExtension (markdown.Extension):
 
     def extendMarkdown(self, md, md_globals) :
 
-        md.preprocessors.add("imagelink", ImageLinkPreprocessor(self), "_begin")
+        md.preprocessors.add("imagelink", ImageLinkPreprocessor(md), "_begin")
 
 
 class ImageLinkPreprocessor (markdown.Preprocessor):
