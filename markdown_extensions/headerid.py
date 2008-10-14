@@ -52,18 +52,16 @@ Use with MetaData extension:
     >>> md
     u'<h2>A Header</h2>'
 
-By [Waylan Limberg](http://achinghead.com/).
+Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
 
-Project website: http://achinghead.com/markdown-headerid/
-Contact: waylan [at] gmail [dot] com
+Project website: <http://www.freewisdom.org/project/python-markdown/HeaderId>
+Contact: markdown@freewisdom.org
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
-
-Version: 0.1 (May 2, 2008)
+License: BSD (see ../docs/LICENSE for details) 
 
 Dependencies:
 * [Python 2.3+](http://python.org)
-* [Markdown 1.7+](http://www.freewisdom.org/projects/python-markdown/)
+* [Markdown 2.0+](http://www.freewisdom.org/projects/python-markdown/)
 
 """
 
@@ -76,7 +74,7 @@ ID_CHARS = ascii_lowercase + digits + '-_'
 
 HEADER_RE = re.compile(r'''^(\#{1,6})		# group(1) = string of hashes
                            ( [^{^#]*)		# group(2) = Header text
-                           [\#]*		    # optional closing hashes (not counted)
+                           [\#]*		    # optional closing hashes 
                            (?:[ \t]*\{[ \t]*\#([-_:a-zA-Z0-9]+)[ \t]*\})?	# group(3) = id attr''',
                            re.VERBOSE)
 
@@ -97,10 +95,10 @@ class HeaderIdExtension (markdown.Extension) :
     def extendMarkdown(self, md, md_globals) :
 
         md.IDs = []
-
+        
         def _processHeaderId(parent_elem, paragraph) :
             ''' 
-            Overrides _processHeader of Markdown() and 
+            Overrides __processHeader of MarkdownParser() and 
             adds an 'id' to the header. 
             '''
             m = HEADER_RE.match(paragraph[0])
@@ -119,7 +117,7 @@ class HeaderIdExtension (markdown.Extension) :
             else :
                 message(CRITICAL, "We've got a problem header!")
         
-        md._processHeader = _processHeaderId
+        md.parser._MarkdownParser__processHeader = _processHeaderId
 
         def _get_meta():
             ''' Return meta data suported by this ext as a tuple '''
