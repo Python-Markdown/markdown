@@ -137,19 +137,21 @@ class TestTreap(unittest.TestCase):
                     [('first', 'This'), ('second', 'is'), ('third', 'a'), 
                     ('fourth', 'self'), ('seventh','.'), ('fifth', 'test')])
 
-suite = unittest.TestSuite()
-suite.addTest(unittest.makeSuite(TestMarkdownParser))
-suite.addTest(unittest.makeSuite(TestHtmlStash))
-suite.addTest(unittest.makeSuite(TestTreap))
+def suite():
+    """ Build a test suite of the above tests and extension doctests. """
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestMarkdownParser))
+    suite.addTest(unittest.makeSuite(TestHtmlStash))
+    suite.addTest(unittest.makeSuite(TestTreap))
 
-for filename in os.listdir('markdown_extensions'):
-    if filename.endswith('.py'):
-        module = 'markdown_extensions.%s' % filename[:-3]
-        try:
-            suite.addTest(DocTestSuite(module))
-        except: ValueError
-            # No tests
+    for filename in os.listdir('markdown_extensions'):
+        if filename.endswith('.py'):
+            module = 'markdown_extensions.%s' % filename[:-3]
+            try:
+                suite.addTest(DocTestSuite(module))
+            except: ValueError
+                # No tests
+    return suite
 
 if __name__ == '__main__':
-    #unittest.main()
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.TextTestRunner(verbosity=2).run(suite())
