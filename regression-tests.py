@@ -152,4 +152,4 @@ for filename in os.listdir('markdown_extensions'):
 
 if __name__ == '__main__':
     #unittest.main()
-    unittest.TextTestRunner().run(suite)
+    unittest.TextTestRunner(verbosity=2).run(suite)
