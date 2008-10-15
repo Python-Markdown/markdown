@@ -8,6 +8,8 @@ Tests of the various APIs with the python markdown lib.
 """
 
 import unittest
+from doctest import DocTestSuite
+import os
 import markdown
 
 class TestMarkdownParser(unittest.TestCase):
@@ -73,7 +75,7 @@ class TestHtmlStash(unittest.TestCase):
         self.assertEqual(self.stash.html_counter, 0)
         self.assertEqual(self.stash.rawHtmlBlocks, [])
 
-class testTreap(unittest.TestCase):
+class TestTreap(unittest.TestCase):
     """ Test Treap storage class. """
 
     def setUp(self):
@@ -135,6 +137,19 @@ class testTreap(unittest.TestCase):
                     [('first', 'This'), ('second', 'is'), ('third', 'a'), 
                     ('fourth', 'self'), ('seventh','.'), ('fifth', 'test')])
 
-if __name__ == '__main__':
-    unittest.main()
+suite = unittest.TestSuite()
+suite.addTest(unittest.makeSuite(TestMarkdownParser))
+suite.addTest(unittest.makeSuite(TestHtmlStash))
+suite.addTest(unittest.makeSuite(TestTreap))
 
+for filename in os.listdir('markdown_extensions'):
+    if filename.endswith('.py'):
+        module = 'markdown_extensions.%s' % filename[:-3]
+        try:
+            suite.addTest(DocTestSuite(module))
+        except: ValueError
+            # No tests
+
+if __name__ == '__main__':
+    #unittest.main()
+    unittest.TextTestRunner().run(suite)

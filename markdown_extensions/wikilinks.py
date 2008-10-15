@@ -12,7 +12,7 @@ Basic usage:
     >>> text = "Some text with a [[WikiLink]]."
     >>> html = markdown.markdown(text, ['wikilinks'])
     >>> html
-    u'<p>Some text with a <a href="/WikiLink/" class="wikilink">WikiLink</a>.</p>'
+    u'<p>Some text with a <a class="wikilink" href="/WikiLink/">WikiLink</a>.</p>'
 
 Whitespace behavior:
 
@@ -26,7 +26,7 @@ To define custom settings the simple way:
     >>> markdown.markdown(text, 
     ...     ['wikilinks(base_url=/wiki/,end_url=.html,html_class=foo)']
     ... )
-    u'<p>Some text with a <a href="/wiki/WikiLink.html" class="foo">WikiLink</a>.</p>'
+    u'<p>Some text with a <a class="foo" href="/wiki/WikiLink.html">WikiLink</a>.</p>'
     
 Custom settings the complex way:
 
@@ -46,7 +46,7 @@ Use MetaData with mdx_meta.py (Note the blank html_class in MetaData):
     ... wiki_end_url:   .html
     ... wiki_html_class:
     ...
-    ... Some text with a WikiLink."""
+    ... Some text with a [[WikiLink]]."""
     >>> md = markdown.Markdown(extensions=['meta', 'wikilinks'])
     >>> md.convert(text)
     u'<p>Some text with a <a href="http://example.com/WikiLink.html">WikiLink</a>.</p>'
@@ -54,7 +54,7 @@ Use MetaData with mdx_meta.py (Note the blank html_class in MetaData):
 MetaData should not carry over to next document:
 
     >>> md.convert("No [[MetaData]] here.")
-    u'<p>No <a href="/MetaData/" class="wikilink">MetaData</a> here.</p>'
+    u'<p>No <a class="wikilink" href="/MetaData/">MetaData</a> here.</p>'
 
 From the command line:
 

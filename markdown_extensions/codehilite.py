@@ -36,7 +36,7 @@ class CodeHilite:
     Determine language of source code, and pass it into the pygments hilighter.
 
     Basic Usage:
-        >>> code = CodeHilite(src = text)
+        >>> code = CodeHilite(src = 'some text')
         >>> html = code.hilite()
     
     * src: Source string or any object with a .readline attribute.
@@ -47,7 +47,7 @@ class CodeHilite:
       
     Low Level Usage:
         >>> code = CodeHilite()
-        >>> code.src = text      # String or anything with a .readline attribute
+        >>> code.src = 'some text' # String or anything with a .readline attr.
         >>> code.linenos = True  # True or False; Turns line numbering on or of.
         >>> html = code.hilite()
     
