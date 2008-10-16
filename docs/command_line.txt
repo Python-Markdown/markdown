@@ -1,0 +1,57 @@
+Using Python-Markdown on the Command Line
+=========================================
+
+While Python-Markdown is primarily a python library, it also serves as a 
+command line program. While there are many other command line implementations 
+of Markdown, you may not have them installed, or you may prefer to use 
+Python-Markdown's various extensions.
+
+The Basics
+----------
+
+To use ``markdown.py`` from the command line, run it as 
+
+    python markdown.py input_file.txt
+
+or 
+
+    python markdown.py input_file.txt > output_file.html
+
+More Options
+
+If you are using Python 2.3 or higher, you can also use advanced
+command line options to specify encoding or to run extensions.
+
+    $ python markdown.py
+    Usage: markdown.py INPUTFILE [options]
+
+    Options:
+      -h, --help            show this help message and exit
+      -f OUTPUT_FILE, --file=OUTPUT_FILE
+                            write output to OUTPUT_FILE
+      -e ENCODING, --encoding=ENCODING
+                            encoding for input and output files
+      -q, --quiet           suppress all messages
+      -v, --verbose         print info messages
+      -s SAFE_MODE, --safe=SAFE_MODE
+                            safe mode ('replace', 'remove' or 'escape'  user's
+                            HTML tag)
+      --noisy               print debug messages
+      -x EXTENSION, --extension=EXTENSION
+                            load extension EXTENSION
+
+Using Extensions
+----------------
+
+For an extension to be ran this way it must be provided in a module
+named ``mdx_{extensionname}.py`` which should be in your python path,
+e.g. ``mdx_footnotes.py``.  It can then be invoked as by name (the
+part after "mdx_"):
+
+    python markdown.py -x footnotes text_with_footnotes.txt > output.html
+
+If the extension supports config options (see below), you can also
+pass them in as well:
+
+    python markdown.py -x "footnotes(PLACE_MARKER=~~~~~~~~)" input.txt
+

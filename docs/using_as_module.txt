@@ -1,0 +1,123 @@
+Using Markdown as Python Library
+================================
+
+First and foremost, Python-Markdown is intended to be a python library module
+used by various projects to convert Markdown syntax into HTML.
+
+The Basics
+----------
+
+To use markdown as a module:
+
+    import markdown
+    html = markdown.markdown(your_text_string)
+
+Encoded Text
+------------
+
+Note that ``markdown()`` expects either a simple ASCII string or **Unicode** 
+as input and returns output as Unicode.  Do not pass encoded strings to it!
+If your input is encoded, e.g. as UTF-8, it is your responsibility to decode 
+it.  E.g.:
+
+    input_file = codecs.open("some_file.txt", mode="r", encoding="utf8")
+    text = input_file.read()
+    html = markdown.markdown(text, extensions)
+
+If you later want to write it to disk, you should encode it:
+
+    output_file = codecs.open("some_file.html", "w", encoding="utf8")
+    output_file.write(html)
+
+More Options
+------------
+
+If you want to pass more options, you can create an instance of the ``Markdown``
+class yourself and then use ``convert()`` to generate HTML:
+
+    import markdown
+    md = markdown.Markdown(extensions=['footnotes'], 
+                  extension_configs= {'footnotes' : 
+                                     ('PLACE_MARKER','~~~~~~~~')}
+                  encoding='utf8',
+                  safe_mode = True)
+    return md.convert(some_text)
+
+You should also use this method if you want to process multiple strings:
+
+    md = markdown.Markdown()
+    html1 = md.convert(text1)
+    html2 = md.convert(text2)
+
+Working with Files
+------------------
+
+While the Markdown class is only intended to work with Unicode text, some
+encoding/decoding is required for the command line features. These functions 
+and methods are only intended to fit the common use case.
+
+The ``Markdown`` class has the method ``convertFile`` which reads in a file and
+writes out to file-like-object:
+
+    md = markdown.Markdown()
+    md.convertFile(input="in.txt", output="out.html", encoding="uft8")
+
+The markdown module also includes a shortcut function ``markdownFromFile`` that
+wraps the above method.
+
+    markdown.markdownFromFile(input="in.txt", 
+                              output="out.html", 
+                              extensions=[],
+                              encoding="utf8",
+                              safe=False)
+
+In either case, if the ``output`` keyword is passed a file name (i.e.: 
+``output="out.html"``), it will try to write to a file by that name. If
+``output`` is passed a file-like-object (i.e. ``output=StringIO.StringIO()``),
+it will attempt to write out to that object. Finally, is ``output`` is 
+set to ``None``, is will write to ``stdout``.
+
+Using Extensions
+----------------
+
+One of the parameters that you can pass is a list of Extensions. Extensions 
+must be available as python modules either within the ``markdown_extensions``
+package or on your PYTHONPATH with names starting with `mdx_`, followed by the 
+name of the extension.  Thus, ``extensions=['footnotes']`` will first look for 
+the module ``markdown_extensions.footnotes``, then a module named 
+``mdx_footnotes``.   See the documentation specific to the extension you are 
+using for help in specifying configuration settings for that extension.
+
+Note that some extensions may need their state reset between each call to 
+``convert``:
+
+    html1 = md.convert(text1)
+    md.reset()
+    html2 = md.convert(text2)
+
+Safe Mode
+---------
+
+If you are using Markdown on a web system which will transform text provided 
+by untrusted users, you may want to use the "safe_mode" option which ensures 
+that the user's HTML tags are either replaced, removed or escaped. (They can 
+still create links using Markdown syntax.)
+
+* To replace HTML, set ``safe_mode="replace"`` (``safe_mode=True`` still works 
+    for backward compatibility with older versions). The HTML will be replaced 
+    with the text defined in ``markdown.HTML_REMOVED_TEXT`` which defaults to 
+    ``[HTML_REMOVED]``. To replace the HTML with something else:
+
+        markdown.HTML_REMOVED_TEXT = "--RAW HTML IS NOT ALLOWED--"
+        md = markdown.Markdown(safe_mode="replace")
+
+    **Note**: You may edit the value of ``HTML_REMOVED_TEXT`` directly in 
+    markdown.py but you will need to remember to do so every time you upgrade 
+    to a newer version of Markdown.
+
+* To remove HTML, set ``safe_mode="remove"``. Any raw HTML will be completely 
+    stripped from the text with no warning to the author.
+
+* To escape HTML, set ``safe_mode="escape"``. The HTML will be escaped and 
+    included in the document.
+
