@@ -13,8 +13,11 @@ of Python, open a Python shell and type the following:
 
 If at least one of those does not generate any errors, then you have a working
 copy of ElementTree installed on your system. As cElementTree is faster, you
-may want install that if you don't already have it and it's available for your
-system.
+may want to install that if you don't already have it and it's available for 
+your system.
+
+See <http://effbot.org/zone/element-index.htm> for more information or to 
+download the latest version of ElementTree.
 
 The East Way
 ------------
@@ -30,26 +33,23 @@ That's it, your done.
 Installing on Windows
 ---------------------
 
-
-
-Download the Windows installer (.exe) from PyPI:
-
+Download the Windows installer (.exe) from PyPI: 
 <http://pypi.python.org/pypi/Markdown>
 
-Doubleclick the file and follow the instructions.
+Double-click the file and follow the instructions.
 
-If you preffer to manually install Python-Markdown in Windows, download the
+If you prefer to manually install Python-Markdown in Windows, download the
 Zip file, unzip it, and on the command line in the directory you unzipped to:
 
     python setup.py install
 
-If you plan to use the provided commandline script, you need to make sure your
-script directory is on your system path. On a typical Python install on Windows
+If you plan to use the provided command line script, you need to make sure your
+script directory is on your system path. On a typical Python install of Windows
 the Scripts directory is `C:\Python25\Scripts\`. Adjust according to your 
 system and add that to your system path.
 
-Installing on *nix Sytems
--------------------------
+Installing on *nix Systems
+--------------------------
 
 From the command line do the following:
 
@@ -57,3 +57,17 @@ From the command line do the following:
     tar xvzf markdown-2.0.tar.gz
     cd markdown-2.0/
     sudo python setup.py install
+
+Using the Git Repository
+------------------------
+
+If your the type that like to live on the edge, you may want to keep up with 
+the latest additions and bug fixes in the repository between releases.
+Python-Markdown is maintained in a Git repository on Gitorious.org. To
+get a copy of Python-Markdown from the repository do the following from the
+command line:
+
+    git clone git://gitorious.org/python-markdown/mainline.git python-markdown
+    cd python-markdown
+    python setup.py install
+
