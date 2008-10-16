@@ -1,4 +1,8 @@
-### Overview
+Writing Extensions for Python-Markdown
+======================================
+
+Overview
+--------
 
 Python-Markdown includes an API for extension writers to plug their own 
 custom functionality and/or syntax into the parser. There are preprocessors
@@ -39,9 +43,9 @@ There are two types of preprocessors: [TextPreprocessors][] and
 
 <h4 id="textpreprocessors">TextPreprocessors</h4>
 
-TextPreprocessors should inherit from `markdown.TextPreprocessor` and implement
-a `run` method with one argument `text`. The `run` method of each 
-TextPreprocessor will be passed the entire source text as a single Unicode
+TextPreprocessors should inherit from ``markdown.TextPreprocessor`` and 
+implement a ``run`` method with one argument ``text``. The ``run`` method of 
+each TextPreprocessor will be passed the entire source text as a single Unicode
 string and should either return that single Unicode string, or an altered
 version of it.
 
@@ -57,10 +61,10 @@ example is for illustrative purposes only.
 
 <h4 id="linepreprocessors">Line Preprocessors</h4>
 
-Line Preprocessors should inherit from `markdown.Preprocessor` and implement 
-a `run` method with one argument `lines`. The `run` method of each Line
+Line Preprocessors should inherit from ``markdown.Preprocessor`` and implement 
+a ``run`` method with one argument ``lines``. The ``run`` method of each Line
 Preprocessor will be passed the entire source text as a list of Unicode strings.
-Each string will contain one line of text. The `run` method should return
+Each string will contain one line of text. The ``run`` method should return
 either that list, or an altered list of Unicode strings.
 
 A pseudo example:
@@ -79,22 +83,22 @@ A pseudo example:
 <h3 id="inlinepatterns">Inline Patterns</h3>
 
 Inline Patterns implement the inline HTML element syntax for Markdown such as
-`*emphasis*` or `[links](http://example.com)`. Pattern objects should be 
-instances of classes that inherit from `markdown.Pattern` or one of its 
+``*emphasis*`` or ``[links](http://example.com)``. Pattern objects should be 
+instances of classes that inherit from ``markdown.Pattern`` or one of its 
 children. Each pattern object uses a single regular expression and must have 
 the following methods:
 
-* `getCompiledRegExp()`: Returns a compiled regular expression.
-* `handleMatch(m)`: Accepts a match object and returns an ElementTree
-element of a plain Unicode string.
+* ``getCompiledRegExp()``: Returns a compiled regular expression.
+* ``handleMatch(m)``: Accepts a match object and returns an ElementTree
+    element of a plain Unicode string.
 
-Note that any regular expression returned by `getCompiledRegExp` must capture
-the whole block. Therefore, they should all start with `r'^(.*?)'` and end
-with `r'(.*?)!'. When using the default `getCompiledRegExp()` method provided 
-in the `Pattern` you can pass in a regular expression without that and 
-`getCompiledRegExp` will wrap your expression for you. This means that the first
-group of your match will be `m.group(2)` as `m.group(1)` will match everything 
-before the pattern.
+Note that any regular expression returned by ``getCompiledRegExp`` must capture
+the whole block. Therefore, they should all start with ``r'^(.*?)'`` and end
+with ``r'(.*?)!'``. When using the default ``getCompiledRegExp()`` method 
+provided in the ``Pattern`` you can pass in a regular expression without that 
+and ``getCompiledRegExp`` will wrap your expression for you. This means that 
+the first group of your match will be ``m.group(2)`` as ``m.group(1)`` will 
+match everything before the pattern.
 
 For an example, consider this simplified emphasis pattern:
 
@@ -119,21 +123,21 @@ that example pattern is not very DRY. A pattern for `**strong**` text would
 be almost identical, with the exception that it would create a 'strong' element.
 Therefore, Markdown provides a number of generic pattern classes that can 
 provide some common functionality. For example, both emphasis and strong are
-implemented with separate instances of the `SimpleTagPettern` listed below. 
+implemented with separate instances of the ``SimpleTagPettern`` listed below. 
 Feel free to use or extend any of these Pattern classes.
 
 **Generic Pattern Classes**
 
-* `SimpleTextPattern(pattern)`:
+* ``SimpleTextPattern(pattern)``:
 
-    Returns simple text of `group(2)` of a `pattern`.
+    Returns simple text of ``group(2)`` of a `pattern`.
 
-* `SimpleTagPattern(pattern, tag)`:
+* ``SimpleTagPattern(pattern, tag)``:
 
-    Returns an element of type "`tag`" with a text attribute of `group(3)`
-    of a `pattern`. `tag` should be a string of a HTML element (i.e.: 'em').
+    Returns an element of type "`tag`" with a text attribute of ``group(3)``
+    of a ``pattern``. ``tag`` should be a string of a HTML element (i.e.: 'em').
 
-* `SubstituteTagPattern(pattern, tag)`:
+* ``SubstituteTagPattern(pattern, tag)``:
 
     Returns an element of type "`tag`" with no children or text (i.e.: 'br').
 
@@ -145,17 +149,17 @@ situation.
 <h3 id="postprocessors">Postprocessors</h3>
 
 Postprocessors manipulate a document after it has passed through the Markdown 
-core. This is were stored text gets added back in such as a list of footnotes, 
-a table of contents or raw html.
+core. This is were stored text gets added back in; such as a list of footnotes, 
+a table of contents, or raw html.
 
 There are two types of postprocessors: [ElementTree Postprocessors][] and 
 [TextPostprocessors][].
 
 <h4 id="etpostprocessors">ElementTree Postprocessors</h4>
 
-An ElementTree Postprocessor should inherit from `markdown.Postprocessor`,
-over-ride the `run` method which takes one argument `root` and return either
-that root element or a modified root element.
+An ElementTree Postprocessor should inherit from ``markdown.Postprocessor``,
+over-ride the ``run`` method which takes one argument ``root`` and returns 
+either that root element or a modified root element.
 
 A pseudo example:
 
@@ -169,8 +173,8 @@ For specifics on manipulating the ElementTree, see
 
 <h4 id="textpostprocessors">TextPostprocessors</h4>
 
-A TextPostprocessor should inherit from `markdown.TextPostprocessor` and
-over-ride the `run` method which takes one argument `text` and returns a
+A TextPostprocessor should inherit from ``markdown.TextPostprocessor`` and
+over-ride the ``run`` method which takes one argument ``text`` and returns a
 Unicode string.
 
 TextPostprocessors are run after the ElementTree has been serialized back into 
@@ -202,8 +206,10 @@ first, then ``ElementTree`` if the faster C implementation is not available on
 your system.
 
 Sometimes you may want text inserted into an element to be parsed by 
-[InlinePatterns][]. In such a situation, simply insert the text into an 
-`inline` tag and the text will be automatically run through the InlinePatterns.
+[InlinePatterns][]. In such a situation, simply insert the text as you normally
+would and the text will be automatically run through the InlinePatterns. 
+However, if you do *not* want some text to be parsers by InlinePatterns,
+then insert the text as an AtomicString.
 
 Here's a basic example which creates an HTML table (note that the contents of 
 the second cell (``td2``) will be run through InlinePatterns latter):
@@ -212,10 +218,9 @@ the second cell (``td2``) will be run through InlinePatterns latter):
     table.set("cellpadding", "2") # Set cellpadding to 2
     tr = etree.SubElement(table, "tr") # Add child tr to table
     td1 = etree.SubElement(tr, "td") # Add child td1 to tr
-    td1.text = "Cell content" # Add plain text content to td1 element
+    td1.text = markdown.AtomicString("Cell content") # Add plain text content
     td2 = etree.SubElement(tr, "td") # Add second td to tr
-    inline = etree.SubElement(td2, "inline") # Add an inline element to td2
-    inline.text = "Some *text* with **inline** formatting." # Add markup text
+    td2.text = "Some *text* with **inline** formatting." # Add markup text
     table.tail = "Text after table" # Added text after table Element
 
 You can also manipulate an existing tree. Consider the following example which 
@@ -235,55 +240,55 @@ For more information about working with ElementTree see the ElementTree
 
 Once you have the various pieces of your extension built, you need to tell 
 Markdown about them and ensure that they are run in the proper sequence. 
-Markdown accepts a `Extension` instance for each extension. Therefore, you
-will need to define a class that extends `markdown.Extension` and over-rides
-the `extendMarkdown` method. Within this class you will manage configuration 
+Markdown accepts a ``Extension`` instance for each extension. Therefore, you
+will need to define a class that extends ``markdown.Extension`` and over-rides
+the ``extendMarkdown`` method. Within this class you will manage configuration 
 options for your extension and attach the various processors and patterns to 
 the Markdown instance. 
 
 It is important to note that the order of the various processors and patterns 
-matters. For example, if we replace `http://...` links with <a> elements, and 
+matters. For example, if we replace ``http://...`` links with <a> elements, and 
 *then* try to deal with  inline html, we will end up with a mess. Therefore, 
 the various types of processors and patterns are stored within an instance of 
-the Markdown class within lists. Your `Extension` class will need to manipulate
-those lists appropriately. You may insert instances of your processors and
-patterns into the appropriate location in a list, remove a built-in instances,
-or replace a built-in instance with your own.
+the Markdown class within lists. Your ``Extension`` class will need to 
+manipulate those lists appropriately. You may insert instances of your 
+processors and patterns into the appropriate location in a list, remove a 
+built-in instances, or replace a built-in instance with your own.
 
 <h4 id="extendmarkdown">`extendMarkdown`</h4>
 
-The `extendMarkdown` method of a `markdown.Extension` class accepts two 
+The ``extendMarkdown`` method of a ``markdown.Extension`` class accepts two 
 arguments:
 
-* `md`:
+* ``md``:
 
     A pointer to the instance of the Markdown class. You should use this to 
     access the lists of processors and patterns. They are found under the 
     following attributes:
 
-    * `md.textPreprocessors`
-    * `md.preprocessors`
-    * `md.inlinePatterns`
-    * `md.postpreprocessors`
-    * `md.textPostprocessors`
+    * ``md.textPreprocessors``
+    * ``md.preprocessors``
+    * ``md.inlinePatterns``
+    * ``md.postpreprocessors``
+    * ``md.textPostprocessors``
 
     Some other things you may want to access in the markdown instance are:
 
-    * `md.inlineStash`
-    * `md.htmlStash`
-    * `md.registerExtension()`
+    * ``md.inlineStash``
+    * ``md.htmlStash``
+    * ``md.registerExtension()``
 
-* `md_globals`
+* ``md_globals``
 
     Contains all the various global variables within the markdown module.
 
 Of course, with access to those items, theoretically you have the option to 
 changing anything through various [monkey_patching][] techniques. In fact, this
-is how both the [[HeaderId]] and [[CodeHilite]] extensions work. However, you 
-should be aware that the various undocumented or private parts of markdown may 
-change without notice and your monkey_patches may break with a new release. 
-Therefore, what you really should be doing is inserting processors and patterns
-into the markdown pipeline. Consider yourself warned.
+is how the [[HeaderId]] extension works. However, you should be aware that the 
+various undocumented or private parts of markdown may change without notice and
+your monkey_patches may break with a new release. Therefore, what you really 
+should be doing is inserting processors and patterns into the markdown pipeline.
+Consider yourself warned.
 
 [monkey_patching]: http://en.wikipedia.org/wiki/Monkey_patch
 
@@ -322,8 +327,8 @@ initialized the first time. Keep that in mind when over-riding the extension's
 <h4 id="configsettings">Config Settings</h4>
 
 If an extension uses any parameters that the user may want to change,
-those parameters should be stored in `self.config` of your `markdown.Extension`
-class in the following format:
+those parameters should be stored in ``self.config`` of your 
+``markdown.Extension`` class in the following format:
 
     self.config = {parameter_1_name : [value1, description1],
                    parameter_2_name : [value2, description2] }
