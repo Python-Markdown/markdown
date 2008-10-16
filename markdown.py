@@ -1637,6 +1637,7 @@ class Treap(dict):
     def __init__(self, default='end'):
         self.default = '_'+('begin',default)[default in ('begin','end')]
         self.priority = None
+        self._lastItem = "_begin"
         self._tree  = { 
             '_begin' : {'heap':('_begin','B'),'kids' : {},'prio' : 'B'}
             ,'_end' : {'heap':('_end','E'),'kids' : {},'prio' : 'E'}
@@ -1666,9 +1667,12 @@ class Treap(dict):
         self._reset()
         dict.__setitem__(self, key, val)
 
-    def add(self, k, v, p): 
+    def add(self, k, v, p=None): 
         """Adds key/value to dict and sets priority."""
+        if p is None:
+            p = self._lastItem
         self.__setitem__(k, v, p)
+        self._lastItem = ">%s" % k
 
     def _reset(self): self._heap=[];self._keys=[];self._vals=[];self._items=[];
 
@@ -1787,67 +1791,47 @@ class Markdown:
 
         self.textPreprocessors = Treap()
         self.textPreprocessors.add("html_block",
-                                   HtmlBlockPreprocessor(self), "_begin")
+                                   HtmlBlockPreprocessor(self))
         self.preprocessors = Treap()
-        self.preprocessors.add("header", HeaderPreprocessor(self), "_begin")
-        self.preprocessors.add("line", LinePreprocessor(self), ">header")
-        self.preprocessors.add("reference", ReferencePreprocessor(self),
-                               ">line")
+        self.preprocessors.add("header", HeaderPreprocessor(self))
+        
+        self.preprocessors.add("line", LinePreprocessor(self))
+        self.preprocessors.add("reference", ReferencePreprocessor(self))
         # footnote preprocessor will be inserted with "<reference"
 
         self.postprocessors = Treap()
-        self.postprocessors.add("prettify", PrettifyPostprocessor(self),
-                                "_begin")
+        self.postprocessors.add("prettify", PrettifyPostprocessor(self))
 
         self.textPostprocessors = Treap()
-        self.textPostprocessors.add("raw_html", RawHtmlTextPostprocessor(self),
-                                    "_begin")
-        self.textPostprocessors.add("amp_substitute", AndSubstitutePostprocessor(),
-                                    ">raw_html")
+        self.textPostprocessors.add("raw_html", RawHtmlTextPostprocessor(self))
+        self.textPostprocessors.add("amp_substitute", AndSubstitutePostprocessor())
         # footnote postprocessor will be inserted with ">amp_substitute"
 
         self.prePatterns = []
 
         self.inlinePatterns = Treap()
-        self.inlinePatterns.add("backtick", BacktickPattern(BACKTICK_RE),
-                                "_begin")
-        self.inlinePatterns.add("escape", SimpleTextPattern(ESCAPE_RE),
-                                ">backtick")
-        self.inlinePatterns.add("reference",
-                                ReferencePattern(REFERENCE_RE, self), ">escape")
-        self.inlinePatterns.add("link", LinkPattern(LINK_RE, self), 
-                                ">reference")
-        self.inlinePatterns.add("image_link", ImagePattern(IMAGE_LINK_RE, self),
-                                ">link")
+        self.inlinePatterns.add("backtick", BacktickPattern(BACKTICK_RE))
+        self.inlinePatterns.add("escape", SimpleTextPattern(ESCAPE_RE))
+        self.inlinePatterns.add("reference", ReferencePattern(REFERENCE_RE, self))
+        self.inlinePatterns.add("link", LinkPattern(LINK_RE, self))
+        self.inlinePatterns.add("image_link", ImagePattern(IMAGE_LINK_RE, self))
         self.inlinePatterns.add("image_reference",
-                                ImageReferencePattern(IMAGE_REFERENCE_RE, self),
-                                ">image_link")
-        self.inlinePatterns.add("autolink", AutolinkPattern(AUTOLINK_RE, self),
-                                ">image_reference")
-        self.inlinePatterns.add("automail", AutomailPattern(AUTOMAIL_RE, self),
-                                ">autolink")
+                                ImageReferencePattern(IMAGE_REFERENCE_RE, self))
+        self.inlinePatterns.add("autolink", AutolinkPattern(AUTOLINK_RE, self))
+        self.inlinePatterns.add("automail", AutomailPattern(AUTOMAIL_RE, self))
         self.inlinePatterns.add("linebreak2",
-                                SubstituteTagPattern(LINE_BREAK_2_RE, 'br'),
-                                ">automail")
+                                SubstituteTagPattern(LINE_BREAK_2_RE, 'br'))
         self.inlinePatterns.add("linebreak",
-                                SubstituteTagPattern(LINE_BREAK_RE, 'br'),
-                                ">linebreak2")
-        self.inlinePatterns.add("html", HtmlPattern(HTML_RE, self),
-                                ">linebreak")
-        self.inlinePatterns.add("entity", HtmlPattern(ENTITY_RE, self),
-                                ">html")
-        self.inlinePatterns.add("not_strong", SimpleTextPattern(NOT_STRONG_RE),
-                                ">entity")
+                                SubstituteTagPattern(LINE_BREAK_RE, 'br'))
+        self.inlinePatterns.add("html", HtmlPattern(HTML_RE, self))
+        self.inlinePatterns.add("entity", HtmlPattern(ENTITY_RE, self))
+        self.inlinePatterns.add("not_strong", SimpleTextPattern(NOT_STRONG_RE))
         self.inlinePatterns.add("strong_em",
-                                DoubleTagPattern(STRONG_EM_RE, 'strong,em'),
-                                ">not_strong")
-        self.inlinePatterns.add("strong", SimpleTagPattern(STRONG_RE, 'strong'),
-                                ">strong_em")
-        self.inlinePatterns.add("emphasis", SimpleTagPattern(EMPHASIS_RE, 'em'),
-                                ">strong")
+                                DoubleTagPattern(STRONG_EM_RE, 'strong,em'))
+        self.inlinePatterns.add("strong", SimpleTagPattern(STRONG_RE, 'strong'))
+        self.inlinePatterns.add("emphasis", SimpleTagPattern(EMPHASIS_RE, 'em'))
         self.inlinePatterns.add("emphasis2",
-                                SimpleTagPattern(EMPHASIS_2_RE, 'em'),
-                                ">emphasis")
+                                SimpleTagPattern(EMPHASIS_2_RE, 'em'))
         # The order of the handlers matters!!!
 
         self.references = {}
