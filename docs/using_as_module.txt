@@ -40,7 +40,6 @@ class yourself and then use ``convert()`` to generate HTML:
                   extension_configs= {'footnotes' : 
                                      ('PLACE_MARKER','~~~~~~~~')}
                   encoding='utf8',
-                  safe_mode = True)
     return md.convert(some_text)
 
 You should also use this method if you want to process multiple strings:
@@ -74,8 +73,8 @@ wraps the above method.
 In either case, if the ``output`` keyword is passed a file name (i.e.: 
 ``output="out.html"``), it will try to write to a file by that name. If
 ``output`` is passed a file-like-object (i.e. ``output=StringIO.StringIO()``),
-it will attempt to write out to that object. Finally, is ``output`` is 
-set to ``None``, is will write to ``stdout``.
+it will attempt to write out to that object. Finally, if ``output`` is 
+set to ``None``, it will write to ``stdout``.
 
 Using Extensions
 ----------------
