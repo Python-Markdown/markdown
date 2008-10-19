@@ -9,7 +9,7 @@ custom functionality and/or syntax into the parser. There are preprocessors
 which allow you to alter the source before it is passed to the parser, 
 inline patterns which allow you to add, remove or override the syntax of
 any inline elements, and postprocessors which allow munging of the
-output of the parser before it is returned.
+output of the parser before it is returned. If you really want to dive in, there is also the option to subclass the core MarkdownParser.
 
 As the parser builds an [ElementTree][] object which is later rendered 
 as Unicode text, there are also some helpers provided to make manipulation of 
@@ -25,6 +25,7 @@ features documented here.
 * [Postprocessors][]
     * [ElementTree Postprocessors][]
     * [TextProstprocessors][]
+* [MarkdownParser][]
 * [Working with the ElementTree][]
 * [Integrating your code into Markdown][]
     * [extendMarkdown][]
@@ -184,6 +185,46 @@ contents to a document:
     class TocTextPostprocessor(markdown.TextPostprocessor):
     def run(self, text):
         return MYMARKERRE.sub(MyToc, text)
+
+<h3 id="markdownparser">MarkdownParser</h3>
+
+Sometimes, pre/postprocessors and Inline Patterns aren't going to do what you 
+need. In such a situation, you can override the core ``MarkdownParser``. The
+easiest way is to simply subclass the existing ``MarkdownParser`` class and 
+assign an instance of your subclass to ``Markdown``.
+
+    class MyCustomParser(markdown.MarkdownParser):
+        def my_method(self, ...):
+            #do stuff
+
+    md = markdown.Markdown()
+    md.parser = MyCustomParser()
+
+Of course, it is possible to write your own class from scratch which keeps the 
+same public API. At the very least, you must provide the three public methods,
+the arguments and/or keywords they take, and return the appropriate object. 
+Those methods are:
+
+* ``parseDocument``
+    * Keywords:
+        * ``lines``: A list of lines.
+    * Return an ElementTree object
+
+* ``parseChunk``
+    * Keywords:
+        * ``parent_elem``: An ElementTree Element.
+        * ``lines``: A list of lines.
+        * ``inList``: Boolean, optional.
+        * ``looseList``: Boolean, optional.
+    * Return None. However, it should attach the parsed ``lines`` as children 
+      of the ``parent_elem``.
+
+* ``detechTabbed``
+    * Keywords:
+        * ``lines``: A list of lines.
+    * Return a 2 item tuple which should contain:
+        * A list of lines that were tabbed (now in a detabbed state) and 
+        * a list of all remaining lines.
 
 <h3 id="working_with_et">Working with the ElementTree</h3>
 
@@ -384,6 +425,7 @@ than one residing in a module.
 [Postprocessors]: #postprocessors
 [ElementTree Postprocessors]: #etpostprocessors
 [TextProstprocessors]: #textpostprocessors
+[MarkdownParser]: #markdownparser
 [Working with the ElementTree]: #working_with_et
 [Integrating your code into Markdown]: #integrating_into_markdown
 [extendMarkdown]: #extendmarkdown
