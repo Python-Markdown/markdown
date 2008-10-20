@@ -76,15 +76,16 @@ class FencedCodeExtension(markdown.Extension):
     def extendMarkdown(self, md, md_globals):
         """ Add FencedBlockPreprocessor to the Markdown instance. """
 
-        md.textPreprocessors.add('fenced_code_block', 
+        md.preprocessors.add('fenced_code_block', 
                                  FencedBlockPreprocessor(md), 
                                  "_begin")
 
 
-class FencedBlockPreprocessor(markdown.TextPreprocessor):
+class FencedBlockPreprocessor(markdown.Preprocessor):
     
-    def run(self, text):
+    def run(self, lines):
         """ Match and store Fenced Code Blocks in the HtmlStash. """
+        text = "\n".join(lines)
         while 1:
             m = FENCED_BLOCK_RE.search(text)
             if m:
@@ -96,7 +97,7 @@ class FencedBlockPreprocessor(markdown.TextPreprocessor):
                 text = '%s\n%s\n%s'% (text[:m.start()], placeholder, text[m.end():])
             else:
                 break
-        return text
+        return text.split("\n")
 
     def _escape(self, txt):
         """ basic html escaping """

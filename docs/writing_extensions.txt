@@ -19,8 +19,6 @@ helpful as well. For example, the [[Footnotes]] extension uses most of the
 features documented here.
 
 * [Preprocessors][]
-    * [TextPreprocessors][]
-    * [Line Preprocessors][]
 * [InlinePatterns][]
 * [Treeprocessors][] 
 * [Postprocessors][]
@@ -39,30 +37,7 @@ Preprocessors munge the source text before it is passed into the Markdown
 core. This is an excellent place to clean up bad syntax, extract things the 
 parser may otherwise choke on and perhaps even store it for later retrieval.
 
-There are two types of preprocessors: [TextPreprocessors][] and 
-[Line Preprocessors][].
-
-<h4 id="textpreprocessors">TextPreprocessors</h4>
-
-TextPreprocessors should inherit from ``markdown.TextPreprocessor`` and 
-implement a ``run`` method with one argument ``text``. The ``run`` method of 
-each TextPreprocessor will be passed the entire source text as a single Unicode
-string and should either return that single Unicode string, or an altered
-version of it.
-
-For example, a simple TextPreprocessor that normalizes newlines [^1] might look
-like this:
-
-    class NormalizePreprocessor(markdown.TextPreprocessor):
-        def run(self, text):
-            return text.replace("\r\n", "\n").replace("\r", "\n")
-
-[^1]: It should be noted that Markdown already normalizes newlines. This 
-example is for illustrative purposes only.
-
-<h4 id="linepreprocessors">Line Preprocessors</h4>
-
-Line Preprocessors should inherit from ``markdown.Preprocessor`` and implement 
+Preprocessors should inherit from ``markdown.Preprocessor`` and implement 
 a ``run`` method with one argument ``lines``. The ``run`` method of each Line
 Preprocessor will be passed the entire source text as a list of Unicode strings.
 Each string will contain one line of text. The ``run`` method should return
@@ -457,8 +432,6 @@ This is useful if you need to implement a large number of extensions with more
 than one residing in a module.
 
 [Preprocessors]: #preprocessors
-[TextPreprocessors]: #textpreprocessors
-[Line Preprocessors]: #linepreprocessors
 [InlinePatterns]: #inlinepatterns
 [Treeprocessors]: #treeprocessors
 [Postprocessors]: #postprocessors

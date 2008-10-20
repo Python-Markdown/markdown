@@ -581,35 +581,13 @@ PRE-PROCESSORS
 =============================================================================
 
 Preprocessors work on source text before we start doing anything too
-complicated.  There are two types of preprocessors: TextPreprocessor and
-Preprocessor.
+complicated. 
 """
 
 class Processor:
     def __init__(self, markdown_instance=None):
         if markdown_instance:
             self.markdown = markdown_instance
-
-class TextPreprocessor (Processor):
-    """
-    TextPreprocessors are run before the text is broken into lines.
-
-    Each TextPreprocessor implements a "run" method that takes a pointer to a
-    text string of the document, modifies it as necessary and returns
-    either the same pointer or a pointer to a new string.
-
-    TextPreprocessors must extend markdown.TextPreprocessor.
-
-    """
-
-    def run(self, text):
-        """
-        Each subclass of TextPreprocessor should override the `run` method,
-        which takes the document text as a single string and returns the
-        (possibly modified) document as a single string.
-
-        """
-        pass
 
 
 class Preprocessor (Processor):
@@ -633,7 +611,7 @@ class Preprocessor (Processor):
         pass
 
 
-class HtmlBlockPreprocessor(TextPreprocessor):
+class HtmlBlockPreprocessor(Preprocessor):
     """Remove html blocks from the text and store them for later retrieval."""
 
     right_tag_patterns = ["</%s>", "%s>"]
@@ -665,7 +643,8 @@ class HtmlBlockPreprocessor(TextPreprocessor):
     def _is_oneliner(self, tag):
         return (tag in ['hr', 'hr/'])
 
-    def run(self, text):
+    def run(self, lines):
+        text = "\n".join(lines)
         new_blocks = []
         text = text.split("\n\n")
         items = []
@@ -742,7 +721,8 @@ class HtmlBlockPreprocessor(TextPreprocessor):
             new_blocks.append(self.markdown.htmlStash.store('\n\n'.join(items)))
             new_blocks.append('\n')
 
-        return "\n\n".join(new_blocks)
+        new_text = "\n\n".join(new_blocks)
+        return new_text.split("\n")
 
 
 class HeaderPreprocessor(Preprocessor):
@@ -1781,12 +1761,9 @@ class Markdown:
         self.docType = ""
         self.stripTopLevelTags = True
 
-        self.textPreprocessors = Treap()
-        self.textPreprocessors.add("html_block",
-                                   HtmlBlockPreprocessor(self))
         self.preprocessors = Treap()
+        self.preprocessors.add("html_block", HtmlBlockPreprocessor(self))
         self.preprocessors.add("header", HeaderPreprocessor(self))
-        
         self.preprocessors.add("line", LinePreprocessor(self))
         self.preprocessors.add("reference", ReferencePreprocessor(self))
         # footnote preprocessor will be inserted with "<reference"
@@ -1889,10 +1866,6 @@ class Markdown:
         source = source.replace(STX, "").replace(ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
         source = source.expandtabs(TAB_LENGTH)
-
-        # Run the text preprocessors
-        for pp in self.textPreprocessors.heapsorted():
-            source = pp.run(source)
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
