@@ -29,6 +29,7 @@ features documented here.
 * [Working with the ElementTree][]
 * [Integrating your code into Markdown][]
     * [extendMarkdown][]
+    * [Treaps][]
     * [registerExtension][]
     * [Config Settings][]
     * [makeExtension][]
@@ -291,10 +292,10 @@ It is important to note that the order of the various processors and patterns
 matters. For example, if we replace ``http://...`` links with <a> elements, and 
 *then* try to deal with  inline html, we will end up with a mess. Therefore, 
 the various types of processors and patterns are stored within an instance of 
-the Markdown class within lists. Your ``Extension`` class will need to 
-manipulate those lists appropriately. You may insert instances of your 
-processors and patterns into the appropriate location in a list, remove a 
-built-in instances, or replace a built-in instance with your own.
+the Markdown class in [Treaps][]. Your ``Extension`` class will need to 
+manipulate those Treaps appropriately. You may insert instances of your 
+processors and patterns into the appropriate location in a Treap, remove a 
+built-in instance, or replace a built-in instance with your own.
 
 <h4 id="extendmarkdown">`extendMarkdown`</h4>
 
@@ -304,7 +305,7 @@ arguments:
 * ``md``:
 
     A pointer to the instance of the Markdown class. You should use this to 
-    access the lists of processors and patterns. They are found under the 
+    access the Treaps of processors and patterns. They are found under the 
     following attributes:
 
     * ``md.textPreprocessors``
@@ -332,6 +333,44 @@ should be doing is inserting processors and patterns into the markdown pipeline.
 Consider yourself warned.
 
 [monkey_patching]: http://en.wikipedia.org/wiki/Monkey_patch
+
+<h4 id="treaps">Treaps</h4>
+
+A treap is a binary search tree that orders nodes by accepting a priority
+attribute with a node, a well as a key to store the node. The priority 
+determines the node's location in the heap. Each new node entry causes the 
+heap to re-balance. The name "treap" is a composition of "tree" and "heap".
+
+An example:
+
+    tr = markdown.Treap()
+    tr.add("key1", Object1, "_begin")
+    tr.add("key2", Object2, ">key1")
+    tr.add("key3", Object3, "<key2")
+    tr.add("key4", Object4, "_end")
+
+Note that the priority can consist of a few different values. The special 
+strings ``"_begin"`` and ``"_end"`` insert that node at the beginning or end
+of the sorted heap. A less-than sign (``<``) followed by an existing key (i.e.:
+``"<key2"``) inserts that node before that existing key. A greater-than sign
+(``>``) followed by an existing key (i.e.: ``">key1"``) inserts that node after
+that existing key.
+
+Once a treap is created, the nodes are available via key:
+
+    MyNode = tr['somekey']
+
+Therefore, to delete an existing node:
+
+    del tr['somekey']
+
+To change the value of an existing node (leaving priority the same):
+
+    tr['somekey'] = MyNewObject
+
+To change the priority of an existing object:
+
+    tr.link('somekey', '<otherkey')
 
 <h4 id="registerextension">registerExtension</h4>
 
@@ -429,6 +468,7 @@ than one residing in a module.
 [Working with the ElementTree]: #working_with_et
 [Integrating your code into Markdown]: #integrating_into_markdown
 [extendMarkdown]: #extendmarkdown
+[Treaps]: #treaps
 [registerExtension]: #registerextension
 [Config Settings]: #configsettings
 [makeExtension]: #makeextension
