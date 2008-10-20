@@ -1217,7 +1217,6 @@ class InlineProcessor(Treeprocessor):
     """
 
     def __init__ (self, md):
-        #self.__inlinePatterns = patterns
         self.__placeholder_prefix = INLINE_PLACEHOLDER_PREFIX
         self.__placeholder_suffix = ETX
         self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
@@ -1872,16 +1871,6 @@ class Markdown:
         self.htmlStash.reset()
         self.references.clear()
 
-        #HTML_BLOCK_PREPROCESSOR.stash = self.htmlStash
-        #LINE_PREPROCESSOR.stash = self.htmlStash
-        #REFERENCE_PREPROCESSOR.references = self.references
-        #HTML_PATTERN.stash = self.htmlStash
-        #ENTITY_PATTERN.stash = self.htmlStash
-        #REFERENCE_PATTERN.references = self.references
-        #IMAGE_REFERENCE_PATTERN.references = self.references
-        #RAWHTMLTEXTPOSTPROCESSOR.stash = self.htmlStash
-        #RAWHTMLTEXTPOSTPROCESSOR.safeMode = self.safeMode
-
         for extension in self.registeredExtensions:
             extension.reset()
 
@@ -1912,10 +1901,6 @@ class Markdown:
 
         # Parse the high-level elements.
         root = self.parser.parseDocument(self.lines).getroot()
-
-        # Apply inline patterns
-        #inlineProcessor = InlineProcessor(self.inlinePatterns.heapsorted())
-        #root = inlineProcessor.applyInlinePatterns(tree).getroot()
 
         # Run the tree-processors
         for treeprocessor in self.treeprocessors.heapsorted():
