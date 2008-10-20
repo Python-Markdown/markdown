@@ -22,8 +22,8 @@ features documented here.
     * [TextPreprocessors][]
     * [Line Preprocessors][]
 * [InlinePatterns][]
-* [Treeprocessors][]
-* [Prostprocessors][]
+* [Treeprocessors][] 
+* [Postprocessors][]
 * [MarkdownParser][]
 * [Working with the ElementTree][]
 * [Integrating your code into Markdown][]
@@ -147,16 +147,12 @@ or use as well. Read through the source and see if there is anything you can
 use. You might even get a few ideas for different approaches to your specific
 situation.
 
-<h3 id="postprocessors">Postprocessors</h3>
-
-Postprocessors manipulate a document after it has passed through the Markdown 
-core. This is were stored text gets added back in; such as a list of footnotes, 
-a table of contents, or raw html.
-
-There are two types of postprocessors: [ElementTree Postprocessors][] and 
-[TextPostprocessors][].
-
 <h3 id="treeprocessors">Treeprocessors</h3>
+
+Treeprocessors manipulate an ElemenTree object  after it has passed through the
+core MarkdownParser. This is where additional manipulation of the tree takes
+place. Additionaly, the InlineProcessor is a Treeprocessor which steps through
+the tree and runs the InlinePatterns on the text of each Element in the tree.
 
 An Treeprocessor should inherit from ``markdown.Treeprocessor``,
 over-ride the ``run`` method which takes one argument ``root`` (an Elementree 
@@ -173,6 +169,10 @@ For specifics on manipulating the ElementTree, see
 [Working with the ElementTree][] below.
 
 <h3 id="postprocessors">Postprocessors</h3>
+
+Postprocessors manipulate the document after the ElementTree has been 
+serialized into a string. Postprocessors should be used to work with the
+text just before output.
 
 A Postprocessor should inherit from ``markdown.Postprocessor`` and
 over-ride the ``run`` method which takes one argument ``text`` and returns a
@@ -310,8 +310,8 @@ arguments:
     * ``md.textPreprocessors``
     * ``md.preprocessors``
     * ``md.inlinePatterns``
-    * ``md.postpreprocessors``
-    * ``md.textPostprocessors``
+    * ``md.treepreprocessors``
+    * ``md.postprocessors``
 
     Some other things you may want to access in the markdown instance are:
 
