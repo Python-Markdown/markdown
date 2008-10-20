@@ -282,7 +282,6 @@ arguments:
     access the Treaps of processors and patterns. They are found under the 
     following attributes:
 
-    * ``md.textPreprocessors``
     * ``md.preprocessors``
     * ``md.inlinePatterns``
     * ``md.treepreprocessors``
