@@ -12,7 +12,7 @@ import markdown
 from markdown import etree
 import re
 
-class TocPostprocessor (markdown.Postprocessor):
+class TocTreeprocessor (markdown.Treeprocessor):
     # Iterator wrapper to get parent and child all at once
     def iterparent(self, root):
         for parent in root.getiterator():
@@ -119,9 +119,9 @@ class TocExtension (markdown.Extension):
         return re.sub('[-\s]+','-',value)
 
     def extendMarkdown(self, md, md_globals) :
-        tocext = TocPostprocessor(md)
+        tocext = TocTreeprocessor(md)
         tocext.config = self.config
-        md.postprocessors.add("toc", tocext, "_begin")
+        md.treeprocessors.add("toc", tocext, "_begin")
 	
 def makeExtension(configs={}) :
     return TocExtension(configs=configs)

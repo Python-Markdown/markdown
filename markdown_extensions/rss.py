@@ -51,14 +51,14 @@ class RssExtension (markdown.Extension):
 
         md.xml_mode = True
         
-        # Insert a post-processor that would actually add the title tag
-        postprocessor = RssPostProcessor(self)
-        postprocessor.ext = self
-        md.postprocessors.append(postprocessor)
+        # Insert a tree-processor that would actually add the title tag
+        treeprocessor = RssTreeProcessor(self)
+        treeprocessor.ext = self
+        md.treeprocessors.append(treeprocessor)
         md.stripTopLevelTags = 0
         md.docType = '<?xml version="1.0" encoding="utf-8"?>\n'
 
-class RssPostProcessor (markdown.Postprocessor):
+class RssTreeProcessor (markdown.Treeprocessor):
 
     def __init__(self, md):
         

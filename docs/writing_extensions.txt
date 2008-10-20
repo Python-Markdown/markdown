@@ -22,9 +22,8 @@ features documented here.
     * [TextPreprocessors][]
     * [Line Preprocessors][]
 * [InlinePatterns][]
-* [Postprocessors][]
-    * [ElementTree Postprocessors][]
-    * [TextProstprocessors][]
+* [Treeprocessors][]
+* [Prostprocessors][]
 * [MarkdownParser][]
 * [Working with the ElementTree][]
 * [Integrating your code into Markdown][]
@@ -157,15 +156,15 @@ a table of contents, or raw html.
 There are two types of postprocessors: [ElementTree Postprocessors][] and 
 [TextPostprocessors][].
 
-<h4 id="etpostprocessors">ElementTree Postprocessors</h4>
+<h3 id="treeprocessors">Treeprocessors</h3>
 
-An ElementTree Postprocessor should inherit from ``markdown.Postprocessor``,
-over-ride the ``run`` method which takes one argument ``root`` and returns 
-either that root element or a modified root element.
+An Treeprocessor should inherit from ``markdown.Treeprocessor``,
+over-ride the ``run`` method which takes one argument ``root`` (an Elementree 
+object) and returns either that root element or a modified root element.
 
 A pseudo example:
 
-    class MyPostprocessor(markdown.Postprocessor):
+    class MyTreeprocessor(markdown.Treeprocessor):
     def run(self, root):
         #do stufff
         return my_modified_root
@@ -173,17 +172,17 @@ A pseudo example:
 For specifics on manipulating the ElementTree, see 
 [Working with the ElementTree][] below.
 
-<h4 id="textpostprocessors">TextPostprocessors</h4>
+<h3 id="postprocessors">Postprocessors</h3>
 
-A TextPostprocessor should inherit from ``markdown.TextPostprocessor`` and
+A Postprocessor should inherit from ``markdown.Postprocessor`` and
 over-ride the ``run`` method which takes one argument ``text`` and returns a
 Unicode string.
 
-TextPostprocessors are run after the ElementTree has been serialized back into 
+Postprocessors are run after the ElementTree has been serialized back into 
 Unicode text.  For example, this may be an appropriate place to add a table of 
 contents to a document:
 
-    class TocTextPostprocessor(markdown.TextPostprocessor):
+    class TocPostprocessor(markdown.Postprocessor):
     def run(self, text):
         return MYMARKERRE.sub(MyToc, text)
 
@@ -461,9 +460,8 @@ than one residing in a module.
 [TextPreprocessors]: #textpreprocessors
 [Line Preprocessors]: #linepreprocessors
 [InlinePatterns]: #inlinepatterns
+[Treeprocessors]: #treeprocessors
 [Postprocessors]: #postprocessors
-[ElementTree Postprocessors]: #etpostprocessors
-[TextProstprocessors]: #textpostprocessors
 [MarkdownParser]: #markdownparser
 [Working with the ElementTree]: #working_with_et
 [Integrating your code into Markdown]: #integrating_into_markdown

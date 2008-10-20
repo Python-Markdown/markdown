@@ -175,7 +175,7 @@ class CodeHilite:
 
 
 # ------------------ The Markdown Extension -------------------------------
-class HilitePostprocessor(markdown.Postprocessor):
+class HiliteTreeprocessor(markdown.Treeprocessor):
     """ Hilight source code in code blocks. """
 
     def run(self, root):
@@ -214,9 +214,9 @@ class CodeHiliteExtension(markdown.Extension):
 
     def extendMarkdown(self, md, md_globals):
         """ Add HilitePostprocessor to Markdown instance. """
-        hiliter = HilitePostprocessor(md)
+        hiliter = HiliteTreeprocessor(md)
         hiliter.config = self.config
-        md.postprocessors.add("hilite", hiliter, "_begin") 
+        md.treeprocessors.add("hilite", hiliter, "_begin") 
 
 
 def makeExtension(configs={}):

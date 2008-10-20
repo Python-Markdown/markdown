@@ -38,7 +38,7 @@ class TablePattern(markdown.Pattern) :
  
         return tr
 
-class TablePostprocessor:
+class TableTreeprocessor(markdown.Treeprocessor):
     
     def _findElement(self, element, name):
         result = []
@@ -62,7 +62,7 @@ class TablePostprocessor:
 class TableExtension(markdown.Extension):
     def extendMarkdown(self, md, md_globals):
         md.inlinePatterns.add('table', TablePattern(md), "<backtick")
-        md.postprocessors['table'] = TablePostprocessor()
+        md.treeprocessors['table'] = TableTreeprocessor()
 
 
 def makeExtension(configs):

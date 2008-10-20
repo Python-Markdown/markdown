@@ -1458,43 +1458,44 @@ Markdown also allows post-processors, which are similar to preprocessors in
 that they need to implement a "run" method. However, they are run after core
 processing.
 
-There are two types of post-processors: Postprocessor and TextPostprocessor
+There are two types of post-processors: Treeprocessor and Postprocessor
 """
 
-class Postprocessor (Processor):
+class Treeprocessor(Processor):
     """
-    Postprocessors are run before the ElementTree serialization.
+    Treeprocessors are run on the ElementTree object before serialization.
 
-    Each Postprocessor implements a "run" method that takes a pointer to a
-    ElementTree, modifies it as necessary and returns a ElementTree
-    document.
+    Each Treeprocessor implements a "run" method that takes a pointer to an
+    ElementTree, modifies it as necessary and returns an ElementTree
+    object.
 
-    Postprocessors must extend markdown.Postprocessor.
+    Treeprocessors must extend markdown.Treeprocessor.
 
     """
     def run(self, root):
         """
-        Subclasses of Postprocessor should implement a `run` method, which
-        takes a root Element. Method can return another Element, and global
-        root Element will be replaced, or just modify current and return None.
+        Subclasses of Treeprocessor should implement a `run` method, which
+        takes a root ElementTree. This method can return another ElementTree 
+        object, and the existing root ElementTree will be replaced, or it can 
+        modify the current tree and return None.
         """
         pass
 
 
-class TextPostprocessor (Processor):
+class Postprocessor(Processor):
     """
-    TextPostprocessors are run after the ElementTree it converted back into text.
+    Postprocessors are run after the ElementTree it converted back into text.
 
-    Each TextPostprocessor implements a "run" method that takes a pointer to a
+    Each Postprocessor implements a "run" method that takes a pointer to a
     text string, modifies it as necessary and returns a text string.
 
-    TextPostprocessors must extend markdown.TextPostprocessor.
+    Postprocessors must extend markdown.Postprocessor.
 
     """
 
     def run(self, text):
         """
-        Subclasses of TextPostprocessor should implement a `run` method, which
+        Subclasses of Postprocessor should implement a `run` method, which
         takes the html document as a single text string and returns a
         (possibly modified) string.
 
@@ -1502,7 +1503,7 @@ class TextPostprocessor (Processor):
         pass
 
 
-class PrettifyPostprocessor(Postprocessor):
+class PrettifyTreeprocessor(Treeprocessor):
     """Add linebreaks to the html document."""
     def _prettifyETree(self, elem):
         """Recursively add linebreaks to ElementTree children."""
@@ -1532,7 +1533,7 @@ class PrettifyPostprocessor(Postprocessor):
                 br.tail = '\n%s' % br.tail
 
 
-class RawHtmlTextPostprocessor(TextPostprocessor):
+class RawHtmlPostprocessor(Postprocessor):
     """ Restore raw html to the document. """
 
     def run(self, text):
@@ -1560,7 +1561,7 @@ class RawHtmlTextPostprocessor(TextPostprocessor):
         return html.replace('"', '&quot;')
 
 
-class AndSubstitutePostprocessor(TextPostprocessor):
+class AndSubstitutePostprocessor(Postprocessor):
     """ Restore valid entities """
     def __init__(self):
         pass
@@ -1799,12 +1800,12 @@ class Markdown:
         self.preprocessors.add("reference", ReferencePreprocessor(self))
         # footnote preprocessor will be inserted with "<reference"
 
-        self.postprocessors = Treap()
-        self.postprocessors.add("prettify", PrettifyPostprocessor(self))
+        self.treeprocessors = Treap()
+        self.treeprocessors.add("prettify", PrettifyTreeprocessor(self))
 
-        self.textPostprocessors = Treap()
-        self.textPostprocessors.add("raw_html", RawHtmlTextPostprocessor(self))
-        self.textPostprocessors.add("amp_substitute", AndSubstitutePostprocessor())
+        self.postprocessors = Treap()
+        self.postprocessors.add("raw_html", RawHtmlPostprocessor(self))
+        self.postprocessors.add("amp_substitute", AndSubstitutePostprocessor())
         # footnote postprocessor will be inserted with ">amp_substitute"
 
         self.prePatterns = []
@@ -1920,9 +1921,9 @@ class Markdown:
         inlineProcessor = InlineProcessor(self.inlinePatterns.heapsorted())
         root = inlineProcessor.applyInlinePatterns(tree).getroot()
 
-        # Run the post-processors
-        for postprocessor in self.postprocessors.heapsorted():
-            newRoot = postprocessor.run(root)
+        # Run the tree-processors
+        for treeprocessor in self.treeprocessors.heapsorted():
+            newRoot = treeprocessor.run(root)
             if newRoot:
                 root = newRoot
 
@@ -1932,7 +1933,7 @@ class Markdown:
             xml = xml.strip()[44:-7] + "\n"
 
         # Run the text post-processors
-        for pp in self.textPostprocessors.heapsorted():
+        for pp in self.postprocessors.heapsorted():
             xml = pp.run(xml)
 
         return xml.strip()

@@ -60,11 +60,11 @@ class FootnoteExtension (markdown.Extension):
         md.inlinePatterns.add("footnote", FootnotePattern(FOOTNOTE_RE, self),
                               "<reference")
 
-        # Insert a post-processor that would actually add the footnote div
-        md.postprocessors.add("footnote", FootnotePostprocessor(self),
+        # Insert a tree-processor that would actually add the footnote div
+        md.treeprocessors.add("footnote", FootnoteTreeprocessor(self),
                                  "_end")
 
-        md.textPostprocessors.add("footnote", FootnoteTextPostprocessor(self),
+        md.postprocessors.add("footnote", FootnotePostprocessor(self),
                                   ">amp_substitute")
 
     def reset(self) :
@@ -216,7 +216,7 @@ class FootnotePattern (markdown.Pattern) :
         a.text = str(num)
         return sup
 
-class FootnotePostprocessor (markdown.Postprocessor):
+class FootnoteTreeprocessor (markdown.Treeprocessor):
 
     def __init__ (self, footnotes) :
         self.footnotes = footnotes
@@ -239,7 +239,7 @@ class FootnotePostprocessor (markdown.Postprocessor):
             else :
                 root.append(footnotesDiv)
 
-class FootnoteTextPostprocessor (markdown.Postprocessor):
+class FootnotePostprocessor (markdown.Postprocessor):
 
     def run(self, text) :
         return text.replace(FN_BACKLINK_TEXT, "&#8617;")
