@@ -33,7 +33,7 @@ Limberg](http://achinghead.com/) and [Artem Yunusov](http://blog.splyer.com).
 Contact: markdown@freewisdom.org
 
 Copyright 2007, 2008 The Python Markdown Project (v. 1.7 and later)
-Copyright 2007 Benjamin C. Wilson (Treap implementation)
+Copyright 200? Django Software Foundation (OrderedDict implementation)
 Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 Copyright 2004 Manfred Stienstra (the original version)
 
@@ -1586,149 +1586,169 @@ class HtmlStash:
         self.html_counter = 0
         self.rawHtmlBlocks = []
 
-
-from operator import itemgetter
-
-class Treap(dict):
-    """Extends dict to allow assignment of priority. 
-
-    A treap is a binary search tree that orders the nodes by adding a priority
-    attribute to a node, as well as a key. The nodes are ordered so that the
-    keys form a binary search tree and the priorities obey the min heap order
-    property. The name treap is a composition of tree and heap.
-
-    The priority determines the node's location in the heap, which allows
-    extracting the dictionary's nodes in a prioritized order. Each new node
-    entry causes the heap to re-balance.
-
-    Keyword Argument:
-      default -- begin/end, determines where unprioritized dict entry is ordered. (Default: begin.)
+class OrderedDict(dict):
+    """
+    A dictionary that keeps its keys in the order in which they're inserted.
+    
+    Copied from Django's SortedDict with some modifications.
 
     """
-    _r_BRACE = re.compile(r'^([<>])?(.+)')
-    def __init__(self, default='end'):
-        self.default = '_'+('begin',default)[default in ('begin','end')]
-        self.priority = None
-        self._lastItem = "_begin"
-        self._tree  = { 
-            '_begin' : {'heap':('_begin','B'),'kids' : {},'prio' : 'B'}
-            ,'_end' : {'heap':('_end','E'),'kids' : {},'prio' : 'E'}
-        }
-        self._reset()
-        dict.__setitem__(self, '_begin', None)
-        dict.__setitem__(self, '_end', None)
+    def __new__(cls, *args, **kwargs):
+        instance = super(OrderedDict, cls).__new__(cls, *args, **kwargs)
+        instance.keyOrder = []
+        return instance
+
+    def __init__(self, data=None):
+        if data is None:
+            data = {}
+        super(OrderedDict, self).__init__(data)
+        if isinstance(data, dict):
+            self.keyOrder = data.keys()
+        else:
+            self.keyOrder = []
+            for key, value in data:
+                if key not in self.keyOrder:
+                    self.keyOrder.append(key)
+
+    def __deepcopy__(self, memo):
+        from copy import deepcopy
+        return self.__class__([(key, deepcopy(value, memo))
+                               for key, value in self.iteritems()])
+
+    def __setitem__(self, key, value):
+        super(OrderedDict, self).__setitem__(key, value)
+        if key not in self.keyOrder:
+            self.keyOrder.append(key)
 
     def __delitem__(self, key):
-        # Remove item from hash-tree and linking its kids to its parent
-        parn, brace = self._prior(self._tree[key]['prio'])
-        self._tree[parn]['kids'].pop(key, None)
-        for k, b in self._tree[key]['kids'].items(): 
-            self.link(k, b + parn)
-        del self._tree[key]
-        dict.__delitem__(self, key)
+        super(OrderedDict, self).__delitem__(key)
+        self.keyOrder.remove(key)
 
-    def __setitem__(self, key, val, *args):
-        if key not in self._tree:
-            if len(args): 
-                prio = args[0]
-            else:
-                prio = (self.default, self.priority)[self.priority != None]
+    def __iter__(self):
+        for k in self.keyOrder:
+            yield k
 
-            self._tree.setdefault(key, {'kids' : {},'prio' : prio})
-            self.link(key, prio)
-        self._reset()
-        dict.__setitem__(self, key, val)
-
-    def add(self, k, v, p=None): 
-        """Adds key/value to dict and sets priority."""
-        if p is None:
-            p = self._lastItem
-        self.__setitem__(k, v, p)
-        self._lastItem = ">%s" % k
-
-    def _reset(self): self._heap=[];self._keys=[];self._vals=[];self._items=[];
-
-    def _prior(self, p):
-        m = self._r_BRACE.match(p)
-        if m.group(1) is None: b = '='
-        else: b = m.group(1)
-        return m.group(2), b
-
-    def link(self, key, priority):
-        """Sets priority for already-existing key/value pair."""
-        self._reset()
-        parn, brace = self._prior(priority)
-        #if parn in self._tree:
+    def pop(self, k, *args):
+        result = super(OrderedDict, self).pop(k, *args)
         try:
-            self._tree[parn]['kids'][key] = brace
-            if 'heap' in self._tree[parn]:
-                self._tree[key]['heap']=(
-                    key,
-                    self._tree[parn]['heap'][1]+brace
-                )
-                for k,v in self._tree[key]['kids'].iteritems(): 
-                    self.link(k, v+key)
-            self._tree[key]['prio'] = priority
+            self.keyOrder.remove(k)
+        except ValueError:
+            # Key wasn't in the dictionary in the first place. No problem.
+            pass
+        return result
 
-        except: 
-            message(CRITICAL, 
-                    "Key (%s)'s parent (%s) missing." % (key, priority))
+    def popitem(self):
+        result = super(OrderedDict, self).popitem()
+        self.keyOrder.remove(result[0])
+        return result
 
     def items(self):
-        """Returns list of unsorted key/value tuples."""
-        if not len(self._items):
-            dic = dict.copy(self)
-            del dic['_begin']
-            del dic['_end']
-            self._items = dic.items()
-        return self._items
-    
-    def values(self): 
-        """Returns list of unsorted values."""
-        if not len(self._vals):
-            dic = dict.copy(self)
-            del dic['_begin']
-            del dic['_end']
-            self._vals = dic.values()
-        return self._vals
+        return zip(self.keyOrder, self.values())
+
+    def iteritems(self):
+        for key in self.keyOrder:
+            yield key, super(OrderedDict, self).__getitem__(key)
 
     def keys(self):
-        """Returns list of unsorted keys."""
-        if not len(self._keys):
-            self._keys = dict.keys(self)
-            self._keys.remove('_begin')
-            self._keys.remove('_end')
-            
-        return self._keys
+        return self.keyOrder[:]
 
-    def heapsorted(self, keys=0, items=0):
-        """Do heap sort and return list. (Default returns values.)
+    def iterkeys(self):
+        return iter(self.keyOrder)
 
-        Keyword Arguments:
-          keys -- when true, returns heap-sorted list of keys. (default: false)
-          items -- when true, returns heap-sorted list of key/value tuples. (default: false)
-          (if both set, items have precedent.)
+    def values(self):
+        return [super(OrderedDict, self).__getitem__(k) for k in self.keyOrder]
 
+    def itervalues(self):
+        for key in self.keyOrder:
+            yield super(OrderedDict, self).__getitem__(key)
+
+    def update(self, dict_):
+        for k, v in dict_.items():
+            self.__setitem__(k, v)
+
+    def setdefault(self, key, default):
+        if key not in self.keyOrder:
+            self.keyOrder.append(key)
+        return super(OrderedDict, self).setdefault(key, default)
+
+    def value_for_index(self, index):
+        """Return the value of the item at the given zero-based index."""
+        return self[self.keyOrder[index]]
+
+    def insert(self, index, key, value):
+        """Insert the key, value pair before the item with the given index."""
+        if key in self.keyOrder:
+            n = self.keyOrder.index(key)
+            del self.keyOrder[n]
+            if n < index:
+                index -= 1
+        self.keyOrder.insert(index, key)
+        super(OrderedDict, self).__setitem__(key, value)
+
+    def copy(self):
+        """Return a copy of this object."""
+        # This way of initializing the copy means it works for subclasses, too.
+        obj = self.__class__(self)
+        obj.keyOrder = self.keyOrder[:]
+        return obj
+
+    def __repr__(self):
         """
-        if not len(self._heap):
-            self._heap = [
-                (k, dict.__getitem__(self,k)) for k in [
-                    s[0] for s in sorted( 
-                        [v['heap'] for v in self._tree.values()]
-                        ,key=itemgetter(1)
-                    )
-                ]
-            ]
-            for h in self._heap:
-                if h[0] in ('_begin','_end'):
-                    self._heap.remove(h)
+        Replace the normal dict.__repr__ with a version that returns the keys
+        in their sorted order.
+        """
+        return '{%s}' % ', '.join(['%r: %r' % (k, v) for k, v in self.items()])
 
-        if items:
-            return self._heap
-        elif keys:
-            return [ h[0] for h in self._heap ]
+    def clear(self):
+        super(OrderedDict, self).clear()
+        self.keyOrder = []
 
-        return [ h[1] for h in self._heap ]
+    def index(self, key):
+        """ Return the index of a given key. """
+        return self.keyOrder.index(key)
+
+    def index_for_location(self, location):
+        """ Return index or None for a given location. """
+        if location == '_begin':
+            i = 0
+        elif location == '_end':
+            i = None
+        elif location.startswith('<') or location.startswith('>'):
+            i = self.index(location[1:])
+            if location.startswith('>'):
+                if i >= len(self):
+                    # last item
+                    i = None
+                else:
+                    i += 1
+        else:
+            raise ValueError('Not a valid location: "%s". Location key '
+                             'must start with a ">" or "<".' % location)
+        return i
+
+    def add(self, key, value, location):
+        """ Insert by key location. """
+        i = self.index_for_location(location)
+        if i is not None:
+            self.insert(i, key, value)
+        else:
+            self.__setitem__(key, value)
+
+    def link(self, key, location):
+        """ Change location of an existing item. """
+        n = self.keyOrder.index(key)
+        del self.keyOrder[n]
+        i = self.index_for_location(location)
+        try:
+            if i is not None:
+                self.keyOrder.insert(i, key)
+            else:
+                self.keyOrder.append(key)
+        except Error:
+            # restore to prevent data loss and reraise
+            self.keyOrder.insert(n, key)
+            raise Error
+
 
 """
 Markdown
@@ -1761,47 +1781,47 @@ class Markdown:
         self.docType = ""
         self.stripTopLevelTags = True
 
-        self.preprocessors = Treap()
-        self.preprocessors.add("html_block", HtmlBlockPreprocessor(self))
-        self.preprocessors.add("header", HeaderPreprocessor(self))
-        self.preprocessors.add("line", LinePreprocessor(self))
-        self.preprocessors.add("reference", ReferencePreprocessor(self))
+        self.preprocessors = OrderedDict()
+        self.preprocessors["html_block"] =  HtmlBlockPreprocessor(self)
+        self.preprocessors["header"] = HeaderPreprocessor(self)
+        self.preprocessors["line"] =  LinePreprocessor(self)
+        self.preprocessors["reference"] = ReferencePreprocessor(self)
         # footnote preprocessor will be inserted with "<reference"
 
-        self.treeprocessors = Treap()
-        self.treeprocessors.add("inline", InlineProcessor(self))
-        self.treeprocessors.add("prettify", PrettifyTreeprocessor(self))
+        self.treeprocessors = OrderedDict()
+        self.treeprocessors["inline"] = InlineProcessor(self)
+        self.treeprocessors["prettify"] = PrettifyTreeprocessor(self)
 
-        self.postprocessors = Treap()
-        self.postprocessors.add("raw_html", RawHtmlPostprocessor(self))
-        self.postprocessors.add("amp_substitute", AndSubstitutePostprocessor())
+        self.postprocessors = OrderedDict()
+        self.postprocessors["raw_html"] = RawHtmlPostprocessor(self)
+        self.postprocessors["amp_substitute"] = AndSubstitutePostprocessor()
         # footnote postprocessor will be inserted with ">amp_substitute"
 
         self.prePatterns = []
 
-        self.inlinePatterns = Treap()
-        self.inlinePatterns.add("backtick", BacktickPattern(BACKTICK_RE))
-        self.inlinePatterns.add("escape", SimpleTextPattern(ESCAPE_RE))
-        self.inlinePatterns.add("reference", ReferencePattern(REFERENCE_RE, self))
-        self.inlinePatterns.add("link", LinkPattern(LINK_RE, self))
-        self.inlinePatterns.add("image_link", ImagePattern(IMAGE_LINK_RE, self))
-        self.inlinePatterns.add("image_reference",
-                                ImageReferencePattern(IMAGE_REFERENCE_RE, self))
-        self.inlinePatterns.add("autolink", AutolinkPattern(AUTOLINK_RE, self))
-        self.inlinePatterns.add("automail", AutomailPattern(AUTOMAIL_RE, self))
-        self.inlinePatterns.add("linebreak2",
-                                SubstituteTagPattern(LINE_BREAK_2_RE, 'br'))
-        self.inlinePatterns.add("linebreak",
-                                SubstituteTagPattern(LINE_BREAK_RE, 'br'))
-        self.inlinePatterns.add("html", HtmlPattern(HTML_RE, self))
-        self.inlinePatterns.add("entity", HtmlPattern(ENTITY_RE, self))
-        self.inlinePatterns.add("not_strong", SimpleTextPattern(NOT_STRONG_RE))
-        self.inlinePatterns.add("strong_em",
-                                DoubleTagPattern(STRONG_EM_RE, 'strong,em'))
-        self.inlinePatterns.add("strong", SimpleTagPattern(STRONG_RE, 'strong'))
-        self.inlinePatterns.add("emphasis", SimpleTagPattern(EMPHASIS_RE, 'em'))
-        self.inlinePatterns.add("emphasis2",
-                                SimpleTagPattern(EMPHASIS_2_RE, 'em'))
+        self.inlinePatterns = OrderedDict()
+        self.inlinePatterns["backtick"] = BacktickPattern(BACKTICK_RE)
+        self.inlinePatterns["escape"] = SimpleTextPattern(ESCAPE_RE)
+        self.inlinePatterns["reference"] = ReferencePattern(REFERENCE_RE, self)
+        self.inlinePatterns["link"] = LinkPattern(LINK_RE, self)
+        self.inlinePatterns["image_link"] = ImagePattern(IMAGE_LINK_RE, self)
+        self.inlinePatterns["image_reference"] = \
+                            ImageReferencePattern(IMAGE_REFERENCE_RE, self)
+        self.inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, self)
+        self.inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, self)
+        self.inlinePatterns["linebreak2"] = \
+                            SubstituteTagPattern(LINE_BREAK_2_RE, 'br')
+        self.inlinePatterns["linebreak"] = \
+                            SubstituteTagPattern(LINE_BREAK_RE, 'br')
+        self.inlinePatterns["html"] = HtmlPattern(HTML_RE, self)
+        self.inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, self)
+        self.inlinePatterns["not_strong"] = SimpleTextPattern(NOT_STRONG_RE)
+        self.inlinePatterns["strong_em"] = \
+                            DoubleTagPattern(STRONG_EM_RE, 'strong,em')
+        self.inlinePatterns["strong"] = SimpleTagPattern(STRONG_RE, 'strong')
+        self.inlinePatterns["emphasis"] = SimpleTagPattern(EMPHASIS_RE, 'em')
+        self.inlinePatterns["emphasis2"] = \
+                            SimpleTagPattern(EMPHASIS_2_RE, 'em')
         # The order of the handlers matters!!!
 
         self.references = {}
@@ -1811,7 +1831,7 @@ class Markdown:
         self.reset()
 
         # Sort and add patterns only after all extensions are loaded.
-        self.treeprocessors['inline'].patterns = self.inlinePatterns.heapsorted()
+        self.treeprocessors['inline'].patterns = self.inlinePatterns.values()
 
     def registerExtensions(self, extensions, configs):
         """
@@ -1869,14 +1889,14 @@ class Markdown:
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
-        for prep in self.preprocessors.heapsorted():
+        for prep in self.preprocessors.values():
             self.lines = prep.run(self.lines)
 
         # Parse the high-level elements.
         root = self.parser.parseDocument(self.lines).getroot()
 
         # Run the tree-processors
-        for treeprocessor in self.treeprocessors.heapsorted():
+        for treeprocessor in self.treeprocessors.values():
             newRoot = treeprocessor.run(root)
             if newRoot:
                 root = newRoot
@@ -1887,7 +1907,7 @@ class Markdown:
             xml = xml.strip()[44:-7] + "\n"
 
         # Run the text post-processors
-        for pp in self.postprocessors.heapsorted():
+        for pp in self.postprocessors.values():
             xml = pp.run(xml)
 
         return xml.strip()

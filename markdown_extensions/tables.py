@@ -62,7 +62,7 @@ class TableTreeprocessor(markdown.Treeprocessor):
 class TableExtension(markdown.Extension):
     def extendMarkdown(self, md, md_globals):
         md.inlinePatterns.add('table', TablePattern(md), "<backtick")
-        md.treeprocessors['table'] = TableTreeprocessor()
+        md.treeprocessors.add('table', TableTreeprocessor(), "<prettify")
 
 
 def makeExtension(configs):

@@ -75,74 +75,97 @@ class TestHtmlStash(unittest.TestCase):
         self.assertEqual(self.stash.html_counter, 0)
         self.assertEqual(self.stash.rawHtmlBlocks, [])
 
-class TestTreap(unittest.TestCase):
-    """ Test Treap storage class. """
+class TestOrderedDict(unittest.TestCase):
+    """ Test OrderedDict storage class. """
 
     def setUp(self):
-        self.treap = markdown.Treap()
-        self.treap.add('first', 'This', '_begin')
-        self.treap.add('second', 'is', '>first')
-        self.treap.add('fourth', 'self', '>second')
-        self.treap.add('fifth', 'test', '>fourth')
-        self.treap.add('third', 'a', '>second')
-        self.treap['seventh'] = '.'
+        self.odict = markdown.OrderedDict()
+        self.odict['first'] = 'This'
+        self.odict['third'] = 'a'
+        self.odict['fourth'] = 'self'
+        self.odict['fifth'] = 'test'
 
-    def testHeapsorted(self):
-        """ Test output of Treap.heapsorted(). """
-        self.assertEqual(self.treap.heapsorted(),
-                    ['This', 'is', 'a', 'self', 'test','.'])
-        self.assertEqual(self.treap.heapsorted(keys=1),
-                    ['first', 'second', 'third', 'fourth', 'fifth','seventh'])
-        self.assertEqual(self.treap.heapsorted(items=1),
+    def testValues(self):
+        """ Test output of OrderedDict.values(). """
+        self.assertEqual(self.odict.values(), ['This', 'a', 'self', 'test'])
+
+    def testKeys(self):
+        """ Test output of OrderedDict.keys(). """
+        self.assertEqual(self.odict.keys(),
+                    ['first', 'third', 'fourth', 'fifth'])
+
+    def testItems(self):
+        """ Test output of OrderedDict.items(). """
+        self.assertEqual(self.odict.items(),
+                    [('first', 'This'), ('third', 'a'), 
+                    ('fourth', 'self'), ('fifth', 'test')])
+
+    def testAddBefore(self):
+        """ Test adding an OrderedDict item before a given key. """
+        self.odict.add('second', 'is', '<third')
+        self.assertEqual(self.odict.items(),
                     [('first', 'This'), ('second', 'is'), ('third', 'a'), 
-                    ('fourth', 'self'), ('fifth', 'test'), ('seventh','.')])
+                    ('fourth', 'self'), ('fifth', 'test')])
 
-    def testDictStorage(self):
-        """ Test Treap's Dict Storage. """
-        self.treap._reset()
-        self.assertEqual(self.treap.values(), self.treap._vals)
-        self.assertEqual(self.treap.keys(), self.treap._keys)
-        self.assertEqual(self.treap.items(), self.treap._items)
+    def testAddAfter(self):
+        """ Test adding an OrderDict item after a given key. """
+        self.odict.add('second', 'is', '>first')
+        self.assertEqual(self.odict.items(),
+                    [('first', 'This'), ('second', 'is'), ('third', 'a'), 
+                    ('fourth', 'self'), ('fifth', 'test')])
 
-    def testDeleteNode(self):
-        """ Test deletion of a Treap node. """
-        del self.treap['second']
-        self.assertEqual(self.treap.heapsorted(),
-                    ['This', 'a', 'self', 'test','.'])
-        self.assertEqual(self.treap.heapsorted(keys=1),
-                    ['first', 'third', 'fourth', 'fifth','seventh'])
-        self.assertEqual(self.treap.heapsorted(items=1),
-                    [('first', 'This'), ('third', 'a'), ('fourth', 'self'), 
-                    ('fifth', 'test'), ('seventh','.')])
+    def testAddAfterEnd(self):
+        """ Test adding an OrderedDict item after the last key. """
+        self.odict.add('sixth', '.', '>fifth')
+        self.assertEqual(self.odict.items(),
+                    [('first', 'This'), ('third', 'a'), 
+                    ('fourth', 'self'), ('fifth', 'test'), ('sixth', '.')])
+
+    def testAdd_begin(self):
+        """ Test adding an OrderedDict item using "_begin". """
+        self.odict.add('zero', 'CRAZY', '_begin')
+        self.assertEqual(self.odict.items(),
+                    [('zero', 'CRAZY'), ('first', 'This'), ('third', 'a'), 
+                    ('fourth', 'self'), ('fifth', 'test')])
+
+    def testAdd_end(self):
+        """ Test adding an OrderedDict item using "_end". """
+        self.odict.add('sixth', '.', '_end')
+        self.assertEqual(self.odict.items(),
+                    [('first', 'This'), ('third', 'a'), 
+                    ('fourth', 'self'), ('fifth', 'test'), ('sixth', '.')])
+
+    def testAddBadLocation(self):
+        """ Test Error on bad location in OrderedDict.add(). """
+        self.assertRaises(ValueError, self.odict.add, 'sixth', '.', '<seventh')
+        self.assertRaises(ValueError, self.odict.add, 'second', 'is', 'third')
+
+    def testDeleteItem(self):
+        """ Test deletion of an OrderedDict item. """
+        del self.odict['fourth']
+        self.assertEqual(self.odict.items(),
+                    [('first', 'This'), ('third', 'a'), ('fifth', 'test')])
 
     def testChangeValue(self):
-        """ Test Treap change value. """
-        self.treap['seventh'] = 'CRAZY'
-        self.assertEqual(self.treap.heapsorted(),
-                    ['This', 'is', 'a', 'self', 'test','CRAZY'])
-        self.assertEqual(self.treap.heapsorted(keys=1),
-                    ['first', 'second', 'third', 'fourth', 'fifth','seventh'])
-        self.assertEqual(self.treap.heapsorted(items=1),
-                    [('first', 'This'), ('second', 'is'), ('third', 'a'), 
-                    ('fourth', 'self'), ('fifth', 'test'), ('seventh','CRAZY')])
+        """ Test OrderedDict change value. """
+        self.odict['fourth'] = 'CRAZY'
+        self.assertEqual(self.odict.items(),
+                    [('first', 'This'), ('third', 'a'), 
+                    ('fourth', 'CRAZY'), ('fifth', 'test')])
 
-    def testChangePriority(self):
-        """ Test Treap change priority. """
-        self.treap.link('seventh', '<third')
-        self.assertEqual(self.treap.heapsorted(),
-                    ['This', 'is', 'a', 'self', '.', 'test'])
-        self.assertEqual(self.treap.heapsorted(keys=1),
-                    ['first', 'second', 'third', 'fourth', 'seventh', 'fifth'])
-        self.assertEqual(self.treap.heapsorted(items=1),
-                    [('first', 'This'), ('second', 'is'), ('third', 'a'), 
-                    ('fourth', 'self'), ('seventh','.'), ('fifth', 'test')])
+    def testChangeOrder(self):
+        """ Test OrderedDict change order. """
+        self.odict.link('fourth', '<third')
+        self.assertEqual(self.odict.items(),
+                    [('first', 'This'), ('fourth', 'self'),
+                    ('third', 'a'), ('fifth', 'test')])
 
 def suite():
     """ Build a test suite of the above tests and extension doctests. """
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestMarkdownParser))
     suite.addTest(unittest.makeSuite(TestHtmlStash))
-    suite.addTest(unittest.makeSuite(TestTreap))
+    suite.addTest(unittest.makeSuite(TestOrderedDict))
 
     for filename in os.listdir('markdown_extensions'):
         if filename.endswith('.py'):
