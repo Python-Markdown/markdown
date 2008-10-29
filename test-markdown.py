@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os, difflib, time, gc, codecs, platform
 from pprint import pprint
 import textwrap
