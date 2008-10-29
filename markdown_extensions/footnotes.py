@@ -23,12 +23,12 @@ Example:
 
 """
 
-import re, markdown, random
+import re, markdown
 from markdown import etree
 
 FN_BACKLINK_TEXT = "zz1337820767766393qq"
+NBSP_PLACEHOLDER =  "qq3936677670287331zz"
 DEF_RE = re.compile(r'(\ ?\ ?\ ?)\[\^([^\]]*)\]:\s*(.*)')
-SHORT_USE_RE = re.compile(r'\[\^([^\]]*)\]', re.M) # [^a]
 
 
 class FootnoteExtension(markdown.Extension):
@@ -68,9 +68,7 @@ class FootnoteExtension(markdown.Extension):
 
     def reset(self):
         """ Clear the footnotes on reset. """
-        self.footnote_suffix = "-" + str(int(random.random()*1000000000))
-        self.used_footnotes={}
-        self.footnotes = {}
+        self.footnotes = markdown.OrderedDict()
 
     def findFootnotesPlaceholder(self, root):
         
@@ -91,11 +89,11 @@ class FootnoteExtension(markdown.Extension):
     def setFootnote(self, id, text):
         self.footnotes[id] = text
 
-    def makeFootnoteId(self, num):
-        return 'fn%d%s' % (num, self.footnote_suffix)
+    def makeFootnoteId(self, id):
+        return 'fn:%s' % id
 
-    def makeFootnoteRefId(self, num):
-        return 'fnr%d%s' % (num, self.footnote_suffix)
+    def makeFootnoteRefId(self, id):
+        return 'fnref:%s' % id
 
     def makeFootnotesDiv(self, root):
         """Creates the div with class='footnote' and populates it with
@@ -110,29 +108,24 @@ class FootnoteExtension(markdown.Extension):
         div.set('class', 'footnote')
         hr = etree.SubElement(div, "hr")
         ol = etree.SubElement(div, "ol")
-        
 
-        footnotes = [(self.used_footnotes[id], id)
-                     for id in self.footnotes.keys()]
-        footnotes.sort()
-
-        for i, id in footnotes :
+        for id in self.footnotes.keys():
             li = etree.SubElement(ol, "li")
-            li.set("id", self.makeFootnoteId(i))
+            li.set("id", self.makeFootnoteId(id))
             self.parser.parseChunk(li, self.footnotes[id].split("\n"), 
                                         looseList=1)
 
             backlink = etree.Element("a")
-            backlink.set("href", "#" + self.makeFootnoteRefId(i))
-            backlink.set("class", "footnoteBackLink")
-            backlink.set("title", "Jump back to footnote %d in the text" % i)
+            backlink.set("href", "#" + self.makeFootnoteRefId(id))
+            backlink.set("rev", "footnote")
+            backlink.set("title", "Jump back to footnote %d in the text" % \
+                            (self.footnotes.index(id)+1))
             backlink.text = FN_BACKLINK_TEXT
 
             if li.getchildren():
                 node = li[-1]
-                if node.text:
-		            li.append(backlink)
-                elif node.tag == "p":
+                if node.tag == "p":
+                    node.text = node.text + NBSP_PLACEHOLDER
                     node.append(backlink)
                 else:
                     p = etree.SubElement(li, "p")
@@ -148,20 +141,8 @@ class FootnotePreprocessor(markdown.Preprocessor):
 
     def run(self, lines):
         lines = self._handleFootnoteDefinitions(lines)
-
-        # Make a hash of all footnote marks in the text so that we
-        # know in what order they are supposed to appear.  (This
-        # function call doesn't really substitute anything - it's just
-        # a way to get a callback for each occurence.
         text = "\n".join(lines)
-        SHORT_USE_RE.sub(self.recordFootnoteUse, text)
         return text.split("\n")
-
-    def recordFootnoteUse(self, match):
-        id = match.group(1)
-        id = id.strip()
-        nextNum = len(self.footnotes.used_footnotes.keys()) + 1
-        self.footnotes.used_footnotes[id] = nextNum
 
     def _handleFootnoteDefinitions(self, lines):
         """Recursively finds all footnote definitions in the lines.
@@ -190,12 +171,13 @@ class FootnotePreprocessor(markdown.Preprocessor):
             @returns: the index of the line containing a footnote definition """
 
         counter = 0
-        for line in lines :
+        for line in lines:
             m = DEF_RE.match(line)
-            if m :
+            if m:
                 return counter, m.group(2), m.group(3)
             counter += 1
         return counter, None, None
+
 
 class FootnotePattern(markdown.Pattern):
     """ InlinePattern for footnote markers in a document's body text. """
@@ -208,11 +190,12 @@ class FootnotePattern(markdown.Pattern):
         sup = etree.Element("sup")
         a = etree.SubElement(sup, "a")
         id = m.group(2)
-        num = self.footnotes.used_footnotes[id]
-        sup.set('id', self.footnotes.makeFootnoteRefId(num))
-        a.set('href', '#' + self.footnotes.makeFootnoteId(num))
-        a.text = str(num)
+        sup.set('id', self.footnotes.makeFootnoteRefId(id))
+        a.set('href', '#' + self.footnotes.makeFootnoteId(id))
+        a.set('rel', 'footnote')
+        a.text = str(self.footnotes.footnotes.index(id) + 1)
         return sup
+
 
 class FootnoteTreeprocessor(markdown.Treeprocessor):
     """ Build and append footnote div to end of document. """
@@ -235,14 +218,15 @@ class FootnoteTreeprocessor(markdown.Treeprocessor):
                     element.getchildren().insert(ind + 1, footnotesDiv)
                     child.tail = None
                 fnPlaceholder.parent.replaceChild(fnPlaceholder, footnotesDiv)
-            else :
+            else:
                 root.append(footnotesDiv)
 
 class FootnotePostprocessor(markdown.Postprocessor):
     """ Replace FN_BACKLINK_TEXT with html entity ``&#8617;``. """
 
     def run(self, text):
-        return text.replace(FN_BACKLINK_TEXT, "&#8617;")
+        text = text.replace(FN_BACKLINK_TEXT, "&#8617;")
+        return text.replace(NBSP_PLACEHOLDER, "&#160;")
 
 def makeExtension(configs=[]):
     """ Return an instance of the FootnoteExtension """
