@@ -1,6 +1,7 @@
 *.pyc
 *.bak
 *.tmp
+*.swp
 tmp/*
 build/*
 dist/*
