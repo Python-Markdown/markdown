@@ -34,6 +34,12 @@ class TocTreeprocessor (markdown.Treeprocessor):
         list_stack=[div]
         header_rgx = re.compile("[Hh][123456]")
 
+        # Get a list of id attributes
+        used_ids = []
+        for c in doc.getiterator():
+            if c.attrib.has_key("id"):
+                used_ids.append(c.attrib["id"])
+
         for (p, c) in self.iterparent(doc):
             if not c.text:
                 continue
@@ -69,10 +75,17 @@ class TocTreeprocessor (markdown.Treeprocessor):
                     level = tag_level
 
                 # Do not override pre-existing ids 
-                if c.attrib.has_key("id"):
-                    id = c.attrib["id"]
-                else:
+                if not c.attrib.has_key("id"):
                     id = self.config["slugify"][0](c.text)
+                    if id in used_ids:
+                        ctr = 1
+                        while "%s_%d" % (id, ctr) in used_ids:
+                            ctr += 1
+                        id = "%s_%d" % (id, ctr)
+                    used_ids.append(id)
+                    c.attrib["id"] = id
+                else:
+                    id = c.attrib["id"]
 
                 # List item link, to be inserted into the toc div
                 last_li = etree.Element("li")
@@ -83,12 +96,9 @@ class TocTreeprocessor (markdown.Treeprocessor):
                 if int(self.config["anchorlink"][0]):
                     anchor = etree.SubElement(c, "a")
                     anchor.text = c.text
-                    anchor.attrib["id"] = id
                     anchor.attrib["href"] = "#" + id
                     anchor.attrib["class"] = "toclink"
                     c.text = ""
-                else:
-                    c.attrib["id"] = id
 
                 list_stack[-1].append(last_li)
 
