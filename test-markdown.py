@@ -369,7 +369,7 @@ testDirectory("tests/markdown-test", measure_time=True)
 testDirectory("tests/misc", measure_time=True)
 
 testDirectory("tests/extensions-x-tables")
-#testDirectory("tests/extensions-x-footnotes")
+testDirectory("tests/extensions-x-footnotes")
 #testDirectory("tests/extensions-x-ext1-ext2")
 testDirectory("tests/safe_mode", measure_time=True, safe_mode="escape")
 testDirectory("tests/extensions-x-codehilite")
