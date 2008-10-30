@@ -35,12 +35,10 @@ class FootnoteExtension(markdown.Extension):
     """ Footnote Extension. """
 
     def __init__ (self, configs):
-
+        """ Setup configs. """
         self.config = {'PLACE_MARKER':
                        ["///Footnotes Go Here///",
                         "The text string that marks where the footnotes go"]}
-
-        self.parser = markdown.MarkdownParser()
 
         for key, value in configs:
             self.config[key][0] = value
@@ -50,6 +48,7 @@ class FootnoteExtension(markdown.Extension):
     def extendMarkdown(self, md, md_globals):
         """ Add pieces to Markdown. """
         md.registerExtension(self)
+        self.parser = md.parser
         # Insert a preprocessor before ReferencePreprocessor
         md.preprocessors.add("footnote", FootnotePreprocessor(self),
                              "<reference")
@@ -71,7 +70,7 @@ class FootnoteExtension(markdown.Extension):
         self.footnotes = markdown.OrderedDict()
 
     def findFootnotesPlaceholder(self, root):
-        
+        """ Return ElementTree Element that contains Footnote placeholder. """
         def finder(element):
             for child in element:
                 if child.text:
@@ -87,19 +86,19 @@ class FootnoteExtension(markdown.Extension):
         return res
 
     def setFootnote(self, id, text):
+        """ Store a footnote for later retrieval. """
         self.footnotes[id] = text
 
     def makeFootnoteId(self, id):
+        """ Return footnote link id. """
         return 'fn:%s' % id
 
     def makeFootnoteRefId(self, id):
+        """ Return footnote back-link id. """
         return 'fnref:%s' % id
 
     def makeFootnotesDiv(self, root):
-        """Creates the div with class='footnote' and populates it with
-           the text of the footnotes.
-
-           @returns: the footnote div as a dom element """
+        """ Return div of footnotes as et Element. """
 
         if not self.footnotes.keys():
             return None
@@ -145,12 +144,16 @@ class FootnotePreprocessor(markdown.Preprocessor):
         return text.split("\n")
 
     def _handleFootnoteDefinitions(self, lines):
-        """Recursively finds all footnote definitions in the lines.
+        """
+        Recursively find all footnote definitions in lines.
 
-            @param lines: a list of lines of text
-            @returns: a string representing the text with footnote
-                      definitions removed """
+        Keywords:
 
+        * lines: A list of lines of text
+        
+        Return: A list of lines with footnote definitions removed.
+        
+        """
         i, id, footnote = self._findFootnoteDefinition(lines)
 
         if id :
@@ -165,11 +168,18 @@ class FootnotePreprocessor(markdown.Preprocessor):
             return lines
 
     def _findFootnoteDefinition(self, lines):
-        """Finds the first line of a footnote definition.
+        """
+        Find the parts of a footnote definition.
 
-            @param lines: a list of lines of text
-            @returns: the index of the line containing a footnote definition """
+        Keywords:
 
+        * lines: A list of lines of text.
+
+        Return: A three item tuple containing the index of the first line of a
+        footnote definition, the id of the definition and the body of the 
+        definition.
+        
+        """
         counter = 0
         for line in lines:
             m = DEF_RE.match(line)
@@ -222,7 +232,7 @@ class FootnoteTreeprocessor(markdown.Treeprocessor):
                 root.append(footnotesDiv)
 
 class FootnotePostprocessor(markdown.Postprocessor):
-    """ Replace FN_BACKLINK_TEXT with html entity ``&#8617;``. """
+    """ Replace placeholders with html entities. """
 
     def run(self, text):
         text = text.replace(FN_BACKLINK_TEXT, "&#8617;")
