@@ -99,9 +99,16 @@ class DefListParser(markdown.MarkdownParser):
                 elif paragraph:
                     terms, defs, paragraph = self._getDefs(paragraph)
                     if defs:
+                        if not terms:
+                            # The previous paragraph must be the terms
+                            c = parent_elem.getchildren()
+                            if c and c[-1].tag == "p" and c[-1].text:
+                                terms = c[-1].text.split("\n")
+                                parent_elem.remove(c[-1])
                         # check for extra paragraphs of a def
                         extradef, lines = self.detectTabbed(lines)
                         defs[-1].extend(extradef)
+                        # process the terms and defs
                         self._processDef(parent_elem, terms, defs)
                     if len(paragraph):
                         self._MarkdownParser__processParagraph(parent_elem, 
