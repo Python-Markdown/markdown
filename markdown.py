@@ -1202,6 +1202,7 @@ class InlineProcessor(Treeprocessor):
         self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
                                       + len(self.__placeholder_suffix)
         self.__placeholder_re = re.compile(INLINE_PLACEHOLDER % r'([0-9]{4})')
+        self.markdown = md
 
     def __makePlaceholder(self, type):
         """ Generate a placeholder """
@@ -1248,10 +1249,10 @@ class InlineProcessor(Treeprocessor):
         """
         if not isinstance(data, AtomicString):
             startIndex = 0
-            while patternIndex < len(self.patterns):
+            while patternIndex < len(self.markdown.inlinePatterns):
                 data, matched, startIndex = self.__applyPattern(
-                                                 self.patterns[patternIndex],
-                                                 data, patternIndex, startIndex)
+                    self.markdown.inlinePatterns.value_for_index(patternIndex),
+                    data, patternIndex, startIndex)
                 if not matched:
                     patternIndex += 1
         return data
@@ -1829,9 +1830,6 @@ class Markdown:
         self.registerExtensions(extensions = extensions,
                                 configs = extension_configs)
         self.reset()
-
-        # Sort and add patterns only after all extensions are loaded.
-        self.treeprocessors['inline'].patterns = self.inlinePatterns.values()
 
     def registerExtensions(self, extensions, configs):
         """
