@@ -105,11 +105,14 @@ class DefListParser(markdown.MarkdownParser):
                             if c and c[-1].tag == "p" and c[-1].text:
                                 terms = c[-1].text.split("\n")
                                 parent_elem.remove(c[-1])
+                                looseList = 1
                         # check for extra paragraphs of a def
                         extradef, lines = self.detectTabbed(lines)
-                        defs[-1].extend(extradef)
+                        if extradef:
+                            looseList = 1
+                            defs[-1].extend(extradef)
                         # process the terms and defs
-                        self._processDef(parent_elem, terms, defs)
+                        self._processDef(parent_elem, terms, defs, looseList)
                     if len(paragraph):
                         self._MarkdownParser__processParagraph(parent_elem, 
                                                                paragraph,
@@ -145,7 +148,7 @@ class DefListParser(markdown.MarkdownParser):
             return Def
         return []
 
-    def _processDef(self, parentElem, terms, defs):
+    def _processDef(self, parentElem, terms, defs, looseList):
         children = parentElem.getchildren()
         if children and children[-1].tag == "dl":
             dl = children[-1]
@@ -156,11 +159,11 @@ class DefListParser(markdown.MarkdownParser):
             dt.text = term
         for d in defs:
             dd = etree.SubElement(dl, "dd")
-            self.parseChunk(dd, d)
+            self.parseChunk(dd, d, looseList = looseList)
 
     def _MarkdownParser__processParagraph(self, parentElem, paragraph, inList, looseList):
 
-        if ( parentElem.tag == 'li'
+        if ((parentElem.tag == 'li' or parentElem.tag == 'dd')
                 and not (looseList or parentElem.getchildren())):
 
             # If this is the first paragraph inside "li", don't
