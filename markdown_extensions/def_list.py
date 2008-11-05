@@ -181,12 +181,12 @@ class DefListParser(markdown.MarkdownParser):
             # it's hr
             if CORE_RE["isline3"].match(line):
                 el.text = "\n".join(dump)
-                self.__processHR(el)
+                self._MarkdownParser__processHR(el)
                 dump = []
             # it's header
             elif line.startswith("#"):
                 el.text = "\n".join(dump)
-                self.__processHeader(parentElem, [line])
+                self._MarkdownParser__processHeader(parentElem, [line])
                 dump = []
             else:
                 dump.append(line)
