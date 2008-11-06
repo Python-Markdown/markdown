@@ -19,8 +19,10 @@ Copyright 2008 - [Waylan Limberg](http://achinghead.com)
 
 """
 
-import markdown
+import markdown, re
 from markdown import etree, CORE_RE
+
+DEF_RE = re.compile(r'^[ ]{0,3}:[ ]{1,3}(.*)$')
 
 class DefListParser(markdown.MarkdownParser):
     """ Subclass of MarkdownParser which adds definition list parsing. """
@@ -97,22 +99,10 @@ class DefListParser(markdown.MarkdownParser):
                     self._MarkdownParser__processHR(parent_elem)
                     lines = paragraph[1:] + lines
                 elif paragraph:
-                    terms, defs, paragraph = self._getDefs(paragraph)
-                    if defs:
-                        if not terms:
-                            # The previous paragraph must be the terms
-                            c = parent_elem.getchildren()
-                            if c and c[-1].tag == "p" and c[-1].text:
-                                terms = c[-1].text.split("\n")
-                                parent_elem.remove(c[-1])
-                                looseList = 1
-                        # check for extra paragraphs of a def
-                        extradef, lines = self.detectTabbed(lines)
-                        if extradef:
-                            looseList = 1
-                            defs[-1].extend(extradef)
-                        # process the terms and defs
-                        self._processDef(parent_elem, terms, defs, looseList)
+                    paragraph, lines, looseList = self._processDefs(parent_elem,
+                                                                    paragraph, 
+                                                                    lines, 
+                                                                    looseList)
                     if len(paragraph):
                         self._MarkdownParser__processParagraph(parent_elem, 
                                                                paragraph,
@@ -123,45 +113,53 @@ class DefListParser(markdown.MarkdownParser):
                 lines = lines[1:]  # skip the first (blank) line
 
 
-    def _getDefs(self, lines):
+    def _processDefs(self, parentElem, paragraph, lines, looseList):
+        """ Check a paragraph for definition lists and process. """
         terms = []
         defs = []
         i = 0
-        while i < len(lines):
-            if lines[i].startswith(':   '):
-                d  = self._getDef(lines[i:])
+        while i < len(paragraph):
+            m = DEF_RE.match(paragraph[i])
+            if m:
+                d, theRest  = self.detectTabbed(paragraph[i+1:])
+                d.insert(0, m.group(1))
                 if d:
                     defs.append(d)
                     i += len(d)
             else:
-                terms.append(lines[i])
+                terms.append(paragraph[i])
                 i += 1
         if defs:
-            return terms, defs, []
+            if not terms:
+                # The previous paragraph must contain the terms
+                c = parentElem.getchildren()
+                if c and c[-1].tag == "p" and c[-1].text:
+                    terms = c[-1].text.split("\n")
+                    parentElem.remove(c[-1])
+                    looseList = 1
+            # check for extra paragraphs of a def
+            extradef, lines = self.detectTabbed(lines)
+            if extradef:
+                 looseList = 1
+                 defs[-1].extend(extradef)
+            # Build a tree from the terms and defs
+            c = parentElem.getchildren()
+            if c and c[-1].tag == "dl":
+                dl = c[-1]
+            else:
+                dl = etree.SubElement(parentElem, "dl")
+            for term in terms:
+                dt = etree.SubElement(dl, "dt")
+                dt.text = term
+            for d in defs:
+                dd = etree.SubElement(dl, "dd")
+                self.parseChunk(dd, d, looseList = looseList)
+            return [], lines, looseList
         else:
-            return None, None, terms
+            return terms, lines, looseList
 
-    def _getDef(self, lines):
-        if lines[0].startswith(':   '):
-            Def, theRest  = self.detectTabbed(lines[1:])
-            Def.insert(0, lines[0][4:])
-            return Def
-        return []
-
-    def _processDef(self, parentElem, terms, defs, looseList):
-        children = parentElem.getchildren()
-        if children and children[-1].tag == "dl":
-            dl = children[-1]
-        else:
-            dl = etree.SubElement(parentElem, "dl")
-        for term in terms:
-            dt = etree.SubElement(dl, "dt")
-            dt.text = term
-        for d in defs:
-            dd = etree.SubElement(dl, "dd")
-            self.parseChunk(dd, d, looseList = looseList)
-
-    def _MarkdownParser__processParagraph(self, parentElem, paragraph, inList, looseList):
+    def _MarkdownParser__processParagraph(self, parentElem, paragraph, 
+                                          inList, looseList):
 
         if ((parentElem.tag == 'li' or parentElem.tag == 'dd')
                 and not (looseList or parentElem.getchildren())):
