@@ -98,24 +98,6 @@ INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 AMP_SUBSTITUTE = STX+"amp"+ETX
 
-def wrapRe(raw_re) : return re.compile("^%s$" % raw_re, re.DOTALL)
-CORE_RE = {
-    'header':          wrapRe(r'(#{1,6})[ \t]*(.*?)[ \t]*(#*)'), # # A title
-    'reference-def':   wrapRe(r'(\ ?\ ?\ ?)\[([^\]]*)\]:\s*([^ ]*)(.*)'),
-                               # [Google]: http://www.google.com/
-    'containsline':    wrapRe(r'([-]*)$|^([=]*)'), # -----, =====, etc.
-    'ol':              wrapRe(r'[ ]{0,3}[\d]*\.\s+(.*)'), # 1. text
-    'ul':              wrapRe(r'[ ]{0,3}[*+-]\s+(.*)'), # "* text"
-    'isline1':         wrapRe(r'(\**)'), # ***
-    'isline2':         wrapRe(r'(\-*)'), # ---
-    'isline3':         wrapRe(r'(\_*)'), # ___
-    'tabbed':          wrapRe(r'((\t)|(    ))(.*)'), # an indented line
-    'quoted':          wrapRe(r'[ ]{0,2}> ?(.*)'), # a quoted block ("> ...")
-    'containsline':    re.compile(r'^([-]*)$|^([=]*)$', re.M),
-    'attr':            re.compile("\{@([^\}]*)=([^\}]*)}") # {@id=123}
-}
-"""Basic and reusable regular expressions."""
-
 
 """
 AUXILIARY GLOBAL FUNCTIONS
@@ -163,11 +145,13 @@ def isBlockLevel(tag):
     """Check if the tag is a block level HTML tag."""
     return BLOCK_LEVEL_ELEMENTS.match(tag)
 
+ATTR_RE = re.compile("\{@([^\}]*)=([^\}]*)}") # {@id=123}
+
 def handleAttributes(text, parent):
     """Set values of an element based on attribute definitions ({@id=123})."""
     def attributeCallback(match):
         parent.set(match.group(1), match.group(2))
-    return CORE_RE['attr'].sub(attributeCallback, text)
+    return ATTR_RE.sub(attributeCallback, text)
 
 def dequote(string):
     """Remove quotes from around a string."""
@@ -211,369 +195,286 @@ inline elements such as **bold** or *italics*, but rather just catches blocks,
 lists, quotes, etc.
 """
 
-class MarkdownParser:
-    """Parser Markdown into a ElementTree."""
+class BlockProcessor:
+    """ Base class for block processors. """
+    def __init__(self, parser=None):
+        self.parser = parser
 
-    def __init__(self):
+    def lastChild(self, parent):
+        """ Return the last child of an etree element. """
+        if len(parent):
+            return parent[-1]
+        else:
+            return None
+
+    def detab(self, text):
+        """ Remove a tab from the front of each line of the given text. """
+        newtext = []
+        lines = text.split('\n')
+        for line in lines:
+            if line.startswith(' '*4):
+                newtext.append(line[4:])
+            elif not line.strip():
+                newtext.append('')
+            else:
+                break
+        return '\n'.join(newtext), '\n'.join(lines[len(newtext):])
+
+    def looseDetab(self, text):
+        """ Remove a tab from front of lines but allowing dedented lines. """
+        lines = text.split('\n')
+        for i in range(len(lines)):
+            if lines[i].startswith(' '*4):
+                lines[i] = lines[i][4:]
+        return '\n'.join(lines)
+
+    def test(self, parent, block):
+        """ Return boolean. Must be overriden by subclasses. """
         pass
 
-    def parseDocument(self, lines):
-        """Parse a markdown string into an ElementTree."""
-        # Create a ElementTree from the lines
-        root = etree.Element("div")
-        buffer = []
-        for line in lines:
-            if line.startswith("#"):
-                self.parseChunk(root, buffer)
-                buffer = [line]
-            else:
-                buffer.append(line)
+    def run(self, parent, blocks):
+        """ Run processor. Must be overridden by subclasses. """
 
-        self.parseChunk(root, buffer)
 
-        return etree.ElementTree(root)
+class ListIndentProcessor(BlockProcessor):
+    """ Process children of list items. """
 
-    def parseChunk(self, parent_elem, lines, inList=0, looseList=0):
-        """Process a chunk of markdown-formatted text and attach the parse to
-        an ElementTree node.
+    def test(self, parent, block):
+        return block.startswith(' '*4) and parent[-1] and \
+                (parent[-1].tag == "ul" or parent[-1].tag == "ol")
 
-        Process a section of a source document, looking for high
-        level structural elements like lists, block quotes, code
-        segments, html blocks, etc.  Some those then get stripped
-        of their high level markup (e.g. get unindented) and the
-        lower-level markup is processed recursively.
+    def run(self, parent, blocks):
+        block = blocks.pop(0)
+        sibling = self.lastChild(parent)
+        if len(sibling) and sibling[-1].tag == 'li':
+            self.parser.parseBlocks(sibling[-1], [self.looseDetab(block)])
+        else:
+            li = etree.SubElement(sibling, 'li')
+            self.parser.parseBlocks(li, [self.looseDetab(block)])
 
-        Keyword arguments:
 
-        * parent_elem: The ElementTree element to which the content will be
-                       added.
-        * lines: a list of lines
-        * inList: a level
+class CodeBlockProcessor(BlockProcessor):
+    """ Process code blocks. """
 
-        Returns: None
+    def test(self, parent, block):
+        return block.startswith(' '*4)
+    
+    def run(self, parent, blocks):
+        sibling = self.lastChild(parent)
+        block = blocks.pop(0)
+        theRest = ''
+        if sibling and sibling.tag == "pre" and len(sibling) \
+                    and sibling[0].tag == "code":
+            code = sibling[0]
+            block, theRest = self.detab(block)
+            code.text = '%s\n%s\n' % (code.text, block.rstrip())
+        else:
+            pre = etree.SubElement(parent, 'pre')
+            code = etree.SubElement(pre, 'code')
+            block, theRest = self.detab(block)
+            code.text = '%s\n' % block.rstrip()
+        if theRest:
+            blocks.insert(0, theRest)
 
-        """
-        # Loop through lines until none left.
-        while lines:
-            # Skipping empty line
-            if not lines[0]:
-                lines = lines[1:]
-                continue
 
-            # Check if this section starts with a list, a blockquote or
-            # a code block.  If so, process them.
-            processFn = { 'ul':     self.__processUList,
-                          'ol':     self.__processOList,
-                          'quoted': self.__processQuote,
-                          'tabbed': self.__processCodeBlock}
-            for regexp in ['ul', 'ol', 'quoted', 'tabbed']:
-                m = CORE_RE[regexp].match(lines[0])
-                if m:
-                    processFn[regexp](parent_elem, lines, inList)
-                    return
+class BlockQuoteProcessor(BlockProcessor):
 
-            # We are NOT looking at one of the high-level structures like
-            # lists or blockquotes.  So, it's just a regular paragraph
-            # (though perhaps nested inside a list or something else).  If
-            # we are NOT inside a list, we just need to look for a blank
-            # line to find the end of the block.  If we ARE inside a
-            # list, however, we need to consider that a sublist does not
-            # need to be separated by a blank line.  Rather, the following
-            # markup is legal:
-            #
-            # * The top level list item
-            #
-            #     Another paragraph of the list.  This is where we are now.
-            #     * Underneath we might have a sublist.
-            #
+    RE = re.compile(r'^[ ]{0,3}>[ ](.*)')
 
-            if inList:
-                start, lines  = self.__linesUntil(lines, (lambda line:
-                                 CORE_RE['ul'].match(line)
-                                 or CORE_RE['ol'].match(line)
-                                                  or not line.strip()))
-                self.parseChunk(parent_elem, start, inList-1,
-                                looseList=looseList)
-                inList = inList-1
+    def test(self, parent, block):
+        return bool(self.RE.match(block))
 
-            else: # Ok, so it's just a simple block
-                test = lambda line: not line.strip() or line[0] == '>'
-                paragraph, lines = self.__linesUntil(lines, test)
-                if len(paragraph) and paragraph[0].startswith('#'):
-                    self.__processHeader(parent_elem, paragraph)
-                elif len(paragraph) and CORE_RE["isline3"].match(paragraph[0]):
-                    self.__processHR(parent_elem)
-                    lines = paragraph[1:] + lines
-                elif paragraph:
-                    self.__processParagraph(parent_elem, paragraph,
-                                          inList, looseList)
+    def run(self, parent, blocks):
+        block = '\n'.join([self.clean(line) for line in 
+                            blocks.pop(0).split('\n')])
+        sibling = self.lastChild(parent)
+        if sibling and sibling.tag == "blockquote":
+            quote = sibling
+        else:
+            quote = etree.SubElement(parent, 'blockquote')
+        self.parser.parseBlocks(quote, [block])
 
-            if lines and not lines[0].strip():
-                lines = lines[1:]  # skip the first (blank) line
-
-    def __processHR(self, parentElem):
-        hr = etree.SubElement(parentElem, "hr")
-
-    def __processHeader(self, parentElem, paragraph):
-        m = CORE_RE['header'].match(paragraph[0])
+    def clean(self, line):
+        """ Remove ``>`` from begining of a line. """
+        m = self.RE.match(line)
         if m:
-            level = len(m.group(1))
-            h = etree.SubElement(parentElem, "h%d" % level)
+            return m.group(1)
+        elif line.strip() == ">":
+            return ""
+        else:
+            return line
+
+class OListProcessor(BlockProcessor):
+    """ Process ordered list blocks. """
+
+    TAG = 'ol'
+    RE = re.compile(r'^[ ]{0,3}\d+\.[ ](.*)')
+
+    def test(self, parent, block):
+        return bool(self.RE.match(block))
+
+    def run(self, parent, blocks):
+        items = self.get_items(blocks.pop(0))
+        sibling = self.lastChild(parent)
+        if sibling and sibling.tag == self.TAG:
+            lst = sibling
+            # make sure previous item is in a p. 
+            if len(lst) and lst[-1].text and not len(lst[-1]):
+                p = etree.SubElement(lst[-1], 'p')
+                p.text = lst[-1].text
+                lst[-1].text = ''
+            # parse first block differently as it gets wrapped in a p.
+            li = etree.SubElement(lst, 'li')
+            self.parser.state = 'looselist'
+            firstitem = items.pop(0)
+            self.parser.parseBlocks(li, [firstitem])
+            self.parser.resetState()
+        else:
+            lst = etree.SubElement(parent, self.TAG)
+        self.parser.state = 'list'
+        for item in items:
+            li = etree.SubElement(lst, 'li')
+            self.parser.parseBlocks(li, [item])
+        self.parser.resetState()
+
+    def get_items(self, block):
+        """ Break a block into list items. """
+        items = []
+        for line in block.split('\n'):
+            m = self.RE.match(line)
+            if m:
+                items.append(m.group(1))
+            else:
+                items[-1] = '\n'.join([items[-1], line])
+        return items
+
+
+class UListProcessor(OListProcessor):
+    """ Process unordered list blocks. """
+
+    TAG = 'ul'
+    RE = re.compile(r'^[ ]{0,3}[*+-][ ](.*)')
+
+
+class HashHeaderProcessor(BlockProcessor):
+    """ Process Hash Headers. """
+
+    RE = re.compile(r'^(#{1,6})(.*?)#*$')
+
+    def test(self, parent, block):
+        return block.startswith('#')
+
+    def run(self, parent, blocks):
+        lines = blocks.pop(0).split('\n')
+        line1 = lines.pop(0)
+        m = self.RE.match(line1)
+        if m:
+            h = etree.SubElement(parent, 'h%d' % len(m.group(1)))
             h.text = m.group(2).strip()
         else:
-            message(CRITICAL, "We've got a problem header!")
+            lines.insert(0, line1)
+        if len(lines):
+            blocks.insert(0, '\n'.join(lines))
 
-    def __processParagraph(self, parentElem, paragraph, inList, looseList):
 
-        if ( parentElem.tag == 'li'
-                and not (looseList or parentElem.getchildren())):
+class SHeaderProcessor(BlockProcessor):
+    """ Process Setext-style Headers. """
 
-            # If this is the first paragraph inside "li", don't
-            # put <p> around it - append the paragraph bits directly
-            # onto parentElem
-            el = parentElem
+    RE = re.compile(r'^.*?\n[=-]{3,}', re.MULTILINE)
+
+    def test(self, parent, block):
+        return bool(self.RE.match(block))
+
+    def run(self, parent, blocks):
+        lines = blocks.pop(0).split('\n')
+        if lines[1].startswith('='):
+            level = 1
         else:
-            # Otherwise make a "p" element
-            el = etree.SubElement(parentElem, "p")
+            level = 2
+        h = etree.SubElement(parent, 'h%d' % level)
+        h.text = lines[0].strip()
+        if len(lines) > 2:
+            blocks.insert(0, '\n'.join(lines[2:]))
 
-        dump = []
 
-        # Searching for hr or header
-        for line in paragraph:
-            # it's hr
-            if CORE_RE["isline3"].match(line):
-                el.text = "\n".join(dump)
-                self.__processHR(el)
-                dump = []
-            # it's header
-            elif line.startswith("#"):
-                el.text = "\n".join(dump)
-                self.__processHeader(parentElem, [line])
-                dump = []
-            else:
-                dump.append(line)
-        if dump:
-            text = "\n".join(dump)
-            el.text = text
+class HRProcessor(BlockProcessor):
+    """ Process Horizontal Rules. """
 
-    def __processUList(self, parentElem, lines, inList):
-        self.__processList(parentElem, lines, inList, listexpr='ul', tag='ul')
+    RE = re.compile(r'([*_-][ ]?){3,}')
 
-    def __processOList(self, parentElem, lines, inList):
-        self.__processList(parentElem, lines, inList, listexpr='ol', tag='ol')
+    def test(self, parent, block):
+        return bool(self.RE.search(block))
 
-    def __processList(self, parentElem, lines, inList, listexpr, tag):
-        """
-        Given a list of document lines starting with a list item,
-        finds the end of the list, breaks it up, and recursively
-        processes each list item and the remainder of the text file.
-
-        Keyword arguments:
-
-        * parentElem: A ElementTree element to which the content will be added
-        * lines: a list of lines
-        * inList: a level
-
-        Returns: None
-
-        """
-        ul = etree.SubElement(parentElem, tag) # ul might actually be '<ol>'
-
-        looseList = 0
-
-        # Make a list of list items
-        items = []
-        item = -1
-
-        i = 0  # a counter to keep track of where we are
+    def run(self, parent, blocks):
+        # Check for lines in block before hr.
+        lines = blocks.pop(0).split('\n')
+        prelines = []
         for line in lines:
-            loose = 0
-            if not line.strip():
-                # If we see a blank line, this _might_ be the end of the list
-                i += 1
-                loose = 1
-
-                # Find the next non-blank line
-                for j in range(i, len(lines)):
-                    if lines[j].strip():
-                        next = lines[j]
-                        break
-                else:
-                    # There is no more text => end of the list
-                    break
-
-                # Check if the next non-blank line is still a part of the list
-
-                if ( CORE_RE[listexpr].match(next) or
-                     CORE_RE['tabbed'].match(next) ):
-                    # get rid of any white space in the line
-                    items[item].append(line.strip())
-                    looseList = loose or looseList
-                    continue
-                else:
-                    break # found end of the list
-
-            # Now we need to detect list items (at the current level)
-            # while also detabing child elements if necessary
-
-            for expr in ['ul', 'ol', 'tabbed']:
-                m = CORE_RE[expr].match(line)
-                if m:
-                    if expr in ['ul', 'ol']:  # We are looking at a new item
-                        #if m.group(1) :
-                        # Removed the check to allow for a blank line
-                        # at the beginning of the list item
-                        items.append([m.group(1)])
-                        item += 1
-                    elif expr == 'tabbed':  # This line needs to be detabbed
-                        items[item].append(m.group(4)) #after the 'tab'
-                    i += 1
-                    break
-            else:
-                items[item].append(line)  # Just regular continuation
-                i += 1 # added on 2006.02.25
-        else:
-            i += 1
-
-        # Add the ElementTree elements
-        for item in items:
-            li = etree.SubElement(ul, "li")
-            self.parseChunk(li, item, inList + 1, looseList = looseList)
-
-        # Process the remaining part of the section
-        self.parseChunk(parentElem, lines[i:], inList)
-
-    def __linesUntil(self, lines, condition):
-        """
-        A utility function to break a list of lines upon the
-        first line that satisfied a condition.  The condition
-        argument should be a predicate function.
-
-        """
-        i = -1
-        for line in lines:
-            i += 1
-            if condition(line):
-                break
-        else:
-            i += 1
-        return lines[:i], lines[i:]
-
-    def __processQuote(self, parentElem, lines, inList):
-        """
-        Given a list of document lines starting with a quote finds
-        the end of the quote, unindents it and recursively
-        processes the body of the quote and the remainder of the
-        text file.
-
-        Keyword arguments:
-
-        * parentElem: ElementTree element to which the content will be added
-        * lines: a list of lines
-        * inList: a level
-
-        Returns: None
-
-        """
-        dequoted = []
-        i = 0
-        blank_line = False # allow one blank line between paragraphs
-        for line in lines:
-            m = CORE_RE['quoted'].match(line)
+            m = self.RE.match(line)
             if m:
-                dequoted.append(m.group(1))
-                i += 1
-                blank_line = False
-            elif not blank_line and line.strip() != '':
-                dequoted.append(line)
-                i += 1
-            elif not blank_line and line.strip() == '':
-                dequoted.append(line)
-                i += 1
-                blank_line = True
-            else:
                 break
+            else:
+                prelines.append(line)
+        if len(prelines):
+            self.parser.parseBlocks(parent, ['\n'.join(prelines)])
+        # create hr
+        hr = etree.SubElement(parent, 'hr')
+        # check for lines in block after hr.
+        lines = lines[len(prelines)+1:]
+        if len(lines):
+            blocks.insert(0, '\n'.join(lines))
 
-        blockquote = etree.SubElement(parentElem, "blockquote")
 
-        self.parseChunk(blockquote, dequoted, inList)
-        self.parseChunk(parentElem, lines[i:], inList)
+class PBlockProcessor(BlockProcessor):
+    """ Process Paragraph blocks. """
 
-    def __processCodeBlock(self, parentElem, lines, inList):
-        """
-        Given a list of document lines starting with a code block
-        finds the end of the block, puts it into the ElementTree verbatim
-        wrapped in ("<pre><code>") and recursively processes the
-        the remainder of the text file.
+    def test(self, parent, block):
+        return True
 
-        Keyword arguments:
+    def run(self, parent, blocks):
+        block = blocks.pop(0)
+        if block.strip():
+            if self.parser.state == 'list':
+                parent.text = block
+            else:
+                p = etree.SubElement(parent, 'p')
+                p.text = block
 
-        * parentElem: ElementTree element to which the content will be added
-        * lines: a list of lines
-        * inList: a level
 
-        Returns: None
+class BlockParser:
+    """ Parse Markdown blocks into an ElementTree object. """
 
-        """
-        detabbed, theRest = self.detectTabbed(lines)
-        pre = etree.SubElement(parentElem, "pre")
-        code = etree.SubElement(pre, "code")
-        text = "\n".join(detabbed).rstrip()+"\n"
-        code.text = AtomicString(text)
-        self.parseChunk(parentElem, theRest, inList)
+    def __init__(self):
+        self.blockprocessors = OrderedDict()
+        self.blockprocessors['indent'] = ListIndentProcessor(self)
+        self.blockprocessors['code'] = CodeBlockProcessor(self)
+        self.blockprocessors['hashheader'] = HashHeaderProcessor(self)
+        self.blockprocessors['sheader'] = SHeaderProcessor(self)
+        self.blockprocessors['hr'] = HRProcessor(self)
+        self.blockprocessors['olist'] = OListProcessor(self)
+        self.blockprocessors['ulist'] = UListProcessor(self)
+        self.blockprocessors['quote'] = BlockQuoteProcessor(self)
+        self.blockprocessors['paragraph'] = PBlockProcessor(self)
+        self.resetState()
 
-    def detectTabbed(self, lines):
-        """ Find indented text and remove indent before further proccesing.
+    def resetState(self):
+        self.state = ''
 
-        Keyword arguments:
+    def parseDocument(self, lines):
+        """ Parse a markdown string into an ElementTree. """
+        # Create a ElementTree from the lines
+        root = etree.Element("div")
+        blocks = '\n'.join(lines).split('\n\n')
+        self.parseBlocks(root, blocks)
+        return etree.ElementTree(root)
 
-        * lines: an array of strings
-        * fn: a function that returns a substring of a string
-           if the string matches the necessary criteria
-
-        Returns: a list of post processes items and the unused
-        remainder of the original list
-
-        """
-        items = []
-        item = -1
-        i = 0 # to keep track of where we are
-
-        def detab(line):
-            match = CORE_RE['tabbed'].match(line)
-            if match:
-               return match.group(4)
-
-        for line in lines:
-            if line.strip(): # Non-blank line
-                line = detab(line)
-                if line:
-                    items.append(line)
-                    i += 1
-                    continue
-                else:
-                    return items, lines[i:]
-
-            else: # Blank line: _maybe_ we are done.
-                i += 1 # advance
-
-                # Find the next non-blank line
-                for j in range(i, len(lines)):
-                    if lines[j].strip():
-                        next_line = lines[j]; break
-                else:
-                    break # There is no more text; we are done.
-
-                # Check if the next non-blank line is tabbed
-                if detab(next_line): # Yes, more work to do.
-                    items.append("")
-                    continue
-                else:
-                    break # No, we are done.
-        else:
-            i += 1
-
-        return items, lines[i:]
+    def parseBlocks(self, parent, blocks):
+        """ Process blocks of markdown text and attach to given etree node. """
+        while blocks:
+           for processor in self.blockprocessors.values():
+               if processor.test(parent, blocks[0]):
+                   processor.run(parent, blocks)
+                   break
 
 
 """
@@ -725,75 +626,15 @@ class HtmlBlockPreprocessor(Preprocessor):
         return new_text.split("\n")
 
 
-class HeaderPreprocessor(Preprocessor):
-
-    """Replace underlined headers with hashed headers.
-
-    (To avoid the need for lookahead later.)
-
-    """
-
-    def run (self, lines):
-        i = -1
-        while i+1 < len(lines):
-            i = i+1
-            if not lines[i].strip():
-                continue
-
-            if lines[i].startswith("#"):
-                lines.insert(i+1, "\n")
-
-            if (i+1 <= len(lines)
-                  and lines[i+1]
-                  and lines[i+1][0] in ['-', '=']):
-
-                underline = lines[i+1].strip()
-
-                if underline == "="*len(underline):
-                    lines[i] = "# " + lines[i].strip()
-                    lines[i+1] = ""
-                elif underline == "-"*len(underline):
-                    lines[i] = "## " + lines[i].strip()
-                    lines[i+1] = ""
-
-        return lines
-
-
-class LinePreprocessor(Preprocessor):
-    """Convert HR lines to "___" format."""
-    blockquote_re = re.compile(r'^(> )+')
-
-    def run (self, lines):
-        for i in range(len(lines)):
-            prefix = ''
-            m = self.blockquote_re.search(lines[i])
-            if m:
-                prefix = m.group(0)
-            if self._isLine(lines[i][len(prefix):]):
-                lines[i] = prefix + "___"
-        return lines
-
-    def _isLine(self, block):
-        """Determine if a block should be replaced with an <HR>"""
-        if block.startswith("    "):
-            return False  # a code block
-        text = "".join([x for x in block if not x.isspace()])
-        if len(text) <= 2:
-            return False
-        for pattern in ['isline1', 'isline2', 'isline3']:
-            m = CORE_RE[pattern].match(text)
-            if (m and m.group(1)):
-                return True
-        else:
-            return False
-
-
 class ReferencePreprocessor(Preprocessor):
-    """Remove reference definitions from the text and store them for later use."""
+    """ Remove reference definitions from text and store for later use. """
+
+    RE = re.compile(r'^(\ ?\ ?\ ?)\[([^\]]*)\]:\s*([^ ]*)(.*)$', re.DOTALL)
+
     def run (self, lines):
         new_text = [];
         for line in lines:
-            m = CORE_RE['reference-def'].match(line)
+            m = self.RE.match(line)
             if m:
                 id = m.group(2).strip().lower()
                 t = m.group(4).strip()  # potential title
@@ -1776,7 +1617,7 @@ class Markdown:
         * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
 
         """
-        self.parser = MarkdownParser()
+        self.parser = BlockParser()
         self.safeMode = safe_mode
         self.registeredExtensions = []
         self.docType = ""
@@ -1784,8 +1625,6 @@ class Markdown:
 
         self.preprocessors = OrderedDict()
         self.preprocessors["html_block"] =  HtmlBlockPreprocessor(self)
-        self.preprocessors["header"] = HeaderPreprocessor(self)
-        self.preprocessors["line"] =  LinePreprocessor(self)
         self.preprocessors["reference"] = ReferencePreprocessor(self)
         # footnote preprocessor will be inserted with "<reference"
 
