@@ -318,6 +318,7 @@ class OListProcessor(BlockProcessor):
 
     TAG = 'ol'
     RE = re.compile(r'^[ ]{0,3}\d+\.[ ](.*)')
+    CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.)|[*+-])[ ](.*)')
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
@@ -325,7 +326,7 @@ class OListProcessor(BlockProcessor):
     def run(self, parent, blocks):
         items = self.get_items(blocks.pop(0))
         sibling = self.lastChild(parent)
-        if sibling and sibling.tag == self.TAG:
+        if sibling and (sibling.tag == 'ol' or sibling.tag == 'ul'):
             lst = sibling
             # make sure previous item is in a p.
             if len(lst) and lst[-1].text and not len(lst[-1]):
@@ -353,9 +354,9 @@ class OListProcessor(BlockProcessor):
         """ Break a block into list items. """
         items = []
         for line in block.split('\n'):
-            m = self.RE.match(line)
+            m = self.CHILD_RE.match(line)
             if m:
-                items.append(m.group(1))
+                items.append(m.group(3))
             elif line.startswith(' '*4):
                 if items[-1].startswith(' '*4):
                     items[-1] = '%s\n%s' % (items[-1], line)
