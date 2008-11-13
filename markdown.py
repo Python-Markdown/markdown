@@ -319,6 +319,7 @@ class OListProcessor(BlockProcessor):
     TAG = 'ol'
     RE = re.compile(r'^[ ]{0,3}\d+\.[ ](.*)')
     CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.)|[*+-])[ ](.*)')
+    INDENT_RE = re.compile(r'^[ ]{4,7}((\d+\.)|[*+-])[ ].*')
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
@@ -357,13 +358,13 @@ class OListProcessor(BlockProcessor):
             m = self.CHILD_RE.match(line)
             if m:
                 items.append(m.group(3))
-            elif line.startswith(' '*4):
+            elif self.INDENT_RE.match(line):
                 if items[-1].startswith(' '*4):
                     items[-1] = '%s\n%s' % (items[-1], line)
                 else:
                     items.append(line)
             else:
-                items[-1] = '\n'.join([items[-1], line])
+                items[-1] = '%s\n%s' % (items[-1], line)
         return items
 
 
