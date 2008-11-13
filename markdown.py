@@ -335,20 +335,20 @@ class OListProcessor(BlockProcessor):
                 lst[-1].text = ''
             # parse first block differently as it gets wrapped in a p.
             li = etree.SubElement(lst, 'li')
-            self.parser.state = 'looselist'
+            self.parser.state.set('looselist')
             firstitem = items.pop(0)
             self.parser.parseBlocks(li, [firstitem])
-            self.parser.resetState()
+            self.parser.state.reset()
         else:
             lst = etree.SubElement(parent, self.TAG)
-        self.parser.state = 'list'
+        self.parser.state.set('list')
         for item in items:
             if item.startswith(' '*4):
                 self.parser.parseBlocks(lst[-1], [item])
             else:
                 li = etree.SubElement(lst, 'li')
                 self.parser.parseBlocks(li, [item])
-        self.parser.resetState()
+        self.parser.state.reset()
 
     def get_items(self, block):
         """ Break a block into list items. """
@@ -477,7 +477,7 @@ class PBlockProcessor(BlockProcessor):
     def run(self, parent, blocks):
         block = blocks.pop(0)
         if block.strip():
-            if self.parser.state == 'list':
+            if self.parser.state.isstate('list'):
                 if parent.text:
                     parent.text = '%s\n%s' % (parent.text, block)
                 else:
@@ -486,6 +486,23 @@ class PBlockProcessor(BlockProcessor):
                 p = etree.SubElement(parent, 'p')
                 p.text = block.lstrip()
 
+class State(list):
+    """ Track the current and nested stated of the parser. """
+
+    def set(self, state):
+        """ Set a new state. """
+        self.append(state)
+
+    def reset(self):
+        """ Step back one step in nested state. """
+        self.pop()
+
+    def isstate(self, state):
+        """ Test that top level is of given state. """
+        if len(self):
+            return self[-1] == state
+        else:
+            return False
 
 class BlockParser:
     """ Parse Markdown blocks into an ElementTree object. """
@@ -502,10 +519,7 @@ class BlockParser:
         self.blockprocessors['ulist'] = UListProcessor(self)
         self.blockprocessors['quote'] = BlockQuoteProcessor(self)
         self.blockprocessors['paragraph'] = PBlockProcessor(self)
-        self.resetState()
-
-    def resetState(self):
-        self.state = ''
+        self.state = State()
 
     def parseDocument(self, lines):
         """ Parse a markdown string into an ElementTree. """
