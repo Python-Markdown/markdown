@@ -361,14 +361,21 @@ class CodeBlockProcessor(BlockProcessor):
 
 class BlockQuoteProcessor(BlockProcessor):
 
-    RE = re.compile(r'^[ ]{0,3}>[ ](.*)')
+    RE = re.compile(r'(^|\n)[ ]{0,3}>[ ](.*)')
 
     def test(self, parent, block):
-        return bool(self.RE.match(block))
+        return bool(self.RE.search(block))
 
     def run(self, parent, blocks):
-        block = '\n'.join([self.clean(line) for line in 
-                            blocks.pop(0).split('\n')])
+        block = blocks.pop(0)
+        m = self.RE.search(block)
+        if m:
+            before = block[:m.start()] # Lines before blockquote
+            # Pass lines before blockquote in recursively for parsing forst.
+            self.parser.parseBlocks(parent, [before])
+            # Remove ``> `` from begining of each line.
+            block = '\n'.join([self.clean(line) for line in 
+                            block[m.start():].split('\n')])
         sibling = self.lastChild(parent)
         if sibling and sibling.tag == "blockquote":
             # Previous block was a blockquote so set that as this blocks parent
@@ -385,7 +392,7 @@ class BlockQuoteProcessor(BlockProcessor):
         if line.strip() == ">":
             return ""
         elif m:
-            return m.group(1)
+            return m.group(2)
         else:
             return line
 
