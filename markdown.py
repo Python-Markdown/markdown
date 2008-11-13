@@ -240,17 +240,26 @@ class ListIndentProcessor(BlockProcessor):
     """ Process children of list items. """
 
     def test(self, parent, block):
-        return block.startswith(' '*4) and parent[-1] and \
-                (parent[-1].tag == "ul" or parent[-1].tag == "ol")
+        return block.startswith(' '*4) and \
+                (parent.tag == "li" or \
+                    (len(parent) and parent[-1] and \
+                        (parent[-1].tag == "ul" or parent[-1].tag == "ol")
+                    )
+                )
 
     def run(self, parent, blocks):
-        block = blocks.pop(0)
+        block = self.looseDetab(blocks.pop(0))
         sibling = self.lastChild(parent)
-        if len(sibling) and sibling[-1].tag == 'li':
-            self.parser.parseBlocks(sibling[-1], [self.looseDetab(block)])
+        if parent.tag == 'li':
+            self.parser.parseBlocks(parent, [block])
+        elif len(sibling) and sibling[-1].tag == 'li':
+            if sibling[-1].text:
+                block = '%s\n\n%s' % (sibling[-1].text, block)
+                sibling[-1].text = ''
+            self.parser.parseChunk(sibling[-1], block)
         else:
             li = etree.SubElement(sibling, 'li')
-            self.parser.parseBlocks(li, [self.looseDetab(block)])
+            self.parser.parseBlocks(li, [block])
 
 
 class CodeBlockProcessor(BlockProcessor):
@@ -267,12 +276,12 @@ class CodeBlockProcessor(BlockProcessor):
                     and sibling[0].tag == "code":
             code = sibling[0]
             block, theRest = self.detab(block)
-            code.text = '%s\n%s\n' % (code.text, block.rstrip())
+            code.text = AtomicString('%s\n%s\n' % (code.text, block.rstrip()))
         else:
             pre = etree.SubElement(parent, 'pre')
             code = etree.SubElement(pre, 'code')
             block, theRest = self.detab(block)
-            code.text = '%s\n' % block.rstrip()
+            code.text = AtomicString('%s\n' % block.rstrip())
         if theRest:
             blocks.insert(0, theRest)
 
@@ -292,15 +301,15 @@ class BlockQuoteProcessor(BlockProcessor):
             quote = sibling
         else:
             quote = etree.SubElement(parent, 'blockquote')
-        self.parser.parseBlocks(quote, [block])
+        self.parser.parseChunk(quote, block)
 
     def clean(self, line):
         """ Remove ``>`` from begining of a line. """
         m = self.RE.match(line)
-        if m:
-            return m.group(1)
-        elif line.strip() == ">":
+        if line.strip() == ">":
             return ""
+        elif m:
+            return m.group(1)
         else:
             return line
 
@@ -318,7 +327,7 @@ class OListProcessor(BlockProcessor):
         sibling = self.lastChild(parent)
         if sibling and sibling.tag == self.TAG:
             lst = sibling
-            # make sure previous item is in a p. 
+            # make sure previous item is in a p.
             if len(lst) and lst[-1].text and not len(lst[-1]):
                 p = etree.SubElement(lst[-1], 'p')
                 p.text = lst[-1].text
@@ -333,8 +342,11 @@ class OListProcessor(BlockProcessor):
             lst = etree.SubElement(parent, self.TAG)
         self.parser.state = 'list'
         for item in items:
-            li = etree.SubElement(lst, 'li')
-            self.parser.parseBlocks(li, [item])
+            if item.startswith(' '*4):
+                self.parser.parseBlocks(lst[-1], [item])
+            else:
+                li = etree.SubElement(lst, 'li')
+                self.parser.parseBlocks(li, [item])
         self.parser.resetState()
 
     def get_items(self, block):
@@ -344,6 +356,11 @@ class OListProcessor(BlockProcessor):
             m = self.RE.match(line)
             if m:
                 items.append(m.group(1))
+            elif line.startswith(' '*4):
+                if items[-1].startswith(' '*4):
+                    items[-1] = '%s\n%s' % (items[-1], line)
+                else:
+                    items.append(line)
             else:
                 items[-1] = '\n'.join([items[-1], line])
         return items
@@ -359,22 +376,25 @@ class UListProcessor(OListProcessor):
 class HashHeaderProcessor(BlockProcessor):
     """ Process Hash Headers. """
 
-    RE = re.compile(r'^(#{1,6})(.*?)#*$')
+    RE = re.compile(r'(^|\n)(?P<level>#{1,6})(?P<header>.*?)#*(\n|$)')
 
     def test(self, parent, block):
-        return block.startswith('#')
+        return bool(self.RE.search(block))
 
     def run(self, parent, blocks):
-        lines = blocks.pop(0).split('\n')
-        line1 = lines.pop(0)
-        m = self.RE.match(line1)
+        block = blocks.pop(0)
+        m = self.RE.search(block)
         if m:
-            h = etree.SubElement(parent, 'h%d' % len(m.group(1)))
-            h.text = m.group(2).strip()
+            before = block[:m.start()]
+            after = block[m.end():]
+            if before:
+                self.parser.parseBlocks(parent, [before])
+            h = etree.SubElement(parent, 'h%d' % len(m.group('level')))
+            h.text = m.group('header').strip()
+            if after:
+                blocks.insert(0, after)
         else:
-            lines.insert(0, line1)
-        if len(lines):
-            blocks.insert(0, '\n'.join(lines))
+            message(CRITICAL, "We've got a problem header!")
 
 
 class SHeaderProcessor(BlockProcessor):
@@ -400,17 +420,20 @@ class SHeaderProcessor(BlockProcessor):
 class HRProcessor(BlockProcessor):
     """ Process Horizontal Rules. """
 
-    RE = re.compile(r'([*_-][ ]?){3,}')
+    RE = r'[ ]{0,3}(?P<ch>[*_-])[ ]?((?P=ch)[ ]?){2,}[ ]*'
+    SEARCH_RE = re.compile(r'(^|\n)%s(\n|$)' % RE)
+    MATCH_RE = re.compile(r'^%s$' % RE)
 
     def test(self, parent, block):
-        return bool(self.RE.search(block))
+        return bool(self.SEARCH_RE.search(block))
 
     def run(self, parent, blocks):
         # Check for lines in block before hr.
+        #import ipdb; ipdb.set_trace()
         lines = blocks.pop(0).split('\n')
         prelines = []
         for line in lines:
-            m = self.RE.match(line)
+            m = self.MATCH_RE.match(line)
             if m:
                 break
             else:
@@ -425,6 +448,25 @@ class HRProcessor(BlockProcessor):
             blocks.insert(0, '\n'.join(lines))
 
 
+class EmptyBlockProcessor(BlockProcessor):
+    """ Process blocks and start with an empty line. """
+
+    RE = re.compile(r'^\s*\n')
+
+    def test(self, parent, block):
+        return bool(self.RE.match(block))
+
+    def run(self, parent, blocks):
+        block = blocks.pop(0)
+        m = self.RE.match(block)
+        if m:
+            blocks.insert(0, block[m.end():])
+            sibling = self.lastChild(parent)
+            if sibling and sibling.tag == 'pre' and sibling[0] and \
+                    sibling[0].tag == 'code':
+                sibling[0].text = AtomicString('%s/n/n/n' % sibling[0].text )
+
+
 class PBlockProcessor(BlockProcessor):
     """ Process Paragraph blocks. """
 
@@ -435,7 +477,10 @@ class PBlockProcessor(BlockProcessor):
         block = blocks.pop(0)
         if block.strip():
             if self.parser.state == 'list':
-                parent.text = block
+                if parent.text:
+                    parent.text = '%s\n%s' % (parent.text, block)
+                else:
+                    parent.text = block
             else:
                 p = etree.SubElement(parent, 'p')
                 p.text = block
@@ -446,6 +491,7 @@ class BlockParser:
 
     def __init__(self):
         self.blockprocessors = OrderedDict()
+        self.blockprocessors['empty'] = EmptyBlockProcessor(self)
         self.blockprocessors['indent'] = ListIndentProcessor(self)
         self.blockprocessors['code'] = CodeBlockProcessor(self)
         self.blockprocessors['hashheader'] = HashHeaderProcessor(self)
@@ -464,9 +510,12 @@ class BlockParser:
         """ Parse a markdown string into an ElementTree. """
         # Create a ElementTree from the lines
         root = etree.Element("div")
-        blocks = '\n'.join(lines).split('\n\n')
-        self.parseBlocks(root, blocks)
+        self.parseChunk(root, '\n'.join(lines))
         return etree.ElementTree(root)
+
+    def parseChunk(self, parent, text):
+        """ Parse a chunk of markdown text and attach to given etree node. """
+        self.parseBlocks(parent, text.split('\n\n'))
 
     def parseBlocks(self, parent, blocks):
         """ Process blocks of markdown text and attach to given etree node. """
@@ -1722,6 +1771,7 @@ class Markdown:
 
         source = source.replace(STX, "").replace(ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
+        source = re.sub(r'\n\s\n', '\n\n', source)
         source = source.expandtabs(TAB_LENGTH)
 
         # Split into lines and run the line preprocessors.
