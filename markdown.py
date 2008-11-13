@@ -481,10 +481,10 @@ class PBlockProcessor(BlockProcessor):
                 if parent.text:
                     parent.text = '%s\n%s' % (parent.text, block)
                 else:
-                    parent.text = block
+                    parent.text = block.lstrip()
             else:
                 p = etree.SubElement(parent, 'p')
-                p.text = block
+                p.text = block.lstrip()
 
 
 class BlockParser:
