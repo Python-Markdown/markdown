@@ -228,8 +228,8 @@ class BlockProcessor:
         newtext = []
         lines = text.split('\n')
         for line in lines:
-            if line.startswith(' '*4):
-                newtext.append(line[4:])
+            if line.startswith(' '*TAB_LENGTH):
+                newtext.append(line[TAB_LENGTH:])
             elif not line.strip():
                 newtext.append('')
             else:
@@ -240,8 +240,8 @@ class BlockProcessor:
         """ Remove a tab from front of lines but allowing dedented lines. """
         lines = text.split('\n')
         for i in range(len(lines)):
-            if lines[i].startswith(' '*4):
-                lines[i] = lines[i][4:]
+            if lines[i].startswith(' '*TAB_LENGTH):
+                lines[i] = lines[i][TAB_LENGTH:]
         return '\n'.join(lines)
 
     def test(self, parent, block):
@@ -301,7 +301,7 @@ class ListIndentProcessor(BlockProcessor):
     """
 
     def test(self, parent, block):
-        return block.startswith(' '*4) and \
+        return block.startswith(' '*TAB_LENGTH) and \
                 (parent.tag == "li" or \
                     (len(parent) and parent[-1] and \
                         (parent[-1].tag == "ul" or parent[-1].tag == "ol")
@@ -332,7 +332,7 @@ class CodeBlockProcessor(BlockProcessor):
     """ Process code blocks. """
 
     def test(self, parent, block):
-        return block.startswith(' '*4)
+        return block.startswith(' '*TAB_LENGTH)
     
     def run(self, parent, blocks):
         sibling = self.lastChild(parent)
@@ -428,7 +428,7 @@ class OListProcessor(BlockProcessor):
         # Loop through items in block, recursively parsing each with the
         # appropriate parent.
         for item in items:
-            if item.startswith(' '*4):
+            if item.startswith(' '*TAB_LENGTH):
                 # Item is indented. Parse with last item as parent
                 self.parser.parseBlocks(lst[-1], [item])
             else:
@@ -447,7 +447,7 @@ class OListProcessor(BlockProcessor):
                 items.append(m.group(3))
             elif self.INDENT_RE.match(line):
                 # This is an indented (possibly nested) item.
-                if items[-1].startswith(' '*4):
+                if items[-1].startswith(' '*TAB_LENGTH):
                     # Previous item was indented. Append to that item.
                     items[-1] = '%s\n%s' % (items[-1], line)
                 else:
