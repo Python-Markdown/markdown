@@ -6,7 +6,8 @@ Replaces the core parser with the old one.
 
 """
 
-import markdown
+import markdown, re
+from markdown import etree
 
 """Basic and reusable regular expressions."""
 
@@ -335,7 +336,7 @@ class MarkdownParser:
         pre = etree.SubElement(parentElem, "pre")
         code = etree.SubElement(pre, "code")
         text = "\n".join(detabbed).rstrip()+"\n"
-        code.text = AtomicString(text)
+        code.text = markdown.AtomicString(text)
         self.parseChunk(parentElem, theRest, inList)
 
     def detectTabbed(self, lines):
@@ -344,10 +345,8 @@ class MarkdownParser:
         Keyword arguments:
 
         * lines: an array of strings
-        * fn: a function that returns a substring of a string
-           if the string matches the necessary criteria
 
-        Returns: a list of post processes items and the unused
+        Returns: a list of post processed items and the unused
         remainder of the original list
 
         """
@@ -391,7 +390,7 @@ class MarkdownParser:
 
         return items, lines[i:]
 
-class HeaderPreprocessor(Preprocessor):
+class HeaderPreprocessor(markdown.Preprocessor):
 
     """Replace underlined headers with hashed headers.
 
@@ -425,7 +424,7 @@ class HeaderPreprocessor(Preprocessor):
         return lines
 
 
-class LinePreprocessor(Preprocessor):
+class LinePreprocessor(markdown.Preprocessor):
     """Convert HR lines to "___" format."""
     blockquote_re = re.compile(r'^(> )+')
 
