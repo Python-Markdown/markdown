@@ -29,7 +29,7 @@ from markdown import etree
 FN_BACKLINK_TEXT = "zz1337820767766393qq"
 NBSP_PLACEHOLDER =  "qq3936677670287331zz"
 DEF_RE = re.compile(r'(\ ?\ ?\ ?)\[\^([^\]]*)\]:\s*(.*)')
-
+TABBED_RE = re.compile(r'((\t)|(    ))(.*)')
 
 class FootnoteExtension(markdown.Extension):
     """ Footnote Extension. """
@@ -111,9 +111,7 @@ class FootnoteExtension(markdown.Extension):
         for id in self.footnotes.keys():
             li = etree.SubElement(ol, "li")
             li.set("id", self.makeFootnoteId(id))
-            self.parser.parseChunk(li, self.footnotes[id].split("\n"), 
-                                        looseList=1)
-
+            self.parser.parseChunk(li, self.footnotes[id])
             backlink = etree.Element("a")
             backlink.set("href", "#" + self.makeFootnoteRefId(id))
             backlink.set("rev", "footnote")
@@ -158,7 +156,7 @@ class FootnotePreprocessor(markdown.Preprocessor):
 
         if id :
             plain = lines[:i]
-            detabbed, theRest = self.footnotes.parser.detectTabbed(lines[i+1:])
+            detabbed, theRest = self.detectTabbed(lines[i+1:])
             self.footnotes.setFootnote(id,
                                        footnote + "\n"
                                        + "\n".join(detabbed))
@@ -187,6 +185,57 @@ class FootnotePreprocessor(markdown.Preprocessor):
                 return counter, m.group(2), m.group(3)
             counter += 1
         return counter, None, None
+
+    def detectTabbed(self, lines):
+        """ Find indented text and remove indent before further proccesing.
+
+        Keyword arguments:
+
+        * lines: an array of strings
+
+        Returns: a list of post processed items and the unused
+        remainder of the original list
+
+        """
+        items = []
+        item = -1
+        i = 0 # to keep track of where we are
+
+        def detab(line):
+            match = TABBED_RE.match(line)
+            if match:
+               return match.group(4)
+
+        for line in lines:
+            if line.strip(): # Non-blank line
+                line = detab(line)
+                if line:
+                    items.append(line)
+                    i += 1
+                    continue
+                else:
+                    return items, lines[i:]
+
+            else: # Blank line: _maybe_ we are done.
+                i += 1 # advance
+
+                # Find the next non-blank line
+                for j in range(i, len(lines)):
+                    if lines[j].strip():
+                        next_line = lines[j]; break
+                else:
+                    break # There is no more text; we are done.
+
+                # Check if the next non-blank line is tabbed
+                if detab(next_line): # Yes, more work to do.
+                    items.append("")
+                    continue
+                else:
+                    break # No, we are done.
+        else:
+            i += 1
+
+        return items, lines[i:]
 
 
 class FootnotePattern(markdown.Pattern):
