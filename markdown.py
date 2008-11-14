@@ -2096,18 +2096,15 @@ def load_extension(ext_name, configs = []):
         try: # Old style (mdx.<extension>)
             module = __import__(module_name_old_style)
         except ImportError:
-            pass
-
-    if module :
-        # If the module is loaded successfully, we expect it to define a
-        # function called makeExtension()
-        try:
-            return module.makeExtension(configs.items())
-        except:
-            message(CRITICAL, "Failed to instantiate extension '%s'" % ext_name)
-    else:
-       message(CRITICAL, "Failed loading extension '%s' from '%s' or '%s'"
+           message(CRITICAL, "Failed loading extension '%s' from '%s' or '%s'"
                % (ext_name, module_name_new_style, module_name_old_style))
+
+    # If the module is loaded successfully, we expect it to define a
+    # function called makeExtension()
+    try:
+        return module.makeExtension(configs.items())
+    except:
+        message(CRITICAL, "Failed to instantiate extension '%s'" % ext_name)
 
 def load_extensions(ext_names):
     """Loads multiple extensions"""
