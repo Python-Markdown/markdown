@@ -9,20 +9,21 @@ custom functionality and/or syntax into the parser. There are preprocessors
 which allow you to alter the source before it is passed to the parser, 
 inline patterns which allow you to add, remove or override the syntax of
 any inline elements, and postprocessors which allow munging of the
-output of the parser before it is returned. If you really want to dive in, there is also the option to subclass the core MarkdownParser.
+output of the parser before it is returned. If you really want to dive in, 
+there are also blockprocessors which are part of the core BlockParser.
 
 As the parser builds an [ElementTree][] object which is later rendered 
-as Unicode text, there are also some helpers provided to make manipulation of 
-the tree easier. Each part of the API is discussed in its respective 
-section below. You may find reading the source of some [[Available Extensions]] 
-helpful as well. For example, the [[Footnotes]] extension uses most of the 
-features documented here.
+as Unicode text, there are also some helpers provided to ease manipulation of 
+the tree. Each part of the API is discussed in its respective section below. 
+Additionaly, reading the source of some [[Available Extensions]] may be helpful.
+For example, the [[Footnotes]] extension uses most of the features documented 
+here.
 
 * [Preprocessors][]
 * [InlinePatterns][]
 * [Treeprocessors][] 
 * [Postprocessors][]
-* [MarkdownParser][]
+* [BlockParser][]
 * [Working with the ElementTree][]
 * [Integrating your code into Markdown][]
     * [extendMarkdown][]
@@ -38,7 +39,7 @@ core. This is an excellent place to clean up bad syntax, extract things the
 parser may otherwise choke on and perhaps even store it for later retrieval.
 
 Preprocessors should inherit from ``markdown.Preprocessor`` and implement 
-a ``run`` method with one argument ``lines``. The ``run`` method of each Line
+a ``run`` method with one argument ``lines``. The ``run`` method of each 
 Preprocessor will be passed the entire source text as a list of Unicode strings.
 Each string will contain one line of text. The ``run`` method should return
 either that list, or an altered list of Unicode strings.
@@ -124,8 +125,8 @@ situation.
 
 <h3 id="treeprocessors">Treeprocessors</h3>
 
-Treeprocessors manipulate an ElemenTree object  after it has passed through the
-core MarkdownParser. This is where additional manipulation of the tree takes
+Treeprocessors manipulate an ElemenTree object after it has passed through the
+core BlockParser. This is where additional manipulation of the tree takes
 place. Additionaly, the InlineProcessor is a Treeprocessor which steps through
 the tree and runs the InlinePatterns on the text of each Element in the tree.
 
@@ -161,45 +162,107 @@ contents to a document:
     def run(self, text):
         return MYMARKERRE.sub(MyToc, text)
 
-<h3 id="markdownparser">MarkdownParser</h3>
+<h3 id="blockparser">BlockParser</h3>
 
-Sometimes, pre/postprocessors and Inline Patterns aren't going to do what you 
-need. In such a situation, you can override the core ``MarkdownParser``. The
-easiest way is to simply subclass the existing ``MarkdownParser`` class and 
-assign an instance of your subclass to ``Markdown``.
+Sometimes, pre/tree/postprocessors and Inline Patterns aren't going to do what 
+you need. Perhaps you want a new type of block type that needs to be integrated 
+into the core parsing. In such a situation, you can add/change/remove 
+functionality of the core ``BlockParser``. The BlockParser is composed of a
+number of Blockproccessors. The BlockParser steps through each block of text
+(split by blank lines) and passes each block to the appropriate Blockprocessor.
+That Blockprocessor parses the block and adds it to the ElementTree. The
+[[Definition Lists]] extension would be a good example of an extension that
+adds/modifies Blockprocessors.
 
-    class MyCustomParser(markdown.MarkdownParser):
-        def my_method(self, ...):
-            #do stuff
+A Blockprocessor should inherit from ``markdown.BlockProcessor`` and implement
+both the ``test`` and ``run`` methods.
 
-    md = markdown.Markdown()
-    md.parser = MyCustomParser()
+The ``test`` method is used by BlockParser to identify the type of block.
+Therefore the ``test`` method must return a boolean value. If the test returns
+``True``, then the BlockParser will call that Blockprocessor's ``run`` method.
+If it returns ``False``, the BlockParser will move on to the next 
+BlockProcessor.
 
-Of course, it is possible to write your own class from scratch which keeps the 
-same public API. At the very least, you must provide the three public methods,
-the arguments and/or keywords they take, and return the appropriate object. 
-Those methods are:
+The **``test``** method takes two arguments:
 
-* ``parseDocument``
-    * Keywords:
-        * ``lines``: A list of lines.
-    * Return an ElementTree object
+* **``parent``**: The parent etree Element of the block. This can be useful as
+  the block may need to be treated differently if it is inside a list, for
+  example.
 
-* ``parseChunk``
-    * Keywords:
-        * ``parent_elem``: An ElementTree Element.
-        * ``lines``: A list of lines.
-        * ``inList``: Boolean, optional.
-        * ``looseList``: Boolean, optional.
-    * Return None. However, it should attach the parsed ``lines`` as children 
-      of the ``parent_elem``.
+* **``block``**: A string of the current block of text. The test may be a 
+  simple string method (such as ``block.startswith(some_text)``) or a complex 
+  regular expression.
 
-* ``detechTabbed``
-    * Keywords:
-        * ``lines``: A list of lines.
-    * Return a 2 item tuple which should contain:
-        * A list of lines that were tabbed (now in a detabbed state) and 
-        * a list of all remaining lines.
+The **``run``** method takes two arguments:
+
+* **``parent``**: A pointer to the parent etree Element of the block. The run 
+  method will most likely attach additional nodes to this parent. Note that
+  nothing is returned by the method. The Elementree object is altered in place.
+
+* **``blocks``**: A list of all remaining blocks of the document. Your run 
+  method must remove (pop) the first block from the list (which it altered in
+  place - not returned) and parse that block. You may find that a block of text
+  legitimately contains multiple block types. Therefore, after processing the 
+  first type, you processor can insert the remaining text into the beginning
+  of the ``blocks`` list for future parsing.
+
+Please be aware that a single block can span multiple text blocks. For example,
+The official Markdown syntax rules state that a blank line does not end a
+Code Block. If the next block of text is also indented, then it is part of
+the previous block. Therefore, the BlockParser was specifically designed to 
+address these types of situations. If you notice the ``CodeBlockProcessor``,
+in the core, you will note that is checks the last child of the ``parent``.
+If the last child is a code block (``<pre><code>...</code></pre>``), then it
+appends that block to the previous code block rather than creating a new 
+code block.
+
+Each BlockProcessor has the following utility methods available:
+
+* **``lastChild(parent)``**: Returns the last child of the given etree Element
+  or ``None`` if it had no children.
+* **``detab(text)``**: Removes one level of indent (four spaces by default) 
+  from the front of each line of the given text string.
+* **``looseDetab``**: Removes one level if indent from the front of each line
+  of the given text string. However, this methods allows secondary lines to
+  not be indented as does some parts of the Markdown syntax.
+
+Each BlockProcessor also has a pointer to the containing BlockParser instance at
+``self.parser``, which can be used to check or alter the state of the parser.
+The BlockParser tracks it's state in a stack at ``parser.state``. The state
+stack is an instance of the ``State`` class.
+
+**``State``** is a subclass of ``list`` and has the additional methods:
+
+* **``set(state)``**: Set a new state to string ``state``. The new state is 
+  appended to the end of the stack.
+* **``reset()``**: Step back one step in the stack. The last state at the end 
+  is removed from the stack.
+* **``isstate(state)``**: Test that the top (current) level of the stack is of
+  the given string ``state``.
+
+Note that to ensure that the state stack doesn't become corrupted, each time a
+state is set for a block, that state *must* be reset when the parser finishes
+that parsing that block.
+
+An instance of the **``BlockParser``** is found at ``Markdown.parser``.
+``BlockParser`` has the following methods:
+
+* **``parseDocument(lines)``**: Given a list of lines, an ElementTree object is
+  returned. This should be passed an entire document and is the only method
+  the ``Markdown`` class calls directly.
+* **``parseChunk(parent, text)``**: Parses a chunk of markdown text composed of
+  multiple blocks and attaches those blocks to the ``parent`` Element. The 
+  ``parent`` is altered in place and nothing is returned. Extensions would
+  most likely use this method for block parsing
+* **``parseBlocks``**: Parses a list of blocks of text and attaches those 
+  blocks to the ``parent`` Element. The ``parent`` is altered in place and
+  nothing is returned. This method will generally only be used internally to
+  recursively parse nested blocks of text.
+
+While is is not recommended, an extension could subclass of completely replace
+the ``BlockParser``. The new class would have to provide the same public API.
+However, be aware that other extensions may expect the core parser provided
+and will not work with such a drastically different parser.
 
 <h3 id="working_with_et">Working with the ElementTree</h3>
 
@@ -225,22 +288,22 @@ Sometimes you may want text inserted into an element to be parsed by
 [InlinePatterns][]. In such a situation, simply insert the text as you normally
 would and the text will be automatically run through the InlinePatterns. 
 However, if you do *not* want some text to be parsers by InlinePatterns,
-then insert the text as an AtomicString.
+then insert the text as an ``AtomicString``.
 
 Here's a basic example which creates an HTML table (note that the contents of 
 the second cell (``td2``) will be run through InlinePatterns latter):
 
     table = etree.Element("table") 
-    table.set("cellpadding", "2") # Set cellpadding to 2
-    tr = etree.SubElement(table, "tr") # Add child tr to table
-    td1 = etree.SubElement(tr, "td") # Add child td1 to tr
-    td1.text = markdown.AtomicString("Cell content") # Add plain text content
-    td2 = etree.SubElement(tr, "td") # Add second td to tr
-    td2.text = "Some *text* with **inline** formatting." # Add markup text
-    table.tail = "Text after table" # Added text after table Element
+    table.set("cellpadding", "2")                      # Set cellpadding to 2
+    tr = etree.SubElement(table, "tr")                 # Add child tr to table
+    td1 = etree.SubElement(tr, "td")                   # Add child td1 to tr
+    td1.text = markdown.AtomicString("Cell content")   # Add plain text content
+    td2 = etree.SubElement(tr, "td")                   # Add second td to tr
+    td2.text = "*text* with **inline** formatting."    # Add markup text
+    table.tail = "Text after table"                    # Add text after table
 
 You can also manipulate an existing tree. Consider the following example which 
-adds a ``class`` attribute to all ``a`` elements:
+adds a ``class`` attribute to ``a`` elements:
 
 	def set_link_class(self, element):
 		for child in element: 
@@ -284,12 +347,12 @@ arguments:
 
     * ``md.preprocessors``
     * ``md.inlinePatterns``
+    * ``md.parser.blockprocessors``
     * ``md.treepreprocessors``
     * ``md.postprocessors``
 
     Some other things you may want to access in the markdown instance are:
 
-    * ``md.inlineStash``
     * ``md.htmlStash``
     * ``md.registerExtension()``
 
@@ -298,12 +361,11 @@ arguments:
     Contains all the various global variables within the markdown module.
 
 Of course, with access to those items, theoretically you have the option to 
-changing anything through various [monkey_patching][] techniques. In fact, this
-is how the [[HeaderId]] extension works. However, you should be aware that the 
-various undocumented or private parts of markdown may change without notice and
-your monkey_patches may break with a new release. Therefore, what you really 
-should be doing is inserting processors and patterns into the markdown pipeline.
-Consider yourself warned.
+changing anything through various [monkey_patching][] techniques. However, you 
+should be aware that the various undocumented or private parts of markdown 
+may change without notice and your monkey_patches may break with a new release.
+Therefore, what you really should be doing is inserting processors and patterns
+into the markdown pipeline. Consider yourself warned.
 
 [monkey_patching]: http://en.wikipedia.org/wiki/Monkey_patch
 
@@ -485,7 +547,7 @@ than one residing in a module.
 [InlinePatterns]: #inlinepatterns
 [Treeprocessors]: #treeprocessors
 [Postprocessors]: #postprocessors
-[MarkdownParser]: #markdownparser
+[BlockParser]: #blockparser
 [Working with the ElementTree]: #working_with_et
 [Integrating your code into Markdown]: #integrating_into_markdown
 [extendMarkdown]: #extendmarkdown
