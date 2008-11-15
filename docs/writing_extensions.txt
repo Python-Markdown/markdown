@@ -65,9 +65,14 @@ instances of classes that inherit from ``markdown.Pattern`` or one of its
 children. Each pattern object uses a single regular expression and must have 
 the following methods:
 
-* ``getCompiledRegExp()``: Returns a compiled regular expression.
-* ``handleMatch(m)``: Accepts a match object and returns an ElementTree
-    element of a plain Unicode string.
+* **``getCompiledRegExp()``**: 
+
+    Returns a compiled regular expression.
+
+* **``handleMatch(m)``**: 
+
+    Accepts a match object and returns an ElementTree element of a plain 
+    Unicode string.
 
 Note that any regular expression returned by ``getCompiledRegExp`` must capture
 the whole block. Therefore, they should all start with ``r'^(.*?)'`` and end
@@ -105,16 +110,16 @@ Feel free to use or extend any of these Pattern classes.
 
 **Generic Pattern Classes**
 
-* ``SimpleTextPattern(pattern)``:
+* **``SimpleTextPattern(pattern)``**:
 
-    Returns simple text of ``group(2)`` of a `pattern`.
+    Returns simple text of ``group(2)`` of a ``pattern``.
 
-* ``SimpleTagPattern(pattern, tag)``:
+* **``SimpleTagPattern(pattern, tag)``**:
 
     Returns an element of type "`tag`" with a text attribute of ``group(3)``
     of a ``pattern``. ``tag`` should be a string of a HTML element (i.e.: 'em').
 
-* ``SubstituteTagPattern(pattern, tag)``:
+* **``SubstituteTagPattern(pattern, tag)``**:
 
     Returns an element of type "`tag`" with no children or text (i.e.: 'br').
 
@@ -137,9 +142,9 @@ object) and returns either that root element or a modified root element.
 A pseudo example:
 
     class MyTreeprocessor(markdown.Treeprocessor):
-    def run(self, root):
-        #do stufff
-        return my_modified_root
+        def run(self, root):
+            #do stufff
+            return my_modified_root
 
 For specifics on manipulating the ElementTree, see 
 [Working with the ElementTree][] below.
@@ -159,8 +164,8 @@ Unicode text.  For example, this may be an appropriate place to add a table of
 contents to a document:
 
     class TocPostprocessor(markdown.Postprocessor):
-    def run(self, text):
-        return MYMARKERRE.sub(MyToc, text)
+        def run(self, text):
+            return MYMARKERRE.sub(MyToc, text)
 
 <h3 id="blockparser">BlockParser</h3>
 
@@ -211,20 +216,28 @@ The official Markdown syntax rules state that a blank line does not end a
 Code Block. If the next block of text is also indented, then it is part of
 the previous block. Therefore, the BlockParser was specifically designed to 
 address these types of situations. If you notice the ``CodeBlockProcessor``,
-in the core, you will note that is checks the last child of the ``parent``.
+in the core, you will note that it checks the last child of the ``parent``.
 If the last child is a code block (``<pre><code>...</code></pre>``), then it
 appends that block to the previous code block rather than creating a new 
 code block.
 
 Each BlockProcessor has the following utility methods available:
 
-* **``lastChild(parent)``**: Returns the last child of the given etree Element
-  or ``None`` if it had no children.
-* **``detab(text)``**: Removes one level of indent (four spaces by default) 
-  from the front of each line of the given text string.
-* **``looseDetab``**: Removes one level if indent from the front of each line
-  of the given text string. However, this methods allows secondary lines to
-  not be indented as does some parts of the Markdown syntax.
+* **``lastChild(parent)``**: 
+
+    Returns the last child of the given etree Element or ``None`` if it had no 
+    children.
+
+* **``detab(text)``**: 
+
+    Removes one level of indent (four spaces by default) from the front of each
+    line of the given text string.
+
+* **``looseDetab(text)``**: 
+
+    Removes one level if indent from the front of each line of the given text 
+    string. However, this methods allows secondary lines to not be indented as 
+    does some parts of the Markdown syntax.
 
 Each BlockProcessor also has a pointer to the containing BlockParser instance at
 ``self.parser``, which can be used to check or alter the state of the parser.
@@ -233,33 +246,49 @@ stack is an instance of the ``State`` class.
 
 **``State``** is a subclass of ``list`` and has the additional methods:
 
-* **``set(state)``**: Set a new state to string ``state``. The new state is 
-  appended to the end of the stack.
-* **``reset()``**: Step back one step in the stack. The last state at the end 
-  is removed from the stack.
-* **``isstate(state)``**: Test that the top (current) level of the stack is of
-  the given string ``state``.
+* **``set(state)``**: 
+
+    Set a new state to string ``state``. The new state is appended to the end 
+    of the stack.
+
+* **``reset()``**: 
+
+    Step back one step in the stack. The last state at the end is removed from 
+    the stack.
+
+* **``isstate(state)``**: 
+
+    Test that the top (current) level of the stack is of the given string 
+    ``state``.
 
 Note that to ensure that the state stack doesn't become corrupted, each time a
 state is set for a block, that state *must* be reset when the parser finishes
-that parsing that block.
+parsing that block.
 
 An instance of the **``BlockParser``** is found at ``Markdown.parser``.
 ``BlockParser`` has the following methods:
 
-* **``parseDocument(lines)``**: Given a list of lines, an ElementTree object is
-  returned. This should be passed an entire document and is the only method
-  the ``Markdown`` class calls directly.
-* **``parseChunk(parent, text)``**: Parses a chunk of markdown text composed of
-  multiple blocks and attaches those blocks to the ``parent`` Element. The 
-  ``parent`` is altered in place and nothing is returned. Extensions would
-  most likely use this method for block parsing
-* **``parseBlocks``**: Parses a list of blocks of text and attaches those 
-  blocks to the ``parent`` Element. The ``parent`` is altered in place and
-  nothing is returned. This method will generally only be used internally to
-  recursively parse nested blocks of text.
+* **``parseDocument(lines)``**: 
 
-While is is not recommended, an extension could subclass of completely replace
+    Given a list of lines, an ElementTree object is returned. This should be 
+    passed an entire document and is the only method the ``Markdown`` class 
+    calls directly.
+
+* **``parseChunk(parent, text)``**: 
+
+    Parses a chunk of markdown text composed of multiple blocks and attaches 
+    those blocks to the ``parent`` Element. The ``parent`` is altered in place 
+    and nothing is returned. Extensions would most likely use this method for 
+    block parsing.
+
+* **``parseBlocks(parent, blocks)``**: 
+
+    Parses a list of blocks of text and attaches those blocks to the ``parent``
+    Element. The ``parent`` is altered in place and nothing is returned. This 
+    method will generally only be used internally to recursively parse nested 
+    blocks of text.
+
+While is is not recommended, an extension could subclass or completely replace
 the ``BlockParser``. The new class would have to provide the same public API.
 However, be aware that other extensions may expect the core parser provided
 and will not work with such a drastically different parser.
@@ -287,8 +316,10 @@ your system.
 Sometimes you may want text inserted into an element to be parsed by 
 [InlinePatterns][]. In such a situation, simply insert the text as you normally
 would and the text will be automatically run through the InlinePatterns. 
-However, if you do *not* want some text to be parsers by InlinePatterns,
+However, if you do *not* want some text to be parsed by InlinePatterns,
 then insert the text as an ``AtomicString``.
+
+    some_element.text = markdown.AtomicString(some_text)
 
 Here's a basic example which creates an HTML table (note that the contents of 
 the second cell (``td2``) will be run through InlinePatterns latter):
@@ -303,7 +334,7 @@ the second cell (``td2``) will be run through InlinePatterns latter):
     table.tail = "Text after table"                    # Add text after table
 
 You can also manipulate an existing tree. Consider the following example which 
-adds a ``class`` attribute to ``a`` elements:
+adds a ``class`` attribute to ``<a>`` elements:
 
 	def set_link_class(self, element):
 		for child in element: 
@@ -315,7 +346,7 @@ For more information about working with ElementTree see the ElementTree
 [Documentation](http://effbot.org/zone/element-index.htm) 
 ([Python Docs](http://docs.python.org/lib/module-xml.etree.ElementTree.html)).
 
-<h3 id="integrating_into_markdown">Integrating Your Code Into Markdown
+<h3 id="integrating_into_markdown">Integrating Your Code Into Markdown</h3>
 
 Once you have the various pieces of your extension built, you need to tell 
 Markdown about them and ensure that they are run in the proper sequence. 
@@ -334,12 +365,12 @@ manipulate those OrderedDicts appropriately. You may insert instances of your
 processors and patterns into the appropriate location in an OrderedDict, remove
 a built-in instance, or replace a built-in instance with your own.
 
-<h4 id="extendmarkdown">`extendMarkdown`</h4>
+<h4 id="extendmarkdown">extendMarkdown</h4>
 
 The ``extendMarkdown`` method of a ``markdown.Extension`` class accepts two 
 arguments:
 
-* ``md``:
+* **``md``**:
 
     A pointer to the instance of the Markdown class. You should use this to 
     access the [OrderedDict][]s of processors and patterns. They are found 
@@ -356,7 +387,7 @@ arguments:
     * ``md.htmlStash``
     * ``md.registerExtension()``
 
-* ``md_globals``
+* **``md_globals``**:
 
     Contains all the various global variables within the markdown module.
 
@@ -396,9 +427,12 @@ helper method ``add()`` to add additional items to an existing OrderedDict.
 The ``add()`` method accepts three arguments:
 
 * **``key``**: A string. The key is used for later reference to the item.
+
 * **``value``**: The object instance stored in this item.
+
 * **``location``**: Optional. The items location in relation to other items. 
-  Note that the location can consist of a few different values:
+
+    Note that the location can consist of a few different values:
 
     * The special strings ``"_begin"`` and ``"_end"`` insert that item at the 
       beginning or end of the OrderedDict respectively. 
@@ -421,14 +455,14 @@ Consider the following example:
 
 Note that when building an OrderedDict in order, the extra features of the
 ``add`` method offer no real value and are not necessary. However, when 
-manipulating an existing OrderedDict, ``add`` can be very helpful. So lets 
+manipulating an existing OrderedDict, ``add`` can be very helpful. So let's 
 insert another item into the OrderedDict.
 
     >>> od.add('two', 2, '>one')         # Insert after 'one'
     >>> od.values()
     [1, 2, 3, 4]
 
-Now lets insert another item.
+Now let's insert another item.
 
     >>> od.add('twohalf', 2.5, '<three') # Insert before 'three'
     >>> od.keys()
@@ -509,7 +543,7 @@ values, and should be converted at run time. For example:
 
     i = int(self.getConfig("SOME_PARAM"))
 
-<h4 id="makeextension">`makeExtension`</h4>
+<h4 id="makeextension">makeExtension</h4>
 
 Each extension should ideally be placed in its own module starting
 with the  ``mdx_`` prefix (e.g. ``mdx_footnotes.py``).  The module must
