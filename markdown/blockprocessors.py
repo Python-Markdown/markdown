@@ -115,6 +115,7 @@ class ListIndentProcessor(BlockProcessor):
 
     def test(self, parent, block):
         return block.startswith(' '*markdown.TAB_LENGTH) and \
+                not self.parser.state.isstate('detabbed') and  \
                 (parent.tag == "li" or \
                     (len(parent) and parent[-1] and \
                         (parent[-1].tag == "ul" or parent[-1].tag == "ol")
@@ -124,6 +125,7 @@ class ListIndentProcessor(BlockProcessor):
     def run(self, parent, blocks):
         block = self.looseDetab(blocks.pop(0))
         sibling = self.lastChild(parent)
+        self.parser.state.set('detabbed')
         if parent.tag == 'li':
             # The parent is already a li. Just parse the child block.
             self.parser.parseBlocks(parent, [block])
@@ -139,6 +141,7 @@ class ListIndentProcessor(BlockProcessor):
             # Create a new li and parse the block with it as the parent.
             li = markdown.etree.SubElement(sibling, 'li')
             self.parser.parseBlocks(li, [block])
+        self.parser.state.reset()
 
 
 class CodeBlockProcessor(BlockProcessor):
