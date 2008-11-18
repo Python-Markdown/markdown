@@ -39,15 +39,13 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see docs/LICENSE for details).
 """
 
-version = "2.0-alpha"
-version_info = (2,0,0, "beta")
+version = "2.0-beta-2"
+version_info = (2,0,0, "beta-2")
 
 import re
-#import sys
 import codecs
 import logging
 from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
-
 
 """
 CONSTANTS
@@ -69,7 +67,18 @@ BLOCK_LEVEL_ELEMENTS = re.compile("p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
                                   +"|script|noscript|form|fieldset|iframe|math"
                                   +"|ins|del|hr|hr/|style|li|dt|dd|tr")
 
-import linepreprocessors, blockprocessors, treeprocessors, inlinepatterns, blockparser
+# Placeholders
+STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
+ETX = u'\u0003'  # Use ETX ("End of text") for end-of-placeholder
+INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
+INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
+AMP_SUBSTITUTE = STX+"amp"+ETX
+
+import linepreprocessors, blockprocessors, treeprocessors, inlinepatterns
+import postprocessors
+import blockparser
+import etree_loader
+import odict
 
 """
 Constants you probably do not need to change
@@ -83,14 +92,6 @@ RTL_BIDI_RANGES = ( (u'\u0590', u'\u07FF'),
                     (u'\u2D30', u'\u2D7F'), # Tifinagh
                     )
 
-# Placeholders
-STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
-ETX = u'\u0003'  # Use ETX ("End of text") for end-of-placeholder
-HTML_PLACEHOLDER_PREFIX = STX+"wzxhzdk:"
-HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d" + ETX
-INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
-INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
-AMP_SUBSTITUTE = STX+"amp"+ETX
 
 
 """
@@ -102,34 +103,6 @@ def message(level, text):
     """ A wrapper method for logging debug messages. """
     logging.getLogger('MARKDOWN').log(level, text)
 
-## Import
-def importETree():
-    """Import the best implementation of ElementTree, return a module object."""
-    etree_in_c = None
-    try: # Is it Python 2.5+ with C implemenation of ElementTree installed?
-        import xml.etree.cElementTree as etree_in_c
-    except ImportError:
-        try: # Is it Python 2.5+ with Python implementation of ElementTree?
-            import xml.etree.ElementTree as etree
-        except ImportError:
-            try: # An earlier version of Python with cElementTree installed?
-                import cElementTree as etree_in_c
-            except ImportError:
-                try: # An earlier version of Python with Python ElementTree?
-                    import elementtree.ElementTree as etree
-                except ImportError:
-                    message(CRITICAL, "Failed to import ElementTree")
-                    sys.exit(1)
-    if etree_in_c and etree_in_c.VERSION < "1.0":
-        message(CRITICAL, "For cElementTree version 1.0 or higher is required.")
-        sys.exit(1)
-    elif etree_in_c :
-        return etree_in_c
-    elif etree.VERSION < "1.1":
-        message(CRITICAL, "For ElementTree version 1.1 or higher is required")
-        sys.exit(1)
-    else :
-        return etree
 
 def isBlockLevel(tag):
     """Check if the tag is a block level HTML tag."""
@@ -176,70 +149,7 @@ processing.
 There are two types of post-processors: Treeprocessor and Postprocessor
 """
 
-class Processor:
-    def __init__(self, markdown_instance=None):
-        if markdown_instance:
-            self.markdown = markdown_instance
 
-
-class Postprocessor(Processor):
-    """
-    Postprocessors are run after the ElementTree it converted back into text.
-
-    Each Postprocessor implements a "run" method that takes a pointer to a
-    text string, modifies it as necessary and returns a text string.
-
-    Postprocessors must extend markdown.Postprocessor.
-
-    """
-
-    def run(self, text):
-        """
-        Subclasses of Postprocessor should implement a `run` method, which
-        takes the html document as a single text string and returns a
-        (possibly modified) string.
-
-        """
-        pass
-
-
-
-class RawHtmlPostprocessor(Postprocessor):
-    """ Restore raw html to the document. """
-
-    def run(self, text):
-        """ Iterate over html stash and restore "safe" html. """
-        for i in range(self.markdown.htmlStash.html_counter):
-            html, safe  = self.markdown.htmlStash.rawHtmlBlocks[i]
-            if self.markdown.safeMode and not safe:
-                if str(self.markdown.safeMode).lower() == 'escape':
-                    html = self.escape(html)
-                elif str(self.markdown.safeMode).lower() == 'remove':
-                    html = ''
-                else:
-                    html = HTML_REMOVED_TEXT
-            if safe or not self.markdown.safeMode:
-                text = text.replace("<p>%s</p>" % (HTML_PLACEHOLDER % i),
-                                    html + "\n")
-            text =  text.replace(HTML_PLACEHOLDER % i, html)
-        return text
-
-    def escape(self, html):
-        """ Basic html escaping """
-        html = html.replace('&', '&amp;')
-        html = html.replace('<', '&lt;')
-        html = html.replace('>', '&gt;')
-        return html.replace('"', '&quot;')
-
-
-class AndSubstitutePostprocessor(Postprocessor):
-    """ Restore valid entities """
-    def __init__(self):
-        pass
-
-    def run(self, text):
-        text =  text.replace(AMP_SUBSTITUTE, "&")
-        return text
 
 
 """
@@ -250,204 +160,6 @@ MISC AUXILIARY CLASSES
 class AtomicString(unicode):
     """A string which should not be further processed."""
     pass
-
-
-class HtmlStash:
-    """
-    This class is used for stashing HTML objects that we extract
-    in the beginning and replace with place-holders.
-    """
-
-    def __init__ (self):
-        """ Create a HtmlStash. """
-        self.html_counter = 0 # for counting inline html segments
-        self.rawHtmlBlocks=[]
-
-    def store(self, html, safe=False):
-        """
-        Saves an HTML segment for later reinsertion.  Returns a
-        placeholder string that needs to be inserted into the
-        document.
-
-        Keyword arguments:
-
-        * html: an html segment
-        * safe: label an html segment as safe for safemode
-
-        Returns : a placeholder string
-
-        """
-        self.rawHtmlBlocks.append((html, safe))
-        placeholder = HTML_PLACEHOLDER % self.html_counter
-        self.html_counter += 1
-        return placeholder
-
-    def reset(self):
-        self.html_counter = 0
-        self.rawHtmlBlocks = []
-
-class OrderedDict(dict):
-    """
-    A dictionary that keeps its keys in the order in which they're inserted.
-    
-    Copied from Django's SortedDict with some modifications.
-
-    """
-    def __new__(cls, *args, **kwargs):
-        instance = super(OrderedDict, cls).__new__(cls, *args, **kwargs)
-        instance.keyOrder = []
-        return instance
-
-    def __init__(self, data=None):
-        if data is None:
-            data = {}
-        super(OrderedDict, self).__init__(data)
-        if isinstance(data, dict):
-            self.keyOrder = data.keys()
-        else:
-            self.keyOrder = []
-            for key, value in data:
-                if key not in self.keyOrder:
-                    self.keyOrder.append(key)
-
-    def __deepcopy__(self, memo):
-        from copy import deepcopy
-        return self.__class__([(key, deepcopy(value, memo))
-                               for key, value in self.iteritems()])
-
-    def __setitem__(self, key, value):
-        super(OrderedDict, self).__setitem__(key, value)
-        if key not in self.keyOrder:
-            self.keyOrder.append(key)
-
-    def __delitem__(self, key):
-        super(OrderedDict, self).__delitem__(key)
-        self.keyOrder.remove(key)
-
-    def __iter__(self):
-        for k in self.keyOrder:
-            yield k
-
-    def pop(self, k, *args):
-        result = super(OrderedDict, self).pop(k, *args)
-        try:
-            self.keyOrder.remove(k)
-        except ValueError:
-            # Key wasn't in the dictionary in the first place. No problem.
-            pass
-        return result
-
-    def popitem(self):
-        result = super(OrderedDict, self).popitem()
-        self.keyOrder.remove(result[0])
-        return result
-
-    def items(self):
-        return zip(self.keyOrder, self.values())
-
-    def iteritems(self):
-        for key in self.keyOrder:
-            yield key, super(OrderedDict, self).__getitem__(key)
-
-    def keys(self):
-        return self.keyOrder[:]
-
-    def iterkeys(self):
-        return iter(self.keyOrder)
-
-    def values(self):
-        return [super(OrderedDict, self).__getitem__(k) for k in self.keyOrder]
-
-    def itervalues(self):
-        for key in self.keyOrder:
-            yield super(OrderedDict, self).__getitem__(key)
-
-    def update(self, dict_):
-        for k, v in dict_.items():
-            self.__setitem__(k, v)
-
-    def setdefault(self, key, default):
-        if key not in self.keyOrder:
-            self.keyOrder.append(key)
-        return super(OrderedDict, self).setdefault(key, default)
-
-    def value_for_index(self, index):
-        """Return the value of the item at the given zero-based index."""
-        return self[self.keyOrder[index]]
-
-    def insert(self, index, key, value):
-        """Insert the key, value pair before the item with the given index."""
-        if key in self.keyOrder:
-            n = self.keyOrder.index(key)
-            del self.keyOrder[n]
-            if n < index:
-                index -= 1
-        self.keyOrder.insert(index, key)
-        super(OrderedDict, self).__setitem__(key, value)
-
-    def copy(self):
-        """Return a copy of this object."""
-        # This way of initializing the copy means it works for subclasses, too.
-        obj = self.__class__(self)
-        obj.keyOrder = self.keyOrder[:]
-        return obj
-
-    def __repr__(self):
-        """
-        Replace the normal dict.__repr__ with a version that returns the keys
-        in their sorted order.
-        """
-        return '{%s}' % ', '.join(['%r: %r' % (k, v) for k, v in self.items()])
-
-    def clear(self):
-        super(OrderedDict, self).clear()
-        self.keyOrder = []
-
-    def index(self, key):
-        """ Return the index of a given key. """
-        return self.keyOrder.index(key)
-
-    def index_for_location(self, location):
-        """ Return index or None for a given location. """
-        if location == '_begin':
-            i = 0
-        elif location == '_end':
-            i = None
-        elif location.startswith('<') or location.startswith('>'):
-            i = self.index(location[1:])
-            if location.startswith('>'):
-                if i >= len(self):
-                    # last item
-                    i = None
-                else:
-                    i += 1
-        else:
-            raise ValueError('Not a valid location: "%s". Location key '
-                             'must start with a ">" or "<".' % location)
-        return i
-
-    def add(self, key, value, location):
-        """ Insert by key location. """
-        i = self.index_for_location(location)
-        if i is not None:
-            self.insert(i, key, value)
-        else:
-            self.__setitem__(key, value)
-
-    def link(self, key, location):
-        """ Change location of an existing item. """
-        n = self.keyOrder.index(key)
-        del self.keyOrder[n]
-        i = self.index_for_location(location)
-        try:
-            if i is not None:
-                self.keyOrder.insert(i, key)
-            else:
-                self.keyOrder.append(key)
-        except Error:
-            # restore to prevent data loss and reraise
-            self.keyOrder.insert(n, key)
-            raise Error
 
 
 """
@@ -475,29 +187,36 @@ class Markdown:
         * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
 
         """
-        self.parser = blockparser.BlockParser()
+        
         self.safeMode = safe_mode
         self.registeredExtensions = []
         self.docType = ""
         self.stripTopLevelTags = True
 
-        self.preprocessors = OrderedDict()
+        # Preprocessors
+        self.preprocessors = odict.OrderedDict()
         self.preprocessors["html_block"] =  linepreprocessors.HtmlBlockPreprocessor(self)
         self.preprocessors["reference"] = linepreprocessors.ReferencePreprocessor(self)
         # footnote preprocessor will be inserted with "<reference"
 
-        self.treeprocessors = OrderedDict()
-        self.treeprocessors["inline"] = treeprocessors.InlineProcessor(self)
-        self.treeprocessors["prettify"] = treeprocessors.PrettifyTreeprocessor(self)
+        # Block processors - ran by the parser
+        self.parser = blockparser.BlockParser()
+        self.parser.blockprocessors['empty'] = blockprocessors.EmptyBlockProcessor(self.parser)
+        self.parser.blockprocessors['indent'] = blockprocessors.ListIndentProcessor(self.parser)
+        self.parser.blockprocessors['code'] = blockprocessors.CodeBlockProcessor(self.parser)
+        self.parser.blockprocessors['hashheader'] = blockprocessors.HashHeaderProcessor(self.parser)
+        self.parser.blockprocessors['setextheader'] = blockprocessors.SetextHeaderProcessor(self.parser)
+        self.parser.blockprocessors['hr'] = blockprocessors.HRProcessor(self.parser)
+        self.parser.blockprocessors['olist'] = blockprocessors.OListProcessor(self.parser)
+        self.parser.blockprocessors['ulist'] = blockprocessors.UListProcessor(self.parser)
+        self.parser.blockprocessors['quote'] = blockprocessors.BlockQuoteProcessor(self.parser)
+        self.parser.blockprocessors['paragraph'] = blockprocessors.ParagraphProcessor(self.parser)
 
-        self.postprocessors = OrderedDict()
-        self.postprocessors["raw_html"] = RawHtmlPostprocessor(self)
-        self.postprocessors["amp_substitute"] = AndSubstitutePostprocessor()
-        # footnote postprocessor will be inserted with ">amp_substitute"
 
         self.prePatterns = []
 
-        self.inlinePatterns = OrderedDict()
+        # Inline patterns - Run on the tree
+        self.inlinePatterns = odict.OrderedDict()
         self.inlinePatterns["backtick"] = inlinepatterns.BacktickPattern(inlinepatterns.BACKTICK_RE)
         self.inlinePatterns["escape"] = inlinepatterns.SimpleTextPattern(inlinepatterns.ESCAPE_RE)
         self.inlinePatterns["reference"] = inlinepatterns.ReferencePattern(inlinepatterns.REFERENCE_RE, self)
@@ -522,8 +241,20 @@ class Markdown:
                             inlinepatterns.SimpleTagPattern(inlinepatterns.EMPHASIS_2_RE, 'em')
         # The order of the handlers matters!!!
 
+
+        # Tree processors - run once we have a basic parse.
+        self.treeprocessors = odict.OrderedDict()
+        self.treeprocessors["inline"] = treeprocessors.InlineProcessor(self)
+        self.treeprocessors["prettify"] = treeprocessors.PrettifyTreeprocessor(self)
+
+        # Postprocessors - finishing touches.
+        self.postprocessors = odict.OrderedDict()
+        self.postprocessors["raw_html"] = postprocessors.RawHtmlPostprocessor(self)
+        self.postprocessors["amp_substitute"] = postprocessors.AndSubstitutePostprocessor()
+        # footnote postprocessor will be inserted with ">amp_substitute"
+
         self.references = {}
-        self.htmlStash = HtmlStash()
+        self.htmlStash = linepreprocessors.HtmlStash()
         self.registerExtensions(extensions = extensions,
                                 configs = extension_configs)
         self.reset()
@@ -747,7 +478,7 @@ def load_extensions(ext_names):
 # Extensions should use "markdown.etree" instead of "etree" (or do `from
 # markdown import etree`).  Do not import it by yourself.
 
-etree = importETree()
+etree = etree_loader.importETree()
 
 """
 EXPORTED FUNCTIONS

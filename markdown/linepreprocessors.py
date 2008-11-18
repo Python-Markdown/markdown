@@ -10,6 +10,9 @@ complicated.
 import re
 import markdown
 
+HTML_PLACEHOLDER_PREFIX = markdown.STX+"wzxhzdk:"
+HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d" + markdown.ETX
+
 class Processor:
     def __init__(self, markdown_instance=None):
         if markdown_instance:
@@ -34,6 +37,40 @@ class Preprocessor (Processor):
 
         """
         pass
+
+class HtmlStash:
+    """
+    This class is used for stashing HTML objects that we extract
+    in the beginning and replace with place-holders.
+    """
+
+    def __init__ (self):
+        """ Create a HtmlStash. """
+        self.html_counter = 0 # for counting inline html segments
+        self.rawHtmlBlocks=[]
+
+    def store(self, html, safe=False):
+        """
+        Saves an HTML segment for later reinsertion.  Returns a
+        placeholder string that needs to be inserted into the
+        document.
+
+        Keyword arguments:
+
+        * html: an html segment
+        * safe: label an html segment as safe for safemode
+
+        Returns : a placeholder string
+
+        """
+        self.rawHtmlBlocks.append((html, safe))
+        placeholder = HTML_PLACEHOLDER % self.html_counter
+        self.html_counter += 1
+        return placeholder
+
+    def reset(self):
+        self.html_counter = 0
+        self.rawHtmlBlocks = []
 
 
 class HtmlBlockPreprocessor(Preprocessor):

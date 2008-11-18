@@ -42,17 +42,7 @@ class BlockParser:
     """
 
     def __init__(self):
-        self.blockprocessors = markdown.OrderedDict()
-        self.blockprocessors['empty'] = markdown.blockprocessors.EmptyBlockProcessor(self)
-        self.blockprocessors['indent'] = markdown.blockprocessors.ListIndentProcessor(self)
-        self.blockprocessors['code'] = markdown.blockprocessors.CodeBlockProcessor(self)
-        self.blockprocessors['hashheader'] = markdown.blockprocessors.HashHeaderProcessor(self)
-        self.blockprocessors['setextheader'] = markdown.blockprocessors.SetextHeaderProcessor(self)
-        self.blockprocessors['hr'] = markdown.blockprocessors.HRProcessor(self)
-        self.blockprocessors['olist'] = markdown.blockprocessors.OListProcessor(self)
-        self.blockprocessors['ulist'] = markdown.blockprocessors.UListProcessor(self)
-        self.blockprocessors['quote'] = markdown.blockprocessors.BlockQuoteProcessor(self)
-        self.blockprocessors['paragraph'] = markdown.blockprocessors.ParagraphProcessor(self)
+        self.blockprocessors = markdown.odict.OrderedDict()
         self.state = State()
 
     def parseDocument(self, lines):
