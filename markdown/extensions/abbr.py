@@ -37,7 +37,7 @@ class AbbrExtension(markdown.Extension):
         md.preprocessors.add('abbr', AbbrPreprocessor(md), '<reference')
         
            
-class AbbrPreprocessor(markdown.Preprocessor):
+class AbbrPreprocessor(markdown.preprocessors.Preprocessor):
     """ Abbreviation Preprocessor - parse text for abbr references. """
 
     def run(self, lines):
@@ -74,11 +74,11 @@ class AbbrPreprocessor(markdown.Preprocessor):
         return r'(?P<abbr>\b%s\b)' % (r''.join(chars))
 
 
-class AbbrPattern(markdown.Pattern):
+class AbbrPattern(markdown.inlinepatterns.Pattern):
     """ Abbreviation inline pattern. """
 
     def __init__(self, pattern, title):
-        markdown.Pattern.__init__(self, pattern)
+        markdown.inlinepatterns.Pattern.__init__(self, pattern)
         self.title = title
 
     def handleMatch(self, m):
