@@ -55,7 +55,7 @@ class MetaExtension (markdown.Extension):
         md.preprocessors.add("meta", MetaPreprocessor(md), "_begin")
 
 
-class MetaPreprocessor(markdown.Preprocessor):
+class MetaPreprocessor(markdown.preprocessors.Preprocessor):
     """ Get Meta-Data. """
 
     def run(self, lines):
