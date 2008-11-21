@@ -277,26 +277,31 @@ class InlineProcessor(Treeprocessor):
 
             for element, lst in insertQueue:
                 if element.text:
-                    element.text = markdown.inlinepatterns.handleAttributes(element.text, element)
+                    element.text = \
+                        markdown.inlinepatterns.handleAttributes(element.text, 
+                                                                 element)
                 i = 0
                 for newChild in lst:
                     # Processing attributes
                     if newChild.tail:
-                        newChild.tail = markdown.inlinepatterns.handleAttributes(newChild.tail,
-                                                         element)
+                        newChild.tail = \
+                            markdown.inlinepatterns.handleAttributes(newChild.tail,
+                                                                     element)
                     if newChild.text:
-                        newChild.text = markdown.inlinepatterns.handleAttributes(newChild.text,
-                                                         newChild)
+                        newChild.text = \
+                            markdown.inlinepatterns.handleAttributes(newChild.text,
+                                                                     newChild)
                     element.insert(i, newChild)
                     i += 1
-
         return tree
 
 
 class PrettifyTreeprocessor(Treeprocessor):
-    """Add linebreaks to the html document."""
+    """ Add linebreaks to the html document. """
+
     def _prettifyETree(self, elem):
-        """Recursively add linebreaks to ElementTree children."""
+        """ Recursively add linebreaks to ElementTree children. """
+
         i = "\n"
         if markdown.isBlockLevel(elem.tag) and elem.tag not in ['code', 'pre']:
             if (not elem.text or not elem.text.strip()) \
@@ -311,7 +316,8 @@ class PrettifyTreeprocessor(Treeprocessor):
             elem.tail = i
 
     def run(self, root):
-        """.Add linebreaks to ElementTree root object."""
+        """ Add linebreaks to ElementTree root object. """
+
         self._prettifyETree(root)
         # Do <br />'s seperately as they are often in the middle of
         # inline content and missed by _prettifyETree.

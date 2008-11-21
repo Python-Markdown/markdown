@@ -64,8 +64,8 @@ ENABLE_ATTRIBUTES = True     # @id = xyz -> <... id="xyz">
 SMART_EMPHASIS = True        # this_or_that does not become this<i>or</i>that
 HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
 BLOCK_LEVEL_ELEMENTS = re.compile("p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
-                                  +"|script|noscript|form|fieldset|iframe|math"
-                                  +"|ins|del|hr|hr/|style|li|dt|dd|tr")
+                                  "|script|noscript|form|fieldset|iframe|math"
+                                  "|ins|del|hr|hr/|style|li|dt|dd|tr")
 
 # Placeholders
 STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
@@ -74,11 +74,17 @@ INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 AMP_SUBSTITUTE = STX+"amp"+ETX
 
-import linepreprocessors, blockprocessors, treeprocessors, inlinepatterns
+import preprocessors, blockprocessors, treeprocessors, inlinepatterns
 import postprocessors
 import blockparser
 import etree_loader
 import odict
+
+# Extensions should use "markdown.etree" instead of "etree" (or do `from
+# markdown import etree`).  Do not import it by yourself.
+
+etree = etree_loader.importETree()
+
 
 """
 Constants you probably do not need to change
@@ -108,6 +114,15 @@ def isBlockLevel(tag):
     """Check if the tag is a block level HTML tag."""
     return BLOCK_LEVEL_ELEMENTS.match(tag)
 
+"""
+MISC AUXILIARY CLASSES
+=============================================================================
+"""
+
+class AtomicString(unicode):
+    """A string which should not be further processed."""
+    pass
+
 
 """
 OVERALL DESIGN
@@ -127,45 +142,8 @@ Markdown processing takes place in four steps:
 
 Those steps are put together by the Markdown() class.
 
-The code below is organized as follows:
-
-1. BlockParser and it's BlockProcessors - does core block parsing.
-2. All the preprocessors, patterns, treeprocessors, and postprocessors.
-3. Markdown class - does the high-level wrapping.
 """
 
-
-
-
-
-"""
-POST-PROCESSORS
-=============================================================================
-
-Markdown also allows post-processors, which are similar to preprocessors in
-that they need to implement a "run" method. However, they are run after core
-processing.
-
-There are two types of post-processors: Treeprocessor and Postprocessor
-"""
-
-
-
-
-"""
-MISC AUXILIARY CLASSES
-=============================================================================
-"""
-
-class AtomicString(unicode):
-    """A string which should not be further processed."""
-    pass
-
-
-"""
-Markdown
-=============================================================================
-"""
 
 class Markdown:
     """Convert Markdown to HTML."""
@@ -195,66 +173,93 @@ class Markdown:
 
         # Preprocessors
         self.preprocessors = odict.OrderedDict()
-        self.preprocessors["html_block"] =  linepreprocessors.HtmlBlockPreprocessor(self)
-        self.preprocessors["reference"] = linepreprocessors.ReferencePreprocessor(self)
+        self.preprocessors["html_block"] = \
+                preprocessors.HtmlBlockPreprocessor(self)
+        self.preprocessors["reference"] = \
+                preprocessors.ReferencePreprocessor(self)
         # footnote preprocessor will be inserted with "<reference"
 
         # Block processors - ran by the parser
         self.parser = blockparser.BlockParser()
-        self.parser.blockprocessors['empty'] = blockprocessors.EmptyBlockProcessor(self.parser)
-        self.parser.blockprocessors['indent'] = blockprocessors.ListIndentProcessor(self.parser)
-        self.parser.blockprocessors['code'] = blockprocessors.CodeBlockProcessor(self.parser)
-        self.parser.blockprocessors['hashheader'] = blockprocessors.HashHeaderProcessor(self.parser)
-        self.parser.blockprocessors['setextheader'] = blockprocessors.SetextHeaderProcessor(self.parser)
-        self.parser.blockprocessors['hr'] = blockprocessors.HRProcessor(self.parser)
-        self.parser.blockprocessors['olist'] = blockprocessors.OListProcessor(self.parser)
-        self.parser.blockprocessors['ulist'] = blockprocessors.UListProcessor(self.parser)
-        self.parser.blockprocessors['quote'] = blockprocessors.BlockQuoteProcessor(self.parser)
-        self.parser.blockprocessors['paragraph'] = blockprocessors.ParagraphProcessor(self.parser)
+        self.parser.blockprocessors['empty'] = \
+                blockprocessors.EmptyBlockProcessor(self.parser)
+        self.parser.blockprocessors['indent'] = \
+                blockprocessors.ListIndentProcessor(self.parser)
+        self.parser.blockprocessors['code'] = \
+                blockprocessors.CodeBlockProcessor(self.parser)
+        self.parser.blockprocessors['hashheader'] = \
+                blockprocessors.HashHeaderProcessor(self.parser)
+        self.parser.blockprocessors['setextheader'] = \
+                blockprocessors.SetextHeaderProcessor(self.parser)
+        self.parser.blockprocessors['hr'] = \
+                blockprocessors.HRProcessor(self.parser)
+        self.parser.blockprocessors['olist'] = \
+                blockprocessors.OListProcessor(self.parser)
+        self.parser.blockprocessors['ulist'] = \
+                blockprocessors.UListProcessor(self.parser)
+        self.parser.blockprocessors['quote'] = \
+                blockprocessors.BlockQuoteProcessor(self.parser)
+        self.parser.blockprocessors['paragraph'] = \
+                blockprocessors.ParagraphProcessor(self.parser)
 
 
-        self.prePatterns = []
+        #self.prePatterns = []
 
         # Inline patterns - Run on the tree
         self.inlinePatterns = odict.OrderedDict()
-        self.inlinePatterns["backtick"] = inlinepatterns.BacktickPattern(inlinepatterns.BACKTICK_RE)
-        self.inlinePatterns["escape"] = inlinepatterns.SimpleTextPattern(inlinepatterns.ESCAPE_RE)
-        self.inlinePatterns["reference"] = inlinepatterns.ReferencePattern(inlinepatterns.REFERENCE_RE, self)
-        self.inlinePatterns["link"] = inlinepatterns.LinkPattern(inlinepatterns.LINK_RE, self)
-        self.inlinePatterns["image_link"] = inlinepatterns.ImagePattern(inlinepatterns.IMAGE_LINK_RE, self)
+        self.inlinePatterns["backtick"] = \
+                inlinepatterns.BacktickPattern(inlinepatterns.BACKTICK_RE)
+        self.inlinePatterns["escape"] = \
+                inlinepatterns.SimpleTextPattern(inlinepatterns.ESCAPE_RE)
+        self.inlinePatterns["reference"] = \
+            inlinepatterns.ReferencePattern(inlinepatterns.REFERENCE_RE, self)
+        self.inlinePatterns["link"] = \
+                inlinepatterns.LinkPattern(inlinepatterns.LINK_RE, self)
+        self.inlinePatterns["image_link"] = \
+                inlinepatterns.ImagePattern(inlinepatterns.IMAGE_LINK_RE, self)
         self.inlinePatterns["image_reference"] = \
-                            inlinepatterns.ImageReferencePattern(inlinepatterns.IMAGE_REFERENCE_RE, self)
-        self.inlinePatterns["autolink"] = inlinepatterns.AutolinkPattern(inlinepatterns.AUTOLINK_RE, self)
-        self.inlinePatterns["automail"] = inlinepatterns.AutomailPattern(inlinepatterns.AUTOMAIL_RE, self)
+            inlinepatterns.ImageReferencePattern(inlinepatterns.IMAGE_REFERENCE_RE, self)
+        self.inlinePatterns["autolink"] = \
+            inlinepatterns.AutolinkPattern(inlinepatterns.AUTOLINK_RE, self)
+        self.inlinePatterns["automail"] = \
+            inlinepatterns.AutomailPattern(inlinepatterns.AUTOMAIL_RE, self)
         self.inlinePatterns["linebreak2"] = \
-                            inlinepatterns.SubstituteTagPattern(inlinepatterns.LINE_BREAK_2_RE, 'br')
+            inlinepatterns.SubstituteTagPattern(inlinepatterns.LINE_BREAK_2_RE, 'br')
         self.inlinePatterns["linebreak"] = \
-                            inlinepatterns.SubstituteTagPattern(inlinepatterns.LINE_BREAK_RE, 'br')
-        self.inlinePatterns["html"] = inlinepatterns.HtmlPattern(inlinepatterns.HTML_RE, self)
-        self.inlinePatterns["entity"] = inlinepatterns.HtmlPattern(inlinepatterns.ENTITY_RE, self)
-        self.inlinePatterns["not_strong"] = inlinepatterns.SimpleTextPattern(inlinepatterns.NOT_STRONG_RE)
+            inlinepatterns.SubstituteTagPattern(inlinepatterns.LINE_BREAK_RE, 'br')
+        self.inlinePatterns["html"] = \
+                inlinepatterns.HtmlPattern(inlinepatterns.HTML_RE, self)
+        self.inlinePatterns["entity"] = \
+                inlinepatterns.HtmlPattern(inlinepatterns.ENTITY_RE, self)
+        self.inlinePatterns["not_strong"] = \
+                inlinepatterns.SimpleTextPattern(inlinepatterns.NOT_STRONG_RE)
         self.inlinePatterns["strong_em"] = \
-                            inlinepatterns.DoubleTagPattern(inlinepatterns.STRONG_EM_RE, 'strong,em')
-        self.inlinePatterns["strong"] = inlinepatterns.SimpleTagPattern(inlinepatterns.STRONG_RE, 'strong')
-        self.inlinePatterns["emphasis"] = inlinepatterns.SimpleTagPattern(inlinepatterns.EMPHASIS_RE, 'em')
+            inlinepatterns.DoubleTagPattern(inlinepatterns.STRONG_EM_RE, 'strong,em')
+        self.inlinePatterns["strong"] = \
+            inlinepatterns.SimpleTagPattern(inlinepatterns.STRONG_RE, 'strong')
+        self.inlinePatterns["emphasis"] = \
+            inlinepatterns.SimpleTagPattern(inlinepatterns.EMPHASIS_RE, 'em')
         self.inlinePatterns["emphasis2"] = \
-                            inlinepatterns.SimpleTagPattern(inlinepatterns.EMPHASIS_2_RE, 'em')
+            inlinepatterns.SimpleTagPattern(inlinepatterns.EMPHASIS_2_RE, 'em')
         # The order of the handlers matters!!!
 
 
         # Tree processors - run once we have a basic parse.
         self.treeprocessors = odict.OrderedDict()
         self.treeprocessors["inline"] = treeprocessors.InlineProcessor(self)
-        self.treeprocessors["prettify"] = treeprocessors.PrettifyTreeprocessor(self)
+        self.treeprocessors["prettify"] = \
+                treeprocessors.PrettifyTreeprocessor(self)
 
         # Postprocessors - finishing touches.
         self.postprocessors = odict.OrderedDict()
-        self.postprocessors["raw_html"] = postprocessors.RawHtmlPostprocessor(self)
-        self.postprocessors["amp_substitute"] = postprocessors.AndSubstitutePostprocessor()
+        self.postprocessors["raw_html"] = \
+                postprocessors.RawHtmlPostprocessor(self)
+        self.postprocessors["amp_substitute"] = \
+                postprocessors.AndSubstitutePostprocessor()
         # footnote postprocessor will be inserted with ">amp_substitute"
 
         self.references = {}
-        self.htmlStash = linepreprocessors.HtmlStash()
+        self.htmlStash = preprocessors.HtmlStash()
         self.registerExtensions(extensions = extensions,
                                 configs = extension_configs)
         self.reset()
@@ -427,6 +432,7 @@ class Extension:
         """
         pass
 
+
 def load_extension(ext_name, configs = []):
     """Load extension by name, then return the module.
 
@@ -466,6 +472,7 @@ def load_extension(ext_name, configs = []):
     except:
         message(CRITICAL, "Failed to instantiate extension '%s'" % ext_name)
 
+
 def load_extensions(ext_names):
     """Loads multiple extensions"""
     extensions = []
@@ -475,10 +482,6 @@ def load_extensions(ext_names):
             extensions.append(extension)
     return extensions
 
-# Extensions should use "markdown.etree" instead of "etree" (or do `from
-# markdown import etree`).  Do not import it by yourself.
-
-etree = etree_loader.importETree()
 
 """
 EXPORTED FUNCTIONS

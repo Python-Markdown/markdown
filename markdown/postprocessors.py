@@ -1,3 +1,13 @@
+"""
+POST-PROCESSORS
+=============================================================================
+
+Markdown also allows post-processors, which are similar to preprocessors in
+that they need to implement a "run" method. However, they are run after core
+processing.
+
+"""
+
 
 import markdown
 
@@ -42,9 +52,11 @@ class RawHtmlPostprocessor(Postprocessor):
                 else:
                     html = markdown.HTML_REMOVED_TEXT
             if safe or not self.markdown.safeMode:
-                text = text.replace("<p>%s</p>" % (markdown.linepreprocessors.HTML_PLACEHOLDER % i),
-                                    html + "\n")
-            text =  text.replace(markdown.linepreprocessors.HTML_PLACEHOLDER % i, html)
+                text = text.replace("<p>%s</p>" % 
+                            (markdown.preprocessors.HTML_PLACEHOLDER % i),
+                            html + "\n")
+            text =  text.replace(markdown.preprocessors.HTML_PLACEHOLDER % i, 
+                                 html)
         return text
 
     def escape(self, html):
