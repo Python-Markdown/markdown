@@ -7,9 +7,9 @@ Table extension for Python-Markdown
 import markdown
 from markdown import etree
 
-class TablePattern(markdown.Pattern) :
+class TablePattern(markdown.inlinepatterns.Pattern):
     def __init__ (self, md):
-        markdown.Pattern.__init__(self, r'(^|\n)\|([^\n]*)\|')
+        markdown.inlinepatterns.Pattern.__init__(self, r'(^|\n)\|([^\n]*)\|')
         self.md = md
 
     def handleMatch(self, m):
@@ -38,7 +38,7 @@ class TablePattern(markdown.Pattern) :
  
         return tr
 
-class TableTreeprocessor(markdown.Treeprocessor):
+class TableTreeprocessor(markdown.treeprocessors.Treeprocessor):
     
     def _findElement(self, element, name):
         result = []
