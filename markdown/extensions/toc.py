@@ -12,14 +12,14 @@ import markdown
 from markdown import etree
 import re
 
-class TocTreeprocessor (markdown.Treeprocessor):
+class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
     # Iterator wrapper to get parent and child all at once
     def iterparent(self, root):
         for parent in root.getiterator():
             for child in parent:
                 yield parent, child
 
-    def run(self, doc) :
+    def run(self, doc):
         div = etree.Element("div")
         div.attrib["class"] = "toc"
         last_li = None
@@ -102,7 +102,7 @@ class TocTreeprocessor (markdown.Treeprocessor):
 
                 list_stack[-1].append(last_li)
 
-class TocExtension (markdown.Extension):
+class TocExtension(markdown.Extension):
     def __init__(self, configs):
         self.config = { "marker" : ["[TOC]", 
                             "Text to find and replace with Table of Contents -"
@@ -128,10 +128,10 @@ class TocExtension (markdown.Extension):
         value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
         return re.sub('[-\s]+','-',value)
 
-    def extendMarkdown(self, md, md_globals) :
+    def extendMarkdown(self, md, md_globals):
         tocext = TocTreeprocessor(md)
         tocext.config = self.config
         md.treeprocessors.add("toc", tocext, "_begin")
 	
-def makeExtension(configs={}) :
+def makeExtension(configs={}):
     return TocExtension(configs=configs)
