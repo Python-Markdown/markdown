@@ -175,7 +175,7 @@ class CodeHilite:
 
 
 # ------------------ The Markdown Extension -------------------------------
-class HiliteTreeprocessor(markdown.Treeprocessor):
+class HiliteTreeprocessor(markdown.treeprocessors.Treeprocessor):
     """ Hilight source code in code blocks. """
 
     def run(self, root):
