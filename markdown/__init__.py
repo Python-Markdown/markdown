@@ -451,7 +451,7 @@ def load_extension(ext_name, configs = []):
         configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
 
     # Setup the module names
-    ext_module = 'markdown_extensions'
+    ext_module = 'markdown.extensions'
     module_name_new_style = '.'.join([ext_module, ext_name])
     module_name_old_style = '_'.join(['mdx', ext_name])
 
