@@ -71,16 +71,99 @@ import re
 from string import ascii_lowercase, digits, punctuation
 
 ID_CHARS = ascii_lowercase + digits + '-_'
-
-HEADER_RE = re.compile(r'''^(\#{1,6})		# group(1) = string of hashes
-                           ( [^{^#]*)		# group(2) = Header text
-                           [\#]*		    # optional closing hashes 
-                           (?:[ \t]*\{[ \t]*\#([-_:a-zA-Z0-9]+)[ \t]*\})?	# group(3) = id attr''',
-                           re.VERBOSE)
-
 IDCOUNT_RE = re.compile(r'^(.*)_([0-9]+)$')
 
-class HeaderIdExtension (markdown.Extension) :
+
+class HeaderIdProcessor(markdown.blockprocessors.BlockProcessor):
+    """ Replacement BlockProcessor for Header IDs. """
+
+    # Detect a header at start of any line in block
+    RE = re.compile(r"""(^|\n)
+                        (?P<level>\#{1,6})  # group('level') = string of hashes
+                        (?P<header>.*?)     # group('header') = Header text
+                        \#*                 # optional closing hashes
+                        (?:[ \t]*\{[ \t]*\#(?P<id>[-_:a-zA-Z0-9]+)[ \t]*\})?
+                        (\n|$)              #  ^^ group('id') = id attribute
+                     """,
+                     re.VERBOSE)
+
+    IDs = []
+
+    def test(self, parent, block):
+        return bool(self.RE.search(block))
+
+    def run(self, parent, blocks):
+        block = blocks.pop(0)
+        m = self.RE.search(block)
+        if m:
+            before = block[:m.start()] # All lines before header
+            after = block[m.end():]    # All lines after header
+            if before:
+                # As the header was not the first line of the block and the
+                # lines before the header must be parsed first,
+                # recursively parse this lines as a block.
+                self.parser.parseBlocks(parent, [before])
+            # Create header using named groups from RE
+            start_level, force_id = self._get_meta()
+            level = len(m.group('level')) + start_level
+            if level > 6: 
+                level = 6
+            h = markdown.etree.SubElement(parent, 'h%d' % level)
+            h.text = m.group('header').strip()
+            if m.group('id'):
+                h.set('id', self._unique_id(m.group('id')))
+            elif force_id:
+                h.set('id', self._create_id(m.group('header').strip()))
+            if after:
+                # Insert remaining lines as first block for future parsing.
+                blocks.insert(0, after)
+        else:
+            # This should never happen, but just in case...
+            message(CRITICAL, "We've got a problem header!")
+
+    def _get_meta(self):
+        """ Return meta data suported by this ext as a tuple """
+        level = int(self.config['level'][0]) - 1
+        force = self._str2bool(self.config['forceid'][0])
+        if hasattr(self.md, 'Meta'):
+            if self.md.Meta.has_key('header_level'):
+                level = int(self.md.Meta['header_level'][0]) - 1
+            if self.md.Meta.has_key('header_forceid'): 
+                force = self._str2bool(self.md.Meta['header_forceid'][0])
+        return level, force
+
+    def _str2bool(self, s, default=False):
+        """ Convert a string to a booleen value. """
+        s = str(s)
+        if s.lower() in ['0', 'f', 'false', 'off', 'no', 'n']:
+            return False
+        elif s.lower() in ['1', 't', 'true', 'on', 'yes', 'y']:
+            return True
+        return default
+
+    def _unique_id(self, id):
+        """ Ensure ID is unique. Append '_1', '_2'... if not """
+        while id in self.IDs:
+            m = IDCOUNT_RE.match(id)
+            if m:
+                id = '%s_%d'% (m.group(1), int(m.group(2))+1)
+            else:
+                id = '%s_%d'% (id, 1)
+        self.IDs.append(id)
+        return id
+
+    def _create_id(self, header):
+        """ Return ID from Header text. """
+        h = ''
+        for c in header.lower().replace(' ', '_'):
+            if c in ID_CHARS:
+                h += c
+            elif c not in punctuation:
+                h += '+'
+        return self._unique_id(h)
+
+
+class HeaderIdExtension (markdown.Extension):
     def __init__(self, configs):
         # set defaults
         self.config = {
@@ -91,79 +174,16 @@ class HeaderIdExtension (markdown.Extension) :
         for key, value in configs:
             self.setConfig(key, value)
 
+    def extendMarkdown(self, md, md_globals):
 
-    def extendMarkdown(self, md, md_globals) :
-
-        md.IDs = []
-        
-        def _processHeaderId(parent_elem, paragraph) :
-            ''' 
-            Overrides __processHeader of MarkdownParser() and 
-            adds an 'id' to the header. 
-            '''
-            m = HEADER_RE.match(paragraph[0])
-            if m :
-                start_level, force_id = _get_meta()
-                level = len(m.group(1)) + start_level
-                if level > 6: 
-                    level = 6
-                h = etree.Element("h%d" % level)
-                parent_elem.append(h)
-                h.text = m.group(2).strip()
-                if m.group(3) :
-                    h.set('id', _unique_id(m.group(3)))
-                elif force_id:
-                    h.set('id', _create_id(m.group(2).strip()))
-            else :
-                message(CRITICAL, "We've got a problem header!")
-        
-        md.parser._MarkdownParser__processHeader = _processHeaderId
-
-        def _get_meta():
-            ''' Return meta data suported by this ext as a tuple '''
-            level = int(self.config['level'][0]) - 1
-            force = _str2bool(self.config['forceid'][0])
-            if hasattr(md, 'Meta'):
-                if md.Meta.has_key('header_level'):
-                    level = int(md.Meta['header_level'][0]) - 1
-                if md.Meta.has_key('header_forceid'): 
-                    force = _str2bool(md.Meta['header_forceid'][0])
-            return level, force
-
-        def _str2bool(s, default=False):
-            ''' Convert a string to a booleen value. '''
-            s = str(s)
-            if s.lower() in ['0', 'f', 'false', 'off', 'no', 'n']:
-                return False
-            elif s.lower() in ['1', 't', 'true', 'on', 'yes', 'y']:
-                    return True
-            return default
-
-        def _unique_id(id):
-            ''' Ensure ID is unique. Append '_1', '_2'... if not '''
-            while id in md.IDs:
-                m = IDCOUNT_RE.match(id)
-                if m:
-                    id = '%s_%d'% (m.group(1), int(m.group(2))+1)
-                else:
-                    id = '%s_%d'% (id, 1)
-            md.IDs.append(id)
-            return id
+        processor = HeaderIdProcessor(md.parser)
+        processor.md = md
+        processor.config = self.config
+        # Replace existing hasheader in place.
+        md.parser.blockprocessors['hashheader'] = processor
 
 
-        def _create_id(header):
-            ''' Return ID from Header text. '''
-            h = ''
-            for c in header.lower().replace(' ', '_'):
-                if c in ID_CHARS:
-                    h += c
-                elif c not in punctuation:
-                    h += '+'
-            return _unique_id(h)
-
-            
-
-def makeExtension(configs=None) :
+def makeExtension(configs=None):
     return HeaderIdExtension(configs=configs)
 
 if __name__ == "__main__":
