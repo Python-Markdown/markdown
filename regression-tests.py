@@ -12,53 +12,86 @@ from doctest import DocTestSuite
 import os
 import markdown
 
-class TestMarkdownParser(unittest.TestCase):
-    """ Tests of the MarkdownParser class. """
+class TestBlockParser(unittest.TestCase):
+    """ Tests of the BlockParser class. """
 
     def setUp(self):
-        """ Create instance of MarkdownParser. """
-        self.parser = markdown.MarkdownParser()
-
-    def testDetectTabbed(self):
-        """ Test MarkdownParser.detectTabbed. """
-        lines = ["\tfoo", "    bar", "baz"]
-        tabbed, lines = self.parser.detectTabbed(lines)
-        self.assertEqual(tabbed, ["foo", "bar"])
-        self.assertEqual(lines, ["baz"])
+        """ Create instance of BlockParser. """
+        self.parser = markdown.Markdown().parser
 
     def testParseChunk(self):
-        """ Test MarkdownParser.parseChunk. """
+        """ Test BlockParser.parseChunk. """
         root = markdown.etree.Element("div")
-        lines = ['foo']
-        self.parser.parseChunk(root, lines)
+        text = 'foo'
+        self.parser.parseChunk(root, text)
         self.assertEqual(markdown.etree.tostring(root), "<div><p>foo</p></div>")
 
     def testParseDocument(self):
-        """ Test MarkdownParser.parseDocument. """
-        lines = ['#foo', '', 'bar', '', '\tbaz']
+        """ Test BlockParser.parseDocument. """
+        lines = ['#foo', '', 'bar', '', '    baz']
         tree = self.parser.parseDocument(lines)
         self.assert_(isinstance(tree, markdown.etree.ElementTree))
         self.assert_(markdown.etree.iselement(tree.getroot()))
         self.assertEqual(markdown.etree.tostring(tree.getroot()),
             "<div><h1>foo</h1><p>bar</p><pre><code>baz\n</code></pre></div>")
 
+
+class TestBlockParserState(unittest.TestCase):
+    """ Tests of the State class for BlockParser. """
+
+    def setUp(self):
+        self.state = markdown.blockparser.State()
+
+    def testBlankState(self):
+        """ Test State when empty. """
+        self.assertEqual(self.state, [])
+
+    def testSetSate(self):
+        """ Test State.set(). """
+        self.state.set('a_state')
+        self.assertEqual(self.state, ['a_state'])
+        self.state.set('state2')
+        self.assertEqual(self.state, ['a_state', 'state2'])
+
+    def testIsSate(self):
+        """ Test State.isstate(). """
+        self.assertEqual(self.state.isstate('anything'), False)
+        self.state.set('a_state')
+        self.assertEqual(self.state.isstate('a_state'), True)
+        self.state.set('state2')
+        self.assertEqual(self.state.isstate('state2'), True)
+        self.assertEqual(self.state.isstate('a_state'), False)
+        self.assertEqual(self.state.isstate('missing'), False)
+
+    def testReset(self):
+        """ Test State.reset(). """
+        self.state.set('a_state')
+        self.state.reset()
+        self.assertEqual(self.state, [])
+        self.state.set('state1')
+        self.state.set('state2')
+        self.state.reset()
+        self.assertEqual(self.state, ['state1'])
+
 class TestHtmlStash(unittest.TestCase):
     """ Test Markdown's HtmlStash. """
     
     def setUp(self):
-        self.stash = markdown.HtmlStash()
+        self.stash = markdown.preprocessors.HtmlStash()
         self.placeholder = self.stash.store('foo')
 
     def testSimpleStore(self):
         """ Test HtmlStash.store. """
-        self.assertEqual(self.placeholder, markdown.HTML_PLACEHOLDER % 0)
+        self.assertEqual(self.placeholder, 
+                         markdown.preprocessors.HTML_PLACEHOLDER % 0)
         self.assertEqual(self.stash.html_counter, 1)
         self.assertEqual(self.stash.rawHtmlBlocks, [('foo', False)])
 
     def testStoreMore(self):
         """ Test HtmlStash.store with additional blocks. """
         placeholder = self.stash.store('bar')
-        self.assertEqual(placeholder, markdown.HTML_PLACEHOLDER % 1)
+        self.assertEqual(placeholder, 
+                         markdown.preprocessors.HTML_PLACEHOLDER % 1)
         self.assertEqual(self.stash.html_counter, 2)
         self.assertEqual(self.stash.rawHtmlBlocks, 
                         [('foo', False), ('bar', False)])
@@ -79,7 +112,7 @@ class TestOrderedDict(unittest.TestCase):
     """ Test OrderedDict storage class. """
 
     def setUp(self):
-        self.odict = markdown.OrderedDict()
+        self.odict = markdown.odict.OrderedDict()
         self.odict['first'] = 'This'
         self.odict['third'] = 'a'
         self.odict['fourth'] = 'self'
@@ -163,13 +196,14 @@ class TestOrderedDict(unittest.TestCase):
 def suite():
     """ Build a test suite of the above tests and extension doctests. """
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestMarkdownParser))
+    suite.addTest(unittest.makeSuite(TestBlockParser))
+    suite.addTest(unittest.makeSuite(TestBlockParserState))
     suite.addTest(unittest.makeSuite(TestHtmlStash))
     suite.addTest(unittest.makeSuite(TestOrderedDict))
 
-    for filename in os.listdir('markdown_extensions'):
+    for filename in os.listdir('markdown/extensions'):
         if filename.endswith('.py'):
-            module = 'markdown_extensions.%s' % filename[:-3]
+            module = 'markdown.extensions.%s' % filename[:-3]
             try:
                 suite.addTest(DocTestSuite(module))
             except: ValueError
