@@ -71,7 +71,7 @@ Dependencies:
 
 import markdown
 
-class WikiLinkExtension (markdown.Extension) :
+class WikiLinkExtension(markdown.Extension):
     def __init__(self, configs):
         # set extension defaults
         self.config = {
@@ -94,9 +94,9 @@ class WikiLinkExtension (markdown.Extension) :
         md.inlinePatterns.add('wikilink', wikilinkPattern, "_end")
         
 
-class WikiLinks (markdown.BasePattern) :
+class WikiLinks(markdown.inlinepatterns.Pattern):
     def __init__(self, pattern, config):
-        markdown.BasePattern.__init__(self, pattern)
+        markdown.inlinepatterns.Pattern.__init__(self, pattern)
         self.config = config
   
     def handleMatch(self, m):
