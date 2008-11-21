@@ -67,7 +67,7 @@ class FootnoteExtension(markdown.Extension):
 
     def reset(self):
         """ Clear the footnotes on reset. """
-        self.footnotes = markdown.OrderedDict()
+        self.footnotes = markdown.odict.OrderedDict()
 
     def findFootnotesPlaceholder(self, root):
         """ Return ElementTree Element that contains Footnote placeholder. """
@@ -130,7 +130,7 @@ class FootnoteExtension(markdown.Extension):
         return div
 
 
-class FootnotePreprocessor(markdown.Preprocessor):
+class FootnotePreprocessor(markdown.preprocessors.Preprocessor):
     """ Find all footnote references and store for later use. """
 
     def __init__ (self, footnotes):
@@ -238,11 +238,11 @@ class FootnotePreprocessor(markdown.Preprocessor):
         return items, lines[i:]
 
 
-class FootnotePattern(markdown.Pattern):
+class FootnotePattern(markdown.inlinepatterns.Pattern):
     """ InlinePattern for footnote markers in a document's body text. """
 
     def __init__(self, pattern, footnotes):
-        markdown.Pattern.__init__(self, pattern)
+        markdown.inlinepatterns.Pattern.__init__(self, pattern)
         self.footnotes = footnotes
 
     def handleMatch(self, m):
@@ -256,7 +256,7 @@ class FootnotePattern(markdown.Pattern):
         return sup
 
 
-class FootnoteTreeprocessor(markdown.Treeprocessor):
+class FootnoteTreeprocessor(markdown.treeprocessors.Treeprocessor):
     """ Build and append footnote div to end of document. """
 
     def __init__ (self, footnotes):
@@ -280,7 +280,7 @@ class FootnoteTreeprocessor(markdown.Treeprocessor):
             else:
                 root.append(footnotesDiv)
 
-class FootnotePostprocessor(markdown.Postprocessor):
+class FootnotePostprocessor(markdown.postprocessors.Postprocessor):
     """ Replace placeholders with html entities. """
 
     def run(self, text):
