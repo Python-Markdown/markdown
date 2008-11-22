@@ -113,12 +113,15 @@ class ListIndentProcessor(BlockProcessor):
 
     """
 
+    ITEM_TYPES = ['li']
+    LIST_TYPES = ['ul', 'ol']
+
     def test(self, parent, block):
         return block.startswith(' '*markdown.TAB_LENGTH) and \
                 not self.parser.state.isstate('detabbed') and  \
-                (parent.tag == "li" or \
+                (parent.tag in self.ITEM_TYPES or \
                     (len(parent) and parent[-1] and \
-                        (parent[-1].tag == "ul" or parent[-1].tag == "ol")
+                        (parent[-1].tag in self.LIST_TYPES)
                     )
                 )
 
@@ -126,10 +129,10 @@ class ListIndentProcessor(BlockProcessor):
         block = self.looseDetab(blocks.pop(0))
         sibling = self.lastChild(parent)
         self.parser.state.set('detabbed')
-        if parent.tag == 'li':
+        if parent.tag in self.ITEM_TYPES:
             # The parent is already a li. Just parse the child block.
             self.parser.parseBlocks(parent, [block])
-        elif len(sibling) and sibling[-1].tag == 'li':
+        elif len(sibling) and sibling[-1].tag in self.ITEM_TYPES :
             # The parent is a list (``ol`` or ``ul``) which has children.
             # Assume the last child li is the parent of this block.
             if sibling[-1].text:
@@ -138,10 +141,14 @@ class ListIndentProcessor(BlockProcessor):
                 sibling[-1].text = ''
             self.parser.parseChunk(sibling[-1], block)
         else:
-            # Create a new li and parse the block with it as the parent.
-            li = markdown.etree.SubElement(sibling, 'li')
-            self.parser.parseBlocks(li, [block])
+            create_item(sibling, block)
         self.parser.state.reset()
+
+    def create_item(parent, block):
+        """ Create a new li and parse the block with it as the parent. """
+        li = markdown.etree.SubElement(sibling, 'li')
+        self.parser.parseBlocks(li, [block])
+ 
 
 
 class CodeBlockProcessor(BlockProcessor):
@@ -230,7 +237,7 @@ class OListProcessor(BlockProcessor):
         # Check fr multiple items in one block.
         items = self.get_items(blocks.pop(0))
         sibling = self.lastChild(parent)
-        if sibling and (sibling.tag == 'ol' or sibling.tag == 'ul'):
+        if sibling and sibling.tag in ['ol', 'ul']:
             # Previous block was a list item, so set that as parent
             lst = sibling
             # make sure previous item is in a p.
