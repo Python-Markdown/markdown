@@ -146,7 +146,7 @@ class ListIndentProcessor(BlockProcessor):
 
     def create_item(parent, block):
         """ Create a new li and parse the block with it as the parent. """
-        li = markdown.etree.SubElement(sibling, 'li')
+        li = markdown.etree.SubElement(parent, 'li')
         self.parser.parseBlocks(li, [block])
  
 
