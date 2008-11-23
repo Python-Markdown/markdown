@@ -6,9 +6,6 @@ Python-Markdown Extra Extension
 A compilation of various Python-Markdown extensions that imitates
 [PHP Markdown Extra](http://michelf.com/projects/php-markdown/extra/).
 
-As no-one has yet written a Definition List extension for Python-
-Markdown, definition lists are not yet supported by Extra.
-
 Note that each of the individual extensions still need to be available
 on your PYTHONPATH. This extension simply wraps them all up as a 
 convenience so that only one extension needs to be listed when
@@ -16,9 +13,8 @@ initiating Markdown. See the documentation for each individual
 extension for specifics about that extension.
 
 In the event that one or more of the supported extensions are not 
-available for import, Markdown will simply continue without that 
-extension. If you would like to be notified of such failures,
-you may set Python-Markdown's logger level to "WARN".
+available for import, Markdown will issue a warning and simply continue 
+without that extension. 
 
 There may be additional extensions that are distributed with 
 Python-Markdown that are not included here in Extra. Those extensions
@@ -36,6 +32,7 @@ import markdown
 extensions = ['fenced_code',
               'footnotes',
               'headerid',
+              'def_list',
               'tables',
               'abbr',
               ]
