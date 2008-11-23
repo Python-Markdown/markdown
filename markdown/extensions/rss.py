@@ -52,17 +52,13 @@ class RssExtension (markdown.Extension):
         md.xml_mode = True
         
         # Insert a tree-processor that would actually add the title tag
-        treeprocessor = RssTreeProcessor(self)
+        treeprocessor = RssTreeProcessor(md)
         treeprocessor.ext = self
         md.treeprocessors['rss'] = treeprocessor
         md.stripTopLevelTags = 0
         md.docType = '<?xml version="1.0" encoding="utf-8"?>\n'
 
 class RssTreeProcessor(markdown.treeprocessors.Treeprocessor):
-
-    def __init__(self, md):
-        
-        pass
 
     def run (self, root):
 
@@ -80,34 +76,34 @@ class RssTreeProcessor(markdown.treeprocessors.Treeprocessor):
 
         for child in root:
 
-
-            if child.tag in ["h1", "h2", "h3", "h4", "h5"] :
+            if child.tag in ["h1", "h2", "h3", "h4", "h5"]:
       
                 heading = child.text.strip()
-                
                 item = etree.SubElement(channel, "item")
-  
                 link = etree.SubElement(item, "link")
                 link.text = self.ext.getConfig("URL")
-
                 title = etree.SubElement(item, "title")
                 title.text = heading
 
                 guid = ''.join([x for x in heading if x.isalnum()])
-
                 guidElem = etree.SubElement(item, "guid")
                 guidElem.text = guid
                 guidElem.set("isPermaLink", "false")
 
-            elif child.tag in ["p"] :
-                if item:
+            elif child.tag in ["p"]:
+                try:
                     description = etree.SubElement(item, "description")
+                except UnboundLocalError:
+                    # Item not defined - moving on
+                    pass
+                else:
                     if len(child):
                         content = "\n".join([etree.tostring(node)
                                              for node in child])
                     else:
                         content = child.text
-                    pholder = self.stash.store("<![CDATA[ %s]]>" % content)
+                    pholder = self.markdown.htmlStash.store(
+                                                "<![CDATA[ %s]]>" % content)
                     description.text = pholder
     
         return rss
