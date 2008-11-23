@@ -81,7 +81,7 @@ class FencedCodeExtension(markdown.Extension):
                                  "_begin")
 
 
-class FencedBlockPreprocessor(markdown.Preprocessor):
+class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
     
     def run(self, lines):
         """ Match and store Fenced Code Blocks in the HtmlStash. """
