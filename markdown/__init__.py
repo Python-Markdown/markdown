@@ -404,7 +404,7 @@ class Extension:
 
     def getConfig(self, key):
         """ Return a setting for the given key or an empty string. """
-        if self.config.has_key(key):
+        if key in self.config:
             return self.config[key][0]
         else:
             return ""

@@ -301,7 +301,7 @@ class ReferencePattern(LinkPattern):
             # we'll use "google" as the id
             id = m.group(2).lower()
 
-        if not self.markdown.references.has_key(id): # ignore undefined refs
+        if not id in self.markdown.references: # ignore undefined refs
             return None
         href, title = self.markdown.references[id]
 

@@ -37,7 +37,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
         # Get a list of id attributes
         used_ids = []
         for c in doc.getiterator():
-            if c.attrib.has_key("id"):
+            if "id" in c.attrib:
                 used_ids.append(c.attrib["id"])
 
         for (p, c) in self.iterparent(doc):
@@ -75,7 +75,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                     level = tag_level
 
                 # Do not override pre-existing ids 
-                if not c.attrib.has_key("id"):
+                if not "id" in c.attrib:
                     id = self.config["slugify"][0](c.text)
                     if id in used_ids:
                         ctr = 1

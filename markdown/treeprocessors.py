@@ -161,7 +161,7 @@ class InlineProcessor(Treeprocessor):
             if index != -1:
                 id, phEndIndex = self.__findPlaceholder(data, index)
 
-                if self.stashed_nodes.has_key(id):
+                if id in self.stashed_nodes:
                     node = self.stashed_nodes.get(id)
 
                     if index > 0:
