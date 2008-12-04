@@ -74,7 +74,10 @@ INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 AMP_SUBSTITUTE = STX+"amp"+ETX
 
-import preprocessors, blockprocessors, treeprocessors, inlinepatterns
+import preprocessors
+import blockprocessors
+import treeprocessors
+import inlinepatterns
 import postprocessors
 import blockparser
 import etree_loader
