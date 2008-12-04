@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, difflib, time, gc, codecs, platform
+import os, difflib, time, gc, codecs, platform, sys
 from pprint import pprint
 import textwrap
         
@@ -306,7 +306,9 @@ def testDirectory(dir, measure_time=False, safe_mode=False) :
 
     htmlDiffFile.write("</table>")
 
-    htmlDiffFile.write(diffsBuffer.decode("utf8"))
+    if sys.version < "3.0":
+        htmlDiffFile.write(diffsBuffer.decode("utf8"))
+
     htmlDiffFile.write(FOOTER)
     htmlDiffFile.close()
     print "Diff written to %s" % htmlDiffFilePath

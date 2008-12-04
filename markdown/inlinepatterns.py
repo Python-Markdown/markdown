@@ -44,7 +44,11 @@ So, we apply the expressions in the following order:
 import markdown
 import re
 from urlparse import urlparse, urlunparse
-import htmlentitydefs
+import sys
+if sys.version >= "3.0":
+    from html import entities as htmlentitydefs
+else:
+    import htmlentitydefs
 
 """
 The actual regular expressions for patterns
