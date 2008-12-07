@@ -47,6 +47,10 @@ import codecs
 import logging
 from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
 
+def message(level, text):
+    """ A wrapper method for logging debug messages. """
+    logging.getLogger('MARKDOWN').log(level, text)
+
 """
 CONSTANTS
 =============================================================================
@@ -108,9 +112,7 @@ AUXILIARY GLOBAL FUNCTIONS
 =============================================================================
 """
 
-def message(level, text):
-    """ A wrapper method for logging debug messages. """
-    logging.getLogger('MARKDOWN').log(level, text)
+
 
 
 def isBlockLevel(tag):

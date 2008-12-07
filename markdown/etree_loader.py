@@ -1,4 +1,7 @@
 
+from markdown import message, CRITICAL
+import sys
+
 ## Import
 def importETree():
     """Import the best implementation of ElementTree, return a module object."""

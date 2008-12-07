@@ -83,11 +83,6 @@ def parse_options():
 def run():
     """Run Markdown from the command line."""
 
-    # Setup a logger manually for compatibility with Python 2.3
-    logger = logging.getLogger('MARKDOWN')
-    logger.setLevel(markdown.COMMAND_LINE_LOGGING_LEVEL)
-    logger.addHandler(logging.StreamHandler())
-
     # Parse options and adjust logging level if necessary
     options, logging_level = parse_options()
     if not options: sys.exit(0)

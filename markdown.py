@@ -29,6 +29,11 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see docs/LICENSE for details).
 """
 
+# Setup a logger manually for compatibility with Python 2.3
+logger = logging.getLogger('MARKDOWN')
+logger.setLevel(markdown.COMMAND_LINE_LOGGING_LEVEL)
+logger.addHandler(logging.StreamHandler())
+
 from markdown import commandline
 
 if __name__ == '__main__':
