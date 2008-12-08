@@ -320,12 +320,19 @@ def run_tests() :
     tester.test_directory("tests/extensions-x-footnotes")
     #tester.test_directory("tests/extensions-x-ext1-ext2")
     tester.test_directory("tests/safe_mode", measure_time=True, safe_mode="escape")
-    tester.test_directory("tests/extensions-x-codehilite")
     tester.test_directory("tests/extensions-x-wikilinks")
     tester.test_directory("tests/extensions-x-toc")
     tester.test_directory("tests/extensions-x-def_list")
     tester.test_directory("tests/extensions-x-abbr")
-    
+
+    try:
+        import pygments
+    except ImportError:
+        # Dependancy not avalable - skip test
+        pass
+    else:
+        tester.test_directory("tests/extensions-x-codehilite")
+
     print "\n### Final result ###"
     if len(tester.failedTests):
         print "%d failed tests: %s" % (len(tester.failedTests), str(tester.failedTests))
