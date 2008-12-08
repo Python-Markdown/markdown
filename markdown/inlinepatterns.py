@@ -104,7 +104,7 @@ ATTR_RE = re.compile("\{@([^\}]*)=([^\}]*)}") # {@id=123}
 def handleAttributes(text, parent):
     """Set values of an element based on attribute definitions ({@id=123})."""
     def attributeCallback(match):
-        parent.set(match.group(1), match.group(2))
+        parent.set(match.group(1), match.group(2).replace('\n', ' '))
     return ATTR_RE.sub(attributeCallback, text)
 
 
