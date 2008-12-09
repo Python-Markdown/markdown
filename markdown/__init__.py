@@ -466,6 +466,7 @@ def load_extension(ext_name, configs = []):
         except ImportError:
            message(CRITICAL, "Failed loading extension '%s' from '%s' or '%s'"
                % (ext_name, module_name_new_style, module_name_old_style))
+           return None
 
     # If the module is loaded successfully, we expect it to define a
     # function called makeExtension()
