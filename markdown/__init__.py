@@ -283,15 +283,12 @@ class Markdown:
         for ext in extensions:
             if isinstance(ext, basestring):
                 ext = load_extension(ext, configs.get(ext, []))
-            elif hasattr(ext, 'extendMarkdown'):
-                # Looks like an Extension.
-                # Nothing to do here.
-                pass
-            else:
+            try:
+                ext.extendMarkdown(self, globals())
+            except AttributeError:
                 message(ERROR, "Incorrect type! Extension '%s' is "
                                "neither a string or an Extension." %(repr(ext)))
-                continue
-            ext.extendMarkdown(self, globals())
+            
 
     def registerExtension(self, extension):
         """ This gets called by the extension """
@@ -461,7 +458,7 @@ def load_extension(ext_name, configs = []):
     module_name_old_style = '_'.join(['mdx', ext_name])
 
     # Try loading the extention first from one place, then another
-    try: # New style (markdown_extensons.<extension>)
+    try: # New style (markdown.extensons.<extension>)
         module = __import__(module_name_new_style, {}, {}, [ext_module])
     except ImportError:
         try: # Old style (mdx.<extension>)
@@ -474,7 +471,7 @@ def load_extension(ext_name, configs = []):
     # function called makeExtension()
     try:
         return module.makeExtension(configs.items())
-    except:
+    except AttributeError:
         message(CRITICAL, "Failed to instantiate extension '%s'" % ext_name)
 
 
