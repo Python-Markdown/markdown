@@ -56,7 +56,7 @@ class BlockParser:
 
         """
         # Create a ElementTree from the lines
-        root = markdown.etree.Element("div")
+        root = markdown.etree.Element(markdown.DOC_TAG)
         self.parseChunk(root, '\n'.join(lines))
         return markdown.etree.ElementTree(root)
 

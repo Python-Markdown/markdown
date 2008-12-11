@@ -70,6 +70,7 @@ HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
 BLOCK_LEVEL_ELEMENTS = re.compile("p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
                                   "|script|noscript|form|fieldset|iframe|math"
                                   "|ins|del|hr|hr/|style|li|dt|dd|tr")
+DOC_TAG = "div"     # Element used to wrap document - later removed
 
 # Placeholders
 STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
@@ -338,7 +339,9 @@ class Markdown:
         # Serialize _properly_.  Strip top-level tags.
         xml, length = codecs.utf_8_decode(etree.tostring(root, encoding="utf8"))
         if self.stripTopLevelTags:
-            xml = xml.strip()[44:-7] + "\n"
+            start = xml.index('<%s>'%DOC_TAG)+len(DOC_TAG)+2
+            end = xml.rindex('</%s>'%DOC_TAG)
+            xml = xml[start:end].strip()
 
         # Run the text post-processors
         for pp in self.postprocessors.values():
