@@ -184,7 +184,7 @@ class CodeBlockProcessor(BlockProcessor):
 
 class BlockQuoteProcessor(BlockProcessor):
 
-    RE = re.compile(r'(^|\n)[ ]{0,3}>[ ](.*)')
+    RE = re.compile(r'(^|\n)[ ]{0,3}>[ ]?(.*)')
 
     def test(self, parent, block):
         return bool(self.RE.search(block))
