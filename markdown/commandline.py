@@ -57,6 +57,9 @@ def parse_options():
     parser.add_option("-s", "--safe", dest="safe", default=False,
                       metavar="SAFE_MODE",
                       help="safe mode ('replace', 'remove' or 'escape'  user's HTML tag)")
+    parser.add_option("-o", "--output_format", dest="output_format", 
+                      default='xhtml1', metavar="OUTPUT_FORMAT",
+                      help="Format of output. One of 'xhtml1' (default) or 'html4'.")
     parser.add_option("--noisy",
                       action="store_const", const=DEBUG, dest="verbose",
                       help="print debug messages")
@@ -76,9 +79,10 @@ def parse_options():
 
     return {'input': input_file,
             'output': options.filename,
-            'safe': options.safe,
+            'safe_mode': options.safe,
             'extensions': options.extensions,
-            'encoding': options.encoding }, options.verbose
+            'encoding': options.encoding,
+            'output_format': options.output_format}, options.verbose
 
 def run():
     """Run Markdown from the command line."""

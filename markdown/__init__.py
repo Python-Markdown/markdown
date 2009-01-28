@@ -44,6 +44,7 @@ version_info = (2,0,0, "beta-2")
 
 import re
 import codecs
+import sys
 import logging
 from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
 
@@ -66,6 +67,7 @@ COMMAND_LINE_LOGGING_LEVEL = CRITICAL
 TAB_LENGTH = 4               # expand tabs to this many spaces
 ENABLE_ATTRIBUTES = True     # @id = xyz -> <... id="xyz">
 SMART_EMPHASIS = True        # this_or_that does not become this<i>or</i>that
+DEFAULT_OUTPUT_FORMAT = 'xhtml1'     # xhtml or html4 output
 HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
 BLOCK_LEVEL_ELEMENTS = re.compile("p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
                                   "|script|noscript|form|fieldset|iframe|math"
@@ -93,6 +95,8 @@ import odict
 
 etree = etree_loader.importETree()
 
+# Adds the ability to output html4
+import html4
 
 """
 Constants you probably do not need to change
@@ -157,7 +161,8 @@ class Markdown:
     def __init__(self,
                  extensions=[],
                  extension_configs={},
-                 safe_mode = False):
+                 safe_mode = False, 
+                 output_format=DEFAULT_OUTPUT_FORMAT):
         """
         Creates a new Markdown instance.
 
@@ -169,6 +174,14 @@ class Markdown:
            as-is.
         * extension-configs: Configuration setting for extensions.
         * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
+        * output_format: Format of output. Supported formats are:
+            * "xhtml1": Outputs XHTML 1.x. Default.
+            * "xhtml": Outputs latest supported version of XHTML (currently XHTML 1.1).
+            * "html4": Outputs HTML 4
+            * "html": Outputs latest supported version of HTML (currently HTML 4).
+            Note that it is suggested that the more specific formats ("xhtml1" 
+            and "html4") be used as "xhtml" or "html" may change in the future
+            if it makes sense at that time. 
 
         """
         
@@ -268,6 +281,7 @@ class Markdown:
         self.htmlStash = preprocessors.HtmlStash()
         self.registerExtensions(extensions = extensions,
                                 configs = extension_configs)
+        self.set_output_format(output_format)
         self.reset()
 
     def registerExtensions(self, extensions, configs):
@@ -305,8 +319,25 @@ class Markdown:
         for extension in self.registeredExtensions:
             extension.reset()
 
-    def convert (self, source):
-        """Convert markdown to serialized XHTML."""
+    def set_output_format(self, format):
+        """ Set the output format for the class instance. """
+        if format.lower() in ['html', 'html4']:
+            self.serializer = html4.to_html_string
+        elif format.lower() in ['xhtml', 'xhtml1']:
+            self.serializer = etree.tostring
+        else:
+            message(CRITICAL, 'Invalid Output Format: "%s". Use one of "xhtml1" or "html4".' % format)
+            sys.exit()
+
+    def convert(self, source):
+        """
+        Convert markdown to serialized XHTML or HTML.
+
+        Keyword arguments:
+
+        * source: Source text as a Unicode string.
+
+        """
 
         # Fixup the source text
         if not source:
@@ -337,19 +368,19 @@ class Markdown:
                 root = newRoot
 
         # Serialize _properly_.  Strip top-level tags.
-        xml, length = codecs.utf_8_decode(etree.tostring(root, encoding="utf8"))
+        output, length = codecs.utf_8_decode(self.serializer(root, encoding="utf8"))
         if self.stripTopLevelTags:
-            start = xml.index('<%s>'%DOC_TAG)+len(DOC_TAG)+2
-            end = xml.rindex('</%s>'%DOC_TAG)
-            xml = xml[start:end].strip()
+            start = output.index('<%s>'%DOC_TAG)+len(DOC_TAG)+2
+            end = output.rindex('</%s>'%DOC_TAG)
+            output = output[start:end].strip()
 
         # Run the text post-processors
         for pp in self.postprocessors.values():
-            xml = pp.run(xml)
+            output = pp.run(output)
 
-        return xml.strip()
+        return output.strip()
 
-    def convertFile(self, input = None, output = None, encoding = None):
+    def convertFile(self, input=None, output=None, encoding=None):
         """Converts a markdown file and returns the HTML as a unicode string.
 
         Decodes the file using the provided encoding (defaults to utf-8),
@@ -365,9 +396,7 @@ class Markdown:
 
         * input: Name of source text file.
         * output: Name of output file. Writes to stdout if `None`.
-        * extensions: A list of extension names (may contain config args).
         * encoding: Encoding of input and output files. Defaults to utf-8.
-        * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
 
         """
 
@@ -499,7 +528,8 @@ markdownFromFile().
 
 def markdown(text,
              extensions = [],
-             safe_mode = False):
+             safe_mode = False,
+             output_format = DEFAULT_OUTPUT_FORMAT):
     """Convert a markdown string to HTML and return HTML as a unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
@@ -511,12 +541,21 @@ def markdown(text,
     * text: Markdown formatted text as Unicode or ASCII string.
     * extensions: A list of extensions or extension names (may contain config args).
     * safe_mode: Disallow raw html.  One of "remove", "replace" or "escape".
+    * output_format: Format of output. Supported formats are:
+        * "xhtml1": Outputs XHTML 1.x. Default.
+        * "xhtml": Outputs latest supported version of XHTML (currently XHTML 1.1).
+        * "html4": Outputs HTML 4
+        * "html": Outputs latest supported version of HTML (currently HTML 4).
+        Note that it is suggested that the more specific formats ("xhtml1" 
+        and "html4") be used as "xhtml" or "html" may change in the future
+        if it makes sense at that time. 
 
     Returns: An HTML document as a string.
 
     """
     md = Markdown(extensions=load_extensions(extensions),
-                  safe_mode = safe_mode)
+                  safe_mode=safe_mode, 
+                  output_format=output_format)
     return md.convert(text)
 
 
@@ -524,9 +563,12 @@ def markdownFromFile(input = None,
                      output = None,
                      extensions = [],
                      encoding = None,
-                     safe = False):
+                     safe_mode = False,
+                     output_format = DEFAULT_OUTPUT_FORMAT):
     """Read markdown code from a file and write it to a file or a stream."""
-    md = Markdown(extensions=load_extensions(extensions), safe_mode = safe)
+    md = Markdown(extensions=load_extensions(extensions), 
+                  safe_mode=safe_mode,
+                  output_format=output_format)
     md.convertFile(input, output, encoding)
 
 

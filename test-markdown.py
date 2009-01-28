@@ -160,7 +160,7 @@ class TestRunner :
         if not os.path.exists(TMP_DIR):
             os.mkdir(TMP_DIR)
 
-    def test_directory(self, dir, measure_time=False, safe_mode=False, encoding = "utf8") :
+    def test_directory(self, dir, measure_time=False, safe_mode=False, encoding="utf8", output_format='xhtml1') :
         self.encoding = encoding
         benchmark_file_name = os.path.join(dir, "benchmark.dat")
         self.saved_benchmarks = {}
@@ -187,7 +187,7 @@ class TestRunner :
 
         mem = memory()
         start = time.clock()
-        self.md = markdown.Markdown(extensions=extensions, safe_mode = safe_mode)
+        self.md = markdown.Markdown(extensions=extensions, safe_mode = safe_mode, output_format=output_format)
         construction_time = time.clock() - start
         construction_mem = memory(mem)
 
@@ -228,7 +228,7 @@ class TestRunner :
 ####################
 
 
-    def run_test(self, dir, test, repeat) :
+    def run_test(self, dir, test, repeat):
 
         print "--- %s ---" % test
         self.html_diff_file.write("<tr><td>%s</td>" % test)
@@ -324,6 +324,7 @@ def run_tests() :
     tester.test_directory("tests/extensions-x-toc")
     tester.test_directory("tests/extensions-x-def_list")
     tester.test_directory("tests/extensions-x-abbr")
+    tester.test_directory("tests/html4", output_format='html4')
 
     try:
         import pygments
