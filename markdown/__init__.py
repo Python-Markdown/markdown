@@ -45,12 +45,10 @@ version_info = (2,0,0, "beta-2")
 import re
 import codecs
 import sys
+import warnings
 import logging
 from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
 
-def message(level, text):
-    """ A wrapper method for logging debug messages. """
-    logging.getLogger('MARKDOWN').log(level, text)
 
 """
 CONSTANTS
@@ -81,22 +79,6 @@ INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 AMP_SUBSTITUTE = STX+"amp"+ETX
 
-import preprocessors
-import blockprocessors
-import treeprocessors
-import inlinepatterns
-import postprocessors
-import blockparser
-import etree_loader
-import odict
-
-# Extensions should use "markdown.etree" instead of "etree" (or do `from
-# markdown import etree`).  Do not import it by yourself.
-
-etree = etree_loader.importETree()
-
-# Adds the ability to output html4
-import html4
 
 """
 Constants you probably do not need to change
@@ -111,13 +93,24 @@ RTL_BIDI_RANGES = ( (u'\u0590', u'\u07FF'),
                     )
 
 
-
 """
 AUXILIARY GLOBAL FUNCTIONS
 =============================================================================
 """
 
 
+def message(level, text):
+    """ A wrapper method for logging debug messages. """
+    logger =  logging.getLogger('MARKDOWN')
+    if logger.handlers:
+        # The logger is configured
+        logger.log(level, text)
+        if level > WARN:
+            sys.exit(0)
+    elif level > WARN:
+        raise MarkdownException, text
+    else:
+        warnings.warn(text, MarkdownWarning)
 
 
 def isBlockLevel(tag):
@@ -131,6 +124,16 @@ MISC AUXILIARY CLASSES
 
 class AtomicString(unicode):
     """A string which should not be further processed."""
+    pass
+
+
+class MarkdownException(Exception):
+    """ A Markdown Exception. """
+    pass
+
+
+class MarkdownWarning(Warning):
+    """ A Markdown Warning. """
     pass
 
 
@@ -153,6 +156,23 @@ Markdown processing takes place in four steps:
 Those steps are put together by the Markdown() class.
 
 """
+
+import preprocessors
+import blockprocessors
+import treeprocessors
+import inlinepatterns
+import postprocessors
+import blockparser
+import etree_loader
+import odict
+
+# Extensions should use "markdown.etree" instead of "etree" (or do `from
+# markdown import etree`).  Do not import it by yourself.
+
+etree = etree_loader.importETree()
+
+# Adds the ability to output html4
+import html4
 
 
 class Markdown:
@@ -327,7 +347,6 @@ class Markdown:
             self.serializer = etree.tostring
         else:
             message(CRITICAL, 'Invalid Output Format: "%s". Use one of "xhtml1" or "html4".' % format)
-            sys.exit()
 
     def convert(self, source):
         """
@@ -496,8 +515,9 @@ def load_extension(ext_name, configs = []):
         try: # Old style (mdx.<extension>)
             module = __import__(module_name_old_style)
         except ImportError:
-           message(CRITICAL, "Failed loading extension '%s' from '%s' or '%s'"
+           message(WARN, "Failed loading extension '%s' from '%s' or '%s'"
                % (ext_name, module_name_new_style, module_name_old_style))
+           # Return None so we don't try to initiate none-existant extension
            return None
 
     # If the module is loaded successfully, we expect it to define a
@@ -505,7 +525,7 @@ def load_extension(ext_name, configs = []):
     try:
         return module.makeExtension(configs.items())
     except AttributeError:
-        message(CRITICAL, "Failed to instantiate extension '%s'" % ext_name)
+        message(CRITICAL, "Failed to initiate extension '%s'" % ext_name)
 
 
 def load_extensions(ext_names):
