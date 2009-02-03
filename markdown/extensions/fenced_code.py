@@ -37,13 +37,13 @@ Include tilde's in a code block and wrap with blank lines:
 Multiple blocks and language tags:
 
     >>> text = '''
-    ... ~~~~
-    ... block one
     ... ~~~~{.python}
-    ... 
+    ... block one
     ... ~~~~
+    ... 
+    ... ~~~~.html
     ... <p>block two</p>
-    ... ~~~~{.html}'''
+    ... ~~~~'''
     >>> markdown.markdown(text, extensions=['fenced_code'])
     u'<pre><code class="python">block one\\n</code></pre>\\n\\n<pre><code class="html">&lt;p&gt;block two&lt;/p&gt;\\n</code></pre>'
 
@@ -64,7 +64,7 @@ import markdown, re
 
 # Global vars
 FENCED_BLOCK_RE = re.compile( \
-    r'(?P<fence>^~{3,})[ ]*\n(?P<code>.*?)(?P=fence)[ ]*(\{\.(?P<lang>[a-zA-Z0-9_-]*)\})?[ ]*$', 
+    r'(?P<fence>^~{3,})[ ]*(\{?\.(?P<lang>[a-zA-Z0-9_-]*)\}?)?[ ]*\n(?P<code>.*?)(?P=fence)[ ]*$', 
     re.MULTILINE|re.DOTALL
     )
 CODE_WRAP = '<pre><code%s>%s</code></pre>'
