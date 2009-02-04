@@ -56,9 +56,9 @@ class BlockParser:
 
         """
         # Create a ElementTree from the lines
-        root = markdown.etree.Element(markdown.DOC_TAG)
-        self.parseChunk(root, '\n'.join(lines))
-        return markdown.etree.ElementTree(root)
+        self.root = markdown.etree.Element(markdown.DOC_TAG)
+        self.parseChunk(self.root, '\n'.join(lines))
+        return markdown.etree.ElementTree(self.root)
 
     def parseChunk(self, parent, text):
         """ Parse a chunk of markdown text and attach to given etree node. 

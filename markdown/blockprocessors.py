@@ -49,12 +49,12 @@ class BlockProcessor:
                 break
         return '\n'.join(newtext), '\n'.join(lines[len(newtext):])
 
-    def looseDetab(self, text):
+    def looseDetab(self, text, level=1):
         """ Remove a tab from front of lines but allowing dedented lines. """
         lines = text.split('\n')
         for i in range(len(lines)):
-            if lines[i].startswith(' '*markdown.TAB_LENGTH):
-                lines[i] = lines[i][markdown.TAB_LENGTH:]
+            if lines[i].startswith(' '*markdown.TAB_LENGTH*level):
+                lines[i] = lines[i][markdown.TAB_LENGTH*level:]
         return '\n'.join(lines)
 
     def test(self, parent, block):
@@ -113,6 +113,7 @@ class ListIndentProcessor(BlockProcessor):
 
     """
 
+    INDENT_RE = re.compile(r'^(([ ]{%s})+)'% markdown.TAB_LENGTH)
     ITEM_TYPES = ['li']
     LIST_TYPES = ['ul', 'ol']
 
@@ -126,8 +127,10 @@ class ListIndentProcessor(BlockProcessor):
                 )
 
     def run(self, parent, blocks):
-        block = self.looseDetab(blocks.pop(0))
-        sibling = self.lastChild(parent)
+        block = blocks.pop(0)
+        level, sibling = self.get_level(parent, block)
+        block = self.looseDetab(block, level)
+
         self.parser.state.set('detabbed')
         if parent.tag in self.ITEM_TYPES:
             # The parent is already a li. Just parse the child block.
@@ -141,14 +144,30 @@ class ListIndentProcessor(BlockProcessor):
                 sibling[-1].text = ''
             self.parser.parseChunk(sibling[-1], block)
         else:
-            create_item(sibling, block)
+            self.create_item(sibling, block)
         self.parser.state.reset()
 
-    def create_item(parent, block):
+    def create_item(self, parent, block):
         """ Create a new li and parse the block with it as the parent. """
         li = markdown.etree.SubElement(parent, 'li')
         self.parser.parseBlocks(li, [block])
  
+    def get_level(self, parent, block):
+        """ Get level of indent based on list level. """
+        m = self.INDENT_RE.match(block)
+        if m:
+            indent_level = len(m.group(1))/markdown.TAB_LENGTH
+        else:
+            indent_level = 0
+        level = 0
+        while indent_level > level:
+            parent = self.lastChild(parent)
+            if parent:
+                if parent.tag in self.LIST_TYPES:
+                    level += 1
+            else:
+                break
+        return level, parent
 
 
 class CodeBlockProcessor(BlockProcessor):
