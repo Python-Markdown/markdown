@@ -135,7 +135,10 @@ class ListIndentProcessor(BlockProcessor):
         if parent.tag in self.ITEM_TYPES:
             # The parent is already a li. Just parse the child block.
             self.parser.parseBlocks(parent, [block])
-        elif len(sibling) and sibling[-1].tag in self.ITEM_TYPES :
+        elif sibling.tag in self.ITEM_TYPES:
+            # The sibling is a li. Use it as parent.
+            self.parser.parseBlocks(sibling, [block])
+        elif len(sibling) and sibling[-1].tag in self.ITEM_TYPES:
             # The parent is a list (``ol`` or ``ul``) which has children.
             # Assume the last child li is the parent of this block.
             if sibling[-1].text:
@@ -154,18 +157,28 @@ class ListIndentProcessor(BlockProcessor):
  
     def get_level(self, parent, block):
         """ Get level of indent based on list level. """
+        # Get indent level
         m = self.INDENT_RE.match(block)
         if m:
             indent_level = len(m.group(1))/markdown.TAB_LENGTH
         else:
             indent_level = 0
-        level = 0
+        if self.parser.state.isstate('list'):
+            # We're in a tightlist - so we already are at correct parent.
+            level = 1
+        else:
+            # We're in a looselist - so we need to find parent.
+            level = 0
+        # Step through children of tree to find matching indent level.
         while indent_level > level:
-            parent = self.lastChild(parent)
-            if parent:
-                if parent.tag in self.LIST_TYPES:
+            child = self.lastChild(parent)
+            if child and (child.tag in self.LIST_TYPES or child.tag in self.ITEM_TYPES):
+                if child.tag in self.LIST_TYPES:
                     level += 1
+                parent = child
             else:
+                # No more child levels. If we're short of indent_level,
+                # we have a code block. So we stop here.
                 break
         return level, parent
 
