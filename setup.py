@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
+from markdown import version
 
 setup(
     name = 'Markdown',
-    version = '2.0-beta-2',
+    version = version,
     url = 'http://www.freewisdom.org/projects/python-markdown',
-    download_url = 'http://pypi.python.org/packages/source/M/Markdown/markdown-1.7.tar.gz',
+    download_url = 'http://pypi.python.org/packages/source/M/Markdown/Markdown-2.0.tar.gz',
     description = "Python implementation of Markdown.",
     author = "Manfred Stienstra and Yuri takhteyev",
     author_email = "yuri [at] freewisdom.org",

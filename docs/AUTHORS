@@ -6,7 +6,8 @@ while procrastingating his Ph.D.
 
 Waylan Limberg <http://achinghead.com/>, who has written most of the available 
 extensions and later was asked to join Yuri, fixing nummrious bugs, adding
-documentation and making general improvements to the existing codebase.
+documentation and making general improvements to the existing codebase,
+included a complete refactor of the core.
 
 Artem Yunusov, who as part of a 2008 GSoC project, has refactored inline 
 patterns, replaced the NanoDOM with ElementTree support and made various other 
@@ -21,10 +22,11 @@ as he helped to integrate Markdown into Dr.Project.
 Other Contributors
 ==================
 
-The incomplete list of individuals below have provided patches 
-or otherwise contributed to the project in various ways. We would like to thank
-everyone who has contributed to the progect in any way.
+The incomplete list of individuals below have provided patches or otherwise 
+contributed to the project in various ways. We would like to thank everyone 
+who has contributed to the progect in any way.
 
+Eric Abrahamsen
 Jeff Balogh
 Sergej Chodarev
 Chris Clark
@@ -38,4 +40,4 @@ Neale Pickett
 John Szakmeister
 Malcolm Tredinnick
 Ben Wilson
-and many others to helped by reporting bugs
+and many others who helped by reporting bugs

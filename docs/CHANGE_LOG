@@ -1,6 +1,24 @@
 PYTHON MARKDOWN CHANGELOG
 =========================
 
+Mar 8, 2009: Release Candidate 2.0-rc-1.
+
+Feb 2009: Added support for multi-level lists to new Blockprocessors.
+
+Jan 2009: Added HTML 4 output as an option (thanks Eric Abrahamsen)
+
+Nov 2008: Added Definistion List ext. Replaced old core with BlockProcessors.
+Broken up into multiple files.
+
+Oct 2008: Changed logging behavior to work better with other systems. 
+Refactored tree tarversing. Added treap implementation, then replaced with 
+OrderedDEict. Renamed various processors to better reflect what they actually
+do. Refactored footnote ext to match php Extra's output.
+
+Sept 2008: Moved prettifyTree to a Postprocessor, replaced wikilink ext
+with wikilinks (note the s) ext (uses bracketed links instead of CamelCase)
+and various bug fixes.
+
 August 18 2008: Reorganized directory structure. Added a 'docs' dir
 and moved all extensions into a 'markdown-extensions' package.
 Added additional documentation and a few bug fixes. (v2.0-beta)

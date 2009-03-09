@@ -53,8 +53,8 @@ Installing on *nix Systems
 
 From the command line do the following:
 
-    wget http://pypi.python.org/packages/source/M/Markdown/markdown-2.0.tar.gz
-    tar xvzf markdown-2.0.tar.gz
+    wget http://pypi.python.org/packages/source/M/Markdown/Markdown-2.0.tar.gz
+    tar xvzf Markdown-2.0.tar.gz
     cd markdown-2.0/
     sudo python setup.py install
 
