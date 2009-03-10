@@ -49,10 +49,9 @@ class TableTreeprocessor(markdown.treeprocessors.Treeprocessor):
         return result
     
     def run(self, root):
-
         for element in self._findElement(root, "p"):
              for child in element:
-                 if child.tail:
+                 if child.tag in ['tr', 'th', 'td']:
                      element.tag = "table"
                      break
         

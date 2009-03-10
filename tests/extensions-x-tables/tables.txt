@@ -3,7 +3,7 @@ Before
 | a |* b *|
 | [c](#link) | *d* |
 
-Another
+*Another* *some inline markup*
 
 | a | b |
 | _a_ | b |
