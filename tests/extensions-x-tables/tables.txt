@@ -1,15 +1,34 @@
-Before
+Table Tests
+-----------
 
-| a |* b *|
-| [c](#link) | *d* |
+First Header  | Second Header
+------------- | -------------
+Content Cell  | Content Cell
+Content Cell  | Content Cell
 
-*Another* *some inline markup*
+| First Header  | Second Header |
+| ------------- | ------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
 
-| a | b |
-| _a_ | b |
-| a | b |
-| a | b |
-| c | *d* |
+| Item      | Value |
+| :-------- | -----:|
+| Computer  | $1600 |
+| Phone     |   $12 |
+| Pipe      |    $1 |
 
-After
+| Function name | Description                    |
+| ------------- | ------------------------------ |
+| `help()`      | Display the help window.       |
+| `destroy()`   | **Destroy your computer!**     |
+
+|foo|bar|baz|
+|:--|:-:|--:|
+|   | Q |   |
+|W  |   |  W|
+
+foo|bar|baz
+---|---|---
+   | Q |
+ W |   | W
 

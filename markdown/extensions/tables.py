@@ -1,69 +1,97 @@
-#!/usr/bin/env python
-
+#!/usr/bin/env Python
 """
-Table extension for Python-Markdown
-"""
+Tables Extension for Python-Markdown
+====================================
 
+Added parsing of tables to Python-Markdown.
+
+A simple example:
+
+    First Header  | Second Header
+    ------------- | -------------
+    Content Cell  | Content Cell
+    Content Cell  | Content Cell
+
+Copyright 2009 - [Waylan Limberg](http://achinghead.com)
+"""
 import markdown
 from markdown import etree
 
-class TablePattern(markdown.inlinepatterns.Pattern):
-    def __init__ (self, md):
-        markdown.inlinepatterns.Pattern.__init__(self, r'(^|\n)\|([^\n]*)\|')
-        self.md = md
 
-    def handleMatch(self, m):
+class TableProcessor(markdown.blockprocessors.BlockProcessor):
+    """ Process Tables. """
 
-        # a single line represents a row
-        tr = etree.Element('tr')
-        
-        # chunks between pipes represent cells
+    def test(self, parent, block):
+        rows = block.split('\n')
+        return (len(rows) > 2 and '|' in rows[0] and 
+                '|' in rows[1] and '-' in rows[1] and 
+                rows[1][0] in ['|', ':', '-'])
 
-        for t in m.group(3).split('|'): 
-     
-            if len(t) >= 2 and t.startswith('*') and t.endswith('*'):
-                # if a cell is bounded by asterisks, it is a <th>
-                td = etree.Element('th')
-                t = t[1:-1]
+    def run(self, parent, blocks):
+        """ Parse a table block and build table. """
+        block = blocks.pop(0).split('\n')
+        header = block[:2]
+        rows = block[2:]
+        # Get format type (bordered by pipes or not)
+        border = False
+        if header[0].startswith('|'):
+            border = True
+        # Get alignment of columns
+        align = []
+        for c in self._split_row(header[1], border):
+            if c.startswith(':') and c.endswith(':'):
+                align.append('center')
+            elif c.startswith(':'):
+                align.append('left')
+            elif c.endswith(':'):
+                align.append('right')
             else:
-                # otherwise it is a <td>
-                td = etree.Element('td')
-            
-            # add text ot inline section, later it will be
-            # processed by core
+                align.append(None)
+        # Build table
+        table = etree.SubElement(parent, 'table')
+        thead = etree.SubElement(table, 'thead')
+        self._build_row(header[0], thead, align, border)
+        tbody = etree.SubElement(table, 'tbody')
+        for row in rows:
+            self._build_row(row, tbody, align, border)
 
-            td.text = t
-            tr.append(td)
-            tr.tail = "\n"
- 
-        return tr
+    def _build_row(self, row, parent, align, border):
+        """ Given a row of text, build table cells. """
+        tr = etree.SubElement(parent, 'tr')
+        tag = 'td'
+        if parent.tag == 'thead':
+            tag = 'th'
+        cells = self._split_row(row, border)
+        # We use align here rather than cells to ensure every row 
+        # contains the same number of columns.
+        for i, a in enumerate(align):
+            c = etree.SubElement(tr, tag)
+            try:
+                c.text = cells[i].strip()
+            except IndexError:
+                c.text = ""
+            if a:
+                c.set('align', a)
 
-class TableTreeprocessor(markdown.treeprocessors.Treeprocessor):
-    
-    def _findElement(self, element, name):
-        result = []
-        for child in element:
-            if child.tag == name:
-                result.append(child)
-            result += self._findElement(child, name)
-        return result
-    
-    def run(self, root):
-        for element in self._findElement(root, "p"):
-             for child in element:
-                 if child.tag in ['tr', 'th', 'td']:
-                     element.tag = "table"
-                     break
-        
-                
+    def _split_row(self, row, border):
+        """ split a row of text into list of cells. """
+        if border:
+            if row.startswith('|'):
+                row = row[1:]
+            if row.endswith('|'):
+                row = row[:-1]
+        return row.split('|')
 
 
 class TableExtension(markdown.Extension):
+    """ Add tables to Markdown. """
+
     def extendMarkdown(self, md, md_globals):
-        md.inlinePatterns.add('table', TablePattern(md), "<backtick")
-        md.treeprocessors.add('table', TableTreeprocessor(), "<prettify")
+        """ Add an instance of TableProcessor to BlockParser. """
+        md.parser.blockprocessors.add('table', 
+                                      TableProcessor(md.parser),
+                                      '<hashheader')
 
 
-def makeExtension(configs):
-    return TableExtension(configs)
-
+def makeExtension(configs={}):
+    return TableExtension(configs=configs)
