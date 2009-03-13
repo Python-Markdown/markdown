@@ -432,7 +432,7 @@ class Markdown:
         html = self.convert(text)
 
         # Write to file or stdout
-        if type(output) == type("string"):
+        if isinstance(output, (str, unicode)):
             output_file = codecs.open(output, "w", encoding=encoding)
             output_file.write(html)
             output_file.close()
