@@ -175,12 +175,15 @@ class HeaderIdExtension (markdown.Extension):
             self.setConfig(key, value)
 
     def extendMarkdown(self, md, md_globals):
-
-        processor = HeaderIdProcessor(md.parser)
-        processor.md = md
-        processor.config = self.config
+        md.registerExtension(self)
+        self.processor = HeaderIdProcessor(md.parser)
+        self.processor.md = md
+        self.processor.config = self.config
         # Replace existing hasheader in place.
-        md.parser.blockprocessors['hashheader'] = processor
+        md.parser.blockprocessors['hashheader'] = self.processor
+
+    def reset(self):
+        self.processor.IDs = []
 
 
 def makeExtension(configs=None):
