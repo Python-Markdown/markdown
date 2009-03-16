@@ -29,6 +29,17 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see docs/LICENSE for details).
 """
 
+import sys, os
+if sys.platform == 'win32':
+        # We have to remove the Scripts dir from path on windows.
+        # If we don't, it will try to import itself rather than markdown lib.
+        # This appears to *not* be a problem on *nix systems, only Windows.
+        try:
+            sys.path.remove(os.path.dirname(__file__))
+        except (ValueError, NameError):
+            pass
+
+# Now we can import the markdown lib.
 import logging
 from markdown import COMMAND_LINE_LOGGING_LEVEL
 from markdown import commandline
