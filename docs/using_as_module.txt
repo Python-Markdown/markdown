@@ -15,8 +15,8 @@ To use markdown as a module:
 Encoded Text
 ------------
 
-Note that ``markdown()`` expects either a simple ASCII string or **Unicode** 
-as input and returns output as Unicode.  Do not pass encoded strings to it!
+Note that ``markdown()`` expects **Unicode** as input (although a simple ASCII 
+string should work) and returns output as Unicode.  Do not pass encoded strings to it!
 If your input is encoded, e.g. as UTF-8, it is your responsibility to decode 
 it.  E.g.:
 
@@ -24,7 +24,7 @@ it.  E.g.:
     text = input_file.read()
     html = markdown.markdown(text, extensions)
 
-If you later want to write it to disk, you should encode it:
+If you later want to write it to disk, you should encode it yourself:
 
     output_file = codecs.open("some_file.html", "w", encoding="utf8")
     output_file.write(html)
@@ -36,10 +36,12 @@ If you want to pass more options, you can create an instance of the ``Markdown``
 class yourself and then use ``convert()`` to generate HTML:
 
     import markdown
-    md = markdown.Markdown(extensions=['footnotes'], 
-                  extension_configs= {'footnotes' : 
-                                     ('PLACE_MARKER','~~~~~~~~')}
-                  encoding='utf8',
+    md = markdown.Markdown(
+            extensions=['footnotes'], 
+            extension_configs= {'footnotes' : ('PLACE_MARKER','~~~~~~~~')},
+            safe_mode=True,
+            output_format='html4'
+    )
     return md.convert(some_text)
 
 You should also use this method if you want to process multiple strings:
@@ -56,7 +58,7 @@ encoding/decoding is required for the command line features. These functions
 and methods are only intended to fit the common use case.
 
 The ``Markdown`` class has the method ``convertFile`` which reads in a file and
-writes out to file-like-object:
+writes out to a file-like-object:
 
     md = markdown.Markdown()
     md.convertFile(input="in.txt", output="out.html", encoding="uft8")
@@ -80,10 +82,10 @@ Using Extensions
 ----------------
 
 One of the parameters that you can pass is a list of Extensions. Extensions 
-must be available as python modules either within the ``markdown_extensions``
+must be available as python modules either within the ``markdown.extensions``
 package or on your PYTHONPATH with names starting with `mdx_`, followed by the 
 name of the extension.  Thus, ``extensions=['footnotes']`` will first look for 
-the module ``markdown_extensions.footnotes``, then a module named 
+the module ``markdown.extensions.footnotes``, then a module named 
 ``mdx_footnotes``.   See the documentation specific to the extension you are 
 using for help in specifying configuration settings for that extension.
 
@@ -120,3 +122,29 @@ still create links using Markdown syntax.)
 * To escape HTML, set ``safe_mode="escape"``. The HTML will be escaped and 
     included in the document.
 
+Output Formats
+--------------
+
+If Markdown is outputing (X)HTML as part of a web page, most likely you will
+want the output to match the (X)HTML version used by the rest of your page/site.
+Currenlty, Markdown offers two output formats out of the box; "HTML4" and 
+"XHTML1" (the default) . Markdown will also accept the formats "HTML" and 
+"XHTML" which currently map to "HTML4" and "XHTML" respectively. However, 
+you should use the more explicit keys as the general keys may change in the 
+future if it makes sense at that time. The keys can either be lowercase or 
+uppercase.
+
+To set the output format do:
+
+    html = markdown.markdown(text, output_format='html4')
+
+Or, when using the Markdown class:
+
+    md = markdown.Markdown(output_format='html4')
+    html = md.convert(text)
+
+Note that the output format is only set once for the class and cannot be 
+specified each time ``convert()`` is called. If you really must change the
+output format for the class, you can use the ``set_output_format`` method:
+
+    md.set_output_format('xhtml1')

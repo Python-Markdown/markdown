@@ -385,6 +385,8 @@ arguments:
     Some other things you may want to access in the markdown instance are:
 
     * ``md.htmlStash``
+    * ``md.output_formats``
+    * ``md.set_output_format()``
     * ``md.registerExtension()``
 
 * **``md_globals``**:

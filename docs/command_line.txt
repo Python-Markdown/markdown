@@ -10,8 +10,8 @@ Setup
 -----
 
 Generally, you may simply call the ``python markdown.py`` file from the command 
-line. However, if you have fully installed Markdown (``setup.py install`` of 
-``easyinstall``), then the ``markdown.py`` script will have been copied to
+line. However, if you have fully installed Markdown (``setup.py install`` or 
+``easy_install``), then the ``markdown.py`` script will have been copied to
 you Python "Scripts" directory. Different systems require different methods to
 ensure that any files in the Python "Scripts" directory are on your system 
 path.
@@ -37,7 +37,7 @@ path.
 * **Linux**:
 
     As each Linux distribution is different and we can't possible document all 
-    of them here, We'll provide a few helpful pointers:
+    of them here, we'll provide a few helpful pointers:
 
     * Some systems will automatically install the script on your path. Try it 
       and see if it works. Just run ``markdown.py`` from the command line.
