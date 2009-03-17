@@ -298,6 +298,14 @@ class Markdown:
                 postprocessors.AndSubstitutePostprocessor()
         # footnote postprocessor will be inserted with ">amp_substitute"
 
+        # Map format keys to serializers
+        self.output_formats = {
+            'html'  : html4.to_html_string, 
+            'html4' : html4.to_html_string,
+            'xhtml' : etree.tostring, 
+            'xhtml1': etree.tostring,
+        }
+
         self.references = {}
         self.htmlStash = preprocessors.HtmlStash()
         self.registerExtensions(extensions = extensions,
@@ -342,12 +350,11 @@ class Markdown:
 
     def set_output_format(self, format):
         """ Set the output format for the class instance. """
-        if format.lower() in ['html', 'html4']:
-            self.serializer = html4.to_html_string
-        elif format.lower() in ['xhtml', 'xhtml1']:
-            self.serializer = etree.tostring
-        else:
-            message(CRITICAL, 'Invalid Output Format: "%s". Use one of "xhtml1" or "html4".' % format)
+        try:
+            self.serializer = self.output_formats[format.lower()]
+        except KeyError:
+            message(CRITICAL, 'Invalid Output Format: "%s". Use one of %s.' \
+                               % (format, self.output_formats.keys()))
 
     def convert(self, source):
         """
