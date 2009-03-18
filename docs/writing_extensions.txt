@@ -132,10 +132,10 @@ situation.
 
 Treeprocessors manipulate an ElemenTree object after it has passed through the
 core BlockParser. This is where additional manipulation of the tree takes
-place. Additionaly, the InlineProcessor is a Treeprocessor which steps through
+place. Additionally, the InlineProcessor is a Treeprocessor which steps through
 the tree and runs the InlinePatterns on the text of each Element in the tree.
 
-An Treeprocessor should inherit from ``markdown.Treeprocessor``,
+A Treeprocessor should inherit from ``markdown.Treeprocessor``,
 over-ride the ``run`` method which takes one argument ``root`` (an Elementree 
 object) and returns either that root element or a modified root element.
 
@@ -143,7 +143,7 @@ A pseudo example:
 
     class MyTreeprocessor(markdown.Treeprocessor):
         def run(self, root):
-            #do stufff
+            #do stuff
             return my_modified_root
 
 For specifics on manipulating the ElementTree, see 
@@ -208,7 +208,7 @@ The **``run``** method takes two arguments:
   method must remove (pop) the first block from the list (which it altered in
   place - not returned) and parse that block. You may find that a block of text
   legitimately contains multiple block types. Therefore, after processing the 
-  first type, you processor can insert the remaining text into the beginning
+  first type, your processor can insert the remaining text into the beginning
   of the ``blocks`` list for future parsing.
 
 Please be aware that a single block can span multiple text blocks. For example,
@@ -233,11 +233,11 @@ Each BlockProcessor has the following utility methods available:
     Removes one level of indent (four spaces by default) from the front of each
     line of the given text string.
 
-* **``looseDetab(text)``**: 
+* **``looseDetab(text, level)``**: 
 
-    Removes one level if indent from the front of each line of the given text 
-    string. However, this methods allows secondary lines to not be indented as 
-    does some parts of the Markdown syntax.
+    Removes "level" levels of indent (defaults to 1) from the front of each line 
+    of the given text string. However, this methods allows secondary lines to 
+    not be indented as does some parts of the Markdown syntax.
 
 Each BlockProcessor also has a pointer to the containing BlockParser instance at
 ``self.parser``, which can be used to check or alter the state of the parser.
@@ -404,7 +404,7 @@ into the markdown pipeline. Consider yourself warned.
 
 A simple example:
 
-    class MyExtension(makrdown.Extension):
+    class MyExtension(markdown.Extension):
         def extendMarkdown(self, md, md_globals):
             # Insert instance of 'mypattern' before 'references' pattern
             md.inlinePatterns.add('mypattern', MyPattern(md), '<references')
@@ -473,7 +473,7 @@ Now let's insert another item.
 Note that we also could have set the location of "twohalf" to be 'after two'
 (i.e.: ``'>two'``). However, it's unlikely that you will have control over the 
 order in which extensions will be loaded, and this could affect the final 
-sorted order of an OrderedDict. For example, suppose a extension adding 
+sorted order of an OrderedDict. For example, suppose an extension adding 
 'twohalf' in the above examples was loaded before a separate  extension which 
 adds 'two'. You may need to take this into consideration when adding your 
 extension components to the various markdown OrderedDicts.
@@ -563,8 +563,8 @@ the module and call the ``makeExtension`` function initiating your extension.
 
 You may have noted that the extensions packaged with Python-Markdown do not
 use the ``mdx_`` prefix in their module names. This is because they are all
-part of the ``markdown_extensions`` package. Markdown will first try to import
-from ``markdown_extensions.extname`` and upon failure, ``mdx_extname``. If both
+part of the ``markdown.extensions`` package. Markdown will first try to import
+from ``markdown.extensions.extname`` and upon failure, ``mdx_extname``. If both
 fail, Markdown will continue without the extension.
 
 However, Markdown will also accept an already existing instance of an extension.

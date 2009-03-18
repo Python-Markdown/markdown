@@ -61,7 +61,7 @@ The ``Markdown`` class has the method ``convertFile`` which reads in a file and
 writes out to a file-like-object:
 
     md = markdown.Markdown()
-    md.convertFile(input="in.txt", output="out.html", encoding="uft8")
+    md.convertFile(input="in.txt", output="out.html", encoding="utf8")
 
 The markdown module also includes a shortcut function ``markdownFromFile`` that
 wraps the above method.
@@ -112,9 +112,9 @@ still create links using Markdown syntax.)
         markdown.HTML_REMOVED_TEXT = "--RAW HTML IS NOT ALLOWED--"
         md = markdown.Markdown(safe_mode="replace")
 
-    **Note**: You may edit the value of ``HTML_REMOVED_TEXT`` directly in 
-    markdown.py but you will need to remember to do so every time you upgrade 
-    to a newer version of Markdown.
+    **Note**: You could edit the value of ``HTML_REMOVED_TEXT`` directly in 
+    markdown/__init__.py but you will need to remember to do so every time you 
+    upgrade to a newer version of Markdown. Therefore, this is not recommended.
 
 * To remove HTML, set ``safe_mode="remove"``. Any raw HTML will be completely 
     stripped from the text with no warning to the author.
@@ -127,7 +127,7 @@ Output Formats
 
 If Markdown is outputing (X)HTML as part of a web page, most likely you will
 want the output to match the (X)HTML version used by the rest of your page/site.
-Currenlty, Markdown offers two output formats out of the box; "HTML4" and 
+Currently, Markdown offers two output formats out of the box; "HTML4" and 
 "XHTML1" (the default) . Markdown will also accept the formats "HTML" and 
 "XHTML" which currently map to "HTML4" and "XHTML" respectively. However, 
 you should use the more explicit keys as the general keys may change in the 

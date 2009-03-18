@@ -36,7 +36,7 @@ path.
 
 * **Linux**:
 
-    As each Linux distribution is different and we can't possible document all 
+    As each Linux distribution is different and we can't possibly document all 
     of them here, we'll provide a few helpful pointers:
 
     * Some systems will automatically install the script on your path. Try it 
