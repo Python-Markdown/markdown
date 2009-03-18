@@ -1,5 +1,6 @@
 include markdown.py
 recursive-include markdown *.py
-include docs/*
+recursive-include docs *
+prune markdown/extensions/legacy.py
 include setup.py
 include MANIFEST

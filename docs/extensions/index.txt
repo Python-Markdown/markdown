@@ -1,0 +1,44 @@
+Available Extensions
+====================
+
+Officially Supported Extensions
+-------------------------------
+
+These extensions are included with (at least) the most recent release and are 
+officially supported by the Python-Markdown developers. Any documentation is 
+maintained here and all bug reports should be made to the project. If you 
+have a typical install of Python-Markdown, these extensions are already 
+available to you.
+
+* [[Extra]]
+    * [[Abbreviations]]
+    * [[Definition_Lists]]
+    * [[Fenced_Code_Blocks]]
+    * [[Footnotes]]
+    * [[HeaderId]]
+    * [[Tables]]
+* [[CodeHilite]]
+* [[HTML_Tidy]]
+* [[ImageLinks]]
+* [[Meta-Data]]
+* [[RSS]]
+* [[Table of Contents]]
+* [[WikiLinks]]
+
+Unofficially Supported Extensions 
+---------------------------------
+
+These extensions have not yet been included in any official Python-Markdown 
+release. However, the code is maintained in the projects 
+[mainline git repository](http://gitorious.org/projects/python-markdown/repos/mainline) 
+by the Python-Markdown developers and the official documentation is maintained 
+here. All bug reports should be made to the project. It is anticipated that 
+these extensions will be included with some future official release, at which 
+time they will be moved to the above list of official extensions.
+
+* [[Legacy]]
+
+
+
+
+
