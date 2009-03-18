@@ -47,8 +47,11 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
             # To keep the output from screwing up the
             # validation by putting a <div> inside of a <p>
             # we actually replace the <p> in its entirety.
+            # We do not allow the marker inside a header as that
+            # would causes an enless loop of placing a new TOC 
+            # inside previously generated TOC.
 
-            if c.text.find(self.config["marker"][0]) > -1:
+            if c.text.find(self.config["marker"][0]) > -1 and not header_rgx.match(c.tag):
                 for i in range(len(p)):
                     if p[i] == c:
                         p[i] = div
