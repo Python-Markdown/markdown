@@ -1,0 +1,104 @@
+HeaderId
+========
+
+Summary
+-------
+
+An extension to Python-Markdown that adds an 'id' attribute to HTML header 
+elements (h1-h6) in markdown's output.
+
+This extension is included in the standard Markdown library.
+
+Syntax
+------
+
+The basic syntax follows [PHP Markdown Extra][]'s implementation:
+
+[PHP Markdown Extra]: http://michelf.com/projects/php-markdown/extra/#header-id
+
+    Header 1            {#header1}
+    ========
+
+    ## Header 2 ##      {#header2}
+
+will result in the following HTML:
+
+    <h1 id="header1">Header 1</h1>
+
+    <h2 id="header2">Header 2</h2>
+
+However, there is much more that this extension does.
+
+By default, all headers will automatically have unique "id" attributes 
+generated based upon the text of the header (See below to turn this off). 
+Note this example in which all three headers would have the same "id":
+
+    #Header
+    #Another Header {#header}
+    #Header
+
+Results in:
+
+    <h1 id="header">Header</h1>
+    <h1 id="header_1">Another Header</h1>
+    <h1 id="header_2">Third Header</h1>
+
+Configuring the Output
+----------------------
+
+The HeaderId extension has two configuration settings:
+
+* **level**: Base level for headers.
+
+    Default: `1`
+
+* **forceid**: Force all headers to have an id.
+
+    Default: `True`
+
+The `level` setting allows you to automatically adjust the header levels to fit
+within the hierarchy of your html templates. For example, the markdown text for
+this page should not contain any headers higher than level 3 (`<h3>`). 
+Therefore, do the following:
+
+    >>>  text = '''
+    ... #Some Header
+    ... ## Next Level'''
+    >>> html = markdown.markdown(text, ['headerid(level=3)'])
+    >>> print html
+    <h3 id="some_header">Some Header</h3>
+    <h4 id="next_level">Next Level</h4>'
+
+The `forceid` setting turns on or off the automatically generated ids for 
+headers that do not have one explicitly defined.
+
+    >>> text = '''
+    ... # Some Header
+    ... # Header with ID # { #foo }'''
+    >>> html = markdown.markdown(text, ['headerid(forceid=False)'])
+    >>> print html
+    <h1>Some Header</h1>
+    <h1 id="foo">Header with ID</h1>
+
+Using with Meta-Data
+--------------------
+
+The HeaderId Extension also supports the [[Meta-Data]] Extension. Please see the documentation for that extension for specifics. The supported meta-data keywords are:
+
+* `header_level`
+* `header_forceid`
+
+When used, the meta-data will override the settings provided through the  
+`extension_configs` interface. 
+
+This document:
+
+    header_level: 2
+    header_forceid: Off
+
+    # A Header
+
+
+Will result in the following output:
+
+    <h2>A Header</h2>
