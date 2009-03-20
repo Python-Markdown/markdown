@@ -22,7 +22,7 @@ available to you.
 * [[ImageLinks]]
 * [[Meta-Data]]
 * [[RSS]]
-* [[Table of Contents]]
+* [[Table_of_Contents]]
 * [[WikiLinks]]
 
 Unofficially Supported Extensions 

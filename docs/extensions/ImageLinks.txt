@@ -1,0 +1,27 @@
+ImageLinks
+==========
+
+Summary
+-------
+
+ImageLinks is a Python-Markdown extension that provides a mechanism for 
+defining mini-photo galleries within a markdown document.
+
+This extension is part of the Markdown library since 2.0.
+
+Syntax
+------
+
+Turns paragraphs like
+
+    <~~~~~~~~~~~~~~~~~~~~~~~~
+    dir/subdir
+    dir/subdir
+    dir/subdir
+    ~~~~~~~~~~~~~~
+    dir/subdir
+    dir/subdir
+    dir/subdir
+    ~~~~~~~~~~~~~~~~~~~>
+
+Into mini-photo galleries.
