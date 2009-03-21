@@ -70,6 +70,13 @@ Dependencies:
 '''
 
 import markdown
+import re
+
+def build_url(label, base, end):
+    """ Build a url from the label, a base, and an end. """
+    clean_label = re.sub(r'([ ]+_)|(_[ ]+)|([ ]+)', '_', label)
+    return '%s%s%s'% (base, clean_label, end)
+
 
 class WikiLinkExtension(markdown.Extension):
     def __init__(self, configs):
@@ -77,7 +84,8 @@ class WikiLinkExtension(markdown.Extension):
         self.config = {
                         'base_url' : ['/', 'String to append to beginning or URL.'],
                         'end_url' : ['/', 'String to append to end of URL.'],
-                        'html_class' : ['wikilink', 'CSS hook. Leave blank for none.']
+                        'html_class' : ['wikilink', 'CSS hook. Leave blank for none.'],
+                        'build_url' : [build_url, 'Callable formats URL from label.'],
         }
         
         # Override defaults with user settings
@@ -91,8 +99,8 @@ class WikiLinkExtension(markdown.Extension):
         WIKILINK_RE = r'\[\[([A-Za-z0-9_ -]+)\]\]'
         wikilinkPattern = WikiLinks(WIKILINK_RE, self.config)
         wikilinkPattern.md = md
-        md.inlinePatterns.add('wikilink', wikilinkPattern, "_end")
-        
+        md.inlinePatterns.add('wikilink', wikilinkPattern, "<not_strong")
+
 
 class WikiLinks(markdown.inlinepatterns.Pattern):
     def __init__(self, pattern, config):
@@ -103,9 +111,9 @@ class WikiLinks(markdown.inlinepatterns.Pattern):
         if m.group(2).strip():
             base_url, end_url, html_class = self._getMeta()
             label = m.group(2).strip()
-            url = '%s%s%s'% (base_url, label.replace(' ', '_'), end_url)
+            url = self.config['build_url'][0](label, base_url, end_url)
             a = markdown.etree.Element('a')
-            a.text = markdown.AtomicString(label)
+            a.text = label #markdown.AtomicString(label)
             a.set('href', url)
             if html_class:
                 a.set('class', html_class)

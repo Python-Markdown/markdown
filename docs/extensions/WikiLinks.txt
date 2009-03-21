@@ -63,6 +63,8 @@ change the default behavior:
 
     Default: `'wikilink'`
 
+4. **build_url**: Callable which formats the URL from it's parts.
+
 For an example, let us suppose links should always point to the subdirectory 
 `/wiki/` and end with `.html`
 
@@ -73,6 +75,20 @@ For an example, let us suppose links should always point to the subdirectory
 The above would result in the following link for `[[WikiLink]]`.
 
     <a href="/wiki/WikiLink.html" class="wikilink">WikiLink</a>
+
+If you want to do more that just alter the base and/or end of the URL, you 
+could also pass in a callable which must accept three arguments (``label``, 
+``base``, and ``end``). The callable must return the URL in it's entirety.
+
+    def my_url_builder(label, base, end):
+        # do stuff
+        return url
+
+    md = markdown.Markdown(
+            extensions=['wikilinks],
+            extension_configs={'wikilinks' : ('build_url', my_url_builder)}
+    )
+
 
 The option is also provided to change or remove the class attribute.
 
