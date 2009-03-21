@@ -86,7 +86,7 @@ could also pass in a callable which must accept three arguments (``label``,
 
     md = markdown.Markdown(
             extensions=['wikilinks],
-            extension_configs={'wikilinks' : ('build_url', my_url_builder)}
+            extension_configs={'wikilinks' : [('build_url', my_url_builder)]}
     )
 
 

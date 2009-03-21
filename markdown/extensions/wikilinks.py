@@ -56,6 +56,15 @@ MetaData should not carry over to next document:
     >>> md.convert("No [[MetaData]] here.")
     u'<p>No <a class="wikilink" href="/MetaData/">MetaData</a> here.</p>'
 
+Define a custom URL builder:
+
+    >>> def my_url_builder(label, base, end):
+    ...     return '/bar/'
+    >>> md = markdown.Markdown(extensions=['wikilinks'], 
+    ...         extension_configs={'wikilinks' : [('build_url', my_url_builder)]})
+    >>> md.convert('[[foo]]')
+    u'<p><a class="wikilink" href="/bar/">foo</a></p>'
+
 From the command line:
 
     python markdown.py -x wikilinks(base_url=http://example.com/,end_url=.html,html_class=foo) src.txt
