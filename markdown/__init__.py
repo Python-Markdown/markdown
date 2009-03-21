@@ -367,7 +367,7 @@ class Markdown:
         """
 
         # Fixup the source text
-        if not source:
+        if not source.strip():
             return u""  # a blank unicode string
         try:
             source = unicode(source)
