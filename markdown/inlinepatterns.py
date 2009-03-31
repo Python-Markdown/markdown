@@ -64,14 +64,14 @@ NOIMG = r'(?<!\!)'
 
 BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)' # `e=f()` or ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                             # \<
-EMPHASIS_RE = r'(\*)([^\*]*)\2'                    # *emphasis*
-STRONG_RE = r'(\*{2}|_{2})(.*?)\2'                      # **strong**
-STRONG_EM_RE = r'(\*{3}|_{3})(.*?)\2'            # ***strong***
+EMPHASIS_RE = r'(\*)([^\*]+)\2'                    # *emphasis*
+STRONG_RE = r'(\*{2}|_{2})(.+?)\2'                      # **strong**
+STRONG_EM_RE = r'(\*{3}|_{3})(.+?)\2'            # ***strong***
 
 if markdown.SMART_EMPHASIS:
-    EMPHASIS_2_RE = r'(?<!\S)(_)(\S.*?)\2'        # _emphasis_
+    EMPHASIS_2_RE = r'(?<!\S)(_)(\S.+?)\2'        # _emphasis_
 else:
-    EMPHASIS_2_RE = r'(_)(.*?)\2'                 # _emphasis_
+    EMPHASIS_2_RE = r'(_)(.+?)\2'                 # _emphasis_
 
 LINK_RE = NOIMG + BRK + \
 r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*)\12)?\)'''
@@ -81,7 +81,7 @@ IMAGE_LINK_RE = r'\!' + BRK + r'\s*\((<.*?>|([^\)]*))\)'
 # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
 REFERENCE_RE = NOIMG + BRK+ r'\s*\[([^\]]*)\]'           # [Google][3]
 IMAGE_REFERENCE_RE = r'\!' + BRK + '\s*\[([^\]]*)\]' # ![alt text][2]
-NOT_STRONG_RE = r'( \* )'                        # stand-alone * or _
+NOT_STRONG_RE = r'((^| )(\*|_)( |$))'                        # stand-alone * or _
 AUTOLINK_RE = r'<((?:f|ht)tps?://[^>]*)>'        # <http://www.123.com>
 AUTOMAIL_RE = r'<([^> \!]*@[^> ]*)>'               # <me@example.com>
 
