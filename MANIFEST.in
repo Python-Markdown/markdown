@@ -1,4 +1,4 @@
-include markdown.py
+recursive-include bin *
 recursive-include markdown *.py
 recursive-include docs *
 prune markdown/extensions/legacy.py
