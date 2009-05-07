@@ -13,9 +13,9 @@ called from the command line.
 
 ## Basic use from the command line:
 
-    python markdown.py source.txt > destination.html
+    markdown source.txt > destination.html
 
-Run "python markdown.py --help" to see more options.
+Run "markdown --help" to see more options.
 
 ## Extensions
 

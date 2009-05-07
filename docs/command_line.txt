@@ -9,30 +9,21 @@ Python-Markdown's various extensions.
 Setup
 -----
 
-Generally, you may simply call the ``python markdown.py`` file from the command 
+Generally, you may simply call the ``markdown`` file from the command 
 line. However, if you have fully installed Markdown (``setup.py install`` or 
-``easy_install``), then the ``markdown.py`` script will have been copied to
+``easy_install``), then the ``markdown`` script will have been copied to
 you Python "Scripts" directory. Different systems require different methods to
 ensure that any files in the Python "Scripts" directory are on your system 
 path.
 
 * **Windows**:
 
-    1. Assuming a default install on Windows, your "Scripts" directory is mostly
-       likely something like ``C:\\Python25\Scripts``. Verify the location of
-       your "Scripts" directory and add it to you system path.
+    Assuming a default install on Windows, your "Scripts" directory is most
+    likely something like ``C:\\Python25\Scripts``. Verify the location of
+    your "Scripts" directory and add it to you system path.
 
-    2. Make sure Windows is setup to recognize files that end with the 
-       "``.py``" extension are associated with ``python.exe`` so that
-       you can simply call the script directly.
-
-    Note that due to a peculiarity of how things work on Windows, you cannot
-    just ``cd`` into the directory of the source distribution and run
-    ``markdown.py`` from there. It will try to import itself rather than
-    the markdown library. While a safeguard has been put in place to block this
-    from happening, if ``markdown.py`` is in the same directory as the markdown
-    library, then the safeguard blocks both from importing and the script won't
-    be able to run.
+    Calling ``markdown`` from th ecommand line will call the wrapper batch file
+    ``markdown.bat`` in the "Scripts" directory created during install.
 
 * **Linux**:
 
@@ -40,30 +31,30 @@ path.
     of them here, we'll provide a few helpful pointers:
 
     * Some systems will automatically install the script on your path. Try it 
-      and see if it works. Just run ``markdown.py`` from the command line.
+      and see if it works. Just run ``markdown`` from the command line.
 
     * Other systems may maintain a separate "Scripts" directory which you
       need to add to your path. Find it (check with your distribution) and
       either add it to your path or make a symbolic link to it from your path.
 
-    * If you are sure ``markdown.py`` is on your path, but it still isn't being
+    * If you are sure ``markdown`` is on your path, but it still isn't being
       found, check the permissions of the file and make sure it is executable.
 
     As an alternative, you could just ``cd`` into the directory which contains
     the source distribution, and run it from there. However, remember that your
     markdown text files will not likely be in that directory, so it is much more 
-    convenient to have ``markdown.py`` on your path.
+    convenient to have ``markdown`` on your path.
 
 The Basics
 ----------
 
-To use ``markdown.py`` from the command line, run it as 
+To use ``markdown`` from the command line, run it as 
 
-    $ markdown.py input_file.txt
+    $ markdown input_file.txt
 
 or 
 
-    $ markdown.py input_file.txt > output_file.html
+    $ markdown input_file.txt > output_file.html
 
 More Options
 ------------
@@ -71,8 +62,8 @@ More Options
 If you are using Python 2.3 or higher, you can also use advanced
 command line options to specify encoding or to run extensions.
 
-    $ markdown.py --help
-    Usage: markdown.py INPUTFILE [options]
+    $ markdown --help
+    Usage: markdown INPUTFILE [options]
 
     Options:
       -h, --help            show this help message and exit
@@ -99,9 +90,9 @@ For an extension to be ran this way it must be provided in a module
 which should be in your python path (see [[writing_extensions]] for details). 
 It can then be invoked by the name of that module:
 
-    $ markdown.py -x footnotes text_with_footnotes.txt > output.html
+    $ markdown -x footnotes text_with_footnotes.txt > output.html
 
 If the extension supports config options, you can pass them in as well:
 
-    $ markdown.py -x "footnotes(PLACE_MARKER=~~~~~~~~)" input.txt
+    $ markdown -x "footnotes(PLACE_MARKER=~~~~~~~~)" input.txt
 

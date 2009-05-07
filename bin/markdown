@@ -7,9 +7,9 @@ This is the command line script for Python Markdown.
 
 Basic use from the command line:
 
-    python markdown.py source.txt > destination.html
+    markdown source.txt > destination.html
 
-Run "python markdown.py --help" to see more options.
+Run "markdown --help" to see more options.
 
 See markdown/__init__.py for information on using Python Markdown as a module.
 
