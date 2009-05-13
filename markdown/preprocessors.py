@@ -128,7 +128,14 @@ class HtmlBlockPreprocessor(Preprocessor):
                     left_tag = self._get_left_tag(block)
                     right_tag, data_index = self._get_right_tag(left_tag, block)
 
-                    if data_index < len(block):
+                    if block[1] == "!":
+                        # is a comment block
+                        left_tag = "--"
+                        right_tag, data_index = self._get_right_tag(left_tag, block)
+                        # keep checking conditions below and maybe just append
+                    
+                    if data_index < len(block) \
+                        and markdown.isBlockLevel(left_tag): 
                         text.insert(0, block[data_index:])
                         block = block[:data_index]
 
@@ -141,12 +148,6 @@ class HtmlBlockPreprocessor(Preprocessor):
                         new_blocks.append(block.strip())
                         continue
 
-                    if block[1] == "!":
-                        # is a comment block
-                        left_tag = "--"
-                        right_tag, data_index = self._get_right_tag(left_tag, block)
-                        # keep checking conditions below and maybe just append
-
                     if block.rstrip().endswith(">") \
                         and self._equal_tags(left_tag, right_tag):
                         new_blocks.append(
@@ -156,7 +157,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                         # if is block level tag and is not complete
 
                         if markdown.isBlockLevel(left_tag) or left_tag == "--" \
-                        and not block.rstrip().endswith(">"):
+                            and not block.rstrip().endswith(">"):
                             items.append(block.strip())
                             in_tag = True
                         else:
