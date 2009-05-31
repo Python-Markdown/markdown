@@ -4,7 +4,7 @@ import codecs
 import difflib
 import nose
 import util 
-from plugins import MdSyntaxError, HtmlOutput, MdSyntaxErrorPlugin
+from plugins import HtmlOutput, Markdown
 from test_apis import *
 
 test_dir = os.path.abspath(os.path.dirname(__file__))
@@ -25,10 +25,10 @@ def check_syntax(file, config):
                                             output, output_file, 
                                             'actual_output.html', n=3)]
     if diff:
-        raise util.MdSyntaxError('Output from "%s" failed to match expected '
-                                 'output.\n\n%s' % (input_file, ''.join(diff)))
+        raise util.MarkdownSyntaxError('Output from "%s" failed to match expected '
+                                       'output.\n\n%s' % (input_file, ''.join(diff)))
 
-def test_markdown_syntax():
+def TestSyntax():
     for dir_name, sub_dirs, files in os.walk(test_dir):
         # Get dir specific config settings.
         config = util.CustomConfigParser({'extensions': '', 
@@ -41,4 +41,4 @@ def test_markdown_syntax():
             if ext == '.txt':
                 yield check_syntax, os.path.join(dir_name, root), config
 
-nose.main(addplugins=[HtmlOutput(), MdSyntaxErrorPlugin()])
+nose.main(addplugins=[HtmlOutput(), Markdown()])

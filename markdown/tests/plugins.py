@@ -1,11 +1,13 @@
 import traceback
-from util import MdSyntaxError
+from util import MarkdownSyntaxError
 from nose.plugins import Plugin
 from nose.plugins.errorclass import ErrorClass, ErrorClassPlugin
 
-class MdSyntaxErrorPlugin(ErrorClassPlugin):
-    """ Add MdSyntaxError and ensure proper formatting. """
-    mdsyntax = ErrorClass(MdSyntaxError, label='MdSyntaxError', isfailure=True)
+class Markdown(ErrorClassPlugin):
+    """ Add MarkdownSyntaxError and ensure proper formatting. """
+    mdsyntax = ErrorClass(MarkdownSyntaxError, 
+                          label='MarkdownSyntaxError', 
+                          isfailure=True)
     enabled = True
 
     def configure(self, options, conf):
@@ -18,7 +20,7 @@ class MdSyntaxErrorPlugin(ErrorClassPlugin):
     def formatError(self, test, err):
         """ Remove unnessecary and unhelpful traceback from error report. """
         et, ev, tb = err
-        if et.__name__ == 'MdSyntaxError':
+        if et.__name__ == 'MarkdownSyntaxError':
             return et, ev, ''
         return err
 

@@ -1,6 +1,6 @@
 from ConfigParser import SafeConfigParser
 
-class MdSyntaxError(Exception):
+class MarkdownSyntaxError(Exception):
     pass
 
 
