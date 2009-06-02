@@ -12,15 +12,23 @@ test_dir = os.path.abspath(os.path.dirname(__file__))
 def normalize(text):
     return ['%s\n' % l for l in text.strip().split('\n')]
 
+def get_args(file, config):
+    args = {}
+    filename = os.path.basename(file)
+    if config.has_section(filename):
+        section = filename
+    else:
+        section = 'DEFAULT'
+    for key in ['extensions', 'safe_mode', 'output_format']:
+        args[key] = config.get(section, key)
+    return args
+
 def check_syntax(file, config):
     input_file = file + ".txt"
     input = codecs.open(input_file, encoding="utf-8").read()
     output_file = file + ".html"
     expected_output = codecs.open(output_file, encoding="utf-8").read()
-    output = normalize(markdown.markdown(input, 
-                                         config.get('DEFAULT', 'extensions'),
-                                         config.get('DEFAULT', 'safe_mode'),
-                                         config.get('DEFAULT', 'output_format')))
+    output = normalize(markdown.markdown(input, **get_args(file, config)))
     diff = [l for l in difflib.unified_diff(normalize(expected_output),
                                             output, output_file, 
                                             'actual_output.html', n=3)]
