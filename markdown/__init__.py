@@ -397,9 +397,17 @@ class Markdown:
         # Serialize _properly_.  Strip top-level tags.
         output, length = codecs.utf_8_decode(self.serializer(root, encoding="utf8"))
         if self.stripTopLevelTags:
-            start = output.index('<%s>'%DOC_TAG)+len(DOC_TAG)+2
-            end = output.rindex('</%s>'%DOC_TAG)
-            output = output[start:end].strip()
+            try:
+                start = output.index('<%s>'%DOC_TAG)+len(DOC_TAG)+2
+                end = output.rindex('</%s>'%DOC_TAG)
+                output = output[start:end].strip()
+            except ValueError:
+                if output.strip().endswith('<%s />'%DOC_TAG):
+                    # We have an empty document
+                    output = ''
+                else:
+                    # We have a serious problem
+                    message(CRITICAL, 'Failed to strip top level tags.')
 
         # Run the text post-processors
         for pp in self.postprocessors.values():
