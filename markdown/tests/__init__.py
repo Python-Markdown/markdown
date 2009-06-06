@@ -5,14 +5,17 @@ import difflib
 import nose
 import util 
 from plugins import HtmlOutput, Markdown
+# import api tests for autodiscovery
 from test_apis import *
 
 test_dir = os.path.abspath(os.path.dirname(__file__))
 
 def normalize(text):
+    """ normalize lines for better diff output. """
     return ['%s\n' % l for l in text.strip().split('\n')]
 
 def get_args(file, config):
+    """ Get args to pass to markdown from config for a given file. """
     args = {}
     filename = os.path.basename(file)
     if config.has_section(filename):
@@ -24,6 +27,7 @@ def get_args(file, config):
     return args
 
 def check_syntax(file, config):
+    """ Compare expected output to actual output and report result. """
     input_file = file + ".txt"
     input = codecs.open(input_file, encoding="utf-8").read()
     output_file = file + ".html"
@@ -47,6 +51,13 @@ def TestSyntax():
         for file in files:
             root, ext = os.path.splitext(file)
             if ext == '.txt':
+                # check_syntax.description = root
                 yield check_syntax, os.path.join(dir_name, root), config
 
-nose.main(addplugins=[HtmlOutput(), Markdown()])
+def run():
+    nose.main(addplugins=[HtmlOutput(), Markdown()])
+
+# Hack to make nose run with extensions. Once extensions can be added from
+# setup.cfg, the below line can be removed. 
+# See nose [Issue 271](http://code.google.com/p/python-nose/issues/detail?id=271)
+run()
