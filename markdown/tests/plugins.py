@@ -75,7 +75,7 @@ or ""))
                               'errors=%d' % len(result.errors)])
             for cls in result.errorClasses.keys():
                 storage, label, isfail = result.errorClasses[cls]
-                if isfail:
+                if len(storage):
                     self.html.append(' %ss=%d' % (label, len(storage)))
             self.html.append(')</span>')
         else:
