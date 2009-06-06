@@ -5,8 +5,6 @@ import difflib
 import nose
 import util 
 from plugins import HtmlOutput, Markdown
-# import api tests for autodiscovery
-from test_apis import *
 
 test_dir = os.path.abspath(os.path.dirname(__file__))
 
