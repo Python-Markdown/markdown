@@ -212,23 +212,3 @@ class TestOrderedDict(unittest.TestCase):
                     [('first', 'This'), ('fourth', 'self'),
                     ('third', 'a'), ('fifth', 'test')])
 
-def suite():
-    """ Build a test suite of the above tests and extension doctests. """
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestMarkdown))
-    suite.addTest(unittest.makeSuite(TestBlockParser))
-    suite.addTest(unittest.makeSuite(TestBlockParserState))
-    suite.addTest(unittest.makeSuite(TestHtmlStash))
-    suite.addTest(unittest.makeSuite(TestOrderedDict))
-
-    for filename in os.listdir('markdown/extensions'):
-        if filename.endswith('.py'):
-            module = 'markdown.extensions.%s' % filename[:-3]
-            try:
-                suite.addTest(DocTestSuite(module))
-            except: ValueError
-                # No tests
-    return suite
-
-if __name__ == '__main__':
-    unittest.TextTestRunner(verbosity=2).run(suite())
