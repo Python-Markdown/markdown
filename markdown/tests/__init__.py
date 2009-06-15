@@ -13,9 +13,18 @@ except ImportError:
 
 test_dir = os.path.abspath(os.path.dirname(__file__))
 
-def splitlines(text):
-    """ Split lines for better diff output. """
-    return ['%s\n' % l for l in text.strip().split('\n')]
+def relpath(path, start=test_dir):
+    """ reimplement relpath for python 2.3-2.5 from 2.6 """
+    if not path:
+        raise ValueError('no path secified')
+    start_list = os.path.abspath(start).split(os.path.sep)
+    path_list = os.path.abspath(path).split(os.path.sep)
+    # Work out how much of the filepath is shared by start and path.
+    i = len(os.path.commonprefix([start_list, path_list]))
+    rel_list = [os.path.pardir] * (len(start_list)-i) + path_list[i:]
+    if not rel_list:
+        return test_dir
+    return os.path.join(*rel_list)
 
 def get_section(file, config):
     """ Get name of config section for given file. """
@@ -51,26 +60,33 @@ def normalize(text):
                                     char_encoding='utf8',
                                     newline='LF'))
 
-def check_syntax(file, config):
-    """ Compare expected output to actual output and report result. """
-    input_file = file + ".txt"
-    input = codecs.open(input_file, encoding="utf-8").read()
-    output_file = file + ".html"
-    expected_output = codecs.open(output_file, encoding="utf-8").read()
-    output = markdown.markdown(input, **get_args(file, config))
-    if tidy and config.getboolean(get_section(file, config), 'normalize'):
-        # Normalize whitespace before comparing.
-        expected_output = normalize(expected_output)
-        output = normalize(output)
-    elif config.getboolean(get_section(file, config), 'normalize'):
-        # Tidy is not available. Skip this test.
-        raise nose.plugins.skip.SkipTest, 'Skipped test. Tidy not available in system.'
-    diff = [l for l in difflib.unified_diff(splitlines(expected_output),
-                                            splitlines(output), output_file, 
-                                            'actual_output.html', n=3)]
-    if diff:
-        raise util.MarkdownSyntaxError('Output from "%s" failed to match expected '
-                                       'output.\n\n%s' % (input_file, ''.join(diff)))
+class CheckSyntax(object):
+    def __init__(self, description=None):
+        if description:
+            self.description = 'TestSyntax: "%s"' % description
+
+    def __call__(self, file, config):
+        """ Compare expected output to actual output and report result. """
+        input_file = file + ".txt"
+        input = codecs.open(input_file, encoding="utf-8").read()
+        output_file = file + ".html"
+        expected_output = codecs.open(output_file, encoding="utf-8").read()
+        output = markdown.markdown(input, **get_args(file, config))
+        if tidy and config.getboolean(get_section(file, config), 'normalize'):
+            # Normalize whitespace before comparing.
+            expected_output = normalize(expected_output)
+            output = normalize(output)
+        elif config.getboolean(get_section(file, config), 'normalize'):
+            # Tidy is not available. Skip this test.
+            raise nose.plugins.skip.SkipTest, 'Skipped test. Tidy not available in system.'
+        diff = [l for l in difflib.unified_diff(expected_output.splitlines(True),
+                                                output.splitlines(True), 
+                                                output_file, 
+                                                'actual_output.html', 
+                                                n=3)]
+        if diff:
+            raise util.MarkdownSyntaxError('Output from "%s" failed to match expected '
+                                           'output.\n\n%s' % (input_file, ''.join(diff)))
 
 def TestSyntax():
     for dir_name, sub_dirs, files in os.walk(test_dir):
@@ -84,8 +100,9 @@ def TestSyntax():
         for file in files:
             root, ext = os.path.splitext(file)
             if ext == '.txt':
-                # check_syntax.description = root
-                yield check_syntax, os.path.join(dir_name, root), config
+                path = os.path.join(dir_name, root)
+                check_syntax = CheckSyntax(description=relpath(path, test_dir))
+                yield check_syntax, path, config
 
 def run():
     nose.main(addplugins=[HtmlOutput(), Markdown()])
