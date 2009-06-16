@@ -52,9 +52,7 @@ def normalize(text):
                                     join_styles=0,
                                     lower_literals=0,
                                     merge_divs=0,
-                                    #merge_spans=0,
                                     output_xhtml=1,
-                                    #preserve_entities=1,
                                     quote_ampersand=0,
                                     show_body_only=1,
                                     char_encoding='utf8',
@@ -70,9 +68,9 @@ class CheckSyntax(object):
         cfg_section = get_section(file, config)
         if config.getboolean(cfg_section, 'skip'):
             raise nose.plugins.skip.SkipTest, 'Test skipped per config.'
-        input_file = file + ".txt"
+        input_file = file + config.get(cfg_section, 'input_ext')
         input = codecs.open(input_file, encoding="utf-8").read()
-        output_file = file + ".html"
+        output_file = file + config.get(cfg_section, 'output_ext') 
         expected_output = codecs.open(output_file, encoding="utf-8").read()
         output = markdown.markdown(input, **get_args(file, config))
         if tidy and config.getboolean(cfg_section, 'normalize'):
@@ -98,12 +96,14 @@ def TestSyntax():
                                           'safe_mode': False,
                                           'output_format': 'xhtml1',
                                           'normalize': '0',
-                                          'skip': '0'})
+                                          'skip': '0',
+                                          'input_ext': '.txt',
+                                          'output_ext': '.html'})
         config.read(os.path.join(dir_name, 'test.cfg'))
         # Loop through files and generate tests.
         for file in files:
             root, ext = os.path.splitext(file)
-            if ext == '.txt':
+            if ext == config.get(get_section(file, config), 'input_ext'):
                 path = os.path.join(dir_name, root)
                 check_syntax = CheckSyntax(description=relpath(path, test_dir))
                 yield check_syntax, path, config
