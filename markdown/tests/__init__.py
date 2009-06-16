@@ -44,7 +44,7 @@ def get_args(file, config):
 
 def normalize(text):
     """ Normalize whitespace for a string of html using tidy. """
-    return unicode(tidy.parseString(text.encode('utf-8'), 
+    return str(tidy.parseString(text.encode('utf-8'), 
                                     drop_empty_paras=0,
                                     fix_backslash=0,
                                     fix_bad_comments=0,
@@ -56,7 +56,7 @@ def normalize(text):
                                     quote_ampersand=0,
                                     show_body_only=1,
                                     char_encoding='utf8',
-                                    newline='LF'))
+                                    newline='LF')).decode('string-escape')
 
 class CheckSyntax(object):
     def __init__(self, description=None):
