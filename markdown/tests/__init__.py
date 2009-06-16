@@ -67,18 +67,21 @@ class CheckSyntax(object):
 
     def __call__(self, file, config):
         """ Compare expected output to actual output and report result. """
+        cfg_section = get_section(file, config)
+        if config.getboolean(cfg_section, 'skip'):
+            raise nose.plugins.skip.SkipTest, 'Test skipped per config.'
         input_file = file + ".txt"
         input = codecs.open(input_file, encoding="utf-8").read()
         output_file = file + ".html"
         expected_output = codecs.open(output_file, encoding="utf-8").read()
         output = markdown.markdown(input, **get_args(file, config))
-        if tidy and config.getboolean(get_section(file, config), 'normalize'):
+        if tidy and config.getboolean(cfg_section, 'normalize'):
             # Normalize whitespace before comparing.
             expected_output = normalize(expected_output)
             output = normalize(output)
-        elif config.getboolean(get_section(file, config), 'normalize'):
+        elif config.getboolean(cfg_section, 'normalize'):
             # Tidy is not available. Skip this test.
-            raise nose.plugins.skip.SkipTest, 'Skipped test. Tidy not available in system.'
+            raise nose.plugins.skip.SkipTest, 'Test skipped. Tidy not available in system.'
         diff = [l for l in difflib.unified_diff(expected_output.splitlines(True),
                                                 output.splitlines(True), 
                                                 output_file, 
@@ -94,7 +97,8 @@ def TestSyntax():
         config = util.CustomConfigParser({'extensions': '', 
                                           'safe_mode': False,
                                           'output_format': 'xhtml1',
-                                          'normalize': '0'})
+                                          'normalize': '0',
+                                          'skip': '0'})
         config.read(os.path.join(dir_name, 'test.cfg'))
         # Loop through files and generate tests.
         for file in files:
