@@ -256,11 +256,11 @@ class OListProcessor(BlockProcessor):
 
     TAG = 'ol'
     # Detect an item (``1. item``). ``group(1)`` contains contents of item.
-    RE = re.compile(r'^[ ]{0,3}\d+\.[ ](.*)')
+    RE = re.compile(r'^[ ]{0,3}\d+\.[ ]+(.*)')
     # Detect items on secondary lines. they can be of either list type.
-    CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.)|[*+-])[ ](.*)')
+    CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.)|[*+-])[ ]+(.*)')
     # Detect indented (nested) items of either type
-    INDENT_RE = re.compile(r'^[ ]{4,7}((\d+\.)|[*+-])[ ].*')
+    INDENT_RE = re.compile(r'^[ ]{4,7}((\d+\.)|[*+-])[ ]+.*')
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
@@ -324,7 +324,7 @@ class UListProcessor(OListProcessor):
     """ Process unordered list blocks. """
 
     TAG = 'ul'
-    RE = re.compile(r'^[ ]{0,3}[*+-][ ](.*)')
+    RE = re.compile(r'^[ ]{0,3}[*+-][ ]+(.*)')
 
 
 class HashHeaderProcessor(BlockProcessor):
