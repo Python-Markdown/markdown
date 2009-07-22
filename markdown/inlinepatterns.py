@@ -69,7 +69,7 @@ STRONG_RE = r'(\*{2}|_{2})(.+?)\2'                      # **strong**
 STRONG_EM_RE = r'(\*{3}|_{3})(.+?)\2'            # ***strong***
 
 if markdown.SMART_EMPHASIS:
-    EMPHASIS_2_RE = r'(?<!\S)(_)(\S.+?)\2'        # _emphasis_
+    EMPHASIS_2_RE = r'(?<!\w)(_)(\S.+?)\2(?!\w)'        # _emphasis_
 else:
     EMPHASIS_2_RE = r'(_)(.+?)\2'                 # _emphasis_
 
