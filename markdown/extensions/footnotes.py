@@ -38,11 +38,18 @@ class FootnoteExtension(markdown.Extension):
         """ Setup configs. """
         self.config = {'PLACE_MARKER':
                        ["///Footnotes Go Here///",
-                        "The text string that marks where the footnotes go"]}
+                        "The text string that marks where the footnotes go"],
+                       'UNIQUE_IDS':
+                       [False,
+                        "Avoid name collisions across "
+                        "multiple calls to reset()."]}
 
         for key, value in configs:
             self.config[key][0] = value
-            
+
+        # In multiple invocations, emit links that don't get tangled.
+        self.unique_prefix = 0
+
         self.reset()
 
     def extendMarkdown(self, md, md_globals):
@@ -66,8 +73,9 @@ class FootnoteExtension(markdown.Extension):
                                   ">amp_substitute")
 
     def reset(self):
-        """ Clear the footnotes on reset. """
+        """ Clear the footnotes on reset, and prepare for a distinct document. """
         self.footnotes = markdown.odict.OrderedDict()
+        self.unique_prefix += 1
 
     def findFootnotesPlaceholder(self, root):
         """ Return ElementTree Element that contains Footnote placeholder. """
@@ -91,11 +99,17 @@ class FootnoteExtension(markdown.Extension):
 
     def makeFootnoteId(self, id):
         """ Return footnote link id. """
-        return 'fn:%s' % id
+        if self.getConfig("UNIQUE_IDS"):
+            return 'fn:%d-%s' % (self.unique_prefix, id)
+        else:
+            return 'fn:%s' % id
 
     def makeFootnoteRefId(self, id):
         """ Return footnote back-link id. """
-        return 'fnref:%s' % id
+        if self.getConfig("UNIQUE_IDS"):
+            return 'fnref:%d-%s' % (self.unique_prefix, id)
+        else:
+            return 'fnref:%s' % id
 
     def makeFootnotesDiv(self, root):
         """ Return div of footnotes as et Element. """
