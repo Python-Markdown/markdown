@@ -60,13 +60,9 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
             if header_rgx.match(c.tag):
                 tag_level = int(c.tag[-1])
                 
-                # Regardless of how many levels we jumped
-                # only one list should be created, since
-                # empty lists containing lists are illegal.
-    
-                if tag_level < level:
+                while tag_level < level:
                     list_stack.pop()
-                    level = tag_level
+                    level -= 1
 
                 if tag_level > level:
                     newlist = etree.Element("ul")
@@ -75,7 +71,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                     else:
                         list_stack[-1].append(newlist)
                     list_stack.append(newlist)
-                    level = tag_level
+                    level += 1
 
                 # Do not override pre-existing ids 
                 if not "id" in c.attrib:
