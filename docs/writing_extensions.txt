@@ -38,7 +38,7 @@ Preprocessors munge the source text before it is passed into the Markdown
 core. This is an excellent place to clean up bad syntax, extract things the 
 parser may otherwise choke on and perhaps even store it for later retrieval.
 
-Preprocessors should inherit from ``markdown..preprocessors.Preprocessor`` and 
+Preprocessors should inherit from ``markdown.preprocessors.Preprocessor`` and 
 implement a ``run`` method with one argument ``lines``. The ``run`` method of 
 each Preprocessor will be passed the entire source text as a list of Unicode 
 strings. Each string will contain one line of text. The ``run`` method should 
@@ -155,7 +155,7 @@ Postprocessors manipulate the document after the ElementTree has been
 serialized into a string. Postprocessors should be used to work with the
 text just before output.
 
-A Postprocessor should inherit from ``markdown.porstprocessors.Postprocessor`` 
+A Postprocessor should inherit from ``markdown.postprocessors.Postprocessor`` 
 and over-ride the ``run`` method which takes one argument ``text`` and returns 
 a Unicode string.
 
