@@ -39,8 +39,8 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see docs/LICENSE for details).
 """
 
-version = "2.0.1"
-version_info = (2,0,1, "Final")
+version = "2.0.2"
+version_info = (2,0,2, "Final")
 
 import re
 import codecs
