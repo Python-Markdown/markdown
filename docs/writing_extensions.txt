@@ -38,15 +38,15 @@ Preprocessors munge the source text before it is passed into the Markdown
 core. This is an excellent place to clean up bad syntax, extract things the 
 parser may otherwise choke on and perhaps even store it for later retrieval.
 
-Preprocessors should inherit from ``markdown.Preprocessor`` and implement 
-a ``run`` method with one argument ``lines``. The ``run`` method of each 
-Preprocessor will be passed the entire source text as a list of Unicode strings.
-Each string will contain one line of text. The ``run`` method should return
-either that list, or an altered list of Unicode strings.
+Preprocessors should inherit from ``markdown..preprocessors.Preprocessor`` and 
+implement a ``run`` method with one argument ``lines``. The ``run`` method of 
+each Preprocessor will be passed the entire source text as a list of Unicode 
+strings. Each string will contain one line of text. The ``run`` method should 
+return either that list, or an altered list of Unicode strings.
 
 A pseudo example:
 
-    class MyPreprocessor(markdown.Preprocessor):
+    class MyPreprocessor(markdown.preprocessors.Preprocessor):
         def run(self, lines):
             new_lines = []
             for line in lines:
@@ -61,9 +61,9 @@ A pseudo example:
 
 Inline Patterns implement the inline HTML element syntax for Markdown such as
 ``*emphasis*`` or ``[links](http://example.com)``. Pattern objects should be 
-instances of classes that inherit from ``markdown.Pattern`` or one of its 
-children. Each pattern object uses a single regular expression and must have 
-the following methods:
+instances of classes that inherit from ``markdown.inlinepatterns.Pattern`` or 
+one of its children. Each pattern object uses a single regular expression and 
+must have the following methods:
 
 * **``getCompiledRegExp()``**: 
 
@@ -84,7 +84,7 @@ match everything before the pattern.
 
 For an example, consider this simplified emphasis pattern:
 
-    class EmphasisPattern(markdown.Pattern):
+    class EmphasisPattern(markdown.inlinepatterns.Pattern):
         def handleMatch(self, m):
             el = markdown.etree.Element('em')
             el.text = m.group(3)
@@ -135,13 +135,13 @@ core BlockParser. This is where additional manipulation of the tree takes
 place. Additionally, the InlineProcessor is a Treeprocessor which steps through
 the tree and runs the InlinePatterns on the text of each Element in the tree.
 
-A Treeprocessor should inherit from ``markdown.Treeprocessor``,
+A Treeprocessor should inherit from ``markdown.treeprocessors.Treeprocessor``,
 over-ride the ``run`` method which takes one argument ``root`` (an Elementree 
 object) and returns either that root element or a modified root element.
 
 A pseudo example:
 
-    class MyTreeprocessor(markdown.Treeprocessor):
+    class MyTreeprocessor(markdown.treeprocessors.Treeprocessor):
         def run(self, root):
             #do stuff
             return my_modified_root
@@ -155,15 +155,15 @@ Postprocessors manipulate the document after the ElementTree has been
 serialized into a string. Postprocessors should be used to work with the
 text just before output.
 
-A Postprocessor should inherit from ``markdown.Postprocessor`` and
-over-ride the ``run`` method which takes one argument ``text`` and returns a
-Unicode string.
+A Postprocessor should inherit from ``markdown.porstprocessors.Postprocessor`` 
+and over-ride the ``run`` method which takes one argument ``text`` and returns 
+a Unicode string.
 
 Postprocessors are run after the ElementTree has been serialized back into 
 Unicode text.  For example, this may be an appropriate place to add a table of 
 contents to a document:
 
-    class TocPostprocessor(markdown.Postprocessor):
+    class TocPostprocessor(markdown.postprocessors.Postprocessor):
         def run(self, text):
             return MYMARKERRE.sub(MyToc, text)
 
@@ -179,8 +179,8 @@ That Blockprocessor parses the block and adds it to the ElementTree. The
 [[Definition Lists]] extension would be a good example of an extension that
 adds/modifies Blockprocessors.
 
-A Blockprocessor should inherit from ``markdown.BlockProcessor`` and implement
-both the ``test`` and ``run`` methods.
+A Blockprocessor should inherit from ``markdown.blockprocessors.BlockProcessor``
+and implement both the ``test`` and ``run`` methods.
 
 The ``test`` method is used by BlockParser to identify the type of block.
 Therefore the ``test`` method must return a boolean value. If the test returns
