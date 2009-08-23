@@ -160,7 +160,7 @@ class TestRunner :
         if not os.path.exists(TMP_DIR):
             os.mkdir(TMP_DIR)
 
-    def test_directory(self, dir, measure_time=False, safe_mode=False, encoding="utf8", output_format='xhtml1') :
+    def test_directory(self, dir, measure_time=False, safe_mode=False, encoding="utf-8", output_format='xhtml1') :
         self.encoding = encoding
         benchmark_file_name = os.path.join(dir, "benchmark.dat")
         self.saved_benchmarks = {}
@@ -209,7 +209,7 @@ class TestRunner :
         self.html_diff_file.write("</table>")
 
         if sys.version < "3.0":
-            self.html_diff_file.write(self.diffs_buffer.decode("utf8"))
+            self.html_diff_file.write(self.diffs_buffer.decode("utf-8"))
 
         self.html_diff_file.write(FOOTER)
         self.html_diff_file.close()
@@ -249,8 +249,8 @@ class TestRunner :
         conversion_mem = memory(mem)
         self.md.reset()
         
-        expected_lines = [x.encode("utf8") for x in smart_split(expected_output)]
-        actual_lines = [x.encode("utf8") for x in smart_split(actual_output)]
+        expected_lines = [x.encode("utf-8") for x in smart_split(expected_output)]
+        actual_lines = [x.encode("utf-8") for x in smart_split(actual_output)]
 
         #diff = difflib.ndiff(expected_output.split("\n"),
         #                    actual_output.split("\n"))

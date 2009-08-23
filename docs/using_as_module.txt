@@ -20,13 +20,13 @@ string should work) and returns output as Unicode.  Do not pass encoded strings 
 If your input is encoded, e.g. as UTF-8, it is your responsibility to decode 
 it.  E.g.:
 
-    input_file = codecs.open("some_file.txt", mode="r", encoding="utf8")
+    input_file = codecs.open("some_file.txt", mode="r", encoding="utf-8")
     text = input_file.read()
     html = markdown.markdown(text, extensions)
 
 If you later want to write it to disk, you should encode it yourself:
 
-    output_file = codecs.open("some_file.html", "w", encoding="utf8")
+    output_file = codecs.open("some_file.html", "w", encoding="utf-8")
     output_file.write(html)
 
 More Options
@@ -61,7 +61,7 @@ The ``Markdown`` class has the method ``convertFile`` which reads in a file and
 writes out to a file-like-object:
 
     md = markdown.Markdown()
-    md.convertFile(input="in.txt", output="out.html", encoding="utf8")
+    md.convertFile(input="in.txt", output="out.html", encoding="utf-8")
 
 The markdown module also includes a shortcut function ``markdownFromFile`` that
 wraps the above method.
@@ -69,7 +69,7 @@ wraps the above method.
     markdown.markdownFromFile(input="in.txt", 
                               output="out.html", 
                               extensions=[],
-                              encoding="utf8",
+                              encoding="utf-8",
                               safe=False)
 
 In either case, if the ``output`` keyword is passed a file name (i.e.: 
