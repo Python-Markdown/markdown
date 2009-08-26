@@ -327,12 +327,14 @@ class Markdown:
         for ext in extensions:
             if isinstance(ext, basestring):
                 ext = load_extension(ext, configs.get(ext, []))
-            try:
-                ext.extendMarkdown(self, globals())
-            except AttributeError:
-                message(ERROR, "Incorrect type! Extension '%s' is "
-                               "neither a string or an Extension." %(repr(ext)))
-            
+            if isinstance(ext, Extension):
+                try:
+                    ext.extendMarkdown(self, globals())
+                except NotImplementedError, e:
+                    message(ERROR, e)
+            else:
+                message(ERROR, 'Extension "%s.%s" must be of type: "markdown.Extension".' \
+                    % (ext.__class__.__module__, ext.__class__.__name__))
 
     def registerExtension(self, extension):
         """ This gets called by the extension """
@@ -499,7 +501,8 @@ class Extension:
         * md_globals: Global variables in the markdown module namespace.
 
         """
-        pass
+        raise NotImplementedError, 'Extension "%s.%s" must define an "extendMarkdown"' \
+            'method.' % (self.__class__.__module__, self.__class__.__name__)
 
 
 def load_extension(ext_name, configs = []):
