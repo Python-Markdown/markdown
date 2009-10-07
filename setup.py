@@ -3,7 +3,8 @@
 import sys, os
 from distutils.core import setup
 from distutils.command.install_scripts import install_scripts
-from markdown import version
+
+version = '2.0.3'
 
 class md_install_scripts(install_scripts):
     """ Customized install_scripts. Create markdown.bat for win32. """
