@@ -14,9 +14,13 @@ def parse_options():
     """
     Define and parse `optparse` options for command-line usage.
     """
-
-    parser = optparse.OptionParser(usage="%prog [options] INPUTFILE", 
-                                   version="%%prog %s" % markdown.version)
+    usage = """%prog [options] [INPUTFILE]
+       (STDIN is assumed if no INPUTFILE is given)"""
+    desc = "A Python implementation of John Gruber's Markdown. " \
+           "http://www.freewisdom.org/projects/python-markdown/"
+    ver = "%%prog %s" % markdown.version
+    
+    parser = optparse.OptionParser(usage=usage, description=desc, version=ver)
     parser.add_option("-f", "--file", dest="filename", default=sys.stdout,
                       help="write output to OUTPUT_FILE",
                       metavar="OUTPUT_FILE")
@@ -30,10 +34,10 @@ def parse_options():
                       help="print info messages")
     parser.add_option("-s", "--safe", dest="safe", default=False,
                       metavar="SAFE_MODE",
-                      help="safe mode ('replace', 'remove' or 'escape'  user's HTML tag)")
+                      help="'replace', 'remove' or 'escape' HTML tags in input")
     parser.add_option("-o", "--output_format", dest="output_format", 
                       default='xhtml1', metavar="OUTPUT_FORMAT",
-                      help="Format of output. One of 'xhtml1' (default) or 'html4'.")
+                      help="'xhtml1' (default) or 'html4'.")
     parser.add_option("--noisy",
                       action="store_const", const=DEBUG, dest="verbose",
                       help="print debug messages")
