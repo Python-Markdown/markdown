@@ -275,24 +275,25 @@ class InlineProcessor(Treeprocessor):
                 if child.getchildren():
                     stack.append(child)
 
-            for element, lst in insertQueue:
-                if element.text:
-                    element.text = \
-                        markdown.inlinepatterns.handleAttributes(element.text, 
-                                                                 element)
-                i = 0
-                for newChild in lst:
-                    # Processing attributes
-                    if newChild.tail:
-                        newChild.tail = \
-                            markdown.inlinepatterns.handleAttributes(newChild.tail,
+            if markdown.ENABLE_ATTRIBUTES:
+                for element, lst in insertQueue:
+                    if element.text:
+                        element.text = \
+                            markdown.inlinepatterns.handleAttributes(element.text, 
                                                                      element)
-                    if newChild.text:
-                        newChild.text = \
-                            markdown.inlinepatterns.handleAttributes(newChild.text,
-                                                                     newChild)
-                    element.insert(i, newChild)
-                    i += 1
+                    i = 0
+                    for newChild in lst:
+                        # Processing attributes
+                        if newChild.tail:
+                            newChild.tail = \
+                                markdown.inlinepatterns.handleAttributes(newChild.tail,
+                                                                         element)
+                        if newChild.text:
+                            newChild.text = \
+                                markdown.inlinepatterns.handleAttributes(newChild.text,
+                                                                         newChild)
+                        element.insert(i, newChild)
+                        i += 1
         return tree
 
 
