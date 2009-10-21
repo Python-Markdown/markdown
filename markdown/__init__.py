@@ -431,7 +431,7 @@ class Markdown:
 
         Keyword arguments:
 
-        * input: Name of source text file.
+        * input: File object or path of file as string.
         * output: Name of output file. Writes to stdout if `None`.
         * encoding: Encoding of input and output files. Defaults to utf-8.
 
@@ -440,7 +440,10 @@ class Markdown:
         encoding = encoding or "utf-8"
 
         # Read the source
-        input_file = codecs.open(input, mode="r", encoding=encoding)
+        if isinstance(input, basestring):
+            input_file = codecs.open(input, mode="r", encoding=encoding)
+        else:
+            input_file = input
         text = input_file.read()
         input_file.close()
         text = text.lstrip(u'\ufeff') # remove the byte-order mark
@@ -449,7 +452,7 @@ class Markdown:
         html = self.convert(text)
 
         # Write to file or stdout
-        if isinstance(output, (str, unicode)):
+        if isinstance(output, basestring):
             output_file = codecs.open(output, "w", encoding=encoding)
             output_file.write(html)
             output_file.close()
