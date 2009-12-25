@@ -71,7 +71,10 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                     else:
                         list_stack[-1].append(newlist)
                     list_stack.append(newlist)
-                    level += 1
+                    if level == 0:
+                        level = tag_level
+                    else:
+                        level += 1
 
                 # Do not override pre-existing ids 
                 if not "id" in c.attrib:
