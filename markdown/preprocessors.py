@@ -169,7 +169,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                 new_blocks.append(block)
 
             else:
-                items.append(block.strip())
+                items.append(block)
 
                 right_tag, data_index = self._get_right_tag(left_tag, block)
 
