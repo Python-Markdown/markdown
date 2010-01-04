@@ -1,0 +1,12 @@
+<div markdown="1">_foo_</div>
+
+<div markdown=1 class="baz">
+_bar_
+</div>
+
+<div markdown>
+
+_blah_
+
+</div>
+

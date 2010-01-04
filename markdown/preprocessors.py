@@ -227,7 +227,8 @@ class HtmlBlockPreprocessor(Preprocessor):
                     # if find closing tag
                     in_tag = False
                     if self.markdown_in_raw and 'markdown' in attrs.keys():
-                        start = items[0][:left_index]
+                        start = re.sub(r'\smarkdown(=[\'"]?[^> ]*[\'"]?)?', 
+                                       '', items[0][:left_index])
                         items[0] = items[0][left_index:]
                         end = items[-1][-len(right_tag)-2:]
                         items[-1] = items[-1][:-len(right_tag)-2]
@@ -243,7 +244,8 @@ class HtmlBlockPreprocessor(Preprocessor):
 
         if items:
             if self.markdown_in_raw and 'markdown' in attrs.keys():
-                start = items[0][:left_index]
+                start = re.sub(r'\smarkdown(=[\'"]?[^> ]*[\'"]?)?', 
+                               '', items[0][:left_index])
                 items[0] = items[0][left_index:]
                 end = items[-1][-len(right_tag)-2:]
                 items[-1] = items[-1][:-len(right_tag)-2]
