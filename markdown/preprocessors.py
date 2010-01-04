@@ -77,17 +77,41 @@ class HtmlBlockPreprocessor(Preprocessor):
     """Remove html blocks from the text and store them for later retrieval."""
 
     right_tag_patterns = ["</%s>", "%s>"]
+    attrs_pattern = r"""
+        \s+(?P<attr> [^>"'/ ]+)=(?P<q>['"])(?P<value>.*?)(?P=q)   # attr="value"
+        |                                                         # OR 
+        \s+(?P<sattr> [^>"'/ ]+)                                  # attr
+        """
+    left_tag_pattern = r'^\<(?P<tag>[^> ]+)(?P<attrs>(%s)*)\s*\/?\>?' % attrs_pattern
+    attrs_re = re.compile(attrs_pattern, re.VERBOSE)
+    left_tag_re = re.compile(left_tag_pattern, re.VERBOSE)
 
     def _get_left_tag(self, block):
-        return block[1:].replace(">", " ", 1).split()[0].lower()
+        m = self.left_tag_re.match(block)
+        if m:
+            tag = m.group('tag')
+            raw_attrs = m.group('attrs')
+            attrs = {}
+            if raw_attrs:
+                for ma in self.attrs_re.finditer(raw_attrs):
+                    if ma.group('value'):
+                        attrs[ma.group('attr').strip()] = ma.group('value')
+                    elif ma.group('attr'):
+                        attrs[ma.group('attr').strip()] = ""
+            return tag, len(m.group(0)), attrs
+        else:
+            tag = block[1:].replace(">", " ", 1).split()[0].lower()
+            return tag, len(tag+2), {}
 
-    def _get_right_tag(self, left_tag, block):
+        #return block[1:].replace(">", " ", 1).split()[0].lower()
+
+    def _get_right_tag(self, left_tag, left_index, block):
         for p in self.right_tag_patterns:
             tag = p % left_tag
             i = block.rfind(tag)
             if i > 2:
-                return tag.lstrip("<").rstrip(">"), i + len(p)-2 + len(left_tag)
-        return block.rstrip()[-len(left_tag)-2:-1].lower(), len(block)
+                return tag.lstrip("<").rstrip(">"), i + len(p)-2 + left_index-2
+        return block.rstrip()[-left_index:-1].lower(), len(block)
 
     def _equal_tags(self, left_tag, right_tag):
         if left_tag == 'div' or left_tag[0] in ['?', '@', '%']: # handle PHP, etc.
@@ -113,7 +137,7 @@ class HtmlBlockPreprocessor(Preprocessor):
         left_tag = ''
         right_tag = ''
         in_tag = False # flag
-
+        #import pdb; pdb.set_trace()
         while text:
             block = text[0]
             if block.startswith("\n"):
@@ -125,13 +149,17 @@ class HtmlBlockPreprocessor(Preprocessor):
 
             if not in_tag:
                 if block.startswith("<"):
-                    left_tag = self._get_left_tag(block)
-                    right_tag, data_index = self._get_right_tag(left_tag, block)
+                    left_tag, left_index, attrs = self._get_left_tag(block)
+                    right_tag, data_index = self._get_right_tag(left_tag, 
+                                                                left_index,
+                                                                block)
 
                     if block[1] == "!":
                         # is a comment block
                         left_tag = "--"
-                        right_tag, data_index = self._get_right_tag(left_tag, block)
+                        right_tag, data_index = self._get_right_tag(left_tag, 
+                                                                    left_index,
+                                                                    block)
                         # keep checking conditions below and maybe just append
                     
                     if data_index < len(block) \
@@ -171,7 +199,9 @@ class HtmlBlockPreprocessor(Preprocessor):
             else:
                 items.append(block)
 
-                right_tag, data_index = self._get_right_tag(left_tag, block)
+                right_tag, data_index = self._get_right_tag(left_tag, 
+                                                            left_index, 
+                                                            block)
 
                 if self._equal_tags(left_tag, right_tag):
                     # if find closing tag
