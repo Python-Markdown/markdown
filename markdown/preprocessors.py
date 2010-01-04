@@ -78,13 +78,16 @@ class HtmlBlockPreprocessor(Preprocessor):
 
     right_tag_patterns = ["</%s>", "%s>"]
     attrs_pattern = r"""
-        \s+(?P<attr> [^>"'/ ]+)=(?P<q>['"])(?P<value>.*?)(?P=q)   # attr="value"
+        \s+(?P<attr>[^>"'/= ]+)=(?P<q>['"])(?P<value>.*?)(?P=q)   # attr="value"
         |                                                         # OR 
-        \s+(?P<sattr> [^>"'/ ]+)                                  # attr
+        \s+(?P<attr1>[^>"'/= ]+)=(?P<value1>[^> ]+)               # attr=value
+        |                                                         # OR
+        \s+(?P<attr2>[^>"'/= ]+)                                  # attr
         """
     left_tag_pattern = r'^\<(?P<tag>[^> ]+)(?P<attrs>(%s)*)\s*\/?\>?' % attrs_pattern
     attrs_re = re.compile(attrs_pattern, re.VERBOSE)
     left_tag_re = re.compile(left_tag_pattern, re.VERBOSE)
+    markdown_in_raw = False
 
     def _get_left_tag(self, block):
         m = self.left_tag_re.match(block)
@@ -94,16 +97,22 @@ class HtmlBlockPreprocessor(Preprocessor):
             attrs = {}
             if raw_attrs:
                 for ma in self.attrs_re.finditer(raw_attrs):
-                    if ma.group('value'):
-                        attrs[ma.group('attr').strip()] = ma.group('value')
-                    elif ma.group('attr'):
-                        attrs[ma.group('attr').strip()] = ""
+                    if ma.group('attr'):
+                        if ma.group('value'):
+                            attrs[ma.group('attr').strip()] = ma.group('value')
+                        else:
+                            attrs[ma.group('attr').strip()] = ""
+                    elif ma.group('attr1'):
+                        if ma.group('value1'):
+                            attrs[ma.group('attr1').strip()] = ma.group('value1')
+                        else:
+                            attrs[ma.group('attr1').strip()] = ""
+                    elif ma.group('attr2'):
+                        attrs[ma.group('attr2').strip()] = ""
             return tag, len(m.group(0)), attrs
         else:
             tag = block[1:].replace(">", " ", 1).split()[0].lower()
             return tag, len(tag+2), {}
-
-        #return block[1:].replace(">", " ", 1).split()[0].lower()
 
     def _get_right_tag(self, left_tag, left_index, block):
         for p in self.right_tag_patterns:
@@ -114,7 +123,7 @@ class HtmlBlockPreprocessor(Preprocessor):
         return block.rstrip()[-left_index:-1].lower(), len(block)
 
     def _equal_tags(self, left_tag, right_tag):
-        if left_tag == 'div' or left_tag[0] in ['?', '@', '%']: # handle PHP, etc.
+        if left_tag[0] in ['?', '@', '%']: # handle PHP, etc.
             return True
         if ("/" + left_tag) == right_tag:
             return True
@@ -137,7 +146,7 @@ class HtmlBlockPreprocessor(Preprocessor):
         left_tag = ''
         right_tag = ''
         in_tag = False # flag
-        #import pdb; pdb.set_trace()
+        
         while text:
             block = text[0]
             if block.startswith("\n"):
@@ -175,13 +184,24 @@ class HtmlBlockPreprocessor(Preprocessor):
                     if self._is_oneliner(left_tag):
                         new_blocks.append(block.strip())
                         continue
-
+                    
                     if block.rstrip().endswith(">") \
                         and self._equal_tags(left_tag, right_tag):
-                        new_blocks.append(
-                            self.markdown.htmlStash.store(block.strip()))
+                        if self.markdown_in_raw and 'markdown' in attrs.keys():
+                            start = re.sub(r'\smarkdown(=[\'"]?[^> ]*[\'"]?)?', 
+                                           '', block[:left_index])
+                            end = block[-len(right_tag)-2:]
+                            block = block[left_index:-len(right_tag)-2]
+                            new_blocks.append(
+                                self.markdown.htmlStash.store(start))
+                            new_blocks.append(block)
+                            new_blocks.append(
+                                self.markdown.htmlStash.store(end))
+                        else:
+                            new_blocks.append(
+                                self.markdown.htmlStash.store(block.strip()))
                         continue
-                    else: #if not block[1] == "!":
+                    else: 
                         # if is block level tag and is not complete
 
                         if markdown.isBlockLevel(left_tag) or left_tag == "--" \
@@ -206,12 +226,36 @@ class HtmlBlockPreprocessor(Preprocessor):
                 if self._equal_tags(left_tag, right_tag):
                     # if find closing tag
                     in_tag = False
-                    new_blocks.append(
-                        self.markdown.htmlStash.store('\n\n'.join(items)))
+                    if self.markdown_in_raw and 'markdown' in attrs.keys():
+                        start = items[0][:left_index]
+                        items[0] = items[0][left_index:]
+                        end = items[-1][-len(right_tag)-2:]
+                        items[-1] = items[-1][:-len(right_tag)-2]
+                        new_blocks.append(
+                            self.markdown.htmlStash.store(start))
+                        new_blocks.extend(items)
+                        new_blocks.append(
+                            self.markdown.htmlStash.store(end))
+                    else:
+                        new_blocks.append(
+                            self.markdown.htmlStash.store('\n\n'.join(items)))
                     items = []
 
         if items:
-            new_blocks.append(self.markdown.htmlStash.store('\n\n'.join(items)))
+            if self.markdown_in_raw and 'markdown' in attrs.keys():
+                start = items[0][:left_index]
+                items[0] = items[0][left_index:]
+                end = items[-1][-len(right_tag)-2:]
+                items[-1] = items[-1][:-len(right_tag)-2]
+                new_blocks.append(
+                    self.markdown.htmlStash.store(start))
+                new_blocks.extend(items)
+                new_blocks.append(
+                    self.markdown.htmlStash.store(end))
+            else:
+                new_blocks.append(
+                    self.markdown.htmlStash.store('\n\n'.join(items)))
+            #new_blocks.append(self.markdown.htmlStash.store('\n\n'.join(items)))
             new_blocks.append('\n')
 
         new_text = "\n\n".join(new_blocks)
