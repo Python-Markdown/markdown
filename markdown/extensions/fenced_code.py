@@ -9,7 +9,7 @@ This extension adds Fenced Code Blocks to Python-Markdown.
     >>> import markdown
     >>> text = '''
     ... A paragraph before a fenced code block:
-    ... 
+    ...
     ... ~~~
     ... Fenced code block
     ... ~~~
@@ -22,14 +22,14 @@ Works with safe_mode also (we check this because we are using the HtmlStash):
 
     >>> markdown.markdown(text, extensions=['fenced_code'], safe_mode='replace')
     u'<p>A paragraph before a fenced code block:</p>\\n<pre><code>Fenced code block\\n</code></pre>'
-    
+
 Include tilde's in a code block and wrap with blank lines:
 
     >>> text = '''
     ... ~~~~~~~~
-    ... 
+    ...
     ... ~~~~
-    ... 
+    ...
     ... ~~~~~~~~'''
     >>> markdown.markdown(text, extensions=['fenced_code'])
     u'<pre><code>\\n~~~~\\n\\n</code></pre>'
@@ -40,7 +40,7 @@ Multiple blocks and language tags:
     ... ~~~~{.python}
     ... block one
     ... ~~~~
-    ... 
+    ...
     ... ~~~~.html
     ... <p>block two</p>
     ... ~~~~'''
@@ -52,19 +52,29 @@ Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
 Project website: <http://www.freewisdom.org/project/python-markdown/Fenced__Code__Blocks>
 Contact: markdown@freewisdom.org
 
-License: BSD (see ../docs/LICENSE for details) 
+License: BSD (see ../docs/LICENSE for details)
 
 Dependencies:
-* [Python 2.3+](http://python.org)
+* [Python 2.4+](http://python.org)
 * [Markdown 2.0+](http://www.freewisdom.org/projects/python-markdown/)
+* [Pygments (optional)](http://pygments.org)
 
 """
 
 import markdown, re
 
+try:
+    from pygments import highlight
+    from pygments.lexers import get_lexer_by_name
+    from pygments.formatters import HtmlFormatter
+except ImportError:
+    HAS_PYGMENTS = False
+else:
+    HAS_PYGMENTS = True
+
 # Global vars
 FENCED_BLOCK_RE = re.compile( \
-    r'(?P<fence>^~{3,})[ ]*(\{?\.(?P<lang>[a-zA-Z0-9_-]*)\}?)?[ ]*\n(?P<code>.*?)(?P=fence)[ ]*$', 
+    r'(?P<fence>^~{3,})[ ]*(\{?\.(?P<lang>[a-zA-Z0-9_-]*)\}?)?[ ]*\n(?P<code>.*?)(?P=fence)[ ]*$',
     re.MULTILINE|re.DOTALL
     )
 CODE_WRAP = '<pre><code%s>%s</code></pre>'
@@ -73,26 +83,67 @@ LANG_TAG = ' class="%s"'
 
 class FencedCodeExtension(markdown.Extension):
 
+    def __init__(self, configs):
+        self.config = {
+            'HIGHLIGHT_STYLE': ['tango', 'The pygments HTML Formatter style to use'],
+            'NO_CSS_CLASSES': [True, 'Do not use any CSS classes, use inline styles instead'],
+            'LINENOS': [True, 'Display line numbers']
+        }
+
+        for key, value in configs:
+            self.config[key][0] = value
+
     def extendMarkdown(self, md, md_globals):
         """ Add FencedBlockPreprocessor to the Markdown instance. """
 
-        md.preprocessors.add('fenced_code_block', 
-                                 FencedBlockPreprocessor(md), 
+        md.preprocessors.add('fenced_code_block',
+                                 FencedBlockPreprocessor(md, self.config),
                                  "_begin")
 
 
 class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
-    
+
+    def __init__(self, md, config):
+        markdown.preprocessors.Preprocessor.__init__(self, md)
+        self.config = config
+
+    def getConfig(self, key):
+        if key in self.config:
+            return self.config[key][0]
+        else:
+            return None
+
     def run(self, lines):
         """ Match and store Fenced Code Blocks in the HtmlStash. """
         text = "\n".join(lines)
         while 1:
             m = FENCED_BLOCK_RE.search(text)
             if m:
+                highlighted = False
+
                 lang = ''
                 if m.group('lang'):
                     lang = LANG_TAG % m.group('lang')
-                code = CODE_WRAP % (lang, self._escape(m.group('code')))
+
+                # If pygments installed, highlight code
+                if HAS_PYGMENTS and m.group('lang'):
+                    formatter = HtmlFormatter(
+                        linenos=self.getConfig('LINENOS'),
+                        style=self.getConfig('HIGHLIGHT_STYLE'),
+                        noclasses=self.getConfig('NO_CSS_CLASSES')
+                    )
+
+                    try:
+                        lexer = get_lexer_by_name(m.group('lang'))
+                    except:
+                        highlighted = False
+                    else:
+                        highlighted = True
+                        code = highlight(m.group('code'), lexer, formatter)
+
+                if not highlighted:
+                    code = CODE_WRAP % (lang, self._escape(m.group('code')))
+
                 placeholder = self.markdown.htmlStash.store(code, safe=True)
                 text = '%s\n%s\n%s'% (text[:m.start()], placeholder, text[m.end():])
             else:
@@ -109,7 +160,7 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
 
 
 def makeExtension(configs=None):
-    return FencedCodeExtension()
+    return FencedCodeExtension(configs=configs)
 
 
 if __name__ == "__main__":
