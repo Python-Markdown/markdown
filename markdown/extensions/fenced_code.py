@@ -62,15 +62,7 @@ Dependencies:
 """
 
 import markdown, re
-
-try:
-    from pygments import highlight
-    from pygments.lexers import get_lexer_by_name
-    from pygments.formatters import HtmlFormatter
-except ImportError:
-    HAS_PYGMENTS = False
-else:
-    HAS_PYGMENTS = True
+from markdown.extensions.codehilite import CodeHilite, CodeHiliteExtension
 
 # Global vars
 FENCED_BLOCK_RE = re.compile( \
@@ -80,32 +72,24 @@ FENCED_BLOCK_RE = re.compile( \
 CODE_WRAP = '<pre><code%s>%s</code></pre>'
 LANG_TAG = ' class="%s"'
 
-
 class FencedCodeExtension(markdown.Extension):
-
-    def __init__(self, configs):
-        self.config = {
-            'HIGHLIGHT_STYLE': ['tango', 'The pygments HTML Formatter style to use'],
-            'NO_CSS_CLASSES': [True, 'Do not use any CSS classes, use inline styles instead'],
-            'LINENOS': [True, 'Display line numbers']
-        }
-
-        for key, value in configs:
-            self.config[key][0] = value
 
     def extendMarkdown(self, md, md_globals):
         """ Add FencedBlockPreprocessor to the Markdown instance. """
+        md.registerExtension(self)
 
         md.preprocessors.add('fenced_code_block',
-                                 FencedBlockPreprocessor(md, self.config),
+                                 FencedBlockPreprocessor(md),
                                  "_begin")
 
 
 class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
 
-    def __init__(self, md, config):
+    def __init__(self, md):
         markdown.preprocessors.Preprocessor.__init__(self, md)
-        self.config = config
+
+        self.checked_for_codehilite = False
+        self.codehilite_conf = {}
 
     def getConfig(self, key):
         if key in self.config:
@@ -115,33 +99,36 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
 
     def run(self, lines):
         """ Match and store Fenced Code Blocks in the HtmlStash. """
+
+        # Check for code hilite extension
+        if not self.checked_for_codehilite:
+            for ext in self.markdown.registeredExtensions:
+                if isinstance(ext, CodeHiliteExtension):
+                    self.codehilite_conf = ext.config
+                    break
+
+            self.checked_for_codehilite = True
+
         text = "\n".join(lines)
         while 1:
             m = FENCED_BLOCK_RE.search(text)
             if m:
-                highlighted = False
-
                 lang = ''
                 if m.group('lang'):
                     lang = LANG_TAG % m.group('lang')
 
-                # If pygments installed, highlight code
-                if HAS_PYGMENTS and m.group('lang'):
-                    formatter = HtmlFormatter(
-                        linenos=self.getConfig('LINENOS'),
-                        style=self.getConfig('HIGHLIGHT_STYLE'),
-                        noclasses=self.getConfig('NO_CSS_CLASSES')
-                    )
+                # If config is not empty, then the codehighlite extension
+                # is enabled, so we call it to highlite the code
+                if self.codehilite_conf:
+                    highliter = CodeHilite(m.group('code'),
+                            linenos=self.codehilite_conf['force_linenos'][0],
+                            css_class=self.codehilite_conf['css_class'][0],
+                            style=self.codehilite_conf['pygments_style'][0],
+                            lang=(m.group('lang') if m.group('lang') else None),
+                            noclasses=self.codehilite_conf['noclasses'][0])
 
-                    try:
-                        lexer = get_lexer_by_name(m.group('lang'))
-                    except:
-                        highlighted = False
-                    else:
-                        highlighted = True
-                        code = highlight(m.group('code'), lexer, formatter)
-
-                if not highlighted:
+                    code = highliter.hilite()
+                else:
                     code = CODE_WRAP % (lang, self._escape(m.group('code')))
 
                 placeholder = self.markdown.htmlStash.store(code, safe=True)
