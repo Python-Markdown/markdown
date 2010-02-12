@@ -1,7 +1,6 @@
 recursive-include bin *
 recursive-include markdown *.py
 recursive-include docs *
-recursive-include markdown/tests *.txt *.html *.cfg *.py
-prune markdown/extensions/legacy.py
+recursive-include tests *.txt *.html *.cfg *.py
 include setup.py
 include MANIFEST
