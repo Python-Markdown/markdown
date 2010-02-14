@@ -2,7 +2,12 @@ import os
 import markdown
 import codecs
 import difflib
-import nose
+try:
+    import nose
+except ImportError:
+    raise ImportError, "The nose testing framework is required to run " \
+                       "Python-Markdown tests. Run `easy_install nose` " \
+                       "to install the latest version."
 import util 
 from plugins import HtmlOutput, Markdown
 try:
@@ -111,7 +116,3 @@ def TestSyntax():
 def run():
     nose.main(addplugins=[HtmlOutput(), Markdown()])
 
-# Hack to make nose run with extensions. Once extensions can be added from
-# setup.cfg, the below line can be removed. 
-# See nose [Issue 271](http://code.google.com/p/python-nose/issues/detail?id=271)
-run()
