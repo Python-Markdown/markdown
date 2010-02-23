@@ -124,7 +124,7 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
                             linenos=self.codehilite_conf['force_linenos'][0],
                             css_class=self.codehilite_conf['css_class'][0],
                             style=self.codehilite_conf['pygments_style'][0],
-                            lang=(m.group('lang') if m.group('lang') else None),
+                            lang=(m.group('lang') or None),
                             noclasses=self.codehilite_conf['noclasses'][0])
 
                     code = highliter.hilite()
