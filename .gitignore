@@ -2,7 +2,7 @@
 *.bak
 *.tmp
 *.swp
-tmp/*
+test-output.html
 build/*
 dist/*
 MANIFEST

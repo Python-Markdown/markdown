@@ -81,7 +81,7 @@ or ""))
         else:
             self.html.append('OK')
         self.html.append('</div></body></html>')
-        f = open('tmp/test-output.html', 'w')
+        f = open('test-output.html', 'w')
         for l in self.html:
             f.write(l)
         f.close()
