@@ -44,6 +44,7 @@ class RawHtmlPostprocessor(Postprocessor):
         """ Iterate over html stash and restore "safe" html. """
         for i in range(self.markdown.htmlStash.html_counter):
             html, safe  = self.markdown.htmlStash.rawHtmlBlocks[i]
+            html = self.unescape(html)
             if self.markdown.safeMode and not safe:
                 if str(self.markdown.safeMode).lower() == 'escape':
                     html = self.escape(html)
@@ -58,6 +59,13 @@ class RawHtmlPostprocessor(Postprocessor):
             text =  text.replace(markdown.preprocessors.HTML_PLACEHOLDER % i, 
                                  html)
         return text
+
+    def unescape(self, html):
+        """ Unescape any markdown escaped text within inline html. """
+        for k, v in self.markdown.treeprocessors['inline'].stashed_nodes.items():
+            ph = markdown.INLINE_PLACEHOLDER % k
+            html = html.replace(ph, '\%s' % v)
+        return html
 
     def escape(self, html):
         """ Basic html escaping """

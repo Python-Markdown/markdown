@@ -15,3 +15,4 @@ And of course <script>blah</script>.
 
 [this <script>link](<script>stuff</script>)
 
+Some funky <x\]> inline stuff with markdown escaping syntax.
