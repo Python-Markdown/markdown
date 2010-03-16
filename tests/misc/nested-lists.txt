@@ -22,3 +22,12 @@ plain text
     * item 1-2
         * item 1-2-1
 * item 2
+* item 3
+* item 4
+    * item 4-1
+    * item 4-2
+    * item 4-3
+
+        Paragraph under item 4-3
+
+    Paragraph under item 4

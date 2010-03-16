@@ -143,8 +143,12 @@ class ListIndentProcessor(BlockProcessor):
             # Assume the last child li is the parent of this block.
             if sibling[-1].text:
                 # If the parent li has text, that text needs to be moved to a p
-                block = '%s\n\n%s' % (sibling[-1].text, block)
+                # The p must be 'inserted' at beginning of list in the event
+                # that other children already exist i.e.; a nested sublist.
+                p = markdown.etree.Element('p')
+                p.text = sibling[-1].text
                 sibling[-1].text = ''
+                sibling[-1].insert(0, p)
             self.parser.parseChunk(sibling[-1], block)
         else:
             self.create_item(sibling, block)
