@@ -133,8 +133,16 @@ class ListIndentProcessor(BlockProcessor):
 
         self.parser.state.set('detabbed')
         if parent.tag in self.ITEM_TYPES:
-            # The parent is already a li. Just parse the child block.
-            self.parser.parseBlocks(parent, [block])
+            # It's possible that this parent has a 'ul' or 'ol' child list
+            # with a member.  If that is the case, then that should be the
+            # parent.  This is intended to catch the edge case of an indented 
+            # list whose first member was parsed previous to this point
+            # see OListProcessor
+            if len(parent) and parent[-1].tag in self.LIST_TYPES:
+                self.parser.parseBlocks(parent[-1], [block])
+            else:
+                # The parent is already a li. Just parse the child block.
+                self.parser.parseBlocks(parent, [block])
         elif sibling.tag in self.ITEM_TYPES:
             # The sibling is a li. Use it as parent.
             self.parser.parseBlocks(sibling, [block])
@@ -287,6 +295,13 @@ class OListProcessor(BlockProcessor):
             firstitem = items.pop(0)
             self.parser.parseBlocks(li, [firstitem])
             self.parser.state.reset()
+        elif parent.tag in ['ol', 'ul']:
+            # this catches the edge case of a multi-item indented list whose 
+            # first item is in a blank parent-list item:
+            # * * subitem1
+            #     * subitem2
+            # see also ListIndentProcessor
+            lst = parent
         else:
             # This is a new list so create parent with appropriate tag.
             lst = markdown.etree.SubElement(parent, self.TAG)
