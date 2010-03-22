@@ -127,9 +127,19 @@ class ListIndentProcessor(BlockProcessor):
                 )
 
     def run(self, parent, blocks):
+        print "BEGIN ListIndentProcessor"
+        print "parent:  %s" % markdown.etree.tostring(parent)
+        print "blocks:  %s" % blocks
+
         block = blocks.pop(0)
         level, sibling = self.get_level(parent, block)
         block = self.looseDetab(block, level)
+
+        print "block:  %s" % block
+        if sibling:
+            print "sibling:  %s" % markdown.etree.tostring(sibling)
+        else:
+            print "sibling:  none"
 
         self.parser.state.set('detabbed')
         if parent.tag in self.ITEM_TYPES:
@@ -161,6 +171,8 @@ class ListIndentProcessor(BlockProcessor):
         else:
             self.create_item(sibling, block)
         self.parser.state.reset()
+    
+        print "END ListIndentProcessor"
 
     def create_item(self, parent, block):
         """ Create a new li and parse the block with it as the parent. """
@@ -278,22 +290,40 @@ class OListProcessor(BlockProcessor):
         return bool(self.RE.match(block))
 
     def run(self, parent, blocks):
+        print "BEGIN OListProcessor"
+        print "parent:  %s" % markdown.etree.tostring(parent)
+        print "blocks:  %s" % blocks
+
         # Check fr multiple items in one block.
         items = self.get_items(blocks.pop(0))
         sibling = self.lastChild(parent)
+
+        print "items:  %s" % items
+        if sibling:
+            print "sibling:  %s" % markdown.etree.tostring(sibling)
+        else:
+            print "sibling: none"
+
         if sibling and sibling.tag in ['ol', 'ul']:
             # Previous block was a list item, so set that as parent
             lst = sibling
-            # make sure previous item is in a p.
-            if len(lst) and lst[-1].text and not len(lst[-1]):
-                p = markdown.etree.SubElement(lst[-1], 'p')
+            # make sure previous item is in a p- if the item has text, then it
+            # it isn't in a p
+            if lst[-1].text: 
+                # since it's possible there are other children for this sibling,
+                # we can't just SubElement the p, we need to insert it as the 
+                # first item
+                p = markdown.etree.Element('p')
                 p.text = lst[-1].text
                 lst[-1].text = ''
+                lst[-1].insert(0, p)
+
             # parse first block differently as it gets wrapped in a p.
             li = markdown.etree.SubElement(lst, 'li')
             self.parser.state.set('looselist')
             firstitem = items.pop(0)
             self.parser.parseBlocks(li, [firstitem])
+            print "looselist:  %s" % markdown.etree.tostring(lst)
             self.parser.state.reset()
         elif parent.tag in ['ol', 'ul']:
             # this catches the edge case of a multi-item indented list whose 
@@ -317,6 +347,8 @@ class OListProcessor(BlockProcessor):
                 li = markdown.etree.SubElement(lst, 'li')
                 self.parser.parseBlocks(li, [item])
         self.parser.state.reset()
+
+    print "END OListProcessor"
 
     def get_items(self, block):
         """ Break a block into list items. """
