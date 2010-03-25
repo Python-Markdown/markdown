@@ -29,7 +29,10 @@ Dependencies:
 """
 
 import markdown
-import tidy
+try:
+    import tidy
+except ImportError:
+    tidy = None
 
 class TidyExtension(markdown.Extension):
 
@@ -46,7 +49,8 @@ class TidyExtension(markdown.Extension):
         # Save options to markdown instance
         md.tidy_options = self.config
         # Add TidyProcessor to postprocessors
-        md.postprocessors['tidy'] = TidyProcessor(md)
+        if tidy:
+            md.postprocessors['tidy'] = TidyProcessor(md)
 
 
 class TidyProcessor(markdown.postprocessors.Postprocessor):
