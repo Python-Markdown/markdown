@@ -26,4 +26,10 @@ term *3*
 
     * > blockquote in list
 
+and more text.
+
+term 4
+: def4
+  line 2 of def 4
+
 final text.

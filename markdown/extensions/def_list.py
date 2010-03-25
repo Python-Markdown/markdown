@@ -27,6 +27,7 @@ class DefListProcessor(markdown.blockprocessors.BlockProcessor):
     """ Process Definition Lists. """
 
     RE = re.compile(r'(^|\n)[ ]{0,3}:[ ]{1,3}(.*?)(\n|$)')
+    NO_INDENT_RE = re.compile(r'^[ ]{0,3}[^ :]')
 
     def test(self, parent, block):
         return bool(self.RE.search(block))
@@ -35,12 +36,16 @@ class DefListProcessor(markdown.blockprocessors.BlockProcessor):
         block = blocks.pop(0)
         m = self.RE.search(block)
         terms = [l.strip() for l in block[:m.start()].split('\n') if l.strip()]
-        d, theRest = self.detab(block[m.end():])
+        block = block[m.end():]
+        no_indent = self.NO_INDENT_RE.match(block)
+        if no_indent:
+            d, theRest = (block, None)
+        else:
+            d, theRest = self.detab(block)
         if d:
             d = '%s\n%s' % (m.group(2), d)
         else:
             d = m.group(2)
-        #import ipdb; ipdb.set_trace()
         sibling = self.lastChild(parent)
         if not terms and sibling.tag == 'p':
             # The previous paragraph contains the terms
