@@ -214,7 +214,7 @@ class CodeHiliteExtension(markdown.Extension):
             'force_linenos' : [False, "Force line numbers - Default: False"],
             'css_class' : ["codehilite",
                            "Set class name for wrapper <div> - Default: codehilite"],
-            'pygments_style' : ['tango', 'Pygments HTML Formatter Style (Colorscheme) - Default: tango'],
+            'pygments_style' : ['default', 'Pygments HTML Formatter Style (Colorscheme) - Default: default'],
             'noclasses': [False, 'Use inline styles instead of CSS classes - Default false']
             }
 
