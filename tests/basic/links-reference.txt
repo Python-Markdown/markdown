@@ -29,3 +29,11 @@ Indented [four][] times.
 
 
 [b]: /url/
+
+With [angle brackets][].
+
+And [without][].
+
+[angle brackets]: <http://example.com/> "Angle Brackets"
+[without]: http://example.com/ "Without angle brackets."
+

@@ -275,14 +275,15 @@ class ReferencePreprocessor(Preprocessor):
             m = self.RE.match(line)
             if m:
                 id = m.group(2).strip().lower()
+                link = m.group(3).lstrip('<').rstrip('>')
                 t = m.group(4).strip()  # potential title
                 if not t:
-                    self.markdown.references[id] = (m.group(3), t)
+                    self.markdown.references[id] = (link, t)
                 elif (len(t) >= 2
                       and (t[0] == t[-1] == "\""
                            or t[0] == t[-1] == "\'"
                            or (t[0] == "(" and t[-1] == ")") ) ):
-                    self.markdown.references[id] = (m.group(3), t[1:-1])
+                    self.markdown.references[id] = (link, t[1:-1])
                 else:
                     new_text.append(line)
             else:
