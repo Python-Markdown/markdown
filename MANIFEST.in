@@ -3,4 +3,7 @@ recursive-include markdown *.py
 recursive-include docs *
 recursive-include tests *.txt *.html *.cfg *.py
 include setup.py
+include LICENSE
+include README
+include INSTALL
 include MANIFEST
