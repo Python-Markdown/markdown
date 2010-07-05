@@ -84,7 +84,7 @@ class DefListIndentProcessor(markdown.blockprocessors.ListIndentProcessor):
     ITEM_TYPES = ['dd']
     LIST_TYPES = ['dl']
 
-    def create_item(parent, block):
+    def create_item(self, parent, block):
         """ Create a new dd and parse the block with it as the parent. """
         dd = markdown.etree.SubElement(parent, 'dd')
         self.parser.parseBlocks(dd, [block])

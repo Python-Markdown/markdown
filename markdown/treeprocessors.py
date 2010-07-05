@@ -185,7 +185,7 @@ class InlineProcessor(Treeprocessor):
                     result.append(node)
 
                 else: # wrong placeholder
-                    end = index + len(prefix)
+                    end = index + len(self.__placeholder_prefix)
                     linkText(data[strartIndex:end])
                     strartIndex = end
             else:
