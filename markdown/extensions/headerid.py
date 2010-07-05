@@ -66,7 +66,8 @@ Dependencies:
 """
 
 import markdown
-from markdown import CRITICAL, etree, message
+from markdown.misc import etree
+from markdown.misc_logging import CRITICAL, message
 import re
 from string import ascii_lowercase, digits, punctuation
 
@@ -108,7 +109,7 @@ class HeaderIdProcessor(markdown.blockprocessors.BlockProcessor):
             level = len(m.group('level')) + start_level
             if level > 6: 
                 level = 6
-            h = markdown.etree.SubElement(parent, 'h%d' % level)
+            h = etree.SubElement(parent, 'h%d' % level)
             h.text = m.group('header').strip()
             if m.group('id'):
                 h.set('id', self._unique_id(m.group('id')))

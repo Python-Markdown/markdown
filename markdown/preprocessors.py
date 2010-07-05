@@ -8,10 +8,11 @@ complicated.
 """
 
 import re
-import markdown
 
-HTML_PLACEHOLDER_PREFIX = markdown.STX+"wzxhzdk:"
-HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d" + markdown.ETX
+import misc
+
+HTML_PLACEHOLDER_PREFIX = misc.STX+"wzxhzdk:"
+HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d" + misc.ETX
 
 class Processor:
     def __init__(self, markdown_instance=None):
@@ -146,7 +147,7 @@ class HtmlBlockPreprocessor(Preprocessor):
         left_tag = ''
         right_tag = ''
         in_tag = False # flag
-        
+
         while text:
             block = text[0]
             if block.startswith("\n"):
@@ -172,11 +173,11 @@ class HtmlBlockPreprocessor(Preprocessor):
                         # keep checking conditions below and maybe just append
                     
                     if data_index < len(block) \
-                        and markdown.isBlockLevel(left_tag): 
+                        and misc.isBlockLevel(left_tag): 
                         text.insert(0, block[data_index:])
                         block = block[:data_index]
 
-                    if not (markdown.isBlockLevel(left_tag) \
+                    if not (misc.isBlockLevel(left_tag) \
                         or block[1] in ["!", "?", "@", "%"]):
                         new_blocks.append(block)
                         continue
@@ -184,7 +185,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                     if self._is_oneliner(left_tag):
                         new_blocks.append(block.strip())
                         continue
-                    
+
                     if block.rstrip().endswith(">") \
                         and self._equal_tags(left_tag, right_tag):
                         if self.markdown_in_raw and 'markdown' in attrs.keys():
@@ -204,7 +205,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                     else: 
                         # if is block level tag and is not complete
 
-                        if markdown.isBlockLevel(left_tag) or left_tag == "--" \
+                        if misc.isBlockLevel(left_tag) or left_tag == "--" \
                             and not block.rstrip().endswith(">"):
                             items.append(block.strip())
                             in_tag = True

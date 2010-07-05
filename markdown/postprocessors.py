@@ -9,7 +9,8 @@ processing.
 """
 
 
-import markdown
+import misc
+import preprocessors
 
 class Processor:
     def __init__(self, markdown_instance=None):
@@ -51,19 +52,19 @@ class RawHtmlPostprocessor(Postprocessor):
                 elif str(self.markdown.safeMode).lower() == 'remove':
                     html = ''
                 else:
-                    html = markdown.HTML_REMOVED_TEXT
+                    html = misc.HTML_REMOVED_TEXT
             if safe or not self.markdown.safeMode:
                 text = text.replace("<p>%s</p>" % 
-                            (markdown.preprocessors.HTML_PLACEHOLDER % i),
+                            (preprocessors.HTML_PLACEHOLDER % i),
                             html + "\n")
-            text =  text.replace(markdown.preprocessors.HTML_PLACEHOLDER % i, 
+            text =  text.replace(preprocessors.HTML_PLACEHOLDER % i, 
                                  html)
         return text
 
     def unescape(self, html):
         """ Unescape any markdown escaped text within inline html. """
         for k, v in self.markdown.treeprocessors['inline'].stashed_nodes.items():
-            ph = markdown.INLINE_PLACEHOLDER % k
+            ph = misc.INLINE_PLACEHOLDER % k
             html = html.replace(ph, '\%s' % v)
         return html
 
@@ -81,5 +82,5 @@ class AndSubstitutePostprocessor(Postprocessor):
         pass
 
     def run(self, text):
-        text =  text.replace(markdown.AMP_SUBSTITUTE, "&")
+        text =  text.replace(misc.AMP_SUBSTITUTE, "&")
         return text

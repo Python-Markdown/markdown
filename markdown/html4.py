@@ -37,12 +37,12 @@
 # --------------------------------------------------------------------
 
 
-import markdown
-ElementTree = markdown.etree.ElementTree
-QName = markdown.etree.QName
-Comment = markdown.etree.Comment
-PI = markdown.etree.PI
-ProcessingInstruction = markdown.etree.ProcessingInstruction
+import misc
+ElementTree = misc.etree.ElementTree
+QName = misc.etree.QName
+Comment = misc.etree.Comment
+PI = misc.etree.PI
+ProcessingInstruction = misc.etree.ProcessingInstruction
 
 HTML_EMPTY = ("area", "base", "basefont", "br", "col", "frame", "hr",
               "img", "input", "isindex", "link", "meta" "param")

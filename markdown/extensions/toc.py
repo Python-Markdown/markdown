@@ -9,7 +9,7 @@ Dependencies:
 
 """
 import markdown
-from markdown import etree
+from markdown.misc import etree
 import re
 
 class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):

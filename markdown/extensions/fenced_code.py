@@ -61,7 +61,8 @@ Dependencies:
 
 """
 
-import markdown, re
+import re
+import markdown
 from markdown.extensions.codehilite import CodeHilite, CodeHiliteExtension
 
 # Global vars

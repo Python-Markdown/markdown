@@ -39,8 +39,9 @@ Contact: markdown@freewisdom.org
 License: BSD (see ../docs/LICENSE for details)
 
 """
+import re
 
-import markdown, re
+import markdown
 
 # Global Vars
 META_RE = re.compile(r'^[ ]{0,3}(?P<key>[A-Za-z0-9_-]+):\s*(?P<value>.*)')

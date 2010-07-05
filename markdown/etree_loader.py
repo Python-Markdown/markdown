@@ -1,5 +1,5 @@
 
-from markdown import message, CRITICAL
+from misc_logging import message, CRITICAL
 import sys
 
 ## Import

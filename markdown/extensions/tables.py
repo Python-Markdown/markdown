@@ -15,7 +15,7 @@ A simple example:
 Copyright 2009 - [Waylan Limberg](http://achinghead.com)
 """
 import markdown
-from markdown import etree
+from markdown.misc import etree
 
 
 class TableProcessor(markdown.blockprocessors.BlockProcessor):

@@ -1,5 +1,6 @@
 
-import markdown
+import misc
+import odict
 
 class State(list):
     """ Track the current and nested state of the parser. 
@@ -42,7 +43,7 @@ class BlockParser:
     """
 
     def __init__(self):
-        self.blockprocessors = markdown.odict.OrderedDict()
+        self.blockprocessors = odict.OrderedDict()
         self.state = State()
 
     def parseDocument(self, lines):
@@ -56,9 +57,9 @@ class BlockParser:
 
         """
         # Create a ElementTree from the lines
-        self.root = markdown.etree.Element(markdown.DOC_TAG)
+        self.root = misc.etree.Element(misc.DOC_TAG)
         self.parseChunk(self.root, '\n'.join(lines))
-        return markdown.etree.ElementTree(self.root)
+        return misc.etree.ElementTree(self.root)
 
     def parseChunk(self, parent, text):
         """ Parse a chunk of markdown text and attach to given etree node. 

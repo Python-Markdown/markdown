@@ -44,99 +44,6 @@ version_info = (2,0,3, "Final")
 
 import re
 import codecs
-import sys
-import warnings
-import logging
-from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
-
-
-"""
-CONSTANTS
-=============================================================================
-"""
-
-"""
-Constants you might want to modify
------------------------------------------------------------------------------
-"""
-
-# default logging level for command-line use
-COMMAND_LINE_LOGGING_LEVEL = CRITICAL
-TAB_LENGTH = 4               # expand tabs to this many spaces
-ENABLE_ATTRIBUTES = True     # @id = xyz -> <... id="xyz">
-SMART_EMPHASIS = True        # this_or_that does not become this<i>or</i>that
-DEFAULT_OUTPUT_FORMAT = 'xhtml1'     # xhtml or html4 output
-HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
-BLOCK_LEVEL_ELEMENTS = re.compile("p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
-                                  "|script|noscript|form|fieldset|iframe|math"
-                                  "|ins|del|hr|hr/|style|li|dt|dd|thead|tbody"
-                                  "|tr|th|td")
-DOC_TAG = "div"     # Element used to wrap document - later removed
-
-# Placeholders
-STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
-ETX = u'\u0003'  # Use ETX ("End of text") for end-of-placeholder
-INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
-INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
-AMP_SUBSTITUTE = STX+"amp"+ETX
-
-
-"""
-Constants you probably do not need to change
------------------------------------------------------------------------------
-"""
-
-RTL_BIDI_RANGES = ( (u'\u0590', u'\u07FF'),
-                     # Hebrew (0590-05FF), Arabic (0600-06FF),
-                     # Syriac (0700-074F), Arabic supplement (0750-077F),
-                     # Thaana (0780-07BF), Nko (07C0-07FF).
-                    (u'\u2D30', u'\u2D7F'), # Tifinagh
-                    )
-
-
-"""
-AUXILIARY GLOBAL FUNCTIONS
-=============================================================================
-"""
-
-
-def message(level, text):
-    """ A wrapper method for logging debug messages. """
-    logger =  logging.getLogger('MARKDOWN')
-    if logger.handlers:
-        # The logger is configured
-        logger.log(level, text)
-        if level > WARN:
-            sys.exit(0)
-    elif level > WARN:
-        raise MarkdownException, text
-    else:
-        warnings.warn(text, MarkdownWarning)
-
-
-def isBlockLevel(tag):
-    """Check if the tag is a block level HTML tag."""
-    return BLOCK_LEVEL_ELEMENTS.match(tag)
-
-"""
-MISC AUXILIARY CLASSES
-=============================================================================
-"""
-
-class AtomicString(unicode):
-    """A string which should not be further processed."""
-    pass
-
-
-class MarkdownException(Exception):
-    """ A Markdown Exception. """
-    pass
-
-
-class MarkdownWarning(Warning):
-    """ A Markdown Warning. """
-    pass
-
 
 """
 OVERALL DESIGN
@@ -157,20 +64,15 @@ Markdown processing takes place in four steps:
 Those steps are put together by the Markdown() class.
 
 """
-
+import misc
+import misc_logging
 import preprocessors
 import blockprocessors
 import treeprocessors
 import inlinepatterns
 import postprocessors
 import blockparser
-import etree_loader
 import odict
-
-# Extensions should use "markdown.etree" instead of "etree" (or do `from
-# markdown import etree`).  Do not import it by yourself.
-
-etree = etree_loader.importETree()
 
 # Adds the ability to output html4
 import html4
@@ -183,7 +85,7 @@ class Markdown:
                  extensions=[],
                  extension_configs={},
                  safe_mode = False,
-                 output_format=DEFAULT_OUTPUT_FORMAT):
+                 output_format=misc.DEFAULT_OUTPUT_FORMAT):
         """
         Creates a new Markdown instance.
 
@@ -302,8 +204,8 @@ class Markdown:
         self.output_formats = {
             'html'  : html4.to_html_string,
             'html4' : html4.to_html_string,
-            'xhtml' : etree.tostring,
-            'xhtml1': etree.tostring,
+            'xhtml' : misc.etree.tostring,
+            'xhtml1': misc.etree.tostring,
         }
 
         self.references = {}
@@ -331,9 +233,10 @@ class Markdown:
                 try:
                     ext.extendMarkdown(self, globals())
                 except NotImplementedError, e:
-                    message(ERROR, e)
+                    misc_logging.message(misc_logging.ERROR, e)
             else:
-                message(ERROR, 'Extension "%s.%s" must be of type: "markdown.Extension".' \
+                misc_logging.message(misc_logging.ERROR,
+                'Extension "%s.%s" must be of type: "markdown.Extension".' \
                     % (ext.__class__.__module__, ext.__class__.__name__))
 
     def registerExtension(self, extension):
@@ -356,7 +259,8 @@ class Markdown:
         try:
             self.serializer = self.output_formats[format.lower()]
         except KeyError:
-            message(CRITICAL, 'Invalid Output Format: "%s". Use one of %s.' \
+            misc_logging.message(misc_logging.CRITICAL,
+                    'Invalid Output Format: "%s". Use one of %s.' \
                                % (format, self.output_formats.keys()))
 
     def convert(self, source):
@@ -375,13 +279,14 @@ class Markdown:
         try:
             source = unicode(source)
         except UnicodeDecodeError:
-            message(CRITICAL, 'UnicodeDecodeError: Markdown only accepts unicode or ascii input.')
+            misc_logging.message(misc_logging.CRITICAL,
+                    'UnicodeDecodeError: Markdown only accepts unicode or ascii input.')
             return u""
 
-        source = source.replace(STX, "").replace(ETX, "")
+        source = source.replace(misc.STX, "").replace(misc.ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
         source = re.sub(r'\n\s+\n', '\n\n', source)
-        source = source.expandtabs(TAB_LENGTH)
+        source = source.expandtabs(misc.TAB_LENGTH)
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
@@ -401,16 +306,16 @@ class Markdown:
         output, length = codecs.utf_8_decode(self.serializer(root, encoding="utf-8"))
         if self.stripTopLevelTags:
             try:
-                start = output.index('<%s>'%DOC_TAG)+len(DOC_TAG)+2
-                end = output.rindex('</%s>'%DOC_TAG)
+                start = output.index('<%s>'%misc.DOC_TAG)+len(misc.DOC_TAG)+2
+                end = output.rindex('</%s>'%misc.DOC_TAG)
                 output = output[start:end].strip()
             except ValueError:
-                if output.strip().endswith('<%s />'%DOC_TAG):
+                if output.strip().endswith('<%s />'%misc.DOC_TAG):
                     # We have an empty document
                     output = ''
                 else:
                     # We have a serious problem
-                    message(CRITICAL, 'Failed to strip top level tags.')
+                    misc_logging.message(misc_logging.CRITICAL, 'Failed to strip top level tags.')
 
         # Run the text post-processors
         for pp in self.postprocessors.values():
@@ -453,7 +358,7 @@ class Markdown:
         html = self.convert(text)
 
         # Write to file or stdout
-        if isinstance(output, basestring):
+        if isinstance(output, (str, unicode)):
             output_file = codecs.open(output, "w", encoding=encoding)
             output_file.write(html)
             output_file.close()
@@ -538,7 +443,7 @@ def load_extension(ext_name, configs = []):
         try: # Old style (mdx.<extension>)
             module = __import__(module_name_old_style)
         except ImportError:
-           message(WARN, "Failed loading extension '%s' from '%s' or '%s'"
+           misc_logging.message(misc_logging.WARN, "Failed loading extension '%s' from '%s' or '%s'"
                % (ext_name, module_name_new_style, module_name_old_style))
            # Return None so we don't try to initiate none-existant extension
            return None
@@ -548,7 +453,7 @@ def load_extension(ext_name, configs = []):
     try:
         return module.makeExtension(configs.items())
     except AttributeError, e:
-        message(CRITICAL, "Failed to initiate extension '%s': %s" % (ext_name, e))
+        misc_logging.message(misc_logging.CRITICAL, "Failed to initiate extension '%s': %s" % (ext_name, e))
 
 
 def load_extensions(ext_names):
@@ -572,7 +477,7 @@ markdownFromFile().
 def markdown(text,
              extensions = [],
              safe_mode = False,
-             output_format = DEFAULT_OUTPUT_FORMAT):
+             output_format = misc.DEFAULT_OUTPUT_FORMAT):
     """Convert a markdown string to HTML and return HTML as a unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
@@ -607,7 +512,7 @@ def markdownFromFile(input = None,
                      extensions = [],
                      encoding = None,
                      safe_mode = False,
-                     output_format = DEFAULT_OUTPUT_FORMAT):
+                     output_format = misc.DEFAULT_OUTPUT_FORMAT):
     """Read markdown code from a file and write it to a file or a stream."""
     md = Markdown(extensions=load_extensions(extensions),
                   safe_mode=safe_mode,
