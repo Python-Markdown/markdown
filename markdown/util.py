@@ -48,8 +48,8 @@ RTL_BIDI_RANGES = ( (u'\u0590', u'\u07FF'),
                     (u'\u2D30', u'\u2D7F'), # Tifinagh
                     )
 
-# Extensions should use "markdown.misc.etree" instead of "etree" (or do `from
-# markdown.misc import etree`).  Do not import it by yourself.
+# Extensions should use "markdown.util.etree" instead of "etree" (or do `from
+# markdown.util import etree`).  Do not import it by yourself.
 
 etree = etree_loader.importETree()
 

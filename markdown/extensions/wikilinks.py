@@ -121,7 +121,7 @@ class WikiLinks(markdown.inlinepatterns.Pattern):
             base_url, end_url, html_class = self._getMeta()
             label = m.group(2).strip()
             url = self.config['build_url'][0](label, base_url, end_url)
-            a = markdown.misc.etree.Element('a')
+            a = markdown.util.etree.Element('a')
             a.text = label 
             a.set('href', url)
             if html_class:

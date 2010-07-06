@@ -64,7 +64,7 @@ Markdown processing takes place in four steps:
 Those steps are put together by the Markdown() class.
 
 """
-import misc
+import util
 import misc_logging
 import preprocessors
 import blockprocessors
@@ -77,7 +77,7 @@ import odict
 # For backwards compatibility in the 2.0.x series
 # The things defined in these modules started off in __init__.py so third
 # party code might need to access them here.
-from misc import *
+from util import *
 from misc_logging import *
 
 # Adds the ability to output html4
@@ -91,7 +91,7 @@ class Markdown:
                  extensions=[],
                  extension_configs={},
                  safe_mode = False,
-                 output_format=misc.DEFAULT_OUTPUT_FORMAT):
+                 output_format=util.DEFAULT_OUTPUT_FORMAT):
         """
         Creates a new Markdown instance.
 
@@ -210,8 +210,8 @@ class Markdown:
         self.output_formats = {
             'html'  : html4.to_html_string,
             'html4' : html4.to_html_string,
-            'xhtml' : misc.etree.tostring,
-            'xhtml1': misc.etree.tostring,
+            'xhtml' : util.etree.tostring,
+            'xhtml1': util.etree.tostring,
         }
 
         self.references = {}
@@ -289,10 +289,10 @@ class Markdown:
                     'UnicodeDecodeError: Markdown only accepts unicode or ascii input.')
             return u""
 
-        source = source.replace(misc.STX, "").replace(misc.ETX, "")
+        source = source.replace(util.STX, "").replace(util.ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
         source = re.sub(r'\n\s+\n', '\n\n', source)
-        source = source.expandtabs(misc.TAB_LENGTH)
+        source = source.expandtabs(util.TAB_LENGTH)
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
@@ -312,11 +312,11 @@ class Markdown:
         output, length = codecs.utf_8_decode(self.serializer(root, encoding="utf-8"))
         if self.stripTopLevelTags:
             try:
-                start = output.index('<%s>'%misc.DOC_TAG)+len(misc.DOC_TAG)+2
-                end = output.rindex('</%s>'%misc.DOC_TAG)
+                start = output.index('<%s>'%util.DOC_TAG)+len(util.DOC_TAG)+2
+                end = output.rindex('</%s>'%util.DOC_TAG)
                 output = output[start:end].strip()
             except ValueError:
-                if output.strip().endswith('<%s />'%misc.DOC_TAG):
+                if output.strip().endswith('<%s />'%util.DOC_TAG):
                     # We have an empty document
                     output = ''
                 else:
@@ -483,7 +483,7 @@ markdownFromFile().
 def markdown(text,
              extensions = [],
              safe_mode = False,
-             output_format = misc.DEFAULT_OUTPUT_FORMAT):
+             output_format = util.DEFAULT_OUTPUT_FORMAT):
     """Convert a markdown string to HTML and return HTML as a unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
@@ -518,7 +518,7 @@ def markdownFromFile(input = None,
                      extensions = [],
                      encoding = None,
                      safe_mode = False,
-                     output_format = misc.DEFAULT_OUTPUT_FORMAT):
+                     output_format = util.DEFAULT_OUTPUT_FORMAT):
     """Read markdown code from a file and write it to a file or a stream."""
     md = Markdown(extensions=load_extensions(extensions),
                   safe_mode=safe_mode,

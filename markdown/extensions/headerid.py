@@ -66,7 +66,7 @@ Dependencies:
 """
 
 import markdown
-from markdown.misc import etree
+from markdown.util import etree
 from markdown.misc_logging import CRITICAL, message
 import re
 from string import ascii_lowercase, digits, punctuation

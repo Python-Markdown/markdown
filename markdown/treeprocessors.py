@@ -1,7 +1,7 @@
 import re
 
 import inlinepatterns
-import misc
+import util
 
 def isString(s):
     """ Check if it's string """
@@ -39,17 +39,17 @@ class InlineProcessor(Treeprocessor):
     """
 
     def __init__ (self, md):
-        self.__placeholder_prefix = misc.INLINE_PLACEHOLDER_PREFIX
-        self.__placeholder_suffix = misc.ETX
+        self.__placeholder_prefix = util.INLINE_PLACEHOLDER_PREFIX
+        self.__placeholder_suffix = util.ETX
         self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
                                       + len(self.__placeholder_suffix)
-        self.__placeholder_re = re.compile(misc.INLINE_PLACEHOLDER % r'([0-9]{4})')
+        self.__placeholder_re = re.compile(util.INLINE_PLACEHOLDER % r'([0-9]{4})')
         self.markdown = md
 
     def __makePlaceholder(self, type):
         """ Generate a placeholder """
         id = "%04d" % len(self.stashed_nodes)
-        hash = misc.INLINE_PLACEHOLDER % id
+        hash = util.INLINE_PLACEHOLDER % id
         return hash, id
 
     def __findPlaceholder(self, data, index):
@@ -89,7 +89,7 @@ class InlineProcessor(Treeprocessor):
         Returns: String with placeholders.
 
         """
-        if not isinstance(data, misc.AtomicString):
+        if not isinstance(data, util.AtomicString):
             startIndex = 0
             while patternIndex < len(self.markdown.inlinePatterns):
                 data, matched, startIndex = self.__applyPattern(
@@ -224,7 +224,7 @@ class InlineProcessor(Treeprocessor):
             return data, True, len(leftData) + match.span(len(match.groups()))[0]
 
         if not isString(node):
-            if not isinstance(node.text, misc.AtomicString):
+            if not isinstance(node.text, util.AtomicString):
                 # We need to process current node too
                 for child in [node] + node.getchildren():
                     if not isString(node):
@@ -266,7 +266,7 @@ class InlineProcessor(Treeprocessor):
             currElement = stack.pop()
             insertQueue = []
             for child in currElement.getchildren():
-                if child.text and not isinstance(child.text, misc.AtomicString):
+                if child.text and not isinstance(child.text, util.AtomicString):
                     text = child.text
                     child.text = None
                     lst = self.__processPlaceholders(self.__handleInline(
@@ -277,7 +277,7 @@ class InlineProcessor(Treeprocessor):
                 if child.getchildren():
                     stack.append(child)
 
-            if misc.ENABLE_ATTRIBUTES:
+            if util.ENABLE_ATTRIBUTES:
                 for element, lst in insertQueue:
                     if element.text:
                         element.text = \
@@ -306,12 +306,12 @@ class PrettifyTreeprocessor(Treeprocessor):
         """ Recursively add linebreaks to ElementTree children. """
 
         i = "\n"
-        if misc.isBlockLevel(elem.tag) and elem.tag not in ['code', 'pre']:
+        if util.isBlockLevel(elem.tag) and elem.tag not in ['code', 'pre']:
             if (not elem.text or not elem.text.strip()) \
-                    and len(elem) and misc.isBlockLevel(elem[0].tag):
+                    and len(elem) and util.isBlockLevel(elem[0].tag):
                 elem.text = i
             for e in elem:
-                if misc.isBlockLevel(e.tag):
+                if util.isBlockLevel(e.tag):
                     self._prettifyETree(e)
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i

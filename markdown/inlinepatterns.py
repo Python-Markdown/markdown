@@ -41,7 +41,7 @@ So, we apply the expressions in the following order:
 * finally we apply strong and emphasis
 """
 
-import misc
+import util
 import re
 from urlparse import urlparse, urlunparse
 import sys
@@ -68,7 +68,7 @@ EMPHASIS_RE = r'(\*)([^\*]+)\2'                    # *emphasis*
 STRONG_RE = r'(\*{2}|_{2})(.+?)\2'                      # **strong**
 STRONG_EM_RE = r'(\*{3}|_{3})(.+?)\2'            # ***strong***
 
-if misc.SMART_EMPHASIS:
+if util.SMART_EMPHASIS:
     EMPHASIS_2_RE = r'(?<!\w)(_)(\S.+?)\2(?!\w)'        # _emphasis_
 else:
     EMPHASIS_2_RE = r'(_)(.+?)\2'                 # _emphasis_
@@ -159,7 +159,7 @@ class SimpleTextPattern (Pattern):
     """ Return a simple text of group(2) of a Pattern. """
     def handleMatch(self, m):
         text = m.group(2)
-        if text == misc.INLINE_PLACEHOLDER_PREFIX:
+        if text == util.INLINE_PLACEHOLDER_PREFIX:
             return None
         return text
 
@@ -174,7 +174,7 @@ class SimpleTagPattern (Pattern):
         self.tag = tag
 
     def handleMatch(self, m):
-        el = misc.etree.Element(self.tag)
+        el = util.etree.Element(self.tag)
         el.text = m.group(3)
         return el
 
@@ -182,7 +182,7 @@ class SimpleTagPattern (Pattern):
 class SubstituteTagPattern (SimpleTagPattern):
     """ Return a eLement of type `tag` with no children. """
     def handleMatch (self, m):
-        return misc.etree.Element(self.tag)
+        return util.etree.Element(self.tag)
 
 
 class BacktickPattern (Pattern):
@@ -192,8 +192,8 @@ class BacktickPattern (Pattern):
         self.tag = "code"
 
     def handleMatch(self, m):
-        el = misc.etree.Element(self.tag)
-        el.text = misc.AtomicString(m.group(3).strip())
+        el = util.etree.Element(self.tag)
+        el.text = util.AtomicString(m.group(3).strip())
         return el
 
 
@@ -205,8 +205,8 @@ class DoubleTagPattern (SimpleTagPattern):
     """
     def handleMatch(self, m):
         tag1, tag2 = self.tag.split(",")
-        el1 = misc.etree.Element(tag1)
-        el2 = misc.etree.SubElement(el1, tag2)
+        el1 = util.etree.Element(tag1)
+        el2 = util.etree.SubElement(el1, tag2)
         el2.text = m.group(3)
         return el1
 
@@ -223,7 +223,7 @@ class HtmlPattern (Pattern):
 class LinkPattern (Pattern):
     """ Return a link element from the given match. """
     def handleMatch(self, m):
-        el = misc.etree.Element("a")
+        el = util.etree.Element("a")
         el.text = m.group(2)
         title = m.group(11)
         href = m.group(9)
@@ -275,7 +275,7 @@ class LinkPattern (Pattern):
 class ImagePattern(LinkPattern):
     """ Return a img element from the given match. """
     def handleMatch(self, m):
-        el = misc.etree.Element("img")
+        el = util.etree.Element("img")
         src_parts = m.group(9).split()
         if src_parts:
             src = src_parts[0]
@@ -287,7 +287,7 @@ class ImagePattern(LinkPattern):
         if len(src_parts) > 1:
             el.set('title', dequote(" ".join(src_parts[1:])))
 
-        if misc.ENABLE_ATTRIBUTES:
+        if util.ENABLE_ATTRIBUTES:
             truealt = handleAttributes(m.group(2), el)
         else:
             truealt = m.group(2)
@@ -313,7 +313,7 @@ class ReferencePattern(LinkPattern):
         return self.makeTag(href, title, text)
 
     def makeTag(self, href, title, text):
-        el = misc.etree.Element('a')
+        el = util.etree.Element('a')
 
         el.set('href', self.sanitize_url(href))
         if title:
@@ -326,7 +326,7 @@ class ReferencePattern(LinkPattern):
 class ImageReferencePattern (ReferencePattern):
     """ Match to a stored reference and return img element. """
     def makeTag(self, href, title, text):
-        el = misc.etree.Element("img")
+        el = util.etree.Element("img")
         el.set("src", self.sanitize_url(href))
         if title:
             el.set("title", title)
@@ -337,9 +337,9 @@ class ImageReferencePattern (ReferencePattern):
 class AutolinkPattern (Pattern):
     """ Return a link Element given an autolink (`<http://example/com>`). """
     def handleMatch(self, m):
-        el = misc.etree.Element("a")
+        el = util.etree.Element("a")
         el.set('href', m.group(2))
-        el.text = misc.AtomicString(m.group(2))
+        el.text = util.AtomicString(m.group(2))
         return el
 
 class AutomailPattern (Pattern):
@@ -347,7 +347,7 @@ class AutomailPattern (Pattern):
     Return a mailto link Element given an automail link (`<foo@example.com>`).
     """
     def handleMatch(self, m):
-        el = misc.etree.Element('a')
+        el = util.etree.Element('a')
         email = m.group(2)
         if email.startswith("mailto:"):
             email = email[len("mailto:"):]
@@ -356,15 +356,15 @@ class AutomailPattern (Pattern):
             """Return entity definition by code, or the code if not defined."""
             entity = htmlentitydefs.codepoint2name.get(code)
             if entity:
-                return "%s%s;" % (misc.AMP_SUBSTITUTE, entity)
+                return "%s%s;" % (util.AMP_SUBSTITUTE, entity)
             else:
-                return "%s#%d;" % (misc.AMP_SUBSTITUTE, code)
+                return "%s#%d;" % (util.AMP_SUBSTITUTE, code)
 
         letters = [codepoint2name(ord(letter)) for letter in email]
-        el.text = misc.AtomicString(''.join(letters))
+        el.text = util.AtomicString(''.join(letters))
 
         mailto = "mailto:" + email
-        mailto = "".join([misc.AMP_SUBSTITUTE + '#%d;' %
+        mailto = "".join([util.AMP_SUBSTITUTE + '#%d;' %
                           ord(letter) for letter in mailto])
         el.set('href', mailto)
         return el

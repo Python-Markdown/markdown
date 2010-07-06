@@ -25,7 +25,7 @@ Copyright 2007-2008
 
 import re
 import markdown
-from markdown.misc import etree
+from markdown.util import etree
 
 # Global Vars
 ABBR_REF_RE = re.compile(r'[*]\[(?P<abbr>[^\]]*)\][ ]?:\s*(?P<title>.*)')

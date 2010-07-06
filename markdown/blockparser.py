@@ -1,5 +1,5 @@
 
-import misc
+import util
 import odict
 
 class State(list):
@@ -57,9 +57,9 @@ class BlockParser:
 
         """
         # Create a ElementTree from the lines
-        self.root = misc.etree.Element(misc.DOC_TAG)
+        self.root = util.etree.Element(util.DOC_TAG)
         self.parseChunk(self.root, '\n'.join(lines))
-        return misc.etree.ElementTree(self.root)
+        return util.etree.ElementTree(self.root)
 
     def parseChunk(self, parent, text):
         """ Parse a chunk of markdown text and attach to given etree node. 

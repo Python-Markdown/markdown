@@ -21,7 +21,7 @@ Copyright 2008 - [Waylan Limberg](http://achinghead.com)
 
 import re
 import markdown
-from markdown.misc import etree
+from markdown.util import etree
 
 
 class DefListProcessor(markdown.blockprocessors.BlockProcessor):

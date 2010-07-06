@@ -9,10 +9,10 @@ complicated.
 
 import re
 
-import misc
+import util
 
-HTML_PLACEHOLDER_PREFIX = misc.STX+"wzxhzdk:"
-HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d" + misc.ETX
+HTML_PLACEHOLDER_PREFIX = util.STX+"wzxhzdk:"
+HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d" + util.ETX
 
 class Processor:
     def __init__(self, markdown_instance=None):
@@ -173,11 +173,11 @@ class HtmlBlockPreprocessor(Preprocessor):
                         # keep checking conditions below and maybe just append
                     
                     if data_index < len(block) \
-                        and misc.isBlockLevel(left_tag): 
+                        and util.isBlockLevel(left_tag): 
                         text.insert(0, block[data_index:])
                         block = block[:data_index]
 
-                    if not (misc.isBlockLevel(left_tag) \
+                    if not (util.isBlockLevel(left_tag) \
                         or block[1] in ["!", "?", "@", "%"]):
                         new_blocks.append(block)
                         continue
@@ -205,7 +205,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                     else: 
                         # if is block level tag and is not complete
 
-                        if misc.isBlockLevel(left_tag) or left_tag == "--" \
+                        if util.isBlockLevel(left_tag) or left_tag == "--" \
                             and not block.rstrip().endswith(">"):
                             items.append(block.strip())
                             in_tag = True

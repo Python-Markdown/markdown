@@ -37,12 +37,12 @@
 # --------------------------------------------------------------------
 
 
-import misc
-ElementTree = misc.etree.ElementTree
-QName = misc.etree.QName
-Comment = misc.etree.Comment
-PI = misc.etree.PI
-ProcessingInstruction = misc.etree.ProcessingInstruction
+import util
+ElementTree = util.etree.ElementTree
+QName = util.etree.QName
+Comment = util.etree.Comment
+PI = util.etree.PI
+ProcessingInstruction = util.etree.ProcessingInstruction
 
 HTML_EMPTY = ("area", "base", "basefont", "br", "col", "frame", "hr",
               "img", "input", "isindex", "link", "meta" "param")
