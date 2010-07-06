@@ -101,16 +101,14 @@ class TestHtmlStash(unittest.TestCase):
 
     def testSimpleStore(self):
         """ Test HtmlStash.store. """
-        self.assertEqual(self.placeholder, 
-                         markdown.util.HTML_PLACEHOLDER % 0)
+        self.assertEqual(self.placeholder, self.stash.get_placeholder(0))
         self.assertEqual(self.stash.html_counter, 1)
         self.assertEqual(self.stash.rawHtmlBlocks, [('foo', False)])
 
     def testStoreMore(self):
         """ Test HtmlStash.store with additional blocks. """
         placeholder = self.stash.store('bar')
-        self.assertEqual(placeholder, 
-                         markdown.util.HTML_PLACEHOLDER % 1)
+        self.assertEqual(placeholder, self.stash.get_placeholder(1))
         self.assertEqual(self.stash.html_counter, 2)
         self.assertEqual(self.stash.rawHtmlBlocks, 
                         [('foo', False), ('bar', False)])

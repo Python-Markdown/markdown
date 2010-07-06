@@ -33,8 +33,6 @@ ETX = u'\u0003'  # Use ETX ("End of text") for end-of-placeholder
 INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 AMP_SUBSTITUTE = STX+"amp"+ETX
-HTML_PLACEHOLDER_PREFIX = STX+"wzxhzdk:"
-HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d" + ETX
 
 """
 Constants you probably do not need to change
@@ -105,7 +103,7 @@ class HtmlStash:
 
         """
         self.rawHtmlBlocks.append((html, safe))
-        placeholder = HTML_PLACEHOLDER % self.html_counter
+        placeholder = self.get_placeholder(self.html_counter)
         self.html_counter += 1
         return placeholder
 
@@ -113,4 +111,6 @@ class HtmlStash:
         self.html_counter = 0
         self.rawHtmlBlocks = []
 
+    def get_placeholder(self, key):
+        return "%swzxhzdk:%d%s" % (STX, key, ETX)
 
