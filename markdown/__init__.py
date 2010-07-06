@@ -217,7 +217,7 @@ class Markdown:
         }
 
         self.references = {}
-        self.htmlStash = preprocessors.HtmlStash()
+        self.htmlStash = util.HtmlStash()
         self.registerExtensions(extensions = extensions,
                                 configs = extension_configs)
         self.set_output_format(output_format)

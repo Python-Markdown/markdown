@@ -8,16 +8,9 @@ processing.
 
 """
 
-
 import util
-import preprocessors
 
-class Processor:
-    def __init__(self, markdown_instance=None):
-        if markdown_instance:
-            self.markdown = markdown_instance
-
-class Postprocessor(Processor):
+class Postprocessor(util.Processor):
     """
     Postprocessors are run after the ElementTree it converted back into text.
 
@@ -55,9 +48,9 @@ class RawHtmlPostprocessor(Postprocessor):
                     html = util.HTML_REMOVED_TEXT
             if safe or not self.markdown.safeMode:
                 text = text.replace("<p>%s</p>" % 
-                            (preprocessors.HTML_PLACEHOLDER % i),
+                            (util.HTML_PLACEHOLDER % i),
                             html + "\n")
-            text =  text.replace(preprocessors.HTML_PLACEHOLDER % i, 
+            text =  text.replace(util.HTML_PLACEHOLDER % i, 
                                  html)
         return text
 

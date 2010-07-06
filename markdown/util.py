@@ -33,7 +33,8 @@ ETX = u'\u0003'  # Use ETX ("End of text") for end-of-placeholder
 INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 AMP_SUBSTITUTE = STX+"amp"+ETX
-
+HTML_PLACEHOLDER_PREFIX = STX+"wzxhzdk:"
+HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d" + ETX
 
 """
 Constants you probably do not need to change
@@ -70,3 +71,46 @@ MISC AUXILIARY CLASSES
 class AtomicString(unicode):
     """A string which should not be further processed."""
     pass
+
+
+class Processor:
+    def __init__(self, markdown_instance=None):
+        if markdown_instance:
+            self.markdown = markdown_instance
+
+
+class HtmlStash:
+    """
+    This class is used for stashing HTML objects that we extract
+    in the beginning and replace with place-holders.
+    """
+
+    def __init__ (self):
+        """ Create a HtmlStash. """
+        self.html_counter = 0 # for counting inline html segments
+        self.rawHtmlBlocks=[]
+
+    def store(self, html, safe=False):
+        """
+        Saves an HTML segment for later reinsertion.  Returns a
+        placeholder string that needs to be inserted into the
+        document.
+
+        Keyword arguments:
+
+        * html: an html segment
+        * safe: label an html segment as safe for safemode
+
+        Returns : a placeholder string
+
+        """
+        self.rawHtmlBlocks.append((html, safe))
+        placeholder = HTML_PLACEHOLDER % self.html_counter
+        self.html_counter += 1
+        return placeholder
+
+    def reset(self):
+        self.html_counter = 0
+        self.rawHtmlBlocks = []
+
+
