@@ -74,6 +74,12 @@ import postprocessors
 import blockparser
 import odict
 
+# For backwards compatibility in the 2.0.x series
+# The things defined in these modules started off in __init__.py so third
+# party code might need to access them here.
+from misc import *
+from misc_logging import *
+
 # Adds the ability to output html4
 import html4
 
