@@ -67,12 +67,8 @@ ESCAPE_RE = r'\\(.)'                             # \<
 EMPHASIS_RE = r'(\*)([^\*]+)\2'                    # *emphasis*
 STRONG_RE = r'(\*{2}|_{2})(.+?)\2'                      # **strong**
 STRONG_EM_RE = r'(\*{3}|_{3})(.+?)\2'            # ***strong***
-
-if util.SMART_EMPHASIS:
-    EMPHASIS_2_RE = r'(?<!\w)(_)(\S.+?)\2(?!\w)'        # _emphasis_
-else:
-    EMPHASIS_2_RE = r'(_)(.+?)\2'                 # _emphasis_
-
+SMART_EMPHASIS_RE = r'(?<!\w)(_)(\S.+?)\2(?!\w)'        # _smart_emphasis_
+EMPHASIS_2_RE = r'(_)(.+?)\2'                 # _emphasis_
 LINK_RE = NOIMG + BRK + \
 r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\12)?\)'''
 # [text](url) or [text](<url>)
@@ -287,7 +283,7 @@ class ImagePattern(LinkPattern):
         if len(src_parts) > 1:
             el.set('title', dequote(" ".join(src_parts[1:])))
 
-        if util.ENABLE_ATTRIBUTES:
+        if self.markdown.ENABLE_ATTRIBUTES:
             truealt = handleAttributes(m.group(2), el)
         else:
             truealt = m.group(2)

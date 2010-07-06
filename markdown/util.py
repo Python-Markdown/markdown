@@ -15,18 +15,10 @@ Constants you might want to modify
 -----------------------------------------------------------------------------
 """
 
-
-TAB_LENGTH = 4               # expand tabs to this many spaces
-ENABLE_ATTRIBUTES = True     # @id = xyz -> <... id="xyz">
-SMART_EMPHASIS = True        # this_or_that does not become this<i>or</i>that
-DEFAULT_OUTPUT_FORMAT = 'xhtml1'     # xhtml or html4 output
-HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
 BLOCK_LEVEL_ELEMENTS = re.compile("p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
                                   "|script|noscript|form|fieldset|iframe|math"
                                   "|ins|del|hr|hr/|style|li|dt|dd|thead|tbody"
                                   "|tr|th|td")
-DOC_TAG = "div"     # Element used to wrap document - later removed
-
 # Placeholders
 STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
 ETX = u'\u0003'  # Use ETX ("End of text") for end-of-placeholder

@@ -90,11 +90,18 @@ import html4
 class Markdown:
     """Convert Markdown to HTML."""
 
+    TAB_LENGTH = 4               # expand tabs to this many spaces
+    ENABLE_ATTRIBUTES = True     # @id = xyz -> <... id="xyz">
+    SMART_EMPHASIS = True        # this_or_that does not become this<i>or</i>that
+    DEFAULT_OUTPUT_FORMAT = 'xhtml1'     # xhtml or html4 output
+    HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
+    DOC_TAG = "div"     # Element used to wrap document - later removed
+
     def __init__(self,
                  extensions=[],
                  extension_configs={},
                  safe_mode = False,
-                 output_format=util.DEFAULT_OUTPUT_FORMAT):
+                 output_format=None):
         """
         Creates a new Markdown instance.
 
@@ -131,7 +138,7 @@ class Markdown:
         # footnote preprocessor will be inserted with "<reference"
 
         # Block processors - ran by the parser
-        self.parser = blockparser.BlockParser()
+        self.parser = blockparser.BlockParser(self)
         self.parser.blockprocessors['empty'] = \
                 blockprocessors.EmptyBlockProcessor(self.parser)
         self.parser.blockprocessors['indent'] = \
@@ -190,8 +197,14 @@ class Markdown:
             inlinepatterns.SimpleTagPattern(inlinepatterns.STRONG_RE, 'strong')
         self.inlinePatterns["emphasis"] = \
             inlinepatterns.SimpleTagPattern(inlinepatterns.EMPHASIS_RE, 'em')
-        self.inlinePatterns["emphasis2"] = \
-            inlinepatterns.SimpleTagPattern(inlinepatterns.EMPHASIS_2_RE, 'em')
+        if self.SMART_EMPHASIS:
+            self.inlinePatterns["emphasis2"] = \
+                inlinepatterns.SimpleTagPattern( \
+                                        inlinepatterns.SMART_EMPHASIS_RE, 'em')
+        else:
+            self.inlinePatterns["emphasis2"] = \
+                inlinepatterns.SimpleTagPattern( \
+                                        inlinepatterns.EMPHASIS_2_RE, 'em')
         # The order of the handlers matters!!!
 
 
@@ -265,6 +278,8 @@ class Markdown:
 
     def set_output_format(self, format):
         """ Set the output format for the class instance. """
+        if format is None:
+            format = self.DEFAULT_OUTPUT_FORMAT
         try:
             self.serializer = self.output_formats[format.lower()]
         except KeyError:
@@ -295,7 +310,7 @@ class Markdown:
         source = source.replace(util.STX, "").replace(util.ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
         source = re.sub(r'\n\s+\n', '\n\n', source)
-        source = source.expandtabs(util.TAB_LENGTH)
+        source = source.expandtabs(self.TAB_LENGTH)
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
@@ -315,11 +330,11 @@ class Markdown:
         output, length = codecs.utf_8_decode(self.serializer(root, encoding="utf-8"))
         if self.stripTopLevelTags:
             try:
-                start = output.index('<%s>'%util.DOC_TAG)+len(util.DOC_TAG)+2
-                end = output.rindex('</%s>'%util.DOC_TAG)
+                start = output.index('<%s>'%self.DOC_TAG)+len(self.DOC_TAG)+2
+                end = output.rindex('</%s>'%self.DOC_TAG)
                 output = output[start:end].strip()
             except ValueError:
-                if output.strip().endswith('<%s />'%util.DOC_TAG):
+                if output.strip().endswith('<%s />'%self.DOC_TAG):
                     # We have an empty document
                     output = ''
                 else:
@@ -386,7 +401,7 @@ markdownFromFile().
 def markdown(text,
              extensions = [],
              safe_mode = False,
-             output_format = util.DEFAULT_OUTPUT_FORMAT):
+             output_format = None):
     """Convert a markdown string to HTML and return HTML as a unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
@@ -421,7 +436,7 @@ def markdownFromFile(input = None,
                      extensions = [],
                      encoding = None,
                      safe_mode = False,
-                     output_format = util.DEFAULT_OUTPUT_FORMAT):
+                     output_format = None):
     """Read markdown code from a file and write it to a file or a stream."""
     md = Markdown(extensions=load_extensions(extensions),
                   safe_mode=safe_mode,

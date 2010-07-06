@@ -45,7 +45,7 @@ class RawHtmlPostprocessor(Postprocessor):
                 elif str(self.markdown.safeMode).lower() == 'remove':
                     html = ''
                 else:
-                    html = util.HTML_REMOVED_TEXT
+                    html = self.markdown.HTML_REMOVED_TEXT
             if safe or not self.markdown.safeMode:
                 text = text.replace("<p>%s</p>" % 
                             (self.markdown.htmlStash.get_placeholder(i)),
