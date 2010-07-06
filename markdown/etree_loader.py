@@ -1,5 +1,5 @@
-
-from misc_logging import message, CRITICAL
+from logging import CRITICAL
+from md_logging import message
 import sys
 
 ## Import

@@ -14,7 +14,8 @@ as they need to alter how markdown blocks are parsed.
 
 import re
 import util
-from misc_logging import CRITICAL, message
+from logging import CRITICAL
+from md_logging import message
 
 class BlockProcessor:
     """ Base class for block processors. 

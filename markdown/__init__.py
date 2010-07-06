@@ -64,8 +64,11 @@ Markdown processing takes place in four steps:
 Those steps are put together by the Markdown() class.
 
 """
+
+
+from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
+from md_logging import message
 import util
-import misc_logging
 import preprocessors
 import blockprocessors
 import treeprocessors
@@ -78,7 +81,6 @@ import odict
 # The things defined in these modules started off in __init__.py so third
 # party code might need to access them here.
 from util import *
-from misc_logging import *
 
 # Adds the ability to output html4
 import html4
@@ -239,9 +241,9 @@ class Markdown:
                 try:
                     ext.extendMarkdown(self, globals())
                 except NotImplementedError, e:
-                    misc_logging.message(misc_logging.ERROR, e)
+                    message(ERROR, e)
             else:
-                misc_logging.message(misc_logging.ERROR,
+                message(ERROR,
                 'Extension "%s.%s" must be of type: "markdown.Extension".' \
                     % (ext.__class__.__module__, ext.__class__.__name__))
 
@@ -265,7 +267,7 @@ class Markdown:
         try:
             self.serializer = self.output_formats[format.lower()]
         except KeyError:
-            misc_logging.message(misc_logging.CRITICAL,
+            message(CRITICAL,
                     'Invalid Output Format: "%s". Use one of %s.' \
                                % (format, self.output_formats.keys()))
 
@@ -285,7 +287,7 @@ class Markdown:
         try:
             source = unicode(source)
         except UnicodeDecodeError:
-            misc_logging.message(misc_logging.CRITICAL,
+            message(CRITICAL,
                     'UnicodeDecodeError: Markdown only accepts unicode or ascii input.')
             return u""
 
@@ -321,7 +323,7 @@ class Markdown:
                     output = ''
                 else:
                     # We have a serious problem
-                    misc_logging.message(misc_logging.CRITICAL, 'Failed to strip top level tags.')
+                    message(CRITICAL, 'Failed to strip top level tags.')
 
         # Run the text post-processors
         for pp in self.postprocessors.values():
@@ -449,7 +451,7 @@ def load_extension(ext_name, configs = []):
         try: # Old style (mdx.<extension>)
             module = __import__(module_name_old_style)
         except ImportError:
-           misc_logging.message(misc_logging.WARN, "Failed loading extension '%s' from '%s' or '%s'"
+           message(WARN, "Failed loading extension '%s' from '%s' or '%s'"
                % (ext_name, module_name_new_style, module_name_old_style))
            # Return None so we don't try to initiate none-existant extension
            return None
@@ -459,7 +461,7 @@ def load_extension(ext_name, configs = []):
     try:
         return module.makeExtension(configs.items())
     except AttributeError, e:
-        misc_logging.message(misc_logging.CRITICAL, "Failed to initiate extension '%s': %s" % (ext_name, e))
+        message(CRITICAL, "Failed to initiate extension '%s': %s" % (ext_name, e))
 
 
 def load_extensions(ext_names):
