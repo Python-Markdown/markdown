@@ -1,8 +1,8 @@
 *.pyc
 *.bak
-*.tmp
 *.swp
 test-output.html
 build/*
 dist/*
+tmp/*
 MANIFEST
