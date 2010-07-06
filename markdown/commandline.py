@@ -10,6 +10,9 @@ import optparse
 import logging
 from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
 
+# default logging level for command-line use
+COMMAND_LINE_LOGGING_LEVEL = CRITICAL
+
 def parse_options():
     """
     Define and parse `optparse` options for command-line usage.

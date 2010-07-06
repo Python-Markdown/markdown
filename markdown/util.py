@@ -15,8 +15,7 @@ Constants you might want to modify
 -----------------------------------------------------------------------------
 """
 
-# default logging level for command-line use
-COMMAND_LINE_LOGGING_LEVEL = CRITICAL
+
 TAB_LENGTH = 4               # expand tabs to this many spaces
 ENABLE_ATTRIBUTES = True     # @id = xyz -> <... id="xyz">
 SMART_EMPHASIS = True        # this_or_that does not become this<i>or</i>that
