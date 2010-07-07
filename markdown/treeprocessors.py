@@ -2,6 +2,16 @@ import re
 
 import inlinepatterns
 import util
+import odict
+
+
+def build_treeprocessors(md_instance, **kwargs):
+    """ Build the default treeprocessors for Markdown. """
+    treeprocessors = odict.OrderedDict()
+    treeprocessors["inline"] = InlineProcessor(md_instance)
+    treeprocessors["prettify"] = PrettifyTreeprocessor(md_instance)
+    return treeprocessors
+
 
 def isString(s):
     """ Check if it's string """

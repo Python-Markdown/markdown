@@ -42,6 +42,7 @@ So, we apply the expressions in the following order:
 """
 
 import util
+import odict
 import re
 from urlparse import urlparse, urlunparse
 import sys
@@ -49,6 +50,33 @@ if sys.version >= "3.0":
     from html import entities as htmlentitydefs
 else:
     import htmlentitydefs
+
+
+def build_inlinepatterns(md_instance, **kwargs):
+    """ Build the default set of inline patterns for Markdown. """
+    inlinePatterns = odict.OrderedDict()
+    inlinePatterns["backtick"] = BacktickPattern(BACKTICK_RE)
+    inlinePatterns["escape"] = SimpleTextPattern(ESCAPE_RE)
+    inlinePatterns["reference"] = ReferencePattern(REFERENCE_RE, md_instance)
+    inlinePatterns["link"] = LinkPattern(LINK_RE, md_instance)
+    inlinePatterns["image_link"] = ImagePattern(IMAGE_LINK_RE, md_instance)
+    inlinePatterns["image_reference"] = \
+            ImageReferencePattern(IMAGE_REFERENCE_RE, md_instance)
+    inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md_instance)
+    inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md_instance)
+    inlinePatterns["linebreak2"] = SubstituteTagPattern(LINE_BREAK_2_RE, 'br')
+    inlinePatterns["linebreak"] = SubstituteTagPattern(LINE_BREAK_RE, 'br')
+    inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
+    inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md_instance)
+    inlinePatterns["not_strong"] = SimpleTextPattern(NOT_STRONG_RE)
+    inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'strong,em')
+    inlinePatterns["strong"] = SimpleTagPattern(STRONG_RE, 'strong')
+    inlinePatterns["emphasis"] = SimpleTagPattern(EMPHASIS_RE, 'em')
+    if md_instance.SMART_EMPHASIS:
+        inlinePatterns["emphasis2"] = SimpleTagPattern(SMART_EMPHASIS_RE, 'em')
+    else:
+        inlinePatterns["emphasis2"] = SimpleTagPattern(EMPHASIS_2_RE, 'em')
+    return inlinePatterns
 
 """
 The actual regular expressions for patterns

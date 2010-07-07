@@ -14,8 +14,26 @@ as they need to alter how markdown blocks are parsed.
 
 import re
 import util
+from blockparser import BlockParser
 from logging import CRITICAL
 from md_logging import message
+
+
+def build_block_parser(md_instance, **kwargs):
+    """ Build the default block parser used by Markdown. """
+    parser = BlockParser(md_instance)
+    parser.blockprocessors['empty'] = EmptyBlockProcessor(parser)
+    parser.blockprocessors['indent'] = ListIndentProcessor(parser)
+    parser.blockprocessors['code'] = CodeBlockProcessor(parser)
+    parser.blockprocessors['hashheader'] = HashHeaderProcessor(parser)
+    parser.blockprocessors['setextheader'] = SetextHeaderProcessor(parser)
+    parser.blockprocessors['hr'] = HRProcessor(parser)
+    parser.blockprocessors['olist'] = OListProcessor(parser)
+    parser.blockprocessors['ulist'] = UListProcessor(parser)
+    parser.blockprocessors['quote'] = BlockQuoteProcessor(parser)
+    parser.blockprocessors['paragraph'] = ParagraphProcessor(parser)
+    return parser
+
 
 class BlockProcessor:
     """ Base class for block processors. 

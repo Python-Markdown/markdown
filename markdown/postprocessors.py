@@ -9,6 +9,15 @@ processing.
 """
 
 import util
+import odict
+
+def build_postprocessors(md_instance, **kwargs):
+    """ Build the default postprocessors for Markdown. """
+    postprocessors = odict.OrderedDict()
+    postprocessors["raw_html"] = RawHtmlPostprocessor(md_instance)
+    postprocessors["amp_substitute"] = AndSubstitutePostprocessor()
+    return postprocessors
+
 
 class Postprocessor(util.Processor):
     """
