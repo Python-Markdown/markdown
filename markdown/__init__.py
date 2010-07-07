@@ -8,16 +8,7 @@ called from the command line.
 ## Basic usage as a module:
 
     import markdown
-    md = Markdown()
-    html = md.convert(your_text_string)
-
-## Basic use from the command line:
-
-    markdown source.txt > destination.html
-
-Run "markdown --help" to see more options.
-
-## Extensions
+    html = markdown.markdown(your_text_string)
 
 See <http://www.freewisdom.org/projects/python-markdown/> for more
 information and instructions on how to extend the functionality of
@@ -36,7 +27,7 @@ Copyright 200? Django Software Foundation (OrderedDict implementation)
 Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 Copyright 2004 Manfred Stienstra (the original version)
 
-License: BSD (see docs/LICENSE for details).
+License: BSD (see LICENSE for details).
 """
 
 version = "2.0.3"
@@ -44,28 +35,6 @@ version_info = (2,0,3, "Final")
 
 import re
 import codecs
-
-"""
-OVERALL DESIGN
-=============================================================================
-
-Markdown processing takes place in four steps:
-
-1. A bunch of "preprocessors" munge the input text.
-2. BlockParser() parses the high-level structural elements of the
-   pre-processed text into an ElementTree.
-3. A bunch of "treeprocessors" are run against the ElementTree. One such
-   treeprocessor runs InlinePatterns against the ElementTree, detecting inline
-   markup.
-4. Some post-processors are run against the text after the ElementTree has
-   been serialized into text.
-5. The output is written to a string.
-
-Those steps are put together by the Markdown() class.
-
-"""
-
-
 from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
 from md_logging import message
 import util
@@ -209,6 +178,18 @@ class Markdown:
         Keyword arguments:
 
         * source: Source text as a Unicode string.
+
+        Markdown processing takes place in five steps:
+
+        1. A bunch of "preprocessors" munge the input text.
+        2. BlockParser() parses the high-level structural elements of the
+           pre-processed text into an ElementTree.
+        3. A bunch of "treeprocessors" are run against the ElementTree. One 
+           such treeprocessor runs InlinePatterns against the ElementTree, 
+           detecting inline markup.
+        4. Some post-processors are run against the text after the ElementTree 
+           has been serialized into text.
+        5. The output is written to a string.
 
         """
 
