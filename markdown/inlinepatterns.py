@@ -72,7 +72,7 @@ def build_inlinepatterns(md_instance, **kwargs):
     inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'strong,em')
     inlinePatterns["strong"] = SimpleTagPattern(STRONG_RE, 'strong')
     inlinePatterns["emphasis"] = SimpleTagPattern(EMPHASIS_RE, 'em')
-    if md_instance.SMART_EMPHASIS:
+    if md_instance.smart_emphasis:
         inlinePatterns["emphasis2"] = SimpleTagPattern(SMART_EMPHASIS_RE, 'em')
     else:
         inlinePatterns["emphasis2"] = SimpleTagPattern(EMPHASIS_2_RE, 'em')
@@ -311,7 +311,7 @@ class ImagePattern(LinkPattern):
         if len(src_parts) > 1:
             el.set('title', dequote(" ".join(src_parts[1:])))
 
-        if self.markdown.ENABLE_ATTRIBUTES:
+        if self.markdown.enable_attributes:
             truealt = handleAttributes(m.group(2), el)
         else:
             truealt = m.group(2)

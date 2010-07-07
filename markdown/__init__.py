@@ -75,30 +75,34 @@ from treeprocessors import build_treeprocessors
 from inlinepatterns import build_inlinepatterns
 from postprocessors import build_postprocessors
 from extensions import Extension, load_extension, load_extensions
+import html4
 
 # For backwards compatibility in the 2.0.x series
 # The things defined in these modules started off in __init__.py so third
 # party code might need to access them here.
 from util import *
 
-# Adds the ability to output html4
-import html4
-
 
 class Markdown:
     """Convert Markdown to HTML."""
 
-    TAB_LENGTH = 4               # expand tabs to this many spaces
-    ENABLE_ATTRIBUTES = True     # @id = xyz -> <... id="xyz">
-    SMART_EMPHASIS = True        # this_or_that does not become this<i>or</i>that
-    HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
-    DOC_TAG = "div"     # Element used to wrap document - later removed
+    doc_tag = "div"     # Element used to wrap document - later removed
+    
+    option_defaults = {
+        'html_replacement_text' : '[HTML_REMOVED]',
+        'tab_length'            : 4,
+        'enable_attributes'     : True,
+        'smart_emphasis'        : True,
+    }
+    
+    output_formats = {
+        'html'  : html4.to_html_string,
+        'html4' : html4.to_html_string,
+        'xhtml' : util.etree.tostring,
+        'xhtml1': util.etree.tostring,
+    }
 
-    def __init__(self,
-                 extensions=[],
-                 extension_configs={},
-                 safe_mode = False,
-                 output_format=None):
+    def __init__(self, extensions=[], **kwargs):
         """
         Creates a new Markdown instance.
 
@@ -108,8 +112,7 @@ class Markdown:
            If they are of type string, the module mdx_name.py will be loaded.
            If they are a subclass of markdown.Extension, they will be used
            as-is.
-        * extension-configs: Configuration setting for extensions.
-        * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
+        * extension-configs: Configuration settingis for extensions.
         * output_format: Format of output. Supported formats are:
             * "xhtml1": Outputs XHTML 1.x. Default.
             * "xhtml": Outputs latest supported version of XHTML (currently XHTML 1.1).
@@ -118,29 +121,29 @@ class Markdown:
             Note that it is suggested that the more specific formats ("xhtml1"
             and "html4") be used as "xhtml" or "html" may change in the future
             if it makes sense at that time.
+        * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
+        * html_replacement_text: Text used when safe_mode is set to "replace".
+        * tab_length: Length of tabs in the source. Default: 4
+        * enable_attributes: Enable the conversion of attributes. Default: True
+        * smart_emphsasis: Treat `_connected_words_` intelegently Default: True
 
         """
 
-        self.safeMode = safe_mode
+        for option, default in self.option_defaults.items():
+            setattr(self, option, kwargs.get(option, default)) 
+
+        self.safeMode = kwargs.get('safe_mode', False)
         self.registeredExtensions = []
         self.docType = ""
         self.stripTopLevelTags = True
 
         self.build_parser()
 
-        # Map format keys to serializers
-        self.output_formats = {
-            'html'  : html4.to_html_string,
-            'html4' : html4.to_html_string,
-            'xhtml' : util.etree.tostring,
-            'xhtml1': util.etree.tostring,
-        }
-
         self.references = {}
         self.htmlStash = util.HtmlStash()
         self.registerExtensions(extensions = extensions,
-                                configs = extension_configs)
-        self.set_output_format(output_format)
+                                configs = kwargs.get('extension_configs', {}))
+        self.set_output_format(kwargs.get('output_format', 'xhtml1'))
         self.reset()
 
     def build_parser(self):
@@ -190,10 +193,8 @@ class Markdown:
             if hasattr(extension, 'reset'):
                 extension.reset()
 
-    def set_output_format(self, format=None):
+    def set_output_format(self, format):
         """ Set the output format for the class instance. """
-        if format is None:
-            format = 'xhtml1' #DEFAULT
         try:
             self.serializer = self.output_formats[format.lower()]
         except KeyError:
@@ -224,7 +225,7 @@ class Markdown:
         source = source.replace(util.STX, "").replace(util.ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
         source = re.sub(r'\n\s+\n', '\n\n', source)
-        source = source.expandtabs(self.TAB_LENGTH)
+        source = source.expandtabs(self.tab_length)
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
@@ -244,11 +245,11 @@ class Markdown:
         output, length = codecs.utf_8_decode(self.serializer(root, encoding="utf-8"))
         if self.stripTopLevelTags:
             try:
-                start = output.index('<%s>'%self.DOC_TAG)+len(self.DOC_TAG)+2
-                end = output.rindex('</%s>'%self.DOC_TAG)
+                start = output.index('<%s>'%self.doc_tag)+len(self.doc_tag)+2
+                end = output.rindex('</%s>'%self.doc_tag)
                 output = output[start:end].strip()
             except ValueError:
-                if output.strip().endswith('<%s />'%self.DOC_TAG):
+                if output.strip().endswith('<%s />'%self.doc_tag):
                     # We have an empty document
                     output = ''
                 else:
@@ -315,7 +316,7 @@ markdownFromFile().
 def markdown(text,
              extensions = [],
              safe_mode = False,
-             output_format = None):
+             output_format = 'xhtml1'):
     """Convert a markdown string to HTML and return HTML as a unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
@@ -350,7 +351,7 @@ def markdownFromFile(input = None,
                      extensions = [],
                      encoding = None,
                      safe_mode = False,
-                     output_format = None):
+                     output_format = 'xhtml1'):
     """Read markdown code from a file and write it to a file or a stream."""
     md = Markdown(extensions=load_extensions(extensions),
                   safe_mode=safe_mode,

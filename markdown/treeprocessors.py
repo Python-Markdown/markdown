@@ -287,7 +287,7 @@ class InlineProcessor(Treeprocessor):
                 if child.getchildren():
                     stack.append(child)
 
-            if self.markdown.ENABLE_ATTRIBUTES:
+            if self.markdown.enable_attributes:
                 for element, lst in insertQueue:
                     if element.text:
                         element.text = \
