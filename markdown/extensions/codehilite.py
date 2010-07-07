@@ -22,14 +22,6 @@ Dependencies:
 
 import markdown
 
-# --------------- CONSTANTS YOU MIGHT WANT TO MODIFY -----------------
-
-try:
-    TAB_LENGTH = markdown.TAB_LENGTH
-except AttributeError:
-    TAB_LENGTH = 4
-
-
 # ------------------ The Main CodeHilite Class ----------------------
 class CodeHilite:
     """
@@ -54,13 +46,14 @@ class CodeHilite:
     """
 
     def __init__(self, src=None, linenos=False, css_class="codehilite",
-                lang=None, style='default', noclasses=False):
+                lang=None, style='default', noclasses=False, tab_length=4):
         self.src = src
         self.lang = lang
         self.linenos = linenos
         self.css_class = css_class
         self.style = style
         self.noclasses = noclasses
+        self.tab_length = tab_length
 
     def hilite(self):
         """
@@ -117,7 +110,7 @@ class CodeHilite:
     def _number(self, txt):
         """ Use <ol> for line numbering """
         # Fix Whitespace
-        txt = txt.replace('\t', ' '*TAB_LENGTH)
+        txt = txt.replace('\t', ' '*self.tab_length)
         txt = txt.replace(" "*4, "&nbsp; &nbsp; ")
         txt = txt.replace(" "*3, "&nbsp; &nbsp;")
         txt = txt.replace(" "*2, "&nbsp; ")
@@ -194,7 +187,8 @@ class HiliteTreeprocessor(markdown.treeprocessors.Treeprocessor):
                             linenos=self.config['force_linenos'][0],
                             css_class=self.config['css_class'][0],
                             style=self.config['pygments_style'][0],
-                            noclasses=self.config['noclasses'][0])
+                            noclasses=self.config['noclasses'][0],
+                            tab_length=self.markdown.tab_length)
                 placeholder = self.markdown.htmlStash.store(code.hilite(),
                                                             safe=True)
                 # Clear codeblock in etree instance
