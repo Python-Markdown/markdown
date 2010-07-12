@@ -39,8 +39,12 @@ class yourself and then use ``convert()`` to generate HTML:
     md = markdown.Markdown(
             extensions=['footnotes'], 
             extension_configs= {'footnotes' : ('PLACE_MARKER','~~~~~~~~')},
-            safe_mode=True,
-            output_format='html4'
+            output_format='html4',
+            safe_mode="replace",
+            html_replacement_text="--NO HTML ALLOWED--",
+            tab_length=8,
+            enable_attributes=False,
+            smart_emphasis=False,
     )
     return md.convert(some_text)
 
@@ -106,15 +110,11 @@ still create links using Markdown syntax.)
 
 * To replace HTML, set ``safe_mode="replace"`` (``safe_mode=True`` still works 
     for backward compatibility with older versions). The HTML will be replaced 
-    with the text defined in ``markdown.HTML_REMOVED_TEXT`` which defaults to 
+    with the text assigned to ``html_replacement_text`` which defaults to 
     ``[HTML_REMOVED]``. To replace the HTML with something else:
 
-        markdown.HTML_REMOVED_TEXT = "--RAW HTML IS NOT ALLOWED--"
-        md = markdown.Markdown(safe_mode="replace")
-
-    **Note**: You could edit the value of ``HTML_REMOVED_TEXT`` directly in 
-    markdown/__init__.py but you will need to remember to do so every time you 
-    upgrade to a newer version of Markdown. Therefore, this is not recommended.
+        md = markdown.Markdown(safe_mode="replace", 
+                               html_replacement_text="--RAW HTML NOT ALLOWED--")
 
 * To remove HTML, set ``safe_mode="remove"``. Any raw HTML will be completely 
     stripped from the text with no warning to the author.

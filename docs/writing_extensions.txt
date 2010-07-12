@@ -46,7 +46,9 @@ return either that list, or an altered list of Unicode strings.
 
 A pseudo example:
 
-    class MyPreprocessor(markdown.preprocessors.Preprocessor):
+    from markdown.preprocessors import Preprocessor
+
+    class MyPreprocessor(Preprocessor):
         def run(self, lines):
             new_lines = []
             for line in lines:
@@ -84,9 +86,12 @@ match everything before the pattern.
 
 For an example, consider this simplified emphasis pattern:
 
-    class EmphasisPattern(markdown.inlinepatterns.Pattern):
+    from markdown.inlinepatterns import Pattern
+    from markdown.util import etree
+
+    class EmphasisPattern(Pattern):
         def handleMatch(self, m):
-            el = markdown.etree.Element('em')
+            el = etree.Element('em')
             el.text = m.group(3)
             return el
 
@@ -106,7 +111,7 @@ be almost identical, with the exception that it would create a 'strong' element.
 Therefore, Markdown provides a number of generic pattern classes that can 
 provide some common functionality. For example, both emphasis and strong are
 implemented with separate instances of the ``SimpleTagPettern`` listed below. 
-Feel free to use or extend any of these Pattern classes.
+Feel free to use or extend any of the Pattern classes found at `markdown.inlinepatterns`.
 
 **Generic Pattern Classes**
 
@@ -141,7 +146,9 @@ object) and returns either that root element or a modified root element.
 
 A pseudo example:
 
-    class MyTreeprocessor(markdown.treeprocessors.Treeprocessor):
+    from markdown.treprocessors import Treeprocessor
+
+    class MyTreeprocessor(Treeprocessor):
         def run(self, root):
             #do stuff
             return my_modified_root
@@ -163,7 +170,9 @@ Postprocessors are run after the ElementTree has been serialized back into
 Unicode text.  For example, this may be an appropriate place to add a table of 
 contents to a document:
 
-    class TocPostprocessor(markdown.postprocessors.Postprocessor):
+    from markdown.postprocessors import Postprocessor
+
+    class TocPostprocessor(Postprocessor):
         def run(self, text):
             return MYMARKERRE.sub(MyToc, text)
 
@@ -302,16 +311,16 @@ of the Markdown module.
 
 First, to get access to the ElementTree module import ElementTree from 
 ``markdown`` rather than importing it directly. This will ensure you are using 
-the same version of ElementTree as markdown. The module is named ``etree`` 
-within Markdown.
+the same version of ElementTree as markdown. The module is found at 
+``markdown.util.etree`` within Markdown.
 
-    from markdown import etree
+    from markdown.util import etree
     
-``markdown.etree`` tries to import ElementTree from any known location, first 
-as a standard library module (from ``xml.etree`` in Python 2.5), then as a third
-party package (``Elementree``). In each instance, ``cElementTree`` is tried 
-first, then ``ElementTree`` if the faster C implementation is not available on 
-your system.
+``markdown.util.etree`` tries to import ElementTree from any known location, 
+first as a standard library module (from ``xml.etree`` in Python 2.5), then as 
+a third party package (``Elementree``). In each instance, ``cElementTree`` is 
+tried first, then ``ElementTree`` if the faster C implementation is not 
+available on your system.
 
 Sometimes you may want text inserted into an element to be parsed by 
 [InlinePatterns][]. In such a situation, simply insert the text as you normally
@@ -319,7 +328,8 @@ would and the text will be automatically run through the InlinePatterns.
 However, if you do *not* want some text to be parsed by InlinePatterns,
 then insert the text as an ``AtomicString``.
 
-    some_element.text = markdown.AtomicString(some_text)
+    from markdown.util import AtomicString
+    some_element.text = AtomicString(some_text)
 
 Here's a basic example which creates an HTML table (note that the contents of 
 the second cell (``td2``) will be run through InlinePatterns latter):
@@ -351,10 +361,10 @@ For more information about working with ElementTree see the ElementTree
 Once you have the various pieces of your extension built, you need to tell 
 Markdown about them and ensure that they are run in the proper sequence. 
 Markdown accepts a ``Extension`` instance for each extension. Therefore, you
-will need to define a class that extends ``markdown.Extension`` and over-rides
-the ``extendMarkdown`` method. Within this class you will manage configuration 
-options for your extension and attach the various processors and patterns to 
-the Markdown instance. 
+will need to define a class that extends ``markdown.extensions.Extension`` and 
+over-rides the ``extendMarkdown`` method. Within this class you will manage 
+configuration options for your extension and attach the various processors and 
+patterns to the Markdown instance. 
 
 It is important to note that the order of the various processors and patterns 
 matters. For example, if we replace ``http://...`` links with <a> elements, and 
@@ -367,8 +377,8 @@ a built-in instance, or replace a built-in instance with your own.
 
 <h4 id="extendmarkdown">extendMarkdown</h4>
 
-The ``extendMarkdown`` method of a ``markdown.Extension`` class accepts two 
-arguments:
+The ``extendMarkdown`` method of a ``markdown.extensions.Extension`` class 
+accepts two arguments:
 
 * **``md``**:
 
@@ -388,6 +398,10 @@ arguments:
     * ``md.output_formats``
     * ``md.set_output_format()``
     * ``md.registerExtension()``
+    * ``md.html_replacement_text``
+    * ``md.tab_length``
+    * ``md.enable_attributes``
+    * ``md.smart_emphasis``
 
 * **``md_globals``**:
 
@@ -404,7 +418,9 @@ into the markdown pipeline. Consider yourself warned.
 
 A simple example:
 
-    class MyExtension(markdown.Extension):
+    from markdown.extensions import Extension
+
+    class MyExtension(Extension):
         def extendMarkdown(self, md, md_globals):
             # Insert instance of 'mypattern' before 'references' pattern
             md.inlinePatterns.add('mypattern', MyPattern(md), '<references')
@@ -447,8 +463,8 @@ The ``add()`` method accepts three arguments:
 
 Consider the following example:
 
-    >>> import markdown
-    >>> od = markdown.OrderedDict()
+    >>> from markdown.odict import OrderedDict
+    >>> od = OrderedDict()
     >>> od['one'] =  1           # The same as: od.add('one', 1, '_begin')
     >>> od['three'] = 3          # The same as: od.add('three', 3, '>one')
     >>> od['four'] = 4           # The same as: od.add('four', 4, '_end')
