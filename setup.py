@@ -54,7 +54,7 @@ data = dict(
                      'Programming Language :: Python :: 2.5',
                      'Programming Language :: Python :: 2.6',
                      'Programming Language :: Python :: 3',
-                     'Programming Language :: Python :: 3.0',
+                     'Programming Language :: Python :: 3.1',
                      'Topic :: Communications :: Email :: Filters',
                      'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: CGI Tools/Libraries',
                      'Topic :: Internet :: WWW/HTTP :: Site Management',

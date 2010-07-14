@@ -46,10 +46,13 @@ import odict
 import re
 from urlparse import urlparse, urlunparse
 import sys
-if sys.version >= "3.0":
-    from html import entities as htmlentitydefs
-else:
-    import htmlentitydefs
+# If you see an ImportError for htmlentitydefs after using 2to3 to convert for 
+# use by Python3, then you are probably using the buggy version from Python 3.0.
+# We recomend using the tool from Python 3.1 even if you will be running the 
+# code on Python 3.0.  The following line should be converted by the tool to:
+# `from html import entities` and later calls to `htmlentitydefs` should be
+# changed to call `entities`. Python 3.1's tool does this but 3.0's does not.
+import htmlentitydefs
 
 
 def build_inlinepatterns(md_instance, **kwargs):
