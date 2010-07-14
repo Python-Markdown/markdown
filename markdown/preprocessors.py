@@ -79,7 +79,7 @@ class HtmlBlockPreprocessor(Preprocessor):
             return tag, len(m.group(0)), attrs
         else:
             tag = block[1:].replace(">", " ", 1).split()[0].lower()
-            return tag, len(tag+2), {}
+            return tag, len(tag)+2, {}
 
     def _get_right_tag(self, left_tag, left_index, block):
         for p in self.right_tag_patterns:
@@ -124,7 +124,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                 block = block[1:]
 
             if not in_tag:
-                if block.startswith("<"):
+                if block.startswith("<") and len(block.strip()) > 1:
                     left_tag, left_index, attrs = self._get_left_tag(block)
                     right_tag, data_index = self._get_right_tag(left_tag, 
                                                                 left_index,
