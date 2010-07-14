@@ -31,7 +31,7 @@ License: BSD (see LICENSE for details).
 """
 
 version = "2.1.0"
-version_info = (2,0,3, "Dev")
+version_info = (2,1,0, "Dev")
 
 import re
 import codecs
