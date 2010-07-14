@@ -4,6 +4,14 @@ import sys, os
 from distutils.core import setup
 from distutils.command.install_scripts import install_scripts
 
+# Try to run 2to3 automaticaly when building in Python 3.x
+try:
+    from distutils.command.build_py import build_py_2to3 as build_py
+except ImportError:
+    if sys.version_info >= (3, 0):
+        raise ImportError("build_py_2to3 is required to build in Python 3.x.")
+    from distutils.command.build_py import build_py
+
 version = '2.1.0.Dev'
 
 # The command line script name.  Currently set to "markdown_py" so as not to 
@@ -43,7 +51,8 @@ data = dict(
     license =       'BSD License',
     packages =      ['markdown', 'markdown.extensions'],
     scripts =       ['bin/%s' % SCRIPT_NAME],
-    cmdclass =      {'install_scripts': md_install_scripts},
+    cmdclass =      {'install_scripts': md_install_scripts, 
+                     'build_py': build_py},
     classifiers =   ['Development Status :: 5 - Production/Stable',
                      'License :: OSI Approved :: BSD License',
                      'Operating System :: OS Independent',
