@@ -1,3 +1,5 @@
+from markdown.md_logging import message
+from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
 
 """
 Extensions

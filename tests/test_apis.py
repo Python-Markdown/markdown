@@ -10,7 +10,12 @@ Tests of the various APIs with the python markdown lib.
 import unittest
 from doctest import DocTestSuite
 import os
+import sys
+import types
 import markdown
+from markdown.md_logging import MarkdownException, MarkdownWarning
+from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
+import warnings
 
 class TestMarkdownBasics(unittest.TestCase):
     """ Tests basics of the Markdown class. """
@@ -210,3 +215,73 @@ class TestOrderedDict(unittest.TestCase):
                     [('first', 'This'), ('fourth', 'self'),
                     ('third', 'a'), ('fifth', 'test')])
 
+class TestErrors(unittest.TestCase):
+    """ Test Error Reporting. """
+
+    def setUp(self):
+        # Set warnings to be raised as errors
+        warnings.simplefilter('error')
+
+    def tearDown(self):
+        # Reset warning behavior back to default
+        warnings.simplefilter('default')
+
+    def testMessageWarn(self):
+        """ Test message WARN. """
+        self.assertRaises(MarkdownWarning, markdown.md_logging.message, 
+                            WARN, 'This should raise a MardownWarning')
+
+    def testMessageError(self):
+        """ Test message ERROR. """
+        self.assertRaises(MarkdownException, markdown.md_logging.message, 
+                            ERROR, 'This should raise a MarkdownException')
+
+    def testNonUnicodeSource(self):
+        """ Test falure on non-unicode source text. """
+        source = "foo".encode('utf-16') 
+        self.assertRaises(MarkdownException, markdown.markdown, source)
+
+    def testBadOutputFormat(self):
+        """ Test failure on bad output_format. """
+        self.assertRaises(MarkdownException, 
+                            markdown.Markdown, output_format='invalid')
+
+    def testLoadExtensionFailure(self):
+        """ Test failure of an extension to load. """
+        self.assertRaises(MarkdownWarning, 
+                        markdown.extensions.load_extension, 'non_existant_ext') 
+
+    def testLoadBadExtension(self):
+        """ Test loading of an Extension with no makeExtension function. """
+        _create_fake_extension(name='fake', has_factory_func=False)
+        self.assertRaises(MarkdownException,
+                        markdown.extensions.load_extension, 'fake')
+
+    def testNonExtension(self):
+        """ Test loading a non Extension object as an extension. """
+        _create_fake_extension(name='fake', is_wrong_type=True)
+        self.assertRaises(MarkdownException, 
+                        markdown.Markdown, extensions=['fake'])
+
+    def testBaseExtention(self):
+        """ Test that the base Extension class will raise NotImplemented. """
+        _create_fake_extension(name='fake')
+        self.assertRaises(MarkdownException, 
+                        markdown.Markdown, extensions=['fake'])
+
+
+def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False):
+    """ Create a fake extension module for testing. """
+    mod_name = '_'.join(['mdx', name])
+    ext_mod = types.ModuleType(mod_name)
+    def makeExtension(configs=None):
+        if is_wrong_type:
+            return object
+        else:
+            return markdown.extensions.Extension(configs=configs)
+    if has_factory_func:
+        ext_mod.makeExtension = makeExtension
+    # Warning: this brute forces the extenson module onto the system. Either 
+    # this needs to be specificly overriden or a new python session needs to 
+    # be started to get rid of this. This should be ok in a testing context.
+    sys.modules[mod_name] =  ext_mod
