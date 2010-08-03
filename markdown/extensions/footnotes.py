@@ -291,7 +291,6 @@ class FootnoteTreeprocessor(markdown.treeprocessors.Treeprocessor):
                     ind = element.getchildren().find(child)
                     element.getchildren().insert(ind + 1, footnotesDiv)
                     child.tail = None
-                fnPlaceholder.parent.replaceChild(fnPlaceholder, footnotesDiv)
             else:
                 root.append(footnotesDiv)
 
