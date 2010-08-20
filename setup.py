@@ -3,6 +3,7 @@
 import sys, os
 from distutils.core import setup
 from distutils.command.install_scripts import install_scripts
+from distutils.command.build import build
 from distutils.core import Command
 from distutils.util import change_root, newer
 
@@ -113,7 +114,7 @@ class build_docs(Command):
                     self.mkpath(os.path.split(outfile)[0])
                     if self.force or newer(doc, outfile):
                         if self.verbose:
-                            print ('Converting %s ---> %s' % (doc, outfile))
+                            print ('Converting %s -> %s' % (doc, outfile))
                         if not self.dry_run:
                             outfile = open(outfile, 'w')
                             outfile.write(doc_header % {'title': title})
@@ -121,9 +122,14 @@ class build_docs(Command):
                             md.reset()
                             outfile.write(doc_footer)
                             outfile.close()
-                    else:
-                        if self.verbose:
-                            print ('Skipping... (%s is newer)' % outfile)
+
+
+class md_build(build):
+    """ Run "build_docs" command from "build" command. """
+    def has_docs(self):
+        return True
+
+    sub_commands = build.sub_commands + [('build_docs', has_docs)]
 
 
 data = dict(
@@ -141,7 +147,8 @@ data = dict(
     scripts =       ['bin/%s' % SCRIPT_NAME],
     cmdclass =      {'install_scripts': md_install_scripts, 
                      'build_py': build_py,
-                     'build_docs': build_docs},
+                     'build_docs': build_docs,
+                     'build': md_build},
     classifiers =   ['Development Status :: 5 - Production/Stable',
                      'License :: OSI Approved :: BSD License',
                      'Operating System :: OS Independent',
