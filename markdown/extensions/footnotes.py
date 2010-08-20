@@ -84,10 +84,10 @@ class FootnoteExtension(markdown.Extension):
             for child in element:
                 if child.text:
                     if child.text.find(self.getConfig("PLACE_MARKER")) > -1:
-                        return child, True
+                        return child, element, True
                 if child.tail:
                     if child.tail.find(self.getConfig("PLACE_MARKER")) > -1:
-                        return (child, element), False
+                        return child, element, False
                 finder(child)
             return None
                 
@@ -282,16 +282,14 @@ class FootnoteTreeprocessor(markdown.treeprocessors.Treeprocessor):
         if footnotesDiv:
             result = self.footnotes.findFootnotesPlaceholder(root)
             if result:
-                node, isText = result
+                child, parent, isText = result
+                ind = parent.getchildren().index(child)
                 if isText:
-                    node.text = None
-                    node.getchildren().insert(0, footnotesDiv)
+                    parent.remove(child)
+                    parent.insert(ind, footnotesDiv)
                 else:
-                    child, element = node
-                    ind = element.getchildren().find(child)
-                    element.getchildren().insert(ind + 1, footnotesDiv)
+                    parent.insert(ind + 1, footnotesDiv)
                     child.tail = None
-                fnPlaceholder.parent.replaceChild(fnPlaceholder, footnotesDiv)
             else:
                 root.append(footnotesDiv)
 
