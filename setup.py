@@ -3,6 +3,8 @@
 import sys, os
 from distutils.core import setup
 from distutils.command.install_scripts import install_scripts
+from distutils.core import Command
+from distutils.util import change_root, newer
 
 # Try to run 2to3 automaticaly when building in Python 3.x
 try:
@@ -38,6 +40,59 @@ class md_install_scripts(install_scripts):
             except Exception, e:
                 print 'ERROR: Unable to create %s: %s' % (bat_path, e)
 
+
+class build_docs(Command):
+    """ Build mardkown documentation into html."""
+
+    description = '"build" documentation (convert markdown text to html)'
+
+    user_options = [
+        ('build-base=', 'd', 'directory to "build" to'),
+        ('force', 'f', 'forcibly build everything (ignore file timestamps)'),
+        ]
+
+    boolean_options = ['force']
+
+    def initialize_options(self):
+        self.build_base = None
+        self.force = None
+        self.docs = None
+
+    def finalize_options(self):
+        self.set_undefined_options('build', 
+                                    ('build_base', 'build_base'), 
+                                    ('force', 'force'))
+        self.docs = self._get_docs()
+
+    def _get_docs(self):
+        for root, dirs, files in os.walk('docs'):
+            for file in files:
+                yield os.path.join(root, file)
+
+    def run(self):
+        try:
+            import markdown
+        except ImportError:
+            print ('skipping build_docs: Markdown "import" failed!')
+        else:
+            md = markdown.Markdown()
+            for doc in self.docs:
+                outfile, ext = os.path.splitext(doc)
+                if ext == '.txt':
+                    outfile += '.html'
+                    outfile = change_root(self.build_base, outfile)
+                    self.mkpath(os.path.split(outfile)[0])
+                    if self.force or newer(doc, outfile):
+                        if self.verbose:
+                            print ('Converting %s ---> %s' % (doc, outfile))
+                        if not self.dry_run:
+                            md.convertFile(doc, outfile)
+                            md.reset()
+                    else:
+                        if self.verbose:
+                            print ('Skipping... (%s is newer)' % outfile)
+
+
 data = dict(
     name =          'Markdown',
     version =       version,
@@ -52,7 +107,8 @@ data = dict(
     packages =      ['markdown', 'markdown.extensions'],
     scripts =       ['bin/%s' % SCRIPT_NAME],
     cmdclass =      {'install_scripts': md_install_scripts, 
-                     'build_py': build_py},
+                     'build_py': build_py,
+                     'build_docs': build_docs},
     classifiers =   ['Development Status :: 5 - Production/Stable',
                      'License :: OSI Approved :: BSD License',
                      'Operating System :: OS Independent',
