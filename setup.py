@@ -19,7 +19,7 @@ version = '2.1.0.Dev'
 # The command line script name.  Currently set to "markdown_py" so as not to 
 # conflict with the perl implimentation (which uses "markdown").  We can't use
 # "markdown.py" as the default config on some systems will cause the script to
-# try to import itself rather than the library which raised an error. 
+# try to import itself rather than the library which will raise an error. 
 SCRIPT_NAME = 'markdown_py'
 
 class md_install_scripts(install_scripts):
@@ -42,8 +42,22 @@ class md_install_scripts(install_scripts):
                 print ('ERROR: Unable to create %s: %s' % (bat_path, err))
 
 
+doc_header = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>%(title)s</title>
+</head>
+<body>
+"""
+
+doc_footer = """
+</body>
+</html>
+"""
+
 class build_docs(Command):
-    """ Build mardkown documentation into html."""
+    """ Build markdown documentation into html."""
 
     description = '"build" documentation (convert markdown text to html)'
 
@@ -70,6 +84,19 @@ class build_docs(Command):
             for file in files:
                 yield os.path.join(root, file)
 
+    def _get_page_title(self, path):
+        """ Get page title from file name (and path). """
+        root, ext = os.path.splitext(path)
+        path, name = os.path.split(root)
+        parts = path.split(os.sep)
+        parts = [x.replace('_', ' ').capitalize() for x in parts[1:]]
+        if name.lower() != 'index':
+            parts.append(name.replace('_', ' ').capitalize())
+        if parts:
+            return ' | '.join(parts) + ' &#8212; Python Markdown'
+        else:
+            return 'Python Markdown'
+
     def run(self):
         try:
             import markdown
@@ -80,6 +107,7 @@ class build_docs(Command):
             for doc in self.docs:
                 outfile, ext = os.path.splitext(doc)
                 if ext == '.txt':
+                    title = self._get_page_title(outfile)
                     outfile += '.html'
                     outfile = change_root(self.build_base, outfile)
                     self.mkpath(os.path.split(outfile)[0])
@@ -87,8 +115,12 @@ class build_docs(Command):
                         if self.verbose:
                             print ('Converting %s ---> %s' % (doc, outfile))
                         if not self.dry_run:
+                            outfile = open(outfile, 'w')
+                            outfile.write(doc_header % {'title': title})
                             md.convertFile(doc, outfile)
                             md.reset()
+                            outfile.write(doc_footer)
+                            outfile.close()
                     else:
                         if self.verbose:
                             print ('Skipping... (%s is newer)' % outfile)
@@ -135,3 +167,4 @@ if sys.version[:3] < '2.5':
     data['install_requires'] = ['elementtree']
 
 setup(**data)
+
