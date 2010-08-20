@@ -48,11 +48,20 @@ doc_header = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>%(title)s</title>
+<style type="text/css">
+.nav { float:right; margin:1em;}
+</style>
 </head>
 <body>
+<div id="nav">
+%(menu)s
+</div>
+<div id="content">
 """
 
 doc_footer = """
+</div>
+<p id="foot">&copy; 2010 Python Markdown Project<p>
 </body>
 </html>
 """
@@ -73,17 +82,25 @@ class build_docs(Command):
         self.build_base = None
         self.force = None
         self.docs = None
+        self.sitemap = ''
 
     def finalize_options(self):
         self.set_undefined_options('build', 
                                     ('build_base', 'build_base'), 
                                     ('force', 'force'))
         self.docs = self._get_docs()
+        try:
+            sm = open('docs/sitemap.txt')
+            self.sitemap = sm.read()
+            sm.close()
+        except:
+            pass
 
     def _get_docs(self):
         for root, dirs, files in os.walk('docs'):
             for file in files:
-                yield os.path.join(root, file)
+                path = os.path.join(root, file)
+                yield (path, self._get_page_title(path))
 
     def _get_page_title(self, path):
         """ Get page title from file name (and path). """
@@ -105,23 +122,25 @@ class build_docs(Command):
             print ('skipping build_docs: Markdown "import" failed!')
         else:
             md = markdown.Markdown()
-            for doc in self.docs:
-                outfile, ext = os.path.splitext(doc)
+            menu = md.convert(self.sitemap)
+            md.reset()
+            for infile, title in self.docs:
+                outfile, ext = os.path.splitext(infile)
                 if ext == '.txt':
-                    title = self._get_page_title(outfile)
                     outfile += '.html'
                     outfile = change_root(self.build_base, outfile)
                     self.mkpath(os.path.split(outfile)[0])
-                    if self.force or newer(doc, outfile):
+                    if self.force or newer(infile, outfile):
                         if self.verbose:
-                            print ('Converting %s -> %s' % (doc, outfile))
+                            print ('Converting %s -> %s' % (infile, outfile))
                         if not self.dry_run:
-                            outfile = open(outfile, 'w')
-                            outfile.write(doc_header % {'title': title})
-                            md.convertFile(doc, outfile)
+                            doc = open(outfile, 'w')
+                            doc.write(doc_header % {'title': title, 
+                                                    'menu': menu})
+                            md.convertFile(infile, doc)
                             md.reset()
-                            outfile.write(doc_footer)
-                            outfile.close()
+                            doc.write(doc_footer)
+                            doc.close()
 
 
 class md_build(build):
