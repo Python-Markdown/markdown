@@ -261,14 +261,17 @@ class FootnotePattern(markdown.inlinepatterns.Pattern):
         self.footnotes = footnotes
 
     def handleMatch(self, m):
-        sup = etree.Element("sup")
-        a = etree.SubElement(sup, "a")
         id = m.group(2)
-        sup.set('id', self.footnotes.makeFootnoteRefId(id))
-        a.set('href', '#' + self.footnotes.makeFootnoteId(id))
-        a.set('rel', 'footnote')
-        a.text = str(self.footnotes.footnotes.index(id) + 1)
-        return sup
+        if id in self.footnotes.footnotes.keys():
+            sup = etree.Element("sup")
+            a = etree.SubElement(sup, "a")
+            sup.set('id', self.footnotes.makeFootnoteRefId(id))
+            a.set('href', '#' + self.footnotes.makeFootnoteId(id))
+            a.set('rel', 'footnote')
+            a.text = unicode(self.footnotes.footnotes.index(id) + 1)
+            return sup
+        else:
+            return None
 
 
 class FootnoteTreeprocessor(markdown.treeprocessors.Treeprocessor):

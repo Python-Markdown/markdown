@@ -1,5 +1,7 @@
 This is the body with a footnote[^1] or two[^2] or more[^3] [^4].
 
+Also a reference that does not exist[^5].
+
 [^1]: Footnote that ends with a list:
 
     * item 1
