@@ -335,10 +335,7 @@ Those are the two functions we really mean to export: markdown() and
 markdownFromFile().
 """
 
-def markdown(text,
-             extensions = [],
-             safe_mode = False,
-             output_format = 'xhtml1'):
+def markdown(text, *args, **kwargs):
     """Convert a markdown string to HTML and return HTML as a unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
@@ -362,9 +359,7 @@ def markdown(text,
     Returns: An HTML document as a string.
 
     """
-    md = Markdown(extensions=extensions,
-                  safe_mode=safe_mode,
-                  output_format=output_format)
+    md = Markdown(*args, **kwargs)
     return md.convert(text)
 
 
@@ -372,12 +367,9 @@ def markdownFromFile(input = None,
                      output = None,
                      extensions = [],
                      encoding = None,
-                     safe_mode = False,
-                     output_format = 'xhtml1'):
+                     *args, **kwargs):
     """Read markdown code from a file and write it to a file or a stream."""
-    md = Markdown(extensions=extensions,
-                  safe_mode=safe_mode,
-                  output_format=output_format)
+    md = Markdown(extensions=extensions, *args, **kwargs)
     md.convertFile(input, output, encoding)
 
 
