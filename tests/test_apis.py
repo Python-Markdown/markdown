@@ -249,13 +249,13 @@ class TestErrors(unittest.TestCase):
     def testLoadExtensionFailure(self):
         """ Test failure of an extension to load. """
         self.assertRaises(MarkdownWarning, 
-                        markdown.extensions.load_extension, 'non_existant_ext') 
+                        markdown.Markdown, extensions=['non_existant_ext']) 
 
     def testLoadBadExtension(self):
         """ Test loading of an Extension with no makeExtension function. """
         _create_fake_extension(name='fake', has_factory_func=False)
         self.assertRaises(MarkdownException,
-                        markdown.extensions.load_extension, 'fake')
+                        markdown.Markdown, extensions=['fake'])
 
     def testNonExtension(self):
         """ Test loading a non Extension object as an extension. """
