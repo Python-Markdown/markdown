@@ -82,7 +82,7 @@ class HtmlBlockPreprocessor(Preprocessor):
             return tag, len(tag)+2, {}
 
     def _get_right_tag(self, left_tag, left_index, block):
-        def recursive_tagfind(start_index, ltag, rtag):
+        def recursive_tagfind(ltag, rtag, start_index):
             while 1:
                 i = block.find(rtag, start_index)
                 if i == -1:
@@ -91,16 +91,20 @@ class HtmlBlockPreprocessor(Preprocessor):
                 # if no ltag, or rtag found before another ltag, return index
                 if (j > i or j == -1):
                     return i + len(rtag)
-                start_index = recursive_tagfind(j + len(ltag) + 1, ltag, rtag)
+                # another ltag found before rtag, use end of ltag as starting
+                # point and search again
+                j = block.find('>', j)
+                start_index = recursive_tagfind(ltag, rtag, j + 1)
+                if start_index == -1:
+                    # HTML potentially malformed- ltag has no corresponding 
+                    # rtag
+                    return -1
 
         for p in self.right_tag_patterns:
             tag = p % left_tag
-            i = recursive_tagfind(left_index, "<%s" % left_tag, tag)
-#            i = block.rfind(tag)
-            if i != -1:
-                i = i - len(tag)
+            i = recursive_tagfind("<%s" % left_tag, tag, left_index)
             if i > 2:
-                return tag.lstrip("<").rstrip(">"), i + len(p)-2 + left_index-2
+                return tag.lstrip("<").rstrip(">"), i
         return block.rstrip()[-left_index:-1].lower(), len(block)
 
     def _equal_tags(self, left_tag, right_tag):
