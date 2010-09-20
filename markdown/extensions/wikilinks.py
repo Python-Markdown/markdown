@@ -105,7 +105,7 @@ class WikiLinkExtension(markdown.Extension):
         self.md = md
     
         # append to end of inline patterns
-        WIKILINK_RE = r'\[\[([A-Za-z0-9_ -]+)\]\]'
+        WIKILINK_RE = r'\[\[([\w0-9_ -]+)\]\]'
         wikilinkPattern = WikiLinks(WIKILINK_RE, self.config)
         wikilinkPattern.md = md
         md.inlinePatterns.add('wikilink', wikilinkPattern, "<not_strong")
