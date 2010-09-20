@@ -43,7 +43,7 @@ from blockprocessors import build_block_parser
 from treeprocessors import build_treeprocessors
 from inlinepatterns import build_inlinepatterns
 from postprocessors import build_postprocessors
-from extensions import Extension, load_extension, load_extensions
+from extensions import Extension
 import html4
 
 # For backwards compatibility in the 2.0.x series
@@ -136,7 +136,7 @@ class Markdown:
         """
         for ext in extensions:
             if isinstance(ext, basestring):
-                ext = load_extension(ext, configs.get(ext, []))
+                ext = self.build_extension(ext, configs.get(ext, []))
             if isinstance(ext, Extension):
                 try:
                     ext.extendMarkdown(self, globals())
@@ -147,6 +147,47 @@ class Markdown:
                 'Extension "%s.%s" must be of type: "markdown.Extension".' \
                     % (ext.__class__.__module__, ext.__class__.__name__))
 
+    def build_extension(self, ext_name, configs = []):
+        """Build extension by name, then return the module.
+
+        The extension name may contain arguments as part of the string in the
+        following format: "extname(key1=value1,key2=value2)"
+
+        """
+
+        # Parse extensions config params (ignore the order)
+        configs = dict(configs)
+        pos = ext_name.find("(") # find the first "("
+        if pos > 0:
+            ext_args = ext_name[pos+1:-1]
+            ext_name = ext_name[:pos]
+            pairs = [x.split("=") for x in ext_args.split(",")]
+            configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
+
+        # Setup the module names
+        ext_module = 'markdown.extensions'
+        module_name_new_style = '.'.join([ext_module, ext_name])
+        module_name_old_style = '_'.join(['mdx', ext_name])
+
+        # Try loading the extention first from one place, then another
+        try: # New style (markdown.extensons.<extension>)
+            module = __import__(module_name_new_style, {}, {}, [ext_module])
+        except ImportError:
+            try: # Old style (mdx_<extension>)
+                module = __import__(module_name_old_style)
+            except ImportError:
+               message(WARN, "Failed loading extension '%s' from '%s' or '%s'"
+                   % (ext_name, module_name_new_style, module_name_old_style))
+               # Return None so we don't try to initiate none-existant extension
+               return None
+
+        # If the module is loaded successfully, we expect it to define a
+        # function called makeExtension()
+        try:
+            return module.makeExtension(configs.items())
+        except AttributeError, e:
+            message(CRITICAL, "Failed to initiate extension '%s': %s" % (ext_name, e))
+    
     def registerExtension(self, extension):
         """ This gets called by the extension """
         self.registeredExtensions.append(extension)
@@ -294,10 +335,7 @@ Those are the two functions we really mean to export: markdown() and
 markdownFromFile().
 """
 
-def markdown(text,
-             extensions = [],
-             safe_mode = False,
-             output_format = 'xhtml1'):
+def markdown(text, *args, **kwargs):
     """Convert a markdown string to HTML and return HTML as a unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
@@ -321,9 +359,7 @@ def markdown(text,
     Returns: An HTML document as a string.
 
     """
-    md = Markdown(extensions=load_extensions(extensions),
-                  safe_mode=safe_mode,
-                  output_format=output_format)
+    md = Markdown(*args, **kwargs)
     return md.convert(text)
 
 
@@ -331,12 +367,9 @@ def markdownFromFile(input = None,
                      output = None,
                      extensions = [],
                      encoding = None,
-                     safe_mode = False,
-                     output_format = 'xhtml1'):
+                     *args, **kwargs):
     """Read markdown code from a file and write it to a file or a stream."""
-    md = Markdown(extensions=load_extensions(extensions),
-                  safe_mode=safe_mode,
-                  output_format=output_format)
+    md = Markdown(extensions=extensions, *args, **kwargs)
     md.convertFile(input, output, encoding)
 
 

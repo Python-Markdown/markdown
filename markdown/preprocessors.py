@@ -81,14 +81,32 @@ class HtmlBlockPreprocessor(Preprocessor):
             tag = block[1:].replace(">", " ", 1).split()[0].lower()
             return tag, len(tag)+2, {}
 
+    def _recursive_tagfind(self, ltag, rtag, start_index, block):
+        while 1:
+            i = block.find(rtag, start_index)
+            if i == -1:
+                return -1
+            j = block.find(ltag, start_index) 
+            # if no ltag, or rtag found before another ltag, return index
+            if (j > i or j == -1):
+                return i + len(rtag)
+            # another ltag found before rtag, use end of ltag as starting
+            # point and search again
+            j = block.find('>', j)
+            start_index = self._recursive_tagfind(ltag, rtag, j + 1, block)
+            if start_index == -1:
+                # HTML potentially malformed- ltag has no corresponding 
+                # rtag
+                return -1
+
     def _get_right_tag(self, left_tag, left_index, block):
         for p in self.right_tag_patterns:
             tag = p % left_tag
-            i = block.rfind(tag)
+            i = self._recursive_tagfind("<%s" % left_tag, tag, left_index, block)
             if i > 2:
-                return tag.lstrip("<").rstrip(">"), i + len(p)-2 + left_index-2
+                return tag.lstrip("<").rstrip(">"), i
         return block.rstrip()[-left_index:-1].lower(), len(block)
-
+    
     def _equal_tags(self, left_tag, right_tag):
         if left_tag[0] in ['?', '@', '%']: # handle PHP, etc.
             return True
