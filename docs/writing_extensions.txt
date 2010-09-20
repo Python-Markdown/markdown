@@ -80,9 +80,10 @@ Note that any regular expression returned by ``getCompiledRegExp`` must capture
 the whole block. Therefore, they should all start with ``r'^(.*?)'`` and end
 with ``r'(.*?)!'``. When using the default ``getCompiledRegExp()`` method 
 provided in the ``Pattern`` you can pass in a regular expression without that 
-and ``getCompiledRegExp`` will wrap your expression for you. This means that 
-the first group of your match will be ``m.group(2)`` as ``m.group(1)`` will 
-match everything before the pattern.
+and ``getCompiledRegExp`` will wrap your expression for you and set the 
+`re.DOTALL` and `re.UNICODE` flags. This means that the first group of your 
+match will be ``m.group(2)`` as ``m.group(1)`` will match everything before the
+pattern.
 
 For an example, consider this simplified emphasis pattern:
 
