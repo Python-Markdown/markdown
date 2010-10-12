@@ -47,3 +47,10 @@ and [line
 breaks[] with two spaces.
 
 [line breaks]: http://example.com "Yes this works"
+
+[short ref]
+
+[short 
+ref]
+
+[short ref]: http://example.com "No more hanging empty bracket!"

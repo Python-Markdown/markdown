@@ -65,6 +65,8 @@ def build_inlinepatterns(md_instance, **kwargs):
     inlinePatterns["image_link"] = ImagePattern(IMAGE_LINK_RE, md_instance)
     inlinePatterns["image_reference"] = \
             ImageReferencePattern(IMAGE_REFERENCE_RE, md_instance)
+    inlinePatterns["short_reference"] = \
+            ReferencePattern(SHORT_REF_RE, md_instance)
     inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md_instance)
     inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md_instance)
     inlinePatterns["linebreak2"] = SubstituteTagPattern(LINE_BREAK_2_RE, 'br')
@@ -107,6 +109,7 @@ r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\12)?\)'''
 IMAGE_LINK_RE = r'\!' + BRK + r'\s*\((<.*?>|([^\)]*))\)'
 # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
 REFERENCE_RE = NOIMG + BRK+ r'\s*\[([^\]]*)\]'           # [Google][3]
+SHORT_REF_RE = NOIMG + BRK                              # [Google]
 IMAGE_REFERENCE_RE = r'\!' + BRK + '\s*\[([^\]]*)\]' # ![alt text][2]
 NOT_STRONG_RE = r'((^| )(\*|_)( |$))'                        # stand-alone * or _
 AUTOLINK_RE = r'<((?:f|ht)tps?://[^>]*)>'        # <http://www.123.com>
@@ -143,7 +146,7 @@ The pattern classes
 class Pattern:
     """Base class that inline patterns subclass. """
 
-    def __init__ (self, pattern, markdown_instance=None):
+    def __init__(self, pattern, markdown_instance=None):
         """
         Create an instant of an inline pattern.
 
@@ -161,7 +164,7 @@ class Pattern:
         if markdown_instance:
             self.markdown = markdown_instance
 
-    def getCompiledRegExp (self):
+    def getCompiledRegExp(self):
         """ Return a compiled regular expression. """
         return self.compiled_re
 
@@ -183,7 +186,7 @@ class Pattern:
 
 BasePattern = Pattern # for backward compatibility
 
-class SimpleTextPattern (Pattern):
+class SimpleTextPattern(Pattern):
     """ Return a simple text of group(2) of a Pattern. """
     def handleMatch(self, m):
         text = m.group(2)
@@ -191,7 +194,7 @@ class SimpleTextPattern (Pattern):
             return None
         return text
 
-class SimpleTagPattern (Pattern):
+class SimpleTagPattern(Pattern):
     """
     Return element of type `tag` with a text attribute of group(3)
     of a Pattern.
@@ -207,13 +210,13 @@ class SimpleTagPattern (Pattern):
         return el
 
 
-class SubstituteTagPattern (SimpleTagPattern):
+class SubstituteTagPattern(SimpleTagPattern):
     """ Return a eLement of type `tag` with no children. """
     def handleMatch (self, m):
         return util.etree.Element(self.tag)
 
 
-class BacktickPattern (Pattern):
+class BacktickPattern(Pattern):
     """ Return a `<code>` element containing the matching text. """
     def __init__ (self, pattern):
         Pattern.__init__(self, pattern)
@@ -225,7 +228,7 @@ class BacktickPattern (Pattern):
         return el
 
 
-class DoubleTagPattern (SimpleTagPattern):
+class DoubleTagPattern(SimpleTagPattern):
     """Return a ElementTree element nested in tag2 nested in tag1.
 
     Useful for strong emphasis etc.
@@ -239,7 +242,7 @@ class DoubleTagPattern (SimpleTagPattern):
         return el1
 
 
-class HtmlPattern (Pattern):
+class HtmlPattern(Pattern):
     """ Store raw inline html and return a placeholder. """
     def handleMatch (self, m):
         rawhtml = m.group(2)
@@ -248,7 +251,7 @@ class HtmlPattern (Pattern):
         return place_holder
 
 
-class LinkPattern (Pattern):
+class LinkPattern(Pattern):
     """ Return a link element from the given match. """
     def handleMatch(self, m):
         el = util.etree.Element("a")
@@ -356,7 +359,7 @@ class ReferencePattern(LinkPattern):
         return el
 
 
-class ImageReferencePattern (ReferencePattern):
+class ImageReferencePattern(ReferencePattern):
     """ Match to a stored reference and return img element. """
     def makeTag(self, href, title, text):
         el = util.etree.Element("img")
@@ -367,7 +370,7 @@ class ImageReferencePattern (ReferencePattern):
         return el
 
 
-class AutolinkPattern (Pattern):
+class AutolinkPattern(Pattern):
     """ Return a link Element given an autolink (`<http://example/com>`). """
     def handleMatch(self, m):
         el = util.etree.Element("a")
@@ -375,7 +378,7 @@ class AutolinkPattern (Pattern):
         el.text = util.AtomicString(m.group(2))
         return el
 
-class AutomailPattern (Pattern):
+class AutomailPattern(Pattern):
     """
     Return a mailto link Element given an automail link (`<foo@example.com>`).
     """
