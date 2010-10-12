@@ -325,6 +325,9 @@ class ImagePattern(LinkPattern):
 
 class ReferencePattern(LinkPattern):
     """ Match to a stored reference and return link element. """
+
+    NEWLINE_CLEANUP_RE = re.compile(r'[ ]?\n', re.MULTILINE)
+
     def handleMatch(self, m):
         if m.group(9):
             id = m.group(9).lower()
@@ -333,6 +336,8 @@ class ReferencePattern(LinkPattern):
             # we'll use "google" as the id
             id = m.group(2).lower()
 
+        # Clean up linebreaks in id
+        id = self.NEWLINE_CLEANUP_RE.sub(' ', id)
         if not id in self.markdown.references: # ignore undefined refs
             return None
         href, title = self.markdown.references[id]
