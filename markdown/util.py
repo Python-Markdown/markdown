@@ -51,9 +51,13 @@ AUXILIARY GLOBAL FUNCTIONS
 
 def isBlockLevel(tag):
     """Check if the tag is a block level HTML tag."""
+    if isinstance(tag, basestring):
+        return BLOCK_LEVEL_ELEMENTS.match(tag)
+    # Some ElementTree tags are not strings, so return True for Comments
+    # and False for anything else.
     if tag is etree.Comment:
         return True
-    return BLOCK_LEVEL_ELEMENTS.match(tag)
+    return False
 
 """
 MISC AUXILIARY CLASSES
