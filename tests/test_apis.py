@@ -285,3 +285,39 @@ def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False):
     # this needs to be specificly overriden or a new python session needs to 
     # be started to get rid of this. This should be ok in a testing context.
     sys.modules[mod_name] =  ext_mod
+
+
+class testETreeComments(unittest.TestCase):
+    """ 
+    Test that ElementTree Comments work.
+
+    These tests should only be a concern when using cElementTree with third
+    party serializers (including markdown's html4 serializer). While markdown
+    doesn't use ElementTree.Comment itself, we should certainly support any
+    third party extensions which may. Therefore, these tests are included to
+    ensure such support is maintained.
+    """
+
+    def setUp(self):
+        # Create comment node
+        self.comment = markdown.util.etree.Comment('foo')
+
+    def testCommentIsComment(self):
+        """ Test that an ElementTree Comment passes the `is Comment` test. """
+        self.assert_(self.comment.tag is markdown.util.etree.Comment)
+
+    def testCommentIsBlockLevel(self):
+        """ Test that an ElementTree Comment is recognized as BlockLevel. """
+        self.assert_(markdown.util.isBlockLevel(self.comment.tag))
+
+    def testCommentSerialization(self):
+        """ Test that an ElementTree Comment serializes properly. """
+        self.assertEqual(markdown.html4.to_html_string(self.comment),
+                    '<!--foo-->')
+
+    def testCommentPrettify(self):
+        """ Test that an ElementTree Comment is prettified properly. """
+        pretty = markdown.treeprocessors.PrettifyTreeprocessor()
+        pretty.run(self.comment)
+        self.assertEqual(markdown.html4.to_html_string(self.comment),
+                    '<!--foo-->\n')

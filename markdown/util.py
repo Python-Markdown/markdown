@@ -51,6 +51,8 @@ AUXILIARY GLOBAL FUNCTIONS
 
 def isBlockLevel(tag):
     """Check if the tag is a block level HTML tag."""
+    if tag is etree.Comment:
+        return True
     return BLOCK_LEVEL_ELEMENTS.match(tag)
 
 """

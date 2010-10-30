@@ -8,26 +8,30 @@ def importETree():
     etree_in_c = None
     try: # Is it Python 2.5+ with C implemenation of ElementTree installed?
         import xml.etree.cElementTree as etree_in_c
+        from xml.etree.ElementTree import Comment
     except ImportError:
         try: # Is it Python 2.5+ with Python implementation of ElementTree?
             import xml.etree.ElementTree as etree
         except ImportError:
             try: # An earlier version of Python with cElementTree installed?
                 import cElementTree as etree_in_c
+                from elementtree.ElementTree import Comment
             except ImportError:
                 try: # An earlier version of Python with Python ElementTree?
                     import elementtree.ElementTree as etree
                 except ImportError:
                     message(CRITICAL, "Failed to import ElementTree")
                     sys.exit(1)
-    if etree_in_c and etree_in_c.VERSION < "1.0":
-        message(CRITICAL, "For cElementTree version 1.0 or higher is required.")
-        sys.exit(1)
-    elif etree_in_c :
+    if etree_in_c: 
+        if etree_in_c.VERSION < "1.0":
+            message(CRITICAL, "cElementTree version 1.0 or higher is required.")
+            sys.exit(1)
+        # Third party serializers (including ours) require non-c Comment
+        etree_in_c.Comment = Comment
         return etree_in_c
     elif etree.VERSION < "1.1":
-        message(CRITICAL, "For ElementTree version 1.1 or higher is required")
+        message(CRITICAL, "ElementTree version 1.1 or higher is required")
         sys.exit(1)
-    else :
+    else:
         return etree
 
