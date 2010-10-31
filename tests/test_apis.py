@@ -301,14 +301,18 @@ class testETreeComments(unittest.TestCase):
     def setUp(self):
         # Create comment node
         self.comment = markdown.util.etree.Comment('foo')
+        if hasattr(markdown.util.etree, 'test_comment'):
+            self.test_comment = markdown.util.etree.test_comment
+        else:
+            self.test_comment = markdown.util.etree.Comment
 
     def testCommentIsComment(self):
         """ Test that an ElementTree Comment passes the `is Comment` test. """
-        self.assert_(self.comment.tag is markdown.util.etree.Comment)
+        self.assert_(self.comment.tag is markdown.util.etree.test_comment)
 
     def testCommentIsBlockLevel(self):
         """ Test that an ElementTree Comment is recognized as BlockLevel. """
-        self.assert_(markdown.util.isBlockLevel(self.comment.tag))
+        self.assertFalse(markdown.util.isBlockLevel(self.comment.tag))
 
     def testCommentSerialization(self):
         """ Test that an ElementTree Comment serializes properly. """

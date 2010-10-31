@@ -26,8 +26,8 @@ def importETree():
         if etree_in_c.VERSION < "1.0":
             message(CRITICAL, "cElementTree version 1.0 or higher is required.")
             sys.exit(1)
-        # Third party serializers (including ours) require non-c Comment
-        etree_in_c.Comment = Comment
+        # Third party serializers (including ours) test with non-c Comment
+        etree_in_c.test_comment = Comment
         return etree_in_c
     elif etree.VERSION < "1.1":
         message(CRITICAL, "ElementTree version 1.1 or higher is required")

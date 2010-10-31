@@ -40,7 +40,10 @@
 import util
 ElementTree = util.etree.ElementTree
 QName = util.etree.QName
-Comment = util.etree.Comment
+if hasattr(util.etree, 'test_comment'):
+    Comment = util.etree.test_comment
+else:
+    Comment = util.etree.Comment
 PI = util.etree.PI
 ProcessingInstruction = util.etree.ProcessingInstruction
 
