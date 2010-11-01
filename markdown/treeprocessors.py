@@ -1,5 +1,4 @@
 import re
-
 import inlinepatterns
 import util
 import odict
@@ -17,10 +16,12 @@ def isString(s):
     """ Check if it's string """
     return isinstance(s, unicode) or isinstance(s, str)
 
+
 class Processor:
     def __init__(self, markdown_instance=None):
         if markdown_instance:
             self.markdown = markdown_instance
+
 
 class Treeprocessor(Processor):
     """
@@ -48,12 +49,13 @@ class InlineProcessor(Treeprocessor):
     A Treeprocessor that traverses a tree, applying inline patterns.
     """
 
-    def __init__ (self, md):
+    def __init__(self, md):
         self.__placeholder_prefix = util.INLINE_PLACEHOLDER_PREFIX
         self.__placeholder_suffix = util.ETX
         self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
                                       + len(self.__placeholder_suffix)
-        self.__placeholder_re = re.compile(util.INLINE_PLACEHOLDER % r'([0-9]{4})')
+        self.__placeholder_re = \
+                            re.compile(util.INLINE_PLACEHOLDER % r'([0-9]{4})')
         self.markdown = md
 
     def __makePlaceholder(self, type):
@@ -72,8 +74,8 @@ class InlineProcessor(Treeprocessor):
         * index: index, from which we start search
 
         Returns: placeholder id and string index, after the found placeholder.
+        
         """
-
         m = self.__placeholder_re.search(data, index)
         if m:
             return m.group(1), m.end()
@@ -152,6 +154,7 @@ class InlineProcessor(Treeprocessor):
         * parent: Element, which contains processing inline data
 
         Returns: list with ElementTree elements with applied inline patterns.
+        
         """
         def linkText(text):
             if text:
@@ -165,7 +168,6 @@ class InlineProcessor(Treeprocessor):
                         parent.text += text
                     else:
                         parent.text = text
-
         result = []
         strartIndex = 0
         while data:
@@ -184,7 +186,7 @@ class InlineProcessor(Treeprocessor):
                         for child in [node] + node.getchildren():
                             if child.tail:
                                 if child.tail.strip():
-                                    self.__processElementText(node, child, False)
+                                    self.__processElementText(node, child,False)
                             if child.text:
                                 if child.text.strip():
                                     self.__processElementText(child, child)
@@ -217,7 +219,7 @@ class InlineProcessor(Treeprocessor):
         * data: the text to be processed
         * pattern: the pattern to be checked
         * patternIndex: index of current pattern
-        * startIndex: string index, from which we starting search
+        * startIndex: string index, from which we start searching
 
         Returns: String with placeholders instead of ElementTree elements.
 
@@ -231,14 +233,14 @@ class InlineProcessor(Treeprocessor):
         node = pattern.handleMatch(match)
 
         if node is None:
-            return data, True, len(leftData) + match.span(len(match.groups()))[0]
+            return data, True, len(leftData)+match.span(len(match.groups()))[0]
 
         if not isString(node):
             if not isinstance(node.text, util.AtomicString):
                 # We need to process current node too
                 for child in [node] + node.getchildren():
                     if not isString(node):
-                        if child.text:
+                        if child.text: 
                             child.text = self.__handleInline(child.text,
                                                             patternIndex + 1)
                         if child.tail:
@@ -256,14 +258,14 @@ class InlineProcessor(Treeprocessor):
 
         Iterate over ElementTree, find elements with inline tag, apply inline
         patterns and append newly created Elements to tree.  If you don't
-        want process your data with inline paterns, instead of normal string,
+        want to process your data with inline paterns, instead of normal string,
         use subclass AtomicString:
 
-            node.text = markdown.AtomicString("data won't be processed with inline patterns")
+            node.text = markdown.AtomicString("This will not be processed.")
 
         Arguments:
 
-        * markdownTree: ElementTree object, representing Markdown tree.
+        * tree: ElementTree object, representing Markdown tree.
 
         Returns: ElementTree object with applied inline patterns.
 
@@ -292,18 +294,18 @@ class InlineProcessor(Treeprocessor):
                     if element.text:
                         element.text = \
                             inlinepatterns.handleAttributes(element.text, 
-                                                                     element)
+                                                                    element)
                     i = 0
                     for newChild in lst:
                         # Processing attributes
                         if newChild.tail:
                             newChild.tail = \
                                 inlinepatterns.handleAttributes(newChild.tail,
-                                                                         element)
+                                                                    element)
                         if newChild.text:
                             newChild.text = \
                                 inlinepatterns.handleAttributes(newChild.text,
-                                                                         newChild)
+                                                                    newChild)
                         element.insert(i, newChild)
                         i += 1
         return tree
