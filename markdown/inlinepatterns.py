@@ -103,13 +103,13 @@ STRONG_EM_RE = r'(\*{3}|_{3})(.+?)\2'            # ***strong***
 SMART_EMPHASIS_RE = r'(?<!\w)(_)(\S.+?)\2(?!\w)'        # _smart_emphasis_
 EMPHASIS_2_RE = r'(_)(.+?)\2'                 # _emphasis_
 LINK_RE = NOIMG + BRK + \
-r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\12)?\)'''
-# [text](url) or [text](<url>)
+r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\12\s*)?\)'''
+# [text](url) or [text](<url>) or [text](url "title")
 
 IMAGE_LINK_RE = r'\!' + BRK + r'\s*\((<.*?>|([^\)]*))\)'
 # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
 REFERENCE_RE = NOIMG + BRK+ r'\s*\[([^\]]*)\]'           # [Google][3]
-SHORT_REF_RE = NOIMG + BRK                              # [Google]
+SHORT_REF_RE = NOIMG + r'\[([^\]]+)\]'                   # [Google]
 IMAGE_REFERENCE_RE = r'\!' + BRK + '\s*\[([^\]]*)\]' # ![alt text][2]
 NOT_STRONG_RE = r'((^| )(\*|_)( |$))'                        # stand-alone * or _
 AUTOLINK_RE = r'<((?:f|ht)tps?://[^>]*)>'        # <http://www.123.com>
@@ -256,7 +256,7 @@ class LinkPattern(Pattern):
     def handleMatch(self, m):
         el = util.etree.Element("a")
         el.text = m.group(2)
-        title = m.group(11)
+        title = m.group(13)
         href = m.group(9)
 
         if href:
@@ -332,10 +332,12 @@ class ReferencePattern(LinkPattern):
     NEWLINE_CLEANUP_RE = re.compile(r'[ ]?\n', re.MULTILINE)
 
     def handleMatch(self, m):
-        if m.group(9):
+        try:
             id = m.group(9).lower()
-        else:
-            # if we got something like "[Google][]"
+        except IndexError:
+            id = None
+        if not id:
+            # if we got something like "[Google][]" or "[Goggle]"
             # we'll use "google" as the id
             id = m.group(2).lower()
 
