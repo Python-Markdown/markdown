@@ -325,3 +325,48 @@ class testETreeComments(unittest.TestCase):
         pretty.run(self.comment)
         self.assertEqual(markdown.html4.to_html_string(self.comment),
                     '<!--foo-->\n')
+
+
+class testAtomicString(unittest.TestCase):
+    """ Test that AtomicStrings are honored (not parsed). """
+
+    def setUp(self):
+        md = markdown.Markdown()
+        self.inlineprocessor = md.treeprocessors['inline']
+
+    def testString(self):
+        """ Test that a regular string is parsed. """
+        tree = markdown.util.etree.Element('div')
+        p = markdown.util.etree.SubElement(tree, 'p')
+        p.text = u'some *text*'
+        new = self.inlineprocessor.run(tree)
+        self.assertEqual(markdown.html4.to_html_string(new), 
+                    '<div><p>some <em>text</em></p></div>')
+
+    def testSimpleAtomicString(self):
+        """ Test that a simple AtomicString is not parsed. """
+        tree = markdown.util.etree.Element('div')
+        p = markdown.util.etree.SubElement(tree, 'p')
+        p.text = markdown.util.AtomicString(u'some *text*')
+        new = self.inlineprocessor.run(tree)
+        self.assertEqual(markdown.html4.to_html_string(new), 
+                    '<div><p>some *text*</p></div>')
+
+    def testNestedAtomicString(self):
+        """ Test that a nested AtomicString is not parsed. """
+        tree = markdown.util.etree.Element('div')
+        p = markdown.util.etree.SubElement(tree, 'p')
+        p.text = markdown.util.AtomicString(u'*some* ')
+        span1 = markdown.util.etree.SubElement(p, 'span')
+        span1.text = markdown.util.AtomicString(u'*more* ')
+        span2 = markdown.util.etree.SubElement(span1, 'span')
+        span2.text = markdown.util.AtomicString(u'*text* ')
+        span3 = markdown.util.etree.SubElement(span2, 'span')
+        span3.text = markdown.util.AtomicString(u'*here*')
+        span3.tail = markdown.util.AtomicString(u' *to*')
+        span2.tail = markdown.util.AtomicString(u' *test*')
+        span1.tail = markdown.util.AtomicString(u' *with*')
+        new = self.inlineprocessor.run(tree)
+        self.assertEqual(markdown.html4.to_html_string(new), 
+            '<div><p>*some* <span>*more* <span>*text* <span>*here*</span> *to*</span> *test*</span> *with*</p></div>')
+

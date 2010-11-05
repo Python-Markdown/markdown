@@ -14,7 +14,9 @@ def build_treeprocessors(md_instance, **kwargs):
 
 def isString(s):
     """ Check if it's string """
-    return isinstance(s, unicode) or isinstance(s, str)
+    if not isinstance(s, util.AtomicString):
+        return isinstance(s, basestring)
+    return False
 
 
 class Processor:
@@ -204,6 +206,9 @@ class InlineProcessor(Treeprocessor):
                     strartIndex = end
             else:
                 text = data[strartIndex:]
+                if isinstance(data, util.AtomicString):
+                    # We don't want to loose the AtomicString
+                    text = util.AtomicString(text)
                 linkText(text)
                 data = ""
 
