@@ -122,6 +122,7 @@ class Markdown:
         self.inlinePatterns = build_inlinepatterns(self)
         self.treeprocessors = build_treeprocessors(self)
         self.postprocessors = build_postprocessors(self)
+        return self
 
     def registerExtensions(self, extensions, configs):
         """
@@ -146,6 +147,8 @@ class Markdown:
                 message(ERROR,
                 'Extension "%s.%s" must be of type: "markdown.Extension".' \
                     % (ext.__class__.__module__, ext.__class__.__name__))
+
+        return self
 
     def build_extension(self, ext_name, configs = []):
         """Build extension by name, then return the module.
@@ -191,6 +194,7 @@ class Markdown:
     def registerExtension(self, extension):
         """ This gets called by the extension """
         self.registeredExtensions.append(extension)
+        return self
 
     def reset(self):
         """
@@ -203,6 +207,8 @@ class Markdown:
             if hasattr(extension, 'reset'):
                 extension.reset()
 
+        return self
+
     def set_output_format(self, format):
         """ Set the output format for the class instance. """
         try:
@@ -211,6 +217,7 @@ class Markdown:
             message(CRITICAL,
                     'Invalid Output Format: "%s". Use one of %s.' \
                                % (format, self.output_formats.keys()))
+        return self
 
     def convert(self, source):
         """
@@ -325,6 +332,8 @@ class Markdown:
             output_file.close()
         else:
             output.write(html.encode(encoding))
+
+        return self
 
 
 """
