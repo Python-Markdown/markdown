@@ -116,6 +116,10 @@ class build_docs(Command):
             return 'Python Markdown'
 
     def run(self):
+        # Before importing markdown, we have to tweak sys.path because we have to import it from
+        # the build directory (we might have ran 2to3 on the library)
+        bld_cmd = self.get_finalized_command("build")
+        sys.path.insert(0, bld_cmd.build_lib)
         try:
             import markdown
         except ImportError:
@@ -134,12 +138,12 @@ class build_docs(Command):
                         if self.verbose:
                             print ('Converting %s -> %s' % (infile, outfile))
                         if not self.dry_run:
-                            doc = open(outfile, 'w')
-                            doc.write(doc_header % {'title': title, 
-                                                    'menu': menu})
+                            doc = open(outfile, 'wb')
+                            header = doc_header % {'title': title, 'menu': menu}
+                            doc.write(header.encode('utf-8'))
                             md.convertFile(infile, doc)
                             md.reset()
-                            doc.write(doc_footer)
+                            doc.write(doc_footer.encode('utf-8'))
                             doc.close()
 
 
