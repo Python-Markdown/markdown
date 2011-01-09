@@ -116,8 +116,8 @@ class build_docs(Command):
             return 'Python Markdown'
 
     def run(self):
-        # Before importing markdown, we have to tweak sys.path because we have to import it from
-        # the build directory (we might have ran 2to3 on the library)
+        # Before importing markdown, tweak sys.path to import from the 
+        # build directory (2to3 might have run on the library).
         bld_cmd = self.get_finalized_command("build")
         sys.path.insert(0, bld_cmd.build_lib)
         try:
