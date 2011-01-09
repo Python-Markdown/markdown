@@ -84,7 +84,7 @@ class HeaderIdProcessor(markdown.blockprocessors.BlockProcessor):
                         (?P<level>\#{1,6})  # group('level') = string of hashes
                         (?P<header>.*?)     # group('header') = Header text
                         \#*                 # optional closing hashes
-                        (?:[ \t]*\{[ \t]*\#(?P<id>[-_:a-zA-Z0-9]+)[ \t]*\})?
+                        (?:[ \t]*\{[ \t]*\#(?P<id>[-_.:a-zA-Z0-9]+)[ \t]*\})?
                         (\n|$)              #  ^^ group('id') = id attribute
                      """,
                      re.VERBOSE)
