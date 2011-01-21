@@ -34,7 +34,7 @@ class md_install_scripts(install_scripts):
                 script_path = os.path.join(script_dir, SCRIPT_NAME)
                 bat_str = '@"%s" "%s" %%*' % (sys.executable, script_path)
                 bat_path = os.path.join(self.install_dir, '%s.bat' %SCRIPT_NAME)
-                f = file(bat_path, 'w')
+                f = open(bat_path, 'w')
                 f.write(bat_str)
                 f.close()
                 print ('Created: %s' % bat_path)
