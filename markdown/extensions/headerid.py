@@ -157,7 +157,7 @@ class HeaderIdProcessor(markdown.blockprocessors.BlockProcessor):
     def _create_id(self, header):
         """ Return ID from Header text. """
         h = ''
-        for c in header.lower().replace(' ', '_'):
+        for c in header.lower().replace(' ', self.config['separator'][0]):
             if c in ID_CHARS:
                 h += c
             elif c not in punctuation:
@@ -170,7 +170,8 @@ class HeaderIdExtension (markdown.Extension):
         # set defaults
         self.config = {
                 'level' : ['1', 'Base level for headers.'],
-                'forceid' : ['True', 'Force all headers to have an id.']
+                'forceid' : ['True', 'Force all headers to have an id.'],
+                'separator' : ['_', 'Word separator.'],
             }
 
         for key, value in configs:
