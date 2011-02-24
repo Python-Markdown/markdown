@@ -70,7 +70,11 @@ class MetaPreprocessor(markdown.preprocessors.Preprocessor):
             m1 = META_RE.match(line)
             if m1:
                 key = m1.group('key').lower().strip()
-                meta[key] = [m1.group('value').strip()]
+                value = m1.group('value').strip()
+                try:
+                    meta[key].append(value)
+                except KeyError:
+                    meta[key] = [value]
             else:
                 m2 = META_MORE_RE.match(line)
                 if m2 and key:
