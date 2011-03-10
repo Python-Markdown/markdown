@@ -54,6 +54,10 @@ You should also use this method if you want to process multiple strings:
     html1 = md.convert(text1)
     html2 = md.convert(text2)
 
+Any options accepted by the `Markdown` class are also accepted by the 
+`markdown` shortcut function. However, a new instant of the class will be
+created each time the shortcut function is called.
+
 Working with Files
 ------------------
 
@@ -121,6 +125,10 @@ still create links using Markdown syntax.)
 
 * To escape HTML, set ``safe_mode="escape"``. The HTML will be escaped and 
     included in the document.
+
+Note that "safe_mode" does not alter the "enable_attributes" option, which 
+could allow someone to inject javascript (i.e., `{@onclick=alert(1)}`). You 
+may also want to set `enable_attributes=False` when using "safe_mode".
 
 Output Formats
 --------------
