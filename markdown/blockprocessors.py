@@ -367,6 +367,7 @@ class OListProcessor(BlockProcessor):
         for line in block.split('\n'):
             m = self.CHILD_RE.match(line)
             if m:
+                # This is a new list item
                 # Check first item for the start index
                 if not items and self.TAG=='ol':
                     # Detect the integer value of first list item
