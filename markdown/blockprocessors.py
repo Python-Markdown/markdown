@@ -300,6 +300,11 @@ class OListProcessor(BlockProcessor):
     CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.)|[*+-])[ ]+(.*)')
     # Detect indented (nested) items of either type
     INDENT_RE = re.compile(r'^[ ]{4,7}((\d+\.)|[*+-])[ ]+.*')
+    # The integer with which the lists starts (None means start with 0)
+    # Eg: If list is intialized as)
+    #   3. Item
+    # The ol tag will get starts="3" attribute
+    STARTSWITH = None
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
@@ -339,6 +344,10 @@ class OListProcessor(BlockProcessor):
         else:
             # This is a new list so create parent with appropriate tag.
             lst = util.etree.SubElement(parent, self.TAG)
+            # Check if a custom start integer is set
+            if self.STARTSWITH:
+                lst.attrib['start'] = self.STARTSWITH
+
         self.parser.state.set('list')
         # Loop through items in block, recursively parsing each with the
         # appropriate parent.
@@ -358,7 +367,14 @@ class OListProcessor(BlockProcessor):
         for line in block.split('\n'):
             m = self.CHILD_RE.match(line)
             if m:
-                # This is a new item. Append
+                # Check first item for the start index
+                if not items and self.TAG=='ol':
+                    # Detect the integer value of first list item
+                    INTEGER_RE = re.compile('(\d+)')
+                    start_integer = INTEGER_RE.match(m.group(1)).group()
+                    if start_integer!='1':
+                        self.STARTSWITH = start_integer
+                # Append to the list
                 items.append(m.group(3))
             elif self.INDENT_RE.match(line):
                 # This is an indented (possibly nested) item.
