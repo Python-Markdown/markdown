@@ -77,14 +77,18 @@ class CodeHilite:
                                         TextLexer
             from pygments.formatters import HtmlFormatter
         except ImportError:
-            # just escape and pass through
+            # just escape and build markup usable by JS highlighting libs
             txt = self._escape(self.src)
+            classes = []
+            if self.lang:
+                classes.append('language-%s' % self.lang)
             if self.linenos:
-                txt = self._number(txt)
-            else :
-                txt = '<div class="%s"><pre>%s</pre></div>\n'% \
-                        (self.css_class, txt)
-            return txt
+                classes.append('linenums')
+            class_str = ''
+            if classes:
+                class_str = ' class="%s"' % ' '.join(classes) 
+            return '<pre class="%s"><code%s>%s</code></pre>\n'% \
+                        (self.css_class, class_str, txt)
         else:
             try:
                 lexer = get_lexer_by_name(self.lang)
@@ -107,28 +111,11 @@ class CodeHilite:
         txt = txt.replace('"', '&quot;')
         return txt
 
-    def _number(self, txt):
-        """ Use <ol> for line numbering """
-        # Fix Whitespace
-        txt = txt.replace('\t', ' '*self.tab_length)
-        txt = txt.replace(" "*4, "&nbsp; &nbsp; ")
-        txt = txt.replace(" "*3, "&nbsp; &nbsp;")
-        txt = txt.replace(" "*2, "&nbsp; ")
-
-        # Add line numbers
-        lines = txt.splitlines()
-        txt = '<div class="codehilite"><pre><ol>\n'
-        for line in lines:
-            txt += '\t<li>%s</li>\n'% line
-        txt += '</ol></pre></div>\n'
-        return txt
-
-
     def _getLang(self):
         """
-        Determines language of a code block from shebang lines and whether said
+        Determines language of a code block from shebang line and whether said
         line should be removed or left in place. If the sheband line contains a
-        path (even a single /) then it is assumed to be a real shebang lines and
+        path (even a single /) then it is assumed to be a real shebang line and
         left alone. However, if no path is given (e.i.: #!python or :::python)
         then it is assumed to be a mock shebang for language identifitation of a
         code fragment and removed from the code block prior to processing for
