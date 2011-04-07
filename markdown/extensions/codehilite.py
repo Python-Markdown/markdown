@@ -21,6 +21,13 @@ Dependencies:
 """
 
 import markdown
+try:
+    from pygments import highlight
+    from pygments.lexers import get_lexer_by_name, guess_lexer, TextLexer
+    from pygments.formatters import HtmlFormatter
+    pygments = True
+except ImportError:
+    pygments = False
 
 # ------------------ The Main CodeHilite Class ----------------------
 class CodeHilite:
@@ -71,25 +78,7 @@ class CodeHilite:
         if self.lang == None:
             self._getLang()
 
-        try:
-            from pygments import highlight
-            from pygments.lexers import get_lexer_by_name, guess_lexer, \
-                                        TextLexer
-            from pygments.formatters import HtmlFormatter
-        except ImportError:
-            # just escape and build markup usable by JS highlighting libs
-            txt = self._escape(self.src)
-            classes = []
-            if self.lang:
-                classes.append('language-%s' % self.lang)
-            if self.linenos:
-                classes.append('linenums')
-            class_str = ''
-            if classes:
-                class_str = ' class="%s"' % ' '.join(classes) 
-            return '<pre class="%s"><code%s>%s</code></pre>\n'% \
-                        (self.css_class, class_str, txt)
-        else:
+        if pygments:
             try:
                 lexer = get_lexer_by_name(self.lang)
             except ValueError:
@@ -102,14 +91,22 @@ class CodeHilite:
                                       style=self.style,
                                       noclasses=self.noclasses)
             return highlight(self.src, lexer, formatter)
-
-    def _escape(self, txt):
-        """ basic html escaping """
-        txt = txt.replace('&', '&amp;')
-        txt = txt.replace('<', '&lt;')
-        txt = txt.replace('>', '&gt;')
-        txt = txt.replace('"', '&quot;')
-        return txt
+        else:
+            # just escape and build markup usable by JS highlighting libs
+            txt = self.src.replace('&', '&amp;')
+            txt = txt.replace('<', '&lt;')
+            txt = txt.replace('>', '&gt;')
+            txt = txt.replace('"', '&quot;')
+            classes = []
+            if self.lang:
+                classes.append('language-%s' % self.lang)
+            if self.linenos:
+                classes.append('linenums')
+            class_str = ''
+            if classes:
+                class_str = ' class="%s"' % ' '.join(classes) 
+            return '<pre class="%s"><code%s>%s</code></pre>\n'% \
+                        (self.css_class, class_str, txt)
 
     def _getLang(self):
         """
