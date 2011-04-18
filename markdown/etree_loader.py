@@ -1,6 +1,3 @@
-from logging import CRITICAL
-from md_logging import message
-import sys
 
 ## Import
 def importETree():
@@ -20,18 +17,15 @@ def importETree():
                 try: # An earlier version of Python with Python ElementTree?
                     import elementtree.ElementTree as etree
                 except ImportError:
-                    message(CRITICAL, "Failed to import ElementTree")
-                    sys.exit(1)
+                    raise ImportError("Failed to import ElementTree")
     if etree_in_c: 
         if etree_in_c.VERSION < "1.0":
-            message(CRITICAL, "cElementTree version 1.0 or higher is required.")
-            sys.exit(1)
+            raise RuntimeError("cElementTree version 1.0 or higher is required.")
         # Third party serializers (including ours) test with non-c Comment
         etree_in_c.test_comment = Comment
         return etree_in_c
     elif etree.VERSION < "1.1":
-        message(CRITICAL, "ElementTree version 1.1 or higher is required")
-        sys.exit(1)
+        raise RuntimeError("ElementTree version 1.1 or higher is required")
     else:
         return etree
 

@@ -15,8 +15,7 @@ as they need to alter how markdown blocks are parsed.
 import re
 import util
 from blockparser import BlockParser
-from logging import CRITICAL
-from md_logging import message
+from markdown import logger
 
 
 def build_block_parser(md_instance, **kwargs):
@@ -408,7 +407,7 @@ class HashHeaderProcessor(BlockProcessor):
                 blocks.insert(0, after)
         else:
             # This should never happen, but just in case...
-            message(CRITICAL, "We've got a problem header!")
+            logger.warn("We've got a problem header: %r" % block)
 
 
 class SetextHeaderProcessor(BlockProcessor):
