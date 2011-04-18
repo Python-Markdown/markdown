@@ -48,8 +48,7 @@ import html4
 # For backwards compatibility in the 2.0.x series
 # The things defined in these modules started off in __init__.py so third
 # party code might need to access them here.
-#from util import *
-
+from util import *
 
 logger =  logging.getLogger('MARKDOWN')
 

@@ -12,10 +12,12 @@ as they need to alter how markdown blocks are parsed.
 
 """
 
+import logging
 import re
 import util
 from blockparser import BlockParser
-from markdown import logger
+
+logger =  logging.getLogger('MARKDOWN')
 
 
 def build_block_parser(md_instance, **kwargs):

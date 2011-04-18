@@ -7,9 +7,11 @@ COMMAND-LINE SPECIFIC STUFF
 import markdown
 import sys
 import optparse
+
+import logging
 from logging import DEBUG, INFO, CRITICAL
 
-from markdown import logger
+logger =  logging.getLogger('MARKDOWN')
 
 # default logging level for command-line use
 COMMAND_LINE_LOGGING_LEVEL = CRITICAL
