@@ -19,8 +19,8 @@ def importETree():
                 except ImportError:
                     raise ImportError("Failed to import ElementTree")
     if etree_in_c: 
-        if etree_in_c.VERSION < "1.0":
-            raise RuntimeError("cElementTree version 1.0 or higher is required.")
+        if etree_in_c.VERSION < "1.0.5":
+            raise RuntimeError("cElementTree version 1.0.5 or higher is required.")
         # Third party serializers (including ours) test with non-c Comment
         etree_in_c.test_comment = Comment
         return etree_in_c
