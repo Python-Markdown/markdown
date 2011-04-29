@@ -243,8 +243,12 @@ class Markdown:
         if not source.strip():
             return u""  # a blank unicode string
         
-        # if this raises UnicodeDecodeError, that's the caller's fault.
-        source = unicode(source)
+        try:
+            source = unicode(source)
+        except UnicodeDecodeError, e:
+            # Customise error message while maintaining original trackback
+            e.reason += '. -- Note: Markdown only accepts unicode input!'
+            raise
 
         source = source.replace(util.STX, "").replace(util.ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
