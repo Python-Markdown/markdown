@@ -49,6 +49,9 @@ def parse_options():
                       help="print debug messages")
     parser.add_option("-x", "--extension", action="append", dest="extensions",
                       help = "load extension EXTENSION", metavar="EXTENSION")
+    parser.add_option("-n", "--no_lazy_ol", dest="lazy_ol", 
+                      action='store_false', default=True,
+                      help="Observe number of first item of ordered lists.")
 
     (options, args) = parser.parse_args()
 
@@ -65,7 +68,8 @@ def parse_options():
             'safe_mode': options.safe,
             'extensions': options.extensions,
             'encoding': options.encoding,
-            'output_format': options.output_format}, options.verbose
+            'output_format': options.output_format,
+            'lazy_ol': options.lazy_ol}, options.verbose
 
 def run():
     """Run Markdown from the command line."""

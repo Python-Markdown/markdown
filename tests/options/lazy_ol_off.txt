@@ -1,0 +1,17 @@
+A numbered list from daringfireball:
+
+3. Bird
+1. McHale
+8. Parish
+
+Again:
+
+3. Bird
+1. McHale
+8. Parish
+
+Now starting with 1:
+
+1. Bird
+1. McHale
+8. Parish

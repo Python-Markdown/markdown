@@ -63,6 +63,7 @@ class Markdown:
         'tab_length'            : 4,
         'enable_attributes'     : True,
         'smart_emphasis'        : True,
+        'lazy_ol'               : True,
     }
     
     output_formats = {
@@ -96,6 +97,7 @@ class Markdown:
         * tab_length: Length of tabs in the source. Default: 4
         * enable_attributes: Enable the conversion of attributes. Default: True
         * smart_emphsasis: Treat `_connected_words_` intelegently Default: True
+        * lazy_ol: Ignore number of first item of ordered lists. Default: True
 
         """
 
@@ -353,16 +355,7 @@ def markdown(text, *args, **kwargs):
     Keyword arguments:
 
     * text: Markdown formatted text as Unicode or ASCII string.
-    * extensions: A list of extensions or extension names (may contain config args).
-    * safe_mode: Disallow raw html.  One of "remove", "replace" or "escape".
-    * output_format: Format of output. Supported formats are:
-        * "xhtml1": Outputs XHTML 1.x. Default.
-        * "xhtml": Outputs latest supported version of XHTML (currently XHTML 1.1).
-        * "html4": Outputs HTML 4
-        * "html": Outputs latest supported version of HTML (currently HTML 4).
-        Note that it is suggested that the more specific formats ("xhtml1"
-        and "html4") be used as "xhtml" or "html" may change in the future
-        if it makes sense at that time.
+    * Any arguments accepted by the Markdown class.
 
     Returns: An HTML document as a string.
 
