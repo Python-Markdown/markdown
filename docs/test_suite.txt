@@ -98,10 +98,6 @@ settings under a specific file section will override anything in the
 Below are each of the config options available and the defaults used when they
 are not explicitly set.
 
-* `extensions`: A comma separated list of extensions to use with the test.
-   Defaults to an empty list.  
-* `safe_mode`: Switches safe_mode on and off. Defaults to `False` (off).  
-* `output_format`: Defines the expected output_format. Defaults to `xhtml1`.  
 * `normalize`: Switches whitespace normalization of the test output on or off. 
   Defaults to `0` (off). Note: This requires that [uTidylib] be installed on 
   the system. Otherwise the test will be skipped, regardless of any other 
@@ -111,6 +107,8 @@ are not explicitly set.
   from other implementations.
 * `output_ext`: Extension of output file. Defaults to `.html`. Useful for tests
   from other implementations.
+* Any keyword arguement accepted my Markdown. If not set, Markdown's defaults
+  are used. 
 
 ## Unit Tests
 

@@ -12,4 +12,8 @@ class CustomConfigParser(SafeConfigParser):
                 return value.split(',')
             else:
                 return []
+        if value.lower() in ['yes', 'true', 'on']:
+            return True
+        if value.lower() in ['no', 'false', 'off']:
+            return False
         return value

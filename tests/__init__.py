@@ -43,8 +43,10 @@ def get_args(file, config):
     """ Get args to pass to markdown from config for a given file. """
     args = {}
     section = get_section(file, config)
-    for key in ['extensions', 'safe_mode', 'output_format']:
-        args[key] = config.get(section, key)
+    for key, v in config.items(section):
+        # Filter out args unique to testing framework
+        if key not in ['normalize', 'skip', 'input_ext', 'output_ext']:
+            args[key] = config.get(section, key)
     return args
 
 def normalize(text):
@@ -97,10 +99,7 @@ class CheckSyntax(object):
 def TestSyntax():
     for dir_name, sub_dirs, files in os.walk(test_dir):
         # Get dir specific config settings.
-        config = util.CustomConfigParser({'extensions': '', 
-                                          'safe_mode': False,
-                                          'output_format': 'xhtml1',
-                                          'normalize': '0',
+        config = util.CustomConfigParser({'normalize': '0',
                                           'skip': '0',
                                           'input_ext': '.txt',
                                           'output_ext': '.html'})
