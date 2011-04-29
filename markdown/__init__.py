@@ -35,8 +35,7 @@ version_info = (2,1,0, "Dev")
 
 import re
 import codecs
-from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
-from md_logging import message
+import logging
 import util
 from preprocessors import build_preprocessors
 from blockprocessors import build_block_parser
@@ -50,6 +49,8 @@ import html4
 # The things defined in these modules started off in __init__.py so third
 # party code might need to access them here.
 from util import *
+
+logger =  logging.getLogger('MARKDOWN')
 
 
 class Markdown:
@@ -139,13 +140,10 @@ class Markdown:
             if isinstance(ext, basestring):
                 ext = self.build_extension(ext, configs.get(ext, []))
             if isinstance(ext, Extension):
-                try:
-                    ext.extendMarkdown(self, globals())
-                except NotImplementedError, e:
-                    message(ERROR, e)
+                # might raise NotImplementedError, but that's the extension author's problem
+                ext.extendMarkdown(self, globals())
             else:
-                message(ERROR,
-                'Extension "%s.%s" must be of type: "markdown.Extension".' \
+                raise ValueError('Extension "%s.%s" must be of type: "markdown.Extension".' \
                     % (ext.__class__.__module__, ext.__class__.__name__))
 
         return self
@@ -179,17 +177,18 @@ class Markdown:
             try: # Old style (mdx_<extension>)
                 module = __import__(module_name_old_style)
             except ImportError:
-               message(WARN, "Failed loading extension '%s' from '%s' or '%s'"
-                   % (ext_name, module_name_new_style, module_name_old_style))
-               # Return None so we don't try to initiate none-existant extension
-               return None
+                logger.warn("Failed loading extension '%s' from '%s' or '%s'"
+                    % (ext_name, module_name_new_style, module_name_old_style))
+                # Return None so we don't try to initiate none-existant extension
+                return None
 
         # If the module is loaded successfully, we expect it to define a
         # function called makeExtension()
         try:
             return module.makeExtension(configs.items())
         except AttributeError, e:
-            message(CRITICAL, "Failed to initiate extension '%s': %s" % (ext_name, e))
+            logger.warn("Failed to initiate extension '%s': %s" % (ext_name, e))
+            return None
     
     def registerExtension(self, extension):
         """ This gets called by the extension """
@@ -214,8 +213,7 @@ class Markdown:
         try:
             self.serializer = self.output_formats[format.lower()]
         except KeyError:
-            message(CRITICAL,
-                    'Invalid Output Format: "%s". Use one of %s.' \
+            raise KeyError('Invalid Output Format: "%s". Use one of %s.' \
                                % (format, self.output_formats.keys()))
         return self
 
@@ -244,12 +242,13 @@ class Markdown:
         # Fixup the source text
         if not source.strip():
             return u""  # a blank unicode string
+        
         try:
             source = unicode(source)
-        except UnicodeDecodeError:
-            message(CRITICAL,
-                    'UnicodeDecodeError: Markdown only accepts unicode or ascii input.')
-            return u""
+        except UnicodeDecodeError, e:
+            # Customise error message while maintaining original trackback
+            e.reason += '. -- Note: Markdown only accepts unicode input!'
+            raise
 
         source = source.replace(util.STX, "").replace(util.ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
@@ -283,7 +282,7 @@ class Markdown:
                     output = ''
                 else:
                     # We have a serious problem
-                    message(CRITICAL, 'Failed to strip top level tags.')
+                    raise ValueError('Markdown failed to strip top-level tags. Document=%r' % output.strip())
 
         # Run the text post-processors
         for pp in self.postprocessors.values():

@@ -67,10 +67,11 @@ Dependencies:
 
 import markdown
 from markdown.util import etree
-from logging import CRITICAL 
-from markdown.md_logging import message
 import re
 from string import ascii_lowercase, digits, punctuation
+import logging
+
+logger = logging.getLogger('MARKDOWN')
 
 ID_CHARS = ascii_lowercase + digits + '-_'
 IDCOUNT_RE = re.compile(r'^(.*)_([0-9]+)$')
@@ -121,7 +122,7 @@ class HeaderIdProcessor(markdown.blockprocessors.BlockProcessor):
                 blocks.insert(0, after)
         else:
             # This should never happen, but just in case...
-            message(CRITICAL, "We've got a problem header!")
+            logger.warn("We've got a problem header: %r" % block)
 
     def _get_meta(self):
         """ Return meta data suported by this ext as a tuple """

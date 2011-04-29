@@ -7,8 +7,11 @@ COMMAND-LINE SPECIFIC STUFF
 import markdown
 import sys
 import optparse
+
 import logging
-from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
+from logging import DEBUG, INFO, CRITICAL
+
+logger =  logging.getLogger('MARKDOWN')
 
 # default logging level for command-line use
 COMMAND_LINE_LOGGING_LEVEL = CRITICAL
@@ -69,8 +72,8 @@ def run():
 
     # Parse options and adjust logging level if necessary
     options, logging_level = parse_options()
-    if not options: sys.exit(0)
-    if logging_level: logging.getLogger('MARKDOWN').setLevel(logging_level)
+    if not options: sys.exit(2)
+    if logging_level: logger.setLevel(logging_level)
 
     # Run
     markdown.markdownFromFile(**options)

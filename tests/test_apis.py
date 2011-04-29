@@ -13,8 +13,6 @@ import os
 import sys
 import types
 import markdown
-from markdown.md_logging import MarkdownException, MarkdownWarning
-from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
 import warnings
 
 class TestMarkdownBasics(unittest.TestCase):
@@ -226,47 +224,34 @@ class TestErrors(unittest.TestCase):
         # Reset warning behavior back to default
         warnings.simplefilter('default')
 
-    def testMessageWarn(self):
-        """ Test message WARN. """
-        self.assertRaises(MarkdownWarning, markdown.md_logging.message, 
-                            WARN, 'This should raise a MardownWarning')
-
-    def testMessageError(self):
-        """ Test message ERROR. """
-        self.assertRaises(MarkdownException, markdown.md_logging.message, 
-                            ERROR, 'This should raise a MarkdownException')
-
     def testNonUnicodeSource(self):
         """ Test falure on non-unicode source text. """
         source = "foo".encode('utf-16') 
-        self.assertRaises(MarkdownException, markdown.markdown, source)
+        self.assertRaises(UnicodeDecodeError, markdown.markdown, source)
 
     def testBadOutputFormat(self):
         """ Test failure on bad output_format. """
-        self.assertRaises(MarkdownException, 
-                            markdown.Markdown, output_format='invalid')
+        self.assertRaises(KeyError, markdown.Markdown, output_format='invalid')
 
     def testLoadExtensionFailure(self):
         """ Test failure of an extension to load. """
-        self.assertRaises(MarkdownWarning, 
+        self.assertRaises(ValueError, 
                         markdown.Markdown, extensions=['non_existant_ext']) 
 
     def testLoadBadExtension(self):
         """ Test loading of an Extension with no makeExtension function. """
         _create_fake_extension(name='fake', has_factory_func=False)
-        self.assertRaises(MarkdownException,
-                        markdown.Markdown, extensions=['fake'])
+        self.assertRaises(ValueError, markdown.Markdown, extensions=['fake'])
 
     def testNonExtension(self):
         """ Test loading a non Extension object as an extension. """
         _create_fake_extension(name='fake', is_wrong_type=True)
-        self.assertRaises(MarkdownException, 
-                        markdown.Markdown, extensions=['fake'])
+        self.assertRaises(ValueError, markdown.Markdown, extensions=['fake'])
 
     def testBaseExtention(self):
         """ Test that the base Extension class will raise NotImplemented. """
         _create_fake_extension(name='fake')
-        self.assertRaises(MarkdownException, 
+        self.assertRaises(NotImplementedError, 
                         markdown.Markdown, extensions=['fake'])
 
 
