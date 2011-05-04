@@ -92,12 +92,6 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
         self.checked_for_codehilite = False
         self.codehilite_conf = {}
 
-    def getConfig(self, key):
-        if key in self.config:
-            return self.config[key][0]
-        else:
-            return None
-
     def run(self, lines):
         """ Match and store Fenced Code Blocks in the HtmlStash. """
 
@@ -122,11 +116,11 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
                 # is enabled, so we call it to highlite the code
                 if self.codehilite_conf:
                     highliter = CodeHilite(m.group('code'),
-                            linenos=self.codehilite_conf['force_linenos'][0],
-                            css_class=self.codehilite_conf['css_class'][0],
-                            style=self.codehilite_conf['pygments_style'][0],
+                            linenos=self.codehilite_conf['force_linenos'],
+                            css_class=self.codehilite_conf['css_class'],
+                            style=self.codehilite_conf['pygments_style'],
                             lang=(m.group('lang') or None),
-                            noclasses=self.codehilite_conf['noclasses'][0])
+                            noclasses=self.codehilite_conf['noclasses'])
 
                     code = highliter.hilite()
                 else:

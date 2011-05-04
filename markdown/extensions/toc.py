@@ -25,10 +25,10 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
         last_li = None
 
         # Add title to the div
-        if self.config["title"][0]:
+        if self.config["title"]:
             header = etree.SubElement(div, "span")
             header.attrib["class"] = "toctitle"
-            header.text = self.config["title"][0]
+            header.text = self.config["title"]
 
         level = 0
         list_stack=[div]
@@ -51,7 +51,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
             # would causes an enless loop of placing a new TOC 
             # inside previously generated TOC.
 
-            if c.text.find(self.config["marker"][0]) > -1 and not header_rgx.match(c.tag):
+            if c.text.find(self.config["marker"]) > -1 and not header_rgx.match(c.tag):
                 for i in range(len(p)):
                     if p[i] == c:
                         p[i] = div
@@ -78,7 +78,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
 
                 # Do not override pre-existing ids 
                 if not "id" in c.attrib:
-                    id = self.config["slugify"][0](c.text)
+                    id = self.config["slugify"](c.text)
                     if id in used_ids:
                         ctr = 1
                         while "%s_%d" % (id, ctr) in used_ids:
@@ -95,7 +95,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 link.text = c.text
                 link.attrib["href"] = '#' + id
 
-                if int(self.config["anchorlink"][0]):
+                if int(self.config["anchorlink"]):
                     anchor = etree.SubElement(c, "a")
                     anchor.text = c.text
                     anchor.attrib["href"] = "#" + id
@@ -132,7 +132,7 @@ class TocExtension(markdown.Extension):
 
     def extendMarkdown(self, md, md_globals):
         tocext = TocTreeprocessor(md)
-        tocext.config = self.config
+        tocext.config = self.getConfigs()
         md.treeprocessors.add("toc", tocext, "_begin")
 	
 def makeExtension(configs={}):

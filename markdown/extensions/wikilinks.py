@@ -106,7 +106,7 @@ class WikiLinkExtension(markdown.Extension):
     
         # append to end of inline patterns
         WIKILINK_RE = r'\[\[([\w0-9_ -]+)\]\]'
-        wikilinkPattern = WikiLinks(WIKILINK_RE, self.config)
+        wikilinkPattern = WikiLinks(WIKILINK_RE, self.getConfigs())
         wikilinkPattern.md = md
         md.inlinePatterns.add('wikilink', wikilinkPattern, "<not_strong")
 
@@ -120,7 +120,7 @@ class WikiLinks(markdown.inlinepatterns.Pattern):
         if m.group(2).strip():
             base_url, end_url, html_class = self._getMeta()
             label = m.group(2).strip()
-            url = self.config['build_url'][0](label, base_url, end_url)
+            url = self.config['build_url'](label, base_url, end_url)
             a = markdown.util.etree.Element('a')
             a.text = label 
             a.set('href', url)
@@ -132,9 +132,9 @@ class WikiLinks(markdown.inlinepatterns.Pattern):
 
     def _getMeta(self):
         """ Return meta data or config data. """
-        base_url = self.config['base_url'][0]
-        end_url = self.config['end_url'][0]
-        html_class = self.config['html_class'][0]
+        base_url = self.config['base_url']
+        end_url = self.config['end_url']
+        html_class = self.config['html_class']
         if hasattr(self.md, 'Meta'):
             if self.md.Meta.has_key('wiki_base_url'):
                 base_url = self.md.Meta['wiki_base_url'][0]

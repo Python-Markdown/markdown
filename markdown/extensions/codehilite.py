@@ -168,10 +168,10 @@ class HiliteTreeprocessor(markdown.treeprocessors.Treeprocessor):
             children = block.getchildren()
             if len(children) == 1 and children[0].tag == 'code':
                 code = CodeHilite(children[0].text,
-                            linenos=self.config['force_linenos'][0],
-                            css_class=self.config['css_class'][0],
-                            style=self.config['pygments_style'][0],
-                            noclasses=self.config['noclasses'][0],
+                            linenos=self.config['force_linenos'],
+                            css_class=self.config['css_class'],
+                            style=self.config['pygments_style'],
+                            noclasses=self.config['noclasses'],
                             tab_length=self.markdown.tab_length)
                 placeholder = self.markdown.htmlStash.store(code.hilite(),
                                                             safe=True)
@@ -203,7 +203,7 @@ class CodeHiliteExtension(markdown.Extension):
     def extendMarkdown(self, md, md_globals):
         """ Add HilitePostprocessor to Markdown instance. """
         hiliter = HiliteTreeprocessor(md)
-        hiliter.config = self.config
+        hiliter.config = self.getConfigs
         md.treeprocessors.add("hilite", hiliter, "_begin")
 
         md.registerExtension(self)

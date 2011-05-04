@@ -126,8 +126,8 @@ class HeaderIdProcessor(markdown.blockprocessors.BlockProcessor):
 
     def _get_meta(self):
         """ Return meta data suported by this ext as a tuple """
-        level = int(self.config['level'][0]) - 1
-        force = self._str2bool(self.config['forceid'][0])
+        level = int(self.config['level']) - 1
+        force = self._str2bool(self.config['forceid'])
         if hasattr(self.md, 'Meta'):
             if self.md.Meta.has_key('header_level'):
                 level = int(self.md.Meta['header_level'][0]) - 1
@@ -158,7 +158,7 @@ class HeaderIdProcessor(markdown.blockprocessors.BlockProcessor):
     def _create_id(self, header):
         """ Return ID from Header text. """
         h = ''
-        for c in header.lower().replace(' ', self.config['separator'][0]):
+        for c in header.lower().replace(' ', self.config['separator']):
             if c in ID_CHARS:
                 h += c
             elif c not in punctuation:
@@ -182,7 +182,7 @@ class HeaderIdExtension (markdown.Extension):
         md.registerExtension(self)
         self.processor = HeaderIdProcessor(md.parser)
         self.processor.md = md
-        self.processor.config = self.config
+        self.processor.config = self.getConfigs()
         # Replace existing hasheader in place.
         md.parser.blockprocessors['hashheader'] = self.processor
 

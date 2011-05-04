@@ -22,8 +22,8 @@ class Extension:
             return default
 
     def getConfigs(self):
-        """ Return all configs settings as a list of tuples. """
-        return [(key, self.getConfig(key)) for key in self.config.keys()]
+        """ Return all configs settings as a dict. """
+        return dict([(key, self.getConfig(key)) for key in self.config.keys()])
 
     def getConfigInfo(self):
         """ Return all config descriptions as a list of tuples. """
