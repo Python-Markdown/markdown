@@ -10,6 +10,8 @@ Dependencies:
 """
 import markdown
 from markdown.util import etree
+from markdown.inlinepatterns import LINK_RE, REFERENCE_RE, SHORT_REF_RE, \
+                                    AUTOLINK_RE, AUTOMAIL_RE
 import re
 
 class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
@@ -75,10 +77,15 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                         level = tag_level
                     else:
                         level += 1
+                
+                # Sanitize text. Replace all links with link lables (group 1).
+                text = c.text
+                for RE in [LINK_RE, REFERENCE_RE, SHORT_REF_RE, AUTOLINK_RE, AUTOMAIL_RE]:
+                    text = re.sub(RE, '\g<1>', text)
 
                 # Do not override pre-existing ids 
                 if not "id" in c.attrib:
-                    id = self.config["slugify"](c.text)
+                    id = self.config["slugify"](text)
                     if id in used_ids:
                         ctr = 1
                         while "%s_%d" % (id, ctr) in used_ids:
@@ -92,12 +99,12 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 # List item link, to be inserted into the toc div
                 last_li = etree.Element("li")
                 link = etree.SubElement(last_li, "a")
-                link.text = c.text
+                link.text = text
                 link.attrib["href"] = '#' + id
 
                 if int(self.config["anchorlink"]):
                     anchor = etree.SubElement(c, "a")
-                    anchor.text = c.text
+                    anchor.text = text
                     anchor.attrib["href"] = "#" + id
                     anchor.attrib["class"] = "toclink"
                     c.text = ""
