@@ -12,147 +12,207 @@ To use markdown as a module:
     import markdown
     html = markdown.markdown(your_text_string)
 
-Encoded Text
-------------
+The Details
+-----------
 
-Note that ``markdown()`` expects **Unicode** as input (although a simple ASCII 
-string should work) and returns output as Unicode.  Do not pass encoded strings to it!
-If your input is encoded, e.g. as UTF-8, it is your responsibility to decode 
-it.  E.g.:
+Python-Markdown provides two public functions (`markdown.markdown` and 
+`markdown.markdownFromFile`) both of which wrap the public class
+`markdown.Markdown`. If your processing one document at a time, the
+functions will serve your needs. However, if you need to process 
+multiple documents, it may be advantageous to create a single instance 
+of the `markdown.Markdown` class and pass multiple documents through it.
 
-    input_file = codecs.open("some_file.txt", mode="r", encoding="utf-8")
-    text = input_file.read()
-    html = markdown.markdown(text, extensions)
+### `markdown.markdown(text [, extensions][, **kwargs])`
 
-If you later want to write it to disk, you should encode it yourself:
+The following options are available on the `markdown.markdown` function:
 
-    output_file = codecs.open("some_file.html", "w", encoding="utf-8")
-    output_file.write(html)
+* `text` (required): The source text string.
 
-More Options
-------------
+    Note that Python-Markdown expects **Unicode** as input (although
+    a simple ASCII string may work) and returns output as Unicode.  
+    Do not pass encoded strings to it! If your input is encoded, (e.g. as 
+    UTF-8), it is your responsibility to decode it.  For example:
 
-If you want to pass more options, you can create an instance of the ``Markdown``
-class yourself and then use ``convert()`` to generate HTML:
+        input_file = codecs.open("some_file.txt", mode="r", encoding="utf-8")
+        text = input_file.read()
+        html = markdown.markdown(text)
 
-    import markdown
-    md = markdown.Markdown(
-            extensions=['footnotes'], 
-            extension_configs= {'footnotes' : ('PLACE_MARKER','~~~~~~~~')},
-            output_format='html4',
-            safe_mode="replace",
-            html_replacement_text="--NO HTML ALLOWED--",
-            tab_length=8,
-            enable_attributes=False,
-            smart_emphasis=False,
-    )
-    return md.convert(some_text)
+    If you want to write the output to disk, you must encode it yourself:
 
-You should also use this method if you want to process multiple strings:
+        output_file = codecs.open("some_file.html", "w", encoding="utf-8")
+        output_file.write(html)
 
-    md = markdown.Markdown()
-    html1 = md.convert(text1)
-    html2 = md.convert(text2)
+* `extensions`: A list of extensions.
 
-Any options accepted by the `Markdown` class are also accepted by the 
-`markdown` shortcut function. However, a new instant of the class will be
-created each time the shortcut function is called.
+    Python-Markdown provides an API for third parties to write extensions to
+    the parser adding their own additions or changes to the syntax. A few
+    commonly used extensions are shipped with the markdown library. See
+    the extension documentation for a list of available extensions.
 
-Working with Files
-------------------
+    The list of extensions may contain instances of extensions or stings of
+    extension names. If an extension name is provided as a string, the
+    extension must be importable as a python module either within the 
+    `markdown.extensions` package or on your PYTHONPATH with a name starting 
+    with `mdx_`, followed by the name of the extension.  Thus, 
+    `extensions=['extra']` will first look for the module 
+    `markdown.extensions.extra`, then a module named `mdx_extra`. 
 
-While the Markdown class is only intended to work with Unicode text, some
-encoding/decoding is required for the command line features. These functions 
-and methods are only intended to fit the common use case.
+* `extension-configs`: A dictionary of configuration settings for extensions.
 
-The ``Markdown`` class has the method ``convertFile`` which reads in a file and
-writes out to a file-like-object:
+    The dictionary must be of the following format:
 
-    md = markdown.Markdown()
-    md.convertFile(input="in.txt", output="out.html", encoding="utf-8")
+        extension-configs = {'extension_name_1': 
+                               [
+                                  ('option_1', 'value_1'),
+                                  ('option_2', 'value_2')
+                               ],
+                             'extension_name_2':
+                               [
+                                  ('option_1', 'value_1')
+                               ]
+                            }
+    See the documentation specific to the extension you are using for help in 
+    specifying configuration settings for that extension.
 
-The markdown module also includes a shortcut function ``markdownFromFile`` that
-wraps the above method.
+* `output_format`: Format of output. 
 
-    markdown.markdownFromFile(input="in.txt", 
-                              output="out.html", 
-                              extensions=[],
-                              encoding="utf-8",
-                              safe=False)
+    Supported formats are:
 
-In either case, if the ``output`` keyword is passed a file name (i.e.: 
-``output="out.html"``), it will try to write to a file by that name. If
-``output`` is passed a file-like-object (i.e. ``output=StringIO.StringIO()``),
-it will attempt to write out to that object. Finally, if ``output`` is 
-set to ``None``, it will write to ``stdout``.
+    * `"xhtml1"`: Outputs XHTML 1.x. **Default**.
+    * `"xhtml"`: Outputs latest supported version of XHTML (currently XHTML 1.1).
+    * `"html4"`: Outputs HTML 4
+    * `"html"`: Outputs latest supported version of HTML (currently HTML 4).
 
-Using Extensions
-----------------
+    Note that it is suggested that the more specific formats ("xhtml1"
+    and "html4") be used as "xhtml" or "html" may change in the future
+    if it makes sense at that time. The values can either be lowercase or 
+    uppercase.
 
-One of the parameters that you can pass is a list of Extensions. Extensions 
-must be available as python modules either within the ``markdown.extensions``
-package or on your PYTHONPATH with names starting with `mdx_`, followed by the 
-name of the extension.  Thus, ``extensions=['footnotes']`` will first look for 
-the module ``markdown.extensions.footnotes``, then a module named 
-``mdx_footnotes``.   See the documentation specific to the extension you are 
-using for help in specifying configuration settings for that extension.
+* `safe_mode`: Disallow raw html.
 
-Note that some extensions may need their state reset between each call to 
-``convert``:
+    If you are using Markdown on a web system which will transform text 
+    provided by untrusted users, you may want to use the "safe_mode" 
+    option which ensures that the user's HTML tags are either replaced, 
+    removed or escaped. (They can still create links using Markdown syntax.)
 
-    html1 = md.convert(text1)
-    md.reset()
-    html2 = md.convert(text2)
+    The following values are accepted:
 
-Safe Mode
----------
+    * `False` (Default): Raw HTML is passed through unaltered.
 
-If you are using Markdown on a web system which will transform text provided 
-by untrusted users, you may want to use the "safe_mode" option which ensures 
-that the user's HTML tags are either replaced, removed or escaped. (They can 
-still create links using Markdown syntax.)
+    * `replace`: Replace all HTML blocks with the text assigned to 
+      `html_replacement_text` To maintain backward compatibility, setting 
+      `safe_mode=True` will have the same effect as `safe_mode='replace'`.   
 
-* To replace HTML, set ``safe_mode="replace"`` (``safe_mode=True`` still works 
-    for backward compatibility with older versions). The HTML will be replaced 
-    with the text assigned to ``html_replacement_text`` which defaults to 
-    ``[HTML_REMOVED]``. To replace the HTML with something else:
+        To replace raw HTML with something other than the default, do:
 
-        md = markdown.Markdown(safe_mode="replace", 
-                               html_replacement_text="--RAW HTML NOT ALLOWED--")
+            md = markdown.Markdown(safe_mode='replace', 
+                               html_replacement_text='--RAW HTML NOT ALLOWED--')
 
-* To remove HTML, set ``safe_mode="remove"``. Any raw HTML will be completely 
-    stripped from the text with no warning to the author.
+    * `remove`: All raw HTML will be completely stripped from the text with
+      no warning to the author.
 
-* To escape HTML, set ``safe_mode="escape"``. The HTML will be escaped and 
-    included in the document.
+    * `escape`: All raw HTML will be escaped and included in the document.
 
-Note that "safe_mode" does not alter the "enable_attributes" option, which 
-could allow someone to inject javascript (i.e., `{@onclick=alert(1)}`). You 
-may also want to set `enable_attributes=False` when using "safe_mode".
+        For example, the following source:
 
-Output Formats
---------------
+            Foo <b>bar</b>.
 
-If Markdown is outputing (X)HTML as part of a web page, most likely you will
-want the output to match the (X)HTML version used by the rest of your page/site.
-Currently, Markdown offers two output formats out of the box; "HTML4" and 
-"XHTML1" (the default) . Markdown will also accept the formats "HTML" and 
-"XHTML" which currently map to "HTML4" and "XHTML" respectively. However, 
-you should use the more explicit keys as the general keys may change in the 
-future if it makes sense at that time. The keys can either be lowercase or 
-uppercase.
+        Will result in the following HTML:
 
-To set the output format do:
+            <p>Foo &lt;b&gt;bar&lt;/b&gt;.</p>
 
-    html = markdown.markdown(text, output_format='html4')
+    Note that "safe_mode" does not alter the `enable_attributes` option, which 
+    could allow someone to inject javascript (i.e., `{@onclick=alert(1)}`). You 
+    may also want to set `enable_attributes=False` when using "safe_mode".
 
-Or, when using the Markdown class:
+* `html_replacement_text`: Text used when safe_mode is set to `replace`.
+  Defaults to `[HTML_REMOVED]`.
 
-    md = markdown.Markdown(output_format='html4')
-    html = md.convert(text)
+* `tab_length`: Length of tabs in the source. Default: 4
 
-Note that the output format is only set once for the class and cannot be 
-specified each time ``convert()`` is called. If you really must change the
-output format for the class, you can use the ``set_output_format`` method:
+* `enable_attributes`: Enable the conversion of attributes. Default: True
 
-    md.set_output_format('xhtml1')
+* `smart_emphasis`: Treat `_connected_words_` intelegently Default: True
+
+* `lazy_ol`: Ignore number of first item of ordered lists. Default: True
+
+    Given the following list:
+
+        4. Apples
+        5. Oranges
+        6. Pears
+
+    By default markdown will ignore the fact the the first line started 
+    with item number "4" and the HTML list will start with a number "1".
+    If `lazy_ol` is set to `True`, then markdown will output the following
+    HTML:
+
+        <ol>
+          <li start="4">Apples</li>
+          <li>Oranges</li>
+          <li>Pears</li>
+        </ol>
+
+
+### `markdown.markdownFromFile(input [, output] [, extensions] [, encoding] [, **kwargs])`
+
+With a few exceptions, `markdown.markdownFromFile` accepts the same options as 
+`markdown.markdown`. It does **not** accept a `text` string. Instead, it accepts
+the following required options:
+
+* `input` (required): The source text file.
+
+    `input` may be set to one of two options:
+
+    * a string which contains a path to a readable file on the file system,
+    * or a readable file-like object.
+
+* `output`: The target which output to written to.
+
+    `output` may be set to one of three options:
+
+    * a string which contains a path to a writable file on the file system,
+    * a writable file-like object,
+    * or `None` (default) which will write to `stdout`.
+
+* `encoding`: The encoding of the source text file. Defaults to 
+  "utf-8". The same encoding will always be used for the output file.
+
+    **Note:** This is the only place that decoding and encoding of unicode
+    takes place in Python-Markdown. If this rather naive solution does not
+    meet your special needs, it is suggested that you write your own code
+    to handle your specific encoding/decoding needs.
+
+### `markdown.Markdown([extensions][, **kwargs])`
+
+The same options are available when initializing the `markdown.Markdown` class
+as on the `markdown.markdown` function, except that the class does **not**
+accept a source text string on initialization. Rather, the source text string
+must be passed to one of two instance methods:
+
+* `Markdown.convert(source)`
+
+    The `source` text must meet the same requirements as the `text` argument
+    of the `markdown.markdown` function.
+
+    You should also use this method if you want to process multiple strings
+    without creating a new instance of the class for each string.
+
+        md = markdown.Markdown()
+        html1 = md.convert(text1)
+        html2 = md.convert(text2)
+
+    Note that depending on which options and/or extensions are being used,
+    the parser may need its state reset between each call to `convert`.
+
+        html1 = md.convert(text1)
+        md.reset()
+        html2 = md.convert(text2)
+
+* `Markdown.convertFile(input, output, encoding)`
+
+    The arguments of this method are identical to the arguments of the same
+    name on the `markdown.markdownFromFile` function. As with the `convert`
+    method, this method should be used to process multiple files without
+    creating a new instance of the class for each document. State may need to
+    be `reset` between each call to `convertFile` as with `convert`.
