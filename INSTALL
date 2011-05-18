@@ -19,16 +19,16 @@ your system.
 See <http://effbot.org/zone/element-index.htm> for more information or to 
 download the latest version of ElementTree.
 
-The East Way
+The Easy Way
 ------------
 
-The simplest way to install Python-Markdown is by using SetupTools. As and
-Admin/Root user on your system do:
+As an Admin/Root user on your system do:
 
-    easy_install ElementTree
-    easy_install Markdown
+    pip install markdown
 
-That's it, your done.
+or
+
+    easy_install markdown
 
 Installing on Windows
 ---------------------
@@ -51,23 +51,25 @@ system and add that to your system path.
 Installing on *nix Systems
 --------------------------
 
-From the command line do the following:
+From the command line do the following (where 2.x is the version number):
 
-    wget http://pypi.python.org/packages/source/M/Markdown/Markdown-2.0.tar.gz
-    tar xvzf Markdown-2.0.tar.gz
-    cd markdown-2.0/
+    wget http://pypi.python.org/packages/source/M/Markdown/Markdown-2.x.tar.gz
+    tar xvzf Markdown-2.x.tar.gz
+    cd markdown-2.x/
     sudo python setup.py install
+
+See [PyPI](http://pypi.python.org/pypi/Markdown) for all available versions.
 
 Using the Git Repository
 ------------------------
 
-If your the type that like to live on the edge, you may want to keep up with 
+If you're the type that likes to live on the edge, you may want to keep up with 
 the latest additions and bug fixes in the repository between releases.
-Python-Markdown is maintained in a Git repository on Gitorious.org. To
+Python-Markdown is maintained in a Git repository on github.com. To
 get a copy of Python-Markdown from the repository do the following from the
 command line:
 
-    git clone git://gitorious.org/python-markdown/mainline.git python-markdown
+    git clone git://github.com/waylan/Python-Markdown.git python-markdown
     cd python-markdown
     python setup.py install
 
