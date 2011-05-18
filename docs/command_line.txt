@@ -9,21 +9,21 @@ Python-Markdown's various extensions.
 Setup
 -----
 
-Generally, you may simply call the ``markdown`` file from the command 
-line. However, if you have fully installed Markdown (``setup.py install`` or 
-``easy_install``), then the ``markdown`` script will have been copied to
-you Python "Scripts" directory. Different systems require different methods to
+Generally, you will want to have the may Markdown library fully installed on your
+system (``setup.py install`` or ``easy_install markdown``) to run the command line 
+script. Upon installation, the ``markdown_py`` script will have been copied to
+your Python "Scripts" directory. Different systems require different methods to
 ensure that any files in the Python "Scripts" directory are on your system 
 path.
 
 * **Windows**:
 
-    Assuming a default install on Windows, your "Scripts" directory is most
-    likely something like ``C:\\Python25\Scripts``. Verify the location of
+    Assuming a default install of Python on Windows, your "Scripts" directory is 
+    most likely something like ``C:\\Python26\Scripts``. Verify the location of
     your "Scripts" directory and add it to you system path.
 
-    Calling ``markdown`` from th ecommand line will call the wrapper batch file
-    ``markdown.bat`` in the "Scripts" directory created during install.
+    Calling ``markdown_py`` from the command line will call the wrapper batch file
+    ``markdown_py.bat`` in the "Scripts" directory created during install.
 
 * **Linux**:
 
@@ -31,62 +31,47 @@ path.
     of them here, we'll provide a few helpful pointers:
 
     * Some systems will automatically install the script on your path. Try it 
-      and see if it works. Just run ``markdown`` from the command line.
+      and see if it works. Just run ``markdown_py`` from the command line.
 
     * Other systems may maintain a separate "Scripts" directory which you
       need to add to your path. Find it (check with your distribution) and
       either add it to your path or make a symbolic link to it from your path.
 
-    * If you are sure ``markdown`` is on your path, but it still isn't being
+    * If you are sure ``markdown_py`` is on your path, but it still isn't being
       found, check the permissions of the file and make sure it is executable.
 
     As an alternative, you could just ``cd`` into the directory which contains
     the source distribution, and run it from there. However, remember that your
     markdown text files will not likely be in that directory, so it is much more 
-    convenient to have ``markdown`` on your path.
+    convenient to have ``markdown_py`` on your path.
 
-The Basics
-----------
+__Note:__ Python-Markdown uses "markdown_py" as a script name because
+the Perl implementation has already taken the more obvious name "markdown".
+Additionally, the default Python configuration on some systems would cause a script
+named "markdown.py" to fail by importing itself rather than the markdown library.
+Therefore, the script has been named "markdown_py" as a compromise. If you prefer
+a different name for the script on your system, it is suggested that you create
+a symbolic link to `markdown_py` with your preferred name.
 
-To use ``markdown`` from the command line, run it as 
+Usage
+-----
 
-    $ markdown input_file.txt
+To use ``markdown_py`` from the command line, run it as 
+
+    $ markdown_py input_file.txt
 
 or 
 
-    $ markdown input_file.txt > output_file.html
+    $ markdown_py input_file.txt > output_file.html
 
-More Options
-------------
+For a complete list of options, run
 
-If you are using Python 2.3 or higher, you can also use advanced
-command line options to specify encoding or to run extensions.
-
-    $ markdown --help
-    Usage: markdown INPUTFILE [options]
-
-    Options:
-      -h, --help            show this help message and exit
-      -f OUTPUT_FILE, --file=OUTPUT_FILE
-                            write output to OUTPUT_FILE
-      -e ENCODING, --encoding=ENCODING
-                            encoding for input and output files
-      -q, --quiet           suppress all messages
-      -v, --verbose         print info messages
-      -s SAFE_MODE, --safe=SAFE_MODE
-                            safe mode ('replace', 'remove' or 'escape'  user's
-                            HTML tag)
-      -o OUTPUT_FORMAT, --output_format=OUTPUT_FORMAT
-                            Format of output. One of 'xhtml1' (default) or
-                            'html4'.
-      --noisy               print debug messages
-      -x EXTENSION, --extension=EXTENSION
-                            load extension EXTENSION
+    $ markdown_py --help
 
 Using Extensions
 ----------------
 
-For an extension to be ran this way it must be provided in a module
+For an extension to be ran from the command line it must be provided in a module
 which should be in your python path (see [[writing_extensions]] for details). 
 It can then be invoked by the name of that module:
 
