@@ -1,0 +1,14 @@
+<section>
+    <header>
+        <hgroup>
+            <h1>Hello :-)</h1>
+        </hgroup>
+    </header>
+    <figure>
+        <img src="image.png" alt="" />
+        <figcaption>Caption</figcaption>
+    </figure>
+    <footer>
+        <p>Some footer</p>
+    </footer>
+</section><figure></figure>
