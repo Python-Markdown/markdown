@@ -184,6 +184,19 @@ class Pattern:
         """ Return class name, to define pattern type """
         return self.__class__.__name__
 
+    def unescape(self, text):
+        """ Return unescaped text given text with an inline placeholder. """
+        try:
+            stash = self.markdown.treeprocessors['inline'].stashed_nodes
+        except KeyError:
+            return text
+        def get_stash(m):
+            id = m.group(1)
+            if id in stash:
+                return stash.get(id)
+        return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
+
+
 BasePattern = Pattern # for backward compatibility
 
 class SimpleTextPattern(Pattern):
@@ -262,12 +275,12 @@ class LinkPattern(Pattern):
         if href:
             if href[0] == "<":
                 href = href[1:-1]
-            el.set("href", self.sanitize_url(href.strip()))
+            el.set("href", self.sanitize_url(self.unescape(href.strip())))
         else:
             el.set("href", "")
 
         if title:
-            title = dequote(title) #.replace('"', "&quot;")
+            title = dequote(self.unescape(title)) 
             el.set("title", title)
         return el
 
@@ -312,11 +325,11 @@ class ImagePattern(LinkPattern):
             src = src_parts[0]
             if src[0] == "<" and src[-1] == ">":
                 src = src[1:-1]
-            el.set('src', self.sanitize_url(src))
+            el.set('src', self.sanitize_url(self.unescape(src)))
         else:
             el.set('src', "")
         if len(src_parts) > 1:
-            el.set('title', dequote(" ".join(src_parts[1:])))
+            el.set('title', dequote(self.unescape(" ".join(src_parts[1:]))))
 
         if self.markdown.enable_attributes:
             truealt = handleAttributes(m.group(2), el)
@@ -353,9 +366,9 @@ class ReferencePattern(LinkPattern):
     def makeTag(self, href, title, text):
         el = util.etree.Element('a')
 
-        el.set('href', self.sanitize_url(href))
+        el.set('href', self.sanitize_url(self.unescape(href)))
         if title:
-            el.set('title', title)
+            el.set('title', self.unescape(title))
 
         el.text = text
         return el
@@ -365,9 +378,9 @@ class ImageReferencePattern(ReferencePattern):
     """ Match to a stored reference and return img element. """
     def makeTag(self, href, title, text):
         el = util.etree.Element("img")
-        el.set("src", self.sanitize_url(href))
+        el.set("src", self.sanitize_url(self.unescape(href)))
         if title:
-            el.set("title", title)
+            el.set("title", self.unescape(title))
         el.set("alt", text)
         return el
 
@@ -376,7 +389,7 @@ class AutolinkPattern(Pattern):
     """ Return a link Element given an autolink (`<http://example/com>`). """
     def handleMatch(self, m):
         el = util.etree.Element("a")
-        el.set('href', m.group(2))
+        el.set('href', self.unescape(m.group(2)))
         el.text = util.AtomicString(m.group(2))
         return el
 
@@ -386,7 +399,7 @@ class AutomailPattern(Pattern):
     """
     def handleMatch(self, m):
         el = util.etree.Element('a')
-        email = m.group(2)
+        email = self.unescape(m.group(2))
         if email.startswith("mailto:"):
             email = email[len("mailto:"):]
 

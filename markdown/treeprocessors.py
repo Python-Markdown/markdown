@@ -56,8 +56,7 @@ class InlineProcessor(Treeprocessor):
         self.__placeholder_suffix = util.ETX
         self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
                                       + len(self.__placeholder_suffix)
-        self.__placeholder_re = \
-                            re.compile(util.INLINE_PLACEHOLDER % r'([0-9]{4})')
+        self.__placeholder_re = util.INLINE_PLACEHOLDER_RE
         self.markdown = md
 
     def __makePlaceholder(self, type):
