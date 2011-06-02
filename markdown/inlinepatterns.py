@@ -366,9 +366,9 @@ class ReferencePattern(LinkPattern):
     def makeTag(self, href, title, text):
         el = util.etree.Element('a')
 
-        el.set('href', self.sanitize_url(self.unescape(href)))
+        el.set('href', self.sanitize_url(href))
         if title:
-            el.set('title', self.unescape(title))
+            el.set('title', title)
 
         el.text = text
         return el
@@ -378,9 +378,9 @@ class ImageReferencePattern(ReferencePattern):
     """ Match to a stored reference and return img element. """
     def makeTag(self, href, title, text):
         el = util.etree.Element("img")
-        el.set("src", self.sanitize_url(self.unescape(href)))
+        el.set("src", self.sanitize_url(href))
         if title:
-            el.set("title", self.unescape(title))
+            el.set("title", title)
         el.set("alt", text)
         return el
 
