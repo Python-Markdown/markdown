@@ -431,7 +431,7 @@ class SetextHeaderProcessor(BlockProcessor):
     """ Process Setext-style Headers. """
 
     # Detect Setext-style header. Must be first 2 lines of block.
-    RE = re.compile(r'^.*?\n[=-]{3,}', re.MULTILINE)
+    RE = re.compile(r'^.*?\n[=-]+[ ]*(\n|$)', re.MULTILINE)
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
