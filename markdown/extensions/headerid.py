@@ -73,7 +73,7 @@ import logging
 
 logger = logging.getLogger('MARKDOWN')
 
-ID_CHARS = ascii_lowercase + digits + '-_'
+ID_CHARS = ascii_lowercase + digits + '-_.'
 IDCOUNT_RE = re.compile(r'^(.*)_([0-9]+)$')
 
 
