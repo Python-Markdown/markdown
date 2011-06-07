@@ -100,7 +100,7 @@ ESCAPE_RE = r'\\(.)'                             # \<
 EMPHASIS_RE = r'(\*)([^\*]+)\2'                    # *emphasis*
 STRONG_RE = r'(\*{2}|_{2})(.+?)\2'                      # **strong**
 STRONG_EM_RE = r'(\*{3}|_{3})(.+?)\2'            # ***strong***
-SMART_EMPHASIS_RE = r'(?<!\w)(_)(\S.+?)\2(?!\w)'        # _smart_emphasis_
+SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\2(?!\w)'  # _smart_emphasis_
 EMPHASIS_2_RE = r'(_)(.+?)\2'                 # _emphasis_
 LINK_RE = NOIMG + BRK + \
 r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\12\s*)?\)'''
