@@ -15,6 +15,7 @@ The supported extensions include:
 * [[Footnotes]]
 * [[HeaderId]]
 * [[Tables]]
+* [[Smart_Strong]]
 
 See each individual extension for syntax documentation. Extra and all it's 
 supported extensions are included in the standard Markdown library.

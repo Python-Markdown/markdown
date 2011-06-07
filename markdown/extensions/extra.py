@@ -29,7 +29,8 @@ when you upgrade to any future version of Python-Markdown.
 
 import markdown
 
-extensions = ['fenced_code',
+extensions = ['smart_strong',
+              'fenced_code',
               'footnotes',
               'headerid',
               'def_list',
