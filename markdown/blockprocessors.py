@@ -328,6 +328,13 @@ class OListProcessor(BlockProcessor):
                 p.text = lst[-1].text
                 lst[-1].text = ''
                 lst[-1].insert(0, p)
+            # if the last item has a tail, then the tail needs to be put in a p
+            # likely only when a header is not followed by a blank line
+            lch = self.lastChild(lst[-1])
+            if lch is not None and lch.tail:
+                p = util.etree.SubElement(lst[-1], 'p')
+                p.text = lch.tail.lstrip()
+                lch.tail = ''
 
             # parse first block differently as it gets wrapped in a p.
             li = util.etree.SubElement(lst, 'li')
@@ -518,11 +525,27 @@ class ParagraphProcessor(BlockProcessor):
         if block.strip():
             # Not a blank block. Add to parent, otherwise throw it away.
             if self.parser.state.isstate('list'):
-                # The parent is a tight-list. Append to parent.text
-                if parent.text:
-                    parent.text = '%s\n%s' % (parent.text, block)
+                # The parent is a tight-list.
+                #
+                # Check for any children. This will likely only happen in a 
+                # tight-list when a header isn't followed by a blank line.
+                # For example:
+                #
+                #     * # Header
+                #     Line 2 of list item - not part of header.
+                sibling = self.lastChild(parent)
+                if sibling is not None:
+                    # Insetrt after sibling.
+                    if sibling.tail:
+                        sibling.tail = '%s\n%s' % (sibling.tail, block)
+                    else:
+                        sibling.tail = '\n%s' % block
                 else:
-                    parent.text = block.lstrip()
+                    # Append to parent.text
+                    if parent.text:
+                        parent.text = '%s\n%s' % (parent.text, block)
+                    else:
+                        parent.text = block.lstrip()
             else:
                 # Create a regular paragraph
                 p = util.etree.SubElement(parent, 'p')
