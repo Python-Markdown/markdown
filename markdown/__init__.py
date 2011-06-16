@@ -43,7 +43,7 @@ from treeprocessors import build_treeprocessors
 from inlinepatterns import build_inlinepatterns
 from postprocessors import build_postprocessors
 from extensions import Extension
-import html4
+from searializers import to_html_string, to_xhtml_string
 
 # For backwards compatibility in the 2.0.x series
 # The things defined in these modules started off in __init__.py so third
@@ -67,10 +67,10 @@ class Markdown:
     }
     
     output_formats = {
-        'html'  : html4.to_html_string,
-        'html4' : html4.to_html_string,
-        'xhtml' : util.etree.tostring,
-        'xhtml1': util.etree.tostring,
+        'html'  : to_html_string,
+        'html4' : to_html_string,
+        'xhtml' : to_xhtml_string,
+        'xhtml1': to_xhtml_string,
     }
 
     def __init__(self, extensions=[], **kwargs):

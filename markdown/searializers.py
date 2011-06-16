@@ -119,6 +119,8 @@ def _escape_attrib_html(text, encoding):
     try:
         if "&" in text:
             text = text.replace("&", "&amp;")
+        if "<" in text:
+            text = text.replace("<", "&lt;")
         if ">" in text:
             text = text.replace(">", "&gt;")
         if "\"" in text:
@@ -128,7 +130,7 @@ def _escape_attrib_html(text, encoding):
         _raise_serialization_error(text)
 
 
-def _serialize_html(write, elem, encoding, qnames, namespaces):
+def _serialize_html(write, elem, encoding, qnames, namespaces, format):
     tag = elem.tag
     text = elem.text
     if tag is Comment:
@@ -141,7 +143,7 @@ def _serialize_html(write, elem, encoding, qnames, namespaces):
             if text:
                 write(_escape_cdata(text, encoding))
             for e in elem:
-                _serialize_html(write, e, encoding, qnames, None)
+                _serialize_html(write, e, encoding, qnames, None, format)
         else:
             write("<" + tag)
             items = elem.items()
@@ -166,24 +168,28 @@ def _serialize_html(write, elem, encoding, qnames, namespaces):
                             k.encode(encoding),
                             _escape_attrib(v, encoding)
                             ))
-            write(">")
-            tag = tag.lower()
-            if text:
-                if tag == "script" or tag == "style":
-                    write(_encode(text, encoding))
-                else:
-                    write(_escape_cdata(text, encoding))
-            for e in elem:
-                _serialize_html(write, e, encoding, qnames, None)
-            if tag not in HTML_EMPTY:
-                write("</" + tag + ">")
+            if format == "xhtml" and tag in HTML_EMPTY:
+                write(" />")
+            else:
+                write(">")
+                tag = tag.lower()
+                if text:
+                    if tag == "script" or tag == "style":
+                        write(_encode(text, encoding))
+                    else:
+                        write(_escape_cdata(text, encoding))
+                for e in elem:
+                    _serialize_html(write, e, encoding, qnames, None, format)
+                if tag not in HTML_EMPTY:
+                    write("</" + tag + ">")
     if elem.tail:
         write(_escape_cdata(elem.tail, encoding))
 
 def write_html(root, f,
           # keyword arguments
           encoding="us-ascii",
-          default_namespace=None):
+          default_namespace=None,
+          format="html"):
     assert root is not None
     if not hasattr(f, "write"):
         f = open(f, "wb")
@@ -194,7 +200,7 @@ def write_html(root, f,
             root, encoding, default_namespace
             )
     _serialize_html(
-                write, root, encoding, qnames, namespaces
+                write, root, encoding, qnames, namespaces, format
                 )
 
 # --------------------------------------------------------------------
@@ -273,5 +279,14 @@ def to_html_string(element, encoding=None):
     data = []
     file = dummy()
     file.write = data.append
-    write_html(ElementTree(element).getroot(),file,encoding)
+    write_html(ElementTree(element).getroot(), file, encoding, format="html")
+    return "".join(data)
+
+def to_xhtml_string(element, encoding=None):
+    class dummy:
+        pass
+    data = []
+    file = dummy()
+    file.write = data.append
+    write_html(ElementTree(element).getroot(), file, encoding, format="xhtml")
     return "".join(data)

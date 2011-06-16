@@ -277,7 +277,7 @@ class testETreeComments(unittest.TestCase):
     Test that ElementTree Comments work.
 
     These tests should only be a concern when using cElementTree with third
-    party serializers (including markdown's html4 serializer). While markdown
+    party serializers (including markdown's (x)html serializer). While markdown
     doesn't use ElementTree.Comment itself, we should certainly support any
     third party extensions which may. Therefore, these tests are included to
     ensure such support is maintained.
@@ -301,14 +301,14 @@ class testETreeComments(unittest.TestCase):
 
     def testCommentSerialization(self):
         """ Test that an ElementTree Comment serializes properly. """
-        self.assertEqual(markdown.html4.to_html_string(self.comment),
+        self.assertEqual(markdown.searializers.to_html_string(self.comment),
                     '<!--foo-->')
 
     def testCommentPrettify(self):
         """ Test that an ElementTree Comment is prettified properly. """
         pretty = markdown.treeprocessors.PrettifyTreeprocessor()
         pretty.run(self.comment)
-        self.assertEqual(markdown.html4.to_html_string(self.comment),
+        self.assertEqual(markdown.searializers.to_html_string(self.comment),
                     '<!--foo-->\n')
 
 
@@ -325,7 +325,7 @@ class testAtomicString(unittest.TestCase):
         p = markdown.util.etree.SubElement(tree, 'p')
         p.text = u'some *text*'
         new = self.inlineprocessor.run(tree)
-        self.assertEqual(markdown.html4.to_html_string(new), 
+        self.assertEqual(markdown.searializers.to_html_string(new), 
                     '<div><p>some <em>text</em></p></div>')
 
     def testSimpleAtomicString(self):
@@ -334,7 +334,7 @@ class testAtomicString(unittest.TestCase):
         p = markdown.util.etree.SubElement(tree, 'p')
         p.text = markdown.util.AtomicString(u'some *text*')
         new = self.inlineprocessor.run(tree)
-        self.assertEqual(markdown.html4.to_html_string(new), 
+        self.assertEqual(markdown.searializers.to_html_string(new), 
                     '<div><p>some *text*</p></div>')
 
     def testNestedAtomicString(self):
@@ -352,6 +352,6 @@ class testAtomicString(unittest.TestCase):
         span2.tail = markdown.util.AtomicString(u' *test*')
         span1.tail = markdown.util.AtomicString(u' *with*')
         new = self.inlineprocessor.run(tree)
-        self.assertEqual(markdown.html4.to_html_string(new), 
+        self.assertEqual(markdown.searializers.to_html_string(new), 
             '<div><p>*some* <span>*more* <span>*text* <span>*here*</span> *to*</span> *test*</span> *with*</p></div>')
 
