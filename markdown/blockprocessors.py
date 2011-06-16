@@ -460,7 +460,7 @@ class SetextHeaderProcessor(BlockProcessor):
 class HRProcessor(BlockProcessor):
     """ Process Horizontal Rules. """
 
-    RE = r'[ ]{0,3}(?P<ch>[*_-])[ ]?((?P=ch)[ ]?){2,}[ ]*'
+    RE = r'[ ]{0,3}((-+[ ]{0,2}){3,}|(_+[ ]{0,2}){3,}|(\*+[ ]{0,2}){3,})[ ]*'
     # Detect hr on any line of a block.
     SEARCH_RE = re.compile(r'(^|\n)%s(\n|$)' % RE)
     # Match a hr on a single line of text.
