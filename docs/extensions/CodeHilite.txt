@@ -111,3 +111,10 @@ to do so.
     >>> html = markdown.markdown(text, 
     ...     ['codehilite(force_linenos=True)']
     ... )
+
+If you want to prevent Pygments from guessing the language, only highlighting
+blocks when you explicitly request it, set the `guess_lang` setting to 'False'.
+
+    >>> html = markdown.markdown(text,
+    ...     ['codehilite(guess_lang=True)']
+    ... )
