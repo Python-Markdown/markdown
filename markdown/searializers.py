@@ -156,8 +156,11 @@ def _serialize_html(write, elem, encoding, qnames, namespaces, format):
                         v = qnames[v.text]
                     else:
                         v = _escape_attrib_html(v, encoding)
-                    # FIXME: handle boolean attributes
-                    write(" %s=\"%s\"" % (qnames[k], v))
+                    if qnames[k] == v and format == 'html':
+                        # handle boolean attributes
+                        write(" %s" % v)
+                    else:
+                        write(" %s=\"%s\"" % (qnames[k], v))
                 if namespaces:
                     items = namespaces.items()
                     items.sort(key=lambda x: x[1]) # sort on prefix
