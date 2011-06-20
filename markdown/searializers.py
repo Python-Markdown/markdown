@@ -47,6 +47,8 @@ else:
 PI = util.etree.PI
 ProcessingInstruction = util.etree.ProcessingInstruction
 
+__all__ = ['to_html_string', 'to_xhtml_string']
+
 HTML_EMPTY = ("area", "base", "basefont", "br", "col", "frame", "hr",
               "img", "input", "isindex", "link", "meta" "param")
 
@@ -188,23 +190,23 @@ def _serialize_html(write, elem, encoding, qnames, namespaces, format):
     if elem.tail:
         write(_escape_cdata(elem.tail, encoding))
 
-def write_html(root, f,
+def _write_html(root,
           # keyword arguments
-          encoding="us-ascii",
+          encoding="utf-8",
           default_namespace=None,
           format="html"):
     assert root is not None
-    if not hasattr(f, "write"):
-        f = open(f, "wb")
-    write = f.write
+    data = []
+    write = data.append
     if not encoding:
-        encoding = "us-ascii"
+        encoding = "utf-8"
     qnames, namespaces = _namespaces(
             root, encoding, default_namespace
             )
     _serialize_html(
                 write, root, encoding, qnames, namespaces, format
                 )
+    return "".join(data)
 
 # --------------------------------------------------------------------
 # serialization support
@@ -277,19 +279,7 @@ def _namespaces(elem, encoding, default_namespace=None):
     return qnames, namespaces
 
 def to_html_string(element, encoding=None):
-    class dummy:
-        pass
-    data = []
-    file = dummy()
-    file.write = data.append
-    write_html(ElementTree(element).getroot(), file, encoding, format="html")
-    return "".join(data)
+    return _write_html(ElementTree(element).getroot(), encoding, format="html")
 
 def to_xhtml_string(element, encoding=None):
-    class dummy:
-        pass
-    data = []
-    file = dummy()
-    file.write = data.append
-    write_html(ElementTree(element).getroot(), file, encoding, format="xhtml")
-    return "".join(data)
+    return _write_html(ElementTree(element).getroot(), encoding, format="xhtml")
