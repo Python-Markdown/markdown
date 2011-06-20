@@ -45,12 +45,9 @@ from postprocessors import build_postprocessors
 from extensions import Extension
 from searializers import to_html_string, to_xhtml_string
 
-# For backwards compatibility in the 2.0.x series
-# The things defined in these modules started off in __init__.py so third
-# party code might need to access them here.
-from util import *
+__all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
-logger =  logging.getLogger('MARKDOWN')
+logger = logging.getLogger('MARKDOWN')
 
 
 class Markdown:
