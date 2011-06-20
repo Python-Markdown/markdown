@@ -42,6 +42,8 @@ class CodeHilite:
 
     * linenos: (Boolen) Turn line numbering 'on' or 'off' (off by default).
 
+    * guess_lang: (Boolen) Turn language auto-detection 'on' or 'off' (on by default).
+
     * css_class: Set class name of wrapper div ('codehilite' by default).
 
     Low Level Usage:
@@ -52,11 +54,13 @@ class CodeHilite:
 
     """
 
-    def __init__(self, src=None, linenos=False, css_class="codehilite",
-                lang=None, style='default', noclasses=False, tab_length=4):
+    def __init__(self, src=None, linenos=False, guess_lang=True,
+                css_class="codehilite", lang=None, style='default',
+                noclasses=False, tab_length=4):
         self.src = src
         self.lang = lang
         self.linenos = linenos
+        self.guess_lang = guess_lang
         self.css_class = css_class
         self.style = style
         self.noclasses = noclasses
@@ -75,7 +79,7 @@ class CodeHilite:
 
         self.src = self.src.strip('\n')
 
-        if self.lang == None:
+        if self.lang is None:
             self._getLang()
 
         if pygments:
@@ -83,7 +87,10 @@ class CodeHilite:
                 lexer = get_lexer_by_name(self.lang)
             except ValueError:
                 try:
-                    lexer = guess_lexer(self.src)
+                    if self.guess_lang:
+                        lexer = guess_lexer(self.src)
+                    else:
+                        lexer = TextLexer()
                 except ValueError:
                     lexer = TextLexer()
             formatter = HtmlFormatter(linenos=self.linenos,
@@ -169,6 +176,7 @@ class HiliteTreeprocessor(markdown.treeprocessors.Treeprocessor):
             if len(children) == 1 and children[0].tag == 'code':
                 code = CodeHilite(children[0].text,
                             linenos=self.config['force_linenos'],
+                            guess_lang=self.config['guess_lang'],
                             css_class=self.config['css_class'],
                             style=self.config['pygments_style'],
                             noclasses=self.config['noclasses'],
@@ -190,6 +198,7 @@ class CodeHiliteExtension(markdown.Extension):
         # define default configs
         self.config = {
             'force_linenos' : [False, "Force line numbers - Default: False"],
+            'guess_lang' : [True, "Automatic language detection - Default: True"],
             'css_class' : ["codehilite",
                            "Set class name for wrapper <div> - Default: codehilite"],
             'pygments_style' : ['default', 'Pygments HTML Formatter Style (Colorscheme) - Default: default'],
@@ -198,6 +207,9 @@ class CodeHiliteExtension(markdown.Extension):
 
         # Override defaults with user settings
         for key, value in configs:
+            # convert strings to booleans
+            if value == 'True': value = True
+            if value == 'False': value = False
             self.setConfig(key, value)
 
     def extendMarkdown(self, md, md_globals):
