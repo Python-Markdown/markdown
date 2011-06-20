@@ -1,0 +1,17 @@
+<h1 id="setext">This is a sextext header</h1>
+<p class="myclass" id="par1">A paragraph with some text.
+Line two of the paragraph.</p>
+<h2 class="someclass" id="sextext2">This is another</h2>
+<p>Test some <em class="inline">inline</em> text.
+A <a class="linkkyclass" href="http://example.com" title="A title.">link</a>
+And a <strong class="nest">nested <a class="linky2" href="http://example.com" title="Some title">link</a></strong></p>
+<h3 id="hash">This is a hash Header</h3>
+<p bar="b az" baz="blah blah" foo="foo" title="I wasn't kidding!">And now some random attributes.</p>
+<h3 id="hash2">No closing hash header</h3>
+<p class="foo bar addme" id="overridden">Now test overrides</p>
+<pre><code># A code block which contains attr_list syntax
+# This should be ignored.
+{: #someid .someclass }
+</code></pre>
+<h3 id="hash3">No colon for compatability with Headerid ext</h3>
+<p id="the_end">Also a codespan: <code class="foo">{: .someclass}</code>.</p>
