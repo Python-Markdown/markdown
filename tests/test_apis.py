@@ -43,18 +43,18 @@ class TestBlockParser(unittest.TestCase):
 
     def testParseChunk(self):
         """ Test BlockParser.parseChunk. """
-        root = markdown.etree.Element("div")
+        root = markdown.util.etree.Element("div")
         text = 'foo'
         self.parser.parseChunk(root, text)
-        self.assertEqual(markdown.etree.tostring(root), "<div><p>foo</p></div>")
+        self.assertEqual(markdown.util.etree.tostring(root), "<div><p>foo</p></div>")
 
     def testParseDocument(self):
         """ Test BlockParser.parseDocument. """
         lines = ['#foo', '', 'bar', '', '    baz']
         tree = self.parser.parseDocument(lines)
-        self.assert_(isinstance(tree, markdown.etree.ElementTree))
-        self.assert_(markdown.etree.iselement(tree.getroot()))
-        self.assertEqual(markdown.etree.tostring(tree.getroot()),
+        self.assert_(isinstance(tree, markdown.util.etree.ElementTree))
+        self.assert_(markdown.util.etree.iselement(tree.getroot()))
+        self.assertEqual(markdown.util.etree.tostring(tree.getroot()),
             "<div><h1>foo</h1><p>bar</p><pre><code>baz\n</code></pre></div>")
 
 
