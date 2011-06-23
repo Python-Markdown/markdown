@@ -79,12 +79,14 @@ The following options are available on the `markdown.markdown` function:
     Supported formats are:
 
     * `"xhtml1"`: Outputs XHTML 1.x. **Default**.
+    * `"xhtml5"`: Outputs XHTML style tags of HTML 5
     * `"xhtml"`: Outputs latest supported version of XHTML (currently XHTML 1.1).
     * `"html4"`: Outputs HTML 4
+    * `"html5"`: Outputs HTML style tags of HTML 5
     * `"html"`: Outputs latest supported version of HTML (currently HTML 4).
 
-    Note that it is suggested that the more specific formats ("xhtml1"
-    and "html4") be used as "xhtml" or "html" may change in the future
+    Note that it is suggested that the more specific formats ("xhtml1",
+    "html5", & "html4") be used as "xhtml" or "html" may change in the future
     if it makes sense at that time. The values can either be lowercase or 
     uppercase.
 

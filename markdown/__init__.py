@@ -66,8 +66,10 @@ class Markdown:
     output_formats = {
         'html'  : to_html_string,
         'html4' : to_html_string,
+        'html5' : to_html_string,
         'xhtml' : to_xhtml_string,
         'xhtml1': to_xhtml_string,
+        'xhtml5': to_xhtml_string,
     }
 
     def __init__(self, *args, **kwargs):
@@ -83,8 +85,10 @@ class Markdown:
         * extension-configs: Configuration settingis for extensions.
         * output_format: Format of output. Supported formats are:
             * "xhtml1": Outputs XHTML 1.x. Default.
+            * "xhtml5": Outputs XHTML style tags of HTML 5
             * "xhtml": Outputs latest supported version of XHTML (currently XHTML 1.1).
             * "html4": Outputs HTML 4
+            * "html5": Outputs HTML style tags of HTML 5
             * "html": Outputs latest supported version of HTML (currently HTML 4).
             Note that it is suggested that the more specific formats ("xhtml1"
             and "html4") be used as "xhtml" or "html" may change in the future
