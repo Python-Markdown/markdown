@@ -70,7 +70,7 @@ class Markdown:
         'xhtml1': to_xhtml_string,
     }
 
-    def __init__(self, extensions=[], **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Creates a new Markdown instance.
 
@@ -93,11 +93,23 @@ class Markdown:
         * html_replacement_text: Text used when safe_mode is set to "replace".
         * tab_length: Length of tabs in the source. Default: 4
         * enable_attributes: Enable the conversion of attributes. Default: True
-        * smart_emphsasis: Treat `_connected_words_` intelegently Default: True
+        * smart_emphasis: Treat `_connected_words_` intelegently Default: True
         * lazy_ol: Ignore number of first item of ordered lists. Default: True
 
         """
 
+        # For backward compatability, loop through old positional args
+        pos = ['extensions', 'extension_configs', 'safe_mode', 'output_format']
+        c = 0
+        for arg in args:
+            if not kwargs.has_key(pos[c]):
+                kwargs[pos[c]] = arg
+            c += 1
+            if c == len(pos):
+                # ignore any additional args
+                break
+
+        # Loop throu kwargs and assign defaults
         for option, default in self.option_defaults.items():
             setattr(self, option, kwargs.get(option, default)) 
 
@@ -110,8 +122,8 @@ class Markdown:
 
         self.references = {}
         self.htmlStash = util.HtmlStash()
-        self.registerExtensions(extensions = extensions,
-                                configs = kwargs.get('extension_configs', {}))
+        self.registerExtensions(extensions=kwargs.get('extensions', []),
+                                configs=kwargs.get('extension_configs', {}))
         self.set_output_format(kwargs.get('output_format', 'xhtml1'))
         self.reset()
 
@@ -361,14 +373,34 @@ def markdown(text, *args, **kwargs):
     return md.convert(text)
 
 
-def markdownFromFile(input = None,
-                     output = None,
-                     extensions = [],
-                     encoding = None,
-                     *args, **kwargs):
-    """Read markdown code from a file and write it to a file or a stream."""
-    md = Markdown(extensions=extensions, *args, **kwargs)
-    md.convertFile(input, output, encoding)
+def markdownFromFile(*args, **kwargs):
+    """Read markdown code from a file and write it to a file or a stream.
+    
+    This is a shortcut function which initializes an instance of Markdown,
+    cand calls the convertFile method rather than convert.
+    
+    Keyword arguments:
+    
+    * input: a file name or readable object.
+    * output: a file name or writable object.
+    * encoding: Encoding of input and output.
+    * Any arguments accepted by the Markdown class.
+    
+    """
+    # For backward compatability loop through positional args
+    pos = ['input', 'output', 'extensions', 'encoding']
+    c = 0
+    for arg in args:
+        if not kwargs.has_key(pos[c]):
+            kwargs[pos[c]] = arg
+        c += 1
+        if c == len(pos):
+            break
+
+    md = Markdown(**kwargs)
+    md.convertFile(kwargs.get('input', None), 
+                   kwargs.get('output', None),
+                   kwargs.get('encoding', None))
 
 
 

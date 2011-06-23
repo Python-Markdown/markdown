@@ -22,7 +22,7 @@ functions will serve your needs. However, if you need to process
 multiple documents, it may be advantageous to create a single instance 
 of the `markdown.Markdown` class and pass multiple documents through it.
 
-### `markdown.markdown(text [, extensions][, **kwargs])`
+### `markdown.markdown(text [, **kwargs])`
 
 The following options are available on the `markdown.markdown` function:
 
@@ -154,7 +154,7 @@ The following options are available on the `markdown.markdown` function:
         </ol>
 
 
-### `markdown.markdownFromFile(input [, output] [, extensions] [, encoding] [, **kwargs])`
+### `markdown.markdownFromFile(**kwargs)`
 
 With a few exceptions, `markdown.markdownFromFile` accepts the same options as 
 `markdown.markdown`. It does **not** accept a `text` string. Instead, it accepts
@@ -183,7 +183,7 @@ the following required options:
     meet your special needs, it is suggested that you write your own code
     to handle your specific encoding/decoding needs.
 
-### `markdown.Markdown([extensions][, **kwargs])`
+### `markdown.Markdown([**kwargs])`
 
 The same options are available when initializing the `markdown.Markdown` class
 as on the `markdown.markdown` function, except that the class does **not**
@@ -209,10 +209,11 @@ must be passed to one of two instance methods:
         md.reset()
         html2 = md.convert(text2)
 
-* `Markdown.convertFile(input, output, encoding)`
+* `Markdown.convertFile(**kwargs)`
 
     The arguments of this method are identical to the arguments of the same
-    name on the `markdown.markdownFromFile` function. As with the `convert`
-    method, this method should be used to process multiple files without
-    creating a new instance of the class for each document. State may need to
-    be `reset` between each call to `convertFile` as with `convert`.
+    name on the `markdown.markdownFromFile` function (`input`, `output`, and 
+    `encoding`). As with the `convert` method, this method should be used to 
+    process multiple files without creating a new instance of the class for 
+    each document. State may need to be `reset` between each call to 
+    `convertFile` as with `convert`.
