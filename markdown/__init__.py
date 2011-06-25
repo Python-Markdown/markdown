@@ -331,7 +331,7 @@ class Markdown:
         if isinstance(input, basestring):
             input_file = codecs.open(input, mode="r", encoding=encoding)
         else:
-            input_file = input
+            input_file = codecs.getreader(encoding)(input)
         text = input_file.read()
         input_file.close()
         text = text.lstrip(u'\ufeff') # remove the byte-order mark
