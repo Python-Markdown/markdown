@@ -22,7 +22,7 @@ class TableProcessor(markdown.blockprocessors.BlockProcessor):
     """ Process Tables. """
 
     def test(self, parent, block):
-        rows = block.split('\n')
+        rows = [r.strip() for r in block.split('\n')]
         return (len(rows) > 2 and '|' in rows[0] and 
                 '|' in rows[1] and '-' in rows[1] and 
                 rows[1][0] in ['|', ':', '-'])
