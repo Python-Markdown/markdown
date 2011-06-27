@@ -76,10 +76,7 @@ class TableProcessor(markdown.blockprocessors.BlockProcessor):
     def _split_row(self, row, border):
         """ split a row of text into list of cells. """
         if border:
-            if row.startswith('|'):
-                row = row[1:]
-            if row.endswith('|'):
-                row = row[:-1]
+            row = row.strip('|')
         return row.split('|')
 
 
