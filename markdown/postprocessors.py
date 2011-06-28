@@ -8,6 +8,7 @@ processing.
 
 """
 
+import re
 import util
 import odict
 
@@ -55,7 +56,7 @@ class RawHtmlPostprocessor(Postprocessor):
                     html = ''
                 else:
                     html = self.markdown.html_replacement_text
-            if safe or not self.markdown.safeMode:
+            if self.isblocklevel(html) and (safe or not self.markdown.safeMode):
                 text = text.replace("<p>%s</p>" % 
                             (self.markdown.htmlStash.get_placeholder(i)),
                             html + "\n")
@@ -76,6 +77,16 @@ class RawHtmlPostprocessor(Postprocessor):
         html = html.replace('<', '&lt;')
         html = html.replace('>', '&gt;')
         return html.replace('"', '&quot;')
+
+
+    def isblocklevel(self, html):
+        m = re.match(r'^\<\/?([^ ]+)', html)
+        if m:
+            if m.group(1).startswith(('!', '?', '@', '%')):
+                # Comment, php etc...
+                return True
+            return util.isBlockLevel(m.group(1))
+        return False
 
 
 class AndSubstitutePostprocessor(Postprocessor):
