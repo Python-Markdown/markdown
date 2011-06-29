@@ -32,3 +32,21 @@ foo|bar|baz
    | Q |
  W |   | W
 
+Three spaces in front of a table:
+
+   First Header | Second Header
+   ------------ | -------------
+   Content Cell | Content Cell
+   Content Cell | Content Cell
+
+   | First Header | Second Header |
+   | ------------ | ------------- |
+   | Content Cell | Content Cell  |
+   | Content Cell | Content Cell  |
+
+Four spaces is a code block:
+   
+    First Header | Second Header
+    ------------ | -------------
+    Content Cell | Content Cell
+    Content Cell | Content Cell

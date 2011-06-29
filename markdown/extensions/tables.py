@@ -25,20 +25,21 @@ class TableProcessor(markdown.blockprocessors.BlockProcessor):
         rows = block.split('\n')
         return (len(rows) > 2 and '|' in rows[0] and 
                 '|' in rows[1] and '-' in rows[1] and 
-                rows[1][0] in ['|', ':', '-'])
+                rows[1].strip()[0] in ['|', ':', '-'])
 
     def run(self, parent, blocks):
         """ Parse a table block and build table. """
         block = blocks.pop(0).split('\n')
-        header = block[:2]
+        header = block[0].strip()
+        seperator = block[1].strip()
         rows = block[2:]
         # Get format type (bordered by pipes or not)
         border = False
-        if header[0].startswith('|'):
+        if header.startswith('|'):
             border = True
         # Get alignment of columns
         align = []
-        for c in self._split_row(header[1], border):
+        for c in self._split_row(seperator, border):
             if c.startswith(':') and c.endswith(':'):
                 align.append('center')
             elif c.startswith(':'):
@@ -50,10 +51,10 @@ class TableProcessor(markdown.blockprocessors.BlockProcessor):
         # Build table
         table = etree.SubElement(parent, 'table')
         thead = etree.SubElement(table, 'thead')
-        self._build_row(header[0], thead, align, border)
+        self._build_row(header, thead, align, border)
         tbody = etree.SubElement(table, 'tbody')
         for row in rows:
-            self._build_row(row, tbody, align, border)
+            self._build_row(row.strip(), tbody, align, border)
 
     def _build_row(self, row, parent, align, border):
         """ Given a row of text, build table cells. """
