@@ -22,7 +22,7 @@ class TableProcessor(markdown.blockprocessors.BlockProcessor):
     """ Process Tables. """
 
     def test(self, parent, block):
-        rows = block.split('\n')
+        rows = [r.strip() for r in block.split('\n')]
         return (len(rows) > 2 and '|' in rows[0] and 
                 '|' in rows[1] and '-' in rows[1] and 
                 rows[1][0] in ['|', ':', '-'])
@@ -76,10 +76,7 @@ class TableProcessor(markdown.blockprocessors.BlockProcessor):
     def _split_row(self, row, border):
         """ split a row of text into list of cells. """
         if border:
-            if row.startswith('|'):
-                row = row[1:]
-            if row.endswith('|'):
-                row = row[:-1]
+            row = row.strip('|')
         return row.split('|')
 
 
