@@ -35,6 +35,12 @@ variables (either by editing the source or by overriding them in your code),
 you should now set them on the class. See [[using_as_module]] for the options 
 available.
 
+* If you have been using the HeaderID extension to define custom ids on headers,
+you will want to swtich to using the new attr_list extension. The headerid 
+extension now only auto-generates ids on headers which have not already had
+ids defined. Note that the extra extension has been switched to use attr_list
+instead of headeris as it did previously.
+
 * Some code was moved into the `markdown.util` namespace which was previously
 in the `markdown` namespace. Extension authors may need to adjust a few
 import statements in their extensions to work with the changes.
