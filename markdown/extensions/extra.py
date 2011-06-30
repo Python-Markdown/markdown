@@ -32,7 +32,7 @@ import markdown
 extensions = ['smart_strong',
               'fenced_code',
               'footnotes',
-              'headerid',
+              'attr_list',
               'def_list',
               'tables',
               'abbr',
