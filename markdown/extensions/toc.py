@@ -95,11 +95,15 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 link.attrib["href"] = '#' + id
 
                 if int(self.config["anchorlink"]):
-                    anchor = etree.SubElement(c, "a")
-                    anchor.text = text
+                    anchor = etree.Element("a")
+                    anchor.text = c.text
                     anchor.attrib["href"] = "#" + id
                     anchor.attrib["class"] = "toclink"
                     c.text = ""
+                    for elem in c.getchildren():
+                        anchor.append(elem)
+                        c.remove(elem)
+                    c.append(anchor)
 
                 list_stack[-1].append(last_li)
 
