@@ -5,14 +5,15 @@ Table of Contents Extension for Python-Markdown
 (c) 2008 [Jack Miller](http://codezen.org)
 
 Dependencies:
-* [Markdown 2.0+](http://www.freewisdom.org/projects/python-markdown/)
+* [Markdown 2.1+](http://www.freewisdom.org/projects/python-markdown/)
 
 """
 import markdown
 from markdown.util import etree
-from markdown.inlinepatterns import LINK_RE, REFERENCE_RE, SHORT_REF_RE, \
-                                    AUTOLINK_RE, AUTOMAIL_RE
+from markdown.extensions.headerid import slugify, unique, itertext
+
 import re
+
 
 class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
     # Iterator wrapper to get parent and child all at once
@@ -43,7 +44,8 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 used_ids.append(c.attrib["id"])
 
         for (p, c) in self.iterparent(doc):
-            if not c.text:
+            text = ''.join(itertext(c)).strip()
+            if not text:
                 continue
 
             # To keep the output from screwing up the
@@ -53,7 +55,8 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
             # would causes an enless loop of placing a new TOC 
             # inside previously generated TOC.
 
-            if c.text.find(self.config["marker"]) > -1 and not header_rgx.match(c.tag):
+            if c.text and c.text.strip() == self.config["marker"] and \
+               not header_rgx.match(c.tag) and c.tag not in ['pre', 'code']:
                 for i in range(len(p)):
                     if p[i] == c:
                         p[i] = div
@@ -77,21 +80,10 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                         level = tag_level
                     else:
                         level += 1
-                
-                # Sanitize text. Replace all links with link lables (group 1).
-                text = c.text
-                for RE in [LINK_RE, REFERENCE_RE, SHORT_REF_RE, AUTOLINK_RE, AUTOMAIL_RE]:
-                    text = re.sub(RE, '\g<1>', text)
 
                 # Do not override pre-existing ids 
                 if not "id" in c.attrib:
-                    id = self.config["slugify"](text)
-                    if id in used_ids:
-                        ctr = 1
-                        while "%s_%d" % (id, ctr) in used_ids:
-                            ctr += 1
-                        id = "%s_%d" % (id, ctr)
-                    used_ids.append(id)
+                    id = unique(self.config["slugify"](text, '-'), used_ids)
                     c.attrib["id"] = id
                 else:
                     id = c.attrib["id"]
@@ -116,9 +108,9 @@ class TocExtension(markdown.Extension):
         self.config = { "marker" : ["[TOC]", 
                             "Text to find and replace with Table of Contents -"
                             "Defaults to \"[TOC]\""],
-                        "slugify" : [self.slugify,
+                        "slugify" : [slugify,
                             "Function to generate anchors based on header text-"
-                            "Defaults to a built in slugify function."],
+                            "Defaults to the headerid ext's slugify function."],
                         "title" : [None,
                             "Title to insert into TOC <div> - "
                             "Defaults to None"],
@@ -129,18 +121,15 @@ class TocExtension(markdown.Extension):
         for key, value in configs:
             self.setConfig(key, value)
 
-    # This is exactly the same as Django's slugify
-    def slugify(self, value):
-        """ Slugify a string, to make it URL friendly. """
-        import unicodedata
-        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-        value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
-        return re.sub('[-\s]+','-',value)
-
     def extendMarkdown(self, md, md_globals):
         tocext = TocTreeprocessor(md)
         tocext.config = self.getConfigs()
-        md.treeprocessors.add("toc", tocext, "_begin")
+        # Headerid ext is set to '>inline'. With this set to '<prettify',
+        # it should always come after headerid ext (and honor ids assinged 
+        # by the header id extension) if both are used. Same goes for 
+        # attr_list extension. This must come last because we don't want
+        # to redefine ids after toc is created. But we do want toc prettified.
+        md.treeprocessors.add("toc", tocext, "<prettify")
 	
 def makeExtension(configs={}):
     return TocExtension(configs=configs)
