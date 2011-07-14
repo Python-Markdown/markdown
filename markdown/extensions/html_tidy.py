@@ -40,6 +40,7 @@ class TidyExtension(markdown.Extension):
         # Set defaults to match typical markdown behavior.
         self.config = dict(output_xhtml=1,
                            show_body_only=1,
+                           char_encoding='utf8'
                           )
         # Merge in user defined configs overriding any present if nessecary.
         for c in configs:
@@ -58,8 +59,10 @@ class TidyProcessor(markdown.postprocessors.Postprocessor):
     def run(self, text):
         # Pass text to Tidy. As Tidy does not accept unicode we need to encode
         # it and decode its return value.
-        return unicode(tidy.parseString(text.encode('utf-8'), 
-                                        **self.markdown.tidy_options)) 
+        enc = self.markdown.tidy_options.get('char_encoding', 'utf8')
+        return unicode(tidy.parseString(text.encode(enc), 
+                                        **self.markdown.tidy_options),
+                       encoding=enc) 
 
 
 def makeExtension(configs=None):
