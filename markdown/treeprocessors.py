@@ -289,7 +289,18 @@ class InlineProcessor(Treeprocessor):
                                                     text), child)
                     stack += lst
                     insertQueue.append((child, lst))
-
+                if child.tail:
+                    tail = self.__handleInline(child.tail)
+                    dumby = util.etree.Element('d')
+                    tailResult = self.__processPlaceholders(tail, dumby)
+                    if dumby.text:
+                        child.tail = dumby.text
+                    else:
+                        child.tail = None
+                    pos = currElement.getchildren().index(child) + 1
+                    tailResult.reverse()
+                    for newChild in tailResult:
+                        currElement.insert(pos, newChild)
                 if child.getchildren():
                     stack.append(child)
 
