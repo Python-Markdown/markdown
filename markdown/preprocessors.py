@@ -237,8 +237,9 @@ class HtmlBlockPreprocessor(Preprocessor):
                 new_blocks.append(
                     self.markdown.htmlStash.store(start))
                 new_blocks.extend(items)
-                new_blocks.append(
-                    self.markdown.htmlStash.store(end))
+                if end.strip():
+                    new_blocks.append(
+                        self.markdown.htmlStash.store(end))
             else:
                 new_blocks.append(
                     self.markdown.htmlStash.store('\n\n'.join(items)))
