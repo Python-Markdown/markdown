@@ -82,7 +82,7 @@ class RawHtmlPostprocessor(Postprocessor):
     def isblocklevel(self, html):
         m = re.match(r'^\<\/?([^ ]+)', html)
         if m:
-            if m.group(1).startswith(('!', '?', '@', '%')):
+            if m.group(1)[0] in ('!', '?', '@', '%'):
                 # Comment, php etc...
                 return True
             return util.isBlockLevel(m.group(1))

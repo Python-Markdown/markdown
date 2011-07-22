@@ -22,6 +22,12 @@ import markdown
 import re
 from markdown.util import isBlockLevel
 
+try:
+    Scanner = re.Scanner
+except AttributeError:
+    # must be on Python 2.4
+    from sre import Scanner
+
 def _handle_double_quote(s, t):
     k, v = t.split('=')
     return k, v.strip('"')
@@ -40,7 +46,7 @@ def _handle_word(s, t):
         return u'id', t[1:]
     return t, t
 
-_scanner = re.Scanner([
+_scanner = Scanner([
     (r'[^ ]+=".*?"', _handle_double_quote),
     (r"[^ ]+='.*?'", _handle_single_quote),
     (r'[^ ]+=[^ ]*', _handle_key_value),
