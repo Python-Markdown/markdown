@@ -7,14 +7,14 @@ This extention adds smarter handling of double underscores within words.
 Simple Usage:
 
     >>> import markdown
-    >>> markdown.markdown('Text with double__underscore__words.', \
-                          extensions=['smart_strong'])
+    >>> markdown.markdown('Text with double__underscore__words.',
+    ...                   extensions=['smart_strong'])
     u'<p>Text with double__underscore__words.</p>'
-    >>> markdown.markdown('__Strong__ still works.', \
-                          extensions=['smart_strong'])
+    >>> markdown.markdown('__Strong__ still works.',
+    ...                   extensions=['smart_strong'])
     u'<p><strong>Strong</strong> still works.</p>'
-    >>> markdown.markdown('__this__works__too__.', \
-                          extensions=['smart_strong'])
+    >>> markdown.markdown('__this__works__too__.',
+    ...                   extensions=['smart_strong'])
     u'<p><strong>this__works__too</strong>.</p>'
 
 Copyright 2011
