@@ -81,6 +81,7 @@ class TableProcessor(markdown.blockprocessors.BlockProcessor):
                 row = row[1:]
             if row.endswith('|'):
                 row = row[:-1]
+            row = row.replace('+', '|') 
         return row.split('|')
 
 
