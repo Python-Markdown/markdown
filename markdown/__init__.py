@@ -285,7 +285,7 @@ class Markdown:
                 root = newRoot
 
         # Serialize _properly_.  Strip top-level tags.
-        output, length = codecs.utf_8_decode(self.serializer(root, encoding="utf-8"))
+        output = self.serializer(root)
         if self.stripTopLevelTags:
             try:
                 start = output.index('<%s>'%self.doc_tag)+len(self.doc_tag)+2
