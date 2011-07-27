@@ -46,7 +46,8 @@ class TestBlockParser(unittest.TestCase):
         root = markdown.util.etree.Element("div")
         text = 'foo'
         self.parser.parseChunk(root, text)
-        self.assertEqual(markdown.util.etree.tostring(root), "<div><p>foo</p></div>")
+        self.assertEqual(markdown.searializers.to_xhtml_string(root), 
+                         "<div><p>foo</p></div>")
 
     def testParseDocument(self):
         """ Test BlockParser.parseDocument. """
@@ -54,7 +55,7 @@ class TestBlockParser(unittest.TestCase):
         tree = self.parser.parseDocument(lines)
         self.assert_(isinstance(tree, markdown.util.etree.ElementTree))
         self.assert_(markdown.util.etree.iselement(tree.getroot()))
-        self.assertEqual(markdown.util.etree.tostring(tree.getroot()),
+        self.assertEqual(markdown.searializers.to_xhtml_string(tree.getroot()),
             "<div><h1>foo</h1><p>bar</p><pre><code>baz\n</code></pre></div>")
 
 
@@ -353,5 +354,6 @@ class testAtomicString(unittest.TestCase):
         span1.tail = markdown.util.AtomicString(u' *with*')
         new = self.inlineprocessor.run(tree)
         self.assertEqual(markdown.searializers.to_html_string(new), 
-            '<div><p>*some* <span>*more* <span>*text* <span>*here*</span> *to*</span> *test*</span> *with*</p></div>')
+            '<div><p>*some* <span>*more* <span>*text* <span>*here*</span> '
+            '*to*</span> *test*</span> *with*</p></div>')
 
