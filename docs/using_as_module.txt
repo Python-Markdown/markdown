@@ -39,7 +39,10 @@ The following options are available on the `markdown.markdown` function:
 
     If you want to write the output to disk, you must encode it yourself:
 
-        output_file = codecs.open("some_file.html", "w", encoding="utf-8")
+        output_file = codecs.open("some_file.html", "w", 
+                                  encoding="utf-8", 
+                                  errors="xmlcharrefreplace"
+        )
         output_file.write(html)
 
 * `extensions`: A list of extensions.
@@ -178,7 +181,8 @@ the following required options:
     * or `None` (default) which will write to `stdout`.
 
 * `encoding`: The encoding of the source text file. Defaults to 
-  "utf-8". The same encoding will always be used for the output file.
+  "utf-8". The same encoding will always be used for the output file. 
+  The 'xmlcharrefreplace' error handler is used when encoding the output.
 
     **Note:** This is the only place that decoding and encoding of unicode
     takes place in Python-Markdown. If this rather naive solution does not

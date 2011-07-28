@@ -311,7 +311,8 @@ class Markdown:
         Decodes the file using the provided encoding (defaults to utf-8),
         passes the file content to markdown, and outputs the html to either
         the provided stream or the file with provided name, using the same
-        encoding as the source file.
+        encoding as the source file. The 'xmlcharrefreplace' error handler is
+        used when encoding the output.
 
         **Note:** This is the only place that decoding and encoding of unicode
         takes place in Python-Markdown.  (All other code is unicode-in /
@@ -341,11 +342,13 @@ class Markdown:
 
         # Write to file or stdout
         if isinstance(output, (str, unicode)):
-            output_file = codecs.open(output, "w", encoding=encoding)
+            output_file = codecs.open(output, "w", 
+                                      encoding=encoding, 
+                                      errors="xmlcharrefreplace")
             output_file.write(html)
             output_file.close()
         else:
-            output.write(html.encode(encoding))
+            output.write(html.encode(encoding, errors="xmlcharrefreplace"))
 
         return self
 

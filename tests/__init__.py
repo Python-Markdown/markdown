@@ -51,7 +51,7 @@ def get_args(file, config):
 
 def normalize(text):
     """ Normalize whitespace for a string of html using tidy. """
-    return str(tidy.parseString(text.encode('utf-8'), 
+    return str(tidy.parseString(text.encode('utf-8', errors='xmlcharrefreplace'), 
                                     drop_empty_paras=0,
                                     fix_backslash=0,
                                     fix_bad_comments=0,
