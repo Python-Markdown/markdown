@@ -227,8 +227,9 @@ class TestErrors(unittest.TestCase):
 
     def testNonUnicodeSource(self):
         """ Test falure on non-unicode source text. """
-        source = "foo".encode('utf-16') 
-        self.assertRaises(UnicodeDecodeError, markdown.markdown, source)
+        if sys.version_info < (3, 0):
+            source = "foo".encode('utf-16') 
+            self.assertRaises(UnicodeDecodeError, markdown.markdown, source)
 
     def testBadOutputFormat(self):
         """ Test failure on bad output_format. """
