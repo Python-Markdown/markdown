@@ -348,7 +348,7 @@ class Markdown:
             output_file.write(html)
             output_file.close()
         else:
-            output.write(html.encode(encoding, errors="xmlcharrefreplace"))
+            output.write(html.encode(encoding, "xmlcharrefreplace"))
 
         return self
 
