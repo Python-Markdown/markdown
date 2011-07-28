@@ -73,18 +73,18 @@ class CheckSyntax(object):
     def __call__(self, file, config):
         """ Compare expected output to actual output and report result. """
         cfg_section = get_section(file, config)
-        if config.getboolean(cfg_section, 'skip'):
+        if config.get(cfg_section, 'skip'):
             raise nose.plugins.skip.SkipTest, 'Test skipped per config.'
         input_file = file + config.get(cfg_section, 'input_ext')
         input = codecs.open(input_file, encoding="utf-8").read()
         output_file = file + config.get(cfg_section, 'output_ext') 
         expected_output = codecs.open(output_file, encoding="utf-8").read()
         output = markdown.markdown(input, **get_args(file, config))
-        if tidy and config.getboolean(cfg_section, 'normalize'):
+        if tidy and config.get(cfg_section, 'normalize'):
             # Normalize whitespace before comparing.
             expected_output = normalize(expected_output)
             output = normalize(output)
-        elif config.getboolean(cfg_section, 'normalize'):
+        elif config.get(cfg_section, 'normalize'):
             # Tidy is not available. Skip this test.
             raise nose.plugins.skip.SkipTest, 'Test skipped. Tidy not available in system.'
         diff = [l for l in difflib.unified_diff(expected_output.splitlines(True),
