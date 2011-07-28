@@ -53,8 +53,8 @@ class TestBlockParser(unittest.TestCase):
         """ Test BlockParser.parseDocument. """
         lines = ['#foo', '', 'bar', '', '    baz']
         tree = self.parser.parseDocument(lines)
-        self.assert_(isinstance(tree, markdown.util.etree.ElementTree))
-        self.assert_(markdown.util.etree.iselement(tree.getroot()))
+        self.assertTrue(isinstance(tree, markdown.util.etree.ElementTree))
+        self.assertTrue(markdown.util.etree.iselement(tree.getroot()))
         self.assertEqual(markdown.searializers.to_xhtml_string(tree.getroot()),
             "<div><h1>foo</h1><p>bar</p><pre><code>baz\n</code></pre></div>")
 
@@ -295,7 +295,7 @@ class testETreeComments(unittest.TestCase):
 
     def testCommentIsComment(self):
         """ Test that an ElementTree Comment passes the `is Comment` test. """
-        self.assert_(self.comment.tag is markdown.util.etree.test_comment)
+        self.assertTrue(self.comment.tag is markdown.util.etree.test_comment)
 
     def testCommentIsBlockLevel(self):
         """ Test that an ElementTree Comment is recognized as BlockLevel. """
