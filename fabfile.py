@@ -49,6 +49,7 @@ def build_tests(version=_pyversion[:3]):
     local('mkdir build/test.%s/tests' % version)
     local('cp -r tests/* build/test.%s/tests' % version)
     local('cp run-tests.py build/test.%s/run-tests.py' % version)
+    local('cp setup.cfg build/test.%s/setup.cfg' % version)
     if version.startswith('3'):
         # Do 2to3 conversion
         local('2to3-%s -w -d build/test.%s/markdown' % (version, version))

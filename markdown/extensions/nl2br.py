@@ -8,8 +8,9 @@ StackOverflow and GitHub flavored Markdown do.
 Usage:
 
     >>> import markdown
-    >>> markdown.markdown('line 1\\nline 2', extensions=['nl2br'])
-    u'<p>line 1<br />\\nline 2</p>'
+    >>> print markdown.markdown('line 1\\nline 2', extensions=['nl2br'])
+    <p>line 1<br />
+    line 2</p>
 
 Copyright 2011 [Brian Neal](http://deathofagremmie.com/)
 

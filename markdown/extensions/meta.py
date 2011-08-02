@@ -17,17 +17,18 @@ Basic Usage:
     ... The body. This is paragraph one.
     ... '''
     >>> md = markdown.Markdown(['meta'])
-    >>> md.convert(text)
-    u'<p>The body. This is paragraph one.</p>'
-    >>> md.Meta
+    >>> print md.convert(text)
+    <p>The body. This is paragraph one.</p>
+    >>> print md.Meta
     {u'blank_data': [u''], u'author': [u'Waylan Limberg', u'John Doe'], u'title': [u'A Test Doc.']}
 
 Make sure text without Meta Data still works (markdown < 1.6b returns a <p>).
 
     >>> text = '    Some Code - not extra lines of meta data.'
     >>> md = markdown.Markdown(['meta'])
-    >>> md.convert(text)
-    u'<pre><code>Some Code - not extra lines of meta data.\\n</code></pre>'
+    >>> print md.convert(text)
+    <pre><code>Some Code - not extra lines of meta data.
+    </code></pre>
     >>> md.Meta
     {}
 

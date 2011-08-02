@@ -11,8 +11,8 @@ Basic usage:
     >>> import markdown
     >>> text = "# Some Header #"
     >>> md = markdown.markdown(text, ['headerid'])
-    >>> md
-    u'<h1 id="some-header">Some Header</h1>'
+    >>> print md
+    <h1 id="some-header">Some Header</h1>
 
 All header IDs are unique:
 
@@ -21,8 +21,10 @@ All header IDs are unique:
     ... #Header
     ... #Header'''
     >>> md = markdown.markdown(text, ['headerid'])
-    >>> md
-    u'<h1 id="header">Header</h1>\\n<h1 id="header_1">Header</h1>\\n<h1 id="header_2">Header</h1>'
+    >>> print md
+    <h1 id="header">Header</h1>
+    <h1 id="header_1">Header</h1>
+    <h1 id="header_2">Header</h1>
 
 To fit within a html template's hierarchy, set the header base level:
 
@@ -30,15 +32,16 @@ To fit within a html template's hierarchy, set the header base level:
     ... #Some Header
     ... ## Next Level'''
     >>> md = markdown.markdown(text, ['headerid(level=3)'])
-    >>> md
-    u'<h3 id="some-header">Some Header</h3>\\n<h4 id="next-level">Next Level</h4>'
+    >>> print md
+    <h3 id="some-header">Some Header</h3>
+    <h4 id="next-level">Next Level</h4>
 
 Works with inline markup.
 
     >>> text = '#Some *Header* with [markup](http://example.com).'
     >>> md = markdown.markdown(text, ['headerid'])
-    >>> md
-    u'<h1 id="some-header-with-markup">Some <em>Header</em> with <a href="http://example.com">markup</a>.</h1>'
+    >>> print md
+    <h1 id="some-header-with-markup">Some <em>Header</em> with <a href="http://example.com">markup</a>.</h1>
 
 Turn off auto generated IDs:
 
@@ -46,8 +49,9 @@ Turn off auto generated IDs:
     ... # Some Header
     ... # Another Header'''
     >>> md = markdown.markdown(text, ['headerid(forceid=False)'])
-    >>> md
-    u'<h1>Some Header</h1>\\n<h1>Another Header</h1>'
+    >>> print md
+    <h1>Some Header</h1>
+    <h1>Another Header</h1>
 
 Use with MetaData extension:
 
@@ -56,8 +60,8 @@ Use with MetaData extension:
     ...
     ... # A Header'''
     >>> md = markdown.markdown(text, ['headerid', 'meta'])
-    >>> md
-    u'<h2>A Header</h2>'
+    >>> print md
+    <h2>A Header</h2>
 
 Copyright 2007-2011 [Waylan Limberg](http://achinghead.com/).
 
