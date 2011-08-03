@@ -35,6 +35,7 @@ version_info = (2,1,0, "Dev")
 
 import re
 import codecs
+import sys
 import logging
 import util
 from preprocessors import build_preprocessors
@@ -320,8 +321,8 @@ class Markdown:
 
         Keyword arguments:
 
-        * input: File object or path of file as string.
-        * output: Name of output file. Writes to stdout if `None`.
+        * input: File object or path. Reads from stdin if `None`.
+        * output: File object or path. Writes to stdout if `None`.
         * encoding: Encoding of input and output files. Defaults to utf-8.
 
         """
@@ -332,6 +333,7 @@ class Markdown:
         if isinstance(input, basestring):
             input_file = codecs.open(input, mode="r", encoding=encoding)
         else:
+            input = input or sys.stdin
             input_file = codecs.getreader(encoding)(input)
         text = input_file.read()
         input_file.close()
@@ -341,13 +343,14 @@ class Markdown:
         html = self.convert(text)
 
         # Write to file or stdout
-        if isinstance(output, (str, unicode)):
+        if isinstance(output, basestring):
             output_file = codecs.open(output, "w", 
                                       encoding=encoding, 
                                       errors="xmlcharrefreplace")
             output_file.write(html)
             output_file.close()
         else:
+            output = output or sys.stdout
             output.write(html.encode(encoding, "xmlcharrefreplace"))
 
         return self

@@ -167,10 +167,11 @@ the following required options:
 
 * `input` (required): The source text file.
 
-    `input` may be set to one of two options:
+    `input` may be set to one of three options:
 
     * a string which contains a path to a readable file on the file system,
-    * or a readable file-like object.
+    * a readable file-like object,
+    * or `None` (default) which will read from `stdin`.
 
 * `output`: The target which output to written to.
 
