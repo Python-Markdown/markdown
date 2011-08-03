@@ -97,6 +97,12 @@ the markdown parser and throwing it away.
 Import statements within markdown have been improved so that third party 
 libraries can embed the markdown library if they desire (licencing permitting).
 
+Added support for Python's `-m` command line option. You can run the markdown 
+package as a command line script. Do `python -m markdown [options] [args]`. 
+Note that this is only fully supported in Python 2.7+. Python 2.5 & 2.6 
+require you to call the module directly (`markdown.__main__`) rather than
+the package (`markdown`). This does not work in Python 2.4.
+
 The commandline script has been renamed to `markdown_py` which avoids all the 
 various problems we had with previous names.  Also improved the commandline 
 script to accept input on stdin.
