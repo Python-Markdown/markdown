@@ -29,7 +29,6 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see docs/LICENSE for details).
 """
 
-from markdown import commandline
-
 if __name__ == '__main__':
-    commandline.run()
+    from markdown.__main__ import run
+    run()

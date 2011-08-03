@@ -412,5 +412,3 @@ def markdownFromFile(*args, **kwargs):
                    kwargs.get('output', None),
                    kwargs.get('encoding', None))
 
-
-
