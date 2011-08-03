@@ -79,7 +79,7 @@ def build_release():
     else:
         abort('Try again after updating the version numbers.')
 
-def do_release():
+def deploy_release():
     """ Register and upload release to PyPI and Github. """
     build_release()
     local('./setup.py register')
