@@ -6,6 +6,7 @@ from distutils.command.install_scripts import install_scripts
 from distutils.command.build import build
 from distutils.core import Command
 from distutils.util import change_root, newer
+import codecs
 
 # Try to run 2to3 automaticaly when building in Python 3.x
 try:
@@ -43,29 +44,6 @@ class md_install_scripts(install_scripts):
                 print ('ERROR: Unable to create %s: %s' % (bat_path, err))
 
 
-doc_header = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>%(title)s</title>
-<style type="text/css">
-.nav { float:right; margin:1em;}
-</style>
-</head>
-<body>
-<div id="nav">
-%(menu)s
-</div>
-<div id="content">
-"""
-
-doc_footer = """
-</div>
-<p id="foot">&copy; 2010 Python Markdown Project<p>
-</body>
-</html>
-"""
-
 class build_docs(Command):
     """ Build markdown documentation into html."""
 
@@ -99,8 +77,9 @@ class build_docs(Command):
     def _get_docs(self):
         for root, dirs, files in os.walk('docs'):
             for file in files:
-                path = os.path.join(root, file)
-                yield (path, self._get_page_title(path))
+                if not file.startswith('_'):
+                    path = os.path.join(root, file)
+                    yield (path, self._get_page_title(path))
 
     def _get_page_title(self, path):
         """ Get page title from file name (and path). """
@@ -125,7 +104,8 @@ class build_docs(Command):
         except ImportError:
             print ('skipping build_docs: Markdown "import" failed!')
         else:
-            md = markdown.Markdown()
+            template = codecs.open('docs/_template.html', encoding='utf-8').read()
+            md = markdown.Markdown(extensions=['extra', 'toc'])
             menu = md.convert(self.sitemap)
             md.reset()
             for infile, title in self.docs:
@@ -138,12 +118,15 @@ class build_docs(Command):
                         if self.verbose:
                             print ('Converting %s -> %s' % (infile, outfile))
                         if not self.dry_run:
-                            doc = open(outfile, 'wb')
-                            header = doc_header % {'title': title, 'menu': menu}
-                            doc.write(header.encode('utf-8'))
-                            md.convertFile(infile, doc)
+                            src = codecs.open(infile, encoding='utf-8').read()
+                            out = template % {
+                                'title': title, 
+                                'body' : md.convert(src),
+                                'toc'  : md.toc,
+                            }
                             md.reset()
-                            doc.write(doc_footer.encode('utf-8'))
+                            doc = open(outfile, 'wb')
+                            doc.write(out.encode('utf-8'))
                             doc.close()
 
 
