@@ -31,6 +31,15 @@ def relpath(path, start=test_dir):
         return test_dir
     return os.path.join(*rel_list)
 
+def get_config(dir_name):
+    """ Get config for given directory name. """
+    config = util.CustomConfigParser({'normalize': '0',
+                                      'skip': '0',
+                                      'input_ext': '.txt',
+                                      'output_ext': '.html'})
+    config.read(os.path.join(dir_name, 'test.cfg'))
+    return config
+
 def get_section(file, config):
     """ Get name of config section for given file. """
     filename = os.path.basename(file)
@@ -99,11 +108,7 @@ class CheckSyntax(object):
 def TestSyntax():
     for dir_name, sub_dirs, files in os.walk(test_dir):
         # Get dir specific config settings.
-        config = util.CustomConfigParser({'normalize': '0',
-                                          'skip': '0',
-                                          'input_ext': '.txt',
-                                          'output_ext': '.html'})
-        config.read(os.path.join(dir_name, 'test.cfg'))
+        config = get_config(dir_name)
         # Loop through files and generate tests.
         for file in files:
             root, ext = os.path.splitext(file)
@@ -111,6 +116,34 @@ def TestSyntax():
                 path = os.path.join(dir_name, root)
                 check_syntax = CheckSyntax(description=relpath(path, test_dir))
                 yield check_syntax, path, config
+
+def generate(file, config):
+    """ Write expected output file for given input. """
+    cfg_section = get_section(file, config)
+    if config.get(cfg_section, 'skip'):
+        print 'Skipping:', file
+        return None
+    input_file = file + config.get(cfg_section, 'input_ext')
+    output_file = file + config.get(cfg_section, 'output_ext') 
+    if not os.path.isfile(output_file) or \
+            os.path.getmtime(output_file) < os.path.getmtime(input_file):
+        print 'Generating:', file
+        markdown.markdownFromFile(input=input_file, output=output_file, 
+                                  encoding='utf-8', **get_args(file, config))
+    else:
+        print 'Already up-to-date:', file
+
+def generate_all():
+    """ Generate expected output for all outdated tests. """
+    for dir_name, sub_dirs, files in os.walk(test_dir):
+        # Get dir specific config settings.
+        config = get_config(dir_name)
+        # Loop through files and generate tests.
+        for file in files:
+            root, ext = os.path.splitext(file)
+            if ext == config.get(get_section(file, config), 'input_ext'):
+                generate(os.path.join(dir_name, root), config)
+
 
 def run():
     nose.main(addplugins=[HtmlOutput(), Markdown()])

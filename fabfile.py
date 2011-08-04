@@ -61,6 +61,22 @@ def build_tests(version=_pyversion[:3]):
         local('2to3-%s -w build/test.%s/tests' % (version, version))
         local('2to3-%s -w build/test.%s/run-tests.py' % (version, version))
 
+def generate_test(file):
+    """ Generate a given test. """
+    import tests
+    config = tests.get_config(os.path.dirname(file))
+    root, ext = os.path.splitext(file)
+    if ext == config.get(get_section(os.path.basename(root), config), 
+                         'input_ext'):
+        tests.generate(root, config)
+    else:
+        print test, 'does not have a valid file extension. Check config.'
+
+def generate_tests():
+    """ Generate all outdated tests. """
+    from tests import generate_all
+    generate_all()
+
 def build_env(version=_pyversion[:3]):
     """ Build testing environment for given Python version. """
     if version in confirmed_versions:
