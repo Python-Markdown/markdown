@@ -23,6 +23,8 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 yield parent, child
 
     def run(self, doc):
+        marker_found = False
+
         div = etree.Element("div")
         div.attrib["class"] = "toc"
         last_li = None
@@ -61,6 +63,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                     if p[i] == c:
                         p[i] = div
                         break
+                marker_found = True
                     
             if header_rgx.match(c.tag):
                 tag_level = int(c.tag[-1])
@@ -106,6 +109,14 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                     c.append(anchor)
 
                 list_stack[-1].append(last_li)
+        if not marker_found:
+            # searialize and attach to markdown instance.
+            prettify = self.markdown.treeprocessors.get('prettify')
+            if prettify: prettify.run(div)
+            toc = self.markdown.serializer(div)
+            for pp in self.markdown.postprocessors.values():
+                toc = pp.run(toc)
+            self.markdown.toc = toc
 
 class TocExtension(markdown.Extension):
     def __init__(self, configs):
