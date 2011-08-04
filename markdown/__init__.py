@@ -30,8 +30,8 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE for details).
 """
 
-version = "2.1.0"
-version_info = (2,1,0, "Dev")
+version = "2.1.0.alpha"
+version_info = (2,1,0, "alpha")
 
 import re
 import codecs
