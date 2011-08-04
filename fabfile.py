@@ -21,6 +21,10 @@ def _get_versions():
     return vs
 confirmed_versions = _get_versions()
 
+def clean():
+    """ Clean up dir. """
+    local('git clean -dfx')
+
 def list_versions():
     """ List all supported versions of Python. """
     print('Supported Python versions available on this system:')
