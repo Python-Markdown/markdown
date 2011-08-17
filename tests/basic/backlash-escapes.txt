@@ -20,8 +20,6 @@ Left paren: \(
 
 Right paren: \)
 
-Greater-than: \>
-
 Hash: \#
 
 Period: \.

@@ -17,6 +17,7 @@ def build_postprocessors(md_instance, **kwargs):
     postprocessors = odict.OrderedDict()
     postprocessors["raw_html"] = RawHtmlPostprocessor(md_instance)
     postprocessors["amp_substitute"] = AndSubstitutePostprocessor()
+    postprocessors["unescape"] = UnescapePostprocessor()
     return postprocessors
 
 
@@ -91,9 +92,19 @@ class RawHtmlPostprocessor(Postprocessor):
 
 class AndSubstitutePostprocessor(Postprocessor):
     """ Restore valid entities """
-    def __init__(self):
-        pass
 
     def run(self, text):
         text =  text.replace(util.AMP_SUBSTITUTE, "&")
         return text
+
+
+class UnescapePostprocessor(Postprocessor):
+    """ Restore escaped chars """
+
+    RE = re.compile('%s(\d+)%s' % (util.STX, util.ETX))
+
+    def unescape(self, m):
+        return unichr(int(m.group(1)))
+
+    def run(self, text):
+        return self.RE.sub(self.unescape, text)

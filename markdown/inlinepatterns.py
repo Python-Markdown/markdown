@@ -59,7 +59,7 @@ def build_inlinepatterns(md_instance, **kwargs):
     """ Build the default set of inline patterns for Markdown. """
     inlinePatterns = odict.OrderedDict()
     inlinePatterns["backtick"] = BacktickPattern(BACKTICK_RE)
-    inlinePatterns["escape"] = SimpleTextPattern(ESCAPE_RE)
+    inlinePatterns["escape"] = EscapePattern(ESCAPE_RE, md_instance)
     inlinePatterns["reference"] = ReferencePattern(REFERENCE_RE, md_instance)
     inlinePatterns["link"] = LinkPattern(LINK_RE, md_instance)
     inlinePatterns["image_link"] = ImagePattern(IMAGE_LINK_RE, md_instance)
@@ -197,8 +197,6 @@ class Pattern:
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
-BasePattern = Pattern # for backward compatibility
-
 class SimpleTextPattern(Pattern):
     """ Return a simple text of group(2) of a Pattern. """
     def handleMatch(self, m):
@@ -206,6 +204,18 @@ class SimpleTextPattern(Pattern):
         if text == util.INLINE_PLACEHOLDER_PREFIX:
             return None
         return text
+
+
+class EscapePattern(Pattern):
+    """ Return an escaped character. """
+
+    def handleMatch(self, m):
+        char = m.group(2)
+        if char in self.markdown.ESCAPED_CHARS:
+            return '%s%s%s' % (util.STX, ord(char), util.ETX)
+        else:
+            return '\\%s' % char
+
 
 class SimpleTagPattern(Pattern):
     """
