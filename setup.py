@@ -67,12 +67,6 @@ class build_docs(Command):
                                     ('build_base', 'build_base'), 
                                     ('force', 'force'))
         self.docs = self._get_docs()
-        try:
-            sm = open('docs/sitemap.txt')
-            self.sitemap = sm.read()
-            sm.close()
-        except:
-            pass
 
     def _get_docs(self):
         for root, dirs, files in os.walk('docs'):
@@ -106,11 +100,9 @@ class build_docs(Command):
         else:
             template = codecs.open('docs/_template.html', encoding='utf-8').read()
             md = markdown.Markdown(extensions=['extra', 'toc'])
-            menu = md.convert(self.sitemap)
-            md.reset()
             for infile, title in self.docs:
                 outfile, ext = os.path.splitext(infile)
-                if ext == '.txt':
+                if ext == '.md':
                     outfile += '.html'
                     outfile = change_root(self.build_base, outfile)
                     self.mkpath(os.path.split(outfile)[0])
