@@ -120,6 +120,10 @@ class build_docs(Command):
                             doc = open(outfile, 'wb')
                             doc.write(out.encode('utf-8'))
                             doc.close()
+                else:
+                    outfile = change_root(self.build_base, infile)
+                    self.mkpath(os.path.split(outfile)[0])
+                    self.copy_file(infile, outfile)
 
 
 class md_build(build):
