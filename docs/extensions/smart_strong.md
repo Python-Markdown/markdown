@@ -23,8 +23,8 @@ Usage
                           extensions=['smart_strong'])
     u'<p><strong>this__works__too</strong>.</p>'
 
-This extension is also included with the [[Extra]] Extension. You may call that
-extension to get this behavior with all the other features of 'Extra'.
+This extension is also included with the [Extra](extra.html) Extension. You may
+call that extension to get this behavior with all the other features of 'Extra'.
 
     >>> markdown.markdown(text, extensions=['extra'])
 

@@ -10,21 +10,20 @@ maintained here and all bug reports should be made to the project. If you
 have a typical install of Python-Markdown, these extensions are already 
 available to you.
 
-* [[Extra]]
-    * [[Abbreviations]]
-    * [[Definition_Lists]]
-    * [[Fenced_Code_Blocks]]
-    * [[Footnotes]]
-    * [[Attr_List]]
-    * [[Tables]]
-* [[attr_list]]
-* [[CodeHilite]]
-* [[HTML_Tidy]]
-* [[HeaderId]]
-* [[ImageLinks]]
-* [[Meta-Data]]
-* [[nl2br]]
-* [[RSS]]
-* [[Table_of_Contents]]
-* [[WikiLinks]]
+* [Extra](extra.html)
+    * [Abbreviations](abbreviations.html)
+    * [Attribute Lists](attr_list.html)
+    * [Definition Lists](definition_lists.html)
+    * [Fenced Code Blocks](fenced_code_blocks.html)
+    * [Footnotes](footnotes.html)
+    * [Tables](tables.html)
+    * [Smart Strong](smart_strong.html)
+* [CodeHilite](code_hilite.html)
+* [HTML Tidy](html_tidy.html)
+* [HeaderId](header_id.html)
+* [Meta-Data](meta_data.html)
+* [New Line to Break](nl2br.html)
+* [RSS](rss.html)
+* [Table of Contents](toc.html)
+* [WikiLinks](wikilinks.html)
 

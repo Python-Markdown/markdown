@@ -9,15 +9,15 @@ A compilation of various Python-Markdown extensions that (mostly) imitates
 
 The supported extensions include:
 
-* [[Abbreviations]]
-* [[Attribute Lists]]
-* [[Definition_Lists]]
-* [[Fenced_Code_Blocks]]
-* [[Footnotes]]
-* [[Tables]]
-* [[Smart_Strong]]
+* [Abbreviations](abbreviations.html)
+* [Attribute Lists](attr_list.html)
+* [Definition Lists](definition_lists.html)
+* [Fenced Code Blocks](fenced_code_blocks.html)
+* [Footnotes](footnotes.html)
+* [Tables](tables.html)
+* [Smart Strong](smart_strong.html)
 
-See each individual extension for syntax documentation. Extra and all it's 
+See each individual extension for syntax documentation. Extra and all its 
 supported extensions are included in the standard Markdown library.
 
 Usage
@@ -33,10 +33,10 @@ available for import, Markdown will simply continue without that
 extension. If you would like to be notified of such failures,
 you may set Python-Markdown's logger level to "WARN".
 
-There may be additional extensions that are distributed with
+There may be [additional extensions](index.html) that are distributed with
 Python-Markdown that are not included here in Extra. The features 
 of those extensions are not part of PHP Markdown Extra, and 
 therefore, not part of Python-Markdown Extra. If you really would 
 like Extra to include additional extensions, we suggest creating 
 your own clone of Extra under a different name 
-(see [[Writing Extensions]]).  
+(see [Writing Extensions](../writing_extensions.html)).  

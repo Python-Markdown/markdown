@@ -82,9 +82,9 @@ The HeaderId extension has four configuration settings:
 Using with Meta-Data
 --------------------
 
-The HeaderId Extension also supports the [[Meta-Data]] Extension. Please see 
-the documentation for that extension for specifics. The supported meta-data 
-keywords are:
+The HeaderId Extension also supports the [Meta-Data](meta_data.html) Extension.
+Please see the documentation for that extension for specifics. The supported 
+meta-data keywords are:
 
 * `header_level`
 * `header_forceid`
