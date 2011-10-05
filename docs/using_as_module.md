@@ -1,5 +1,5 @@
 Using Markdown as a Python Library
-====================++============
+==================================
 
 First and foremost, Python-Markdown is intended to be a python library module
 used by various projects to convert Markdown syntax into HTML.
