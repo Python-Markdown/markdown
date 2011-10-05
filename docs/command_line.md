@@ -90,12 +90,12 @@ Using Extensions
 ----------------
 
 For an extension to be run from the command line it must be provided in a module
-which should be in your python path (see [[writing_extensions]] for details). 
-It can then be invoked by the name of that module:
+which should be in your python path (see [writing_extensions](writing_extensions.html)
+for details). It can then be invoked by the name of that module:
 
-    $ markdown -x footnotes text_with_footnotes.txt > output.html
+    $ markdown_py -x footnotes text_with_footnotes.txt > output.html
 
 If the extension supports config options, you can pass them in as well:
 
-    $ markdown -x "footnotes(PLACE_MARKER=~~~~~~~~)" input.txt
+    $ markdown_py -x "footnotes(PLACE_MARKER=~~~~~~~~)" input.txt
 
