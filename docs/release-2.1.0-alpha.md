@@ -32,7 +32,7 @@ manually use Python 3.1's 2to3 tool to do a conversion.
 wrapper methods. It now expects keyword arguments. Currently, the positional
 arguments should continue to work, but the solution feels hacky and may be 
 removed in a future version. All users are encouraged to use keyword arguments 
-as documented in [using_as_module]].
+as documented in [Using Markdown as a Python Library](using_as_module.html).
 
 * Past versions of Python-Markdown provided module level Global variables which
 controlled the behavior of a few different aspects of the parser. Those global
