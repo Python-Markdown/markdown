@@ -1,5 +1,5 @@
-Using Markdown as Python Library
-================================
+Using Markdown as a Python Library
+====================++============
 
 First and foremost, Python-Markdown is intended to be a python library module
 used by various projects to convert Markdown syntax into HTML.
@@ -17,7 +17,7 @@ The Details
 
 Python-Markdown provides two public functions (`markdown.markdown` and 
 `markdown.markdownFromFile`) both of which wrap the public class
-`markdown.Markdown`. If your processing one document at a time, the
+`markdown.Markdown`. If you're processing one document at a time, the
 functions will serve your needs. However, if you need to process 
 multiple documents, it may be advantageous to create a single instance 
 of the `markdown.Markdown` class and pass multiple documents through it.
@@ -50,7 +50,7 @@ The following options are available on the `markdown.markdown` function:
     Python-Markdown provides an API for third parties to write extensions to
     the parser adding their own additions or changes to the syntax. A few
     commonly used extensions are shipped with the markdown library. See
-    the extension documentation for a list of available extensions.
+    the [extension documentation](extensions) for a list of available extensions.
 
     The list of extensions may contain instances of extensions or stings of
     extension names. If an extension name is provided as a string, the
@@ -137,7 +137,7 @@ The following options are available on the `markdown.markdown` function:
 
 * `enable_attributes`: Enable the conversion of attributes. Default: True
 
-* `smart_emphasis`: Treat `_connected_words_` intelegently Default: True
+* `smart_emphasis`: Treat `_connected_words_` intelligently Default: True
 
 * `lazy_ol`: Ignore number of first item of ordered lists. Default: True
 
@@ -162,8 +162,8 @@ The following options are available on the `markdown.markdown` function:
 ### `markdown.markdownFromFile(**kwargs)`
 
 With a few exceptions, `markdown.markdownFromFile` accepts the same options as 
-`markdown.markdown`. It does **not** accept a `text` string. Instead, it accepts
-the following required options:
+`markdown.markdown`. It does **not** accept a `text` (or Unicode) string. 
+Instead, it accepts the following required options:
 
 * `input` (required): The source text file.
 
@@ -173,7 +173,7 @@ the following required options:
     * a readable file-like object,
     * or `None` (default) which will read from `stdin`.
 
-* `output`: The target which output to written to.
+* `output`: The target which output is written to.
 
     `output` may be set to one of three options:
 
@@ -182,13 +182,13 @@ the following required options:
     * or `None` (default) which will write to `stdout`.
 
 * `encoding`: The encoding of the source text file. Defaults to 
-  "utf-8". The same encoding will always be used for the output file. 
+  "utf-8". The same encoding will always be used for input and output. 
   The 'xmlcharrefreplace' error handler is used when encoding the output.
 
     **Note:** This is the only place that decoding and encoding of unicode
     takes place in Python-Markdown. If this rather naive solution does not
-    meet your special needs, it is suggested that you write your own code
-    to handle your specific encoding/decoding needs.
+    meet your specific needs, it is suggested that you write your own code
+    to handle your encoding/decoding needs.
 
 ### `markdown.Markdown([**kwargs])`
 
@@ -215,6 +215,10 @@ must be passed to one of two instance methods:
         html1 = md.convert(text1)
         md.reset()
         html2 = md.convert(text2)
+    
+    You can also change calls to `reset` togeather:
+    
+        html3 = md.reset().convert(text3)
 
 * `Markdown.convertFile(**kwargs)`
 
@@ -223,4 +227,4 @@ must be passed to one of two instance methods:
     `encoding`). As with the `convert` method, this method should be used to 
     process multiple files without creating a new instance of the class for 
     each document. State may need to be `reset` between each call to 
-    `convertFile` as with `convert`.
+    `convertFile` as is the case with `convert`.
