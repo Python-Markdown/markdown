@@ -73,7 +73,11 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                     level -= 1
 
                 if tag_level > level:
-                    newlist = etree.Element("ul")
+                    if self.config['ordered']:
+                        newlist = etree.Element("ol")
+                    else:
+                        newlist = etree.Element("ul")
+
                     if last_li:
                         last_li.append(newlist)
                     else:
@@ -131,7 +135,10 @@ class TocExtension(markdown.Extension):
                             "Defaults to None"],
                         "anchorlink" : [0,
                             "1 if header should be a self link"
-                            "Defaults to 0"]}
+                            "Defaults to 0"],
+                        "ordered" : [False,
+                            "If true, <ol> tags are used instead of <ul> tags"
+                            "Defaults to False"]}
 
         for key, value in configs:
             self.setConfig(key, value)
