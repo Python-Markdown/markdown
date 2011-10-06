@@ -97,7 +97,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 link.text = text
                 link.attrib["href"] = '#' + id
 
-                if int(self.config["anchorlink"]):
+                if self.config["anchorlink"] in [1, '1', True, 'True', 'true']:
                     anchor = etree.Element("a")
                     anchor.text = c.text
                     anchor.attrib["href"] = "#" + id
