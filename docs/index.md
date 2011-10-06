@@ -31,7 +31,7 @@ features:
 
 * Extensions
 
-    Various [extensions](extensions.html) are provided (including 
+    Various [extensions](extensions/) are provided (including 
     [extra](extensions/extra.html)) to expand the base syntax. Additionally, 
     a public [Extension API](writing_extensions.html) is available to write 
     your own extensions.
