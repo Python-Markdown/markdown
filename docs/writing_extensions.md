@@ -186,7 +186,7 @@ functionality of the core ``BlockParser``. The BlockParser is composed of a
 number of Blockproccessors. The BlockParser steps through each block of text
 (split by blank lines) and passes each block to the appropriate Blockprocessor.
 That Blockprocessor parses the block and adds it to the ElementTree. The
-[[Definition Lists]] extension would be a good example of an extension that
+[Definition Lists][] extension would be a good example of an extension that
 adds/modifies Blockprocessors.
 
 A Blockprocessor should inherit from ``markdown.blockprocessors.BlockProcessor``
@@ -612,3 +612,4 @@ than one residing in a module.
 [ElementTree]: http://effbot.org/zone/element-index.htm
 [Available Extensions]: extensions/
 [Footnotes]: extensions/footnotes.html
+[Definition Lists]: extensions/definition_lists.html
