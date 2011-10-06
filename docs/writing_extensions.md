@@ -15,9 +15,9 @@ there are also blockprocessors which are part of the core BlockParser.
 As the parser builds an [ElementTree][] object which is later rendered 
 as Unicode text, there are also some helpers provided to ease manipulation of 
 the tree. Each part of the API is discussed in its respective section below. 
-Additionaly, reading the source of some [[Available Extensions]] may be helpful.
-For example, the [[Footnotes]] extension uses most of the features documented 
-here.
+Additionally, reading the source of some [Available Extensions][] may be 
+helpful. For example, the [Footnotes][] extension uses most of the features 
+documented here.
 
 * [Preprocessors][]
 * [InlinePatterns][]
@@ -368,13 +368,14 @@ configuration options for your extension and attach the various processors and
 patterns to the Markdown instance. 
 
 It is important to note that the order of the various processors and patterns 
-matters. For example, if we replace ``http://...`` links with <a> elements, and 
-*then* try to deal with  inline html, we will end up with a mess. Therefore, 
-the various types of processors and patterns are stored within an instance of 
-the Markdown class in [OrderedDict][]s. Your ``Extension`` class will need to 
-manipulate those OrderedDicts appropriately. You may insert instances of your 
-processors and patterns into the appropriate location in an OrderedDict, remove
-a built-in instance, or replace a built-in instance with your own.
+matters. For example, if we replace ``http://...`` links with ``<a>`` elements, 
+and *then* try to deal with  inline html, we will end up with a mess. 
+Therefore, the various types of processors and patterns are stored within an 
+instance of the Markdown class in [OrderedDict][]s. Your ``Extension`` class 
+will need to manipulate those OrderedDicts appropriately. You may insert 
+instances of your processors and patterns into the appropriate location in an 
+OrderedDict, remove a built-in instance, or replace a built-in instance with 
+your own.
 
 <h4 id="extendmarkdown">extendMarkdown</h4>
 
@@ -514,7 +515,7 @@ To change the location of an existing item:
 <h4 id="registerextension">registerExtension</h4>
 
 Some extensions may need to have their state reset between multiple runs of the
-Markdown class. For example, consider the following use of the [[Footnotes]] 
+Markdown class. For example, consider the following use of the [Footnotes][] 
 extension:
 
     md = markdown.Markdown(extensions=['footnotes'])
@@ -609,3 +610,5 @@ than one residing in a module.
 [Config Settings]: #configsettings
 [makeExtension]: #makeextension
 [ElementTree]: http://effbot.org/zone/element-index.htm
+[Available Extensions]: extensions/
+[Footnotes]: extensions/footnotes.html
