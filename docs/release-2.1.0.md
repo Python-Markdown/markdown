@@ -1,18 +1,18 @@
-Python-Markdown 2.1.0-Alpha Release Notes
-=========================================
+Python-Markdown 2.1.0-Beta Release Notes
+========================================
 
-We are pleased to release Python-Markdown 2.1-Alpha which makes many 
+We are pleased to release Python-Markdown 2.1-Beta which makes many 
 improvements on 2.0. In fact, we consider 2.1 to be what 2.0 should have been. 
 While 2.1 consists mostly of bug fixes, bringing Python-Markdown more inline 
 with other implementations, some internal improvements were made to the parser, 
 a few new builtin extensions were added, and HTML5 support was added.
 
-Please be aware that Python-Markdown 2.1-Alpha is *alpha* software and is not
+Please be aware that Python-Markdown 2.1-Beta is *beta* software and is not
 considered production ready pending the release of 2.1-Final.
 
-Python-Markdown supports Python versions 2.4, 2.5, 2.6, 2.7, 3.1, and 3.2 out of 
-the box. In fact, the same codebase installs on Python 3.1 and 3.2 with no extra 
-work by the end user.
+Python-Markdown supports Python versions 2.4, 2.5, 2.6, 2.7, 3.1, and 3.2 out 
+of the box. In fact, the same codebase installs on Python 3.1 and 3.2 with no 
+extra work by the end user.
 
 Backwards-incompatible Changes
 ------------------------------
@@ -20,13 +20,13 @@ Backwards-incompatible Changes
 While Python-Markdown has received only minor internal changes since the last
 release, there are a few backward-incompatible changes to note:
 
-* Support had been dropped for Python 2.3. No guarantees are made that the library
-will work in any version of Python lower than 2.4. Additionally, while the library
-had been tested with Python 2.4, consider Python 2.4 support to be depreciated.
-It is not likely that any future versions will continue to support any version of
-Python less than 2.5. Note that Python 3.0 is not supported due to a bug in its 
-2to3 tool. If you must use Python-Markdown with Python 3.0, it is suggested you 
-manually use Python 3.1's 2to3 tool to do a conversion.
+* Support had been dropped for Python 2.3. No guarantees are made that the 
+library will work in any version of Python lower than 2.4. Additionally, while 
+the library had been tested with Python 2.4, consider Python 2.4 support to be 
+depreciated. It is not likely that any future versions will continue to support
+any version of Python less than 2.5. Note that Python 3.0 is not supported due 
+to a bug in its 2to3 tool. If you must use Python-Markdown with Python 3.0, it 
+is suggested you manually use Python 3.1's 2to3 tool to do a conversion.
 
 * Python-Markdown previously accepted positional arguments on its class and
 wrapper methods. It now expects keyword arguments. Currently, the positional
@@ -40,13 +40,14 @@ variables have been replaced with attributes on the Markdown class.
 Additionally, those attributes are settable as keyword arguments when 
 initializing a class instance. Therefore, if you were editing the global 
 variables (either by editing the source or by overriding them in your code), 
-you should now set them on the class. See [Using Markdown as a Python Library](using_as_module.html)
-for the options available.
+you should now set them on the class. See 
+[Using Markdown as a Python Library](using_as_module.html) for the options 
+available.
 
 * If you have been using the [HeaderID](extensions/header_id.html) extension 
 to define custom ids on headers, you will want to switch to using the new 
-[Attribute List](extensions/attr_list.html) extension. The HeaderId extension now 
-only auto-generates ids on headers which have not already had ids defined. 
+[Attribute List](extensions/attr_list.html) extension. The HeaderId extension 
+now only auto-generates ids on headers which have not already had ids defined. 
 Note that the [Extra](extensions/extra.html) extension has been switched to use 
 Attribute Lists instead of HeaderId as it did previously.
 
@@ -64,11 +65,11 @@ may want to remove them yourself as they are unlikely to work properly.
 What's New in Python-Markdown 2.1
 ---------------------------------
 
-Three new extensions were added. [Attribute Lists](extensions/attr_list.html), which 
-was inspired by Maruku's feature of the same name, 
-[Newline to Break](extensions/nl2br.html), which was inspired by Github Flavored 
-Markdown, and [Smart Strong](extensions/smart_strong.html), which fills a 
-hole in the Extra extension.
+Three new extensions were added. [Attribute Lists](extensions/attr_list.html), 
+which was inspired by Maruku's feature of the same name, 
+[Newline to Break](extensions/nl2br.html), which was inspired by Github 
+Flavored Markdown, and [Smart Strong](extensions/smart_strong.html), which 
+fills a hole in the Extra extension.
 
 HTML5 is now supported. All this really means is that new block level elements 
 introduced in the HTML5 spec are now properly recognized as raw HTML. As
