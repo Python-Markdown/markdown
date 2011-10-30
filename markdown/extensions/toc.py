@@ -66,49 +66,53 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 marker_found = True
                     
             if header_rgx.match(c.tag):
-                tag_level = int(c.tag[-1])
-                
-                while tag_level < level:
-                    list_stack.pop()
-                    level -= 1
+                try:
+                    tag_level = int(c.tag[-1])
+                    
+                    while tag_level < level:
+                        list_stack.pop()
+                        level -= 1
 
-                if tag_level > level:
-                    newlist = etree.Element("ul")
-                    if last_li:
-                        last_li.append(newlist)
+                    if tag_level > level:
+                        newlist = etree.Element("ul")
+                        if last_li:
+                            last_li.append(newlist)
+                        else:
+                            list_stack[-1].append(newlist)
+                        list_stack.append(newlist)
+                        if level == 0:
+                            level = tag_level
+                        else:
+                            level += 1
+
+                    # Do not override pre-existing ids 
+                    if not "id" in c.attrib:
+                        id = unique(self.config["slugify"](text, '-'), used_ids)
+                        c.attrib["id"] = id
                     else:
-                        list_stack[-1].append(newlist)
-                    list_stack.append(newlist)
-                    if level == 0:
-                        level = tag_level
-                    else:
-                        level += 1
+                        id = c.attrib["id"]
 
-                # Do not override pre-existing ids 
-                if not "id" in c.attrib:
-                    id = unique(self.config["slugify"](text, '-'), used_ids)
-                    c.attrib["id"] = id
-                else:
-                    id = c.attrib["id"]
+                    # List item link, to be inserted into the toc div
+                    last_li = etree.Element("li")
+                    link = etree.SubElement(last_li, "a")
+                    link.text = text
+                    link.attrib["href"] = '#' + id
 
-                # List item link, to be inserted into the toc div
-                last_li = etree.Element("li")
-                link = etree.SubElement(last_li, "a")
-                link.text = text
-                link.attrib["href"] = '#' + id
+                    if self.config["anchorlink"] in [1, '1', True, 'True', 'true']:
+                        anchor = etree.Element("a")
+                        anchor.text = c.text
+                        anchor.attrib["href"] = "#" + id
+                        anchor.attrib["class"] = "toclink"
+                        c.text = ""
+                        for elem in c.getchildren():
+                            anchor.append(elem)
+                            c.remove(elem)
+                        c.append(anchor)
 
-                if self.config["anchorlink"] in [1, '1', True, 'True', 'true']:
-                    anchor = etree.Element("a")
-                    anchor.text = c.text
-                    anchor.attrib["href"] = "#" + id
-                    anchor.attrib["class"] = "toclink"
-                    c.text = ""
-                    for elem in c.getchildren():
-                        anchor.append(elem)
-                        c.remove(elem)
-                    c.append(anchor)
-
-                list_stack[-1].append(last_li)
+                    list_stack[-1].append(last_li)
+                except IndexError:
+                    # We have bad ordering of headers. Just move on.
+                    pass
         if not marker_found:
             # searialize and attach to markdown instance.
             prettify = self.markdown.treeprocessors.get('prettify')
