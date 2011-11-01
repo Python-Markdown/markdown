@@ -184,20 +184,21 @@ class Markdown:
             pairs = [x.split("=") for x in ext_args.split(",")]
             configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
 
-        # Setup the module names
-        ext_module = 'markdown.extensions'
-        module_name_new_style = '.'.join([ext_module, ext_name])
-        module_name_old_style = '_'.join(['mdx', ext_name])
+        # Setup the module name
+        module_name = ext_name
+        if '.' not in ext_name:
+            module_name = '.'.join(['markdown.extensions', ext_name])
 
         # Try loading the extention first from one place, then another
         try: # New style (markdown.extensons.<extension>)
-            module = __import__(module_name_new_style, {}, {}, [ext_module])
+            module = __import__(module_name, {}, {}, [module_name.rpartition('.')[0]])
         except ImportError:
+            module_name_old_style = '_'.join(['mdx', ext_name])
             try: # Old style (mdx_<extension>)
                 module = __import__(module_name_old_style)
             except ImportError:
                 logger.warn("Failed loading extension '%s' from '%s' or '%s'"
-                    % (ext_name, module_name_new_style, module_name_old_style))
+                    % (ext_name, module_name, module_name_old_style))
                 # Return None so we don't try to initiate none-existant extension
                 return None
 
