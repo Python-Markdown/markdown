@@ -29,7 +29,7 @@ from markdown.util import etree
 
 FN_BACKLINK_TEXT = "zz1337820767766393qq"
 NBSP_PLACEHOLDER =  "qq3936677670287331zz"
-DEF_RE = re.compile(r'(\ ?\ ?\ ?)\[\^([^\]]*)\]:\s*(.*)')
+DEF_RE = re.compile(r'[ ]{0,3}\[\^([^\]]*)\]:\s*(.*)')
 TABBED_RE = re.compile(r'((\t)|(    ))(.*)')
 
 class FootnoteExtension(markdown.Extension):
@@ -152,54 +152,33 @@ class FootnotePreprocessor(markdown.preprocessors.Preprocessor):
         self.footnotes = footnotes
 
     def run(self, lines):
-        lines = self._handleFootnoteDefinitions(lines)
-        text = "\n".join(lines)
-        return text.split("\n")
-
-    def _handleFootnoteDefinitions(self, lines):
         """
-        Recursively find all footnote definitions in lines.
+        Loop through lines and find, set, and remove footnote definitions.
 
         Keywords:
 
         * lines: A list of lines of text
-        
-        Return: A list of lines with footnote definitions removed.
-        
+
+        Return: A list of lines of text with footnote definitions removed.
+
         """
-        i, id, footnote = self._findFootnoteDefinition(lines)
-
-        if id :
-            plain = lines[:i]
-            detabbed, theRest = self.detectTabbed(lines[i+1:])
-            self.footnotes.setFootnote(id,
-                                       footnote + "\n"
-                                       + "\n".join(detabbed))
-            more_plain = self._handleFootnoteDefinitions(theRest)
-            return plain + [""] + more_plain
-        else :
-            return lines
-
-    def _findFootnoteDefinition(self, lines):
-        """
-        Find the parts of a footnote definition.
-
-        Keywords:
-
-        * lines: A list of lines of text.
-
-        Return: A three item tuple containing the index of the first line of a
-        footnote definition, the id of the definition and the body of the 
-        definition.
-        
-        """
-        counter = 0
-        for line in lines:
-            m = DEF_RE.match(line)
+        newlines = []
+        i = 0
+        #import pdb; pdb.set_trace() #for i, line in enumerate(lines):
+        while True:
+            m = DEF_RE.match(lines[i])
             if m:
-                return counter, m.group(2), m.group(3)
-            counter += 1
-        return counter, None, None
+                fn, _i = self.detectTabbed(lines[i+1:])
+                fn.insert(0, m.group(2))
+                i += _i-1 # skip past footnote
+                self.footnotes.setFootnote(m.group(1), "\n".join(fn))
+            else:
+                newlines.append(lines[i])
+            if len(lines) > i+1:
+                i += 1
+            else:
+                break
+        return newlines
 
     def detectTabbed(self, lines):
         """ Find indented text and remove indent before further proccesing.
@@ -208,12 +187,11 @@ class FootnotePreprocessor(markdown.preprocessors.Preprocessor):
 
         * lines: an array of strings
 
-        Returns: a list of post processed items and the unused
-        remainder of the original list
+        Returns: a list of post processed items and the index of last line.
 
         """
         items = []
-        item = -1
+        blank_line = False # have we encountered a blank line yet?
         i = 0 # to keep track of where we are
 
         def detab(line):
@@ -223,15 +201,21 @@ class FootnotePreprocessor(markdown.preprocessors.Preprocessor):
 
         for line in lines:
             if line.strip(): # Non-blank line
-                line = detab(line)
-                if line:
+                detabbed_line = detab(line)
+                if detabbed_line:
+                    items.append(detabbed_line)
+                    i += 1
+                    continue
+                elif not blank_line and not DEF_RE.match(line):
+                    # not tabbed but still part of first par.
                     items.append(line)
                     i += 1
                     continue
                 else:
-                    return items, lines[i:]
+                    return items, i+1
 
             else: # Blank line: _maybe_ we are done.
+                blank_line = True
                 i += 1 # advance
 
                 # Find the next non-blank line
@@ -250,7 +234,7 @@ class FootnotePreprocessor(markdown.preprocessors.Preprocessor):
         else:
             i += 1
 
-        return items, lines[i:]
+        return items, i
 
 
 class FootnotePattern(markdown.inlinepatterns.Pattern):
