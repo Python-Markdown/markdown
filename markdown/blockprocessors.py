@@ -460,35 +460,36 @@ class SetextHeaderProcessor(BlockProcessor):
 class HRProcessor(BlockProcessor):
     """ Process Horizontal Rules. """
 
-    RE = r'[ ]{0,3}((-+[ ]{0,2}){3,}|(_+[ ]{0,2}){3,}|(\*+[ ]{0,2}){3,})[ ]*'
+    RE = r'^[ ]{0,3}((-+[ ]{0,2}){3,}|(_+[ ]{0,2}){3,}|(\*+[ ]{0,2}){3,})[ ]*'
     # Detect hr on any line of a block.
-    SEARCH_RE = re.compile(r'(^|\n)%s(\n|$)' % RE)
-    # Match a hr on a single line of text.
-    MATCH_RE = re.compile(r'^%s$' % RE)
+    SEARCH_RE = re.compile(RE, re.MULTILINE)
 
     def test(self, parent, block):
-        return bool(self.SEARCH_RE.search(block))
+        m = self.SEARCH_RE.search(block)
+        # No atomic grouping in python so we simulate it here for performance.
+        # The regex only matches what would be in the atomic group - the HR.
+        # Then check if we are at end of block or if next char is a newline.
+        if m and (m.end() == len(block) or block[m.end()] == '\n'):
+            # Save match object on class instance so we can use it later.
+            self.match = m
+            return True
+        return False
 
     def run(self, parent, blocks):
-        lines = blocks.pop(0).split('\n')
-        prelines = []
+        block = blocks.pop(0)
         # Check for lines in block before hr.
-        for line in lines:
-            m = self.MATCH_RE.match(line)
-            if m:
-                break
-            else:
-                prelines.append(line)
-        if len(prelines):
+        prelines = block[:self.match.start()].rstrip('\n')
+        if prelines:
             # Recursively parse lines before hr so they get parsed first.
-            self.parser.parseBlocks(parent, ['\n'.join(prelines)])
+            self.parser.parseBlocks(parent, [prelines])
         # create hr
         hr = util.etree.SubElement(parent, 'hr')
         # check for lines in block after hr.
-        lines = lines[len(prelines)+1:]
-        if len(lines):
+        postlines = block[self.match.end():].lstrip('\n')
+        if postlines:
             # Add lines after hr to master blocks for later parsing.
-            blocks.insert(0, '\n'.join(lines))
+            blocks.insert(0, postlines)
+
 
 
 class EmptyBlockProcessor(BlockProcessor):
