@@ -16,7 +16,7 @@ except ImportError:
         raise ImportError("build_py_2to3 is required to build in Python 3.x.")
     from distutils.command.build_py import build_py
 
-version = '2.1.0.beta'
+version = '2.1.0'
 
 # The command line script name.  Currently set to "markdown_py" so as not to 
 # conflict with the perl implimentation (which uses "markdown").  We can't use
@@ -162,6 +162,7 @@ data = dict(
                      'Programming Language :: Python :: 2.7',
                      'Programming Language :: Python :: 3',
                      'Programming Language :: Python :: 3.1',
+                     'Programming Language :: Python :: 3.2',
                      'Topic :: Communications :: Email :: Filters',
                      'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: CGI Tools/Libraries',
                      'Topic :: Internet :: WWW/HTTP :: Site Management',

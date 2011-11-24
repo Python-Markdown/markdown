@@ -1,14 +1,11 @@
-Python-Markdown 2.1.0-Beta Release Notes
-========================================
+Python-Markdown 2.1.0 Release Notes
+===================================
 
-We are pleased to release Python-Markdown 2.1-Beta which makes many 
+We are pleased to release Python-Markdown 2.1 which makes many 
 improvements on 2.0. In fact, we consider 2.1 to be what 2.0 should have been. 
 While 2.1 consists mostly of bug fixes, bringing Python-Markdown more inline 
 with other implementations, some internal improvements were made to the parser, 
 a few new builtin extensions were added, and HTML5 support was added.
-
-Please be aware that Python-Markdown 2.1-Beta is *beta* software and is not
-considered production ready pending the release of 2.1-Final.
 
 Python-Markdown supports Python versions 2.4, 2.5, 2.6, 2.7, 3.1, and 3.2 out 
 of the box. In fact, the same codebase installs on Python 3.1 and 3.2 with no 
