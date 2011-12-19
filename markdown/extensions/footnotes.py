@@ -43,7 +43,11 @@ class FootnoteExtension(markdown.Extension):
                        'UNIQUE_IDS':
                        [False,
                         "Avoid name collisions across "
-                        "multiple calls to reset()."]}
+                        "multiple calls to reset()."],
+                       "BACKLINK_TEXT":
+                        ["&#8617;",
+                        "The text string that links from the footnote to the reader's place."]
+                       }
 
         for key, value in configs:
             self.config[key][0] = value
@@ -71,7 +75,7 @@ class FootnoteExtension(markdown.Extension):
                                  "<inline")
         # Insert a postprocessor after amp_substitute oricessor
         md.postprocessors.add("footnote", FootnotePostprocessor(self),
-                                  ">amp_substitute")
+                ">amp_substitute")
 
     def reset(self):
         """ Clear the footnotes on reset, and prepare for a distinct document. """
@@ -282,9 +286,11 @@ class FootnoteTreeprocessor(markdown.treeprocessors.Treeprocessor):
 
 class FootnotePostprocessor(markdown.postprocessors.Postprocessor):
     """ Replace placeholders with html entities. """
+    def __init__(self, footnotes):
+        self.footnotes = footnotes
 
     def run(self, text):
-        text = text.replace(FN_BACKLINK_TEXT, "&#8617;")
+        text = text.replace(FN_BACKLINK_TEXT, self.footnotes.getConfig("BACKLINK_TEXT"))
         return text.replace(NBSP_PLACEHOLDER, "&#160;")
 
 def makeExtension(configs=[]):
