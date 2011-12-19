@@ -74,9 +74,8 @@ class FootnoteExtension(markdown.Extension):
         md.treeprocessors.add("footnote", FootnoteTreeprocessor(self),
                                  "<inline")
         # Insert a postprocessor after amp_substitute oricessor
-        # (pass BACKLINK_TEXT config value to it because the Postprocessor can't get it otherwise.)
-        md.postprocessors.add("footnote", FootnotePostprocessor(
-            self.getConfig("BACKLINK_TEXT"), self), ">amp_substitute")
+        md.postprocessors.add("footnote", FootnotePostprocessor(self),
+                ">amp_substitute")
 
     def reset(self):
         """ Clear the footnotes on reset, and prepare for a distinct document. """
@@ -287,12 +286,11 @@ class FootnoteTreeprocessor(markdown.treeprocessors.Treeprocessor):
 
 class FootnotePostprocessor(markdown.postprocessors.Postprocessor):
     """ Replace placeholders with html entities. """
-    def __init__(self, backlink, *args):
-        self.backlink = backlink
-        markdown.postprocessors.Postprocessor.__init__(self, *args)
+    def __init__(self, footnotes):
+        self.footnotes = footnotes
 
     def run(self, text):
-        text = text.replace(FN_BACKLINK_TEXT, self.backlink)
+        text = text.replace(FN_BACKLINK_TEXT, self.footnotes.getConfig("BACKLINK_TEXT"))
         return text.replace(NBSP_PLACEHOLDER, "&#160;")
 
 def makeExtension(configs=[]):
