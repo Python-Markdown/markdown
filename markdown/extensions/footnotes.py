@@ -290,8 +290,8 @@ class FootnotePostprocessor(markdown.postprocessors.Postprocessor):
         self.footnotes = footnotes
 
     def run(self, text):
-        text = text.replace(FN_BACKLINK_TEXT, "&#8617;")
-        return text.replace(NBSP_PLACEHOLDER, self.footnotes.getConfig("BACKLINK_TEXT"))
+        text = text.replace(FN_BACKLINK_TEXT, self.footnotes.getConfig("BACKLINK_TEXT"))
+        return text.replace(NBSP_PLACEHOLDER, "&#160;")
 
 def makeExtension(configs=[]):
     """ Return an instance of the FootnoteExtension """
