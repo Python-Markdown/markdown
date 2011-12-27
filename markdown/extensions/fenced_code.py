@@ -49,7 +49,17 @@ Language tags:
     <pre><code class="python"># Some python code
     </code></pre>
 
-Optionally backticks instead of tildes as per how github's code block markdown is identified.
+Optionally backticks instead of tildes as per how github's code block markdown is identified:
+
+    >>> text = '''
+    ... `````
+    ... # Arbitrary code
+    ... ~~~~~ # these tildes will not close the block
+    ... `````'''
+    >>> print markdown.markdown(text, extensions=['fenced_code'])
+    <pre><code># Arbitrary code
+    ~~~~~ # these tildes will not close the block
+    </code></pre>
 
 Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
 
