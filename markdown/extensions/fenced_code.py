@@ -49,6 +49,8 @@ Language tags:
     <pre><code class="python"># Some python code
     </code></pre>
 
+Optionally backticks instead of tildes as per how github's code block markdown is identified.
+
 Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
 
 Project website: <http://www.freewisdom.org/project/python-markdown/Fenced__Code__Blocks>
@@ -69,7 +71,7 @@ from markdown.extensions.codehilite import CodeHilite, CodeHiliteExtension
 
 # Global vars
 FENCED_BLOCK_RE = re.compile( \
-    r'(?P<fence>^~{3,})[ ]*(\{?\.(?P<lang>[a-zA-Z0-9_-]*)\}?)?[ ]*\n(?P<code>.*?)(?P=fence)[ ]*$',
+    r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{?\.(?P<lang>[a-zA-Z0-9_-]*)\}?)?[ ]*\n(?P<code>.*?)(?P=fence)[ ]*$',
     re.MULTILINE|re.DOTALL
     )
 CODE_WRAP = '<pre><code%s>%s</code></pre>'
