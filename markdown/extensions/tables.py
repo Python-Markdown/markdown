@@ -1,4 +1,4 @@
-#!/usr/bin/env Python
+#!/usr/bin/env python
 """
 Tables Extension for Python-Markdown
 ====================================
