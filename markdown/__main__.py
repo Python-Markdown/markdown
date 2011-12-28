@@ -53,7 +53,7 @@ def parse_options():
     (options, args) = parser.parse_args()
 
     if len(args) == 0:
-        input_file = sys.stdin 
+        input_file = None
     else:
         input_file = args[0]
 

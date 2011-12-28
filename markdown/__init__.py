@@ -333,28 +333,38 @@ class Markdown:
         encoding = encoding or "utf-8"
 
         # Read the source
-        if isinstance(input, basestring):
-            input_file = codecs.open(input, mode="r", encoding=encoding)
+        if input:
+            if isinstance(input, str):
+                input_file = codecs.open(input, mode="r", encoding=encoding)
+            else:
+                input_file = codecs.getreader(encoding)(input)
+            text = input_file.read()
+            input_file.close()
         else:
-            input = input or sys.stdin
-            input_file = codecs.getreader(encoding)(input)
-        text = input_file.read()
-        input_file.close()
-        text = text.lstrip(u'\ufeff') # remove the byte-order mark
+            text = sys.stdin.read()
+            if not isinstance(text, unicode):
+                text = text.decode(encoding)
+
+        text = text.lstrip('\ufeff') # remove the byte-order mark
 
         # Convert
         html = self.convert(text)
 
         # Write to file or stdout
-        if isinstance(output, basestring):
-            output_file = codecs.open(output, "w", 
-                                      encoding=encoding, 
-                                      errors="xmlcharrefreplace")
-            output_file.write(html)
-            output_file.close()
+        if output:
+            if isinstance(output, str):
+                output_file = codecs.open(output, "w", 
+                                          encoding=encoding, 
+                                          errors="xmlcharrefreplace")
+                output_file.write(html)
+                output_file.close()
+            else:
+                writer = codecs.getwriter(encoding)
+                output_file = writer(output, errors="xmlcharrefreplace")
+                output_file.write(html)
+                # Don't close here. User may want to write more.
         else:
-            output = output or sys.stdout
-            output.write(html.encode(encoding, "xmlcharrefreplace"))
+            sys.stdout.write(html)
 
         return self
 
