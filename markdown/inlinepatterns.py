@@ -311,20 +311,29 @@ class LinkPattern(Pattern):
         `username:password@host:port`.
 
         """
+        if not self.markdown.safeMode:
+            # Return immediately bipassing parsing.
+            return url
+        
+        try:
+            scheme, netloc, path, params, query, fragment = url = urlparse(url)
+        except ValueError:
+            # Bad url - so bad it couldn't be parsed.
+            return ''
+        
         locless_schemes = ['', 'mailto', 'news']
-        scheme, netloc, path, params, query, fragment = url = urlparse(url)
-        safe_url = False
-        if netloc != '' or scheme in locless_schemes:
-            safe_url = True
+        if netloc == '' or scheme not in locless_schemes:
+            # This fails regardless of anything else. 
+            # Return immediately to save additional proccessing
+            return ''
 
         for part in url[2:]:
             if ":" in part:
-                safe_url = False
+                # Not a safe url
+                return ''
 
-        if self.markdown.safeMode and not safe_url:
-            return ''
-        else:
-            return urlunparse(url)
+        # Url passes all tests. Return url as-is.
+        return urlunparse(url)
 
 class ImagePattern(LinkPattern):
     """ Return a img element from the given match. """
