@@ -143,21 +143,20 @@ class HtmlBlockPreprocessor(Preprocessor):
 
             if not in_tag:
                 if block.startswith("<") and len(block.strip()) > 1:
-                    left_tag, left_index, attrs = self._get_left_tag(block)
-                    right_tag, data_index = self._get_right_tag(left_tag, 
-                                                                left_index,
-                                                                block)
 
                     if block[1] == "!":
                         # is a comment block
-                        left_tag = "--"
-                        right_tag, data_index = self._get_right_tag(left_tag, 
-                                                                    left_index,
-                                                                    block)
-                        # keep checking conditions below and maybe just append
+                        left_tag, left_index, attrs  = "--", 2, ()
+                    else:
+                        left_tag, left_index, attrs = self._get_left_tag(block)
+                    right_tag, data_index = self._get_right_tag(left_tag, 
+                                                                left_index,
+                                                                block)
+                    # keep checking conditions below and maybe just append
                     
                     if data_index < len(block) \
-                        and util.isBlockLevel(left_tag): 
+                        and (util.isBlockLevel(left_tag)
+                        or left_tag == '--'): 
                         text.insert(0, block[data_index:])
                         block = block[:data_index]
 
@@ -202,12 +201,9 @@ class HtmlBlockPreprocessor(Preprocessor):
                 new_blocks.append(block)
 
             else:
-                #import pdb; pdb.set_trace()
                 items.append(block)
 
-                right_tag, data_index = self._get_right_tag(left_tag, 
-                                                            0, 
-                                                            block)
+                right_tag, data_index = self._get_right_tag(left_tag, 0, block)
 
                 if self._equal_tags(left_tag, right_tag):
                     # if find closing tag

@@ -5,3 +5,6 @@ X>0
 <!-- A comment -->
 
 <div>as if</div>
+
+<!-- comment -->
+__no blank line__
