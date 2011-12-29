@@ -78,7 +78,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                         attrs[ma.group('attr2').strip()] = ""
             return tag, len(m.group(0)), attrs
         else:
-            tag = block[1:].replace(">", " ", 1).split()[0].lower()
+            tag = block[1:].split(">", 1)[0].lower()
             return tag, len(tag)+2, {}
 
     def _recursive_tagfind(self, ltag, rtag, start_index, block):
