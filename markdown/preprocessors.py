@@ -202,14 +202,21 @@ class HtmlBlockPreprocessor(Preprocessor):
                 new_blocks.append(block)
 
             else:
+                #import pdb; pdb.set_trace()
                 items.append(block)
 
                 right_tag, data_index = self._get_right_tag(left_tag, 
-                                                            left_index, 
+                                                            0, 
                                                             block)
 
                 if self._equal_tags(left_tag, right_tag):
                     # if find closing tag
+                    
+                    if data_index < len(block):
+                        # we have more text after right_tag
+                        items[-1] = block[:data_index]
+                        text.insert(0, block[data_index:])
+
                     in_tag = False
                     if self.markdown_in_raw and 'markdown' in attrs.keys():
                         start = re.sub(r'\smarkdown(=[\'"]?[^> ]*[\'"]?)?', 
