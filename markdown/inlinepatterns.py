@@ -322,7 +322,7 @@ class LinkPattern(Pattern):
             return ''
         
         locless_schemes = ['', 'mailto', 'news']
-        if netloc == '' or scheme not in locless_schemes:
+        if netloc == '' and scheme not in locless_schemes:
             # This fails regardless of anything else. 
             # Return immediately to save additional proccessing
             return ''
