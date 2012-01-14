@@ -14,7 +14,8 @@ import odict
 def build_preprocessors(md_instance, **kwargs):
     """ Build the default set of preprocessors used by Markdown. """
     preprocessors = odict.OrderedDict()
-    preprocessors["html_block"] = HtmlBlockPreprocessor(md_instance)
+    if md_instance.safeMode != 'escape':
+        preprocessors["html_block"] = HtmlBlockPreprocessor(md_instance)
     preprocessors["reference"] = ReferencePreprocessor(md_instance)
     return preprocessors
 
