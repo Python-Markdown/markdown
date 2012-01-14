@@ -1,3 +1,4 @@
+.DS*
 *.pyc
 *.bak
 *.swp
@@ -8,4 +9,4 @@ tmp/*
 MANIFEST
 .venv
 *~
-#*
+*#*
