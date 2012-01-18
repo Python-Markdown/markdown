@@ -117,7 +117,7 @@ class Markdown:
                 # ignore any additional args
                 break
 
-        # Loop throu kwargs and assign defaults
+        # Loop through kwargs and assign defaults
         for option, default in self.option_defaults.items():
             setattr(self, option, kwargs.get(option, default)) 
 
@@ -148,7 +148,7 @@ class Markdown:
         """
         Register extensions with this instance of Markdown.
 
-        Keyword aurguments:
+        Keyword arguments:
 
         * extensions: A list of extensions, which can either
            be strings or objects.  See the docstring on Markdown.
@@ -189,7 +189,7 @@ class Markdown:
         module_name_new_style = '.'.join([ext_module, ext_name])
         module_name_old_style = '_'.join(['mdx', ext_name])
 
-        # Try loading the extention first from one place, then another
+        # Try loading the extension first from one place, then another
         try: # New style (markdown.extensons.<extension>)
             module = __import__(module_name_new_style, {}, {}, [ext_module])
         except ImportError:
@@ -400,7 +400,7 @@ def markdownFromFile(*args, **kwargs):
     """Read markdown code from a file and write it to a file or a stream.
     
     This is a shortcut function which initializes an instance of Markdown,
-    cand calls the convertFile method rather than convert.
+    and calls the convertFile method rather than convert.
     
     Keyword arguments:
     
@@ -410,7 +410,7 @@ def markdownFromFile(*args, **kwargs):
     * Any arguments accepted by the Markdown class.
     
     """
-    # For backward compatability loop through positional args
+    # For backward compatibility loop through positional args
     pos = ['input', 'output', 'extensions', 'encoding']
     c = 0
     for arg in args:
