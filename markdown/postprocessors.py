@@ -60,20 +60,9 @@ class RawHtmlPostprocessor(Postprocessor):
                 text = text.replace("<p>%s</p>" % 
                             (self.markdown.htmlStash.get_placeholder(i)),
                             html + "\n")
-            html = self.unescape(html)
             text =  text.replace(self.markdown.htmlStash.get_placeholder(i), 
                                  html)
         return text
-
-    def unescape(self, html):
-        """ Unescape any markdown escaped text within inline html. """
-        for k, v in self.markdown.treeprocessors['inline'].stashed_nodes.items():
-            ph = util.INLINE_PLACEHOLDER % k
-            try:
-                html = html.replace(ph, '%s' % util.etree.tostring(v))
-            except:
-                html = html.replace(ph, '\%s' % v)
-        return html
 
     def escape(self, html):
         """ Basic html escaping """
@@ -81,7 +70,6 @@ class RawHtmlPostprocessor(Postprocessor):
         html = html.replace('<', '&lt;')
         html = html.replace('>', '&gt;')
         return html.replace('"', '&quot;')
-
 
     def isblocklevel(self, html):
         m = re.match(r'^\<\/?([^ ]+)', html)

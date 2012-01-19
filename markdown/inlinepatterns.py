@@ -268,10 +268,21 @@ class DoubleTagPattern(SimpleTagPattern):
 class HtmlPattern(Pattern):
     """ Store raw inline html and return a placeholder. """
     def handleMatch (self, m):
-        rawhtml = m.group(2)
-        inline = True
+        rawhtml = self.unescape(m.group(2))
         place_holder = self.markdown.htmlStash.store(rawhtml)
         return place_holder
+
+    def unescape(self, text):
+        """ Return unescaped text given text with an inline placeholder. """
+        try:
+            stash = self.markdown.treeprocessors['inline'].stashed_nodes
+        except KeyError:
+            return text
+        def get_stash(m):
+            id = m.group(1)
+            if id in stash:
+                return '\%s' % stash.get(id)
+        return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
 class LinkPattern(Pattern):
