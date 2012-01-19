@@ -71,7 +71,8 @@ def build_inlinepatterns(md_instance, **kwargs):
     inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md_instance)
     inlinePatterns["linebreak2"] = SubstituteTagPattern(LINE_BREAK_2_RE, 'br')
     inlinePatterns["linebreak"] = SubstituteTagPattern(LINE_BREAK_RE, 'br')
-    inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
+    if md_instance.safeMode != 'escape':
+        inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
     inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md_instance)
     inlinePatterns["not_strong"] = SimpleTextPattern(NOT_STRONG_RE)
     inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'strong,em')
