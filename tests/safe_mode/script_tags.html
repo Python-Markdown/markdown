@@ -1,13 +1,11 @@
 <p>This should be stripped/escaped in safe_mode.</p>
 <p>&lt;script&gt;
-alert(&quot;Hello world!&quot;)
+alert("Hello world!")
 &lt;/script&gt;</p>
 <p>With blank lines.</p>
-<p>&lt;script&gt;
-
-alert(&quot;Hello world!&quot;)
-
-&lt;/script&gt;</p>
+<p>&lt;script&gt;</p>
+<p>alert("Hello world!")</p>
+<p>&lt;/script&gt;</p>
 <p>Now with some weirdness</p>
 <p><code>&lt;script &lt;!--
 alert("Hello world!")
@@ -15,14 +13,8 @@ alert("Hello world!")
 <p>Try another way.</p>
 <p>&lt;script &lt;!--
 alert(&quot;Hello world!&quot;)
-&lt;/script &lt;&gt;
-
-This time with blank lines.
-
-&lt;script &lt;!--
-
-alert(&quot;Hello world!&quot;)
-
-&lt;/script &lt;&gt;
-
-</p>
+&lt;/script &lt;&gt;</p>
+<p>This time with blank lines.</p>
+<p>&lt;script &lt;!--</p>
+<p>alert("Hello world!")</p>
+<p>&lt;/script &lt;&gt;</p>
