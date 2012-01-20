@@ -284,7 +284,7 @@ class HtmlPattern(Pattern):
             value = stash.get(id)
             if value is not None:
                 try:
-                    return util.etree.tostring(value)
+                    return self.markdown.serializer(value)
                 except:
                     return '\%s' % value
             
