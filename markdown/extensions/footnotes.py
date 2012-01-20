@@ -69,10 +69,10 @@ class FootnoteExtension(markdown.Extension):
         md.inlinePatterns.add("footnote", FootnotePattern(FOOTNOTE_RE, self),
                               "<reference")
         # Insert a tree-processor that would actually add the footnote div
-        # This must be before the inline treeprocessor so inline patterns
-        # run on the contents of the div.
+        # This must be before all other treeprocessors (i.e., inline and 
+        # codehilite) so they can run on the the contents of the div.
         md.treeprocessors.add("footnote", FootnoteTreeprocessor(self),
-                                 "<inline")
+                                 "_begin")
         # Insert a postprocessor after amp_substitute oricessor
         md.postprocessors.add("footnote", FootnotePostprocessor(self),
                                   ">amp_substitute")

@@ -216,7 +216,7 @@ class CodeHiliteExtension(markdown.Extension):
         """ Add HilitePostprocessor to Markdown instance. """
         hiliter = HiliteTreeprocessor(md)
         hiliter.config = self.getConfigs()
-        md.treeprocessors.add("hilite", hiliter, "_begin")
+        md.treeprocessors.add("hilite", hiliter, "<inline")
 
         md.registerExtension(self)
 
