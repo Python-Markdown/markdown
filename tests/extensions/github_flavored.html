@@ -1,32 +1,32 @@
 <p>index 0000000..6e956a9</p>
-<div class="codehilite"><pre><span class="gd">--- /dev/null</span>
-<span class="gi">+++ b/test/data/stripped_text/mike-30-lili</span>
-<span class="gu">@@ -0,0 +1,27 @@</span>
-<span class="gi">+Summary:</span>
-<span class="gi">+ drift_mod.py |    1 +</span>
-<span class="gi">+ 1 files changed, 1 insertions(+), 0 deletions(-)</span>
-<span class="gi">+</span>
-<span class="gi">+commit da4bfb04debdd994683740878d09988b2641513d</span>
-<span class="gi">+Author: Mike Dirolf &lt;mike@dirolf.com&gt;</span>
-<span class="gi">+Date:   Tue Jan 17 13:42:28 2012 -0500</span>
-<span class="gi">+</span>
-<span class="gi">+```</span>
-<span class="gi">+minor: just wanted to push something.</span>
-<span class="gi">+```</span>
-<span class="gi">+</span>
-<span class="gi">+diff --git a/drift_mod.py b/drift_mod.py</span>
-<span class="gi">+index 34dfba6..8a88a69 100644</span>
-<span class="gi">+</span>
-<span class="gi">+```</span>
-<span class="gi">+--- a/drift_mod.py</span>
-<span class="gi">++++ b/drift_mod.py</span>
-<span class="gi">+@@ -281,6 +281,7 @@ CONTEXT_DIFF_LINE_PATTERN = re.compile(r&#39;^(&#39;</span>
-<span class="gi">+                                        &#39;|\+ .*&#39;</span>
-<span class="gi">+                                        &#39;|- .*&#39;</span>
-<span class="gi">+                                        &#39;)$&#39;)</span>
-<span class="gi">++</span>
-<span class="gi">+ def wrap_context_diffs(message_text):</span>
-<span class="gi">+     return _wrap_diff(CONTEXT_DIFF_HEADER_PATTERN,</span>
-<span class="gi">+                       CONTEXT_DIFF_LINE_PATTERN,</span>
-<span class="gi">+```</span>
-</pre></div>
+<pre><code class="diff">--- /dev/null
++++ b/test/data/stripped_text/mike-30-lili
+@@ -0,0 +1,27 @@
++Summary:
++ drift_mod.py |    1 +
++ 1 files changed, 1 insertions(+), 0 deletions(-)
++
++commit da4bfb04debdd994683740878d09988b2641513d
++Author: Mike Dirolf &lt;mike@dirolf.com&gt;
++Date:   Tue Jan 17 13:42:28 2012 -0500
++
++```
++minor: just wanted to push something.
++```
++
++diff --git a/drift_mod.py b/drift_mod.py
++index 34dfba6..8a88a69 100644
++
++```
++--- a/drift_mod.py
+++++ b/drift_mod.py
++@@ -281,6 +281,7 @@ CONTEXT_DIFF_LINE_PATTERN = re.compile(r'^('
++                                        '|\+ .*'
++                                        '|- .*'
++                                        ')$')
+++
++ def wrap_context_diffs(message_text):
++     return _wrap_diff(CONTEXT_DIFF_HEADER_PATTERN,
++                       CONTEXT_DIFF_LINE_PATTERN,
++```
+</code></pre>
