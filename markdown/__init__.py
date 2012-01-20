@@ -44,7 +44,7 @@ from treeprocessors import build_treeprocessors
 from inlinepatterns import build_inlinepatterns
 from postprocessors import build_postprocessors
 from extensions import Extension
-from searializers import to_html_string, to_xhtml_string
+from serializers import to_html_string, to_xhtml_string
 
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
