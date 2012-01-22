@@ -16,7 +16,7 @@ except ImportError:
         raise ImportError("build_py_2to3 is required to build in Python 3.x.")
     from distutils.command.build_py import build_py
 
-version = '2.1.0'
+version = '2.1.1'
 
 # The command line script name.  Currently set to "markdown_py" so as not to 
 # conflict with the perl implimentation (which uses "markdown").  We can't use
