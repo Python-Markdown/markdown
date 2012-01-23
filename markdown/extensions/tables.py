@@ -23,14 +23,24 @@ class TableProcessor(markdown.blockprocessors.BlockProcessor):
 
     def test(self, parent, block):
         rows = block.split('\n')
-        return (len(rows) > 2 and '|' in rows[0] and 
-                '|' in rows[1] and '-' in rows[1] and 
-                rows[1].strip()[0] in ['|', ':', '-'])
+        # PHP extra format
+        if (len(rows) > 2 and '|' in rows[0] and
+            '|' in rows[1] and '-' in rows[1] and
+            rows[1].strip()[0] in ['|', ':', '-']):
+            return True
+        # MySQL format
+        if (len(rows) > 4 and '+' in rows[0] and
+            '|' in rows[1] and '-' in rows[2] and
+            rows[2].strip()[0] == '+'):
+            return True
 
     def run(self, parent, blocks):
         """ Parse a table block and build table. """
         block = blocks.pop(0).split('\n')
         header = block[0].strip()
+        if header.startswith('+'):
+            block = block[1:-1]
+            header = block[0].strip()
         seperator = block[1].strip()
         rows = block[2:]
         # Get format type (bordered by pipes or not)
@@ -76,12 +86,16 @@ class TableProcessor(markdown.blockprocessors.BlockProcessor):
 
     def _split_row(self, row, border):
         """ split a row of text into list of cells. """
+        sep = '|'
         if border:
             if row.startswith('|'):
                 row = row[1:]
-            if row.endswith('|'):
+            elif row.startswith('+'):
+                sep = '+'
+                row = row[1:]
+            if row.endswith(sep):
                 row = row[:-1]
-        return row.split('|')
+        return row.split(sep)
 
 
 class TableExtension(markdown.Extension):

@@ -32,6 +32,13 @@ foo|bar|baz
    | Q |
  W |   | W
 
++------------+--------------+------+
+| Field      | Type         | Null |
++------------+--------------+------+
+| username   | varchar(255) | NO   |
+| password   | varchar(255) | NO   |
++------------+--------------+------+
+
 Three spaces in front of a table:
 
    First Header | Second Header
