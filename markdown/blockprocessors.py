@@ -306,6 +306,8 @@ class OListProcessor(BlockProcessor):
     #   3. Item
     # The ol tag will get starts="3" attribute
     STARTSWITH = '1'
+    # List of allowed sibling tags. 
+    SIBLING_TAGS = ['ol', 'ul']
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
@@ -315,7 +317,7 @@ class OListProcessor(BlockProcessor):
         items = self.get_items(blocks.pop(0))
         sibling = self.lastChild(parent)
 
-        if sibling and sibling.tag in ['ol', 'ul']:
+        if sibling and sibling.tag in self.SIBLING_TAGS:
             # Previous block was a list item, so set that as parent
             lst = sibling
             # make sure previous item is in a p- if the item has text, then it
