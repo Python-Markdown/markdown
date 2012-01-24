@@ -40,6 +40,7 @@ available to you.
 * [Meta-Data](meta_data.html)
 * [New Line to Break](nl2br.html)
 * [RSS](rss.html)
+* [Sane Lists](sane_lists.html)
 * [Table of Contents](toc.html)
 * [WikiLinks](wikilinks.html)
 
