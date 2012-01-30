@@ -116,7 +116,7 @@ class HtmlBlockPreprocessor(Preprocessor):
         if (right_tag == "--" and left_tag == "--"):
             return True
         elif left_tag == right_tag[1:] \
-            and right_tag[0] != "<":
+            and right_tag[0] == "/":
             return True
         else:
             return False
