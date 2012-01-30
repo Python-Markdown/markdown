@@ -147,7 +147,7 @@ class HtmlBlockPreprocessor(Preprocessor):
 
                     if block[1] == "!":
                         # is a comment block
-                        left_tag, left_index, attrs  = "--", 2, ()
+                        left_tag, left_index, attrs  = "--", 2, {}
                     else:
                         left_tag, left_index, attrs = self._get_left_tag(block)
                     right_tag, data_index = self._get_right_tag(left_tag, 
