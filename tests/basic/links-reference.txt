@@ -54,3 +54,8 @@ breaks[] with two spaces.
 ref]
 
 [short ref]: http://example.com "No more hanging empty bracket!"
+
+[a ref]
+
+[a ref]: http://example.com
+    "Title on next line."
