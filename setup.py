@@ -73,20 +73,44 @@ class build_docs(Command):
             for file in files:
                 if not file.startswith('_'):
                     path = os.path.join(root, file)
-                    yield (path, self._get_page_title(path))
+                    yield path
 
-    def _get_page_title(self, path):
-        """ Get page title from file name (and path). """
-        root, ext = os.path.splitext(path)
-        path, name = os.path.split(root)
-        parts = path.split(os.sep)
+    def _get_context(self, src, path):
+        """ Build and return context to pass to template. """
+        # set defaults
+        c = {
+            'title'      : '',
+            'prev_url'   : '',
+            'prev_title' : '',
+            'next_url'   : '',
+            'next_title' : '',
+            'crumb'      : '',
+            'version'    : version,
+        }
+        c['body'] = self.md.convert(src)
+        c['toc'] = self.md.toc
+        for k, v in self.md.Meta.items():
+            c[k] = ' '.join(v)
+        self.md.reset()
+        # Manipulate path
+        path = path.lstrip(os.path.join(self.build_base, 'docs/'))
+        dir, file = os.path.split(path)
+        name, ext = os.path.splitext(file)
+        parts = [x for x in dir.split(os.sep) if x]
+        c['source'] = '%s.txt' % name
+        c['base'] = '../'*len(parts)
+        # Build page title
         parts = [x.replace('_', ' ').capitalize() for x in parts[1:]]
         if name.lower() != 'index':
             parts.append(name.replace('_', ' ').capitalize())
         if parts:
-            return ' | '.join(parts) + ' &#8212; Python Markdown'
+            c['page_title'] = ' | '.join(parts) + ' &#8212; Python Markdown'
         else:
-            return 'Python Markdown'
+            c['page_title'] = 'Python Markdown'
+        # Build crumb trail
+        if c['title']:
+            c['crumb'] = '<li><a href="%s">%s</a> &raquo;</li>' % (file, c['title'])
+        return c
 
     def run(self):
         # Before importing markdown, tweak sys.path to import from the 
@@ -99,10 +123,16 @@ class build_docs(Command):
             print ('skipping build_docs: Markdown "import" failed!')
         else:
             template = codecs.open('docs/_template.html', encoding='utf-8').read()
-            md = markdown.Markdown(extensions=['extra', 'toc'])
-            for infile, title in self.docs:
+            self.md = markdown.Markdown(extensions=['extra', 'toc', 'meta'])
+            for infile in self.docs:
                 outfile, ext = os.path.splitext(infile)
                 if ext == '.md':
+                    # Copy src to .txt file
+                    srcfile = outfile + '.txt'
+                    srcfile = change_root(self.build_base, srcfile)
+                    self.mkpath(os.path.split(srcfile)[0])
+                    self.copy_file(infile, srcfile)
+                    # Render html file
                     outfile += '.html'
                     outfile = change_root(self.build_base, outfile)
                     self.mkpath(os.path.split(outfile)[0])
@@ -111,12 +141,7 @@ class build_docs(Command):
                             print ('Converting %s -> %s' % (infile, outfile))
                         if not self.dry_run:
                             src = codecs.open(infile, encoding='utf-8').read()
-                            out = template % {
-                                'title': title, 
-                                'body' : md.convert(src),
-                                'toc'  : md.toc,
-                            }
-                            md.reset()
+                            out = template % self._get_context(src, outfile)
                             doc = open(outfile, 'wb')
                             doc.write(out.encode('utf-8'))
                             doc.close()

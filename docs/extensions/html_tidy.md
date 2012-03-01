@@ -1,3 +1,9 @@
+title:      HTML Tidy Extension
+prev_title: CodeHilite Extension
+prev_url:   code_hilite.html
+next_title: HeaderId Extension
+next_url:   header_id.html
+
 HTML Tidy
 =========
 

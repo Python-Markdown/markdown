@@ -1,3 +1,9 @@
+title:      RSS Extension
+prev_title: New Line to Break Extension
+prev_url:   nl2br.html
+next_title: Sane Lists Extension
+next_url:   sane_lists.html
+
 RSS
 ===
 

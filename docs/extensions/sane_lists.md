@@ -1,3 +1,9 @@
+title:      Sane Lists Extension
+prev_title: RSS Extension
+prev_url:   rss.html
+next_title: Table of Contents Extension
+next_url:   toc.html
+
 Sane Lists
 ----------
 

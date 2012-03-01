@@ -1,3 +1,7 @@
+title:      Test Suite
+prev_title: Extension API
+prev_url:   writing_extensions.html
+
 # Test Suite
 
 Python-Markdown comes with a test suite which uses the [Nose][] testing

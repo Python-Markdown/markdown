@@ -1,3 +1,9 @@
+title:      Fenced Code Block Extension
+prev_title: Definition List Extension
+prev_url:   definition_lists.html
+next_title: Footnotes Extension
+next_url:   footnotes.html
+
 Fenced Code Blocks
 ==================
 

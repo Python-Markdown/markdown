@@ -1,3 +1,9 @@
+title:      Table Extension
+prev_title: Footnotes Extension
+prev_url:   footnotes.html
+next_title: Smart Strong Extension
+next_url:   smart_strong.html
+
 Tables
 ----------------
 

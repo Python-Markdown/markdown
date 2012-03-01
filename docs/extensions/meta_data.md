@@ -1,3 +1,9 @@
+title:      Meta-Data Extension
+prev_title: HeaderId Extension
+prev_url:   header_id.html
+next_title: New Line to Break Extension
+next_url:   nl2br.html
+
 Meta-Data
 =========
 

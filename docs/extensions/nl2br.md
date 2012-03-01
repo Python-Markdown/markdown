@@ -1,3 +1,9 @@
+title:      New Line to Break Extension
+prev_title: Meta-Data Extension
+prev_url:   meta_data.html
+next_title: RSS Extension
+next_url:   rss.html
+
 NL2BR Extension
 ===============
 

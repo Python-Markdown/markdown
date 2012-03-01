@@ -1,3 +1,9 @@
+title:      Attribute List Extension
+prev_title: Abbreviation Extension
+prev_url:   abbreviations.html
+next_title: Definition List Extension
+next_url:   definition_lists.html
+
 Attribute Lists
 ===============
 

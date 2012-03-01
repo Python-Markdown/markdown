@@ -1,3 +1,9 @@
+title:      Definition List Extension
+prev_title: Attribute List Extension
+prev_url:   attr_list.html
+next_title: Fenced Code Block Extension
+next_url:   fenced_code_blocks.html
+
 Definition Lists
 ----------------
 

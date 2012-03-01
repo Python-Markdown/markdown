@@ -1,3 +1,9 @@
+title:      CodeHilite Extension
+prev_title: Smart Strong Extension
+prev_url:   smart_strong.html
+next_title: HTML Tidy Extension
+next_url:   html_tidy.html
+
 CodeHilite
 ==========
 

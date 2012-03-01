@@ -1,3 +1,9 @@
+title:      HeaderId Extension
+prev_title: HTML Tidy Extension
+prev_url:   html_tidy.html
+next_title: Meta-Data Extension
+next_url:   meta_data.html
+
 HeaderId
 ========
 

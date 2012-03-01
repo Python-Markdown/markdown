@@ -1,3 +1,10 @@
+title:      Library Reference
+prev_title: Installation
+prev_url:   install.html
+next_title: Command Line
+next_url:   command_line.html
+
+
 Using Markdown as a Python Library
 ==================================
 
@@ -26,7 +33,7 @@ of the `markdown.Markdown` class and pass multiple documents through it.
 
 The following options are available on the `markdown.markdown` function:
 
-* `text` (required): The source text string.
+* __`text`__ (required): The source text string.
 
     Note that Python-Markdown expects **Unicode** as input (although
     a simple ASCII string may work) and returns output as Unicode.  
@@ -45,7 +52,7 @@ The following options are available on the `markdown.markdown` function:
         )
         output_file.write(html)
 
-* `extensions`: A list of extensions.
+* __`extensions`__: A list of extensions.
 
     Python-Markdown provides an API for third parties to write extensions to
     the parser adding their own additions or changes to the syntax. A few
@@ -60,7 +67,7 @@ The following options are available on the `markdown.markdown` function:
     `extensions=['extra']` will first look for the module 
     `markdown.extensions.extra`, then a module named `mdx_extra`. 
 
-* `extension-configs`: A dictionary of configuration settings for extensions.
+* __`extension-configs`__: A dictionary of configuration settings for extensions.
 
     The dictionary must be of the following format:
 
@@ -77,7 +84,7 @@ The following options are available on the `markdown.markdown` function:
     See the documentation specific to the extension you are using for help in 
     specifying configuration settings for that extension.
 
-* `output_format`: Format of output. 
+* __`output_format`__: Format of output. 
 
     Supported formats are:
 
@@ -93,7 +100,7 @@ The following options are available on the `markdown.markdown` function:
     if it makes sense at that time. The values can either be lowercase or 
     uppercase.
 
-* `safe_mode`: Disallow raw html.
+* __`safe_mode`__: Disallow raw html.
 
     If you are using Markdown on a web system which will transform text 
     provided by untrusted users, you may want to use the "safe_mode" 
@@ -130,16 +137,16 @@ The following options are available on the `markdown.markdown` function:
     could allow someone to inject javascript (i.e., `{@onclick=alert(1)}`). You 
     may also want to set `enable_attributes=False` when using "safe_mode".
 
-* `html_replacement_text`: Text used when safe_mode is set to `replace`.
+* __`html_replacement_text`__: Text used when safe_mode is set to `replace`.
   Defaults to `[HTML_REMOVED]`.
 
-* `tab_length`: Length of tabs in the source. Default: 4
+* __`tab_length`__: Length of tabs in the source. Default: 4
 
-* `enable_attributes`: Enable the conversion of attributes. Default: True
+* __`enable_attributes`__: Enable the conversion of attributes. Default: True
 
-* `smart_emphasis`: Treat `_connected_words_` intelligently Default: True
+* __`smart_emphasis`__: Treat `_connected_words_` intelligently Default: True
 
-* `lazy_ol`: Ignore number of first item of ordered lists. Default: True
+* __`lazy_ol`__: Ignore number of first item of ordered lists. Default: True
 
     Given the following list:
 
@@ -165,7 +172,7 @@ With a few exceptions, `markdown.markdownFromFile` accepts the same options as
 `markdown.markdown`. It does **not** accept a `text` (or Unicode) string. 
 Instead, it accepts the following required options:
 
-* `input` (required): The source text file.
+* __`input`__ (required): The source text file.
 
     `input` may be set to one of three options:
 
@@ -173,7 +180,7 @@ Instead, it accepts the following required options:
     * a readable file-like object,
     * or `None` (default) which will read from `stdin`.
 
-* `output`: The target which output is written to.
+* __`output`__: The target which output is written to.
 
     `output` may be set to one of three options:
 
@@ -181,7 +188,7 @@ Instead, it accepts the following required options:
     * a writable file-like object,
     * or `None` (default) which will write to `stdout`.
 
-* `encoding`: The encoding of the source text file. Defaults to 
+* __`encoding`__: The encoding of the source text file. Defaults to 
   "utf-8". The same encoding will always be used for input and output. 
   The 'xmlcharrefreplace' error handler is used when encoding the output.
 

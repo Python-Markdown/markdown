@@ -1,3 +1,10 @@
+title:      Extensions
+prev_title: Command Line
+prev_url:   ../command_line.html
+next_title: Extra Extension
+next_url:   extra.html
+
+
 Available Extensions
 ====================
 
@@ -20,7 +27,7 @@ See [Using Python-Markdown on the Command Line](../command_line.html) or use the
 Officially Supported Extensions
 -------------------------------
 
-The extensions lists below are included with (at least) the most recent release
+The extensions listed below are included with (at least) the most recent release
 and are officially supported by Python-Markdown. Any documentation is 
 maintained here and all bug reports should be made to the project. If you 
 have a typical install of Python-Markdown, these extensions are already 

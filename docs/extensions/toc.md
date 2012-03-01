@@ -1,3 +1,9 @@
+title:      Table of Contents Extension
+prev_title: Sane Lists Extension
+prev_url:   sane_lists.html
+next_title: Wikilinks Extension
+next_url:   wikilinks.html
+
 Table of Contents
 =================
 

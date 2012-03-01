@@ -1,3 +1,9 @@
+title:      Extra Extension
+prev_title: Extensions
+prev_url:   index.html
+next_title: Abreviation Extension
+next_url:   abbreviations.html
+
 Python-Markdown Extra
 =====================
 

@@ -1,3 +1,9 @@
+title:      Smart Strong Extension
+prev_title: Tables Extension
+prev_url:   tables.html
+next_title: CodeHilite Extension
+next_url:   code_hilite.html
+
 Smart_Strong
 ------------
 

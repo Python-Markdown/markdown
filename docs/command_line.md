@@ -1,3 +1,10 @@
+title: Command Line
+prev_title: Library Reference
+prev_url:   using_as_module.html
+next_title: Extensions
+next_url:   extensions/index.html
+
+
 Using Python-Markdown on the Command Line
 =========================================
 

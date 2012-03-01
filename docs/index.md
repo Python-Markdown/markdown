@@ -1,3 +1,6 @@
+next_url:   install.html
+next_title: Installation
+
 Python-Markdown
 ===============
 
@@ -16,37 +19,37 @@ Features
 In addition to the basic markdown syntax, Python-Markdown supports the following
 features:
 
-* International Input
+* __International Input__
 
     Python-Markdown will accept input in any language supported by Unicode 
     including bi-directional text. In fact the test suite includes documents 
     written in Russian and Arabic.
 
-* Middle-Word Emphasis
+* __Middle-Word Emphasis__
 
     Python-Markdown defaults to ignoring middle-word emphasis. In other words,
     `some_long_filename.txt` will not become `some<em>long</em>filename.txt`.
     This can be switched off if desired. See the 
     [Library Reference](using_as_module.html) for details.
 
-* Extensions
+* __Extensions__
 
     Various [extensions](extensions/) are provided (including 
     [extra](extensions/extra.html)) to expand the base syntax. Additionally, 
     a public [Extension API](writing_extensions.html) is available to write 
     your own extensions.
 
-* Output Formats
+* __Output Formats__
 
     Python-Markdown can output documents in HTML4, XHTML and HTML5.
 
-* "Safe Mode"
+* __"Safe Mode"__
 
     When using Python-Markdown to parse input from untrusted users on the web,
     the handling of raw HTML can be controlled in various ways to prevent 
     harmful code from being injected into your site.
 
-* Command Line Interface
+* __Command Line Interface__
 
     In addition to being a Python Library, a 
     [command line script](command_line.html) is available for your convenience.

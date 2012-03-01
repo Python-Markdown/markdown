@@ -1,3 +1,9 @@
+title:      Abbreviation Extension
+prev_title: Extra Extension
+prev_url:   extra.html
+next_title: Attribute List Extension
+next_url:   attr_list.html
+
 Abbreviations
 -------------
 

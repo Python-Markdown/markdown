@@ -1,3 +1,9 @@
+title:      Footnotes Extension
+prev_title: Fenced Code Block Extension
+prev_url:   fenced_code_blocks.html
+next_title: Tables Extension
+next_url:   tables.html
+
 Footnotes
 =========
 
