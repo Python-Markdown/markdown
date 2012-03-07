@@ -93,23 +93,27 @@ class build_docs(Command):
             c[k] = ' '.join(v)
         self.md.reset()
         # Manipulate path
-        path = path.lstrip(os.path.join(self.build_base, 'docs/'))
+        path = path[len(os.path.join(self.build_base, 'docs/')):]
         dir, file = os.path.split(path)
         name, ext = os.path.splitext(file)
         parts = [x for x in dir.split(os.sep) if x]
         c['source'] = '%s.txt' % name
         c['base'] = '../'*len(parts)
         # Build page title
-        parts = [x.replace('_', ' ').capitalize() for x in parts[1:]]
-        if name.lower() != 'index':
-            parts.append(name.replace('_', ' ').capitalize())
-        if parts:
-            c['page_title'] = ' | '.join(parts) + ' &#8212; Python Markdown'
+        if name.lower() != 'index' or parts:
+            c['page_title'] = '%s &#8212; Python Markdown' % c['title']
         else:
             c['page_title'] = 'Python Markdown'
         # Build crumb trail
-        if c['title']:
-            c['crumb'] = '<li><a href="%s">%s</a> &raquo;</li>' % (file, c['title'])
+        crumbs = []
+        ctemp = '<li><a href="%s">%s</a> &raquo;</li>'
+        for n, part in enumerate(parts):
+            href = ('../'*n) + 'index.html'
+            label = part.replace('_', ' ').capitalize()
+            crumbs.append(ctemp % (href, label))
+        if c['title'] and name.lower() != 'index':
+            crumbs.append(ctemp % (file, c['title']))
+        c['crumb'] = '\n'.join(crumbs)
         return c
 
     def run(self):
