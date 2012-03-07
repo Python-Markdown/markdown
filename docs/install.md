@@ -7,28 +7,11 @@ next_url:   reference.html
 Installing Python-Markdown
 ==========================
 
-Checking Dependencies
----------------------
-
-Python-Markdown requires the ElementTree module to be installed. In Python2.5+ 
-ElementTree is included as part of the standard library. For earlier versions 
-of Python, open a Python shell and type the following:
-
-    >>> import cElementTree
-    >>> import ElementTree
-
-If at least one of those does not generate any errors, then you have a working
-copy of ElementTree installed on your system. As cElementTree is faster, you
-may want to install that if you don't already have it and it's available for 
-your system.
-
-See <http://effbot.org/zone/element-index.htm> for more information or to 
-download the latest version of ElementTree.
-
 The Easy Way
 ------------
 
-As an Admin/Root user on your system do:
+The easiest way to install Python-Markdown is simply to type one of the 
+following commands from the command line as an Admin/Root user:
 
     pip install markdown
 
@@ -36,23 +19,27 @@ or
 
     easy_install markdown
 
+That's it! Your ready to [use](reference.html) Python-Markdown. Enjoy!
+
 Installing on Windows
 ---------------------
 
-Download the Windows installer (.exe) from PyPI: 
-<http://pypi.python.org/pypi/Markdown>
+Download the Windows installer (.exe) from 
+[PyPI](http://pypi.python.org/pypi/Markdown)
 
 Double-click the file and follow the instructions.
 
 If you prefer to manually install Python-Markdown in Windows, download the
-Zip file, unzip it, and on the command line in the directory you unzipped to:
+Zip file, unzip it, and on the command line in the directory you unzipped to,
+run the following command:
 
-    python setup.py install
+    C://path/to/python.exe setup.py install
 
 If you plan to use the provided command line script, you need to make sure your
 script directory is on your system path. On a typical Python install of Windows
-the Scripts directory is `C:\Python25\Scripts\`. Adjust according to your 
-system and add that to your system path.
+the Scripts directory is `C:\PythonXX\Scripts\` (were "XX" is the Python version
+number, i.e., "27"). Adjust the path according to your system and add to your 
+system path.
 
 Installing on *nix Systems
 --------------------------
@@ -79,3 +66,18 @@ command line:
     cd python-markdown
     python setup.py install
 
+Dependencies
+------------
+
+Python-Markdown requires the ElementTree module to be installed. In Python 2.5+ 
+ElementTree is included as part of the standard library at 
+`xml.etree.ElementTree` and/or `xml.etree.cElementTree`. For earlier versions 
+of Python, the library needs to be installed.  However, Python-Markdown's 
+install script will automaticaly detect the missing library and download and 
+install the "ElementTree" library for you if your system has internet access. 
+If you would like to use the "cElementTree" library (which is faster), you can 
+install it manually. Markdown will check for the faster "c" library first and 
+fall back to the slower python implementation when it is not available.
+
+See <http://effbot.org/zone/element-index.htm> for more information or to 
+download the latest version of ElementTree.
