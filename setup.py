@@ -130,7 +130,7 @@ class build_docs(Command):
             self.md = markdown.Markdown(extensions=['extra', 'toc', 'meta'])
             for infile in self.docs:
                 outfile, ext = os.path.splitext(infile)
-                if ext == '.md':
+                if ext == '.txt':
                     # Copy src to .txt file
                     srcfile = outfile + '.txt'
                     srcfile = change_root(self.build_base, srcfile)
