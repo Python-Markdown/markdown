@@ -1,3 +1,9 @@
+title:      Release Notes for v2.1.0
+prev_title: Release Notes for v2.1.1
+prev_url:   release-2.1.1.html
+next_title: Release Notes for v2.0.2
+next_url:   release-2.0.2.html
+
 Python-Markdown 2.1.0 Release Notes
 ===================================
 
@@ -29,7 +35,7 @@ is suggested you manually use Python 3.1's 2to3 tool to do a conversion.
 wrapper methods. It now expects keyword arguments. Currently, the positional
 arguments should continue to work, but the solution feels hacky and may be 
 removed in a future version. All users are encouraged to use keyword arguments 
-as documented in [Using Markdown as a Python Library](using_as_module.html).
+as documented in the [Library Reference](reference.html).
 
 * Past versions of Python-Markdown provided module level Global variables which
 controlled the behavior of a few different aspects of the parser. Those global
@@ -37,9 +43,8 @@ variables have been replaced with attributes on the Markdown class.
 Additionally, those attributes are settable as keyword arguments when 
 initializing a class instance. Therefore, if you were editing the global 
 variables (either by editing the source or by overriding them in your code), 
-you should now set them on the class. See 
-[Using Markdown as a Python Library](using_as_module.html) for the options 
-available.
+you should now set them on the class. See the 
+[Library Reference](reference.html) for the options available.
 
 * If you have been using the [HeaderID](extensions/header_id.html) extension 
 to define custom ids on headers, you will want to switch to using the new 

@@ -1,6 +1,8 @@
 title:      Test Suite
 prev_title: Extension API
 prev_url:   extensions/api.html
+next_title: Change Log
+next_url:   change_log.html
 
 # Test Suite
 

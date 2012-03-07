@@ -1,3 +1,9 @@
+title:      Release Notes for v2.0.1
+prev_title: Release Notes for v2.0.2
+prev_url:   release-2.0.2.html
+next_title: Release Notes for v2.0
+next_url:   release-2.0.html
+
 Python-Markdown 2.0.1 Release Notes
 ===================================
 

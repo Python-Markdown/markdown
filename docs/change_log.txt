@@ -1,15 +1,23 @@
-PYTHON MARKDOWN CHANGELOG
+title:      Change Log
+prev_title: Test Suite
+prev_url:   test_suite.html
+next_title: Release Notes for v2.1.1
+next_url:   release-2.1.1.html
+
+Python-Markdown Changelog
 =========================
 
-Nov 24, 2011: Released version 2.1.0-Final.
+Jan 22, 2012: Released version 2.1.1 ([Notes](release-2.1.1.html)).
 
-Oct 7, 2009: Released version 2.0.3-Final.
+Nov 24, 2011: Released version 2.1.0 ([Notes](release-2.1.0.html)).
 
-Sept 28, 2009: Released version 2.0.2-Final.
+Oct 7, 2009: Released version 2.0.3.
 
-May 20, 2009: Released version 2.0.1-Final.
+Sept 28, 2009: Released version 2.0.2 ([Notes](release-2.0.2.html)).
 
-Mar 30, 2009: Released version 2.0-Final.
+May 20, 2009: Released version 2.0.1 ([Notes](release-2.0.1.html)).
+
+Mar 30, 2009: Released version 2.0 ([Notes](release-2.0.html)).
 
 Mar 8, 2009: Release Candidate 2.0-rc-1.
 
@@ -57,7 +65,7 @@ Feb 13, 2008: A little code cleanup and better documentation
 and inheritance for pre/post proccessors.
 
 Feb 9, 2008: Doublequotes no longer html escaped and rawhtml
-honors <?foo>, <@foo>, and <%foo> for those who run markdown on
+honors `<?foo>`, `<@foo>`, and `<%foo>` for those who run markdown on
 template syntax.
 
 Dec 12, 2007: Updated docs. Removed encoding arg from Markdown
@@ -67,7 +75,7 @@ Nov 29, 2007: Added support for images inside links. Also fixed
 a few bugs in the footnote extension.
 
 Nov 19, 2007: `message` now uses python's logging module. Also removed 
-limit imposed by recursion in _process_section(). You can now parse as 
+limit imposed by recursion in `_process_section()`. You can now parse as 
 long of a document as your memory can handle.
 
 Nov 5, 2007: Moved safe_mode code to a textPostprocessor and added 
@@ -104,7 +112,7 @@ with ampersand normalization and html blocks.
 July 10, 2006: Switched to using optparse.  Added proper support for
 unicode.
 
-July 9, 2006: Fixed the <!--@address.com> problem (Tracker #1501354).  
+July 9, 2006: Fixed the `<!--@address.com>` problem (Tracker #1501354).  
 
 May 18, 2006: Stopped catching unquoted titles in reference links.
 Stopped creating blank headers.
@@ -126,17 +134,17 @@ Midwinter. (Version 1.3)
 
 Feb. 24, 2006: Fixed a bug with the last line of the list appearing
 again as a separate paragraph.  Incorporated Chris Clark's "mailto"
-patch.  Added support for <br /> at the end of lines ending in two or
+patch.  Added support for `<br />` at the end of lines ending in two or
 more spaces.  Fixed a crashing bug when using ImageReferencePattern.
 Added several utility methods to Nanodom.  (Version 1.2)
 
-Jan. 31, 2006: Added "hr" and "hr/" to BLOCK_LEVEL_ELEMENTS and
-changed <hr/> to <hr />.  (Thanks to Sergej Chodarev.)
+Jan. 31, 2006: Added `hr` and `hr/` to BLOCK_LEVEL_ELEMENTS and
+changed `<hr/>` to `<hr />`.  (Thanks to Sergej Chodarev.)
 
 Nov. 26, 2005: Fixed a bug with certain tabbed lines inside lists
-getting wrapped in <pre><code>.  (v. 1.1)
+getting wrapped in `<pre><code>`.  (v. 1.1)
 
-Nov. 19, 2005: Made "<!...", "<?...", etc. behave like block-level
+Nov. 19, 2005: Made `<!...`, `<?...`, etc. behave like block-level
 HTML tags.
 
 Nov. 14, 2005: Added entity code and email autolink fix by Tiago
@@ -180,5 +188,5 @@ escape, emphasis in the beginning of the paragraph.
 Nov. 2004: Added links, blockquotes, html blocks to Manfred
 Stienstra's code
 
-Apr. 2004: Manfred's version at http://www.dwerg.net/projects/markdown/
+Apr. 2004: Manfred's version at <http://www.dwerg.net/projects/markdown/>
 
