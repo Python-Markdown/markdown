@@ -14,14 +14,14 @@ of Markdown, you may not have them installed, or you may prefer to use
 Python-Markdown's various extensions.
 
 Generally, you will want to have the Markdown library fully installed on your
-system (``setup.py install`` or ``easy_install markdown``) to run the command 
-line script. 
+system to run the command line script. See the 
+[Installation instructions](install.html) for details.
 
 Assuming the `python` executable is on your system path, just run the following:
 
     python -m markdown [options] [args]
 
-That will run the module as a script. Note that on older python versions (2.5 
+That will run the module as a script. Note that on older Python versions (2.5 
 and 2.6), you may need to specify the appropriate module:
 
     python -m markdown.__main__ [options] [args]

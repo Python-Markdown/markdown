@@ -22,21 +22,22 @@ To use markdown as a module:
 The Details
 -----------
 
-Python-Markdown provides two public functions (`markdown.markdown` and 
-`markdown.markdownFromFile`) both of which wrap the public class
-`markdown.Markdown`. If you're processing one document at a time, the
-functions will serve your needs. However, if you need to process 
-multiple documents, it may be advantageous to create a single instance 
-of the `markdown.Markdown` class and pass multiple documents through it.
+Python-Markdown provides two public functions ([`markdown.markdown`](#markdown)
+and [`markdown.markdownFromFile`](#markdownFromFile)) both of which wrap the 
+public class [`markdown.Markdown`](#Markdown). If you're processing one 
+document at a time, the functions will serve your needs. However, if you need 
+to process multiple documents, it may be advantageous to create a single 
+instance of the `markdown.Markdown` class and pass multiple documents through 
+it.
 
-### `markdown.markdown(text [, **kwargs])`
+### `markdown.markdown (text [, **kwargs])` {: #markdown }
 
 The following options are available on the `markdown.markdown` function:
 
-* __`text`__ (required): The source text string.
+* __`text`__{: #text } (required): The source text string.
 
     Note that Python-Markdown expects **Unicode** as input (although
-    a simple ASCII string may work) and returns output as Unicode.  
+    a simple ASCII string may work) and returns output as Unicode.
     Do not pass encoded strings to it! If your input is encoded, (e.g. as 
     UTF-8), it is your responsibility to decode it.  For example:
 
@@ -52,7 +53,7 @@ The following options are available on the `markdown.markdown` function:
         )
         output_file.write(html)
 
-* __`extensions`__: A list of extensions.
+* __`extensions`__{: #extensions }: A list of extensions.
 
     Python-Markdown provides an API for third parties to write extensions to
     the parser adding their own additions or changes to the syntax. A few
@@ -68,7 +69,8 @@ The following options are available on the `markdown.markdown` function:
     `extensions=['extra']` will first look for the module 
     `markdown.extensions.extra`, then a module named `mdx_extra`. 
 
-* __`extension-configs`__: A dictionary of configuration settings for extensions.
+* __`extension-configs`__{: #extensions_configs }: A dictionary of 
+  configuration settings for extensions.
 
     The dictionary must be of the following format:
 
@@ -85,7 +87,7 @@ The following options are available on the `markdown.markdown` function:
     See the documentation specific to the extension you are using for help in 
     specifying configuration settings for that extension.
 
-* __`output_format`__: Format of output. 
+* __`output_format`__{: #output_format }: Format of output. 
 
     Supported formats are:
 
@@ -101,7 +103,7 @@ The following options are available on the `markdown.markdown` function:
     if it makes sense at that time. The values can either be lowercase or 
     uppercase.
 
-* __`safe_mode`__: Disallow raw html.
+* __`safe_mode`__{: #safe_mode }: Disallow raw html.
 
     If you are using Markdown on a web system which will transform text 
     provided by untrusted users, you may want to use the "safe_mode" 
@@ -138,16 +140,19 @@ The following options are available on the `markdown.markdown` function:
     could allow someone to inject javascript (i.e., `{@onclick=alert(1)}`). You 
     may also want to set `enable_attributes=False` when using "safe_mode".
 
-* __`html_replacement_text`__: Text used when safe_mode is set to `replace`.
-  Defaults to `[HTML_REMOVED]`.
+* __`html_replacement_text`__{: #html_replacement_text }: Text used when 
+  safe_mode is set to `replace`. Defaults to `[HTML_REMOVED]`.
 
-* __`tab_length`__: Length of tabs in the source. Default: 4
+* __`tab_length`__{: #tab_length }: Length of tabs in the source. Default: 4
 
-* __`enable_attributes`__: Enable the conversion of attributes. Default: True
+* __`enable_attributes`__{: #enable_attributes}: Enable the conversion of 
+  attributes. Default: True
 
-* __`smart_emphasis`__: Treat `_connected_words_` intelligently Default: True
+* __`smart_emphasis`__{: #smart_emphasis }: Treat `_connected_words_` 
+  intelligently Default: True
 
-* __`lazy_ol`__: Ignore number of first item of ordered lists. Default: True
+* __`lazy_ol`__{: #lazy_ol }: Ignore number of first item of ordered lists. 
+  Default: True
 
     Given the following list:
 
@@ -167,13 +172,13 @@ The following options are available on the `markdown.markdown` function:
         </ol>
 
 
-### `markdown.markdownFromFile(**kwargs)`
+### `markdown.markdownFromFile (**kwargs)` {: #markdownFromFile }
 
 With a few exceptions, `markdown.markdownFromFile` accepts the same options as 
 `markdown.markdown`. It does **not** accept a `text` (or Unicode) string. 
 Instead, it accepts the following required options:
 
-* __`input`__ (required): The source text file.
+* __`input`__{: #input } (required): The source text file.
 
     `input` may be set to one of three options:
 
@@ -181,7 +186,7 @@ Instead, it accepts the following required options:
     * a readable file-like object,
     * or `None` (default) which will read from `stdin`.
 
-* __`output`__: The target which output is written to.
+* __`output`__{: #output }: The target which output is written to.
 
     `output` may be set to one of three options:
 
@@ -189,8 +194,8 @@ Instead, it accepts the following required options:
     * a writable file-like object,
     * or `None` (default) which will write to `stdout`.
 
-* __`encoding`__: The encoding of the source text file. Defaults to 
-  "utf-8". The same encoding will always be used for input and output. 
+* __`encoding`__{: #encoding }: The encoding of the source text file. Defaults 
+  to "utf-8". The same encoding will always be used for input and output. 
   The 'xmlcharrefreplace' error handler is used when encoding the output.
 
     **Note:** This is the only place that decoding and encoding of unicode
@@ -198,17 +203,17 @@ Instead, it accepts the following required options:
     meet your specific needs, it is suggested that you write your own code
     to handle your encoding/decoding needs.
 
-### `markdown.Markdown([**kwargs])`
+### `markdown.Markdown ([**kwargs])` {: #Markdown }
 
 The same options are available when initializing the `markdown.Markdown` class
-as on the `markdown.markdown` function, except that the class does **not**
-accept a source text string on initialization. Rather, the source text string
-must be passed to one of two instance methods:
+as on the [`markdown.markdown`](#markdown) function, except that the class does
+**not** accept a source text string on initialization. Rather, the source text
+string must be passed to one of two instance methods:
 
-* `Markdown.convert(source)`
+* `Markdown.convert(source)` {: #convert }
 
-    The `source` text must meet the same requirements as the `text` argument
-    of the `markdown.markdown` function.
+    The `source` text must meet the same requirements as the [`text`](#text) 
+    argument of the [`markdown.markdown`](#markdown) function.
 
     You should also use this method if you want to process multiple strings
     without creating a new instance of the class for each string.
@@ -228,11 +233,12 @@ must be passed to one of two instance methods:
     
         html3 = md.reset().convert(text3)
 
-* `Markdown.convertFile(**kwargs)`
+* `Markdown.convertFile(**kwargs)` {: #convertFile }
 
     The arguments of this method are identical to the arguments of the same
-    name on the `markdown.markdownFromFile` function (`input`, `output`, and 
-    `encoding`). As with the `convert` method, this method should be used to 
+    name on the `markdown.markdownFromFile` function ([`input`](#input), 
+    [`output`](#output), and [`encoding`](#encoding)). As with the 
+    [`convert`](#convert) method, this method should be used to 
     process multiple files without creating a new instance of the class for 
     each document. State may need to be `reset` between each call to 
     `convertFile` as is the case with `convert`.

@@ -21,16 +21,16 @@ features:
 
 * __International Input__
 
-    Python-Markdown will accept input in any language supported by Unicode 
-    including bi-directional text. In fact the test suite includes documents 
-    written in Russian and Arabic.
+    Python-Markdown will accept [input](reference.html#text) in any language 
+    supported by Unicode including bi-directional text. In fact the test suite 
+    includes documents written in Russian and Arabic.
 
 * __Middle-Word Emphasis__
 
     Python-Markdown defaults to ignoring middle-word emphasis. In other words,
     `some_long_filename.txt` will not become `some<em>long</em>filename.txt`.
     This can be switched off if desired. See the 
-    [Library Reference](reference.html) for details.
+    [Library Reference](reference.html#smart_emphasis) for details.
 
 * __Extensions__
 
@@ -41,13 +41,15 @@ features:
 
 * __Output Formats__
 
-    Python-Markdown can output documents in HTML4, XHTML and HTML5.
+    Python-Markdown can output documents in HTML4, XHTML and HTML5. See the
+    [Library Reference](reference.html#output_format) for details.
 
 * __"Safe Mode"__
 
     When using Python-Markdown to parse input from untrusted users on the web,
     the handling of raw HTML can be controlled in various ways to prevent 
-    harmful code from being injected into your site.
+    harmful code from being injected into your site. See the
+    [Library Reference](reference.html#safe_mode) for details.
 
 * __Command Line Interface__
 

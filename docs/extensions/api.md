@@ -7,9 +7,6 @@ next_url:   ../test_suite.html
 Writing Extensions for Python-Markdown
 ======================================
 
-Overview
---------
-
 Python-Markdown includes an API for extension writers to plug their own 
 custom functionality and/or syntax into the parser. There are preprocessors
 which allow you to alter the source before it is passed to the parser, 
@@ -25,20 +22,8 @@ Additionally, reading the source of some [Available Extensions][] may be
 helpful. For example, the [Footnotes][] extension uses most of the features 
 documented here.
 
-* [Preprocessors][]
-* [InlinePatterns][]
-* [Treeprocessors][] 
-* [Postprocessors][]
-* [BlockParser][]
-* [Working with the ElementTree][]
-* [Integrating your code into Markdown][]
-    * [extendMarkdown][]
-    * [OrderedDict][]
-    * [registerExtension][]
-    * [Config Settings][]
-    * [makeExtension][]
-
-<h3 id="preprocessors">Preprocessors</h3>
+Preprocessors {: #preprocessors }
+---------------------------------
 
 Preprocessors munge the source text before it is passed into the Markdown 
 core. This is an excellent place to clean up bad syntax, extract things the 
@@ -65,7 +50,8 @@ A pseudo example:
                     new_lines.append(line)
             return new_lines
 
-<h3 id="inlinepatterns">Inline Patterns</h3>
+Inline Patterns {: #inlinepatterns }
+------------------------------------
 
 Inline Patterns implement the inline HTML element syntax for Markdown such as
 ``*emphasis*`` or ``[links](http://example.com)``. Pattern objects should be 
@@ -140,7 +126,8 @@ or use as well. Read through the source and see if there is anything you can
 use. You might even get a few ideas for different approaches to your specific
 situation.
 
-<h3 id="treeprocessors">Treeprocessors</h3>
+Treeprocessors {: #treeprocessors }
+-----------------------------------
 
 Treeprocessors manipulate an ElemenTree object after it has passed through the
 core BlockParser. This is where additional manipulation of the tree takes
@@ -163,7 +150,8 @@ A pseudo example:
 For specifics on manipulating the ElementTree, see 
 [Working with the ElementTree][] below.
 
-<h3 id="postprocessors">Postprocessors</h3>
+Postprocessors {: #postprocessors }
+-----------------------------------
 
 Postprocessors manipulate the document after the ElementTree has been 
 serialized into a string. Postprocessors should be used to work with the
@@ -183,7 +171,8 @@ contents to a document:
         def run(self, text):
             return MYMARKERRE.sub(MyToc, text)
 
-<h3 id="blockparser">BlockParser</h3>
+BlockParser {: #blockparser }
+-----------------------------
 
 Sometimes, pre/tree/postprocessors and Inline Patterns aren't going to do what 
 you need. Perhaps you want a new type of block type that needs to be integrated 
@@ -309,7 +298,8 @@ the ``BlockParser``. The new class would have to provide the same public API.
 However, be aware that other extensions may expect the core parser provided
 and will not work with such a drastically different parser.
 
-<h3 id="working_with_et">Working with the ElementTree</h3>
+Working with the ElementTree {: #working_with_et }
+--------------------------------------------------
 
 As mentioned, the Markdown parser converts a source document to an 
 [ElementTree][] object before serializing that back to Unicode text. 
@@ -363,7 +353,8 @@ For more information about working with ElementTree see the ElementTree
 [Documentation](http://effbot.org/zone/element-index.htm) 
 ([Python Docs](http://docs.python.org/lib/module-xml.etree.ElementTree.html)).
 
-<h3 id="integrating_into_markdown">Integrating Your Code Into Markdown</h3>
+Integrating Your Code Into Markdown {: #integrating_into_markdown }
+-------------------------------------------------------------------
 
 Once you have the various pieces of your extension built, you need to tell 
 Markdown about them and ensure that they are run in the proper sequence. 
@@ -383,7 +374,7 @@ instances of your processors and patterns into the appropriate location in an
 OrderedDict, remove a built-in instance, or replace a built-in instance with 
 your own.
 
-<h4 id="extendmarkdown">extendMarkdown</h4>
+### extendMarkdown {: #extendmarkdown }
 
 The ``extendMarkdown`` method of a ``markdown.extensions.Extension`` class 
 accepts two arguments:
@@ -433,7 +424,7 @@ A simple example:
             # Insert instance of 'mypattern' before 'references' pattern
             md.inlinePatterns.add('mypattern', MyPattern(md), '<references')
 
-<h4 id="ordereddict">OrderedDict</h4>
+### OrderedDict {: #ordereddict }
 
 An OrderedDict is a dictionary like object that retains the order of it's
 items. The items are ordered in the order in which they were appended to
@@ -518,7 +509,7 @@ To change the location of an existing item:
 
     t.link('somekey', '<otherkey')
 
-<h4 id="registerextension">registerExtension</h4>
+### registerExtension {: #registerextension }
 
 Some extensions may need to have their state reset between multiple runs of the
 Markdown class. For example, consider the following use of the [Footnotes][] 
@@ -550,7 +541,7 @@ note that ``reset`` will be called on each registered extension after it is
 initialized the first time. Keep that in mind when over-riding the extension's
 ``reset`` method.
 
-<h4 id="configsettings">Config Settings</h4>
+### Config Settings {: #configsettings }
 
 If an extension uses any parameters that the user may want to change,
 those parameters should be stored in ``self.config`` of your 
@@ -569,7 +560,7 @@ values, and should be converted at run time. For example:
 
     i = int(self.getConfig("SOME_PARAM"))
 
-<h4 id="makeextension">makeExtension</h4>
+### makeExtension {: #makeextension }
 
 Each extension should ideally be placed in its own module starting
 with the  ``mdx_`` prefix (e.g. ``mdx_footnotes.py``).  The module must
