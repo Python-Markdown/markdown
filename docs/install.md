@@ -2,7 +2,7 @@ title:      Installation
 prev_title: Summary
 prev_url:   index.html
 next_title: Library Reference
-next_url:   using_as_module.html
+next_url:   reference.html
 
 Installing Python-Markdown
 ==========================

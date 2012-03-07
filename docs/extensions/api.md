@@ -1,8 +1,8 @@
 title:      Extensions API
 prev_title: Wikilinks Extension
-prev_url:   extensions/wikilinks.html
+prev_url:   wikilinks.html
 next_title: Test Suite
-next_url:   test_suite.html
+next_url:   ../test_suite.html
 
 Writing Extensions for Python-Markdown
 ======================================
@@ -616,6 +616,6 @@ than one residing in a module.
 [Config Settings]: #configsettings
 [makeExtension]: #makeextension
 [ElementTree]: http://effbot.org/zone/element-index.htm
-[Available Extensions]: extensions/
-[Footnotes]: extensions/footnotes.html
-[Definition Lists]: extensions/definition_lists.html
+[Available Extensions]: index.html 
+[Footnotes]: footnotes.html
+[Definition Lists]: definition_lists.html

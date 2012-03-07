@@ -2,7 +2,7 @@ title:      Wikilinks Extension
 prev_title: Table of Contents Extension
 prev_url:   toc.html
 next_title: Extension API 
-next_url:   ../writing_extensions.html
+next_url:   api.html
 
 WikiLinks
 =========

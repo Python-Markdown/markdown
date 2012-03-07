@@ -1,6 +1,6 @@
 title: Command Line
 prev_title: Library Reference
-prev_url:   using_as_module.html
+prev_url:   reference.html
 next_title: Extensions
 next_url:   extensions/index.html
 
@@ -97,8 +97,8 @@ Using Extensions
 ----------------
 
 For an extension to be run from the command line it must be provided in a module
-which should be in your python path (see [writing_extensions](writing_extensions.html)
-for details). It can then be invoked by the name of that module:
+on your python path (see the [Extension API](extensions/api.html) for details).
+It can then be invoked by the name of that module:
 
     $ markdown_py -x footnotes text_with_footnotes.txt > output.html
 

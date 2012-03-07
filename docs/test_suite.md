@@ -1,6 +1,6 @@
 title:      Test Suite
 prev_title: Extension API
-prev_url:   writing_extensions.html
+prev_url:   extensions/api.html
 
 # Test Suite
 

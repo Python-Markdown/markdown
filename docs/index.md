@@ -30,13 +30,13 @@ features:
     Python-Markdown defaults to ignoring middle-word emphasis. In other words,
     `some_long_filename.txt` will not become `some<em>long</em>filename.txt`.
     This can be switched off if desired. See the 
-    [Library Reference](using_as_module.html) for details.
+    [Library Reference](reference.html) for details.
 
 * __Extensions__
 
-    Various [extensions](extensions/) are provided (including 
+    Various [extensions](extensions/index.html) are provided (including 
     [extra](extensions/extra.html)) to expand the base syntax. Additionally, 
-    a public [Extension API](writing_extensions.html) is available to write 
+    a public [Extension API](extensions/api.html) is available to write 
     your own extensions.
 
 * __Output Formats__
@@ -52,7 +52,7 @@ features:
 * __Command Line Interface__
 
     In addition to being a Python Library, a 
-    [command line script](command_line.html) is available for your convenience.
+    [command line script](cli.html) is available for your convenience.
 
 Support
 -------

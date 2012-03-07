@@ -1,6 +1,6 @@
 title:      Extensions
 prev_title: Command Line
-prev_url:   ../command_line.html
+prev_url:   ../cli.html
 next_title: Extra Extension
 next_url:   extra.html
 
@@ -13,14 +13,12 @@ to change and/or extend the behavior of the parser without having to edit the
 actual source files. 
 
 To use an extension, pass it's name to markdown with the `extensions` keyword.
-See [Using Markdown as a Python Library](../using_as_module.html) for more 
-details. 
+See the [Library Reference](../reference.html) for more details. 
 
     markdown.markdown(some_text, extensions=['extra', 'nl2br'])
 
-From the command line, specify an extension with the `-x` option.
-See [Using Python-Markdown on the Command Line](../command_line.html) or use the
-`--help` option for more details.
+From the command line, specify an extension with the `-x` option. See the 
+[Command Line docs](../cli.html) or use the `--help` option for more details.
 
     python -m markdown -x extra input.txt > output.html
 
@@ -56,10 +54,10 @@ Third Party Extensions
 
 Various individuals and/or organizations have developed extensions which they
 have made available to the public.  A [list of third party 
-extensions](http://freewisdom.org/projects/python-markdown/Available_Extensions)
+extensions](https://github.com/waylan/Python-Markdown/wiki/Third-Party-Extensions)
 is maintained on the wiki for your convenience. The Python-Markdown team 
 offers no official support for these extensions. Please see the developer of 
 each extension for support.
 
 If you would like to write your own extensions, see the 
-[Extensions API](../writing_extensions.html) for details.
+[Extensions API](api.html) for details.

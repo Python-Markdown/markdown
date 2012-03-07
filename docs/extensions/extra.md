@@ -45,4 +45,4 @@ of those extensions are not part of PHP Markdown Extra, and
 therefore, not part of Python-Markdown Extra. If you really would 
 like Extra to include additional extensions, we suggest creating 
 your own clone of Extra under a different name 
-(see [Writing Extensions](../writing_extensions.html)).  
+(see the [Extension API](api.html)).  

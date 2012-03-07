@@ -2,7 +2,7 @@ title:      Library Reference
 prev_title: Installation
 prev_url:   install.html
 next_title: Command Line
-next_url:   command_line.html
+next_url:   cli.html
 
 
 Using Markdown as a Python Library
@@ -57,7 +57,8 @@ The following options are available on the `markdown.markdown` function:
     Python-Markdown provides an API for third parties to write extensions to
     the parser adding their own additions or changes to the syntax. A few
     commonly used extensions are shipped with the markdown library. See
-    the [extension documentation](extensions) for a list of available extensions.
+    the [extension documentation](extensions/index.html) for a list of 
+    available extensions.
 
     The list of extensions may contain instances of extensions or stings of
     extension names. If an extension name is provided as a string, the
