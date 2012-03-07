@@ -87,7 +87,7 @@ Extension and the keywords they are known to support:
 * [HeaderId](header_id.html)
     * `header_level`
     * `header_forceid`
-* [[WikiLinks](wikilinks.html)
+* [WikiLinks](wikilinks.html)
     * `wiki_base_url`
     * `wiki_end_url`
     * `wiki_html_class`

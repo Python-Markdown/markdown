@@ -5,7 +5,7 @@ next_title: Fenced Code Block Extension
 next_url:   fenced_code_blocks.html
 
 Definition Lists
-----------------
+================
 
 Summary
 -------

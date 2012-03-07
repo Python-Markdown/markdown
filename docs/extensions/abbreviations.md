@@ -5,7 +5,7 @@ next_title: Attribute List Extension
 next_url:   attr_list.html
 
 Abbreviations
--------------
+=============
 
 Summary
 -------

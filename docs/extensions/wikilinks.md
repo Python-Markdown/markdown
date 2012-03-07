@@ -125,7 +125,7 @@ Some may prefer the more complex format when calling the `Markdown` class direct
 Using with Meta-Data
 --------------------
 
-The WikiLink Extension also supports the [Meta-Data](meta_date.html) Extension.
+The WikiLink Extension also supports the [Meta-Data](meta_data.html) Extension.
 Please see the documentation for that extension for specifics. The supported 
 meta-data keywords are:
 

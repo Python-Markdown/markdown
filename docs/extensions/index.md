@@ -13,7 +13,7 @@ to change and/or extend the behavior of the parser without having to edit the
 actual source files. 
 
 To use an extension, pass it's name to markdown with the `extensions` keyword.
-See the [Library Reference](../reference.html) for more details. 
+See the [Library Reference](../reference.html#extensions) for more details. 
 
     markdown.markdown(some_text, extensions=['extra', 'nl2br'])
 

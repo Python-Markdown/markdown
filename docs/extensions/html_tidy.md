@@ -15,7 +15,7 @@ This extension is available in the standard Markdown library since version 2.0.
 [HTML Tidy]: http://tidy.sourceforge.net/
 [uTidylib]: http://utidylib.berlios.de/
 
-Note than any Tidy [options][] can be passed in as extension configs. So, 
+Note than any Tidy [options][] can be passed in as [extension configs][]. So, 
 for example, to output HTML rather than XHTML, set ``output_xhtml=0``. To
 indent the output, set ``indent=auto`` and to have Tidy wrap the output in 
 ``<html>`` and ``<body>`` tags, set ``show_body_only=0``. See Tidy's 
@@ -24,6 +24,7 @@ most closely match Markdowns defaults with the exception that you get much
 better pretty-printing.
 
 [options]: http://tidy.sourceforge.net/docs/quickref.html
+[extension configs]: ../reference.html#extension_configs
 
 Note that options set in this extension will override most any other settings
 passed on to Markdown (such as "output_format"). Unlike Markdown, this extension

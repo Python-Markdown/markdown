@@ -5,13 +5,14 @@ next_title: CodeHilite Extension
 next_url:   code_hilite.html
 
 Smart_Strong
-------------
+============
 
 Summary
+-------
 
 The Markdown Smart_Strong Extension adds smarter handling of double underscores
-within words. This does for double underscores what 'smart_emphasis' does for 
-single underscores.
+within words. This does for double underscores what 
+[smart_emphasis](../reference.html#smart_emphasis) does for single underscores.
 
 The Smart_Strong Extension is included in the standard Markdown library.
 

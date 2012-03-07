@@ -69,7 +69,7 @@ The following options are available on the `markdown.markdown` function:
     `extensions=['extra']` will first look for the module 
     `markdown.extensions.extra`, then a module named `mdx_extra`. 
 
-* __`extension-configs`__{: #extensions_configs }: A dictionary of 
+* __`extension-configs`__{: #extension_configs }: A dictionary of 
   configuration settings for extensions.
 
     The dictionary must be of the following format:

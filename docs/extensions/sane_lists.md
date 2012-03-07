@@ -5,7 +5,7 @@ next_title: Table of Contents Extension
 next_url:   toc.html
 
 Sane Lists
-----------
+==========
 
 Summary
 -------
