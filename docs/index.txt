@@ -1,7 +1,7 @@
 next_url:   install.html
 next_title: Installation
-prev_title: Authors
-prev_url:   authors.html
+prev_title: Table of Contents
+prev_url:   siteindex.html
 
 Python-Markdown
 ===============

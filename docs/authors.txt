@@ -1,8 +1,8 @@
 title:      Authors
 prev_title: Release Notes for v2.0
 prev_url:   release-2.0.html
-next_title: Summary
-next_url:   index.html
+next_title: Table of Contents
+next_url:   siteindex.html
 
 Primary Authors
 ===============

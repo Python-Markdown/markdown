@@ -21,8 +21,8 @@ or
 
 That's it! Your ready to [use](reference.html) Python-Markdown. Enjoy!
 
-Installing on Windows
----------------------
+Installing on Windows {: #windows }
+-----------------------------------
 
 Download the Windows installer (.exe) from 
 [PyPI](http://pypi.python.org/pypi/Markdown)
@@ -41,8 +41,8 @@ the Scripts directory is `C:\PythonXX\Scripts\` (were "XX" is the Python version
 number, i.e., "27"). Adjust the path according to your system and add to your 
 system path.
 
-Installing on *nix Systems
---------------------------
+Installing on *nix Systems {: #linux }
+--------------------------------------
 
 From the command line do the following (where 2.x is the version number):
 
@@ -53,8 +53,8 @@ From the command line do the following (where 2.x is the version number):
 
 See [PyPI](http://pypi.python.org/pypi/Markdown) for all available versions.
 
-Using the Git Repository
-------------------------
+Using the Git Repository {: #git }
+----------------------------------
 
 If you're the type that likes to live on the edge, you may want to keep up with 
 the latest additions and bug fixes in the repository between releases.

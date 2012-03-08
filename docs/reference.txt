@@ -210,7 +210,7 @@ as on the [`markdown.markdown`](#markdown) function, except that the class does
 **not** accept a source text string on initialization. Rather, the source text
 string must be passed to one of two instance methods:
 
-* `Markdown.convert(source)` {: #convert }
+* `Markdown.convert(source)`{: #convert }
 
     The `source` text must meet the same requirements as the [`text`](#text) 
     argument of the [`markdown.markdown`](#markdown) function.
@@ -233,7 +233,7 @@ string must be passed to one of two instance methods:
     
         html3 = md.reset().convert(text3)
 
-* `Markdown.convertFile(**kwargs)` {: #convertFile }
+* `Markdown.convertFile(**kwargs)`{: #convertFile }
 
     The arguments of this method are identical to the arguments of the same
     name on the `markdown.markdownFromFile` function ([`input`](#input), 
