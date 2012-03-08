@@ -7,10 +7,10 @@ though there are a few known issues. See [Features][] for information
 on what exactly is supported and what is not. Additional features are 
 supported by the [Available Extensions][].
 
-[Python-Markdown]: http://freewisdom.org/projects/python-markdown
+[Python-Markdown]: http://packages.python.org/Markdown/
 [Markdown]: http://daringfireball.net/projects/markdown/
-[Features]: http://www.freewisdom.org/projects/python-markdown/Features
-[Available Extensions]: http://www.freewisdom.org/projects/python-markdown/Available_Extensions
+[Features]: http://packages.python.org/Markdown/index.html#Features
+[Available Extensions]: http://packages.python.org/Markdown/extensions/index.html
 
 
 Documentation
@@ -18,7 +18,7 @@ Documentation
 
 Installation and usage documentation is available in the `docs/` directory
 of the distribution and on the project website at 
-<http://freewisdom.org/projects/python-markdown>.
+<http://packages.python.org/Markdown/>.
 
 Support
 -------
