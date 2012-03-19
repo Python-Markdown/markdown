@@ -214,6 +214,14 @@ class TestOrderedDict(unittest.TestCase):
                     [('first', 'This'), ('fourth', 'self'),
                     ('third', 'a'), ('fifth', 'test')])
 
+    def textBadLink(self):
+        """ Test OrderedDict change order with bad location. """
+        self.assertRaises(ValueError, self.odict.link('fourth', '<bad'))
+        # Check for data integrity ("fourth" wasn't deleted).'
+        self.assertEqual(self.odict.items(),
+                    [('first', 'This'), ('third', 'a'), 
+                    ('fourth', 'self'), ('fifth', 'test')])
+
 class TestErrors(unittest.TestCase):
     """ Test Error Reporting. """
 

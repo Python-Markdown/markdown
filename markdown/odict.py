@@ -150,13 +150,13 @@ class OrderedDict(dict):
         """ Change location of an existing item. """
         n = self.keyOrder.index(key)
         del self.keyOrder[n]
-        i = self.index_for_location(location)
         try:
+            i = self.index_for_location(location)
             if i is not None:
                 self.keyOrder.insert(i, key)
             else:
                 self.keyOrder.append(key)
-        except Error:
+        except Exception as e:
             # restore to prevent data loss and reraise
             self.keyOrder.insert(n, key)
-            raise Error
+            raise e
