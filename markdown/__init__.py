@@ -86,7 +86,7 @@ class Markdown:
            If they are of type string, the module mdx_name.py will be loaded.
            If they are a subclass of markdown.Extension, they will be used
            as-is.
-        * extension-configs: Configuration settingis for extensions.
+        * extension_configs: Configuration settingis for extensions.
         * output_format: Format of output. Supported formats are:
             * "xhtml1": Outputs XHTML 1.x. Default.
             * "xhtml5": Outputs XHTML style tags of HTML 5
