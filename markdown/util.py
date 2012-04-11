@@ -17,7 +17,7 @@ Constants you might want to modify
 
 BLOCK_LEVEL_ELEMENTS = re.compile("^(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
                                   "|script|noscript|form|fieldset|iframe|math"
-                                  "|ins|del|hr|hr/|style|li|dt|dd|thead|tbody"
+                                  "|hr|hr/|style|li|dt|dd|thead|tbody"
                                   "|tr|th|td|section|footer|header|group|figure"
                                   "|figcaption|aside|article|canvas|output"
                                   "|progress|video)$")
