@@ -122,6 +122,10 @@ class Markdown:
             setattr(self, option, kwargs.get(option, default)) 
 
         self.safeMode = kwargs.get('safe_mode', False)
+        if self.safeMode and not kwargs.has_key('enable_attributes'):
+            # Disable attributes in safeMode when not explicitly set
+            self.enable_attributes = False
+
         self.registeredExtensions = []
         self.docType = ""
         self.stripTopLevelTags = True
