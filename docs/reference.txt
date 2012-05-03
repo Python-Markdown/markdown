@@ -136,9 +136,8 @@ The following options are available on the `markdown.markdown` function:
 
             <p>Foo &lt;b&gt;bar&lt;/b&gt;.</p>
 
-    Note that "safe_mode" does not alter the `enable_attributes` option, which 
-    could allow someone to inject javascript (i.e., `{@onclick=alert(1)}`). You 
-    may also want to set `enable_attributes=False` when using "safe_mode".
+    Note that "safe_mode" also alters the default value for the 
+    [`enable_attributes`](#enable_attributes) option.
 
 * __`html_replacement_text`__{: #html_replacement_text }: Text used when 
   safe_mode is set to `replace`. Defaults to `[HTML_REMOVED]`.
@@ -146,7 +145,13 @@ The following options are available on the `markdown.markdown` function:
 * __`tab_length`__{: #tab_length }: Length of tabs in the source. Default: 4
 
 * __`enable_attributes`__{: #enable_attributes}: Enable the conversion of 
-  attributes. Default: True
+  attributes. Defaults to `True`, unless [`safe_mode`](#safe_mode) is enabled, 
+  in which case the default is `False`.
+
+    Note that `safe_mode` only overrides the default. If `enable_attributes` 
+    is explicitly set, the explicit value is used regardless of `safe_mode`.
+    However, this could potentially allow an untrusted user to inject
+    JavaScript into your documents.
 
 * __`smart_emphasis`__{: #smart_emphasis }: Treat `_connected_words_` 
   intelligently Default: True
