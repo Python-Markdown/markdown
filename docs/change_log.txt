@@ -1,8 +1,8 @@
 title:      Change Log
 prev_title: Test Suite
 prev_url:   test_suite.html
-next_title: Release Notes for v2.1.1
-next_url:   release-2.1.1.html
+next_title: Release Notes for v2.2.0
+next_url:   release-2.2.0.html
 
 Python-Markdown Changelog
 =========================
@@ -28,8 +28,8 @@ Jan 2009: Added HTML 4 output as an option (thanks Eric Abrahamsen)
 Nov 2008: Added Definistion List ext. Replaced old core with BlockProcessors.
 Broken up into multiple files.
 
-Oct 2008: Changed logging behavior to work better with other systems. 
-Refactored tree tarversing. Added treap implementation, then replaced with 
+Oct 2008: Changed logging behavior to work better with other systems.
+Refactored tree tarversing. Added treap implementation, then replaced with
 OrderedDEict. Renamed various processors to better reflect what they actually
 do. Refactored footnote ext to match php Extra's output.
 
@@ -41,19 +41,19 @@ August 18 2008: Reorganized directory structure. Added a 'docs' dir
 and moved all extensions into a 'markdown-extensions' package.
 Added additional documentation and a few bug fixes. (v2.0-beta)
 
-August 4 2008: Updated included extensions to ElementTree. Added a 
+August 4 2008: Updated included extensions to ElementTree. Added a
 seperate commanline script. (v2.0-alpha)
 
 July 2008: Switched from home-grown NanoDOM to ElementTree and
 various related bugs (thanks Artem Yunusov).
 
-June 2008: Fixed issues with nested inline patterns and cleaned 
+June 2008: Fixed issues with nested inline patterns and cleaned
 up testing framework (thanks Artem Yunusov).
 
 May 2008: Added a number of additional extensions to the
 distribution and other minor changes. Moved repo to git from svn.
 
-Mar 2008: Refactored extension api to accept either an 
+Mar 2008: Refactored extension api to accept either an
 extension name (as a string) or an instance of an extension
 (Thanks David Wolever). Fixed various bugs and added doc strings.
 
@@ -74,27 +74,27 @@ and markdown as per list discussion. Clean up in prep for 1.7.
 Nov 29, 2007: Added support for images inside links. Also fixed
 a few bugs in the footnote extension.
 
-Nov 19, 2007: `message` now uses python's logging module. Also removed 
-limit imposed by recursion in `_process_section()`. You can now parse as 
+Nov 19, 2007: `message` now uses python's logging module. Also removed
+limit imposed by recursion in `_process_section()`. You can now parse as
 long of a document as your memory can handle.
 
-Nov 5, 2007: Moved safe_mode code to a textPostprocessor and added 
+Nov 5, 2007: Moved safe_mode code to a textPostprocessor and added
 escaping option.
 
 Nov 3, 2007: Fixed convert method to accept empty strings.
 
-Oct 30, 2007: Fixed BOM removal (thanks Malcolm Tredinnick). Fixed 
+Oct 30, 2007: Fixed BOM removal (thanks Malcolm Tredinnick). Fixed
 infinite loop in bracket regex for inline links.
 
-Oct 11, 2007: LineBreaks is now an inlinePattern. Fixed HR in 
+Oct 11, 2007: LineBreaks is now an inlinePattern. Fixed HR in
 blockquotes. Refactored _processSection method (see tracker #1793419).
 
 Oct 9, 2007: Added textPreprocessor (from 1.6b).
 
-Oct 8, 2008: Fixed Lazy Blockquote. Fixed code block on first line. 
+Oct 8, 2008: Fixed Lazy Blockquote. Fixed code block on first line.
 Fixed empty inline image link.
 
-Oct 7, 2007: Limit recursion on inlinePatterns. Added a 'safe' tag 
+Oct 7, 2007: Limit recursion on inlinePatterns. Added a 'safe' tag
 to htmlStash.
 
 March 18, 2007: Fixed or merged a bunch of minor bugs, including
@@ -112,7 +112,7 @@ with ampersand normalization and html blocks.
 July 10, 2006: Switched to using optparse.  Added proper support for
 unicode.
 
-July 9, 2006: Fixed the `<!--@address.com>` problem (Tracker #1501354).  
+July 9, 2006: Fixed the `<!--@address.com>` problem (Tracker #1501354).
 
 May 18, 2006: Stopped catching unquoted titles in reference links.
 Stopped creating blank headers.
