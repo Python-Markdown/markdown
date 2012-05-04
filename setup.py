@@ -16,12 +16,12 @@ except ImportError:
         raise ImportError("build_py_2to3 is required to build in Python 3.x.")
     from distutils.command.build_py import build_py
 
-version = '2.1.1'
+version = '2.2.0'
 
-# The command line script name.  Currently set to "markdown_py" so as not to 
+# The command line script name.  Currently set to "markdown_py" so as not to
 # conflict with the perl implimentation (which uses "markdown").  We can't use
 # "markdown.py" as the default config on some systems will cause the script to
-# try to import itself rather than the library which will raise an error. 
+# try to import itself rather than the library which will raise an error.
 SCRIPT_NAME = 'markdown_py'
 
 class md_install_scripts(install_scripts):
@@ -63,8 +63,8 @@ class build_docs(Command):
         self.sitemap = ''
 
     def finalize_options(self):
-        self.set_undefined_options('build', 
-                                    ('build_base', 'build_base'), 
+        self.set_undefined_options('build',
+                                    ('build_base', 'build_base'),
                                     ('force', 'force'))
         self.docs = self._get_docs()
 
@@ -117,7 +117,7 @@ class build_docs(Command):
         return c
 
     def run(self):
-        # Before importing markdown, tweak sys.path to import from the 
+        # Before importing markdown, tweak sys.path to import from the
         # build directory (2to3 might have run on the library).
         bld_cmd = self.get_finalized_command("build")
         sys.path.insert(0, bld_cmd.build_lib)
@@ -176,7 +176,7 @@ data = dict(
     license =       'BSD License',
     packages =      ['markdown', 'markdown.extensions'],
     scripts =       ['bin/%s' % SCRIPT_NAME],
-    cmdclass =      {'install_scripts': md_install_scripts, 
+    cmdclass =      {'install_scripts': md_install_scripts,
                      'build_py': build_py,
                      'build_docs': build_docs,
                      'build': md_build},
@@ -200,7 +200,7 @@ data = dict(
                      'Topic :: Text Processing :: Filters',
                      'Topic :: Text Processing :: Markup :: HTML',
                     ],
-    ) 
+    )
 
 if sys.version[:3] < '2.5':
     data['install_requires'] = ['elementtree']
