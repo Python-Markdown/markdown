@@ -138,7 +138,7 @@ class CodeHilite:
         fl = lines.pop(0)
 
         c = re.compile(r'''
-            (?:(?:::+)|(?P<shebang>[#]!))	# Shebang or 2 or more colons.
+            (?:(?:^::+)|(?P<shebang>^[#]!))	# Shebang or 2 or more colons.
             (?P<path>(?:/\w+)*[/ ])?        # Zero or 1 path
             (?P<lang>[\w+-]*)               # The language
             ''',  re.VERBOSE)
