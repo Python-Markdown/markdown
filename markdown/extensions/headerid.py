@@ -97,7 +97,7 @@ def slugify(value, separator):
 
 def unique(id, ids):
     """ Ensure id is unique in set of ids. Append '_1', '_2'... if not """
-    while id in ids:
+    while id in ids or not id:
         m = IDCOUNT_RE.match(id)
         if m:
             id = '%s_%d'% (m.group(1), int(m.group(2))+1)
