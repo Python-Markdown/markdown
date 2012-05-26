@@ -17,17 +17,29 @@ This extension adds Fenced Code Blocks to Python-Markdown.
     >>> html = markdown.markdown(text, extensions=['fenced_code'])
     >>> print html
     <p>A paragraph before a fenced code block:</p>
-    <pre><code>Fenced code block
-    </code></pre>
+    <pre>Fenced code block
+    </pre>
+
+Backticks, as in Github Flavored Markdown, are also supported:
+
+    >>> text = '''
+    ... `````
+    ... # Arbitrary code
+    ... ~~~~~ # these tildes will not close the block
+    ... `````'''
+    >>> print markdown.markdown(text, extensions=['fenced_code'])
+    <pre># Arbitrary code
+    ~~~~~ # these tildes will not close the block
+    </pre>
 
 Works with safe_mode also (we check this because we are using the HtmlStash):
 
     >>> print markdown.markdown(text, extensions=['fenced_code'], safe_mode='replace')
     <p>A paragraph before a fenced code block:</p>
-    <pre><code>Fenced code block
-    </code></pre>
+    <pre>Fenced code block
+    </pre>
 
-Include tilde's in a code block and wrap with blank lines:
+Include tildes in a code block and wrap with blank lines:
 
     >>> text = '''
     ... ~~~~~~~~
@@ -35,9 +47,9 @@ Include tilde's in a code block and wrap with blank lines:
     ... ~~~~
     ... ~~~~~~~~'''
     >>> print markdown.markdown(text, extensions=['fenced_code'])
-    <pre><code>
+    <pre>
     ~~~~
-    </code></pre>
+    </pre>
 
 Language tags:
 
@@ -46,20 +58,59 @@ Language tags:
     ... # Some python code
     ... ~~~~'''
     >>> print markdown.markdown(text, extensions=['fenced_code'])
-    <pre><code class="python"># Some python code
-    </code></pre>
+    <pre class="python"># Some python code
+    </pre>
 
-Optionally backticks instead of tildes as per how github's code block markdown is identified:
+Number lines:
 
     >>> text = '''
-    ... `````
-    ... # Arbitrary code
-    ... ~~~~~ # these tildes will not close the block
-    ... `````'''
+    ... ~~~~{.python;number}
+    ... # Some lines
+    ...   # of python
+    ...
+    ...   # code
+    ... ~~~~'''
     >>> print markdown.markdown(text, extensions=['fenced_code'])
-    <pre><code># Arbitrary code
-    ~~~~~ # these tildes will not close the block
-    </code></pre>
+    <pre class="python">1  # Some lines
+    2    # of python
+    3  
+    4    # code
+    </pre>
+
+Number lines, except blank ones:
+
+    >>> text = '''
+    ... ~~~~{;number;skip}
+    ... # Some lines
+    ... #  of python
+    ... 
+    ... #  code
+    ... ~~~~'''
+    >>> print markdown.markdown(text, extensions=['fenced_code'])
+    <pre>1  # Some lines
+    2    # of python
+      
+    3    # code
+    </pre>
+
+Number lines, but don't start at "1":
+
+    >>> text = '''
+    ... ~~~~{.python;number;98}
+    ... # Some lines
+    ...   # of python
+    ...
+    ...   # code
+    ... ~~~~'''
+    >>> print markdown.markdown(text, extensions=['fenced_code'])
+    <pre class="python">098  # Some lines
+    099    # of python
+    100  
+    101    # code
+    </pre>
+
+If 'number', 'skip', and the start-from number are all used, they must
+be specified in that order.
 
 Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
 
@@ -81,10 +132,11 @@ from markdown.extensions.codehilite import CodeHilite, CodeHiliteExtension
 
 # Global vars
 FENCED_BLOCK_RE = re.compile( \
-    r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{?\.?(?P<lang>[a-zA-Z0-9_-]*)\}?)?[ ]*\n(?P<code>.*?)(?<=\n)(?P=fence)[ ]*$',
+    r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{\.?(?P<lang>[a-zA-Z0-9_-]+)?(?P<number>;number)?(?P<nological>;nological)?(?P<skip>;skip)?;?(?P<start>\d+)?\})?[ ]*\n(?P<code>.*?)(?<=\n)(?P=fence)[ ]*$',
     re.MULTILINE|re.DOTALL
     )
-CODE_WRAP = '<pre><code%s>%s</code></pre>'
+LINECONT_RE = re.compile(r'[\\,]\s*$')
+CODE_WRAP = '<pre%s>%s</pre>'
 LANG_TAG = ' class="%s"'
 
 class FencedCodeExtension(markdown.Extension):
@@ -123,6 +175,54 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
             m = FENCED_BLOCK_RE.search(text)
             if m:
                 lang = ''
+
+                if m.group('number'):
+                    # prep the fence for next pass
+                    if m.group('lang'):
+                        fence = "```{." + "{}".format(m.group('lang')) + "}"
+                    else:
+                        fence = "```"
+                    # set flag for line continuation
+                    linecont = True
+                    if m.group('nological'): linecont = False
+
+                    # split code; pad with numbers
+                    i = 1
+                    if m.group('start'): i = int(m.group('start'))
+                    code = m.group('code').split("\n")
+                    code.pop() # yank trailing newline; add it back after processing
+                    zpad = len(str(len(code) + i))
+                    linecont_on = False
+                    for j in range(len(code)):
+                        # don't number blank lines if skip is on
+                        if m.group('skip') and code[j] == "": continue
+                        if linecont:
+                            if LINECONT_RE.search(code[j]):
+                                if linecont_on:
+                                    # linecont and matched and continuation active: no number; space pad; continue
+                                    code[j] = "{0: >{pad}}".format('', pad=(zpad+2)) + code[j]
+                                    continue
+                                else:
+                                    # linecont and matched: number, engage continuation
+                                    linecont_on = True
+                                    code[j] = "{:0{pad}}  {}".format(i, code[j], pad=zpad)
+                            elif linecont_on:
+                                # linecont and no match and continuation: end continuation; number; continue
+                                linecont_on = False
+                                code[j] = "{0: >{pad}}".format('', pad=(zpad+2)) + code[j]
+                                continue
+                            else:
+                                # linecont and no match: number
+                                code[j] = "{:0{pad}}  {}".format(i, code[j], pad=zpad)
+                        else:
+                            # logical mode is off: number
+                            code[j] = "{:0{pad}}  {}".format(i, code[j], pad=zpad)
+                        i = i + 1
+
+                    # put it all back together with fences; reprocess this block
+                    text = '%s\n%s\n%s\n```\n%s'% (text[:m.start()], fence, "\n".join(code), text[m.end():])
+                    continue
+
                 if m.group('lang'):
                     lang = LANG_TAG % m.group('lang')
 
