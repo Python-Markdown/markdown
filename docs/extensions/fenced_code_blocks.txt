@@ -18,12 +18,11 @@ This extension is included in the standard Markdown library.
 Syntax
 ------
 
-Fenced Code Blocks are defined using the syntax established in 
-[PHP Markdown Extra][php].
+Fenced Code Blocks are defined using either the syntax established in 
+[PHP Markdown Extra][php] or in [Github Flavored Markdown][gfm].
 
 [php]: http://www.michelf.com/projects/php-markdown/extra/#fenced-code-blocks
-
-Thus, the following text (taken from the above referenced PHP documentation):
+[gfm]: http://github.github.com/github-flavored-markdown/
 
     This is a paragraph introducing:
 
@@ -31,16 +30,22 @@ Thus, the following text (taken from the above referenced PHP documentation):
     a one-line code block
     ~~~~~~~~~~~~~~~~~~~~
 
+    And here's another:
+
+    ```
+    one-line code block
+    ```
+
 Fenced code blocks can have a blank line as the first  and/or last line of a 
 code block and they can also come immediately after a list item without becoming
 part of the list.
 
-In addition to PHP Extra's syntax, you can define the language of the code 
-block for use by syntax highlighters etc. The language will be assigned as a 
-class attribute of the ``<code>`` element in the output. Therefore, you should 
-define the language as you would a css class - ``.language``. For consistency 
-with other markdown syntax, the language can *optionally* be wrapped in curly 
-brackets:
+You can define the language of the code block for use by syntax
+highlighters etc. The language will be assigned as a class attribute
+of the ``<pre>`` element in the output. Therefore, you should define
+the language as you would a css class - ``.language``. For consistency
+with other markdown syntax, the language can *optionally* be wrapped
+in curly brackets:
 
     ~~~~{.python}
     # python code
@@ -52,11 +57,11 @@ brackets:
 
 The above will output:
 
-    <pre><code class="python"># python code
-    </code></pre>
+    <pre class="python"># python code
+    </pre>
     
-    <pre><code class="html">&lt;p&gt;HTML Document&lt;/p&gt;
-    </code></pre>
+    <pre class="html">&lt;p&gt;HTML Document&lt;/p&gt;
+    </pre>
 
 Usage
 -----
