@@ -132,10 +132,10 @@ from markdown.extensions.codehilite import CodeHilite, CodeHiliteExtension
 
 # Global vars
 FENCED_BLOCK_RE = re.compile( \
-    r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{\.?(?P<lang>[a-zA-Z0-9_-]+)?(?P<number>;number)?(?P<nological>;nological)?(?P<skip>;skip)?;?(?P<start>\d+)?\})?[ ]*\n(?P<code>.*?)(?<=\n)(?P=fence)[ ]*$',
+    r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{\.?(?P<lang>[a-zA-Z0-9_-]+)?;?(?P<mode>(?:lines|skipblanks|statements))?;?(?P<offset>\d+)?\})?[ ]*\n(?P<code>.*?)(?<=\n)(?P=fence)[ ]*$',
     re.MULTILINE|re.DOTALL
     )
-LINECONT_RE = re.compile(r'[\\,]\s*$')
+STMTCONT_RE = re.compile(r'[\\,]\s*$')
 CODE_WRAP = '<pre%s>%s</pre>'
 LANG_TAG = ' class="%s"'
 
@@ -176,50 +176,55 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
             if m:
                 lang = ''
 
-                if m.group('number'):
+                if m.group('mode'):
+                    import sys
+                    mode = m.group('mode')
+                    sys.stderr.write(mode + "\n")
                     # prep the fence for next pass
                     if m.group('lang'):
                         fence = "```{." + "{}".format(m.group('lang')) + "}"
                     else:
                         fence = "```"
-                    # set flag for line continuation
-                    linecont = True
-                    if m.group('nological'): linecont = False
-
-                    # split code; pad with numbers
+                    # set starting line number
                     i = 1
-                    if m.group('start'): i = int(m.group('start'))
+                    if m.group('offset'): i = int(m.group('offset'))
+                    # split code text into array
                     code = m.group('code').split("\n")
-                    code.pop() # yank trailing newline; add it back after processing
+                    # yank trailing newline; we'll add it back last thing
+                    code.pop()
+                    # pad the number of digits in the largest line number
                     zpad = len(str(len(code) + i))
-                    linecont_on = False
-                    for j in range(len(code)):
-                        # don't number blank lines if skip is on
-                        if m.group('skip') and code[j] == "": continue
-                        if linecont:
-                            if LINECONT_RE.search(code[j]):
-                                if linecont_on:
-                                    # linecont and matched and continuation active: no number; space pad; continue
-                                    code[j] = "{0: >{pad}}".format('', pad=(zpad+2)) + code[j]
-                                    continue
-                                else:
-                                    # linecont and matched: number, engage continuation
-                                    linecont_on = True
-                                    code[j] = "{:0{pad}}  {}".format(i, code[j], pad=zpad)
-                            elif linecont_on:
-                                # linecont and no match and continuation: end continuation; number; continue
-                                linecont_on = False
-                                code[j] = "{0: >{pad}}".format('', pad=(zpad+2)) + code[j]
-                                continue
-                            else:
-                                # linecont and no match: number
-                                code[j] = "{:0{pad}}  {}".format(i, code[j], pad=zpad)
-                        else:
-                            # logical mode is off: number
-                            code[j] = "{:0{pad}}  {}".format(i, code[j], pad=zpad)
-                        i = i + 1
+                    in_statement = False
 
-                    # put it all back together with fences; reprocess this block
+                    for j in range(len(code)):
+                        if mode == "statements" and STMTCONT_RE.search(code[j]):
+                            stmt_continuation = True
+                        else:
+                            stmt_continuation = False
+
+                        # ignore blank lines where appropriate
+                        if (mode == "skipblanks" or mode == "statements") and code[j] == "":
+                            continue
+
+                        if stmt_continuation is False and in_statement is False:
+                            code[j] = "{:0{pad}}  {}".format(i, code[j], pad=zpad)
+                            i = i + 1
+                        else:
+                            if stmt_continuation:
+                                if in_statement is False:
+                                    # begin statment
+                                    in_statement = True
+                                    code[j] = "{:0{pad}}  {}".format(i, code[j], pad=zpad)
+                                    i = i + 1
+                                else:
+                                    # in statement: space pad
+                                    code[j] = "{0: >{pad}}".format('', pad=(zpad+2)) + code[j]
+                            else:
+                                # not continuation but in statment: end statment
+                                in_statement = False
+                                code[j] = "{0: >{pad}}".format('', pad=(zpad+2)) + code[j]
+
+                    # put it all back together with fences; restart loop to reprocess this block
                     text = '%s\n%s\n%s\n```\n%s'% (text[:m.start()], fence, "\n".join(code), text[m.end():])
                     continue
 
