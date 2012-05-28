@@ -132,7 +132,7 @@ from markdown.extensions.codehilite import CodeHilite, CodeHiliteExtension
 
 # Global vars
 FENCED_BLOCK_RE = re.compile( \
-    r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{\.?(?P<lang>[a-zA-Z0-9_-]+)?(;(?P<mode>(?:lines|skipblanks|statements)))?(;(?P<offset>\d+))?\})?[ ]*\n(?P<code>.*?)(?<=\n)(?P=fence)[ ]*$',
+    r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{\.?(?P<lang>[a-zA-Z0-9_-]+)?(;(?P<mode>(?:lines|skipblanks|statements|stmtskip)))?(;(?P<offset>\d+))?\})?[ ]*\n(?P<code>.*?)(?<=\n)(?P=fence)[ ]*$',
     re.MULTILINE|re.DOTALL
     )
 STMTCONT_RE = re.compile(r'[\\,]\s*$')
@@ -195,20 +195,20 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
                     in_statement = False
 
                     for j in range(len(code)):
-                        if mode == "statements" and STMTCONT_RE.search(code[j]):
-                            stmt_continuation = True
+                        if (mode == "statements" or mode == "stmtskip") and STMTCONT_RE.search(code[j]):
+                            continuations = True
                         else:
-                            stmt_continuation = False
+                            continuations = False
 
                         # ignore blank lines where appropriate
-                        if (mode == "skipblanks" or mode == "statements") and code[j] == "":
+                        if (mode == "skipblanks" or mode == "stmtskip") and code[j] == "":
                             continue
 
-                        if stmt_continuation is False and in_statement is False:
+                        if continuations is False and in_statement is False:
                             code[j] = "{:0{pad}}  {}".format(i, code[j], pad=zpad)
                             i = i + 1
                         else:
-                            if stmt_continuation:
+                            if continuations:
                                 if in_statement is False:
                                     # begin statment
                                     in_statement = True
@@ -218,7 +218,7 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
                                     # in statement: space pad
                                     code[j] = "{0: >{pad}}".format('', pad=(zpad+2)) + code[j]
                             else:
-                                # not continuation but in statment: end statment
+                                # no continuations but in statment: end statment
                                 in_statement = False
                                 code[j] = "{0: >{pad}}".format('', pad=(zpad+2)) + code[j]
 
