@@ -70,5 +70,6 @@ From the Python interpreter:
 
     >>> html = markdown.markdown(text, ['fenced_code'])
 
+From the command line:
 
-
+    markdown_py -x fenced_code [SOURCE]
