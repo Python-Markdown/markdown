@@ -132,7 +132,7 @@ from markdown.extensions.codehilite import CodeHilite, CodeHiliteExtension
 
 # Global vars
 FENCED_BLOCK_RE = re.compile( \
-    r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{\.?(?P<lang>[a-zA-Z0-9_-]+)?;?(?P<mode>(?:lines|skipblanks|statements))?;?(?P<offset>\d+)?\})?[ ]*\n(?P<code>.*?)(?<=\n)(?P=fence)[ ]*$',
+    r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{\.?(?P<lang>[a-zA-Z0-9_-]+)?(;(?P<mode>(?:lines|skipblanks|statements)))?(;(?P<offset>\d+))?\})?[ ]*\n(?P<code>.*?)(?<=\n)(?P=fence)[ ]*$',
     re.MULTILINE|re.DOTALL
     )
 STMTCONT_RE = re.compile(r'[\\,]\s*$')
@@ -177,9 +177,7 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
                 lang = ''
 
                 if m.group('mode'):
-                    import sys
                     mode = m.group('mode')
-                    sys.stderr.write(mode + "\n")
                     # prep the fence for next pass
                     if m.group('lang'):
                         fence = "```{." + "{}".format(m.group('lang')) + "}"
