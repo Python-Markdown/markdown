@@ -36,9 +36,9 @@ Fenced Code Blocks are defined using either the syntax established in
     one-line code block
     ```
 
-Fenced code blocks can have a blank line as the first  and/or last line of a 
-code block and they can also come immediately after a list item without becoming
-part of the list.
+Fenced code blocks can have a blank line as the first and/or last line
+of a code block and they can also come immediately after a list item
+without becoming part of the list.
 
 You can define the language of the code block for use by syntax
 highlighters etc. The language will be assigned as a class attribute
