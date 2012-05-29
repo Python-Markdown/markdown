@@ -64,7 +64,7 @@ Language tags:
 Number lines:
 
     >>> text = '''
-    ... ~~~~{.python;number}
+    ... ~~~~{.python;lines}
     ... # Some lines
     ...   # of python
     ...
@@ -77,40 +77,7 @@ Number lines:
     4    # code
     </pre>
 
-Number lines, except blank ones:
-
-    >>> text = '''
-    ... ~~~~{;number;skip}
-    ... # Some lines
-    ... #  of python
-    ... 
-    ... #  code
-    ... ~~~~'''
-    >>> print markdown.markdown(text, extensions=['fenced_code'])
-    <pre>1  # Some lines
-    2    # of python
-      
-    3    # code
-    </pre>
-
-Number lines, but don't start at "1":
-
-    >>> text = '''
-    ... ~~~~{.python;number;98}
-    ... # Some lines
-    ...   # of python
-    ...
-    ...   # code
-    ... ~~~~'''
-    >>> print markdown.markdown(text, extensions=['fenced_code'])
-    <pre class="python">098  # Some lines
-    099    # of python
-    100  
-    101    # code
-    </pre>
-
-If 'number', 'skip', and the start-from number are all used, they must
-be specified in that order.
+See the fenced_code docs for more information on line numbering modes.
 
 Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
 
