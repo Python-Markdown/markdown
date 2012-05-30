@@ -32,3 +32,37 @@ index 0000000..6e956a9
 +                       CONTEXT_DIFF_LINE_PATTERN,
 +```
 ```
+
+Now test numbering
+
+and such
+
+```;lines
+a
+b
+```
+
+```;lines;9
+a
+
+b
+```
+
+```.shell;statements
+very long line\
+    continued
+line 2
+```
+
+```;skipblanks
+a
+
+b
+```
+
+```;stmtskip
+a = [1, 2, 3,
+     4, 5, 6]
+
+b
+```

@@ -190,7 +190,7 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
                                 code[j] = "{0: >{pad}}".format('', pad=(zpad+2)) + code[j]
 
                     # put it all back together with fences; restart loop to reprocess this block
-                    text = '%s\n%s\n%s\n```\n%s'% (text[:m.start()], fence, "\n".join(code), text[m.end():])
+                    text = '%s\n%s\n%s\n```%s'% (text[:m.start()], fence, "\n".join(code), text[m.end():])
                     continue
 
                 if m.group('lang'):
