@@ -63,6 +63,33 @@ The above will output:
     <pre class="html">&lt;p&gt;HTML Document&lt;/p&gt;
     </pre>
 
+You can also cause the lines of the code block to be numbered
+automatically by specifying a numbering mode, which must be preceeded
+by a semicolon:
+
+    ```{.python;lines}
+    # numbered lines of python
+    ```
+
+    ```;statements
+    # numbered statements
+    ```
+
+The modes are *lines*, *statements*, *skipblanks*, and *stmtskip*. In
+lines mode, every line is numbered. In statements mode, statements are
+numbered (so lines preceeded by a line ending with a comma or
+backslash are *not* numbered). With skipblanks, blank lines are not
+numbered, and stmtskip is the combination of statements and
+skipblanks.
+
+If a mode is given, an offset may also be given, after the mode. This
+is an integer, preceeded by a semicolon.
+
+    ```{.python;lines;37}
+    # python code, numbered starting with line 37
+    ```
+
+
 Usage
 -----
 
