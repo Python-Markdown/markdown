@@ -17,8 +17,8 @@ This extension adds Fenced Code Blocks to Python-Markdown.
     >>> html = markdown.markdown(text, extensions=['fenced_code'])
     >>> print html
     <p>A paragraph before a fenced code block:</p>
-    <pre>Fenced code block
-    </pre>
+    <pre><code>enced code block
+    </code></pre>
 
 Backticks, as in Github Flavored Markdown, are also supported:
 
@@ -28,16 +28,16 @@ Backticks, as in Github Flavored Markdown, are also supported:
     ... ~~~~~ # these tildes will not close the block
     ... `````'''
     >>> print markdown.markdown(text, extensions=['fenced_code'])
-    <pre># Arbitrary code
+    <pre><code># Arbitrary code
     ~~~~~ # these tildes will not close the block
-    </pre>
+    </code></pre>
 
 Works with safe_mode also (we check this because we are using the HtmlStash):
 
     >>> print markdown.markdown(text, extensions=['fenced_code'], safe_mode='replace')
     <p>A paragraph before a fenced code block:</p>
-    <pre>Fenced code block
-    </pre>
+    <pre><code>Fenced code block
+    </code></pre>
 
 Include tildes in a code block and wrap with blank lines:
 
@@ -47,9 +47,9 @@ Include tildes in a code block and wrap with blank lines:
     ... ~~~~
     ... ~~~~~~~~'''
     >>> print markdown.markdown(text, extensions=['fenced_code'])
-    <pre>
+    <pre><code>
     ~~~~
-    </pre>
+    </code></pre>
 
 Language tags:
 
@@ -58,8 +58,8 @@ Language tags:
     ... # Some python code
     ... ~~~~'''
     >>> print markdown.markdown(text, extensions=['fenced_code'])
-    <pre class="python"># Some python code
-    </pre>
+    <pre><code class="python"># Some python code
+    </code></pre>
 
 Number lines:
 
@@ -71,11 +71,11 @@ Number lines:
     ...   # code
     ... ~~~~'''
     >>> print markdown.markdown(text, extensions=['fenced_code'])
-    <pre class="python">1  # Some lines
+    <pre><code class="python">1  # Some lines
     2    # of python
     3  
     4    # code
-    </pre>
+    </code></pre>
 
 See the fenced_code docs for more information on line numbering modes.
 
@@ -103,7 +103,7 @@ FENCED_BLOCK_RE = re.compile( \
     re.MULTILINE|re.DOTALL
     )
 STMTCONT_RE = re.compile(r'[\\,]\s*$')
-CODE_WRAP = '<pre%s>%s</pre>'
+CODE_WRAP = '<pre><code%s>%s</code></pre>'
 LANG_TAG = ' class="%s"'
 
 class FencedCodeExtension(markdown.Extension):
