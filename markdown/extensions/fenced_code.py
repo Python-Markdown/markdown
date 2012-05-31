@@ -17,7 +17,19 @@ This extension adds Fenced Code Blocks to Python-Markdown.
     >>> html = markdown.markdown(text, extensions=['fenced_code'])
     >>> print html
     <p>A paragraph before a fenced code block:</p>
-    <pre><code>Fenced code block
+    <pre><code>enced code block
+    </code></pre>
+
+Backticks, as in Github Flavored Markdown, are also supported:
+
+    >>> text = '''
+    ... `````
+    ... # Arbitrary code
+    ... ~~~~~ # these tildes will not close the block
+    ... `````'''
+    >>> print markdown.markdown(text, extensions=['fenced_code'])
+    <pre><code># Arbitrary code
+    ~~~~~ # these tildes will not close the block
     </code></pre>
 
 Works with safe_mode also (we check this because we are using the HtmlStash):
@@ -27,7 +39,7 @@ Works with safe_mode also (we check this because we are using the HtmlStash):
     <pre><code>Fenced code block
     </code></pre>
 
-Include tilde's in a code block and wrap with blank lines:
+Include tildes in a code block and wrap with blank lines:
 
     >>> text = '''
     ... ~~~~~~~~
@@ -49,17 +61,23 @@ Language tags:
     <pre><code class="python"># Some python code
     </code></pre>
 
-Optionally backticks instead of tildes as per how github's code block markdown is identified:
+Number lines:
 
     >>> text = '''
-    ... `````
-    ... # Arbitrary code
-    ... ~~~~~ # these tildes will not close the block
-    ... `````'''
+    ... ~~~~{.python;lines}
+    ... # Some lines
+    ...   # of python
+    ...
+    ...   # code
+    ... ~~~~'''
     >>> print markdown.markdown(text, extensions=['fenced_code'])
-    <pre><code># Arbitrary code
-    ~~~~~ # these tildes will not close the block
+    <pre><code class="python">1  # Some lines
+    2    # of python
+    3  
+    4    # code
     </code></pre>
+
+See the fenced_code docs for more information on line numbering modes.
 
 Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
 
@@ -81,9 +99,10 @@ from markdown.extensions.codehilite import CodeHilite, CodeHiliteExtension
 
 # Global vars
 FENCED_BLOCK_RE = re.compile( \
-    r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{?\.?(?P<lang>[a-zA-Z0-9_-]*)\}?)?[ ]*\n(?P<code>.*?)(?<=\n)(?P=fence)[ ]*$',
+    r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{?\.?(?P<lang>[a-zA-Z0-9_-]+)?(;(?P<mode>(?:lines|skipblanks|statements|stmtskip)))?(;(?P<offset>\d+))?\}?)?[ ]*\n(?P<code>.*?)(?<=\n)(?P=fence)[ ]*$',
     re.MULTILINE|re.DOTALL
     )
+STMTCONT_RE = re.compile(r'[\\,]\s*$')
 CODE_WRAP = '<pre><code%s>%s</code></pre>'
 LANG_TAG = ' class="%s"'
 
@@ -123,6 +142,57 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
             m = FENCED_BLOCK_RE.search(text)
             if m:
                 lang = ''
+
+                if m.group('mode'):
+                    mode = m.group('mode')
+                    # prep the fence for next pass
+                    if m.group('lang'):
+                        fence = "```{." + "{}".format(m.group('lang')) + "}"
+                    else:
+                        fence = "```"
+                    # set starting line number
+                    i = 1
+                    if m.group('offset'): i = int(m.group('offset'))
+                    # split code text into array
+                    code = m.group('code').split("\n")
+                    # yank trailing newline; we'll add it back last thing
+                    code.pop()
+                    # pad the number of digits in the largest line number
+                    zpad = len(str(len(code) + i))
+                    in_statement = False
+
+                    for j in range(len(code)):
+                        if (mode == "statements" or mode == "stmtskip") and STMTCONT_RE.search(code[j]):
+                            continuations = True
+                        else:
+                            continuations = False
+
+                        # ignore blank lines where appropriate
+                        if (mode == "skipblanks" or mode == "stmtskip") and code[j] == "":
+                            continue
+
+                        if continuations is False and in_statement is False:
+                            code[j] = "{:0{pad}}  {}".format(i, code[j], pad=zpad)
+                            i = i + 1
+                        else:
+                            if continuations:
+                                if in_statement is False:
+                                    # begin statment
+                                    in_statement = True
+                                    code[j] = "{:0{pad}}  {}".format(i, code[j], pad=zpad)
+                                    i = i + 1
+                                else:
+                                    # in statement: space pad
+                                    code[j] = "{0: >{pad}}".format('', pad=(zpad+2)) + code[j]
+                            else:
+                                # no continuations but in statment: end statment
+                                in_statement = False
+                                code[j] = "{0: >{pad}}".format('', pad=(zpad+2)) + code[j]
+
+                    # put it all back together with fences; restart loop to reprocess this block
+                    text = '%s\n%s\n%s\n```%s'% (text[:m.start()], fence, "\n".join(code), text[m.end():])
+                    continue
+
                 if m.group('lang'):
                     lang = LANG_TAG % m.group('lang')
 

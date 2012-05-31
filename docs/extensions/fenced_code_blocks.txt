@@ -18,12 +18,11 @@ This extension is included in the standard Markdown library.
 Syntax
 ------
 
-Fenced Code Blocks are defined using the syntax established in 
-[PHP Markdown Extra][php].
+Fenced Code Blocks are defined using either the syntax established in 
+[PHP Markdown Extra][php] or in [Github Flavored Markdown][gfm].
 
 [php]: http://www.michelf.com/projects/php-markdown/extra/#fenced-code-blocks
-
-Thus, the following text (taken from the above referenced PHP documentation):
+[gfm]: http://github.github.com/github-flavored-markdown/
 
     This is a paragraph introducing:
 
@@ -31,16 +30,22 @@ Thus, the following text (taken from the above referenced PHP documentation):
     a one-line code block
     ~~~~~~~~~~~~~~~~~~~~
 
-Fenced code blocks can have a blank line as the first  and/or last line of a 
-code block and they can also come immediately after a list item without becoming
-part of the list.
+    And here's another:
 
-In addition to PHP Extra's syntax, you can define the language of the code 
-block for use by syntax highlighters etc. The language will be assigned as a 
-class attribute of the ``<code>`` element in the output. Therefore, you should 
-define the language as you would a css class - ``.language``. For consistency 
-with other markdown syntax, the language can *optionally* be wrapped in curly 
-brackets:
+    ```
+    one-line code block
+    ```
+
+Fenced code blocks can have a blank line as the first and/or last line
+of a code block and they can also come immediately after a list item
+without becoming part of the list.
+
+You can define the language of the code block for use by syntax
+highlighters etc. The language will be assigned as a class attribute
+of the ``<code>`` element in the output. Therefore, you should define
+the language as you would a css class - ``.language``. For consistency
+with other markdown syntax, the language can *optionally* be wrapped
+in curly brackets:
 
     ~~~~{.python}
     # python code
@@ -58,6 +63,33 @@ The above will output:
     <pre><code class="html">&lt;p&gt;HTML Document&lt;/p&gt;
     </code></pre>
 
+You can also cause the lines of the code block to be numbered
+automatically by specifying a numbering mode, which must be preceeded
+by a semicolon:
+
+    ```{.python;lines}
+    # numbered lines of python
+    ```
+
+    ```;statements
+    # numbered statements
+    ```
+
+The modes are *lines*, *statements*, *skipblanks*, and *stmtskip*. In
+lines mode, every line is numbered. In statements mode, statements are
+numbered (so lines preceeded by a line ending with a comma or
+backslash are *not* numbered). With skipblanks, blank lines are not
+numbered, and stmtskip is the combination of statements and
+skipblanks.
+
+If a mode is given, an offset may also be given, after the mode. This
+is an integer, preceeded by a semicolon.
+
+    ```{.python;lines;37}
+    # python code, numbered starting with line 37
+    ```
+
+
 Usage
 -----
 
@@ -65,5 +97,6 @@ From the Python interpreter:
 
     >>> html = markdown.markdown(text, ['fenced_code'])
 
+From the command line:
 
-
+    markdown_py -x fenced_code [SOURCE]
