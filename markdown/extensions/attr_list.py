@@ -120,8 +120,12 @@ class AttrListTreeprocessor(markdown.treeprocessors.Treeprocessor):
 
 class AttrListExtension(markdown.extensions.Extension):
     def extendMarkdown(self, md, md_globals):
-        # insert after 'inline' treeprocessor
-        md.treeprocessors.add('attr_list', AttrListTreeprocessor(md), '>inline')
+        if 'headerid' in md.treeprocessors.keys():
+            # insert after 'headerid' treeprocessor
+            md.treeprocessors.add('attr_list', AttrListTreeprocessor(md), '>headerid')
+        else:
+            # insert after 'inline' treeprocessor
+            md.treeprocessors.add('attr_list', AttrListTreeprocessor(md), '>inline')
 
 
 def makeExtension(configs={}):
