@@ -165,7 +165,7 @@ class Markdown:
             if isinstance(ext, Extension):
                 # might raise NotImplementedError, but that's the extension author's problem
                 ext.extendMarkdown(self, globals())
-            else:
+            elif ext is not None:
                 raise ValueError('Extension "%s.%s" must be of type: "markdown.Extension".' \
                     % (ext.__class__.__module__, ext.__class__.__name__))
 
