@@ -58,6 +58,14 @@ The above will output:
     <pre><code class="html">&lt;p&gt;HTML Document&lt;/p&gt;
     </code></pre>
 
+[Github][]'s tilde (`\``) syntax is also supported:
+
+    ```python
+    # more python code
+    ```
+
+[Github]: http://github.github.com/github-flavored-markdown/
+
 Usage
 -----
 
@@ -65,5 +73,10 @@ From the Python interpreter:
 
     >>> html = markdown.markdown(text, ['fenced_code'])
 
+If you would like to have your fenced code blocks highlighted with the 
+[CodeHilite][] extension, simply include that extension and the language 
+of your fenced code blocks will be passed in and highlighted appropriately.
 
+    >>> html = markdown.markdown(text, ['fenced_code', 'codehilite'])
 
+[CodeHilite]: code_hilite.html
