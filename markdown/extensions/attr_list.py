@@ -10,11 +10,11 @@ Copyright 2011 [Waylan Limberg](http://achinghead.com/).
 
 Contact: markdown@freewisdom.org
 
-License: BSD (see ../../LICENSE for details) 
+License: BSD (see ../LICENSE.md for details) 
 
 Dependencies:
 * [Python 2.4+](http://python.org)
-* [Markdown 2.1+](http://www.freewisdom.org/projects/python-markdown/)
+* [Markdown 2.1+](http://packages.python.org/Markdown/)
 
 """
 

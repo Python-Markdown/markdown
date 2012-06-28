@@ -34,10 +34,10 @@ Make sure text without Meta Data still works (markdown < 1.6b returns a <p>).
 
 Copyright 2007-2008 [Waylan Limberg](http://achinghead.com).
 
-Project website: <http://www.freewisdom.org/project/python-markdown/Meta-Data>
+Project website: <http://packages.python.org/Markdown/meta_data.html>
 Contact: markdown@freewisdom.org
 
-License: BSD (see ../docs/LICENSE for details)
+License: BSD (see ../LICENSE.md for details)
 
 """
 import re

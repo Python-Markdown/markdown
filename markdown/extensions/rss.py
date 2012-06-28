@@ -1,10 +1,10 @@
 import markdown
 from markdown.util import etree
 
-DEFAULT_URL = "http://www.freewisdom.org/projects/python-markdown/"
+DEFAULT_URL = "http://packages.python.org/Markdown/"
 DEFAULT_CREATOR = "Yuri Takhteyev"
 DEFAULT_TITLE = "Markdown in Python"
-GENERATOR = "http://www.freewisdom.org/projects/python-markdown/markdown2rss"
+GENERATOR = "http://packages.python.org/Markdown/extensions/rss.html"
 
 month_map = { "Jan" : "01",
               "Feb" : "02",

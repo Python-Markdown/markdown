@@ -22,7 +22,7 @@ License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 Dependencies:
 * [Python2.3+](http://python.org)
-* [Markdown 2.0+](http://www.freewisdom.org/projects/python-markdown/)
+* [Markdown 2.0+](http://packages.python.org/Markdown/)
 * [HTML Tidy](http://utidylib.berlios.de/)
 * [uTidylib](http://utidylib.berlios.de/)
 

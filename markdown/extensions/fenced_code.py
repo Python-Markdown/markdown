@@ -63,14 +63,14 @@ Optionally backticks instead of tildes as per how github's code block markdown i
 
 Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
 
-Project website: <http://www.freewisdom.org/project/python-markdown/Fenced__Code__Blocks>
+Project website: <http://packages.python.org/Markdown/extensions/fenced_code_blocks.html>
 Contact: markdown@freewisdom.org
 
 License: BSD (see ../docs/LICENSE for details)
 
 Dependencies:
 * [Python 2.4+](http://python.org)
-* [Markdown 2.0+](http://www.freewisdom.org/projects/python-markdown/)
+* [Markdown 2.0+](http://packages.python.org/Markdown/)
 * [Pygments (optional)](http://pygments.org)
 
 """

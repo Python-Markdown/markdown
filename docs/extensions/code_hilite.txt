@@ -13,7 +13,6 @@ Summary
 The CodeHilite Extension adds code/syntax highlighting to standard 
 Python-Markdown code blocks using [Pygments][].
 
-[Python-Markdown]: http://www.freewisdom.org/projects/python-markdown/
 [Pygments]: http://pygments.org/
 
 This extension is included in the  Markdown library.
