@@ -8,13 +8,11 @@ Python-Markdown 2.2.0 Release Notes
 ===================================
 
 We are pleased to release Python-Markdown 2.2 which makes improvements on 2.1. 
-While 2.1 is primarily a bug fix release, some internal improvements were made 
+While 2.2 is primarily a bug fix release, some internal improvements were made 
 to the parser, and a few security issues were resolved.
 
 Python-Markdown supports Python versions 2.5, 2.6, 2.7, 3.1, and 3.2 out 
 of the box. 
-
-__Note__ that this is BETA Software and is not recommended for production.
 
 Backwards-incompatible Changes
 ------------------------------
