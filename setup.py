@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import with_statement
 import sys, os
 from distutils.core import setup
 from distutils.command.install_scripts import install_scripts
@@ -126,7 +127,8 @@ class build_docs(Command):
         except ImportError:
             print ('skipping build_docs: Markdown "import" failed!')
         else:
-            template = codecs.open('docs/_template.html', encoding='utf-8').read()
+            with codecs.open('docs/_template.html', encoding='utf-8') as f:
+                template = f.read()
             self.md = markdown.Markdown(extensions=['extra', 'toc', 'meta'])
             for infile in self.docs:
                 outfile, ext = os.path.splitext(infile)
@@ -144,7 +146,8 @@ class build_docs(Command):
                         if self.verbose:
                             print ('Converting %s -> %s' % (infile, outfile))
                         if not self.dry_run:
-                            src = codecs.open(infile, encoding='utf-8').read()
+                            with codecs.open(infile, encoding='utf-8') as f:
+                                src = f.read()
                             out = template % self._get_context(src, outfile)
                             doc = open(outfile, 'wb')
                             doc.write(out.encode('utf-8'))

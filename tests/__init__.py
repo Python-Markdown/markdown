@@ -1,3 +1,4 @@
+from __future__ import with_statement
 import os
 import markdown
 import codecs
@@ -85,9 +86,11 @@ class CheckSyntax(object):
         if config.get(cfg_section, 'skip'):
             raise nose.plugins.skip.SkipTest, 'Test skipped per config.'
         input_file = file + config.get(cfg_section, 'input_ext')
-        input = codecs.open(input_file, encoding="utf-8").read()
+        with codecs.open(input_file, encoding="utf-8") as f:
+            input = f.read()
         output_file = file + config.get(cfg_section, 'output_ext') 
-        expected_output = codecs.open(output_file, encoding="utf-8").read()
+        with codecs.open(output_file, encoding="utf-8") as f:
+            expected_output = f.read()
         output = markdown.markdown(input, **get_args(file, config))
         if tidy and config.get(cfg_section, 'normalize'):
             # Normalize whitespace before comparing.
