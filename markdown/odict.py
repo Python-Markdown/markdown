@@ -156,7 +156,7 @@ class OrderedDict(dict):
                 self.keyOrder.insert(i, key)
             else:
                 self.keyOrder.append(key)
-        except Exception as e:
+        except Exception, e:
             # restore to prevent data loss and reraise
             self.keyOrder.insert(n, key)
             raise e
