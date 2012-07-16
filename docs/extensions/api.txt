@@ -335,7 +335,7 @@ the second cell (``td2``) will be run through InlinePatterns latter):
     table.set("cellpadding", "2")                      # Set cellpadding to 2
     tr = etree.SubElement(table, "tr")                 # Add child tr to table
     td1 = etree.SubElement(tr, "td")                   # Add child td1 to tr
-    td1.text = markdown.AtomicString("Cell content")   # Add plain text content
+    td1.text = markdown.util.AtomicString("Cell content") # Add plain text content
     td2 = etree.SubElement(tr, "td")                   # Add second td to tr
     td2.text = "*text* with **inline** formatting."    # Add markup text
     table.tail = "Text after table"                    # Add text after table
