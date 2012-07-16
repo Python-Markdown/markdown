@@ -3,7 +3,7 @@ NL2BR Extension
 ===============
 
 A Python-Markdown extension to treat newlines as hard breaks; like
-StackOverflow and GitHub flavored Markdown do.
+GitHub-flavored Markdown does.
 
 Usage:
 
