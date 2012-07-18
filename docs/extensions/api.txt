@@ -388,7 +388,7 @@ accepts two arguments:
     * ``md.preprocessors``
     * ``md.inlinePatterns``
     * ``md.parser.blockprocessors``
-    * ``md.treepreprocessors``
+    * ``md.treeprocessors``
     * ``md.postprocessors``
 
     Some other things you may want to access in the markdown instance are:
