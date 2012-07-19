@@ -120,8 +120,7 @@ class OrderedDict(dict):
         try:
             return self.keyOrder.index(key)
         except ValueError, e:
-            raise KeyError("Element '%s' was not found in OrderedDict" % key)
-            
+            raise ValueError("Element '%s' was not found in OrderedDict" % key)
 
     def index_for_location(self, location):
         """ Return index or None for a given location. """
