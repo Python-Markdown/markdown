@@ -32,3 +32,14 @@ index 0000000..6e956a9
 +                       CONTEXT_DIFF_LINE_PATTERN,
 +```
 ```
+
+Test support for foo+bar lexer names.
+
+```html+jinja
+<title>{% block title %}{% endblock %}</title>
+<ul>
+{% for user in users %}
+  <li><a href="{{ user.url }}">{{ user.username }}</a></li>
+{% endfor %}
+</ul>
+```
