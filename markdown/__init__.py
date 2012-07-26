@@ -373,7 +373,8 @@ class Markdown:
                 output_file.write(html)
                 # Don't close here. User may want to write more.
         else:
-            sys.stdout.write(html)
+            stdout = codecs.getwriter(encoding)(sys.stdout, errors="xmlcharrefreplace")
+            stdout.write(html)
 
         return self
 
