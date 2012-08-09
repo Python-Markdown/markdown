@@ -61,6 +61,7 @@ class FootnoteExtension(markdown.Extension):
         """ Add pieces to Markdown. """
         md.registerExtension(self)
         self.parser = md.parser
+        self.md = md
         # Insert a preprocessor before ReferencePreprocessor
         md.preprocessors.add("footnote", FootnotePreprocessor(self),
                              "<reference")
@@ -133,7 +134,9 @@ class FootnoteExtension(markdown.Extension):
             self.parser.parseChunk(li, self.footnotes[id])
             backlink = etree.Element("a")
             backlink.set("href", "#" + self.makeFootnoteRefId(id))
-            backlink.set("rev", "footnote")
+            if self.md.output_format not in ['html5', 'xhtml5']:
+                backlink.set("rev", "footnote") # Invalid in HTML5
+            backlink.set("class", "footnote-backref")
             backlink.set("title", "Jump back to footnote %d in the text" % \
                             (self.footnotes.index(id)+1))
             backlink.text = FN_BACKLINK_TEXT
@@ -255,7 +258,9 @@ class FootnotePattern(markdown.inlinepatterns.Pattern):
             a = etree.SubElement(sup, "a")
             sup.set('id', self.footnotes.makeFootnoteRefId(id))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
-            a.set('rel', 'footnote')
+            if self.footnotes.md.output_format not in ['html5', 'xhtml5']:
+                a.set('rel', 'footnote') # invalid in HTML5
+            a.set('class', 'footnote-ref')
             a.text = unicode(self.footnotes.footnotes.index(id) + 1)
             return sup
         else:
