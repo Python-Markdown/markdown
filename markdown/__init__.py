@@ -238,11 +238,17 @@ class Markdown:
 
     def set_output_format(self, format):
         """ Set the output format for the class instance. """
+        self.output_format = format.lower()
         try:
-            self.serializer = self.output_formats[format.lower()]
-        except KeyError:
-            raise KeyError('Invalid Output Format: "%s". Use one of %s.' \
-                               % (format, self.output_formats.keys()))
+            self.serializer = self.output_formats[self.output_format]
+        except KeyError, e:
+            valid_formats = self.output_formats.keys()
+            valid_formats.sort()
+            message = 'Invalid Output Format: "%s". Use one of %s.' \
+                       % (self.output_format, 
+                          '"' + '", "'.join(valid_formats) + '"')
+            e.args = (message,) + e.args[1:]
+            raise
         return self
 
     def convert(self, source):
