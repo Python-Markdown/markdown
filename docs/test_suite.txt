@@ -23,8 +23,8 @@ Additionally, a nicely formatted HTML report of all output is written to a
 temporary file in `tmp/test-output.html`. Open the file in a browser to view
 the report.
 
-The test suite contains three kinds of tests: Markdown Syntax Tests, Unit
-Tests, and Doc Tests.
+The test suite contains two kinds of tests: Markdown Syntax Tests and Unit
+Tests.
 
 # Markdown Syntax Tests
 
@@ -118,16 +118,11 @@ are not explicitly set.
 
 ## Unit Tests
 
+Unit Tests are used as regression tests for Python-Markdown's API.
 All Unit Tests shipped with Python-Markdown are standard Python Unit Tests and
-are currently all contained in `tests/test_apis.py`. Standard discovery methods
-are used to find and run the tests. Therefor, when writing new tests, those
-standards and naming conventions should be followed.
-
-## Doc Tests
-
-Some Python-Markdown extensions also include standard Python doctests, which
-are discovered and run in the standard manner; one Unit Test for each file.
-
+are all contained in `tests/test_apis.py` and `tests/test_extensions`. 
+Standard discovery methods are used to find and run the tests. Therefore, when 
+writing new tests, those standards and naming conventions should be followed.
 
 [Nose]: http://somethingaboutorange.com/mrl/projects/nose/ 
 [Perl]: http://daringfireball.net/projects/markdown/ 
