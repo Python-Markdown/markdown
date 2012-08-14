@@ -137,7 +137,7 @@ class HeaderIdTreeprocessor(markdown.treeprocessors.Treeprocessor):
                     if "id" in elem.attrib:
                         id = elem.id
                     else:
-                        id = slugify(''.join(itertext(elem)), sep)
+                        id = slugify(u''.join(itertext(elem)), sep)
                     elem.set('id', unique(id, self.IDs))
                 if start_level:
                     level = int(elem.tag[-1]) + start_level
