@@ -379,8 +379,15 @@ class Markdown:
                 output_file.write(html)
                 # Don't close here. User may want to write more.
         else:
-            stdout = codecs.getwriter(encoding)(sys.stdout, errors="xmlcharrefreplace")
-            stdout.write(html)
+            if sys.stdout.encoding:
+                # If we are in Python 3 or if we are not piping output:
+                sys.stdout.write(html)
+            else:
+                # In python 2.x if you pipe output on command line,
+                # sys.stdout.encoding is None. So lets set it:
+                writer = codecs.getwriter(encoding)
+                stdout = writer(sys.stdout, errors="xmlcharrefreplace")
+                stdout.write(html)
 
         return self
 
