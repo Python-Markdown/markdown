@@ -8,7 +8,6 @@ Tests of the various APIs with the python markdown lib.
 """
 
 import unittest
-from doctest import DocTestSuite
 import os
 import sys
 import types
