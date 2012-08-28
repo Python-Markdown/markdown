@@ -61,7 +61,7 @@ The following options are available on the `markdown.markdown` function:
     the [extension documentation](extensions/index.html) for a list of 
     available extensions.
 
-    The list of extensions may contain instances of extensions or stings of
+    The list of extensions may contain instances of extensions or strings of
     extension names. If an extension name is provided as a string, the
     extension must be importable as a python module either within the 
     `markdown.extensions` package or on your PYTHONPATH with a name starting 
@@ -234,7 +234,7 @@ string must be passed to one of two instance methods:
         md.reset()
         html2 = md.convert(text2)
     
-    You can also change calls to `reset` togeather:
+    You can also change calls to `reset` together:
     
         html3 = md.reset().convert(text3)
 
