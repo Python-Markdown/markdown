@@ -235,7 +235,7 @@ class SimpleTagPattern(Pattern):
 
 
 class SubstituteTagPattern(SimpleTagPattern):
-    """ Return a eLement of type `tag` with no children. """
+    """ Return an element of type `tag` with no children. """
     def handleMatch (self, m):
         return util.etree.Element(self.tag)
 

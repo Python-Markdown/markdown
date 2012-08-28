@@ -103,7 +103,7 @@ that example pattern is not very DRY. A pattern for `**strong**` text would
 be almost identical, with the exception that it would create a 'strong' element.
 Therefore, Markdown provides a number of generic pattern classes that can 
 provide some common functionality. For example, both emphasis and strong are
-implemented with separate instances of the ``SimpleTagPettern`` listed below. 
+implemented with separate instances of the ``SimpleTagPattern`` listed below.
 Feel free to use or extend any of the Pattern classes found at `markdown.inlinepatterns`.
 
 **Generic Pattern Classes**
@@ -358,7 +358,7 @@ Integrating Your Code Into Markdown {: #integrating_into_markdown }
 
 Once you have the various pieces of your extension built, you need to tell 
 Markdown about them and ensure that they are run in the proper sequence. 
-Markdown accepts a ``Extension`` instance for each extension. Therefore, you
+Markdown accepts an ``Extension`` instance for each extension. Therefore, you
 will need to define a class that extends ``markdown.extensions.Extension`` and 
 over-rides the ``extendMarkdown`` method. Within this class you will manage 
 configuration options for your extension and attach the various processors and 
