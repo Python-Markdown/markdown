@@ -107,7 +107,7 @@ class Markdown:
 
         """
 
-        # For backward compatability, loop through old positional args
+        # For backward compatibility, loop through old positional args
         pos = ['extensions', 'extension_configs', 'safe_mode', 'output_format']
         c = 0
         for arg in args:
