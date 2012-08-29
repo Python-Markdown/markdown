@@ -40,9 +40,9 @@ class CodeHilite:
 
     * src: Source string or any object with a .readline attribute.
 
-    * linenos: (Boolen) Turn line numbering 'on' or 'off' (off by default).
+    * linenos: (Boolean) Turn line numbering 'on' or 'off' (off by default).
 
-    * guess_lang: (Boolen) Turn language auto-detection 'on' or 'off' (on by default).
+    * guess_lang: (Boolean) Turn language auto-detection 'on' or 'off' (on by default).
 
     * css_class: Set class name of wrapper div ('codehilite' by default).
 
