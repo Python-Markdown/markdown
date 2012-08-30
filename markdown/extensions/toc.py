@@ -74,7 +74,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                         level -= 1
 
                     if tag_level > level:
-                        newlist = etree.Element("ul")
+                        newlist = etree.Element("ol")
                         if last_li:
                             last_li.append(newlist)
                         else:
