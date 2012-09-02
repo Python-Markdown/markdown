@@ -1,0 +1,136 @@
+#!/usr/bin/env python
+
+"""
+Admonition extension for Python-Markdown
+========================================
+
+Adds rST-style admonitions. Inspired by [rST][] feature with the same name.
+
+The syntax is (followed by an indented block with the contents):
+    !!! <type> [optional title]
+
+Where `type` is one of the followings:
+    attention, caution, danger, error, hint, important, note, tip, warning
+
+The above types have the appropriated title by default (i.e: note => Note)
+
+It's also possible to create custom types (with default CSS classes and Titles)
+see the docs for more info.
+
+A simple example:
+    !!! note
+        This is the first line inside the box.
+
+Outputs:
+    <div class="admonition note">
+    <p class="admonition-title">Note</p>
+    <p>This is the first line inside the box</p>
+    </div>
+
+You can also specify the title and CSS class of the admonition:
+    !!! custom "Did you know?"
+        Another line here.
+
+Outputs:
+    <div class="admonition custom">
+    <p class="admonition-title">Did you know?</p>
+    <p>Another line here.</p>
+    </div>
+
+[rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions
+
+By [Tiago Serafim](http://www.tiagoserafim.com/).
+
+"""
+
+import re
+import markdown
+from markdown.util import etree
+
+DEFAULT_STYLES = {
+    # 'id': ('CSS_class', 'Display Name')
+    'attention': ('attention', 'Attention'),
+    'caution': ('caution', 'Caution'),
+    'danger': ('danger', 'Danger'),
+    'error': ('error', 'Error'),
+    'hint': ('hint', 'Hint'),
+    'important': ('important', 'Important'),
+    'note': ('note', 'Note'),
+    'tip': ('tip', 'Tip'),
+    'warning': ('warning', 'Warning'),
+}
+
+
+class AdmonitionExtension(markdown.Extension):
+    """ Admonition extension for Python-Markdown. """
+
+    def __init__(self, configs):
+        self.config = {
+            'styles': DEFAULT_STYLES.copy(),
+        }
+
+    def extendMarkdown(self, md, md_globals):
+        """ Add Admonition to Markdown instance. """
+        md.registerExtension(self)
+
+        md.parser.blockprocessors.add('admonition',
+                                      AdmonitionProcessor(md.parser, self.config),
+                                      '_begin')
+
+
+class AdmonitionProcessor(markdown.blockprocessors.BlockProcessor):
+
+    CLASSNAME = 'admonition'
+    CLASSNAME_TITLE = 'admonition-title'
+    RE = re.compile(r'(?:^|\n)!!!\ ?([\w\-]+)(?:\ "?([^"\n]+)"?)?')
+
+    def __init__(self, parser, config):
+        markdown.blockprocessors.BlockProcessor.__init__(self, parser)
+        self.config = config
+
+    def test(self, parent, block):
+        sibling = self.lastChild(parent)
+        return self.RE.search(block) or \
+            (block.startswith(' ' * self.tab_length) and sibling and \
+                sibling.get('class', '').find(self.CLASSNAME) != -1)
+
+    def run(self, parent, blocks):
+        sibling = self.lastChild(parent)
+        block = blocks.pop(0)
+        m = self.RE.search(block)
+
+        if m:
+            block = block[m.end() + 1:]  # removes the first line
+
+        block, theRest = self.detab(block)
+
+        if m:
+            klass, title = self.get_class_and_title(m.group(1), m.group(2))
+            div = etree.SubElement(parent, 'div')
+            div.set('class', u'%s %s' % (self.CLASSNAME, klass))
+            if title:
+                p = etree.SubElement(div, 'p')
+                p.text = title
+                p.set('class', self.CLASSNAME_TITLE)
+        else:
+            div = sibling
+
+        self.parser.parseChunk(div, block)
+
+        if theRest:
+            # This block contained unindented line(s) after the first indented
+            # line. Insert these lines as the first block of the master blocks
+            # list for future processing.
+            blocks.insert(0, theRest)
+
+    def get_class_and_title(self, klass, title):
+        styles = self.config['styles']
+        style = styles.get(klass, None)
+        if style:
+            return style[0], title or style[1]
+        else:
+            return klass, title
+
+
+def makeExtension(configs={}):
+    return AdmonitionExtension(configs=configs)
