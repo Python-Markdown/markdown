@@ -99,7 +99,7 @@ could also pass in a callable which must accept three arguments (``label``,
 The option is also provided to change or remove the class attribute.
 
     >>> html = markdown.markdown(text, 
-    ...     ['wikilink(base_url=myclass)']
+    ...     ['wikilink(html_class=myclass)']
     ... )
 
 Would cause all wikilinks to be assigned to the class `myclass`.
