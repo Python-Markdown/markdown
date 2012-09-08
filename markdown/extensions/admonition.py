@@ -7,15 +7,14 @@ Admonition extension for Python-Markdown
 Adds rST-style admonitions. Inspired by [rST][] feature with the same name.
 
 The syntax is (followed by an indented block with the contents):
-    !!! <type> [optional title]
+    !!! <type> [title]
 
-Where `type` is one of the followings:
+Where `type` is used as a CSS class name of the div. If not present, `title`
+defaults to the capitalized `type`, so "note" -> "Note".
+
+rST suggests the following `types`, but you're free to use whatever you want:
     attention, caution, danger, error, hint, important, note, tip, warning
 
-The above types have the appropriated title by default (i.e: note => Note)
-
-It's also possible to create custom types (with default CSS classes and Titles)
-see the docs for more info.
 
 A simple example:
     !!! note
@@ -47,34 +46,16 @@ import re
 import markdown
 from markdown.util import etree
 
-DEFAULT_STYLES = {
-    # 'id': ('CSS_class', 'Display Name')
-    'attention': ('attention', 'Attention'),
-    'caution': ('caution', 'Caution'),
-    'danger': ('danger', 'Danger'),
-    'error': ('error', 'Error'),
-    'hint': ('hint', 'Hint'),
-    'important': ('important', 'Important'),
-    'note': ('note', 'Note'),
-    'tip': ('tip', 'Tip'),
-    'warning': ('warning', 'Warning'),
-}
-
 
 class AdmonitionExtension(markdown.Extension):
     """ Admonition extension for Python-Markdown. """
-
-    def __init__(self, configs):
-        self.config = {
-            'styles': DEFAULT_STYLES.copy(),
-        }
 
     def extendMarkdown(self, md, md_globals):
         """ Add Admonition to Markdown instance. """
         md.registerExtension(self)
 
         md.parser.blockprocessors.add('admonition',
-                                      AdmonitionProcessor(md.parser, self.config),
+                                      AdmonitionProcessor(md.parser),
                                       '_begin')
 
 
@@ -84,9 +65,8 @@ class AdmonitionProcessor(markdown.blockprocessors.BlockProcessor):
     CLASSNAME_TITLE = 'admonition-title'
     RE = re.compile(r'(?:^|\n)!!!\ ?([\w\-]+)(?:\ "?([^"\n]+)"?)?')
 
-    def __init__(self, parser, config):
+    def __init__(self, parser):
         markdown.blockprocessors.BlockProcessor.__init__(self, parser)
-        self.config = config
 
     def test(self, parent, block):
         sibling = self.lastChild(parent)
@@ -105,13 +85,12 @@ class AdmonitionProcessor(markdown.blockprocessors.BlockProcessor):
         block, theRest = self.detab(block)
 
         if m:
-            klass, title = self.get_class_and_title(m.group(1), m.group(2))
+            klass, title = self.get_class_and_title(m)
             div = etree.SubElement(parent, 'div')
             div.set('class', u'%s %s' % (self.CLASSNAME, klass))
-            if title:
-                p = etree.SubElement(div, 'p')
-                p.text = title
-                p.set('class', self.CLASSNAME_TITLE)
+            p = etree.SubElement(div, 'p')
+            p.text = title
+            p.set('class', self.CLASSNAME_TITLE)
         else:
             div = sibling
 
@@ -123,13 +102,11 @@ class AdmonitionProcessor(markdown.blockprocessors.BlockProcessor):
             # list for future processing.
             blocks.insert(0, theRest)
 
-    def get_class_and_title(self, klass, title):
-        styles = self.config['styles']
-        style = styles.get(klass, None)
-        if style:
-            return style[0], title or style[1]
-        else:
-            return klass, title
+    def get_class_and_title(self, match):
+        klass, title = match.group(1), match.group(2)
+        if not title:
+            title = klass.capitalize()
+        return klass, title
 
 
 def makeExtension(configs={}):

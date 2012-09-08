@@ -288,18 +288,9 @@ class TestAdmonition(unittest.TestCase):
     def testComplexSettings(self):
         """ Test Complex Settings. """
 
-        # config = {
-        #     'styles': {
-        #         'note': ('note', 'Please Note'),
-        #         'didyouknow': ('note', 'Did you know?'),
-        #     }
-        # }
-
         md = markdown.Markdown(
             extensions=['admonition'],
-            extension_configs={
-                'admonition': []
-            },
+            extension_configs={},
             safe_mode=True)
         self.assertEqual(md.convert(self.text),
             '<div class="admonition note">\n'
