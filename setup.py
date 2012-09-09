@@ -172,7 +172,6 @@ though there are a few known issues. See Features_ for information
 on what exactly is supported and what is not. Additional features are 
 supported by the `Available Extensions`_.
 
-.. _Python-Markdown: http://packages.python.org/Markdown/
 .. _Markdown: http://daringfireball.net/projects/markdown/
 .. _Features: http://packages.python.org/Markdown/index.html#Features
 .. _`Available Extensions`: http://packages.python.org/Markdown/extensions/index.html
