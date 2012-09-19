@@ -6,6 +6,14 @@ Some text
     1. first
     2. second
 
+    > Some important quote
+
+    > another paragraph in the quote
+
+        int main() {
+            // insert some code
+        }
+
 More text and stuff.
 
 !!! note "Did you know?"
@@ -15,3 +23,6 @@ More text and stuff.
     For something completely different.
 
     You can also use a custom CSS class name.
+
+!!! tip ""
+    An explicitly empty string prevents the title from being rendered.

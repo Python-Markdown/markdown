@@ -278,25 +278,13 @@ class TestAdmonition(unittest.TestCase):
 
     def setUp(self):
         self.md = markdown.Markdown(extensions=['admonition'])
-        self.text = \
-'''!!! note
-    First line
 
-!!! didyouknow "Did you know?"
-    Another text'''
-
-    def testComplexSettings(self):
-        """ Test Complex Settings. """
-
-        md = markdown.Markdown(
-            extensions=['admonition'],
-            extension_configs={},
-            safe_mode=True)
-        self.assertEqual(md.convert(self.text),
-            '<div class="admonition note">\n'
-            '<p class="admonition-title">Note</p>\n'
-            '<p>First line</p>\n'
-            '</div>\n'
-            '<div class="admonition didyouknow">\n'
-            '<p class="admonition-title">Did you know?</p>\n'
-            '<p>Another text</p>\n</div>')
+    def testRE(self):
+        RE = self.md.parser.blockprocessors['admonition'].RE
+        tests = [
+            ('!!! note', ('note', None)),
+            ('!!! note "Please Note"', ('note', 'Please Note')),
+            ('!!! note ""', ('note', '')),
+        ]
+        for test, expected in tests:
+            self.assertEqual(RE.match(test).groups(), expected)

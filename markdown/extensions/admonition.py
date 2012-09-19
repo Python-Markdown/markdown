@@ -7,7 +7,7 @@ Admonition extension for Python-Markdown
 Adds rST-style admonitions. Inspired by [rST][] feature with the same name.
 
 The syntax is (followed by an indented block with the contents):
-    !!! <type> [title]
+    !!! [type] [optional explicit title]
 
 Where `type` is used as a CSS class name of the div. If not present, `title`
 defaults to the capitalized `type`, so "note" -> "Note".
@@ -63,10 +63,7 @@ class AdmonitionProcessor(markdown.blockprocessors.BlockProcessor):
 
     CLASSNAME = 'admonition'
     CLASSNAME_TITLE = 'admonition-title'
-    RE = re.compile(r'(?:^|\n)!!!\ ?([\w\-]+)(?:\ "?([^"\n]+)"?)?')
-
-    def __init__(self, parser):
-        markdown.blockprocessors.BlockProcessor.__init__(self, parser)
+    RE = re.compile(r'(?:^|\n)!!!\ ?([\w\-]+)(?:\ "(.*?)")?')
 
     def test(self, parent, block):
         sibling = self.lastChild(parent)
@@ -88,9 +85,10 @@ class AdmonitionProcessor(markdown.blockprocessors.BlockProcessor):
             klass, title = self.get_class_and_title(m)
             div = etree.SubElement(parent, 'div')
             div.set('class', u'%s %s' % (self.CLASSNAME, klass))
-            p = etree.SubElement(div, 'p')
-            p.text = title
-            p.set('class', self.CLASSNAME_TITLE)
+            if title:
+                p = etree.SubElement(div, 'p')
+                p.text = title
+                p.set('class', self.CLASSNAME_TITLE)
         else:
             div = sibling
 
@@ -104,8 +102,10 @@ class AdmonitionProcessor(markdown.blockprocessors.BlockProcessor):
 
     def get_class_and_title(self, match):
         klass, title = match.group(1), match.group(2)
-        if not title:
+        if title is None:
             title = klass.capitalize()
+        elif title == '':
+            title = None
         return klass, title
 
 
