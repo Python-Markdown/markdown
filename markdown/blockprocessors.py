@@ -262,7 +262,7 @@ class CodeBlockProcessor(BlockProcessor):
 
 class BlockQuoteProcessor(BlockProcessor):
 
-    RE = re.compile(r'(^|\n)[ ]{0,3}>\s?(.*)')
+    RE = re.compile(r'(^|\n)[ ]{0,%s}>\s?(.*)' % (self.tab_length-1))
 
     def test(self, parent, block):
         return bool(self.RE.search(block))
@@ -305,11 +305,12 @@ class OListProcessor(BlockProcessor):
 
     TAG = 'ol'
     # Detect an item (``1. item``). ``group(1)`` contains contents of item.
-    RE = re.compile(r'^[ ]{0,3}\d+\.\s+(.*)')
+    RE = re.compile(r'^[ ]{0,%s}\d+\.\s+(.*)' % (self.tab_length-1))
     # Detect items on secondary lines. they can be of either list type.
-    CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.)|[*+-])\s+(.*)')
+    CHILD_RE = re.compile(r'^[ ]{0,%s}((\d+\.)|[*+-])\s+(.*)' % (self.tab_length-1))
     # Detect indented (nested) items of either type
-    INDENT_RE = re.compile(r'^(?:[ ]{4}|\t)[ ]{0,3}((\d+\.)|[*+-])\s+.*')
+    INDENT_RE = re.compile(r'^(?:[ ]{%s}|\t)[ ]{0,%s}((\d+\.)|[*+-])\s+.*'
+        % (self.tab_length, self.tab_length-1))
     # The integer (python string) with which the lists starts (default=1)
     # Eg: If list is intialized as)
     #   3. Item
@@ -411,7 +412,7 @@ class UListProcessor(OListProcessor):
     """ Process unordered list blocks. """
 
     TAG = 'ul'
-    RE = re.compile(r'^(?:[ ]{0,3}|\t)[*+-]\s+(.*)')
+    RE = re.compile(r'^(?:[ ]{0,%s}|\t)[*+-]\s+(.*)' % (self.tab_length-1))
 
 
 class HashHeaderProcessor(BlockProcessor):
