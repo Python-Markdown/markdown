@@ -25,14 +25,18 @@ import markdown
 
 class SaneOListProcessor(markdown.blockprocessors.OListProcessor):
     
-    CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.))[ ]+(.*)')
-    SIBLING_TAGS = ['ol']
+    def __init__(self, *args):
+        markdown.blockprocessors.OListProcessor.__init__(self, *args)
+        self.CHILD_RE = re.compile(r'^[ ]{0,%s}((\d+\.))\s+(.*)' % (self.tab_length-1))
+        self.SIBLING_TAGS = ['ol']
 
 
 class SaneUListProcessor(markdown.blockprocessors.UListProcessor):
     
-    CHILD_RE = re.compile(r'^[ ]{0,3}(([*+-]))[ ]+(.*)')
-    SIBLING_TAGS = ['ul']
+    def __init__(self, *args):
+        markdown.blockprocessors.UListProcessor.__init__(self, *args)
+        self.CHILD_RE = re.compile(r'^[ ]{0,%s}(([*+-]))\s+(.*)' % (self.tab_length-1))
+        self.SIBLING_TAGS = ['ul']
 
 
 class SaneListExtension(markdown.Extension):

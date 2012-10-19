@@ -261,8 +261,10 @@ class CodeBlockProcessor(BlockProcessor):
 
 
 class BlockQuoteProcessor(BlockProcessor):
-
-    RE = re.compile(r'(^|\n)[ ]{0,%s}>\s?(.*)' % (self.tab_length-1))
+    
+    def __init__(self, *args):
+        BlockProcessor.__init__(self, *args)
+        self.RE = re.compile(r'(^|\n)[ ]{0,%s}>\s?(.*)' % (self.tab_length-1))
 
     def test(self, parent, block):
         return bool(self.RE.search(block))
@@ -302,15 +304,8 @@ class BlockQuoteProcessor(BlockProcessor):
 
 class OListProcessor(BlockProcessor):
     """ Process ordered list blocks. """
-
+    
     TAG = 'ol'
-    # Detect an item (``1. item``). ``group(1)`` contains contents of item.
-    RE = re.compile(r'^[ ]{0,%s}\d+\.\s+(.*)' % (self.tab_length-1))
-    # Detect items on secondary lines. they can be of either list type.
-    CHILD_RE = re.compile(r'^[ ]{0,%s}((\d+\.)|[*+-])\s+(.*)' % (self.tab_length-1))
-    # Detect indented (nested) items of either type
-    INDENT_RE = re.compile(r'^(?:[ ]{%s}|\t)[ ]{0,%s}((\d+\.)|[*+-])\s+.*'
-        % (self.tab_length, self.tab_length-1))
     # The integer (python string) with which the lists starts (default=1)
     # Eg: If list is intialized as)
     #   3. Item
@@ -318,6 +313,16 @@ class OListProcessor(BlockProcessor):
     STARTSWITH = '1'
     # List of allowed sibling tags. 
     SIBLING_TAGS = ['ol', 'ul']
+    
+    def __init__(self, *args):
+        BlockProcessor.__init__(self, *args)
+        # Detect an item (``1. item``). ``group(1)`` contains contents of item.
+        self.RE = re.compile(r'^[ ]{0,%s}\d+\.\s+(.*)' % (self.tab_length-1))
+        # Detect items on secondary lines. they can be of either list type.
+        self.CHILD_RE = re.compile(r'^[ ]{0,%s}((\d+\.)|[*+-])\s+(.*)' % (self.tab_length-1))
+        # Detect indented (nested) items of either type
+        self.INDENT_RE = re.compile(r'^(?:[ ]{%s}|\t)[ ]{0,%s}((\d+\.)|[*+-])\s+.*'
+            % (self.tab_length, self.tab_length-1))
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
@@ -410,9 +415,12 @@ class OListProcessor(BlockProcessor):
 
 class UListProcessor(OListProcessor):
     """ Process unordered list blocks. """
-
+    
     TAG = 'ul'
-    RE = re.compile(r'^(?:[ ]{0,%s}|\t)[*+-]\s+(.*)' % (self.tab_length-1))
+    
+    def __init__(self, *args):
+        OListProcessor.__init__(self, *args)
+        self.RE = re.compile(r'^(?:[ ]{0,%s}|\t)[*+-]\s+(.*)' % (self.tab_length-1))
 
 
 class HashHeaderProcessor(BlockProcessor):
