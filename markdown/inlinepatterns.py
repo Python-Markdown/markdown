@@ -328,6 +328,7 @@ class LinkPattern(Pattern):
         `username:password@host:port`.
 
         """
+        url = url.replace(' ', '%20')
         if not self.markdown.safeMode:
             # Return immediately bipassing parsing.
             return url
