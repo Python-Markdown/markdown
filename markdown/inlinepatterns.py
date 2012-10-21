@@ -69,7 +69,6 @@ def build_inlinepatterns(md_instance, **kwargs):
             ReferencePattern(SHORT_REF_RE, md_instance)
     inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md_instance)
     inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md_instance)
-    inlinePatterns["linebreak2"] = SubstituteTagPattern(LINE_BREAK_2_RE, 'br')
     inlinePatterns["linebreak"] = SubstituteTagPattern(LINE_BREAK_RE, 'br')
     if md_instance.safeMode != 'escape':
         inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
@@ -119,7 +118,6 @@ AUTOMAIL_RE = r'<([^> \!]*@[^> ]*)>'               # <me@example.com>
 HTML_RE = r'(\<([a-zA-Z/][^\>]*?|\!--.*?--)\>)'               # <...>
 ENTITY_RE = r'(&[\#a-zA-Z0-9]*;)'               # &amp;
 LINE_BREAK_RE = r'  \n'                     # two spaces at end of line
-LINE_BREAK_2_RE = r'  $'                    # two spaces at end of text
 
 
 def dequote(string):
