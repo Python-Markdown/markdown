@@ -299,7 +299,7 @@ class HtmlPattern(Pattern):
             value = stash.get(id)
             if value is not None:
                 try:
-                    return self.markdown.serializer(text)
+                    return self.markdown.serializer(value)
                 except:
                     return '\%s' % value
             
