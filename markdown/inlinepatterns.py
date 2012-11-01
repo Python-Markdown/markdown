@@ -375,7 +375,7 @@ class ImagePattern(LinkPattern):
         else:
             truealt = m.group(2)
 
-        el.set('alt', truealt)
+        el.set('alt', self.unescape(truealt))
         return el
 
 class ReferencePattern(LinkPattern):
