@@ -47,7 +47,7 @@ class TestCodeHilite(unittest.TestCase):
                 '</pre></div>')
         else:
             self.assertEqual(self.md.convert(text),
-                '<pre><code>Code\n'
+                '<pre class="codehilite"><code># A Code Comment'
                 '</code></pre>')
 
 
