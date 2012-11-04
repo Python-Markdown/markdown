@@ -73,7 +73,7 @@ The above results in the following output:
 To define attributes on inline elements, the attribute list should be defined 
 immediately after the inline element with no whitespace.
 
-    [link](http://example.com){: class="foo bar" title="Some title! }
+    [link](http://example.com){: class="foo bar" title="Some title!" }
 
 The above results in the following output:
 
