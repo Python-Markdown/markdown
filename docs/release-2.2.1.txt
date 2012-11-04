@@ -1,0 +1,12 @@
+title:      Release Notes for v2.2.1
+prev_title: Change Log
+prev_url:   change_log.html
+next_title: Release Notes for v2.2.0
+next_url:   release-2.2.0.html
+
+Python-Markdown 2.2.1 Release Notes
+===================================
+
+Python-Markdown 2.2.1 is a bug-fix release. No new features have been added.
+However, at least one bug fix does not work in Python 2.4 so that version of
+Python is no longer supported. For a full list of changes, see the git log.
