@@ -380,7 +380,7 @@ class Markdown:
                 # Don't close here. User may want to write more.
         else:
             # Encode manually and write bytes to stdout. 
-            html = html.encode(encoding, errors="xmlcharrefreplace")
+            html = html.encode(encoding, "xmlcharrefreplace")
             try:
                 # Write bytes directly to buffer (Python 3).
                 sys.stdout.buffer.write(html)
