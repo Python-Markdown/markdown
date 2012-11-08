@@ -379,15 +379,14 @@ class Markdown:
                 output_file.write(html)
                 # Don't close here. User may want to write more.
         else:
-            if sys.stdout.encoding:
-                # If we are in Python 3 or if we are not piping output:
+            # Encode manually and write bytes to stdout. 
+            html = html.encode(encoding, errors="xmlcharrefreplace")
+            try:
+                # Write bytes directly to buffer (Python 3).
+                sys.stdout.buffer.write(html)
+            except AttributeError:
+                # Probably Python 2, which works with bytes by default.
                 sys.stdout.write(html)
-            else:
-                # In python 2.x if you pipe output on command line,
-                # sys.stdout.encoding is None. So lets set it:
-                writer = codecs.getwriter(encoding)
-                stdout = writer(sys.stdout, errors="xmlcharrefreplace")
-                stdout.write(html)
 
         return self
 
