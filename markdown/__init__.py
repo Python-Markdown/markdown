@@ -37,7 +37,6 @@ import re
 import codecs
 import sys
 import logging
-import warnings
 import util
 from preprocessors import build_preprocessors
 from blockprocessors import build_block_parser

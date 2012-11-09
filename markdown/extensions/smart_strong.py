@@ -22,7 +22,6 @@ Copyright 2011
 
 '''
 
-import re
 import markdown
 from markdown.inlinepatterns import SimpleTagPattern
 
