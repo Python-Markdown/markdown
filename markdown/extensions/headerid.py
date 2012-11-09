@@ -77,9 +77,7 @@ Dependencies:
 """
 
 import markdown
-from markdown.util import etree
 import re
-from string import ascii_lowercase, digits, punctuation
 import logging
 import unicodedata
 

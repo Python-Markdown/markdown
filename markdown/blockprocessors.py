@@ -485,7 +485,7 @@ class HRProcessor(BlockProcessor):
             # Recursively parse lines before hr so they get parsed first.
             self.parser.parseBlocks(parent, [prelines])
         # create hr
-        hr = util.etree.SubElement(parent, 'hr')
+        util.etree.SubElement(parent, 'hr')
         # check for lines in block after hr.
         postlines = block[self.match.end():].lstrip('\n')
         if postlines:

@@ -1,4 +1,3 @@
-import re
 import inlinepatterns
 import util
 import odict

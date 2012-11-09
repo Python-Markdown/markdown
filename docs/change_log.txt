@@ -9,7 +9,7 @@ Python-Markdown Changelog
 
 Nov 4, 2012: Released version 2.2.1 ([Notes](release-2.2.1.html)).
 
-Jul 5, 2012: Released version 2.2.0 (Notes](release-2.2.0.html)).
+Jul 5, 2012: Released version 2.2.0 ([Notes](release-2.2.0.html)).
 
 Jan 22, 2012: Released version 2.1.1 ([Notes](release-2.1.1.html)).
 
