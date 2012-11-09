@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import re
-from logging import CRITICAL
-
 import etree_loader
 
 

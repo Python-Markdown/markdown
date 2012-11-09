@@ -45,7 +45,6 @@ import util
 import odict
 import re
 from urlparse import urlparse, urlunparse
-import sys
 # If you see an ImportError for htmlentitydefs after using 2to3 to convert for 
 # use by Python3, then you are probably using the buggy version from Python 3.0.
 # We recomend using the tool from Python 3.1 even if you will be running the 

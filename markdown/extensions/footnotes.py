@@ -125,7 +125,7 @@ class FootnoteExtension(markdown.Extension):
 
         div = etree.Element("div")
         div.set('class', 'footnote')
-        hr = etree.SubElement(div, "hr")
+        etree.SubElement(div, "hr")
         ol = etree.SubElement(div, "ol")
 
         for id in self.footnotes.keys():
