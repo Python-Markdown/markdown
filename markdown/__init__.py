@@ -36,6 +36,7 @@ version_info = (2,2,1, "final")
 import re
 import codecs
 import sys
+import os
 import logging
 import util
 from preprocessors import build_preprocessors
@@ -349,6 +350,10 @@ class Markdown:
         # Read the source
         if input:
             if isinstance(input, str):
+                if not os.path.exists(input) or not os.path.isfile(input):
+                  print ("Input file: " + input + " does not exist.")
+                  print ("Cannot continue, exiting.")
+                  sys.exit(1)
                 input_file = codecs.open(input, mode="r", encoding=encoding)
             else:
                 input_file = codecs.getreader(encoding)(input)
