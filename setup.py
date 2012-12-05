@@ -17,7 +17,21 @@ except ImportError:
         raise ImportError("build_py_2to3 is required to build in Python 3.x.")
     from distutils.command.build_py import build_py
 
-version = '2.2.1'
+# Get version & version_info without importing markdown
+execfile(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+                      'markdown/__version__.py'))
+
+# Get development Status for classifiers
+dev_status_map = {
+    'alpha': '3 - Alpha',
+    'beta' : '4 - Beta',
+    'rc'   : '4 - Beta',
+    'final': '5 - Production/Stable'
+}
+if version_info[3] == 'alpha' and version_info[4] == 0:
+    DEVSTATUS = '2 - Pre-Alpha'
+else:
+    DEVSTATUS = dev_status_map[version_info[3]]
 
 # The command line script name.  Currently set to "markdown_py" so as not to
 # conflict with the perl implimentation (which uses "markdown").  We can't use
@@ -204,7 +218,7 @@ data = dict(
                      'build_py': build_py,
                      'build_docs': build_docs,
                      'build': md_build},
-    classifiers =   ['Development Status :: 5 - Production/Stable',
+    classifiers =   ['Development Status :: %s' % DEVSTATUS,
                      'License :: OSI Approved :: BSD License',
                      'Operating System :: OS Independent',
                      'Programming Language :: Python',

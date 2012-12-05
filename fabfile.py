@@ -95,7 +95,7 @@ def build_envs():
 
 def build_release():
     """ Build a package for distribution. """
-    ans = prompt('Have you updated the version in both setup.py and __init__.py?', default='Y')
+    ans = prompt('Have you updated the version_info in __version__.py?', default='Y')
     if ans.lower() == 'y':
         local('./setup.py sdist --formats zip,gztar')
         if platform == 'win32':
