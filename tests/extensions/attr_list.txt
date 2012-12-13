@@ -33,3 +33,4 @@ Now test overrides
 Also a codespan: `{: .someclass}`{: .foo}.
 {: #the_end}
 
+### Bad Syntax { {: #hash5 }

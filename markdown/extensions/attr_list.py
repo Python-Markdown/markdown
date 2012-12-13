@@ -67,6 +67,10 @@ class AttrListTreeprocessor(markdown.treeprocessors.Treeprocessor):
     HEADER_RE = re.compile(r'[ ]*%s[ ]*$' % BASE_RE)
     BLOCK_RE = re.compile(r'\n[ ]*%s[ ]*$' % BASE_RE)
     INLINE_RE = re.compile(r'^%s' % BASE_RE)
+    NAME_RE = re.compile(r'[^A-Z_a-z\xc0-\xd6\xd8-\xf6\u00f8-\u02ff\u0370-\u037d'
+                          '\u037f-\u1fff\u200c-\u200d\u2070-\u218f\u2c00-\u2fef'
+                          '\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd\u10000-\ueffff'
+                          '\-\.0-9\xb7\u0300-\u036f\u203f-\u2040]+')
 
     def run(self, doc):
         for elem in doc.getiterator():
@@ -114,8 +118,15 @@ class AttrListTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 else:
                     elem.set('class', v)
             else:
-                # assing attr k with v
-                elem.set(k, v)
+                # assign attr k with v
+                elem.set(self.sanitize_name(k), v)
+
+    def sanitize_name(self, name):
+        """
+        Sanitize name as 'an XML Name, minus the ":"'.
+        See http://www.w3.org/TR/REC-xml-names/#NT-NCName
+        """
+        return self.NAME_RE.sub('_', name)
 
 
 class AttrListExtension(markdown.extensions.Extension):
