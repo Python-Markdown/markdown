@@ -74,7 +74,6 @@ class AttrListTreeprocessor(markdown.treeprocessors.Treeprocessor):
 
     def run(self, doc):
         for elem in doc.getiterator():
-            #import pdb; pdb.set_trace()
             if isBlockLevel(elem.tag):
                 # Block level: check for attrs on last line of text
                 RE = self.BLOCK_RE
@@ -131,12 +130,7 @@ class AttrListTreeprocessor(markdown.treeprocessors.Treeprocessor):
 
 class AttrListExtension(markdown.extensions.Extension):
     def extendMarkdown(self, md, md_globals):
-        if 'headerid' in md.treeprocessors.keys():
-            # insert after 'headerid' treeprocessor
-            md.treeprocessors.add('attr_list', AttrListTreeprocessor(md), '>headerid')
-        else:
-            # insert after 'inline' treeprocessor
-            md.treeprocessors.add('attr_list', AttrListTreeprocessor(md), '>inline')
+        md.treeprocessors.add('attr_list', AttrListTreeprocessor(md), '>inline')
 
 
 def makeExtension(configs={}):
