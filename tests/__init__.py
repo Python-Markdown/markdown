@@ -90,10 +90,11 @@ class CheckSyntax(object):
             input = f.read()
         output_file = file + config.get(cfg_section, 'output_ext') 
         with codecs.open(output_file, encoding="utf-8") as f:
-            expected_output = f.read()
+            # Normalize line endings (on windows, git may have altered line endings).
+            expected_output = f.read().replace("\r\n", "\n")
         output = markdown.markdown(input, **get_args(file, config))
         if tidy and config.get(cfg_section, 'normalize'):
-            # Normalize whitespace before comparing.
+            # Normalize whitespace with Tidy before comparing.
             expected_output = normalize(expected_output)
             output = normalize(output)
         elif config.get(cfg_section, 'normalize'):
