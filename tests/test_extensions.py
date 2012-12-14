@@ -7,6 +7,7 @@ continue to work as advertised. This used to be accomplished by doctests.
 
 """
 
+from __future__ import unicode_literals
 import unittest
 import markdown
 

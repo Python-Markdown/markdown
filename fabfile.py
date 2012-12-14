@@ -58,8 +58,7 @@ def build_tests(version=_pyversion[:3]):
     if version.startswith('3'):
         # Do 2to3 conversion
         local('2to3-%s -w -d build/test.%s/markdown' % (version, version))
-        local('2to3-%s -w build/test.%s/tests' % (version, version))
-        local('2to3-%s -w build/test.%s/run-tests.py' % (version, version))
+
 
 def generate_test(file):
     """ Generate a given test. """

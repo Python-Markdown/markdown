@@ -1,5 +1,5 @@
 import traceback
-from util import MarkdownSyntaxError
+from .util import MarkdownSyntaxError
 from nose.plugins import Plugin
 from nose.plugins.errorclass import ErrorClass, ErrorClassPlugin
 
@@ -73,7 +73,7 @@ or ""))
             self.html.extend(['<span>FAILED (',
                               'failures=%d ' % len(result.failures),
                               'errors=%d' % len(result.errors)])
-            for cls in result.errorClasses.keys():
+            for cls in list(result.errorClasses.keys()):
                 storage, label, isfail = result.errorClasses[cls]
                 if len(storage):
                     self.html.append(' %ss=%d' % (label, len(storage)))
