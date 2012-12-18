@@ -8,6 +8,7 @@ from distutils.command.build import build
 from distutils.core import Command
 from distutils.util import change_root, newer
 import codecs
+import imp
 
 # Try to run 2to3 automaticaly when building in Python 3.x
 try:
@@ -17,9 +18,17 @@ except ImportError:
         raise ImportError("build_py_2to3 is required to build in Python 3.x.")
     from distutils.command.build_py import build_py
 
-# Get version & version_info without importing markdown
-execfile(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
-                      'markdown/__version__.py'))
+def get_version():
+    " Get version & version_info without importing markdown.__init__ "
+    path = os.path.join(os.path.dirname(__file__), 'markdown')
+    fp, pathname, desc = imp.find_module('__version__', [path])
+    try:
+        v = imp.load_module('__version__', fp, pathname, desc)
+        return v.version, v.version_info
+    finally:
+        fp.close()
+
+version, version_info = get_version()
 
 # Get development Status for classifiers
 dev_status_map = {
