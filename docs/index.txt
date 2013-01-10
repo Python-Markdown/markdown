@@ -15,6 +15,18 @@ for the syntax rules.
 
 See the [installation instructions](install.html) to get started.
 
+Goals
+-----
+
+The Python-Markdown project is developed with the following goals in mind:
+
+* Maintain a python implementation of markdown that follows the 
+  [syntax rules](http://daringfireball.net/projects/markdown/syntax)
+  and the behavior of the original (markdown.pl) implementation as reasonably
+  as possible (see [differences](#differences) for a few exceptions).
+* Provide an [Extension API](extensions/api.html) which allows any behaviors of 
+  the parser to be overridden/changed.
+
 Features
 --------
 
@@ -55,8 +67,9 @@ Differences
 -----------
 
 While Python-Markdown strives to fully implement markdown as described in the 
-syntax rules, the rules can be interpreted in different ways and different 
-implementations occasionally vary in their behavior (see the 
+[syntax rules](http://daringfireball.net/projects/markdown/syntax), the rules 
+can be interpreted in different ways and different implementations 
+occasionally vary in their behavior (see the 
 [Babelmark FAQ](http://johnmacfarlane.net/babelmark2/faq.html#what-are-some-examples-of-interesting-divergences-between-implementations)
 for some examples). Known and intentional differences found in Python-Markdown 
 are summarized below:
