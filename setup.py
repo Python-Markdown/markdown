@@ -209,7 +209,7 @@ You may ask for help and discuss various other issues on the
 .. _`bug tracker`: http://github.com/waylan/Python-Markdown/issues
 '''
 
-data = dict(
+setup(
     name =          'Markdown',
     version =       version,
     url =           'http://packages.python.org/Markdown/',
@@ -247,9 +247,3 @@ data = dict(
                      'Topic :: Text Processing :: Markup :: HTML',
                     ],
     )
-
-if sys.version[:3] < '2.5':
-    data['install_requires'] = ['elementtree']
-
-setup(**data)
-
