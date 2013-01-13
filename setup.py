@@ -183,8 +183,19 @@ class build_docs(Command):
 
 class md_build(build):
     """ Run "build_docs" command from "build" command. """
+
+    user_options = build.user_options + [
+        ('no-build-docs', None, 'do not build documentation'),
+        ]
+
+    boolean_options = build.boolean_options + ['build-docs']
+
+    def initialize_options(self):
+        build.initialize_options(self)
+        self.no_build_docs = False
+
     def has_docs(self):
-        return True
+        return not self.no_build_docs
 
     sub_commands = build.sub_commands + [('build_docs', has_docs)]
 
