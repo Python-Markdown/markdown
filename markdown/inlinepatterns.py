@@ -432,6 +432,10 @@ class ImageReferencePattern(ReferencePattern):
         el.set("src", self.sanitize_url(href))
         if title:
             el.set("title", title)
+
+        if self.markdown.enable_attributes:
+            text = handleAttributes(text, el)
+
         el.set("alt", self.unescape(text))
         return el
 
