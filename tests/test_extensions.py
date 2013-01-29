@@ -11,6 +11,39 @@ from __future__ import unicode_literals
 import unittest
 import markdown
 
+class SmilieProcessor(markdown.preprocessors.Preprocessor):
+    def run(self, lines):
+        for line in lines:
+            yield line.replace(':(', ':)')
+
+class Smilies(markdown.Extension):
+    name = "smilies"
+    def extendMarkdown(self, md, md_globals):
+        md.preprocessors.add("smilie-processor", SmilieProcessor(), "_begin")
+
+    @staticmethod
+    def makeExtension(config):
+        return Smilies()
+
+class BrokenSmilies(markdown.Extension):
+    name = "broken-smilies"
+
+
+class TestMetaClassLoading(unittest.TestCase):
+    """ Test loading extensions that got registered by meta classes """
+
+    def test_meta_class_loading(self):
+        md = markdown.Markdown(extensions = ['smilies'])
+        text = md.convert(':(')
+        self.assertEqual('<p>:)</p>', text)
+
+    def test_static_method_assertion(self):
+        def md():
+            return markdown.Markdown(extensions = ['broken-smilies'])
+
+        self.assertRaises(AssertionError, md)
+        
+
 class TestAbbr(unittest.TestCase):
     """ Test abbr extension. """
 

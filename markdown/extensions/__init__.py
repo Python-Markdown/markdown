@@ -3,8 +3,21 @@ Extensions
 -----------------------------------------------------------------------------
 """
 
+registry = {}
+
+class ExtensionMetaClass(type):
+    def __new__(cls, name, bases, attrs):
+        Extension =  super(ExtensionMetaClass, cls).__new__(cls, name, bases, attrs)
+
+        if hasattr(Extension, 'name'):
+            registry[Extension.name] = Extension
+
+        return Extension
+
+
 class Extension:
     """ Base class for extensions to subclass. """
+    __metaclass__ = ExtensionMetaClass
     def __init__(self, configs = {}):
         """Create an instance of an Extention.
 
