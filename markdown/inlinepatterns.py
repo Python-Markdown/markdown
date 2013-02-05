@@ -364,6 +364,9 @@ class LinkPattern(Pattern):
                 # Not a safe url
                 return ''
 
+        if scheme == 'javascript':
+            return ''
+
         # Url passes all tests. Return url as-is.
         return urlunparse(url)
 
