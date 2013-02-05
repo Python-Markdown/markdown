@@ -1,0 +1,3 @@
+[XSS](javascript://%0Aalert%28'XSS'%29;)
+See http://security.stackexchange.com/q/30330/1261 for details.
+
