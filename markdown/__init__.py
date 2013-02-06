@@ -283,8 +283,8 @@ class Markdown:
 
         source = source.replace(util.STX, "").replace(util.ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
-        source = re.sub(r'\n\s+\n', '\n\n', source)
         source = source.expandtabs(self.tab_length)
+        source = re.sub(r'\n +\n', '\n\n', source)
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
