@@ -31,6 +31,7 @@ FN_BACKLINK_TEXT = "zz1337820767766393qq"
 NBSP_PLACEHOLDER =  "qq3936677670287331zz"
 DEF_RE = re.compile(r'[ ]{0,3}\[\^([^\]]*)\]:\s*(.*)')
 TABBED_RE = re.compile(r'((\t)|(    ))(.*)')
+WHITESPACE_RE = re.compile(r'\s+')
 
 class FootnoteExtension(markdown.Extension):
     """ Footnote Extension. """
@@ -46,7 +47,11 @@ class FootnoteExtension(markdown.Extension):
                         "multiple calls to reset()."],
                        "BACKLINK_TEXT":
                        ["&#8617;",
-                        "The text string that links from the footnote to the reader's place."]
+                        "The text string that links from the footnote to the reader's place."],
+                       "FOOTNOTE_TITLE_MAX_CHARS":
+                       [160,
+                        "Maximum number of characters of footnote text which"
+                        " will be used in the title of the link."]
                        }
 
         for key, value in configs:
@@ -250,6 +255,14 @@ class FootnotePattern(markdown.inlinepatterns.Pattern):
     def __init__(self, pattern, footnotes):
         markdown.inlinepatterns.Pattern.__init__(self, pattern)
         self.footnotes = footnotes
+        self.title_max_chars = footnotes.getConfig("FOOTNOTE_TITLE_MAX_CHARS")
+
+    def getFootnoteTitle(self, fn_id):
+        """Convert and truncate footnote text for title attribute."""
+        text = WHITESPACE_RE.sub(' ', self.footnotes.footnotes[fn_id]).strip()
+        if self.title_max_chars > 0 and len(text) > self.title_max_chars:
+            return text[:self.title_max_chars] + "[...]"
+        return text
 
     def handleMatch(self, m):
         id = m.group(2)
@@ -261,6 +274,8 @@ class FootnotePattern(markdown.inlinepatterns.Pattern):
             if self.footnotes.md.output_format not in ['html5', 'xhtml5']:
                 a.set('rel', 'footnote') # invalid in HTML5
             a.set('class', 'footnote-ref')
+            # Deliberately not parsed here, as we require plain text.
+            a.set('title', self.getFootnoteTitle(id))
             a.text = unicode(self.footnotes.footnotes.index(id) + 1)
             return sup
         else:
