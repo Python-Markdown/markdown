@@ -48,7 +48,9 @@ class DefListProcessor(markdown.blockprocessors.BlockProcessor):
         else:
             d = m.group(2)
         sibling = self.lastChild(parent)
-        if not terms and sibling.tag == 'p':
+        if not terms and sibling==None:
+            state = 'list'
+        elif not terms and sibling.tag == 'p':
             # The previous paragraph contains the terms
             state = 'looselist'
             terms = sibling.text.split('\n')
