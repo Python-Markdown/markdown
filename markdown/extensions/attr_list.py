@@ -130,7 +130,7 @@ class AttrListTreeprocessor(markdown.treeprocessors.Treeprocessor):
 
 class AttrListExtension(markdown.extensions.Extension):
     def extendMarkdown(self, md, md_globals):
-        md.treeprocessors.add('attr_list', AttrListTreeprocessor(md), '>inline')
+        md.treeprocessors.add('attr_list', AttrListTreeprocessor(md), '>prettify')
 
 
 def makeExtension(configs={}):

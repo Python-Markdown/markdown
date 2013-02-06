@@ -187,8 +187,8 @@ class HeaderIdExtension (markdown.Extension):
             # insert after attr_list treeprocessor
             md.treeprocessors.add('headerid', self.processor, '>attr_list')
         else:
-            # insert after 'inline' treeprocessor.
-            md.treeprocessors.add('headerid', self.processor, '>inline')
+            # insert after 'prettify' treeprocessor.
+            md.treeprocessors.add('headerid', self.processor, '>prettify')
 
     def reset(self):
         self.processor.IDs = []
