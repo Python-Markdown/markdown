@@ -354,18 +354,19 @@ class LinkPattern(Pattern):
             return ''
         
         locless_schemes = ['', 'mailto', 'news']
+        allowed_schemes = locless_schemes + ['http', 'https', 'ftp', 'ftps']
+        if scheme not in allowed_schemes:
+            # Not a known (allowed) scheme. Not safe.
+            return ''
+            
         if netloc == '' and scheme not in locless_schemes:
-            # This fails regardless of anything else. 
-            # Return immediately to save additional proccessing
+            # This should not happen. Treat as suspect.
             return ''
 
         for part in url[2:]:
             if ":" in part:
-                # Not a safe url
+                # A colon in "path", "parameters", "query" or "fragment" is suspect.
                 return ''
-
-        if scheme == 'javascript':
-            return ''
 
         # Url passes all tests. Return url as-is.
         return urlunparse(url)
