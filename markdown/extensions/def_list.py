@@ -27,8 +27,11 @@ from markdown.util import etree
 class DefListProcessor(markdown.blockprocessors.BlockProcessor):
     """ Process Definition Lists. """
 
-    RE = re.compile(r'(^|\n)[ ]{0,3}:[ ]{1,3}(.*?)(\n|$)')
-    NO_INDENT_RE = re.compile(r'^[ ]{0,3}[^ :]')
+    def __init__(self, *args):
+        markdown.blockprocessors.BlockProcessor.__init__(self, *args)
+        self.RE = re.compile(r'(^|\n)[ ]{0,%(l)s}:(?:[ ]{1,%(l)s}|\t)(.*?)(\n|$)'
+            % {'l': (self.tab_length-1)})
+        self.NO_INDENT_RE = re.compile(r'^[ ]{0,%s}[^ :]' % (self.tab_length-1))
 
     def test(self, parent, block):
         return bool(self.RE.search(block))

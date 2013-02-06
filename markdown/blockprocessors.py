@@ -65,6 +65,8 @@ class BlockProcessor:
         for line in lines:
             if line.startswith(' '*self.tab_length):
                 newtext.append(line[self.tab_length:])
+            elif line.startswith('\t'):
+                newtext.append(line[1:])
             elif not line.strip():
                 newtext.append('')
             else:
@@ -75,8 +77,15 @@ class BlockProcessor:
         """ Remove a tab from front of lines but allowing dedented lines. """
         lines = text.split('\n')
         for i in range(len(lines)):
-            if lines[i].startswith(' '*self.tab_length*level):
-                lines[i] = lines[i][self.tab_length*level:]
+            levels = level
+            while levels:
+                levels -= 1
+                if lines[i].startswith(' '*self.tab_length):
+                    lines[i] = lines[i][self.tab_length:]
+                elif lines[i].startswith('\t'):
+                    lines[i] = lines[i][1:]
+                else:
+                    break
         return '\n'.join(lines)
 
     def test(self, parent, block):
@@ -140,10 +149,10 @@ class ListIndentProcessor(BlockProcessor):
 
     def __init__(self, *args):
         BlockProcessor.__init__(self, *args)
-        self.INDENT_RE = re.compile(r'^(([ ]{%s})+)'% self.tab_length)
+        self.INDENT_RE = re.compile(r'^(([ ]{%s}|\t)+)'% self.tab_length)
 
     def test(self, parent, block):
-        return block.startswith(' '*self.tab_length) and \
+        return block.startswith((' '*self.tab_length, '\t')) and \
                 not self.parser.state.isstate('detabbed') and  \
                 (parent.tag in self.ITEM_TYPES or \
                     (len(parent) and parent[-1] and \
@@ -197,7 +206,7 @@ class ListIndentProcessor(BlockProcessor):
         # Get indent level
         m = self.INDENT_RE.match(block)
         if m:
-            indent_level = len(m.group(1))/self.tab_length
+            indent_level = m.group(1).count(' ')/self.tab_length + m.group(1).count('\t')
         else:
             indent_level = 0
         if self.parser.state.isstate('list'):
@@ -224,7 +233,7 @@ class CodeBlockProcessor(BlockProcessor):
     """ Process code blocks. """
 
     def test(self, parent, block):
-        return block.startswith(' '*self.tab_length)
+        return block.startswith((' '*self.tab_length, '\t'))
     
     def run(self, parent, blocks):
         sibling = self.lastChild(parent)
@@ -252,8 +261,10 @@ class CodeBlockProcessor(BlockProcessor):
 
 
 class BlockQuoteProcessor(BlockProcessor):
-
-    RE = re.compile(r'(^|\n)[ ]{0,3}>[ ]?(.*)')
+    
+    def __init__(self, *args):
+        BlockProcessor.__init__(self, *args)
+        self.RE = re.compile(r'(^|\n)[ ]{0,%s}>\s?(.*)' % (self.tab_length-1))
 
     def test(self, parent, block):
         return bool(self.RE.search(block))
@@ -293,14 +304,8 @@ class BlockQuoteProcessor(BlockProcessor):
 
 class OListProcessor(BlockProcessor):
     """ Process ordered list blocks. """
-
+    
     TAG = 'ol'
-    # Detect an item (``1. item``). ``group(1)`` contains contents of item.
-    RE = re.compile(r'^[ ]{0,3}\d+\.[ ]+(.*)')
-    # Detect items on secondary lines. they can be of either list type.
-    CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.)|[*+-])[ ]+(.*)')
-    # Detect indented (nested) items of either type
-    INDENT_RE = re.compile(r'^[ ]{4,7}((\d+\.)|[*+-])[ ]+.*')
     # The integer (python string) with which the lists starts (default=1)
     # Eg: If list is intialized as)
     #   3. Item
@@ -308,6 +313,16 @@ class OListProcessor(BlockProcessor):
     STARTSWITH = '1'
     # List of allowed sibling tags. 
     SIBLING_TAGS = ['ol', 'ul']
+    
+    def __init__(self, *args):
+        BlockProcessor.__init__(self, *args)
+        # Detect an item (``1. item``). ``group(1)`` contains contents of item.
+        self.RE = re.compile(r'^[ ]{0,%s}\d+\.\s+(.*)' % (self.tab_length-1))
+        # Detect items on secondary lines. they can be of either list type.
+        self.CHILD_RE = re.compile(r'^[ ]{0,%s}((\d+\.)|[*+-])\s+(.*)' % (self.tab_length-1))
+        # Detect indented (nested) items of either type
+        self.INDENT_RE = re.compile(r'^(?:[ ]{%s}|\t)[ ]{0,%s}((\d+\.)|[*+-])\s+.*'
+            % (self.tab_length, self.tab_length-1))
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
@@ -362,7 +377,7 @@ class OListProcessor(BlockProcessor):
         # Loop through items in block, recursively parsing each with the
         # appropriate parent.
         for item in items:
-            if item.startswith(' '*self.tab_length):
+            if item.startswith((' '*self.tab_length, '\t')):
                 # Item is indented. Parse with last item as parent
                 self.parser.parseBlocks(lst[-1], [item])
             else:
@@ -387,7 +402,7 @@ class OListProcessor(BlockProcessor):
                 items.append(m.group(3))
             elif self.INDENT_RE.match(line):
                 # This is an indented (possibly nested) item.
-                if items[-1].startswith(' '*self.tab_length):
+                if items[-1].startswith((' '*self.tab_length, '\t')):
                     # Previous item was indented. Append to that item.
                     items[-1] = '%s\n%s' % (items[-1], line)
                 else:
@@ -400,9 +415,12 @@ class OListProcessor(BlockProcessor):
 
 class UListProcessor(OListProcessor):
     """ Process unordered list blocks. """
-
+    
     TAG = 'ul'
-    RE = re.compile(r'^[ ]{0,3}[*+-][ ]+(.*)')
+    
+    def __init__(self, *args):
+        OListProcessor.__init__(self, *args)
+        self.RE = re.compile(r'^(?:[ ]{0,%s}|\t)[*+-]\s+(.*)' % (self.tab_length-1))
 
 
 class HashHeaderProcessor(BlockProcessor):

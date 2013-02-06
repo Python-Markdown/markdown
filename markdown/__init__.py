@@ -60,6 +60,7 @@ class Markdown:
         'enable_attributes'     : True,
         'smart_emphasis'        : True,
         'lazy_ol'               : True,
+        'preserve_tabs'         : False,
     }
 
     output_formats = {
@@ -283,8 +284,10 @@ class Markdown:
 
         source = source.replace(util.STX, "").replace(util.ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
+        #TODO: retain indented blank lines in code
         source = re.sub(r'\n\s+\n', '\n\n', source)
-        source = source.expandtabs(self.tab_length)
+        if not self.preserve_tabs:
+            source = source.expandtabs(self.tab_length)
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
