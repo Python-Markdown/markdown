@@ -127,7 +127,7 @@ class HtmlBlockPreprocessor(Preprocessor):
     def run(self, lines):
         text = "\n".join(lines)
         new_blocks = []
-        text = text.split("\n\n")
+        text = text.rsplit("\n\n")
         items = []
         left_tag = ''
         right_tag = ''
