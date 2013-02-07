@@ -1,0 +1,37 @@
+Preserve blank lines in code blocks
+
+    a code block
+    
+    two blank lines
+    
+    
+    three blank lines
+    
+    
+    
+    four blank lines
+    
+    
+    
+    
+    five blank lines
+    
+    
+    
+    
+    
+    six blank lines
+    
+    
+    
+    
+    
+    
+    End of block
+    
+    
+    
+    
+    
+    
+End of document
