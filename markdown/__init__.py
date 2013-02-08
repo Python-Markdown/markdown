@@ -132,9 +132,9 @@ class Markdown:
 
         self.references = {}
         self.htmlStash = util.HtmlStash()
+        self.set_output_format(kwargs.get('output_format', 'xhtml1'))
         self.registerExtensions(extensions=kwargs.get('extensions', []),
                                 configs=kwargs.get('extension_configs', {}))
-        self.set_output_format(kwargs.get('output_format', 'xhtml1'))
         self.reset()
 
     def build_parser(self):

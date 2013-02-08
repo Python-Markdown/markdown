@@ -23,6 +23,12 @@ The whitelesited schemes are: 'http', 'https', 'ftp', 'ftps', 'mailto',
 'news'. Schemeless urls are also permitted, but are checked in other ways - 
 as they have been for some time.
 
+* The ids assigned to footnotes now contain a dash (`-`) rather than a colon
+(`:`) when `output_format` it set to "html5" or "xhtml5". If you are making
+reference to those ids in your JavaScript or CSS and using the HTML5 output,
+you will need to update your code accordingly. No changes are necessary if
+you are outputing XHTML (the default) or HTML4.
+
 What's New in Python-Markdown 2.3
 ---------------------------------
 
