@@ -55,24 +55,60 @@ The following options are available on the `markdown.markdown` function:
 
 * __`extensions`__{: #extensions }: A list of extensions.
 
-    Python-Markdown provides an API for third parties to write extensions to
-    the parser adding their own additions or changes to the syntax. A few
-    commonly used extensions are shipped with the markdown library. See
-    the [extension documentation](extensions/index.html) for a list of 
-    available extensions.
+    Python-Markdown provides an [API](extensions/api.html) for third parties to
+    write extensions to the parser adding their own additions or changes to the
+    syntax. A few commonly used extensions are shipped with the markdown 
+    library. See the [extension documentation](extensions/index.html) for a 
+    list of available extensions.
 
-    The list of extensions may contain instances of extensions or strings of
-    extension names. If an extension name is provided as a string, the
-    extension must be importable as a python module either within the 
-    `markdown.extensions` package or on your PYTHONPATH with a name starting 
-    with `mdx_`, followed by the name of the extension.  Thus, 
-    `extensions=['extra']` will first look for the module 
-    `markdown.extensions.extra`, then a module named `mdx_extra`. 
+    The list of extensions may contain instances of extensions and/or strings 
+    of extension names. 
+
+        extensions=[MyExtension(), 'path.to.my.ext', 'extra']
+    
+    When passing in extension instances, each class instance must be a subclass
+    of `markdown.extensions.Extension` and any configuration options should be 
+    defined when initiating the class instance rather than using the 
+    [extension_configs](#extension_configs) keyword. For example:
+
+        from markdown.extensions import Extension
+        class MyExtension(Extension):
+            # define your extension here...
+    
+        markdown.markdown(text, extensions=[MyExtension(configs={'option': 'value'}))
+
+    If an extension name is provided as a string, the extension must be 
+    importable as a python module on your PYTHONPATH. Python's dot notation is 
+    supported. Therefore, to import the 'extra' extension, one could do 
+    `extensions=['markdown.extensions.extra']` However, if no dots are provided 
+    in the string (`extensions=['extra']`) Markdown will first look for the 
+    module `markdown.extensions.extra` (the built-in extension), then a module 
+    named `mdx_extra` ('mdx_' will be appended to the beginning of the string) 
+    at the root of your PYTHONPATH. 
+
+    When loading an extension by name (as a sting), you may either pass in
+    configuration settings to the extension using the 
+    [extension_configs](#extension_configs) keyword or by appending the 
+    settings to the name in the following format:
+
+        extensions=['name(option1=value,option2=value)']
+    
+    Note that there are no quotes or whitespace in the above format, which 
+    severely limits how it can be used. For more complex settings, it is 
+    suggested that the [extension_configs](#extension_configs) keyword
+    be used or an instance of a class be passed in.
+
+    See the documentation of the [Extension API](extensions/api.html) for 
+    assistance in creating extensions.
 
 * __`extension_configs`__{: #extension_configs }: A dictionary of
   configuration settings for extensions.
 
-    The dictionary must be of the following format:
+    Any configuration settings will only be passed to extensions loaded by name 
+    (as a string). When loading extensions as class instances, pass the 
+    configuration settings directly to the class when initializing it. 
+    
+    The dictionary of configuration settings must be in the following format:
 
         extension_configs = {'extension_name_1':
                                [
