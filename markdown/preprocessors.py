@@ -14,6 +14,7 @@ import odict
 def build_preprocessors(md_instance, **kwargs):
     """ Build the default set of preprocessors used by Markdown. """
     preprocessors = odict.OrderedDict()
+    preprocessors['normalize_whitespace'] = NormalizeWhitespace(md_instance)
     if md_instance.safeMode != 'escape':
         preprocessors["html_block"] = HtmlBlockPreprocessor(md_instance)
     preprocessors["reference"] = ReferencePreprocessor(md_instance)
@@ -39,6 +40,18 @@ class Preprocessor(util.Processor):
 
         """
         pass
+
+
+class NormalizeWhitespace(Preprocessor):
+    """ Normalize whitespace for consistant parsing. """
+
+    def run(self, lines):
+        source = '\n'.join(lines)
+        source = source.replace(util.STX, "").replace(util.ETX, "")
+        source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
+        source = source.expandtabs(self.markdown.tab_length)
+        source = re.sub(r'\n +\n', '\n\n', source)
+        return source.split('\n')
 
 
 class HtmlBlockPreprocessor(Preprocessor):

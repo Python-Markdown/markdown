@@ -281,10 +281,10 @@ class Markdown:
             e.reason += '. -- Note: Markdown only accepts unicode input!'
             raise
 
-        source = source.replace(util.STX, "").replace(util.ETX, "")
-        source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
-        source = source.expandtabs(self.tab_length)
-        source = re.sub(r'\n +\n', '\n\n', source)
+        #source = source.replace(util.STX, "").replace(util.ETX, "")
+        #source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
+        #source = source.expandtabs(self.tab_length)
+        #source = re.sub(r'\n +\n', '\n\n', source)
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
