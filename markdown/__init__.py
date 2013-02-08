@@ -41,7 +41,7 @@ from blockprocessors import build_block_parser
 from treeprocessors import build_treeprocessors
 from inlinepatterns import build_inlinepatterns
 from postprocessors import build_postprocessors
-from extensions import Extension
+from extensions import Extension, registry
 from serializers import to_html_string, to_xhtml_string
 
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
@@ -179,6 +179,14 @@ class Markdown:
 
         # Parse extensions config params (ignore the order)
         configs = dict(configs)
+
+        # Check if the extension was created through the meta class
+        if ext_name in registry:
+            cls = registry[ext_name]
+            assert hasattr(cls, 'makeExtension'), "'%s' requires a static method 'makeExtension'" % repr(cls)
+            return cls.makeExtension(configs.items())
+            
+
         pos = ext_name.find("(") # find the first "("
         if pos > 0:
             ext_args = ext_name[pos+1:-1]

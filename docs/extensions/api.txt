@@ -594,6 +594,25 @@ For example:
 This is useful if you need to implement a large number of extensions with more
 than one residing in a module.
 
+### Named extensions
+
+If you don't want to ship your custom extension as a ``mdx_`` module,
+the third option is to name your extension class and move
+``makeExtension`` to your class as a static method:
+
+    class FootnoteExtension(markdown.Extension):
+        name = "footnotes"
+        
+        @staticmethod
+        def makeExtension(configs=None):
+            return FootnoteExtension(configs=configs)
+
+This will allow you to ship custom Markdown extensions as part of your
+package. Under the hood, :attr:`markdown.Extension` subclasses are
+registered with a meta class that keeps track of all
+`markdown.Extension` sub classes if they have a ``name`` attribute. 
+
+
 [Preprocessors]: #preprocessors
 [InlinePatterns]: #inlinepatterns
 [Treeprocessors]: #treeprocessors
