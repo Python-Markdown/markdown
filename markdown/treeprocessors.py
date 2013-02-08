@@ -357,3 +357,8 @@ class PrettifyTreeprocessor(Treeprocessor):
                 br.tail = '\n'
             else:
                 br.tail = '\n%s' % br.tail
+        # Clean up extra empty lines at end of code blocks.
+        pres = root.getiterator('pre')
+        for pre in pres:
+            if len(pre) and pre[0].tag == 'code':
+                pre[0].text = pre[0].text.rstrip() + '\n'

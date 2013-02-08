@@ -499,7 +499,7 @@ class EmptyBlockProcessor(BlockProcessor):
 
     # Detect a block that only contains whitespace 
     # or only whitespace on the first line.
-    RE = re.compile(r'(^ *$)|(^ *\n)')
+    RE = re.compile(r'^ *(\n|$)')
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
