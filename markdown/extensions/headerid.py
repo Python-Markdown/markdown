@@ -77,9 +77,7 @@ Dependencies:
 """
 
 import markdown
-from markdown.util import etree
 import re
-from string import ascii_lowercase, digits, punctuation
 import logging
 import unicodedata
 
@@ -135,7 +133,7 @@ class HeaderIdTreeprocessor(markdown.treeprocessors.Treeprocessor):
             if elem.tag in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
                 if force_id:
                     if "id" in elem.attrib:
-                        id = elem.id
+                        id = elem.get('id')
                     else:
                         id = slugify(u''.join(itertext(elem)), sep)
                     elem.set('id', unique(id, self.IDs))
@@ -185,8 +183,12 @@ class HeaderIdExtension (markdown.Extension):
         self.processor = HeaderIdTreeprocessor()
         self.processor.md = md
         self.processor.config = self.getConfigs()
-        # Replace existing hasheader in place.
-        md.treeprocessors.add('headerid', self.processor, '>inline')
+        if 'attr_list' in md.treeprocessors.keys():
+            # insert after attr_list treeprocessor
+            md.treeprocessors.add('headerid', self.processor, '>attr_list')
+        else:
+            # insert after 'prettify' treeprocessor.
+            md.treeprocessors.add('headerid', self.processor, '>prettify')
 
     def reset(self):
         self.processor.IDs = []

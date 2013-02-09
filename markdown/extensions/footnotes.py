@@ -62,6 +62,9 @@ class FootnoteExtension(markdown.Extension):
         md.registerExtension(self)
         self.parser = md.parser
         self.md = md
+        self.sep = ':'
+        if self.md.output_format in ['html5', 'xhtml5']:
+            self.sep = '-'
         # Insert a preprocessor before ReferencePreprocessor
         md.preprocessors.add("footnote", FootnotePreprocessor(self),
                              "<reference")
@@ -106,16 +109,16 @@ class FootnoteExtension(markdown.Extension):
     def makeFootnoteId(self, id):
         """ Return footnote link id. """
         if self.getConfig("UNIQUE_IDS"):
-            return 'fn:%d-%s' % (self.unique_prefix, id)
+            return 'fn%s%d-%s' % (self.sep, self.unique_prefix, id)
         else:
-            return 'fn:%s' % id
+            return 'fn%s%s' % (self.sep, id)
 
     def makeFootnoteRefId(self, id):
         """ Return footnote back-link id. """
         if self.getConfig("UNIQUE_IDS"):
-            return 'fnref:%d-%s' % (self.unique_prefix, id)
+            return 'fnref%s%d-%s' % (self.sep, self.unique_prefix, id)
         else:
-            return 'fnref:%s' % id
+            return 'fnref%s%s' % (self.sep, id)
 
     def makeFootnotesDiv(self, root):
         """ Return div of footnotes as et Element. """
@@ -125,7 +128,7 @@ class FootnoteExtension(markdown.Extension):
 
         div = etree.Element("div")
         div.set('class', 'footnote')
-        hr = etree.SubElement(div, "hr")
+        etree.SubElement(div, "hr")
         ol = etree.SubElement(div, "ol")
 
         for id in self.footnotes.keys():
@@ -171,7 +174,6 @@ class FootnotePreprocessor(markdown.preprocessors.Preprocessor):
         """
         newlines = []
         i = 0
-        #import pdb; pdb.set_trace() #for i, line in enumerate(lines):
         while True:
             m = DEF_RE.match(lines[i])
             if m:

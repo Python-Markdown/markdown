@@ -485,7 +485,7 @@ class HRProcessor(BlockProcessor):
             # Recursively parse lines before hr so they get parsed first.
             self.parser.parseBlocks(parent, [prelines])
         # create hr
-        hr = util.etree.SubElement(parent, 'hr')
+        util.etree.SubElement(parent, 'hr')
         # check for lines in block after hr.
         postlines = block[self.match.end():].lstrip('\n')
         if postlines:
@@ -499,7 +499,7 @@ class EmptyBlockProcessor(BlockProcessor):
 
     # Detect a block that only contains whitespace 
     # or only whitespace on the first line.
-    RE = re.compile(r'^\s*\n')
+    RE = re.compile(r'^ *(\n|$)')
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
@@ -508,13 +508,14 @@ class EmptyBlockProcessor(BlockProcessor):
         block = blocks.pop(0)
         m = self.RE.match(block)
         if m:
-            # Add remaining line to master blocks for later.
-            blocks.insert(0, block[m.end():])
+            theRest = block[m.end():]
+            if theRest:
+                # Add remaining lines to master blocks for later.
+                blocks.insert(0, theRest)
             sibling = self.lastChild(parent)
-            if sibling and sibling.tag == 'pre' and sibling[0] and \
-                    sibling[0].tag == 'code':
+            if sibling and sibling.tag == 'pre' and len(sibling) and sibling[0].tag == 'code':
                 # Last block is a codeblock. Append to preserve whitespace.
-                sibling[0].text = util.AtomicString('%s/n/n/n' % sibling[0].text )
+                sibling[0].text = util.AtomicString('%s\n' % sibling[0].text )
 
 
 class ParagraphProcessor(BlockProcessor):

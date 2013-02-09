@@ -30,14 +30,11 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE for details).
 """
 
-version = "2.2.0"
-version_info = (2,2,0, "final")
-
+from __version__ import version, version_info
 import re
 import codecs
 import sys
 import logging
-import warnings
 import util
 from preprocessors import build_preprocessors
 from blockprocessors import build_block_parser
@@ -135,9 +132,9 @@ class Markdown:
 
         self.references = {}
         self.htmlStash = util.HtmlStash()
+        self.set_output_format(kwargs.get('output_format', 'xhtml1'))
         self.registerExtensions(extensions=kwargs.get('extensions', []),
                                 configs=kwargs.get('extension_configs', {}))
-        self.set_output_format(kwargs.get('output_format', 'xhtml1'))
         self.reset()
 
     def build_parser(self):
@@ -284,11 +281,6 @@ class Markdown:
             e.reason += '. -- Note: Markdown only accepts unicode input!'
             raise
 
-        source = source.replace(util.STX, "").replace(util.ETX, "")
-        source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
-        source = re.sub(r'\n\s+\n', '\n\n', source)
-        source = source.expandtabs(self.tab_length)
-
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
         for prep in self.preprocessors.values():
@@ -379,15 +371,14 @@ class Markdown:
                 output_file.write(html)
                 # Don't close here. User may want to write more.
         else:
-            if sys.stdout.encoding:
-                # If we are in Python 3 or if we are not piping output:
+            # Encode manually and write bytes to stdout. 
+            html = html.encode(encoding, "xmlcharrefreplace")
+            try:
+                # Write bytes directly to buffer (Python 3).
+                sys.stdout.buffer.write(html)
+            except AttributeError:
+                # Probably Python 2, which works with bytes by default.
                 sys.stdout.write(html)
-            else:
-                # In python 2.x if you pipe output on command line,
-                # sys.stdout.encoding is None. So lets set it:
-                writer = codecs.getwriter(encoding)
-                stdout = writer(sys.stdout, errors="xmlcharrefreplace")
-                stdout.write(html)
 
         return self
 

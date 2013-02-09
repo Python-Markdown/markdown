@@ -8,6 +8,7 @@ from distutils.command.build import build
 from distutils.core import Command
 from distutils.util import change_root, newer
 import codecs
+import imp
 
 # Try to run 2to3 automaticaly when building in Python 3.x
 try:
@@ -17,7 +18,29 @@ except ImportError:
         raise ImportError("build_py_2to3 is required to build in Python 3.x.")
     from distutils.command.build_py import build_py
 
-version = '2.2.0'
+def get_version():
+    " Get version & version_info without importing markdown.__init__ "
+    path = os.path.join(os.path.dirname(__file__), 'markdown')
+    fp, pathname, desc = imp.find_module('__version__', [path])
+    try:
+        v = imp.load_module('__version__', fp, pathname, desc)
+        return v.version, v.version_info
+    finally:
+        fp.close()
+
+version, version_info = get_version()
+
+# Get development Status for classifiers
+dev_status_map = {
+    'alpha': '3 - Alpha',
+    'beta' : '4 - Beta',
+    'rc'   : '4 - Beta',
+    'final': '5 - Production/Stable'
+}
+if version_info[3] == 'alpha' and version_info[4] == 0:
+    DEVSTATUS = '2 - Pre-Alpha'
+else:
+    DEVSTATUS = dev_status_map[version_info[3]]
 
 # The command line script name.  Currently set to "markdown_py" so as not to
 # conflict with the perl implimentation (which uses "markdown").  We can't use
@@ -160,18 +183,50 @@ class build_docs(Command):
 
 class md_build(build):
     """ Run "build_docs" command from "build" command. """
+
+    user_options = build.user_options + [
+        ('no-build-docs', None, 'do not build documentation'),
+        ]
+
+    boolean_options = build.boolean_options + ['build-docs']
+
+    def initialize_options(self):
+        build.initialize_options(self)
+        self.no_build_docs = False
+
     def has_docs(self):
-        return True
+        return not self.no_build_docs
 
     sub_commands = build.sub_commands + [('build_docs', has_docs)]
 
+long_description = \
+'''This is a Python implementation of John Gruber's Markdown_. 
+It is almost completely compliant with the reference implementation,
+though there are a few known issues. See Features_ for information 
+on what exactly is supported and what is not. Additional features are 
+supported by the `Available Extensions`_.
 
-data = dict(
+.. _Markdown: http://daringfireball.net/projects/markdown/
+.. _Features: http://packages.python.org/Markdown/index.html#Features
+.. _`Available Extensions`: http://packages.python.org/Markdown/extensions/index.html
+
+Support
+=======
+
+You may ask for help and discuss various other issues on the
+`mailing list`_ and report bugs on the `bug tracker`_.
+
+.. _`mailing list`: http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss
+.. _`bug tracker`: http://github.com/waylan/Python-Markdown/issues
+'''
+
+setup(
     name =          'Markdown',
     version =       version,
     url =           'http://packages.python.org/Markdown/',
     download_url =  'http://pypi.python.org/packages/source/M/Markdown/Markdown-%s.tar.gz' % version,
     description =   'Python implementation of Markdown.',
+    long_description = long_description,
     author =        'Manfred Stienstra, Yuri takhteyev and Waylan limberg',
     author_email =  'markdown [at] freewisdom.org',
     maintainer =    'Waylan Limberg',
@@ -183,12 +238,11 @@ data = dict(
                      'build_py': build_py,
                      'build_docs': build_docs,
                      'build': md_build},
-    classifiers =   ['Development Status :: 5 - Production/Stable',
+    classifiers =   ['Development Status :: %s' % DEVSTATUS,
                      'License :: OSI Approved :: BSD License',
                      'Operating System :: OS Independent',
                      'Programming Language :: Python',
                      'Programming Language :: Python :: 2',
-                     'Programming Language :: Python :: 2.4',
                      'Programming Language :: Python :: 2.5',
                      'Programming Language :: Python :: 2.6',
                      'Programming Language :: Python :: 2.7',
@@ -204,9 +258,3 @@ data = dict(
                      'Topic :: Text Processing :: Markup :: HTML',
                     ],
     )
-
-if sys.version[:3] < '2.5':
-    data['install_requires'] = ['elementtree']
-
-setup(**data)
-

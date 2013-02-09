@@ -34,10 +34,11 @@ class DefListProcessor(markdown.blockprocessors.BlockProcessor):
         return bool(self.RE.search(block))
 
     def run(self, parent, blocks):
-        block = blocks.pop(0)
-        m = self.RE.search(block)
-        terms = [l.strip() for l in block[:m.start()].split('\n') if l.strip()]
-        block = block[m.end():]
+
+        raw_block = blocks.pop(0)
+        m = self.RE.search(raw_block)
+        terms = [l.strip() for l in raw_block[:m.start()].split('\n') if l.strip()]
+        block = raw_block[m.end():]
         no_indent = self.NO_INDENT_RE.match(block)
         if no_indent:
             d, theRest = (block, None)
@@ -48,6 +49,11 @@ class DefListProcessor(markdown.blockprocessors.BlockProcessor):
         else:
             d = m.group(2)
         sibling = self.lastChild(parent)
+        if not terms and sibling is None:
+            # This is not a definition item. Most likely a paragraph that 
+            # starts with a colon at the begining of a document or list.
+            blocks.insert(0, raw_block)
+            return False
         if not terms and sibling.tag == 'p':
             # The previous paragraph contains the terms
             state = 'looselist'

@@ -7,12 +7,15 @@ Tests of the various APIs with the python markdown lib.
 
 """
 
+from __future__ import unicode_literals
 import unittest
 import os
 import sys
 import types
 import markdown
 import warnings
+
+PY3 = sys.version_info[0] == 3
 
 class TestMarkdownBasics(unittest.TestCase):
     """ Tests basics of the Markdown class. """
@@ -140,51 +143,51 @@ class TestOrderedDict(unittest.TestCase):
 
     def testValues(self):
         """ Test output of OrderedDict.values(). """
-        self.assertEqual(self.odict.values(), ['This', 'a', 'self', 'test'])
+        self.assertEqual(list(self.odict.values()), ['This', 'a', 'self', 'test'])
 
     def testKeys(self):
         """ Test output of OrderedDict.keys(). """
-        self.assertEqual(self.odict.keys(),
+        self.assertEqual(list(self.odict.keys()),
                     ['first', 'third', 'fourth', 'fifth'])
 
     def testItems(self):
         """ Test output of OrderedDict.items(). """
-        self.assertEqual(self.odict.items(),
+        self.assertEqual(list(self.odict.items()),
                     [('first', 'This'), ('third', 'a'), 
                     ('fourth', 'self'), ('fifth', 'test')])
 
     def testAddBefore(self):
         """ Test adding an OrderedDict item before a given key. """
         self.odict.add('second', 'is', '<third')
-        self.assertEqual(self.odict.items(),
+        self.assertEqual(list(self.odict.items()),
                     [('first', 'This'), ('second', 'is'), ('third', 'a'), 
                     ('fourth', 'self'), ('fifth', 'test')])
 
     def testAddAfter(self):
         """ Test adding an OrderDict item after a given key. """
         self.odict.add('second', 'is', '>first')
-        self.assertEqual(self.odict.items(),
+        self.assertEqual(list(self.odict.items()),
                     [('first', 'This'), ('second', 'is'), ('third', 'a'), 
                     ('fourth', 'self'), ('fifth', 'test')])
 
     def testAddAfterEnd(self):
         """ Test adding an OrderedDict item after the last key. """
         self.odict.add('sixth', '.', '>fifth')
-        self.assertEqual(self.odict.items(),
+        self.assertEqual(list(self.odict.items()),
                     [('first', 'This'), ('third', 'a'), 
                     ('fourth', 'self'), ('fifth', 'test'), ('sixth', '.')])
 
     def testAdd_begin(self):
         """ Test adding an OrderedDict item using "_begin". """
         self.odict.add('zero', 'CRAZY', '_begin')
-        self.assertEqual(self.odict.items(),
+        self.assertEqual(list(self.odict.items()),
                     [('zero', 'CRAZY'), ('first', 'This'), ('third', 'a'), 
                     ('fourth', 'self'), ('fifth', 'test')])
 
     def testAdd_end(self):
         """ Test adding an OrderedDict item using "_end". """
         self.odict.add('sixth', '.', '_end')
-        self.assertEqual(self.odict.items(),
+        self.assertEqual(list(self.odict.items()),
                     [('first', 'This'), ('third', 'a'), 
                     ('fourth', 'self'), ('fifth', 'test'), ('sixth', '.')])
 
@@ -196,20 +199,20 @@ class TestOrderedDict(unittest.TestCase):
     def testDeleteItem(self):
         """ Test deletion of an OrderedDict item. """
         del self.odict['fourth']
-        self.assertEqual(self.odict.items(),
+        self.assertEqual(list(self.odict.items()),
                     [('first', 'This'), ('third', 'a'), ('fifth', 'test')])
 
     def testChangeValue(self):
         """ Test OrderedDict change value. """
         self.odict['fourth'] = 'CRAZY'
-        self.assertEqual(self.odict.items(),
+        self.assertEqual(list(self.odict.items()),
                     [('first', 'This'), ('third', 'a'), 
                     ('fourth', 'CRAZY'), ('fifth', 'test')])
 
     def testChangeOrder(self):
         """ Test OrderedDict change order. """
         self.odict.link('fourth', '<third')
-        self.assertEqual(self.odict.items(),
+        self.assertEqual(list(self.odict.items()),
                     [('first', 'This'), ('fourth', 'self'),
                     ('third', 'a'), ('fifth', 'test')])
 
@@ -217,7 +220,7 @@ class TestOrderedDict(unittest.TestCase):
         """ Test OrderedDict change order with bad location. """
         self.assertRaises(ValueError, self.odict.link('fourth', '<bad'))
         # Check for data integrity ("fourth" wasn't deleted).'
-        self.assertEqual(self.odict.items(),
+        self.assertEqual(list(self.odict.items()),
                     [('first', 'This'), ('third', 'a'), 
                     ('fourth', 'self'), ('fifth', 'test')])
 
@@ -267,6 +270,9 @@ class TestErrors(unittest.TestCase):
 def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False):
     """ Create a fake extension module for testing. """
     mod_name = '_'.join(['mdx', name])
+    if not PY3:
+        # mod_name must be bytes in Python 2.x
+        mod_name = bytes(mod_name)
     ext_mod = types.ModuleType(mod_name)
     def makeExtension(configs=None):
         if is_wrong_type:
@@ -332,7 +338,7 @@ class testAtomicString(unittest.TestCase):
         """ Test that a regular string is parsed. """
         tree = markdown.util.etree.Element('div')
         p = markdown.util.etree.SubElement(tree, 'p')
-        p.text = u'some *text*'
+        p.text = 'some *text*'
         new = self.inlineprocessor.run(tree)
         self.assertEqual(markdown.serializers.to_html_string(new), 
                     '<div><p>some <em>text</em></p></div>')
@@ -341,7 +347,7 @@ class testAtomicString(unittest.TestCase):
         """ Test that a simple AtomicString is not parsed. """
         tree = markdown.util.etree.Element('div')
         p = markdown.util.etree.SubElement(tree, 'p')
-        p.text = markdown.util.AtomicString(u'some *text*')
+        p.text = markdown.util.AtomicString('some *text*')
         new = self.inlineprocessor.run(tree)
         self.assertEqual(markdown.serializers.to_html_string(new), 
                     '<div><p>some *text*</p></div>')
@@ -350,16 +356,16 @@ class testAtomicString(unittest.TestCase):
         """ Test that a nested AtomicString is not parsed. """
         tree = markdown.util.etree.Element('div')
         p = markdown.util.etree.SubElement(tree, 'p')
-        p.text = markdown.util.AtomicString(u'*some* ')
+        p.text = markdown.util.AtomicString('*some* ')
         span1 = markdown.util.etree.SubElement(p, 'span')
-        span1.text = markdown.util.AtomicString(u'*more* ')
+        span1.text = markdown.util.AtomicString('*more* ')
         span2 = markdown.util.etree.SubElement(span1, 'span')
-        span2.text = markdown.util.AtomicString(u'*text* ')
+        span2.text = markdown.util.AtomicString('*text* ')
         span3 = markdown.util.etree.SubElement(span2, 'span')
-        span3.text = markdown.util.AtomicString(u'*here*')
-        span3.tail = markdown.util.AtomicString(u' *to*')
-        span2.tail = markdown.util.AtomicString(u' *test*')
-        span1.tail = markdown.util.AtomicString(u' *with*')
+        span3.text = markdown.util.AtomicString('*here*')
+        span3.tail = markdown.util.AtomicString(' *to*')
+        span2.tail = markdown.util.AtomicString(' *test*')
+        span1.tail = markdown.util.AtomicString(' *with*')
         new = self.inlineprocessor.run(tree)
         self.assertEqual(markdown.serializers.to_html_string(new), 
             '<div><p>*some* <span>*more* <span>*text* <span>*here*</span> '

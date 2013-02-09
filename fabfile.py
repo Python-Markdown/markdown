@@ -10,7 +10,7 @@ from sys import platform
 def _get_versions():
     """ Find and comfirm all supported versions of Python. """
     vs = []
-    for v in ['2.4', '2.5', '2.6', '2.7', '3.1', '3.2']:
+    for v in ['2.5', '2.6', '2.7', '3.1', '3.2']:
         with settings(
             hide('warnings', 'running', 'stdout', 'stderr'),
             warn_only=True
@@ -58,8 +58,7 @@ def build_tests(version=_pyversion[:3]):
     if version.startswith('3'):
         # Do 2to3 conversion
         local('2to3-%s -w -d build/test.%s/markdown' % (version, version))
-        local('2to3-%s -w build/test.%s/tests' % (version, version))
-        local('2to3-%s -w build/test.%s/run-tests.py' % (version, version))
+
 
 def generate_test(file):
     """ Generate a given test. """
@@ -95,7 +94,7 @@ def build_envs():
 
 def build_release():
     """ Build a package for distribution. """
-    ans = prompt('Have you updated the version in both setup.py and __init__.py?', default='Y')
+    ans = prompt('Have you updated the version_info in __version__.py?', default='Y')
     if ans.lower() == 'y':
         local('./setup.py sdist --formats zip,gztar')
         if platform == 'win32':
@@ -108,65 +107,3 @@ def deploy_release():
     build_release()
     local('./setup.py register')
     local('./setup.py upload')
-    upload_to_github()
-
-def upload_to_github():
-    """ Upload release to Github. """
-    # We need github API v3 but no python lib exists yet. So do it manually.
-    import os
-    import urllib2
-    import base64
-    import simplejson
-    import getpass
-    # Setup Auth
-    url = 'https://api.github.com/repos/waylan/Python-Markdown/downloads'
-    user = prompt('Github username:', default=getpass.getuser())
-    password = prompt('Github password:')
-    authstring = base64.encodestring('%s:%s' % (user, password))
-    # Loop through files and upload
-    base = 'dist/'
-    for file in os.listdir(base):
-        file = os.path.join(base, file)
-        if os.path.isfile(file):
-            ans = prompt('Upload: %s' % file, default='Y')
-            if ans.lower() == 'y':
-                # Create document entry on github
-                desc = prompt('Description for %s:' % file)
-                data1 = simplejson.dumps({
-                    'name': os.path.basename(file),
-                    'size': os.path.getsize(file),
-                    'description' : desc,
-                    #'content_type': 'text/plain' # <-  let github determine
-                })
-                req = urllib2.Request(url, data1, 
-                                      {'Content-type': 'application/json'})
-                req.add_header('Authorization', 'Basic %s' % authstring)
-                try:
-                    response = urllib2.urlopen(req)
-                except urllib2.HTTPError, e:
-                    error = simplejson.loads(e.read())
-                    if error['errors'][0]['code'] == 'already_exists':
-                        print 'Already_exists, skipping...'
-                        continue
-                    else:
-                        print e.read()
-                        raise
-                data2 = simplejson.loads(response.read())
-                response.close()
-                # Upload document (using curl because it is easier)
-                data2['file'] = file
-                curl = """curl \\
-                -F "key=%(path)s" \\
-                -F "acl=%(acl)s" \\
-                -F "success_action_status=201" \\
-                -F "Filename=%(name)s" \\
-                -F "AWSAccessKeyId=%(accesskeyid)s" \\
-                -F "Policy=%(policy)s" \\
-                -F "Signature=%(signature)s" \\
-                -F "Content-Type=%(mime_type)s" \\
-                -F "file=@%(file)s" \\
-                %(s3_url)s""" % data2
-                print 'Uploading...'
-                local(curl)
-        else:
-            print 'Skipping...'

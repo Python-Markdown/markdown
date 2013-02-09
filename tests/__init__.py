@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 import os
 import markdown
 import codecs
@@ -6,11 +6,11 @@ import difflib
 try:
     import nose
 except ImportError:
-    raise ImportError, "The nose testing framework is required to run " \
+    raise ImportError("The nose testing framework is required to run " \
                        "Python-Markdown tests. Run `easy_install nose` " \
-                       "to install the latest version."
-import util 
-from plugins import HtmlOutput, Markdown
+                       "to install the latest version.")
+from . import util 
+from .plugins import HtmlOutput, Markdown
 try:
     import tidy
 except ImportError:
@@ -84,21 +84,22 @@ class CheckSyntax(object):
         """ Compare expected output to actual output and report result. """
         cfg_section = get_section(file, config)
         if config.get(cfg_section, 'skip'):
-            raise nose.plugins.skip.SkipTest, 'Test skipped per config.'
+            raise nose.plugins.skip.SkipTest('Test skipped per config.')
         input_file = file + config.get(cfg_section, 'input_ext')
         with codecs.open(input_file, encoding="utf-8") as f:
             input = f.read()
         output_file = file + config.get(cfg_section, 'output_ext') 
         with codecs.open(output_file, encoding="utf-8") as f:
-            expected_output = f.read()
+            # Normalize line endings (on windows, git may have altered line endings).
+            expected_output = f.read().replace("\r\n", "\n")
         output = markdown.markdown(input, **get_args(file, config))
         if tidy and config.get(cfg_section, 'normalize'):
-            # Normalize whitespace before comparing.
+            # Normalize whitespace with Tidy before comparing.
             expected_output = normalize(expected_output)
             output = normalize(output)
         elif config.get(cfg_section, 'normalize'):
             # Tidy is not available. Skip this test.
-            raise nose.plugins.skip.SkipTest, 'Test skipped. Tidy not available in system.'
+            raise nose.plugins.skip.SkipTest('Test skipped. Tidy not available in system.')
         diff = [l for l in difflib.unified_diff(expected_output.splitlines(True),
                                                 output.splitlines(True), 
                                                 output_file, 
@@ -124,17 +125,17 @@ def generate(file, config):
     """ Write expected output file for given input. """
     cfg_section = get_section(file, config)
     if config.get(cfg_section, 'skip'):
-        print 'Skipping:', file
+        print('Skipping:', file)
         return None
     input_file = file + config.get(cfg_section, 'input_ext')
     output_file = file + config.get(cfg_section, 'output_ext') 
     if not os.path.isfile(output_file) or \
             os.path.getmtime(output_file) < os.path.getmtime(input_file):
-        print 'Generating:', file
+        print('Generating:', file)
         markdown.markdownFromFile(input=input_file, output=output_file, 
                                   encoding='utf-8', **get_args(file, config))
     else:
-        print 'Already up-to-date:', file
+        print('Already up-to-date:', file)
 
 def generate_all():
     """ Generate expected output for all outdated tests. """

@@ -3,3 +3,9 @@
    _foo_
 
 </div>
+
+And now in uppercase:
+
+<DIV>
+foo
+</DIV>

@@ -45,7 +45,6 @@ import util
 import odict
 import re
 from urlparse import urlparse, urlunparse
-import sys
 # If you see an ImportError for htmlentitydefs after using 2to3 to convert for 
 # use by Python3, then you are probably using the buggy version from Python 3.0.
 # We recomend using the tool from Python 3.1 even if you will be running the 
@@ -69,7 +68,6 @@ def build_inlinepatterns(md_instance, **kwargs):
             ReferencePattern(SHORT_REF_RE, md_instance)
     inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md_instance)
     inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md_instance)
-    inlinePatterns["linebreak2"] = SubstituteTagPattern(LINE_BREAK_2_RE, 'br')
     inlinePatterns["linebreak"] = SubstituteTagPattern(LINE_BREAK_RE, 'br')
     if md_instance.safeMode != 'escape':
         inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
@@ -119,7 +117,6 @@ AUTOMAIL_RE = r'<([^> \!]*@[^> ]*)>'               # <me@example.com>
 HTML_RE = r'(\<([a-zA-Z/][^\>]*?|\!--.*?--)\>)'               # <...>
 ENTITY_RE = r'(&[\#a-zA-Z0-9]*;)'               # &amp;
 LINE_BREAK_RE = r'  \n'                     # two spaces at end of line
-LINE_BREAK_2_RE = r'  $'                    # two spaces at end of text
 
 
 def dequote(string):
@@ -191,10 +188,27 @@ class Pattern:
             stash = self.markdown.treeprocessors['inline'].stashed_nodes
         except KeyError:
             return text
+        def itertext(el):
+            ' Reimplement Element.itertext for older python versions '
+            tag = el.tag
+            if not isinstance(tag, basestring) and tag is not None:
+                return
+            if el.text:
+                yield el.text
+            for e in el:
+                for s in itertext(e):
+                    yield s
+                if e.tail:
+                    yield e.tail
         def get_stash(m):
             id = m.group(1)
             if id in stash:
-                return stash.get(id)
+                value = stash.get(id)
+                if isinstance(value, basestring):
+                    return value
+                else:
+                    # An etree Element - return text content only
+                    return ''.join(itertext(value)) 
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
@@ -328,6 +342,7 @@ class LinkPattern(Pattern):
         `username:password@host:port`.
 
         """
+        url = url.replace(' ', '%20')
         if not self.markdown.safeMode:
             # Return immediately bipassing parsing.
             return url
@@ -339,14 +354,18 @@ class LinkPattern(Pattern):
             return ''
         
         locless_schemes = ['', 'mailto', 'news']
+        allowed_schemes = locless_schemes + ['http', 'https', 'ftp', 'ftps']
+        if scheme not in allowed_schemes:
+            # Not a known (allowed) scheme. Not safe.
+            return ''
+            
         if netloc == '' and scheme not in locless_schemes:
-            # This fails regardless of anything else. 
-            # Return immediately to save additional proccessing
+            # This should not happen. Treat as suspect.
             return ''
 
         for part in url[2:]:
             if ":" in part:
-                # Not a safe url
+                # A colon in "path", "parameters", "query" or "fragment" is suspect.
                 return ''
 
         # Url passes all tests. Return url as-is.
@@ -372,7 +391,7 @@ class ImagePattern(LinkPattern):
         else:
             truealt = m.group(2)
 
-        el.set('alt', truealt)
+        el.set('alt', self.unescape(truealt))
         return el
 
 class ReferencePattern(LinkPattern):
@@ -417,7 +436,11 @@ class ImageReferencePattern(ReferencePattern):
         el.set("src", self.sanitize_url(href))
         if title:
             el.set("title", title)
-        el.set("alt", text)
+
+        if self.markdown.enable_attributes:
+            text = handleAttributes(text, el)
+
+        el.set("alt", self.unescape(text))
         return el
 
 

@@ -7,6 +7,7 @@ continue to work as advertised. This used to be accomplished by doctests.
 
 """
 
+from __future__ import unicode_literals
 import unittest
 import markdown
 
@@ -47,7 +48,7 @@ class TestCodeHilite(unittest.TestCase):
                 '</pre></div>')
         else:
             self.assertEqual(self.md.convert(text),
-                '<pre><code>Code\n'
+                '<pre class="codehilite"><code># A Code Comment'
                 '</code></pre>')
 
 
@@ -170,6 +171,18 @@ header_forceid: Off
 # A Header'''
         self.assertEqual(markdown.markdown(text, ['headerid', 'meta']),
             '<h2>A Header</h2>')
+
+    def testHeaderIdWithAttr_List(self):
+        """ Test HeaderIDs with Attr_List extension. """
+        
+        text = '# Header1 {: #foo }\n# Header2 {: .bar }'
+        self.assertEqual(markdown.markdown(text, ['headerid', 'attr_list']),
+            '<h1 id="foo">Header1</h1>\n'
+            '<h1 class="bar" id="header2">Header2</h1>')
+        # Switch order extensions are loaded - should be no change in behavior.
+        self.assertEqual(markdown.markdown(text, ['attr_list', 'headerid']),
+            '<h1 id="foo">Header1</h1>\n'
+            '<h1 class="bar" id="header2">Header2</h1>')
 
 class TestMetaData(unittest.TestCase):
     """ Test MetaData extension. """
