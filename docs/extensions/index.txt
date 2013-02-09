@@ -8,16 +8,16 @@ next_url:   extra.html
 Available Extensions
 ====================
 
-Python Markdown offers a flexible extension mechanism, which makes it possible 
-to change and/or extend the behavior of the parser without having to edit the 
-actual source files. 
+Python Markdown offers a flexible extension mechanism, which makes it possible
+to change and/or extend the behavior of the parser without having to edit the
+actual source files.
 
 To use an extension, pass it's name to markdown with the `extensions` keyword.
-See the [Library Reference](../reference.html#extensions) for more details. 
+See the [Library Reference](../reference.html#extensions) for more details.
 
     markdown.markdown(some_text, extensions=['footnotes', 'nl2br'])
 
-From the command line, specify an extension with the `-x` option. See the 
+From the command line, specify an extension with the `-x` option. See the
 [Command Line docs](../cli.html) or use the `--help` option for more details.
 
     python -m markdown -x footnotes -x tables input.txt > output.html
@@ -26,9 +26,9 @@ Officially Supported Extensions
 -------------------------------
 
 The extensions listed below are included with (at least) the most recent release
-and are officially supported by Python-Markdown. Any documentation is 
-maintained here and all bug reports should be made to the project. If you 
-have a typical install of Python-Markdown, these extensions are already 
+and are officially supported by Python-Markdown. Any documentation is
+maintained here and all bug reports should be made to the project. If you
+have a typical install of Python-Markdown, these extensions are already
 available to you.
 
 ### Markdown Extra
@@ -63,6 +63,7 @@ but come in the standard Python-Markdown library.
 
 Extension           | Name in Python-Markdown
 ---------           | -----------------------
+[Admonition][]      | `admonition`
 [CodeHilite][]      | `codehilite`
 [HTML Tidy][]       | `html_tidy`
 [HeaderId]          | `headerid`
@@ -73,6 +74,7 @@ Extension           | Name in Python-Markdown
 [Table of Contents] | `toc`
 [WikiLinks]         | `wikilinks`
 
+[Admonition]: admonition.html
 [CodeHilite]: code_hilite.html
 [HTML Tidy]: html_tidy.html
 [HeaderId]: header_id.html
@@ -87,11 +89,11 @@ Third Party Extensions
 ----------------------
 
 Various individuals and/or organizations have developed extensions which they
-have made available to the public.  A [list of third party 
+have made available to the public.  A [list of third party
 extensions](https://github.com/waylan/Python-Markdown/wiki/Third-Party-Extensions)
-is maintained on the wiki for your convenience. The Python-Markdown team 
-offers no official support for these extensions. Please see the developer of 
+is maintained on the wiki for your convenience. The Python-Markdown team
+offers no official support for these extensions. Please see the developer of
 each extension for support.
 
-If you would like to write your own extensions, see the 
+If you would like to write your own extensions, see the
 [Extensions API](api.html) for details.
