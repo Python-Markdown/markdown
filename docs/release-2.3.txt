@@ -32,6 +32,14 @@ you are outputing XHTML (the default) or HTML4.
 What's New in Python-Markdown 2.3
 ---------------------------------
 
+Added the [Adminition Extension] which implements [rST-style][rST] admonitions 
+to the Markdown syntax. However, be warned that this extension is experimental
+and the syntax and behavior is still subject to change. Please try it out and
+report bugs/improvements.
+
+[Adminition Extension]: extensions/adminition.html
+[rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions
+
 Various bug fixes have been made.  See the
 [commit log](https://github.com/waylan/Python-Markdown/commits/master)
 for a complete history of the changes.
