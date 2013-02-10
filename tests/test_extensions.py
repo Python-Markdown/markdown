@@ -2,7 +2,7 @@
 Python-Markdown Extension Regression Tests
 ==========================================
 
-A collection of regression tests to confirm that the included extensions 
+A collection of regression tests to confirm that the included extensions
 continue to work as advertised. This used to be accomplished by doctests.
 
 """
@@ -60,7 +60,7 @@ class TestFencedCode(unittest.TestCase):
 
     def testBasicFence(self):
         """ Test Fenced Code Blocks. """
-        text = ''' 
+        text = '''
 A paragraph before a fenced code block:
 
 ~~~
@@ -124,7 +124,7 @@ class TestHeaderId(unittest.TestCase):
 
     def testBasicHeaderId(self):
         """ Test Basic HeaderID """
-    
+
         text = "# Some Header #"
         self.assertEqual(self.md.convert(text),
             '<h1 id="some-header">Some Header</h1>')
@@ -202,8 +202,8 @@ The body. This is paragraph one.'''
         self.assertEqual(self.md.convert(text),
             '<p>The body. This is paragraph one.</p>')
         self.assertEqual(self.md.Meta,
-            {'author': ['Waylan Limberg', 'John Doe'], 
-             'blank_data': [''], 
+            {'author': ['Waylan Limberg', 'John Doe'],
+             'blank_data': [''],
              'title': ['A Test Doc.']})
 
     def testMissingMetaData(self):
@@ -239,18 +239,18 @@ class TestWikiLinks(unittest.TestCase):
     def testSimpleSettings(self):
         """ Test Simple Settings. """
 
-        self.assertEqual(markdown.markdown(self.text, 
+        self.assertEqual(markdown.markdown(self.text,
             ['wikilinks(base_url=/wiki/,end_url=.html,html_class=foo)']),
             '<p>Some text with a '
             '<a class="foo" href="/wiki/WikiLink.html">WikiLink</a>.</p>')
-    
+
     def testComplexSettings(self):
         """ Test Complex Settings. """
 
         md = markdown.Markdown(
-            extensions = ['wikilinks'], 
+            extensions = ['wikilinks'],
             extension_configs = {'wikilinks': [
-                                        ('base_url', 'http://example.com/'), 
+                                        ('base_url', 'http://example.com/'),
                                         ('end_url', '.html'),
                                         ('html_class', '') ]},
             safe_mode = True)
@@ -281,8 +281,23 @@ Some text with a [[WikiLink]]."""
 
         def my_url_builder(label, base, end):
             return '/bar/'
-        md = markdown.Markdown(extensions=['wikilinks'], 
+        md = markdown.Markdown(extensions=['wikilinks'],
             extension_configs={'wikilinks' : [('build_url', my_url_builder)]})
         self.assertEqual(md.convert('[[foo]]'),
             '<p><a class="wikilink" href="/bar/">foo</a></p>')
 
+class TestAdmonition(unittest.TestCase):
+    """ Test Admonition Extension. """
+
+    def setUp(self):
+        self.md = markdown.Markdown(extensions=['admonition'])
+
+    def testRE(self):
+        RE = self.md.parser.blockprocessors['admonition'].RE
+        tests = [
+            ('!!! note', ('note', None)),
+            ('!!! note "Please Note"', ('note', 'Please Note')),
+            ('!!! note ""', ('note', '')),
+        ]
+        for test, expected in tests:
+            self.assertEqual(RE.match(test).groups(), expected)

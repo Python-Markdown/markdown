@@ -1,8 +1,8 @@
 title:      Smart Strong Extension
 prev_title: Tables Extension
 prev_url:   tables.html
-next_title: CodeHilite Extension
-next_url:   code_hilite.html
+next_title: Admonition Extension
+next_url:   admonition.html
 
 Smart_Strong
 ============
@@ -11,7 +11,7 @@ Summary
 -------
 
 The Markdown Smart_Strong Extension adds smarter handling of double underscores
-within words. This does for double underscores what 
+within words. This does for double underscores what
 [smart_emphasis](../reference.html#smart_emphasis) does for single underscores.
 
 The Smart_Strong Extension is included in the standard Markdown library.
