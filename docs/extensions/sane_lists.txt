@@ -1,6 +1,6 @@
 title:      Sane Lists Extension
-prev_title: RSS Extension
-prev_url:   rss.html
+prev_title: New Line to Break Extension
+prev_url:   nl2br.html
 next_title: Table of Contents Extension
 next_url:   toc.html
 

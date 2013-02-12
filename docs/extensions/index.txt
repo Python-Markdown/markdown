@@ -69,7 +69,6 @@ Extension           | Name in Python-Markdown
 [HeaderId]          | `headerid`
 [Meta-Data]         | `meta`
 [New Line to Break] | `nl2br`
-[RSS]               | `rss`
 [Sane Lists]        | `sane_lists`
 [Table of Contents] | `toc`
 [WikiLinks]         | `wikilinks`
@@ -80,7 +79,6 @@ Extension           | Name in Python-Markdown
 [HeaderId]: header_id.html
 [Meta-Data]: meta_data.html
 [New Line to Break]: nl2br.html
-[RSS]: rss.html
 [Sane Lists]: sane_lists.html
 [Table of Contents]: toc.html
 [WikiLinks]: wikilinks.html

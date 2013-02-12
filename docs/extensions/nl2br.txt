@@ -1,8 +1,8 @@
 title:      New Line to Break Extension
 prev_title: Meta-Data Extension
 prev_url:   meta_data.html
-next_title: RSS Extension
-next_url:   rss.html
+next_title: Sane Lists Extension
+next_url:   sane_lists.html
 
 NL2BR Extension
 ===============
