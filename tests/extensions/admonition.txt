@@ -16,7 +16,7 @@ Some text
 
 More text and stuff.
 
-!!! note "Did you know?"
+!!! Note "Did you know?"
     You can customize the title of the admonition
 
 !!! mycustomcssclass "And now..."

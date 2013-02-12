@@ -101,7 +101,7 @@ class AdmonitionProcessor(markdown.blockprocessors.BlockProcessor):
             blocks.insert(0, theRest)
 
     def get_class_and_title(self, match):
-        klass, title = match.group(1), match.group(2)
+        klass, title = match.group(1).lower(), match.group(2)
         if title is None:
             # no title was provided, use the capitalized classname as title
             # e.g.: `!!! note` will render `<p class="admonition-title">Note</p>`
