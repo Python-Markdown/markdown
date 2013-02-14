@@ -29,6 +29,7 @@ try:
 except ImportError:
     pygments = False
 
+
 # ------------------ The Main CodeHilite Class ----------------------
 class CodeHilite:
     """
@@ -38,13 +39,10 @@ class CodeHilite:
         >>> code = CodeHilite(src = 'some text')
         >>> html = code.hilite()
 
-    * src: Source string or any object with a .readline attribute.
-
-    * linenos: (Boolean) Turn line numbering 'on' or 'off' (off by default).
-
-    * guess_lang: (Boolean) Turn language auto-detection 'on' or 'off' (on by default).
-
-    * css_class: Set class name of wrapper div ('codehilite' by default).
+    * src:          Source string or any object with a .readline attribute.
+    * linenos:      (Boolean) Turn line numbering 'on' or 'off' (off by default).
+    * guess_lang:   (Boolean) Turn language auto-detection 'on' or 'off' (on by default).
+    * css_class:    Set class name of wrapper div ('codehilite' by default).
 
     Low Level Usage:
         >>> code = CodeHilite()
@@ -54,17 +52,18 @@ class CodeHilite:
 
     """
 
-    def __init__(self, src=None, linenos=False, guess_lang=True,
+    def __init__(self, src=None, force_linenos=False, linenos=True, guess_lang=True,
                 css_class="codehilite", lang=None, style='default',
-                noclasses=False, tab_length=4):
-        self.src = src
-        self.lang = lang
-        self.linenos = linenos
-        self.guess_lang = guess_lang
-        self.css_class = css_class
-        self.style = style
-        self.noclasses = noclasses
-        self.tab_length = tab_length
+                noclasses=False, tab_length=4, ):
+        self.src            = src
+        self.lang           = lang
+        self.force_linenos  = force_linenos
+        self.guess_lang     = guess_lang
+        self.css_class      = css_class
+        self.style          = style
+        self.noclasses      = noclasses
+        self.tab_length     = tab_length
+        self.linenos        = linenos
 
     def hilite(self):
         """
@@ -79,8 +78,21 @@ class CodeHilite:
 
         self.src = self.src.strip('\n')
 
+        self.colons = self.shebang = False
         if self.lang is None:
             self._getLang()
+
+        use_linenos = True
+        # preserve old Codehilite behavior for
+        # backwards-compatibility
+        if self.shebang:
+            use_linenos = True
+        elif self.colons:
+            use_linenos = self.force_linenos
+
+        # allow global linenos override
+        if self.linenos is not None:
+            use_linenos = self.linenos
 
         if pygments:
             try:
@@ -93,7 +105,7 @@ class CodeHilite:
                         lexer = TextLexer()
                 except ValueError:
                     lexer = TextLexer()
-            formatter = HtmlFormatter(linenos=self.linenos,
+            formatter = HtmlFormatter(linenos=use_linenos,
                                       cssclass=self.css_class,
                                       style=self.style,
                                       noclasses=self.noclasses)
@@ -111,9 +123,8 @@ class CodeHilite:
                 classes.append('linenums')
             class_str = ''
             if classes:
-                class_str = ' class="%s"' % ' '.join(classes) 
-            return '<pre class="%s"><code%s>%s</code></pre>\n'% \
-                        (self.css_class, class_str, txt)
+                class_str = ' class="%s"' % ' '.join(classes)
+            return '<pre class="%s"><code%s>%s</code></pre>\n'% (self.css_class, class_str, txt)
 
     def _getLang(self):
         """
@@ -128,6 +139,9 @@ class CodeHilite:
         (e.i.: :::python), line numbering is left in the current state - off
         by default.
 
+        The above algorithm can be overridden on a global basis by
+        passing the linenos boolean argument.
+
         """
 
         import re
@@ -138,9 +152,9 @@ class CodeHilite:
         fl = lines.pop(0)
 
         c = re.compile(r'''
-            (?:(?:^::+)|(?P<shebang>^[#]!))	# Shebang or 2 or more colons.
-            (?P<path>(?:/\w+)*[/ ])?        # Zero or 1 path
-            (?P<lang>[\w+-]*)               # The language
+            ((?P<colons>(?:(?:^::+)))|(?P<shebang>^[#]!)) # Block prefixed by shebang or >= 2 colons prefix
+            (?P<path>(?:/\w+)*[/ ])?                    # Block with 0 or 1 path
+            (?P<lang>[\w+-]*)                           # The language id
             ''',  re.VERBOSE)
         # search first line for shebang
         m = c.search(fl)
@@ -150,12 +164,9 @@ class CodeHilite:
                 self.lang = m.group('lang').lower()
             except IndexError:
                 self.lang = None
-            if m.group('path'):
-                # path exists - restore first line
-                lines.insert(0, fl)
-            if m.group('shebang'):
-                # shebang exists - use line numbers
-                self.linenos = True
+            if m.group('path'):     lines.insert(0, fl) # path exists - restore first line
+            if m.group('shebang'):  self.shebang = True
+            if m.group('colons'):   self.colons = True
         else:
             # No match
             lines.insert(0, fl)
@@ -175,7 +186,8 @@ class HiliteTreeprocessor(markdown.treeprocessors.Treeprocessor):
             children = block.getchildren()
             if len(children) == 1 and children[0].tag == 'code':
                 code = CodeHilite(children[0].text,
-                            linenos=self.config['force_linenos'],
+                            linenos=self.config['linenos'],
+                            force_linenos=self.config['force_linenos'],
                             guess_lang=self.config['guess_lang'],
                             css_class=self.config['css_class'],
                             style=self.config['pygments_style'],
@@ -197,19 +209,19 @@ class CodeHiliteExtension(markdown.Extension):
     def __init__(self, configs):
         # define default configs
         self.config = {
-            'force_linenos' : [False, "Force line numbers - Default: False"],
-            'guess_lang' : [True, "Automatic language detection - Default: True"],
-            'css_class' : ["codehilite",
-                           "Set class name for wrapper <div> - Default: codehilite"],
-            'pygments_style' : ['default', 'Pygments HTML Formatter Style (Colorscheme) - Default: default'],
-            'noclasses': [False, 'Use inline styles instead of CSS classes - Default false']
-            }
+            'linenos'           : [None, "Line numbers - Default: None"],
+            'force_linenos'     : [False, "Force line numbers - Default: False"],
+            'guess_lang'        : [True, "Automatic language detection - Default: True"],
+            'css_class'         : ["codehilite", "Set class name for wrapper <div> - Default: codehilite"],
+            'pygments_style'    : ['default', 'Pygments HTML Formatter Style (Colorscheme) - Default: default'],
+            'noclasses'         : [False, 'Use inline styles instead of CSS classes - Default false']
+        }
 
         # Override defaults with user settings
         for key, value in configs:
             # convert strings to booleans
-            if value == 'True': value = True
-            if value == 'False': value = False
+            if value == 'True':     value = True
+            if value == 'False':    value = False
             self.setConfig(key, value)
 
     def extendMarkdown(self, md, md_globals):
@@ -217,10 +229,8 @@ class CodeHiliteExtension(markdown.Extension):
         hiliter = HiliteTreeprocessor(md)
         hiliter.config = self.getConfigs()
         md.treeprocessors.add("hilite", hiliter, "<inline")
-
         md.registerExtension(self)
 
 
 def makeExtension(configs={}):
-  return CodeHiliteExtension(configs=configs)
-
+    return CodeHiliteExtension(configs=configs)
