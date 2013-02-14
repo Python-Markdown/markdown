@@ -29,6 +29,15 @@ reference to those ids in your JavaScript or CSS and using the HTML5 output,
 you will need to update your code accordingly. No changes are necessary if
 you are outputing XHTML (the default) or HTML4.
 
+* The "force_linenos" config setting of the CodeHilite extension has been
+marked as Pending Deprecation and a new setting "linenums" has been added to
+replace it. See documentation for the [CodeHilite Extension] for an explaination
+of the new "linenums" setting. The new setting will honor the old "force_linenos"
+if it is set, but it will raise a PendingDeprecationWarning and will likely be
+removed in a future version of Python-Markdown.
+
+[CodeHilite Extension]: extensions/codehilite.html
+
 * The "RSS" extension has been removed and no longer ships with Python-Markdown.
 If you would like to continue using the extension (not recomended), it is archived
 on [Github](https://gist.github.com/waylan/4773365).

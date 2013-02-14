@@ -31,8 +31,6 @@ class TestCodeHilite(unittest.TestCase):
     """ Test codehilite extension. """
 
     def setUp(self):
-        self.md = markdown.Markdown(extensions=['codehilite'])
-
         self.has_pygments = True
         try:
             import pygments
@@ -41,14 +39,86 @@ class TestCodeHilite(unittest.TestCase):
 
     def testBasicCodeHilite(self):
         text = '\t# A Code Comment'
+        md = markdown.Markdown(extensions=['codehilite'])
         if self.has_pygments:
-            self.assertEqual(self.md.convert(text),
+            self.assertEqual(md.convert(text),
                 '<div class="codehilite">'
                 '<pre><span class="c"># A Code Comment</span>\n'
                 '</pre></div>')
         else:
-            self.assertEqual(self.md.convert(text),
+            self.assertEqual(md.convert(text),
                 '<pre class="codehilite"><code># A Code Comment'
+                '</code></pre>')
+    
+    def testLinenumsTrue(self):
+        text = '\t# A Code Comment'
+        md = markdown.Markdown(extensions=['codehilite(linenums=True)'])
+        if self.has_pygments:
+            self.assertEqual(md.convert(text),
+                '<table class="codehilitetable"><tr>'
+                '<td class="linenos"><div class="linenodiv"><pre>1</pre></div></td>'
+                '<td class="code"><div class="codehilite">'
+                '<pre><span class="c"># A Code Comment</span>\n</pre>'
+                '</div>\n</td>'
+                '</tr></table>')
+        else:
+            self.assertEqual(md.convert(text),
+                '<pre class="codehilite"><code class="linenums"># A Code Comment'
+                '</code></pre>')
+
+    def testLinenumsFalse(self):
+        text = '\t#!Python\n\t# A Code Comment'
+        md = markdown.Markdown(extensions=['codehilite(linenums=False)'])
+        if self.has_pygments:
+            self.assertEqual(md.convert(text),
+                '<div class="codehilite">'
+                '<pre><span class="c"># A Code Comment</span>\n'
+                '</pre></div>')
+        else:
+            self.assertEqual(md.convert(text),
+                '<pre class="codehilite"><code class="language-python"># A Code Comment'
+                '</code></pre>')
+
+    def testLinenumsNone(self):
+        text = '\t# A Code Comment'
+        md = markdown.Markdown(extensions=['codehilite(linenums=None)'])
+        if self.has_pygments:
+            self.assertEqual(md.convert(text),
+                '<div class="codehilite">'
+                '<pre><span class="c"># A Code Comment</span>\n'
+                '</pre></div>')
+        else:
+            self.assertEqual(md.convert(text),
+                '<pre class="codehilite"><code># A Code Comment'
+                '</code></pre>')
+
+    def testLinenumsNoneWithShebang(self):
+        text = '\t#!Python\n\t# A Code Comment'
+        md = markdown.Markdown(extensions=['codehilite(linenums=None)'])
+        if self.has_pygments:
+            self.assertEqual(md.convert(text),
+                '<table class="codehilitetable"><tr>'
+                '<td class="linenos"><div class="linenodiv"><pre>1</pre></div></td>'
+                '<td class="code"><div class="codehilite">'
+                '<pre><span class="c"># A Code Comment</span>\n</pre>'
+                '</div>\n</td>'
+                '</tr></table>')
+        else:
+            self.assertEqual(md.convert(text),
+                '<pre class="codehilite"><code class="language-python linenums"># A Code Comment'
+                '</code></pre>')
+
+    def testLinenumsNoneWithColon(self):
+        text = '\t:::Python\n\t# A Code Comment'
+        md = markdown.Markdown(extensions=['codehilite(linenums=None)'])
+        if self.has_pygments:
+            self.assertEqual(md.convert(text),
+                '<div class="codehilite">'
+                '<pre><span class="c"># A Code Comment</span>\n'
+                '</pre></div>')
+        else:
+            self.assertEqual(md.convert(text),
+                '<pre class="codehilite"><code class="language-python"># A Code Comment'
                 '</code></pre>')
 
 
