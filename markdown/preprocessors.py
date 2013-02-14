@@ -50,7 +50,7 @@ class NormalizeWhitespace(Preprocessor):
         source = source.replace(util.STX, "").replace(util.ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
         source = source.expandtabs(self.markdown.tab_length)
-        source = re.sub(r'\n +\n', '\n\n', source)
+        source = re.sub(r'(?<=\n) +\n', '\n', source)
         return source.split('\n')
 
 
