@@ -15,7 +15,7 @@ from markdown.extensions.headerid import slugify, unique, itertext
 import re
 
 
-def flatten_list(toc_list):
+def order_toc_list(toc_list):
     """Given an unsorted list with errors and skips, return a nested one.
     [{'level': 1}, {'level': 2}]
     =>
@@ -40,41 +40,41 @@ def flatten_list(toc_list):
             # This happens for instance with [8, 1, 1], ie. when some
             # header level is outside a scope. We treat it as a
             # top-level
-            next2, children2 = build_correct(remaining_list, [current])
-            current['children'].append(children2)
-            return [current] + next2, []
+            next_elements, children = build_correct(remaining_list, [current])
+            current['children'].append(children)
+            return [current] + next_elements, []
         
         prev_element = prev_elements.pop()
         children = []
-        next = [] #@ReservedAssignment
+        next_elements = []
         # Is current part of the child list or next list?
         if current['level'] > prev_element['level']:
             #print "%d is a child of %d" % (current['level'], prev_element['level'])
             prev_elements.append(prev_element)
             prev_elements.append(current)
             prev_element['children'].append(current)
-            next2, children2 = build_correct(remaining_list, prev_elements)
+            next_elements2, children2 = build_correct(remaining_list, prev_elements)
             children += children2
-            next += next2
+            next_elements += next_elements2
         else:
             #print "%d is ancestor of %d" % (current['level'], prev_element['level'])
             if not prev_elements:
                 #print "No previous elements, so appending to the next set"
-                next.append(current)
+                next_elements.append(current)
                 prev_elements = [current]
-                next2, children3 = build_correct(remaining_list, prev_elements)
-                current['children'].extend(children3)
+                next_elements2, children2 = build_correct(remaining_list, prev_elements)
+                current['children'].extend(children2)
             else:
                 #print "Previous elements, comparing to those first"
                 remaining_list.insert(0, current)
-                next2, children3 = build_correct(remaining_list, prev_elements)
-                children.extend(children3)
-            next += next2
+                next_elements2, children2 = build_correct(remaining_list, prev_elements)
+                children.extend(children2)
+            next_elements += next_elements2
         
-        return next, children
+        return next_elements, children
     
-    flattened_list, __ = build_correct(toc_list)
-    return flattened_list
+    ordered_list, __ = build_correct(toc_list)
+    return ordered_list
 
 
 class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
@@ -171,7 +171,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 self.add_anchor(c, elem_id)
                 
         if marker_found:
-            toc_list_nested = flatten_list(toc_list)
+            toc_list_nested = order_toc_list(toc_list)
             self.build_toc_etree(div, toc_list_nested)
             # serialize and attach to markdown instance.
             prettify = self.markdown.treeprocessors.get('prettify')
@@ -180,6 +180,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
             for pp in self.markdown.postprocessors.values():
                 toc = pp.run(toc)
             self.markdown.toc = toc
+
 
 class TocExtension(markdown.Extension):
     
@@ -211,6 +212,7 @@ class TocExtension(markdown.Extension):
         # attr_list extension. This must come last because we don't want
         # to redefine ids after toc is created. But we do want toc prettified.
         md.treeprocessors.add("toc", tocext, "<prettify")
-    
+
+
 def makeExtension(configs={}):
     return TocExtension(configs=configs)
