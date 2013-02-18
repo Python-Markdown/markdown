@@ -46,7 +46,7 @@ def flatten_list(toc_list):
         
         prev_element = prev_elements.pop()
         children = []
-        next = []
+        next = [] #@ReservedAssignment
         # Is current part of the child list or next list?
         if current['level'] > prev_element['level']:
             #print "%d is a child of %d" % (current['level'], prev_element['level'])
@@ -56,7 +56,6 @@ def flatten_list(toc_list):
             next2, children2 = build_correct(remaining_list, prev_elements)
             children += children2
             next += next2
-            return next, children
         else:
             #print "%d is ancestor of %d" % (current['level'], prev_element['level'])
             if not prev_elements:
@@ -71,7 +70,8 @@ def flatten_list(toc_list):
                 next2, children3 = build_correct(remaining_list, prev_elements)
                 children.extend(children3)
             next += next2
-            return next, children
+        
+        return next, children
     
     flattened_list, __ = build_correct(toc_list)
     return flattened_list
@@ -85,11 +85,11 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
             for child in parent:
                 yield parent, child
     
-    def add_anchor(self, c, id):
+    def add_anchor(self, c, elem_id): #@ReservedAssignment
         if self.use_anchors:
             anchor = etree.Element("a")
             anchor.text = c.text
-            anchor.attrib["href"] = "#" + id
+            anchor.attrib["href"] = "#" + elem_id
             anchor.attrib["class"] = "toclink"
             c.text = ""
             for elem in c.getchildren():
@@ -133,7 +133,6 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 used_ids.append(c.attrib["id"])
 
         toc_list = []
-        level = 0
         marker_found = False
         for (p, c) in self.iterparent(doc):
             text = ''.join(itertext(c)).strip()
@@ -158,18 +157,18 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 
                 # Do not override pre-existing ids 
                 if not "id" in c.attrib:
-                    id = unique(self.config["slugify"](text, '-'), used_ids)
-                    c.attrib["id"] = id
+                    elem_id = unique(self.config["slugify"](text, '-'), used_ids)
+                    c.attrib["id"] = elem_id
                 else:
-                    id = c.attrib["id"]
+                    elem_id = c.attrib["id"]
 
                 tag_level = int(c.tag[-1])
                 
                 toc_list.append({'level': tag_level,
-                    'id': id,
+                    'id': elem_id,
                     'name': c.text})
                 
-                self.add_anchor(c, id)
+                self.add_anchor(c, elem_id)
                 
         if marker_found:
             toc_list_nested = flatten_list(toc_list)
@@ -186,7 +185,7 @@ class TocExtension(markdown.Extension):
     
     TreeProcessorClass = TocTreeprocessor
     
-    def __init__(self, configs):
+    def __init__(self, configs=[]):
         self.config = { "marker" : ["[TOC]", 
                             "Text to find and replace with Table of Contents -"
                             "Defaults to \"[TOC]\""],
@@ -212,6 +211,6 @@ class TocExtension(markdown.Extension):
         # attr_list extension. This must come last because we don't want
         # to redefine ids after toc is created. But we do want toc prettified.
         md.treeprocessors.add("toc", tocext, "<prettify")
-	
+    
 def makeExtension(configs={}):
     return TocExtension(configs=configs)
