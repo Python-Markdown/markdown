@@ -40,8 +40,12 @@ would generate the following output:
     <h1 id="header-1">Header 1</h1>
     <h1 id="header-2">Header 2</h1>
 
-Configuration Options
----------------------
+Usage
+-----
+
+From the Python interpreter:
+
+    >>> html = markdown.markdown(some_text, extensions=['toc'])
 
 The following options are provided to configure the output:
 
@@ -54,3 +58,16 @@ The following options are provided to configure the output:
 * **title**: Title to insert in TOC ``<div>``. Defaults to ``None``.
 * **anchorlink**: Set to ``True`` to have the headers link to themselves. 
   Default is ``False``.
+
+If a 'marker' is not found in the document, then the toc is available as an
+attribute of the Markdown class. This allows one to insert the toc elsewhere 
+in their page template. For example:
+
+    >>> text = '''
+    # Header 1
+    
+    ## Header 2
+    '''
+    >>> md = markdown.Markdown(extensions=['toc'])
+    >>> html = md.convert(text)
+    >>> render_some_template(context={'body': html, 'toc': md.toc})

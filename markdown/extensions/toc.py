@@ -170,9 +170,9 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 
                 self.add_anchor(c, elem_id)
                 
-        if marker_found:
-            toc_list_nested = order_toc_list(toc_list)
-            self.build_toc_etree(div, toc_list_nested)
+        toc_list_nested = order_toc_list(toc_list)
+        self.build_toc_etree(div, toc_list_nested)
+        if not marker_found:
             # serialize and attach to markdown instance.
             prettify = self.markdown.treeprocessors.get('prettify')
             if prettify: prettify.run(div)

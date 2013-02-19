@@ -371,3 +371,42 @@ class TestAdmonition(unittest.TestCase):
         ]
         for test, expected in tests:
             self.assertEqual(RE.match(test).groups(), expected)
+
+class TestTOC(unittest.TestCase):
+    """ Test TOC Extension. """
+    
+    def setUp(self):
+        self.md = markdown.Markdown(extensions=['toc'])
+
+    def testMarker(self):
+        """ Test TOC with a Marker. """
+        text = '[TOC]\n\n# Header 1\n\n## Header 2'
+        self.assertEqual(self.md.convert(text),
+            '<div class="toc">\n'
+              '<ul>\n'
+                '<li><a href="#header-1">Header 1</a>'
+                  '<ul>\n'
+                    '<li><a href="#header-2">Header 2</a></li>\n'
+                  '</ul>\n'
+                '</li>\n'
+              '</ul>\n'
+            '</div>\n'
+            '<h1 id="header-1">Header 1</h1>\n'
+            '<h2 id="header-2">Header 2</h2>')
+    
+    def testNoMarker(self):
+        """ Test TOC without a Marker. """
+        text = '# Header 1\n\n## Header 2'
+        self.assertEqual(self.md.convert(text),
+            '<h1 id="header-1">Header 1</h1>\n'
+            '<h2 id="header-2">Header 2</h2>')
+        self.assertEqual(self.md.toc,
+            '<div class="toc">\n'
+              '<ul>\n'
+                '<li><a href="#header-1">Header 1</a>'
+                  '<ul>\n'
+                    '<li><a href="#header-2">Header 2</a></li>\n'
+                  '</ul>\n'
+                '</li>\n'
+              '</ul>\n'
+            '</div>\n')
