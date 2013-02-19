@@ -4,6 +4,6 @@
 
 ### Header i
 
-# Header B
+# Header *B*
 
 [TOC]
