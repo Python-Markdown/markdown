@@ -166,7 +166,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 
                 toc_list.append({'level': tag_level,
                     'id': elem_id,
-                    'name': c.text})
+                    'name': text})
                 
                 self.add_anchor(c, elem_id)
                 
