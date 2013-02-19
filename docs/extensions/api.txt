@@ -562,27 +562,10 @@ values, and should be converted at run time. For example:
 
 ### makeExtension {: #makeextension }
 
-Each extension should ideally be placed in its own module starting
-with the  ``mdx_`` prefix (e.g. ``mdx_footnotes.py``).  The module must
-provide a module-level function called ``makeExtension`` that takes
-an optional parameter consisting of a dictionary of configuration over-rides 
-and returns an instance of the extension.  An example from the footnote 
-extension:
+As noted in the [library reference] an instance of an extension can be passed
+directly to Markdown. In fact, this is the prefered way to use third-party 
+extensions.
 
-    def makeExtension(configs=None) :
-        return FootnoteExtension(configs=configs)
-
-By following the above example, when Markdown is passed the name of your 
-extension as a string (i.e.: ``'footnotes'``), it will automatically import
-the module and call the ``makeExtension`` function initiating your extension.
-
-You may have noted that the extensions packaged with Python-Markdown do not
-use the ``mdx_`` prefix in their module names. This is because they are all
-part of the ``markdown.extensions`` package. Markdown will first try to import
-from ``markdown.extensions.extname`` and upon failure, ``mdx_extname``. If both
-fail, Markdown will continue without the extension.
-
-However, Markdown will also accept an already existing instance of an extension.
 For example:
 
     import markdown
@@ -591,8 +574,42 @@ For example:
     myext = myextension.MyExtension(configs=configs)
     md = markdown.Markdown(extensions=[myext])
 
-This is useful if you need to implement a large number of extensions with more
-than one residing in a module.
+This is especially useful if you need to implement a large number of extensions 
+with more than one residing in a module.
+
+However, for historical reasons, Markdown also accepts "named" third party 
+extensions. In that case, only one extension can be defined per module
+and that extension must define a module-level function called 
+`makeExtension` that takes an optional parameter consisting of a dictionary 
+of configuration over-rides and returns an instance of the extension.  For example:
+
+    class MyExtension(markdown.extensions.Extension)
+        # Define extension here...
+
+    def makeExtension(configs=None):
+        return MyExtension(configs=configs)
+
+When Markdown is passed the "name" of your extension as a string, it will import 
+the module and call the `makeExtension` function to initiate your extension.
+
+The "name" of your extension must be a string consisting of the importable path to
+your module using Python's dot notation. Therefore, if you are providing a library
+to your users and would like to include a custom markdown extensions with your 
+library, that extension would be named `"mylib.mdext.myext"` where `mylib/mdext/myext.py`
+contains the `makeExtension` function and the `mylib` directory is on the PYTHONPATH.
+
+You may have noted that the extensions packaged with Python-Markdown do not
+use  Python's dot notation in their names. This is because they are 
+all part of the `markdown.extensions` package. If a "name" contains any dots 
+(`.`), then it will be imported as-is. Otherwise, Markdown will first try to 
+import from `markdown.extensions.extname` and upon failure, `mdx_extname` where
+`"extname"` is the "name" passed to Markdown.
+
+!!! Note
+    While the `mdx_extname` method of naming extensions is still supported, it 
+    remains solely for historical reasons to support the various existing 
+    third-party extensions. This method is discouraged going forward and support
+    may be removed in a future release.
 
 [Preprocessors]: #preprocessors
 [InlinePatterns]: #inlinepatterns
@@ -610,3 +627,4 @@ than one residing in a module.
 [Available Extensions]: index.html 
 [Footnotes]: footnotes.html
 [Definition Lists]: definition_lists.html
+[library reference]: ../reference.html

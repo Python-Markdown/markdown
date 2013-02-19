@@ -34,11 +34,6 @@ From the Python interpreter:
     >>> import markdown
     >>> html = markdown.markdown(text, ['extra'])
 
-In the unlikely event that one or more of the supported extensions are not
-available for import, Markdown will simply continue without that
-extension. If you would like to be notified of such failures,
-you may set Python-Markdown's logger level to "WARN".
-
 There may be [additional extensions](index.html) that are distributed with
 Python-Markdown that are not included here in Extra. The features 
 of those extensions are not part of PHP Markdown Extra, and 

@@ -10,7 +10,7 @@ Definition Lists
 Summary
 -------
 
-The Definition List Extension adds the ability to create definition list in
+The Definition List Extension adds the ability to create definition lists in
 Markdown documents.
 
 This extension is included in the standard Markdown library.
@@ -58,4 +58,4 @@ To use with other extensions, just add them to the list, like this:
 The extension can also be called from the command line using Markdown's `-x` 
 parameter:
 
-    markdown.py -x def_list source.txt > output.html
+    python -m markdown -x def_list source.txt > output.html

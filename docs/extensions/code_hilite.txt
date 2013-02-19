@@ -30,8 +30,9 @@ language. When that fails, the code block will display as un-highlighted code.
 [dl]: http://pygments.org/download/
 [documentation]: http://pygments.org/docs
 
-**Note:** The css and/or javascript is not included as part of this extension
-but shall always be provided by the end user.
+!!! Note
+    The css and/or javascript is not included as part of this extension
+    but shall always be provided by the end user.
 
 Syntax
 ------
@@ -42,11 +43,11 @@ the code block. There are three ways to tell the hiliter what language the code
 block contains and each one has a different result.
 
 !!! Note
-The format of the language identifier only effects the display of line numbers
-if `linenums` is set to `None` (the default). If set to `True` or `False`
-(see [Usage](#usage) below) the format of the identifier has no effect on the
-display of line numbers -- it only serves as a means to define the language
-of the code block.
+    The format of the language identifier only effects the display of line numbers
+    if `linenums` is set to `None` (the default). If set to `True` or `False`
+    (see [Usage](#usage) below) the format of the identifier has no effect on the
+    display of line numbers -- it only serves as a means to define the language
+    of the code block.
 
 [syntax]: http://daringfireball.net/projects/markdown/syntax#precode
 
@@ -93,10 +94,8 @@ Will result in:
 ###When No Language is Defined
 
 CodeHilite is completely backward compatible so that if a code block is
-encountered that does not define a language, the block is simple wrapped in
-`<pre>` tags and output. Note: one exception would be that the Pygments
-highlighting engine will try to guess the language. Upon failure, the same
-behavior will happen as described here.
+encountered that does not define a language, the block is simply wrapped in
+`<pre>` tags and output. 
 
         # Code goes here ...
 
@@ -106,8 +105,13 @@ Will result in:
 
 Lets see the source for that:
 
-    <div class="codehilite" ><pre><code># Code goes here ...
+    <div class="codehilite"><pre><code># Code goes here ...
     </code></pre></div>
+
+!!! Note
+    When no language is defined, the Pygments highlighting engine will try to guess 
+    the language (unless `guess_lang` is set to `False`). Upon failure, the same 
+    behavior will happen as described above.
 
 Usage
 -----
@@ -131,7 +135,7 @@ SheBangs (`#!`) for language identification, set `linenums` to `False`.
     ... )
 
 If you want to prevent Pygments from guessing the language, only highlighting
-blocks when you explicitly request it, set the `guess_lang` setting to 'False'.
+blocks when you explicitly request it, set the `guess_lang` setting to `False`.
 
     >>> html = markdown.markdown(text,
     ...     extensions=['codehilite(guess_lang=False)']

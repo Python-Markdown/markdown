@@ -65,19 +65,3 @@ command line:
     git clone git://github.com/waylan/Python-Markdown.git python-markdown
     cd python-markdown
     python setup.py install
-
-Dependencies
-------------
-
-Python-Markdown requires the ElementTree module to be installed. In Python 2.5+ 
-ElementTree is included as part of the standard library at 
-`xml.etree.ElementTree` and/or `xml.etree.cElementTree`. For earlier versions 
-of Python, the library needs to be installed.  However, Python-Markdown's 
-install script will automaticaly detect the missing library and download and 
-install the "ElementTree" library for you if your system has internet access. 
-If you would like to use the "cElementTree" library (which is faster), you can 
-install it manually. Markdown will check for the faster "c" library first and 
-fall back to the slower python implementation when it is not available.
-
-See <http://effbot.org/zone/element-index.htm> for more information or to 
-download the latest version of ElementTree.

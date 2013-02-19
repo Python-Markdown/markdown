@@ -56,4 +56,4 @@ To use with other extensions, just add them to the list, like this:
 Abbreviations can also be called from the command line using Markdown's `-x` 
 parameter, like so:
 
-    markdown.py -x abbr source.txt > output.html
+    python -m markdown -x abbr source.txt > output.html

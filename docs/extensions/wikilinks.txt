@@ -54,7 +54,7 @@ From the Python interpreter:
 The default behavior is to point each link to the document root of the current 
 domain and close with a trailing slash. Additionally, each link is assigned to 
 the html class `wikilink`. This may not always be desirable. Therefore, one can
-customize that behavior within Python code. Three settings are provided to 
+customize that behavior within Python code. Four settings are provided to 
 change the default behavior:
 
 1. **base_url**: String to append to beginning of URL. 
@@ -108,7 +108,7 @@ Would cause all wikilinks to be assigned to the class `myclass`.
 
 The same options can be used on the command line as well:
 
-    python markdown.py -x wikilink(base_url=http://example.com/,end_url=.html,html_class=foo) src.txt
+    python -m markdown -x wikilink(base_url=http://example.com/,end_url=.html,html_class=foo) src.txt
 
 Some may prefer the more complex format when calling the `Markdown` class directly:
 
@@ -133,7 +133,7 @@ meta-data keywords are:
 * `wiki_end_url`
 * `wiki_html_class`
 
-When used, the meta-data will override the settings provided through the  
+When used, the meta-data will override the settings provided through the
 `extension_configs` interface. 
 
 This document:

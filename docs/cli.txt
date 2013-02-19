@@ -21,8 +21,8 @@ Assuming the `python` executable is on your system path, just run the following:
 
     python -m markdown [options] [args]
 
-That will run the module as a script. Note that on older Python versions (2.5 
-and 2.6), you may need to specify the appropriate module:
+That will run the module as a script. Note that on older Python versions (2.6), 
+you may need to specify the appropriate module:
 
     python -m markdown.__main__ [options] [args]
 
@@ -30,8 +30,8 @@ Use the `--help` option for available options:
 
     python -m markdown --help
 
-If you are using Python 2.4 or you don't want to have to call the python
-executable directly, follow the instructions below:
+If you don't want to call the python executable directly, follow the 
+instructions below:
 
 Setup
 -----
@@ -70,13 +70,14 @@ path.
     markdown text files will not likely be in that directory, so it is much 
     more convenient to have ``markdown_py`` on your path.
 
-__Note:__ Python-Markdown uses "markdown_py" as a script name because
-the Perl implementation has already taken the more obvious name "markdown".
-Additionally, the default Python configuration on some systems would cause a 
-script named "markdown.py" to fail by importing itself rather than the markdown
-library. Therefore, the script has been named "markdown_py" as a compromise. If
-you prefer a different name for the script on your system, it is suggested that
-you create a symbolic link to `markdown_py` with your preferred name.
+!!!Note 
+    Python-Markdown uses "markdown_py" as a script name because
+    the Perl implementation has already taken the more obvious name "markdown".
+    Additionally, the default Python configuration on some systems would cause a 
+    script named "markdown.py" to fail by importing itself rather than the markdown
+    library. Therefore, the script has been named "markdown_py" as a compromise. If
+    you prefer a different name for the script on your system, it is suggested that
+    you create a symbolic link to `markdown_py` with your preferred name.
 
 Usage
 -----

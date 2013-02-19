@@ -26,14 +26,14 @@ The basic syntax was inspired by [Maruku][]'s Attribute List feature.
 
 An example attribute list might look like this:
 
-    {: #someid .someclass somekey='some values' }
+    {: #someid .someclass somekey='some value' }
 
-A word which starts with a hash `#` will set the id of an element.
+A word which starts with a hash (`#`) will set the id of an element.
 
-A word which starts with a dot `.` will add to the list of classes assigned to
-an element.
+A word which starts with a dot (`.`) will be added to the list of classes 
+assigned to an element.
 
-A key/value pair will assign that pair to the element.
+A key/value pair (`somekey='some value'`) will assign that pair to the element.
 
 Be aware that while the dot syntax will add to a class, using key/value pairs
 will always override the previously defined attribute. Consider the following:
@@ -42,7 +42,7 @@ will always override the previously defined attribute. Consider the following:
 
 The above example would result in the following attributes being defined:
 
-    id="id2 class="class2 class3 class4"
+    id="id2" class="class2 class3 class4"
 
 ### Block Level ###
 
