@@ -94,6 +94,10 @@ are summarized below:
     subsequent paragraphs of a list **must** be indented by four spaces or one
     tab.
 
+    The same strict behavior is enforced on nested lists in Python-Markdown.
+    A sublist item **must** be nested by at last four spaces. To do otherwise 
+    would be considered a bug. 
+
     In the event that one would prefer different behavior,
     [tab_length](reference.html#tab_length) can be set to whatever length is 
     desired. Be warned however, as this will affect indentation for all aspects 
