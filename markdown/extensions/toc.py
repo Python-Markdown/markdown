@@ -127,7 +127,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
         self.use_anchors = self.config["anchorlink"] in [1, '1', True, 'True', 'true']
         
         # Get a list of id attributes
-        used_ids = []
+        used_ids = set()
         for c in doc.getiterator():
             if "id" in c.attrib:
                 used_ids.append(c.attrib["id"])

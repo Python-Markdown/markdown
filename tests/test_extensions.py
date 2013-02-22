@@ -199,6 +199,13 @@ class TestHeaderId(unittest.TestCase):
         self.assertEqual(self.md.convert(text),
             '<h1 id="some-header">Some Header</h1>')
 
+    def testUniqueFunc(self):
+        """ Test 'unique' function. """
+        from markdown.extensions.headerid import unique
+        ids = set(['foo'])
+        self.assertEqual(unique('foo', ids), 'foo_1')
+        self.assertEqual(ids, set(['foo', 'foo_1']))
+
     def testUniqueIds(self):
         """ Test Unique IDs. """
 

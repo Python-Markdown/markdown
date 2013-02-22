@@ -101,7 +101,7 @@ def unique(id, ids):
             id = '%s_%d'% (m.group(1), int(m.group(2))+1)
         else:
             id = '%s_%d'% (id, 1)
-    ids.append(id)
+    ids.add(id)
     return id
 
 
@@ -191,7 +191,7 @@ class HeaderIdExtension (markdown.Extension):
             md.treeprocessors.add('headerid', self.processor, '>prettify')
 
     def reset(self):
-        self.processor.IDs = []
+        self.processor.IDs = set()
 
 
 def makeExtension(configs=None):
