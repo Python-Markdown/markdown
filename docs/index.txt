@@ -90,14 +90,16 @@ are summarized below:
     subsequent paragraph in a list item **must** be indented by either 4 spaces 
     or one tab" (emphasis added). However, many implementations do not enforce 
     this rule and allow less than 4 spaces of indentation. The implementers of 
-    Python-Markdown consider it a bug to not enforce this rule, and therefore,
-    subsequent paragraphs of a list **must** be indented by four spaces or one
-    tab.
+    Python-Markdown consider it a bug to not enforce this rule. 
+
+    This applies to any block level elements nested in a list, including
+    paragraphs, sub-lists, blockquotes, code blocks, etc. They **must** always 
+    be indented by at least four spaces (or one tab) for each level of nesting.
 
     In the event that one would prefer different behavior,
     [tab_length](reference.html#tab_length) can be set to whatever length is 
     desired. Be warned however, as this will affect indentation for all aspects 
-    of the syntax (including code blocks).
+    of the syntax (including root level code blocks).
 
 * __Consecutive Lists__
 
