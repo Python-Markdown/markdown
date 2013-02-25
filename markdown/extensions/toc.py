@@ -130,7 +130,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
         used_ids = set()
         for c in doc.getiterator():
             if "id" in c.attrib:
-                used_ids.append(c.attrib["id"])
+                used_ids.add(c.attrib["id"])
 
         toc_list = []
         marker_found = False
