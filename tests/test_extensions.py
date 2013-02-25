@@ -54,13 +54,11 @@ class TestCodeHilite(unittest.TestCase):
         text = '\t# A Code Comment'
         md = markdown.Markdown(extensions=['codehilite(linenums=True)'])
         if self.has_pygments:
-            self.assertEqual(md.convert(text),
-                '<table class="codehilitetable"><tr>'
-                '<td class="linenos"><div class="linenodiv"><pre>1</pre></div></td>'
-                '<td class="code"><div class="codehilite">'
-                '<pre><span class="c"># A Code Comment</span>\n</pre>'
-                '</div>\n</td>'
-                '</tr></table>')
+            # Differant versions of pygments output slightly different markup.
+            # So we use 'startwith' and test just enough to confirm that 
+            # pygments received and processed linenums.
+            self.assertTrue(md.convert(text).startswith(
+                '<table class="codehilitetable"><tr><td class="linenos">'))
         else:
             self.assertEqual(md.convert(text),
                 '<pre class="codehilite"><code class="linenums"># A Code Comment'
@@ -96,13 +94,11 @@ class TestCodeHilite(unittest.TestCase):
         text = '\t#!Python\n\t# A Code Comment'
         md = markdown.Markdown(extensions=['codehilite(linenums=None)'])
         if self.has_pygments:
-            self.assertEqual(md.convert(text),
-                '<table class="codehilitetable"><tr>'
-                '<td class="linenos"><div class="linenodiv"><pre>1</pre></div></td>'
-                '<td class="code"><div class="codehilite">'
-                '<pre><span class="c"># A Code Comment</span>\n</pre>'
-                '</div>\n</td>'
-                '</tr></table>')
+            # Differant versions of pygments output slightly different markup.
+            # So we use 'startwith' and test just enough to confirm that 
+            # pygments received and processed linenums.
+            self.assertTrue(md.convert(text).startswith(
+                '<table class="codehilitetable"><tr><td class="linenos">'))
         else:
             self.assertEqual(md.convert(text),
                 '<pre class="codehilite"><code class="language-python linenums"># A Code Comment'
