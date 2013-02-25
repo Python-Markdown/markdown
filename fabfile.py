@@ -10,7 +10,7 @@ from sys import platform
 def _get_versions():
     """ Find and comfirm all supported versions of Python. """
     vs = []
-    for v in ['2.5', '2.6', '2.7', '3.1', '3.2']:
+    for v in ['2.6', '2.7', '3.1', '3.2', '3.3']:
         with settings(
             hide('warnings', 'running', 'stdout', 'stderr'),
             warn_only=True
