@@ -69,8 +69,8 @@ class AttrListTreeprocessor(markdown.treeprocessors.Treeprocessor):
     INLINE_RE = re.compile(r'^%s' % BASE_RE)
     NAME_RE = re.compile(r'[^A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff\u0370-\u037d'
                          r'\u037f-\u1fff\u200c-\u200d\u2070-\u218f\u2c00-\u2fef'
-                         r'\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd\u10000-\ueffff'
-                         r'\-\.0-9\u00b7\u0300-\u036f\u203f-\u2040]+')
+                         r'\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd'
+                         r'\:\-\.0-9\u00b7\u0300-\u036f\u203f-\u2040]+')
 
     def run(self, doc):
         for elem in doc.getiterator():
