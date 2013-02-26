@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import re
-import etree_loader
 
 
 """
@@ -42,7 +41,19 @@ RTL_BIDI_RANGES = ( (u'\u0590', u'\u07FF'),
 # Extensions should use "markdown.util.etree" instead of "etree" (or do `from
 # markdown.util import etree`).  Do not import it by yourself.
 
-etree = etree_loader.importETree()
+try: # Is the C implemenation of ElementTree available?
+    import xml.etree.cElementTree as etree
+    from xml.etree.ElementTree import Comment
+    # Serializers (including ours) test with non-c Comment
+    etree.test_comment = Comment
+    if etree.VERSION < "1.0.5":
+        raise RuntimeError("cElementTree version 1.0.5 or higher is required.")
+except (ImportError, RuntimeError):
+    # Use the Python implementation of ElementTree?
+    import xml.etree.ElementTree as etree
+    if etree.VERSION < "1.1":
+        raise RuntimeError("ElementTree version 1.1 or higher is required")
+
 
 """
 AUXILIARY GLOBAL FUNCTIONS
