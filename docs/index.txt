@@ -26,6 +26,7 @@ The Python-Markdown project is developed with the following goals in mind:
   follows the [syntax rules](http://daringfireball.net/projects/markdown/syntax)
   and the behavior of the original (markdown.pl) implementation as reasonably
   as possible (see [differences](#differences) for a few exceptions).
+
 * Provide an [Extension API](extensions/api.html) which makes it possible
   to change and/or extend the behavior of the parser.
 

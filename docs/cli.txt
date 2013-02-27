@@ -17,21 +17,36 @@ Generally, you will want to have the Markdown library fully installed on your
 system to run the command line script. See the 
 [Installation instructions](install.html) for details.
 
-Assuming the `python` executable is on your system path, just run the following:
+Python-Markdown's command line script takes advantage of Python's `-m` flag.
+Therefore, assuming the python executable is on your system path, use the 
+following format:
 
-    python -m markdown [options] [args]
+    $ python -m markdown [options] [args]
 
-That will run the module as a script. Note that on older Python versions (2.6), 
-you may need to specify the appropriate module:
+That will run the module as a script with the options and args provided. 
 
-    python -m markdown.__main__ [options] [args]
+!!! Note 
+    Unfortunately, Python 2.6 does not fully support the `-m` flag. Therefore, you 
+    may need to specify the module in which the command line script exists 
+    (`markdown.__main__`):
 
-Use the `--help` option for available options:
+        $ python -m markdown.__main__ [options] [args]
 
-    python -m markdown --help
+At its most basic usage, one would simply pass in a file name as the only argument:
 
-If you don't want to call the python executable directly, follow the 
-instructions below:
+    $ python -m markdown input_file.txt
+
+Piping input and output (on STDIN and STDOUT) is fully supported as well. 
+For example:
+
+    $ echo "Some **Markdown** text." | python -m markdown > output.html
+
+Use the `--help` option for a list all available options and args:
+
+    $ python -m markdown --help
+
+If you don't want to call the python executable directly (using the `-m` flag), 
+follow the instructions below to use a wrapper script:
 
 Setup
 -----
@@ -58,8 +73,8 @@ path.
     * Some systems will automatically install the script on your path. Try it 
       and see if it works. Just run ``markdown_py`` from the command line.
 
-    * Other systems may maintain a separate "Scripts" directory which you
-      need to add to your path. Find it (check with your distribution) and
+    * Other systems may maintain a separate "Scripts" ("bin") directory which 
+      you need to add to your path. Find it (check with your distribution) and
       either add it to your path or make a symbolic link to it from your path.
 
     * If you are sure ``markdown_py`` is on your path, but it still isn't being

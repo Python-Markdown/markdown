@@ -20,7 +20,7 @@ See the [Library Reference](../reference.html#extensions) for more details.
 
 From the command line, specify an extension with the `-x` option. 
 
-    python -m markdown -x footnotes -x tables input.txt > output.html
+    $ python -m markdown -x footnotes -x tables input.txt > output.html
 
 See the [Command Line docs](../cli.html) or use the `--help` option for more details.
 

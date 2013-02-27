@@ -8,7 +8,7 @@ Python-Markdown 2.3 Release Notes
 =================================
 
 We are pleased to release Python-Markdown 2.3 which adds one new extension,
-remove an old extension, and now runs on both Python 2 and Python 3
+removes an old extension, and now runs on both Python 2 and Python 3
 without running the 2to3 conversion tool. See the list of changes below for
 details.
 
@@ -19,8 +19,8 @@ Backwards-incompatible Changes
 
 * Support has been dropped for Python 2.5. No guarantees are made that the
 library will work in any version of Python lower than 2.6. As all supported
-Python versions include the ElementTree library, Python-Markdown no longer
-will try to import a third-party installation of ElementTree.
+Python versions include the ElementTree library, Python-Markdown will no 
+longer try to import a third-party installation of ElementTree.
 
 * All classes are now "new-style" classes. In other words, all classes
 subclass from 'object'. While this is not likely to affect most users, 
@@ -28,7 +28,7 @@ extension authors may need to make a few minor adjustments to their code.
 
 * "safe_mode" has been further restricted. Markdown formated links must be
 of a known whitelisted scheme when in "safe_mode" or the url is discarded.
-The whitelesited schemes are: 'http', 'https', 'ftp', 'ftps', 'mailto',
+The whitelisted schemes are: 'http', 'https', 'ftp', 'ftps', 'mailto', and
 'news'. Schemeless urls are also permitted, but are checked in other ways - 
 as they have been for some time.
 
@@ -39,7 +39,7 @@ you will need to update your code accordingly. No changes are necessary if
 you are outputing XHTML (the default) or HTML4.
 
 * The "force_linenos" config setting of the CodeHilite extension has been
-marked as Pending Deprecation and a new setting "linenums" has been added to
+marked as **Pending Deprecation** and a new setting "linenums" has been added to
 replace it. See documentation for the [CodeHilite Extension] for an explanation
 of the new "linenums" setting. The new setting will honor the old 
 "force_linenos" if it is set, but it will raise a PendingDeprecationWarning 
@@ -63,10 +63,10 @@ subdirectory of another project. The various files within the library will
 still import each other properly even though 'markdown' may not be in Python's
 root namespace.
 
-* Added the [Admonition Extension] which implements [rST-style][rST] 
-admonitions to the Markdown syntax. However, be warned that this extension 
+* The [Admonition Extension] has been added, which implements [rST-style][rST] 
+admonitions in the Markdown syntax. However, be warned that this extension 
 is experimental and the syntax and behavior is still subject to change. Please 
-try it out and report bugs/improvements.
+try it out and report bugs and/or improvements.
 
 [Admonition Extension]: extensions/admonition.html
 [rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions

@@ -51,67 +51,67 @@ block contains and each one has a different result.
 
 [syntax]: http://daringfireball.net/projects/markdown/syntax#precode
 
-###SheBang (with path)
+* ###SheBang (with path)
 
-If the first line of the codeblock contains a shebang, the language is derived
-from that and line numbers are used.
+    If the first line of the codeblock contains a shebang, the language is derived
+    from that and line numbers are used.
+
+            #!/usr/bin/python
+            # Code goes here ...
+
+    Will result in:
 
         #!/usr/bin/python
         # Code goes here ...
 
-Will result in:
 
-    #!/usr/bin/python
-    # Code goes here ...
+* ###SheBang (no path)
 
+    If the first line contains a shebang, but the shebang line does not contain a
+    path (a single `/` or even a space), then that line is removed from the code
+    block before processing. Line numbers are used.
 
-###SheBang (no path)
+            #!python
+            # Code goes here ...
 
-If the first line contains a shebang, but the shebang line does not contain a
-path (a single `/` or even a space), then that line is removed from the code
-block before processing. Line numbers are used.
-
-        #!python
-        # Code goes here ...
-
-Will result in:
-
-    # Code goes here ...
-
-####Colons
-
-If the first line begins with three or more colons, the text following the
-colons identifies the language. The first line is removed from the code block
-before processing and line numbers are not used.
-
-        :::python
-        # Code goes here ...
-
-Will result in:
-
-    # Code goes here ...
-
-###When No Language is Defined
-
-CodeHilite is completely backward compatible so that if a code block is
-encountered that does not define a language, the block is simply wrapped in
-`<pre>` tags and output. 
+    Will result in:
 
         # Code goes here ...
 
-Will result in:
+* ###Colons
 
-    # Code goes here ...
+    If the first line begins with three or more colons, the text following the
+    colons identifies the language. The first line is removed from the code block
+    before processing and line numbers are not used.
 
-Lets see the source for that:
+            :::python
+            # Code goes here ...
 
-    <div class="codehilite"><pre><code># Code goes here ...
-    </code></pre></div>
+    Will result in:
 
-!!! Note
-    When no language is defined, the Pygments highlighting engine will try to guess 
-    the language (unless `guess_lang` is set to `False`). Upon failure, the same 
-    behavior will happen as described above.
+        # Code goes here ...
+
+* ###When No Language is Defined
+
+    CodeHilite is completely backward compatible so that if a code block is
+    encountered that does not define a language, the block is simply wrapped in
+    `<pre>` tags and output. 
+
+            # Code goes here ...
+
+    Will result in:
+
+        # Code goes here ...
+
+    Lets see the source for that:
+
+        <div class="codehilite"><pre><code># Code goes here ...
+        </code></pre></div>
+
+    !!! Note
+        When no language is defined, the Pygments highlighting engine will try to guess 
+        the language (unless `guess_lang` is set to `False`). Upon failure, the same 
+        behavior will happen as described above.
 
 Usage
 -----
