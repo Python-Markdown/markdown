@@ -71,6 +71,6 @@ try it out and report bugs/improvements.
 [Admonition Extension]: extensions/admonition.html
 [rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions
 
-Various bug fixes have been made.  See the
+* Various bug fixes have been made.  See the
 [commit log](https://github.com/waylan/Python-Markdown/commits/master)
 for a complete history of the changes.
