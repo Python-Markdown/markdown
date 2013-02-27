@@ -1,6 +1,7 @@
-
-import util
-import odict
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from . import util
+from . import odict
 
 class State(list):
     """ Track the current and nested state of the parser. 

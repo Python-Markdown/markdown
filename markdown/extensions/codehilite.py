@@ -1,5 +1,4 @@
-#!/usr/bin/python
-
+from __future__ import unicode_literals
 """
 CodeHilite Extension for Python-Markdown
 ========================================
@@ -20,7 +19,9 @@ Dependencies:
 
 """
 
-import markdown
+from __future__ import absolute_import
+from . import Extension
+from ..treeprocessors import Treeprocessor
 import warnings
 try:
     from pygments import highlight
@@ -31,7 +32,7 @@ except ImportError:
     pygments = False
 
 # ------------------ The Main CodeHilite Class ----------------------
-class CodeHilite:
+class CodeHilite(object):
     """
     Determine language of source code, and pass it into the pygments hilighter.
 
@@ -167,7 +168,7 @@ class CodeHilite:
 
 
 # ------------------ The Markdown Extension -------------------------------
-class HiliteTreeprocessor(markdown.treeprocessors.Treeprocessor):
+class HiliteTreeprocessor(Treeprocessor):
     """ Hilight source code in code blocks. """
 
     def run(self, root):
@@ -193,7 +194,7 @@ class HiliteTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 block.text = placeholder
 
 
-class CodeHiliteExtension(markdown.Extension):
+class CodeHiliteExtension(Extension):
     """ Add source code hilighting to markdown codeblocks. """
 
     def __init__(self, configs):

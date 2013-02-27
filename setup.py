@@ -10,14 +10,6 @@ from distutils.util import change_root, newer
 import codecs
 import imp
 
-# Try to run 2to3 automaticaly when building in Python 3.x
-try:
-    from distutils.command.build_py import build_py_2to3 as build_py
-except ImportError:
-    if sys.version_info >= (3, 0):
-        raise ImportError("build_py_2to3 is required to build in Python 3.x.")
-    from distutils.command.build_py import build_py
-
 def get_version():
     " Get version & version_info without importing markdown.__init__ "
     path = os.path.join(os.path.dirname(__file__), 'markdown')
@@ -235,7 +227,6 @@ setup(
     packages =      ['markdown', 'markdown.extensions'],
     scripts =       ['bin/%s' % SCRIPT_NAME],
     cmdclass =      {'install_scripts': md_install_scripts,
-                     'build_py': build_py,
                      'build_docs': build_docs,
                      'build': md_build},
     classifiers =   ['Development Status :: %s' % DEVSTATUS,

@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 """
 Table of Contents Extension for Python-Markdown
 * * *
@@ -8,10 +9,12 @@ Dependencies:
 * [Markdown 2.1+](http://packages.python.org/Markdown/)
 
 """
-import markdown
-from markdown.util import etree
-from markdown.extensions.headerid import slugify, unique, itertext
 
+from __future__ import absolute_import
+from . import Extension
+from ..treeprocessors import Treeprocessor
+from ..util import etree
+from .headerid import slugify, unique, itertext
 import re
 
 
@@ -77,7 +80,7 @@ def order_toc_list(toc_list):
     return ordered_list
 
 
-class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
+class TocTreeprocessor(Treeprocessor):
     
     # Iterator wrapper to get parent and child all at once
     def iterparent(self, root):
@@ -182,7 +185,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
             self.markdown.toc = toc
 
 
-class TocExtension(markdown.Extension):
+class TocExtension(Extension):
     
     TreeProcessorClass = TocTreeprocessor
     

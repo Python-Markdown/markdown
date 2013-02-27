@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+from __future__ import unicode_literals
 '''
 WikiLinks Extension for Python-Markdown
 ======================================
@@ -78,7 +77,10 @@ Dependencies:
 * [Markdown 2.0+](http://packages.python.org/Markdown/)
 '''
 
-import markdown
+from __future__ import absolute_import
+from . import Extension
+from ..inlinepatterns import Pattern
+from ..util import etree
 import re
 
 def build_url(label, base, end):
@@ -87,7 +89,7 @@ def build_url(label, base, end):
     return '%s%s%s'% (base, clean_label, end)
 
 
-class WikiLinkExtension(markdown.Extension):
+class WikiLinkExtension(Extension):
     def __init__(self, configs):
         # set extension defaults
         self.config = {
@@ -111,9 +113,9 @@ class WikiLinkExtension(markdown.Extension):
         md.inlinePatterns.add('wikilink', wikilinkPattern, "<not_strong")
 
 
-class WikiLinks(markdown.inlinepatterns.Pattern):
+class WikiLinks(Pattern):
     def __init__(self, pattern, config):
-        markdown.inlinepatterns.Pattern.__init__(self, pattern)
+        super(WikiLinks, self).__init__(pattern)
         self.config = config
   
     def handleMatch(self, m):
@@ -121,7 +123,7 @@ class WikiLinks(markdown.inlinepatterns.Pattern):
             base_url, end_url, html_class = self._getMeta()
             label = m.group(2).strip()
             url = self.config['build_url'](label, base_url, end_url)
-            a = markdown.util.etree.Element('a')
+            a = etree.Element('a')
             a.text = label 
             a.set('href', url)
             if html_class:
@@ -136,20 +138,14 @@ class WikiLinks(markdown.inlinepatterns.Pattern):
         end_url = self.config['end_url']
         html_class = self.config['html_class']
         if hasattr(self.md, 'Meta'):
-            if self.md.Meta.has_key('wiki_base_url'):
+            if 'wiki_base_url' in self.md.Meta:
                 base_url = self.md.Meta['wiki_base_url'][0]
-            if self.md.Meta.has_key('wiki_end_url'):
+            if 'wiki_end_url' in self.md.Meta:
                 end_url = self.md.Meta['wiki_end_url'][0]
-            if self.md.Meta.has_key('wiki_html_class'):
+            if 'wiki_html_class' in self.md.Meta:
                 html_class = self.md.Meta['wiki_html_class'][0]
         return base_url, end_url, html_class
     
 
 def makeExtension(configs=None) :
     return WikiLinkExtension(configs=configs)
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
-

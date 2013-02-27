@@ -1,6 +1,8 @@
-import inlinepatterns
-import util
-import odict
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from . import util
+from . import odict
+from . import inlinepatterns
 
 
 def build_treeprocessors(md_instance, **kwargs):
@@ -14,17 +16,11 @@ def build_treeprocessors(md_instance, **kwargs):
 def isString(s):
     """ Check if it's string """
     if not isinstance(s, util.AtomicString):
-        return isinstance(s, basestring)
+        return isinstance(s, util.string_type)
     return False
 
 
-class Processor:
-    def __init__(self, markdown_instance=None):
-        if markdown_instance:
-            self.markdown = markdown_instance
-
-
-class Treeprocessor(Processor):
+class Treeprocessor(util.Processor):
     """
     Treeprocessors are run on the ElementTree object before serialization.
 

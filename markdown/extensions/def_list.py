@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import unicode_literals
 """
 Definition List Extension for Python-Markdown
 =============================================
@@ -19,12 +19,14 @@ Copyright 2008 - [Waylan Limberg](http://achinghead.com)
 
 """
 
+from __future__ import absolute_import
+from . import Extension
+from ..blockprocessors import BlockProcessor, ListIndentProcessor
+from ..util import etree
 import re
-import markdown
-from markdown.util import etree
 
 
-class DefListProcessor(markdown.blockprocessors.BlockProcessor):
+class DefListProcessor(BlockProcessor):
     """ Process Definition Lists. """
 
     RE = re.compile(r'(^|\n)[ ]{0,3}:[ ]{1,3}(.*?)(\n|$)')
@@ -85,7 +87,7 @@ class DefListProcessor(markdown.blockprocessors.BlockProcessor):
         if theRest:
             blocks.insert(0, theRest)
 
-class DefListIndentProcessor(markdown.blockprocessors.ListIndentProcessor):
+class DefListIndentProcessor(ListIndentProcessor):
     """ Process indented children of definition list items. """
 
     ITEM_TYPES = ['dd']
@@ -98,7 +100,7 @@ class DefListIndentProcessor(markdown.blockprocessors.ListIndentProcessor):
  
 
 
-class DefListExtension(markdown.Extension):
+class DefListExtension(Extension):
     """ Add definition lists to Markdown. """
 
     def extendMarkdown(self, md, md_globals):

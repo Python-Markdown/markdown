@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 """
 PRE-PROCESSORS
 =============================================================================
@@ -6,9 +7,10 @@ Preprocessors work on source text before we start doing anything too
 complicated. 
 """
 
+from __future__ import absolute_import
+from . import util
+from . import odict
 import re
-import util
-import odict
 
 
 def build_preprocessors(md_instance, **kwargs):

@@ -1,5 +1,4 @@
-#!/usr/bin/python
-
+from __future__ import unicode_literals
 """
 HeaderID Extension for Python-Markdown
 ======================================
@@ -76,7 +75,9 @@ Dependencies:
 
 """
 
-import markdown
+from __future__ import absolute_import
+from . import Extension
+from ..treeprocessors import Treeprocessor
 import re
 import logging
 import unicodedata
@@ -120,7 +121,7 @@ def itertext(elem):
             yield e.tail
 
 
-class HeaderIdTreeprocessor(markdown.treeprocessors.Treeprocessor):
+class HeaderIdTreeprocessor(Treeprocessor):
     """ Assign IDs to headers. """
 
     IDs = set()
@@ -135,7 +136,7 @@ class HeaderIdTreeprocessor(markdown.treeprocessors.Treeprocessor):
                     if "id" in elem.attrib:
                         id = elem.get('id')
                     else:
-                        id = slugify(u''.join(itertext(elem)), sep)
+                        id = slugify(''.join(itertext(elem)), sep)
                     elem.set('id', unique(id, self.IDs))
                 if start_level:
                     level = int(elem.tag[-1]) + start_level
@@ -149,9 +150,9 @@ class HeaderIdTreeprocessor(markdown.treeprocessors.Treeprocessor):
         level = int(self.config['level']) - 1
         force = self._str2bool(self.config['forceid'])
         if hasattr(self.md, 'Meta'):
-            if self.md.Meta.has_key('header_level'):
+            if 'header_level' in self.md.Meta:
                 level = int(self.md.Meta['header_level'][0]) - 1
-            if self.md.Meta.has_key('header_forceid'): 
+            if 'header_forceid' in self.md.Meta: 
                 force = self._str2bool(self.md.Meta['header_forceid'][0])
         return level, force
 
@@ -165,7 +166,7 @@ class HeaderIdTreeprocessor(markdown.treeprocessors.Treeprocessor):
         return default
 
 
-class HeaderIdExtension (markdown.Extension):
+class HeaderIdExtension(Extension):
     def __init__(self, configs):
         # set defaults
         self.config = {
@@ -196,8 +197,3 @@ class HeaderIdExtension (markdown.Extension):
 
 def makeExtension(configs=None):
     return HeaderIdExtension(configs=configs)
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
-
