@@ -130,7 +130,7 @@ class FootnoteExtension(Extension):
     def makeFootnotesDiv(self, root):
         """ Return div of footnotes as et Element. """
 
-        if not self.footnotes.keys():
+        if not list(self.footnotes.keys()):
             return None
 
         div = etree.Element("div")
