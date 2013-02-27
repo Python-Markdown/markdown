@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 '''
 Smart_Strong Extension for Python-Markdown
 ==========================================
@@ -22,13 +23,14 @@ Copyright 2011
 
 '''
 
-import markdown
-from markdown.inlinepatterns import SimpleTagPattern
+from __future__ import absolute_import
+from . import Extension
+from ..inlinepatterns import SimpleTagPattern
 
 SMART_STRONG_RE = r'(?<!\w)(_{2})(?!_)(.+?)(?<!_)\2(?!\w)'
 STRONG_RE = r'(\*{2})(.+?)\2'
 
-class SmartEmphasisExtension(markdown.extensions.Extension):
+class SmartEmphasisExtension(Extension):
     """ Add smart_emphasis extension to Markdown class."""
 
     def extendMarkdown(self, md, md_globals):
@@ -38,7 +40,3 @@ class SmartEmphasisExtension(markdown.extensions.Extension):
 
 def makeExtension(configs={}):
     return SmartEmphasisExtension(configs=dict(configs))
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()

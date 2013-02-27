@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+from __future__ import unicode_literals
 """
 HTML Tidy Extension for Python-Markdown
 =======================================
@@ -28,13 +27,16 @@ Dependencies:
 
 """
 
-import markdown
+from __future__ import absolute_import
+from . import Extension
+from ..postprocessors import Postprocessor
+from ..util import text_type
 try:
     import tidy
 except ImportError:
     tidy = None
 
-class TidyExtension(markdown.Extension):
+class TidyExtension(Extension):
 
     def __init__(self, configs):
         # Set defaults to match typical markdown behavior.
@@ -54,13 +56,13 @@ class TidyExtension(markdown.Extension):
             md.postprocessors['tidy'] = TidyProcessor(md)
 
 
-class TidyProcessor(markdown.postprocessors.Postprocessor):
+class TidyProcessor(Postprocessor):
 
     def run(self, text):
         # Pass text to Tidy. As Tidy does not accept unicode we need to encode
         # it and decode its return value.
         enc = self.markdown.tidy_options.get('char_encoding', 'utf8')
-        return unicode(tidy.parseString(text.encode(enc), 
+        return text_type(tidy.parseString(text.encode(enc), 
                                         **self.markdown.tidy_options),
                        encoding=enc) 
 

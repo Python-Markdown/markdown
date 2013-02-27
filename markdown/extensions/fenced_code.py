@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+from __future__ import unicode_literals
 """
 Fenced Code Extension for Python Markdown
 =========================================
@@ -75,9 +74,11 @@ Dependencies:
 
 """
 
+from __future__ import absolute_import
+from . import Extension
+from ..preprocessors import Preprocessor
+from .codehilite import CodeHilite, CodeHiliteExtension
 import re
-import markdown
-from markdown.extensions.codehilite import CodeHilite, CodeHiliteExtension
 
 # Global vars
 FENCED_BLOCK_RE = re.compile( \
@@ -87,7 +88,7 @@ FENCED_BLOCK_RE = re.compile( \
 CODE_WRAP = '<pre><code%s>%s</code></pre>'
 LANG_TAG = ' class="%s"'
 
-class FencedCodeExtension(markdown.Extension):
+class FencedCodeExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
         """ Add FencedBlockPreprocessor to the Markdown instance. """
@@ -98,10 +99,10 @@ class FencedCodeExtension(markdown.Extension):
                                  ">normalize_whitespace")
 
 
-class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
+class FencedBlockPreprocessor(Preprocessor):
 
     def __init__(self, md):
-        markdown.preprocessors.Preprocessor.__init__(self, md)
+        super(FencedBlockPreprocessor, self).__init__(md)
 
         self.checked_for_codehilite = False
         self.codehilite_conf = {}
@@ -158,8 +159,3 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
 
 def makeExtension(configs=None):
     return FencedCodeExtension(configs=configs)
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

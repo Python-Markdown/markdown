@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 """
 Attribute List Extension for Python-Markdown
 ============================================
@@ -18,9 +19,11 @@ Dependencies:
 
 """
 
-import markdown
+from __future__ import absolute_import
+from . import Extension
+from ..treeprocessors import Treeprocessor
+from ..util import isBlockLevel
 import re
-from markdown.util import isBlockLevel
 
 try:
     Scanner = re.Scanner
@@ -41,9 +44,9 @@ def _handle_key_value(s, t):
 
 def _handle_word(s, t):
     if t.startswith('.'):
-        return u'.', t[1:]
+        return '.', t[1:]
     if t.startswith('#'):
-        return u'id', t[1:]
+        return 'id', t[1:]
     return t, t
 
 _scanner = Scanner([
@@ -61,7 +64,7 @@ def get_attrs(str):
 def isheader(elem):
     return elem.tag in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
-class AttrListTreeprocessor(markdown.treeprocessors.Treeprocessor):
+class AttrListTreeprocessor(Treeprocessor):
     
     BASE_RE = r'\{\:?([^\}]*)\}'
     HEADER_RE = re.compile(r'[ ]*%s[ ]*$' % BASE_RE)
@@ -128,7 +131,7 @@ class AttrListTreeprocessor(markdown.treeprocessors.Treeprocessor):
         return self.NAME_RE.sub('_', name)
 
 
-class AttrListExtension(markdown.extensions.Extension):
+class AttrListExtension(Extension):
     def extendMarkdown(self, md, md_globals):
         md.treeprocessors.add('attr_list', AttrListTreeprocessor(md), '>prettify')
 

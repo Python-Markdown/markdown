@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import unicode_literals
 """
 Python-Markdown Extra Extension
 ===============================
@@ -27,7 +27,8 @@ when you upgrade to any future version of Python-Markdown.
 
 """
 
-import markdown
+from __future__ import absolute_import
+from . import Extension
 
 extensions = ['smart_strong',
               'fenced_code',
@@ -39,7 +40,7 @@ extensions = ['smart_strong',
               ]
               
 
-class ExtraExtension(markdown.Extension):
+class ExtraExtension(Extension):
     """ Add various extensions to Markdown class."""
 
     def extendMarkdown(self, md, md_globals):

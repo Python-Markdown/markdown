@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 """
 NL2BR Extension
 ===============
@@ -20,17 +21,18 @@ Dependencies:
 
 """
 
-import markdown
+from __future__ import absolute_import
+from . import Extension
+from ..inlinepatterns import SubstituteTagPattern
 
 BR_RE = r'\n'
 
-class Nl2BrExtension(markdown.Extension):
+class Nl2BrExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
-        br_tag = markdown.inlinepatterns.SubstituteTagPattern(BR_RE, 'br')
+        br_tag = SubstituteTagPattern(BR_RE, 'br')
         md.inlinePatterns.add('nl', br_tag, '_end')
 
 
 def makeExtension(configs=None):
     return Nl2BrExtension(configs)
-

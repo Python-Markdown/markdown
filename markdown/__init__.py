@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 """
 Python Markdown
 ===============
@@ -22,7 +23,7 @@ Limberg](http://achinghead.com/) and [Artem Yunusov](http://blog.splyer.com).
 
 Contact: markdown@freewisdom.org
 
-Copyright 2007-2012 The Python Markdown Project (v. 1.7 and later)
+Copyright 2007-2013 The Python Markdown Project (v. 1.7 and later)
 Copyright 200? Django Software Foundation (OrderedDict implementation)
 Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 Copyright 2004 Manfred Stienstra (the original version)
@@ -30,26 +31,27 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE for details).
 """
 
-from __version__ import version, version_info
+from __future__ import absolute_import
+from .__version__ import version, version_info
 import re
 import codecs
 import sys
 import logging
-import util
-from preprocessors import build_preprocessors
-from blockprocessors import build_block_parser
-from treeprocessors import build_treeprocessors
-from inlinepatterns import build_inlinepatterns
-from postprocessors import build_postprocessors
-from extensions import Extension
-from serializers import to_html_string, to_xhtml_string
+from . import util
+from .preprocessors import build_preprocessors
+from .blockprocessors import build_block_parser
+from .treeprocessors import build_treeprocessors
+from .inlinepatterns import build_inlinepatterns
+from .postprocessors import build_postprocessors
+from .extensions import Extension
+from .serializers import to_html_string, to_xhtml_string
 
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
 logger = logging.getLogger('MARKDOWN')
 
 
-class Markdown:
+class Markdown(object):
     """Convert Markdown to HTML."""
 
     doc_tag = "div"     # Element used to wrap document - later removed
@@ -108,7 +110,7 @@ class Markdown:
         pos = ['extensions', 'extension_configs', 'safe_mode', 'output_format']
         c = 0
         for arg in args:
-            if not kwargs.has_key(pos[c]):
+            if pos[c] not in kwargs:
                 kwargs[pos[c]] = arg
             c += 1
             if c == len(pos):
@@ -120,7 +122,7 @@ class Markdown:
             setattr(self, option, kwargs.get(option, default))
 
         self.safeMode = kwargs.get('safe_mode', False)
-        if self.safeMode and not kwargs.has_key('enable_attributes'):
+        if self.safeMode and 'enable_attributes' not in kwargs:
             # Disable attributes in safeMode when not explicitly set
             self.enable_attributes = False
 
@@ -158,7 +160,7 @@ class Markdown:
 
         """
         for ext in extensions:
-            if isinstance(ext, basestring):
+            if isinstance(ext, util.string_type):
                 ext = self.build_extension(ext, configs.get(ext, []))
             if isinstance(ext, Extension):
                 ext.extendMarkdown(self, globals())
@@ -198,7 +200,7 @@ class Markdown:
             module_name_old_style = '_'.join(['mdx', ext_name])
             try: # Old style (mdx_<extension>)
                 module = __import__(module_name_old_style)
-            except ImportError, e:
+            except ImportError as e:
                 message = "Failed loading extension '%s' from '%s' or '%s'" \
                     % (ext_name, module_name, module_name_old_style)
                 e.args = (message,) + e.args[1:]
@@ -208,7 +210,7 @@ class Markdown:
         # function called makeExtension()
         try:
             return module.makeExtension(configs.items())
-        except AttributeError, e:
+        except AttributeError as e:
             message = e.args[0]
             message = "Failed to initiate extension " \
                       "'%s': %s" % (ext_name, message)
@@ -238,7 +240,7 @@ class Markdown:
         self.output_format = format.lower()
         try:
             self.serializer = self.output_formats[self.output_format]
-        except KeyError, e:
+        except KeyError as e:
             valid_formats = self.output_formats.keys()
             valid_formats.sort()
             message = 'Invalid Output Format: "%s". Use one of %s.' \
@@ -272,11 +274,11 @@ class Markdown:
 
         # Fixup the source text
         if not source.strip():
-            return u""  # a blank unicode string
+            return ''  # a blank unicode string
 
         try:
-            source = unicode(source)
-        except UnicodeDecodeError, e:
+            source = util.text_type(source)
+        except UnicodeDecodeError as e:
             # Customise error message while maintaining original trackback
             e.reason += '. -- Note: Markdown only accepts unicode input!'
             raise
@@ -341,7 +343,7 @@ class Markdown:
 
         # Read the source
         if input:
-            if isinstance(input, str):
+            if isinstance(input, util.string_type):
                 input_file = codecs.open(input, mode="r", encoding=encoding)
             else:
                 input_file = codecs.getreader(encoding)(input)
@@ -349,7 +351,7 @@ class Markdown:
             input_file.close()
         else:
             text = sys.stdin.read()
-            if not isinstance(text, unicode):
+            if not isinstance(text, util.text_type):
                 text = text.decode(encoding)
 
         text = text.lstrip('\ufeff') # remove the byte-order mark
@@ -359,7 +361,7 @@ class Markdown:
 
         # Write to file or stdout
         if output:
-            if isinstance(output, str):
+            if isinstance(output, util.string_type):
                 output_file = codecs.open(output, "w",
                                           encoding=encoding,
                                           errors="xmlcharrefreplace")
@@ -428,7 +430,7 @@ def markdownFromFile(*args, **kwargs):
     pos = ['input', 'output', 'extensions', 'encoding']
     c = 0
     for arg in args:
-        if not kwargs.has_key(pos[c]):
+        if pos[c] not in kwargs:
             kwargs[pos[c]] = arg
         c += 1
         if c == len(pos):

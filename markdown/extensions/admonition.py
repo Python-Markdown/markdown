@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+from __future__ import unicode_literals
 """
 Admonition extension for Python-Markdown
 ========================================
@@ -42,12 +41,14 @@ By [Tiago Serafim](http://www.tiagoserafim.com/).
 
 """
 
+from __future__ import absolute_import
+from . import Extension
+from ..blockprocessors import BlockProcessor
+from ..util import etree
 import re
-import markdown
-from markdown.util import etree
 
 
-class AdmonitionExtension(markdown.Extension):
+class AdmonitionExtension(Extension):
     """ Admonition extension for Python-Markdown. """
 
     def extendMarkdown(self, md, md_globals):
@@ -59,7 +60,7 @@ class AdmonitionExtension(markdown.Extension):
                                       '_begin')
 
 
-class AdmonitionProcessor(markdown.blockprocessors.BlockProcessor):
+class AdmonitionProcessor(BlockProcessor):
 
     CLASSNAME = 'admonition'
     CLASSNAME_TITLE = 'admonition-title'
@@ -84,7 +85,7 @@ class AdmonitionProcessor(markdown.blockprocessors.BlockProcessor):
         if m:
             klass, title = self.get_class_and_title(m)
             div = etree.SubElement(parent, 'div')
-            div.set('class', u'%s %s' % (self.CLASSNAME, klass))
+            div.set('class', '%s %s' % (self.CLASSNAME, klass))
             if title:
                 p = etree.SubElement(div, 'p')
                 p.text = title
