@@ -67,6 +67,7 @@ class HtmlBlockPreprocessor(Preprocessor):
         |                                                         # OR
         \s+(?P<attr2>[^>"'/= ]+)                                  # attr
         """
+    # "
     left_tag_pattern = r'^\<(?P<tag>[^> ]+)(?P<attrs>(%s)*)\s*\/?\>?' % attrs_pattern
     attrs_re = re.compile(attrs_pattern, re.VERBOSE)
     left_tag_re = re.compile(left_tag_pattern, re.VERBOSE)
@@ -146,8 +147,9 @@ class HtmlBlockPreprocessor(Preprocessor):
         items = []
         left_tag = ''
         right_tag = ''
-        in_tag = False # flag
-
+        in_tag = 0 # flag
+        in_tag_markdown = False
+        
         while text:
             block = text[0]
             if block.startswith("\n"):
@@ -207,7 +209,8 @@ class HtmlBlockPreprocessor(Preprocessor):
                         if util.isBlockLevel(left_tag) or left_tag == "--" \
                             and not block.rstrip().endswith(">"):
                             items.append(block.strip())
-                            in_tag = True
+                            in_tag = 1
+                            in_tag_markdown = ('markdown' in attrs.keys())
                         else:
                             new_blocks.append(
                             self.markdown.htmlStash.store(block.strip()))
@@ -224,28 +227,35 @@ class HtmlBlockPreprocessor(Preprocessor):
                 if self._equal_tags(left_tag, right_tag):
                     # if find closing tag
                     
-                    if data_index < len(block):
-                        # we have more text after right_tag
-                        items[-1] = block[:data_index]
-                        text.insert(0, block[data_index:])
+                    in_tag = in_tag - 1
 
-                    in_tag = False
-                    if self.markdown_in_raw and 'markdown' in attrs.keys():
-                        start = re.sub(r'\smarkdown(=[\'"]?[^> ]*[\'"]?)?', 
-                                       '', items[0][:left_index])
-                        items[0] = items[0][left_index:]
-                        end = items[-1][-len(right_tag)-2:]
-                        items[-1] = items[-1][:-len(right_tag)-2]
-                        new_blocks.append(
-                            self.markdown.htmlStash.store(start))
-                        new_blocks.extend(items)
-                        new_blocks.append(
-                            self.markdown.htmlStash.store(end))
-                    else:
-                        new_blocks.append(
-                            self.markdown.htmlStash.store('\n\n'.join(items)))
-                    items = []
+                    if in_tag == 0:
+                        if data_index < len(block):
+                            # we have more text after right_tag
+                            items[-1] = block[:data_index]
+                            text.insert(0, block[data_index:])
 
+
+                        if self.markdown_in_raw and in_tag_markdown:
+                            start = re.sub(r'\smarkdown(=[\'"]?[^> ]*[\'"]?)?', 
+                                           '', items[0][:left_index])
+                            items[0] = items[0][left_index:]
+                            end = items[-1][-len(right_tag)-2:]
+                            items[-1] = items[-1][:-len(right_tag)-2]
+                            new_blocks.append(
+                                self.markdown.htmlStash.store(start))
+                            new_blocks.extend(items)
+                            new_blocks.append(
+                                self.markdown.htmlStash.store(end))
+                        else:
+                            new_blocks.append(
+                                self.markdown.htmlStash.store('\n\n'.join(items)))
+                        items = []
+                elif block.startswith("<") and len(block.strip()) > 1 and block[1] != "!":
+                    newleft_tag, newleft_index, attrs = self._get_left_tag(block)
+                    if left_tag == newleft_tag:
+                        in_tag = in_tag + 1
+                    
         if items:
             if self.markdown_in_raw and 'markdown' in attrs.keys():
                 start = re.sub(r'\smarkdown(=[\'"]?[^> ]*[\'"]?)?', 
