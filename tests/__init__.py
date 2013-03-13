@@ -12,9 +12,9 @@ except ImportError:
 from . import util 
 from .plugins import HtmlOutput, Markdown
 try:
-    import tidy
+    import tidylib
 except ImportError:
-    tidy = None
+    tidylib = None
 
 
 test_dir = os.path.abspath(os.path.dirname(__file__))
@@ -60,20 +60,19 @@ def get_args(file, config):
     return args
 
 def normalize(text):
-    """ Normalize whitespace for a string of html using tidy. """
-    return str(tidy.parseString(text.encode('utf-8', 'xmlcharrefreplace'), 
-                                    drop_empty_paras=0,
-                                    fix_backslash=0,
-                                    fix_bad_comments=0,
-                                    fix_uri=0,
-                                    join_styles=0,
-                                    lower_literals=0,
-                                    merge_divs=0,
-                                    output_xhtml=1,
-                                    quote_ampersand=0,
-                                    show_body_only=1,
-                                    char_encoding='utf8',
-                                    newline='LF')).decode('string-escape')
+    """ Normalize whitespace for a string of html using tidylib. """
+    output, errors = tidylib.tidy_fragment(text, options={
+                                    'drop_empty_paras':0,
+                                    'fix_backslash':0,
+                                    'fix_bad_comments':0,
+                                    'fix_uri':0,
+                                    'join_styles':0,
+                                    'lower_literals':0,
+                                    'merge_divs':0,
+                                    'output_xhtml':1,
+                                    'quote_ampersand':0,
+                                    'newline':'LF'})
+    return output
 
 class CheckSyntax(object):
     def __init__(self, description=None):
@@ -93,13 +92,13 @@ class CheckSyntax(object):
             # Normalize line endings (on windows, git may have altered line endings).
             expected_output = f.read().replace("\r\n", "\n")
         output = markdown.markdown(input, **get_args(file, config))
-        if tidy and config.get(cfg_section, 'normalize'):
-            # Normalize whitespace with Tidy before comparing.
+        if tidylib and config.get(cfg_section, 'normalize'):
+            # Normalize whitespace with tidylib before comparing.
             expected_output = normalize(expected_output)
             output = normalize(output)
         elif config.get(cfg_section, 'normalize'):
-            # Tidy is not available. Skip this test.
-            raise nose.plugins.skip.SkipTest('Test skipped. Tidy not available in system.')
+            # Tidylib is not available. Skip this test.
+            raise nose.plugins.skip.SkipTest('Test skipped. Tidylib not available on system.')
         diff = [l for l in difflib.unified_diff(expected_output.splitlines(True),
                                                 output.splitlines(True), 
                                                 output_file, 
@@ -124,7 +123,7 @@ def TestSyntax():
 def generate(file, config):
     """ Write expected output file for given input. """
     cfg_section = get_section(file, config)
-    if config.get(cfg_section, 'skip'):
+    if config.get(cfg_section, 'skip') or config.get(cfg_section, 'normalize'):
         print('Skipping:', file)
         return None
     input_file = file + config.get(cfg_section, 'input_ext')

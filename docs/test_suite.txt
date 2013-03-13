@@ -26,7 +26,7 @@ the report.
 The test suite contains two kinds of tests: Markdown Syntax Tests and Unit
 Tests.
 
-# Markdown Syntax Tests
+## Markdown Syntax Tests
 
 The Syntax Tests are in the various directories contained within the 'tests'
 directory of the packaged tarball. Each test consists of a matching pair of txt
@@ -105,7 +105,7 @@ Below are each of the config options available and the defaults used when they
 are not explicitly set.
 
 * `normalize`: Switches whitespace normalization of the test output on or off. 
-  Defaults to `0` (off). Note: This requires that [uTidylib] be installed on 
+  Defaults to `0` (off). Note: This requires that [PyTidyLib] be installed on 
   the system. Otherwise the test will be skipped, regardless of any other 
   settings.  
 * `skip`: Switches skipping of the test on and off. Defaults to `0` (off).  
@@ -113,18 +113,18 @@ are not explicitly set.
   from other implementations.
 * `output_ext`: Extension of output file. Defaults to `.html`. Useful for tests
   from other implementations.
-* Any keyword arguement accepted my Markdown. If not set, Markdown's defaults
-  are used. 
+* Any keyword arguement accepted by the Markdown class. If not set, Markdown's 
+  defaults are used. 
 
 ## Unit Tests
 
 Unit Tests are used as regression tests for Python-Markdown's API.
 All Unit Tests shipped with Python-Markdown are standard Python Unit Tests and
-are all contained in `tests/test_apis.py` and `tests/test_extensions`. 
+are all contained in `tests/test_apis.py` and `tests/test_extensions.py`. 
 Standard discovery methods are used to find and run the tests. Therefore, when 
 writing new tests, those standards and naming conventions should be followed.
 
 [Nose]: http://somethingaboutorange.com/mrl/projects/nose/ 
 [Perl]: http://daringfireball.net/projects/markdown/ 
 [PHP]: http://michelf.com/projects/php-markdown/ 
-[uTidylib]: http://utidylib.berlios.de/
+[PyTidyLib]: http://countergram.com/open-source/pytidylib/
