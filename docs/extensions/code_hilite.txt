@@ -1,8 +1,8 @@
 title:      CodeHilite Extension
 prev_title: Admonition Extension
 prev_url:   admonition.html
-next_title: HTML Tidy Extension
-next_url:   html_tidy.html
+next_title: HeaderId Extension
+next_url:   header_id.html
 
 CodeHilite
 ==========

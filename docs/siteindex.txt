@@ -8,7 +8,9 @@ Table of Contents
 =================
 
 * [Python Markdown](index.html)
+    * [Goals](index.html#goals)
     * [Features](index.html#features)
+    * [Differences](index.html#differences)
     * [Support](index.html#support)
 * [Installation](install.html)
     * [The Easy Way](install.html#the-easy-way)
@@ -36,12 +38,11 @@ Table of Contents
             * [Footnotes](extensions/footnotes.html)
             * [Tables](extensions/tables.html)
             * [Smart Strong](extensions/smart_strong.html)
+        * [Admonition](extensions/admonition.html)
         * [CodeHilite](extensions/code_hilite.html)
-        * [HTML Tidy](extensions/html_tidy.html)
         * [HeaderId](extensions/header_id.html)
         * [Meta-Data](extensions/meta_data.html)
         * [New Line to Break](extensions/nl2br.html)
-        * [RSS](extensions/rss.html)
         * [Sane Lists](extensions/sane_lists.html)
         * [Table of Contents](extensions/toc.html)
         * [WikiLinks](extensions/wikilinks.html)

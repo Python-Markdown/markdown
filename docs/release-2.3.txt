@@ -8,9 +8,9 @@ Python-Markdown 2.3 Release Notes
 =================================
 
 We are pleased to release Python-Markdown 2.3 which adds one new extension,
-removes an old extension, and now runs on both Python 2 and Python 3
-without running the 2to3 conversion tool. See the list of changes below for
-details.
+removes a few old (obsolete) extensions, and now runs on both Python 2 and 
+Python 3 without running the 2to3 conversion tool. See the list of changes 
+below for details.
 
 Python-Markdown supports Python versions 2.6, 2.7, 3.1, 3.2, and 3.3.
 
@@ -50,6 +50,18 @@ and will likely be removed in a future version of Python-Markdown.
 * The "RSS" extension has been removed and no longer ships with Python-Markdown.
 If you would like to continue using the extension (not recomended), it is 
 archived on [Github](https://gist.github.com/waylan/4773365).
+
+* The "HTML Tidy" Extension has been removed and no longer ships with Python-Markdown.
+If you would like to continue using the extension (not recomended), it is 
+archived on [Github](https://gist.github.com/waylan/5152650). Note that the 
+underlying library, uTidylib, is not Python 3 compatable. Instead, it is 
+recommended that the newer [PyTidyLib] (version 0.2.2+ for Python 3 
+compatability - install from github not PyPI) be used. As the API for that 
+library is rather simple, it is recommended that the output of Markdown be 
+wrapped in a call to PyTidyLib rather than using an extension (for example: 
+`tidylib.tidy_fragment(markdown.markdown(source), options={...})`).
+
+[PyTidyLib]: http://countergram.com/open-source/pytidylib
 
 What's New in Python-Markdown 2.3
 ---------------------------------

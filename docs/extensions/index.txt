@@ -49,7 +49,6 @@ Extension                            | "Name"
 &nbsp; &nbsp; [Smart Strong][]       | `smart_strong`
 [Admonition][]                       | `admonition`
 [CodeHilite][]                       | `codehilite`
-[HTML Tidy][]                        | `html_tidy`
 [HeaderId]                           | `headerid`
 [Meta-Data]                          | `meta`
 [New Line to Break]                  | `nl2br`
@@ -67,7 +66,6 @@ Extension                            | "Name"
 [Smart Strong]: smart_strong.html
 [Admonition]: admonition.html
 [CodeHilite]: code_hilite.html
-[HTML Tidy]: html_tidy.html
 [HeaderId]: header_id.html
 [Meta-Data]: meta_data.html
 [New Line to Break]: nl2br.html
