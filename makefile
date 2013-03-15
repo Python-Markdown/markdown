@@ -3,9 +3,9 @@
 install:
 	python setup.py install
 
-deploy: build
+deploy:
 	python setup.py register
-	python setup.py upload
+	python setup.py sdist --formats zip,gztar upload
 
 build:
 	python setup.py sdist --formats zip,gztar
@@ -14,7 +14,10 @@ build-win:
 	python setup.py bdist_wininst
 
 docs:
-	python setup.py build_docs
+	python setup.py build_docs --force
+	cd build/docs
+	zip -r ../docs.zip .
+	cd ../../ 
 
 test:
 	tox
