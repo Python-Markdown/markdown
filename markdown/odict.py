@@ -2,6 +2,13 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 from . import util
 
+from copy import deepcopy
+
+def iteritems_compat(d):
+    """Return an iterator over the (key, value) pairs of a dictionary.
+    Copied from `six` module."""
+    return iter(getattr(d, _iteritems)())
+
 class OrderedDict(dict):
     """
     A dictionary that keeps its keys in the order in which they're inserted.
@@ -30,7 +37,7 @@ class OrderedDict(dict):
                 super_set(key, value)
 
     def __deepcopy__(self, memo):
-        return self.__class__([(key, copy.deepcopy(value, memo))
+        return self.__class__([(key, deepcopy(value, memo))
                                for key, value in self.items()])
 
     def __copy__(self):
@@ -99,7 +106,7 @@ class OrderedDict(dict):
             return [self[k] for k in self.keyOrder]
 
     def update(self, dict_):
-        for k, v in six.iteritems(dict_):
+        for k, v in iteritems_compat(dict_):
             self[k] = v
 
     def setdefault(self, key, default):
@@ -131,7 +138,7 @@ class OrderedDict(dict):
         Replaces the normal dict.__repr__ with a version that returns the keys
         in their Ordered order.
         """
-        return '{%s}' % ', '.join(['%r: %r' % (k, v) for k, v in six.iteritems(self)])
+        return '{%s}' % ', '.join(['%r: %r' % (k, v) for k, v in iteritems_compat(self)])
 
     def clear(self):
         super(OrderedDict, self).clear()
