@@ -95,7 +95,7 @@ class DefListIndentProcessor(ListIndentProcessor):
 
     def create_item(self, parent, block):
         """ Create a new dd and parse the block with it as the parent. """
-        dd = markdown.etree.SubElement(parent, 'dd')
+        dd = etree.SubElement(parent, 'dd')
         self.parser.parseBlocks(dd, [block])
  
 
