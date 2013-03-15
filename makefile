@@ -13,11 +13,9 @@ build:
 build-win:
 	python setup.py bdist_wininst
 
-docs:
+docs-zip:
 	python setup.py build_docs --force
-	cd build/docs
-	zip -r ../docs.zip .
-	cd ../../ 
+	cd build/docs && zip -r ../docs.zip .
 
 test:
 	tox
