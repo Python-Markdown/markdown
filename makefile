@@ -1,30 +1,36 @@
 # Python-Markdown makefile
 
+.PHONY : install
 install:
 	python setup.py install
 
+.PHONY : deploy
 deploy:
 	python setup.py register
 	python setup.py sdist --formats zip,gztar upload
 
+.PHONY : build
 build:
 	python setup.py sdist --formats zip,gztar
 
+.PHONY : build-win
 build-win:
 	python setup.py bdist_wininst
 
+.PHONY : docs
 docs:
 	python setup.py build_docs --force
-	cd build/docs
-	zip -r ../docs.zip .
-	cd ../../ 
+	cd build/docs && zip -r ../docs.zip .
 
+.PHONY : test
 test:
 	tox
 
+.PHONY : update-tests
 update-tests:
 	python run-tests.py update
 
+.PHONY : clean
 clean:
 	rm -f MANIFEST
 	rm -f test-output.html
