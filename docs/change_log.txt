@@ -7,7 +7,7 @@ next_url:   release-2.3.html
 Python-Markdown Changelog
 =========================
 
-__________: Released version 2.3.0 ([Notes](release-2.3.html))
+Mar 14, 2013: Released version 2.3.0 ([Notes](release-2.3.html))
 
 Nov 4, 2012: Released version 2.2.1 ([Notes](release-2.2.1.html)).
 
