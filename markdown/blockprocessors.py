@@ -1,17 +1,19 @@
-from __future__ import unicode_literals
-# CORE MARKDOWN BLOCKPARSER
-# ===========================================================================
-#
-# This parser handles basic parsing of Markdown blocks.  It doesn't concern itself
-# with inline elements such as **bold** or *italics*, but rather just catches 
-# blocks, lists, quotes, etc.
-#
-# The BlockParser is made up of a bunch of BlockProssors, each handling a 
-# different type of block. Extensions may add/replace/remove BlockProcessors
-# as they need to alter how markdown blocks are parsed.
+"""
+CORE MARKDOWN BLOCKPARSER
+===========================================================================
+
+This parser handles basic parsing of Markdown blocks.  It doesn't concern itself
+with inline elements such as **bold** or *italics*, but rather just catches
+blocks, lists, quotes, etc.
+
+The BlockParser is made up of a bunch of BlockProssors, each handling a
+different type of block. Extensions may add/replace/remove BlockProcessors
+as they need to alter how markdown blocks are parsed.
+"""
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import logging
 import re
 from . import util

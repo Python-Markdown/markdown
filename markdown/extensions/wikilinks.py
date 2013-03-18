@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 '''
 WikiLinks Extension for Python-Markdown
 ======================================
@@ -78,6 +77,7 @@ Dependencies:
 '''
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from . import Extension
 from ..inlinepatterns import Pattern
 from ..util import etree

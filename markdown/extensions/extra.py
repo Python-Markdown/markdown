@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 """
 Python-Markdown Extra Extension
 ===============================
@@ -28,6 +27,7 @@ when you upgrade to any future version of Python-Markdown.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from . import Extension
 
 extensions = ['smart_strong',

@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 """
 Python Markdown
 ===============
@@ -32,6 +31,7 @@ License: BSD (see LICENSE for details).
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from .__version__ import version, version_info
 import re
 import codecs

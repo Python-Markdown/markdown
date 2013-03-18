@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 """
 Admonition extension for Python-Markdown
 ========================================
@@ -42,6 +41,7 @@ By [Tiago Serafim](http://www.tiagoserafim.com/).
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from . import Extension
 from ..blockprocessors import BlockProcessor
 from ..util import etree
