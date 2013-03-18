@@ -1,8 +1,9 @@
-from __future__ import unicode_literals
 """
 Extensions
 -----------------------------------------------------------------------------
 """
+
+from __future__ import unicode_literals
 
 class Extension(object):
     """ Base class for extensions to subclass. """

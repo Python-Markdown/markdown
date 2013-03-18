@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 """
 HeaderID Extension for Python-Markdown
 ======================================
@@ -76,6 +75,7 @@ Dependencies:
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
 import re
