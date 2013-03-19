@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 '''
 Smart_Strong Extension for Python-Markdown
 ==========================================
@@ -24,6 +23,7 @@ Copyright 2011
 '''
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from . import Extension
 from ..inlinepatterns import SimpleTagPattern
 
