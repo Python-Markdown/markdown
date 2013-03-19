@@ -301,7 +301,7 @@ class InlineProcessor(Treeprocessor):
 
             for element, lst in insertQueue:
                 if self.markdown.enable_attributes:
-                    if element.text:
+                    if element.text and isString(element.text):
                         element.text = \
                             inlinepatterns.handleAttributes(element.text, 
                                                                     element)
@@ -309,11 +309,11 @@ class InlineProcessor(Treeprocessor):
                 for newChild in lst:
                     if self.markdown.enable_attributes:
                         # Processing attributes
-                        if newChild.tail:
+                        if newChild.tail and isString(newChild.tail):
                             newChild.tail = \
                                 inlinepatterns.handleAttributes(newChild.tail,
                                                                     element)
-                        if newChild.text:
+                        if newChild.text and isString(newChild.text):
                             newChild.text = \
                                 inlinepatterns.handleAttributes(newChild.text,
                                                                     newChild)
