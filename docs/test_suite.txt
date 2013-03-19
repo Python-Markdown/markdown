@@ -20,8 +20,12 @@ nose`). Any standard nosetests config options can be passed in on the command
 line (i.e.: verbosity level or use of a plugin like coverage).
 
 Additionally, a nicely formatted HTML report of all output is written to a
-temporary file in `tmp/test-output.html`. Open the file in a browser to view
+temporary file in `test-output.html`. Open the file in a browser to view
 the report.
+
+A tox.ini file is also provided, so [tox] can be used to automatically create
+virtual environments and run the tests on each supported Python version. See
+the wiki for instructions on [setting up a testing environment] to use tox.
 
 The test suite contains two kinds of tests: Markdown Syntax Tests and Unit
 Tests.
@@ -128,3 +132,5 @@ writing new tests, those standards and naming conventions should be followed.
 [Perl]: http://daringfireball.net/projects/markdown/ 
 [PHP]: http://michelf.com/projects/php-markdown/ 
 [PyTidyLib]: http://countergram.com/open-source/pytidylib/
+[tox]: http://testrun.org/tox/latest/
+[setting up a testing environment]: https://github.com/waylan/Python-Markdown/wiki/Test-Environment-Setup
