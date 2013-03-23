@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import tests
-import os, sys, getopt
+import os, sys
 
 if len(sys.argv) > 1 and sys.argv[1] == "update":
     if len(sys.argv) > 2:

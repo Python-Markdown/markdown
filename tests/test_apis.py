@@ -9,7 +9,6 @@ Tests of the various APIs with the python markdown lib.
 
 from __future__ import unicode_literals
 import unittest
-import os
 import sys
 import types
 import markdown
