@@ -396,6 +396,8 @@ accepts two arguments:
     * ``md.htmlStash``
     * ``md.output_formats``
     * ``md.set_output_format()``
+    * ``md.output_format``
+    * ``md.serializer``
     * ``md.registerExtension()``
     * ``md.html_replacement_text``
     * ``md.tab_length``
@@ -406,12 +408,13 @@ accepts two arguments:
 
     Contains all the various global variables within the markdown module.
 
-Of course, with access to those items, theoretically you have the option to 
-changing anything through various [monkey_patching][] techniques. However, you 
-should be aware that the various undocumented or private parts of markdown 
-may change without notice and your monkey_patches may break with a new release.
-Therefore, what you really should be doing is inserting processors and patterns
-into the markdown pipeline. Consider yourself warned.
+!!! Warning
+    With access to the above items, theoretically you have the option to 
+    change anything through various [monkey_patching][] techniques. However, 
+    you should be aware that the various undocumented parts of markdown may 
+    change without notice and your monkey_patches may break with a new release.
+    Therefore, what you really should be doing is inserting processors and 
+    patterns into the markdown pipeline. Consider yourself warned!
 
 [monkey_patching]: http://en.wikipedia.org/wiki/Monkey_patch
 
