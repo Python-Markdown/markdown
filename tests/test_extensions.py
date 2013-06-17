@@ -27,6 +27,15 @@ class TestAbbr(unittest.TestCase):
             'and a <abbr title="Abbreviation Reference">REF</abbr>. Ignore '
             'REFERENCE and ref.</p>')
 
+    def testNestedAbbr(self):
+        """ Test Nested Abbreviations. """
+        text = '[ABBR](/foo) and _ABBR_\n\n' + \
+               '*[ABBR]: Abreviation'
+        self.assertEqual(self.md.convert(text),
+            '<p><a href="/foo"><abbr title="Abreviation">ABBR</abbr></a> '
+            'and <em><abbr title="Abreviation">ABBR</abbr></em></p>')
+
+
 class TestCodeHilite(unittest.TestCase):
     """ Test codehilite extension. """
 
