@@ -77,7 +77,6 @@ class AttrListTreeprocessor(Treeprocessor):
 
     def run(self, doc):
         for elem in doc.getiterator():
-            #import pdb; pdb.set_trace()
             if isBlockLevel(elem.tag):
                 # Block level: check for attrs on last line of text
                 RE = self.BLOCK_RE
