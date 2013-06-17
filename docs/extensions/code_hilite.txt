@@ -120,23 +120,31 @@ From the Python interpreter:
 
     >>> html = markdown.markdown(text, extensions=['codehilite'])
 
-If you want to force every code block to have line numbers, even when using 
+To force every code block to have line numbers, even when using 
 colons (`:::`) for language identification, set `linenums` to `True`.
 
     >>> html = markdown.markdown(text,
     ...     extensions=['codehilite(linenums=True)']
     ... )
 
-If you do **not** want any code block to have line numbers, even when using 
-SheBangs (`#!`) for language identification, set `linenums` to `False`.
+To turn off all line numbers, even when using SheBangs (`#!`) for 
+language identification, set `linenums` to `False`.
 
     >>> html = markdown.markdown(text,
     ...     extensions=['codehilite(linenums=False)']
     ... )
 
-If you want to prevent Pygments from guessing the language, only highlighting
-blocks when you explicitly request it, set the `guess_lang` setting to `False`.
+To prevent Pygments from guessing the language (only highlighting
+blocks when you explicitly request it) set the `guess_lang` setting to `False`.
 
     >>> html = markdown.markdown(text,
     ...     extensions=['codehilite(guess_lang=False)']
     ... )
+
+To assign a CSS class differant than the default ('codehilite') on the
+code's wrapping div, define a custom class with the `css_class` setting.
+
+    >>> html = markdown.markdown(text,
+    ...    extensions=['codehilite(css_class=myclass)']
+    ... )
+
