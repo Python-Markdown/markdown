@@ -140,3 +140,10 @@ blocks when you explicitly request it, set the `guess_lang` setting to `False`.
     >>> html = markdown.markdown(text,
     ...     extensions=['codehilite(guess_lang=False)']
     ... )
+
+If you want to use a custom name for the pygments highlighting engine to use, one can be set using extension_configs.
+
+    >>> html = markdown.markdown(text,
+    ...     extensions=['codehilite'],
+    ...     extension_configs={'codehilite': [('css_class', 'highlight')]}
+    ... )
