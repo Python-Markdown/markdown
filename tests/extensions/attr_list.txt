@@ -34,3 +34,14 @@ Also a codespan: `{: .someclass}`{: .foo}.
 {: #the_end}
 
 ### Bad Syntax { {: #hash5 }
+
+* Item1
+  {: .item }
+* Item2
+  {: .item }
+    * Item2-1
+      {: .subitem }
+* _Item3_{: .emph }
+  {: .item }
+    * _Item3-1_{: .emph }
+      {: .subitem }
