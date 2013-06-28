@@ -150,7 +150,7 @@ def _serialize_html(write, elem, qnames, namespaces, format):
                 _serialize_html(write, e, qnames, None, format)
         else:
             write("<" + tag)
-            items = elem.items()
+            items = [item for item in elem.items() if item[1] != None]
             if items or namespaces:
                 items.sort() # lexical order
                 for k, v in items:
