@@ -297,6 +297,13 @@ The body. This is paragraph one.'''
             '</code></pre>')
         self.assertEqual(self.md.Meta, {})
 
+    def testMetaDataWithoutNewline(self):
+        """ Test doocument with only metadata and no newline at end."""
+        text = 'title: No newline'
+        self.assertEqual(self.md.convert(text), '')
+        self.assertEqual(self.md.Meta, {'title': ['No newline']})
+
+
 class TestWikiLinks(unittest.TestCase):
     """ Test Wikilinks Extension. """
 
