@@ -45,3 +45,23 @@ Also a codespan: `{: .someclass}`{: .foo}.
   {: .item }
     * _Item3-1_{: .emph }
       {: .subitem }
+* Item4
+    * Item4-1
+* Item5
+
+And ordered lists too:
+
+1. Item1
+   {: .item }
+2. Item2
+   {: .item }
+    1. Item2-1
+       {: .subitem }
+3. _Item3_{: .emph }
+   {: .item }
+    1. _Item3-1_{: .emph }
+       {: .subitem }
+4. Item4
+    1. Item4-1
+5. Item5
+

@@ -84,25 +84,25 @@ class AttrListTreeprocessor(Treeprocessor):
                     # header: check for attrs at end of line
                     RE = self.HEADER_RE
                 if len(elem) and elem.tag == 'li':
-                    # special case list items. children may include a ul.
-                    ul = None
-                    # find the ul position
+                    # special case list items. children may include a ul or ol.
+                    pos = None
+                    # find the ul or ol position
                     for i, child in enumerate(elem):
-                        if child.tag == 'ul':
-                            ul = i
+                        if child.tag in ['ul', 'ol']:
+                            pos = i
                             break
-                    if ul is None and elem[-1].tail:
-                        # use tail of last child. no ul.
+                    if pos is None and elem[-1].tail:
+                        # use tail of last child. no ul or ol.
                         m = RE.search(elem[-1].tail)
                         if m:
                             self.assign_attrs(elem, m.group(1))
                             elem[-1].tail = elem[-1].tail[:m.start()]
-                    if ul > 0 and elem[ul-1].tail:
-                        # use tail of last child before ul
-                        m = RE.search(elem[ul-1].tail)
+                    elif pos > 0 and elem[pos-1].tail:
+                        # use tail of last child before ul or ol
+                        m = RE.search(elem[pos-1].tail)
                         if m:
                             self.assign_attrs(elem, m.group(1))
-                            elem[ul-1].tail = elem[ul-1].tail[:m.start()]
+                            elem[pos-1].tail = elem[pos-1].tail[:m.start()]
                     elif elem.text:
                         # use text. ul is first child.
                         m = RE.search(elem.text)
