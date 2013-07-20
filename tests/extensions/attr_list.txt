@@ -49,7 +49,7 @@ Also a codespan: `{: .someclass}`{: .foo}.
     * Item4-1
 * Item5
 
-And ordered lists too:
+# And ordered lists *too*{.inline}
 
 1. Item1
    {: .item }

@@ -67,7 +67,7 @@ def isheader(elem):
 class AttrListTreeprocessor(Treeprocessor):
     
     BASE_RE = r'\{\:?([^\}]*)\}'
-    HEADER_RE = re.compile(r'[ ]*%s[ ]*$' % BASE_RE)
+    HEADER_RE = re.compile(r'[ ]+%s[ ]*$' % BASE_RE)
     BLOCK_RE = re.compile(r'\n[ ]*%s[ ]*$' % BASE_RE)
     INLINE_RE = re.compile(r'^%s' % BASE_RE)
     NAME_RE = re.compile(r'[^A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff\u0370-\u037d'
