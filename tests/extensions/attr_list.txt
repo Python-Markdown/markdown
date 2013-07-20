@@ -65,3 +65,14 @@ Also a codespan: `{: .someclass}`{: .foo}.
     1. Item4-1
 5. Item5
 
+# Definition *lists* {.block}
+
+DT1 {.term}
+DT2 {.term}
+:   Some dd
+    {.def}
+:   *dd*{.inline}
+
+*DT3*{.inline}
+:   Some dd
+

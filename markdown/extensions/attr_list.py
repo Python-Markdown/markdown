@@ -80,8 +80,8 @@ class AttrListTreeprocessor(Treeprocessor):
             if isBlockLevel(elem.tag):
                 # Block level: check for attrs on last line of text
                 RE = self.BLOCK_RE
-                if isheader(elem):
-                    # header: check for attrs at end of line
+                if isheader(elem) or elem.tag == 'dt':
+                    # header or def-term: check for attrs at end of line
                     RE = self.HEADER_RE
                 if len(elem) and elem.tag == 'li':
                     # special case list items. children may include a ul or ol.
