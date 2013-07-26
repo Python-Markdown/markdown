@@ -1,8 +1,8 @@
 title:      Sane Lists Extension
 prev_title: New Line to Break Extension
 prev_url:   nl2br.html
-next_title: Table of Contents Extension
-next_url:   toc.html
+next_title: SmartyPants Extension
+next_url:   smarty.html
 
 Sane Lists
 ==========
