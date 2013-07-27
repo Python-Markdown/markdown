@@ -8,6 +8,7 @@ one two '60s
 
 "Isn't this fun"? --- she said...  
 "'Quoted' words in a larger quote."  
+'Quoted "words" in a larger quote.'  
 "quoted" text and **bold "quoted" text**  
 'quoted' text and **bold 'quoted' text**  
 em-dashes (---) and ellipes (...)  
@@ -16,4 +17,8 @@ em-dashes (---) and ellipes (...)
 --- -- ---
 
 Escaped \-- ndash  
+\'Escaped\' \"quotes\"  
 Escaped ellipsis\...
+
+'Escaped \"quotes\" in real ones'  
+\'"Real" quotes in escaped ones\'

@@ -106,9 +106,6 @@ doubleQuoteStartRe = r'^"(?=%s\\B)' % punctClass
 doubleQuoteSetsRe = r""""'(?=\w)"""
 singleQuoteSetsRe = r"""'"(?=\w)"""
 
-# Special case for decade abbreviations (the '80s):
-decadeAbbrRe = r"""\b'(?=\d{2}s)"""
-
 # Get most opening double quotes:
 openingDoubleQuotesRegex = canonicalize("""
 %s      # symbols before the quote
@@ -150,9 +147,7 @@ closingSingleQuotesRegex2 = canonicalize(r"""
 remainingSingleQuotesRegex = "'"
 remainingDoubleQuotesRegex = '"'
 
-for name in ('mdash', 'ndash', 'hellip', 'lsquo', 'rsquo', 'ldquo', 'rdquo'):
-    locals()[name] = '&%s;' % name
-
+lsquo, rsquo, ldquo, rdquo = '&lsquo;', '&rsquo;', '&ldquo;', '&rdquo;'
 
 class SubstituteTextPattern(HtmlPattern):
     def __init__(self, pattern, replace, markdown_instance):
@@ -178,9 +173,11 @@ class SmartyExtension(Extension):
             'smart_ellipses': [True, 'Educate ellipses']
         }
         for key, value in configs:
-            if value.lower() in ('true', 1):
+            if not isinstance(value, str):
+                value = bool(value)
+            elif value.lower() in ('true', 't', 'yes', 'y', '1'):
                 value = True
-            elif value.lower() in ('false', 0):
+            elif value.lower() in ('false', 'f', 'no', 'n', '0'):
                 value = False
             else:
                 raise ValueError('Cannot parse bool value: %s' % value)
@@ -195,14 +192,14 @@ class SmartyExtension(Extension):
             md.inlinePatterns.add(name, pattern, after)
 
     def educateDashes(self, md):
-        emDashesPattern = SubstituteTextPattern(r'(?<!-)---(?!-)', mdash, md)
-        enDashesPattern = SubstituteTextPattern(r'(?<!-)--(?!-)', ndash, md)
+        emDashesPattern = SubstituteTextPattern(r'(?<!-)---(?!-)', '&mdash;', md)
+        enDashesPattern = SubstituteTextPattern(r'(?<!-)--(?!-)', '&ndash;', md)
         md.inlinePatterns.add('smarty-em-dashes', emDashesPattern, '>entity')
         md.inlinePatterns.add('smarty-en-dashes', enDashesPattern,
             '>smarty-em-dashes')
 
     def educateEllipses(self, md):
-        ellipsesPattern = SubstituteTextPattern(r'(?<!\.)\.{3}(?!\.)', hellip, md)
+        ellipsesPattern = SubstituteTextPattern(r'(?<!\.)\.{3}(?!\.)', '&hellip;', md)
         md.inlinePatterns.add('smarty-ellipses', ellipsesPattern, '>entity')
 
     def educateQuotes(self, md):
@@ -230,6 +227,7 @@ class SmartyExtension(Extension):
             self.educateDashes(md)
         if configs['smart_ellipses']:
             self.educateEllipses(md)
+        md.ESCAPED_CHARS.extend(['"', "'"])
 
 def makeExtension(configs=None):
     return SmartyExtension(configs)
