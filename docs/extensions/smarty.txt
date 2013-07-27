@@ -1,0 +1,56 @@
+title: SmartyPants Extension
+prev_title: Sane Lists Extension
+prev_url:   sane_lists.html
+next_title: Table of Contents Extension
+next_url:   toc.html
+
+SmartyPants
+===========
+
+Summary
+-------
+
+The SmartyPants extension converts ASCII dashes, quotes and ellipses to
+their HTML entity equivalents.
+
+ASCII symbol | Unicode replacements
+------------ | --------------------
+&#39;        | &lsquo; &rsquo;
+&quot;       | &ldquo; &rdquo;
+\...         | &hellip;
+\--          | &ndash;
+-\--         | &mdash;
+
+Arguments
+---------
+
+All three arguments are set to `True` by default.
+
+Argument         | Description
+--------         | -----------
+`smart_dashes`   | whether to convert dashes
+`smart_quotes`   | whether to convert quotes
+`smart_ellipses` | whether to convert ellipses
+
+Usage
+-----
+
+Default configuration:
+
+    >>> html = markdown.markdown(text,
+    ...     extensions=['smarty']
+    ... )
+
+Disable quotes convertation:
+
+    >>> html = markdown.markdown(text,
+    ...     extensions=['smarty(smart_quotes=False)']
+    ... )
+
+Further reading
+---------------
+
+SmartyPants extension is based on the original SmartyPants implementation
+by John Gruber. Please read it's [documentation][1] for details.
+
+[1]: http://daringfireball.net/projects/smartypants/
