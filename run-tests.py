@@ -10,7 +10,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "update":
         if ext == config.get(tests.get_section(os.path.basename(root), config), 'input_ext'):
             tests.generate(root, config)
         else:
-            print(file, 'does not have a valid file extension. Check config.')
+            print(sys.argv[2], 'does not have a valid file extension. Check config.')
     else:
         tests.generate_all()
 else:
