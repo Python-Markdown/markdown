@@ -236,6 +236,18 @@ class TestHeaderId(unittest.TestCase):
             '<h1 id="some-header-with-markup">Some <em>Header</em> with '
             '<a href="http://example.com">markup</a>.</h1>')
 
+    def testHtmlEntities(self):
+        """ Test HeaderIDs with HTML Entities. """
+        text = '# Foo &amp; bar'
+        self.assertEqual(self.md.convert(text),
+            '<h1 id="foo-bar">Foo &amp; bar</h1>')
+
+    def testRawHtml(self):
+        """ Test HeaderIDs with raw HTML. """
+        text = '# Foo <b>Bar</b> Baz.'
+        self.assertEqual(self.md.convert(text),
+            '<h1 id="foo-bar-baz">Foo <b>Bar</b> Baz.</h1>')
+
     def testNoAutoIds(self):
         """ Test HeaderIDs with no auto generated IDs. """
 

@@ -38,6 +38,9 @@ INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 INLINE_PLACEHOLDER_RE = re.compile(INLINE_PLACEHOLDER % r'([0-9]{4})')
 AMP_SUBSTITUTE = STX+"amp"+ETX
+HTML_PLACEHOLDER = STX + "wzxhzdk:%s" + ETX
+HTML_PLACEHOLDER_RE = re.compile(HTML_PLACEHOLDER % r'([0-9]+)')
+
 
 """
 Constants you probably do not need to change
@@ -132,5 +135,5 @@ class HtmlStash(object):
         self.rawHtmlBlocks = []
 
     def get_placeholder(self, key):
-        return "%swzxhzdk:%d%s" % (STX, key, ETX)
+        return HTML_PLACEHOLDER % key
 

@@ -78,6 +78,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
+from ..util import HTML_PLACEHOLDER_RE
 import re
 import logging
 import unicodedata
@@ -130,13 +131,27 @@ class HeaderIdTreeprocessor(Treeprocessor):
         start_level, force_id = self._get_meta()
         slugify = self.config['slugify']
         sep = self.config['separator']
+
+        def _html_sub(m):
+            """ Substitute raw html with plain text. """
+            try:
+                raw, safe = self.md.htmlStash.rawHtmlBlocks[int(m.group(1))]
+            except (IndexError, TypeError):
+                return m.group(0)
+            if self.md.safeMode and not safe:
+                return ''
+            # Strip out tags and entities - leaveing text
+            return re.sub(r'(<[^>]+>)|(&[\#a-zA-Z0-9]+;)', '', raw)
+
         for elem in doc.getiterator():
             if elem.tag in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
                 if force_id:
                     if "id" in elem.attrib:
                         id = elem.get('id')
                     else:
-                        id = slugify(''.join(itertext(elem)), sep)
+                        id = HTML_PLACEHOLDER_RE.sub(_html_sub, 
+                                                     ''.join(itertext(elem)))
+                        id = slugify(id, sep)
                     elem.set('id', unique(id, self.IDs))
                 if start_level:
                     level = int(elem.tag[-1]) + start_level
