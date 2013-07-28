@@ -53,6 +53,7 @@ Extension                            | "Name"
 [Meta-Data]                          | `meta`
 [New Line to Break]                  | `nl2br`
 [Sane Lists]                         | `sane_lists`
+[SmartyPants]                        | `smarty`
 [Table of Contents]                  | `toc`
 [WikiLinks]                          | `wikilinks`
 
@@ -70,6 +71,7 @@ Extension                            | "Name"
 [Meta-Data]: meta_data.html
 [New Line to Break]: nl2br.html
 [Sane Lists]: sane_lists.html
+[SmartyPants]: smarty.html
 [Table of Contents]: toc.html
 [WikiLinks]: wikilinks.html
 

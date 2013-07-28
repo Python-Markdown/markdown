@@ -44,6 +44,7 @@ Table of Contents
         * [Meta-Data](extensions/meta_data.html)
         * [New Line to Break](extensions/nl2br.html)
         * [Sane Lists](extensions/sane_lists.html)
+        * [SmartyPants](extensions/smarty.html)
         * [Table of Contents](extensions/toc.html)
         * [WikiLinks](extensions/wikilinks.html)
     * [Third Party Extensions](extensions/index.html#third-party-extensions)
