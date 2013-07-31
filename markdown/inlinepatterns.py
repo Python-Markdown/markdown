@@ -356,7 +356,7 @@ class LinkPattern(Pattern):
             return ''
         
         locless_schemes = ['', 'mailto', 'news']
-        allowed_schemes = locless_schemes + ['http', 'https', 'ftp', 'ftps']
+        allowed_schemes = locless_schemes + ['http', 'https', 'ftp', 'ftps', 'data']
         if scheme not in allowed_schemes:
             # Not a known (allowed) scheme. Not safe.
             return ''
