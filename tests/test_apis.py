@@ -326,6 +326,38 @@ class testETreeComments(unittest.TestCase):
                     '<!--foo-->\n')
 
 
+class testSerializers(unittest.TestCase):
+    """ Test the html and xhtml serializers. """
+
+    def testHtml(self):
+        """ Test HTML serialization. """
+        el = markdown.util.etree.Element('div')
+        p = markdown.util.etree.SubElement(el, 'p')
+        p.text = 'foo'
+        hr = markdown.util.etree.SubElement(el, 'hr')
+        self.assertEqual(markdown.serializers.to_html_string(el),
+                    '<div><p>foo</p><hr></div>')
+
+    def testXhtml(self):
+        """" Test XHTML serialization. """
+        el = markdown.util.etree.Element('div')
+        p = markdown.util.etree.SubElement(el, 'p')
+        p.text = 'foo'
+        hr = markdown.util.etree.SubElement(el, 'hr')
+        self.assertEqual(markdown.serializers.to_xhtml_string(el),
+                    '<div><p>foo</p><hr /></div>')
+
+    def testMixedCaseTags(self):
+        """" Test preservation of tag case. """
+        el = markdown.util.etree.Element('MixedCase')
+        el.text = 'not valid '
+        em = markdown.util.etree.SubElement(el, 'EMPHASIS')
+        em.text = 'html'
+        hr = markdown.util.etree.SubElement(el, 'HR')
+        self.assertEqual(markdown.serializers.to_xhtml_string(el),
+                    '<MixedCase>not valid <EMPHASIS>html</EMPHASIS><HR /></MixedCase>')
+
+
 class testAtomicString(unittest.TestCase):
     """ Test that AtomicStrings are honored (not parsed). """
 
