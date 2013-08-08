@@ -358,6 +358,24 @@ class testSerializers(unittest.TestCase):
                     '<MixedCase>not valid <EMPHASIS>html</EMPHASIS><HR /></MixedCase>')
 
 
+    def buildExtension(self):
+        """ Build an extension which registers fakeSerializer. """
+        def fakeSerializer(elem):
+            # Ignore input and return hardcoded output
+            return '<div><p>foo</p></div>'
+
+        class registerFakeSerializer(markdown.extensions.Extension):
+            def extendMarkdown(self, md, md_globals):
+                md.output_formats['fake'] = fakeSerializer
+
+        return registerFakeSerializer()
+
+    def testRegisterSerializer(self):
+        self.assertEqual(markdown.markdown('baz', 
+                extensions=[self.buildExtension()], output_format='fake'),
+                    '<p>foo</p>')
+
+
 class testAtomicString(unittest.TestCase):
     """ Test that AtomicStrings are honored (not parsed). """
 
