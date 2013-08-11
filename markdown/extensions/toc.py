@@ -14,7 +14,7 @@ from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import etree
-from .headerid import slugify, unique, itertext
+from .headerid import slugify, unique, itertext, stashedHTML2text
 import re
 
 
@@ -160,7 +160,8 @@ class TocTreeprocessor(Treeprocessor):
                 
                 # Do not override pre-existing ids 
                 if not "id" in c.attrib:
-                    elem_id = unique(self.config["slugify"](text, '-'), used_ids)
+                    elem_id = stashedHTML2text(text, self.markdown)
+                    elem_id = unique(self.config["slugify"](elem_id, '-'), used_ids)
                     c.attrib["id"] = elem_id
                 else:
                     elem_id = c.attrib["id"]
