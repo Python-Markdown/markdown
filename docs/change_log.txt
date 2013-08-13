@@ -1,11 +1,15 @@
 title:      Change Log
 prev_title: Test Suite
 prev_url:   test_suite.html
-next_title: Release Notes for v2.3
-next_url:   release-2.3.html
+next_title: Release Notes for v2.4
+next_url:   release-2.4.html
 
 Python-Markdown Changelog
 =========================
+
+__: Released version 2.4.0 ([Notes](release-2.4.html))
+
+Mar 22, 2013: Released version 2.3.1 (a bugfix release).
 
 Mar 14, 2013: Released version 2.3.0 ([Notes](release-2.3.html))
 
