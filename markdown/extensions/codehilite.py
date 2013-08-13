@@ -219,7 +219,7 @@ class CodeHiliteExtension(Extension):
             if key == 'force_linenos':
                 warnings.warn('The "force_linenos" config setting'
                     ' to the CodeHilite extension is deprecrecated.'
-                    ' Use "linenums" instead.', PendingDeprecationWarning)
+                    ' Use "linenums" instead.', DeprecationWarning)
                 if value:
                     # Carry 'force_linenos' over to new 'linenos'.
                     self.setConfig('linenums', True)
