@@ -57,7 +57,7 @@ RTL_BIDI_RANGES = ( ('\u0590', '\u07FF'),
 # Extensions should use "markdown.util.etree" instead of "etree" (or do `from
 # markdown.util import etree`).  Do not import it by yourself.
 
-try: # Is the C implemenation of ElementTree available?
+try: # Is the C implementation of ElementTree available?
     import xml.etree.cElementTree as etree
     from xml.etree.ElementTree import Comment
     # Serializers (including ours) test with non-c Comment
