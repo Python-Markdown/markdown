@@ -18,3 +18,14 @@ term 3
 
 more text
 
+term 4
+:   not loose
+
+
+term 5
+
+:   loose
+
+term 6
+:   also not loose
+
