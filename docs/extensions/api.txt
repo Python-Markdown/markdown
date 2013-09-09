@@ -140,7 +140,7 @@ object) and returns either that root element or a modified root element.
 
 A pseudo example:
 
-    from markdown.treprocessors import Treeprocessor
+    from markdown.treeprocessors import Treeprocessor
 
     class MyTreeprocessor(Treeprocessor):
         def run(self, root):
