@@ -152,7 +152,7 @@ def _serialize_html(write, elem, qnames, namespaces, format):
             write("<" + tag)
             items = elem.items()
             if items or namespaces:
-                items.sort() # lexical order
+                items = sorted(items) # lexical order
                 for k, v in items:
                     if isinstance(k, QName):
                         k = k.text
