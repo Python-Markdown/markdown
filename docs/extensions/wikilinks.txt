@@ -1,7 +1,7 @@
 title:      Wikilinks Extension
 prev_title: Table of Contents Extension
 prev_url:   toc.html
-next_title: Extension API 
+next_title: Extension API
 next_url:   api.html
 
 WikiLinks
@@ -10,7 +10,7 @@ WikiLinks
 Summary
 -------
 
-An extension to Python-Markdown that adds [WikiLinks][]. Specifically, any 
+An extension to Python-Markdown that adds [WikiLinks][]. Specifically, any
 ``[[bracketed]]`` word is converted to a link.
 
 [WikiLinks]: http://en.wikipedia.org/wiki/Wikilink
@@ -21,7 +21,7 @@ Syntax
 ------
 
 A ``[[bracketed]]`` word is any combination of  upper or lower case letters,
-number, dashes, underscores and spaces surrounded by double brackets. Therefore 
+number, dashes, underscores and spaces surrounded by double brackets. Therefore
 
     [[Bracketed]]
 
@@ -29,12 +29,12 @@ Would produce the following html:
 
     <a href="/Bracketed/" class="wikilink">Bracketed</a>
 
-Note that wikilinks are automatically assigned `class="wikilink"` making it 
-easy to style wikilinks differently from other links on a page if one so 
+Note that wikilinks are automatically assigned `class="wikilink"` making it
+easy to style wikilinks differently from other links on a page if one so
 desires. See below for ways to alter the class.
 
 You should also note that when a space is used, the space is converted to an
-underscore in the link but left as-is in the label. Perhaps an example 
+underscore in the link but left as-is in the label. Perhaps an example
 would illustrate this best:
 
     [[Wiki Link]]
@@ -51,13 +51,13 @@ From the Python interpreter:
     >>> text = "Some text with a [[WikiLink]]."
     >>> html = markdown.markdown(text, ['wikilink'])
 
-The default behavior is to point each link to the document root of the current 
-domain and close with a trailing slash. Additionally, each link is assigned to 
+The default behavior is to point each link to the document root of the current
+domain and close with a trailing slash. Additionally, each link is assigned to
 the html class `wikilink`. This may not always be desirable. Therefore, one can
-customize that behavior within Python code. Four settings are provided to 
+customize that behavior within Python code. Four settings are provided to
 change the default behavior:
 
-1. **base_url**: String to append to beginning of URL. 
+1. **base_url**: String to append to beginning of URL.
 
     Default: `'/'`
 
@@ -71,10 +71,10 @@ change the default behavior:
 
 4. **build_url**: Callable which formats the URL from it's parts.
 
-For an example, let us suppose links should always point to the subdirectory 
+For an example, let us suppose links should always point to the subdirectory
 `/wiki/` and end with `.html`
 
-    >>> html = markdown.markdown(text, 
+    >>> html = markdown.markdown(text,
     ...     ['wikilinks(base_url=/wiki/,end_url=.html)']
     ... )
 
@@ -82,8 +82,8 @@ The above would result in the following link for `[[WikiLink]]`.
 
     <a href="/wiki/WikiLink.html" class="wikilink">WikiLink</a>
 
-If you want to do more that just alter the base and/or end of the URL, you 
-could also pass in a callable which must accept three arguments (``label``, 
+If you want to do more that just alter the base and/or end of the URL, you
+could also pass in a callable which must accept three arguments (``label``,
 ``base``, and ``end``). The callable must return the URL in it's entirety.
 
     def my_url_builder(label, base, end):
@@ -98,7 +98,7 @@ could also pass in a callable which must accept three arguments (``label``,
 
 The option is also provided to change or remove the class attribute.
 
-    >>> html = markdown.markdown(text, 
+    >>> html = markdown.markdown(text,
     ...     ['wikilinks(html_class=myclass)']
     ... )
 
@@ -112,10 +112,10 @@ The same options can be used on the command line as well:
 
 Some may prefer the more complex format when calling the `Markdown` class directly:
 
-    >>> md = markdown.Markdown( 
-    ...     extensions = ['wikilinks'], 
+    >>> md = markdown.Markdown(
+    ...     extensions = ['wikilinks'],
     ...     extension_configs = {'wikilinks': [
-    ...                                 ('base_url', 'http://example.com/'), 
+    ...                                 ('base_url', 'http://example.com/'),
     ...                                 ('end_url', '.html'),
     ...                                 ('html_class', '') ]},
     ...     safe_mode = True
@@ -126,7 +126,7 @@ Using with Meta-Data
 --------------------
 
 The WikiLink Extension also supports the [Meta-Data](meta_data.html) Extension.
-Please see the documentation for that extension for specifics. The supported 
+Please see the documentation for that extension for specifics. The supported
 meta-data keywords are:
 
 * `wiki_base_url`
@@ -134,13 +134,13 @@ meta-data keywords are:
 * `wiki_html_class`
 
 When used, the meta-data will override the settings provided through the
-`extension_configs` interface. 
+`extension_configs` interface.
 
 This document:
 
     wiki_base_url: http://example.com/
     wiki_end_url:  .html
-    wiki_html_class: 
+    wiki_html_class:
 
     A [[WikiLink]] in the first paragraph.
 
