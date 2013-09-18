@@ -75,7 +75,7 @@ For an example, let us suppose links should always point to the subdirectory
 `/wiki/` and end with `.html`
 
     >>> html = markdown.markdown(text, 
-    ...     ['wikilink(base_url=/wiki/,end_url=.html)']
+    ...     ['wikilinks(base_url=/wiki/,end_url=.html)']
     ... )
 
 The above would result in the following link for `[[WikiLink]]`.
@@ -91,7 +91,7 @@ could also pass in a callable which must accept three arguments (``label``,
         return url
 
     md = markdown.Markdown(
-            extensions=['wikilinks],
+            extensions=['wikilinks'],
             extension_configs={'wikilinks' : [('build_url', my_url_builder)]}
     )
 
@@ -99,7 +99,7 @@ could also pass in a callable which must accept three arguments (``label``,
 The option is also provided to change or remove the class attribute.
 
     >>> html = markdown.markdown(text, 
-    ...     ['wikilink(html_class=myclass)']
+    ...     ['wikilinks(html_class=myclass)']
     ... )
 
 Would cause all wikilinks to be assigned to the class `myclass`.
@@ -108,13 +108,13 @@ Would cause all wikilinks to be assigned to the class `myclass`.
 
 The same options can be used on the command line as well:
 
-    python -m markdown -x wikilink(base_url=http://example.com/,end_url=.html,html_class=foo) src.txt
+    python -m markdown -x wikilinks(base_url=http://example.com/,end_url=.html,html_class=foo) src.txt
 
 Some may prefer the more complex format when calling the `Markdown` class directly:
 
     >>> md = markdown.Markdown( 
-    ...     extensions = ['wikilink'], 
-    ...     extension_configs = {'wikilink': [
+    ...     extensions = ['wikilinks'], 
+    ...     extension_configs = {'wikilinks': [
     ...                                 ('base_url', 'http://example.com/'), 
     ...                                 ('end_url', '.html'),
     ...                                 ('html_class', '') ]},
