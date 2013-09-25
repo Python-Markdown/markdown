@@ -13,7 +13,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import etree
+from ..util import etree, parseBoolValue
 from .headerid import slugify, unique, itertext, stashedHTML2text
 import re
 
@@ -127,7 +127,7 @@ class TocTreeprocessor(Treeprocessor):
         div.attrib["class"] = "toc"
         header_rgx = re.compile("[Hh][123456]")
         
-        self.use_anchors = self.config["anchorlink"] in [1, '1', True, 'True', 'true']
+        self.use_anchors = parseBoolValue(self.config["anchorlink"])
         
         # Get a list of id attributes
         used_ids = set()
