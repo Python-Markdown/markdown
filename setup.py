@@ -144,7 +144,8 @@ class build_docs(Command):
         else:
             with codecs.open('docs/_template.html', encoding='utf-8') as f:
                 template = f.read()
-            self.md = markdown.Markdown(extensions=['extra', 'toc', 'meta', 'admonition', 'smarty'])
+            self.md = markdown.Markdown(
+                extensions=['extra', 'toc(permalink=true)', 'meta', 'admonition', 'smarty'])
             for infile in self.docs:
                 outfile, ext = os.path.splitext(infile)
                 if ext == '.txt':

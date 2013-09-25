@@ -88,7 +88,7 @@ def parseBoolValue(value, fail_on_errors=True):
     """Parses a string representing bool value. If parsing was successful,
        returns True or False. If parsing was not successful, raises
        ValueError, or, if fail_on_errors=False, returns None."""
-    if not isinstance(value, str):
+    if not isinstance(value, string_type):
         return bool(value)
     elif value.lower() in ('true', 'yes', 'y', 'on', '1'):
         return True
