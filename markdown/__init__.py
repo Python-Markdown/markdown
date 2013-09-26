@@ -100,7 +100,7 @@ class Markdown(object):
         * html_replacement_text: Text used when safe_mode is set to "replace".
         * tab_length: Length of tabs in the source. Default: 4
         * enable_attributes: Enable the conversion of attributes. Default: True
-        * smart_emphasis: Treat `_connected_words_` intelegently Default: True
+        * smart_emphasis: Treat `_connected_words_` intelligently Default: True
         * lazy_ol: Ignore number of first item of ordered lists. Default: True
 
         """
