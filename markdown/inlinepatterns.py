@@ -75,7 +75,8 @@ def build_inlinepatterns(md_instance, **kwargs):
         inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
     inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md_instance)
     inlinePatterns["not_strong"] = SimpleTextPattern(NOT_STRONG_RE)
-    inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'strong,em')
+    inlinePatterns["strong_em"] = DoubleTagPattern(A_STRONG_EM_RE, 'strong,em')
+    inlinePatterns["strong_em_"] = DoubleTagPattern(U_STRONG_EM_RE, 'strong,em')
     inlinePatterns["strong"] = SimpleTagPattern(STRONG_RE, 'strong')
     inlinePatterns["emphasis"] = SimpleTagPattern(EMPHASIS_RE, 'em')
     if md_instance.smart_emphasis:
@@ -99,8 +100,9 @@ NOIMG = r'(?<!\!)'
 BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)' # `e=f()` or ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                             # \<
 EMPHASIS_RE = r'(\*)([^\*]+)\2'                    # *emphasis*
-STRONG_RE = r'(\*{2}|_{2})(.+?)\2'                      # **strong**
-STRONG_EM_RE = r'(\*{3}|_{3})(.+?)\2'            # ***strong***
+STRONG_RE = r'(\*{2}|_{2})(.+?)\2'                 # **strong**
+A_STRONG_EM_RE = r'\*{3}(.+?)\*{2}([^*]*)\*'       # ***strongem***
+U_STRONG_EM_RE = r'_{3}(.+?)_{2}([^_]*)_'          # ___strongem___
 SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\2(?!\w)'  # _smart_emphasis_
 EMPHASIS_2_RE = r'(_)(.+?)\2'                 # _emphasis_
 LINK_RE = NOIMG + BRK + \
@@ -276,9 +278,17 @@ class DoubleTagPattern(SimpleTagPattern):
     """
     def handleMatch(self, m):
         tag1, tag2 = self.tag.split(",")
-        el1 = util.etree.Element(tag1)
-        el2 = util.etree.SubElement(el1, tag2)
-        el2.text = m.group(3)
+        if m.group(3):
+            # This is a match for `***foo** bar*`. Group 3 contains ` bar`.
+            el1 = util.etree.Element(tag2)
+            el2 = util.etree.SubElement(el1, tag1)
+            el2.text = m.group(2)
+            el2.tail = m.group(3)
+        else:
+            # This is a match for `***foo***`. We don't switch tag order here.
+            el1 = util.etree.Element(tag1)
+            el2 = util.etree.SubElement(el1, tag2)
+            el2.text = m.group(2)
         return el1
 
 
