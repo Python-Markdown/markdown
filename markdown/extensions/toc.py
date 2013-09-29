@@ -13,7 +13,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import etree, parseBoolValue
+from ..util import etree, parseBoolValue, AMP_SUBSTITUTE
 from .headerid import slugify, unique, itertext, stashedHTML2text
 import re
 
@@ -101,8 +101,8 @@ class TocTreeprocessor(Treeprocessor):
 
     def add_permalink(self, c, elem_id):
         permalink = etree.Element("a")
-        permalink.text = ("\xb6" if self.use_permalinks is True
-            else self.use_permalinks)
+        permalink.text = ("%spara;" % AMP_SUBSTITUTE
+            if self.use_permalinks is True else self.use_permalinks)
         permalink.attrib["href"] = "#" + elem_id
         permalink.attrib["class"] = "headerlink"
         permalink.attrib["title"] = "Permanent link"
