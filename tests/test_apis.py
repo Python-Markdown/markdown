@@ -420,3 +420,16 @@ class testAtomicString(unittest.TestCase):
             '<div><p>*some* <span>*more* <span>*text* <span>*here*</span> '
             '*to*</span> *test*</span> *with*</p></div>')
 
+class TestConfigParsing(unittest.TestCase):
+    def assertParses(self, value, result):
+        self.assertIs(markdown.util.parseBoolValue(value, False), result)
+
+    def testBooleansParsing(self):
+        self.assertParses(True, True)
+        self.assertParses('novalue', None)
+        self.assertParses('yES', True)
+        self.assertParses('FALSE', False)
+        self.assertParses(0., False)
+
+    def testInvalidBooleansParsing(self):
+        self.assertRaises(ValueError, markdown.util.parseBoolValue, 'novalue')

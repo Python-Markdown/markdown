@@ -78,7 +78,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import HTML_PLACEHOLDER_RE
+from ..util import HTML_PLACEHOLDER_RE, parseBoolValue
 import re
 import logging
 import unicodedata
@@ -166,22 +166,13 @@ class HeaderIdTreeprocessor(Treeprocessor):
     def _get_meta(self):
         """ Return meta data suported by this ext as a tuple """
         level = int(self.config['level']) - 1
-        force = self._str2bool(self.config['forceid'])
+        force = parseBoolValue(self.config['forceid'])
         if hasattr(self.md, 'Meta'):
             if 'header_level' in self.md.Meta:
                 level = int(self.md.Meta['header_level'][0]) - 1
             if 'header_forceid' in self.md.Meta: 
-                force = self._str2bool(self.md.Meta['header_forceid'][0])
+                force = parseBoolValue(self.md.Meta['header_forceid'][0])
         return level, force
-
-    def _str2bool(self, s, default=False):
-        """ Convert a string to a booleen value. """
-        s = str(s)
-        if s.lower() in ['0', 'f', 'false', 'off', 'no', 'n']:
-            return False
-        elif s.lower() in ['1', 't', 'true', 'on', 'yes', 'y']:
-            return True
-        return default
 
 
 class HeaderIdExtension(Extension):
