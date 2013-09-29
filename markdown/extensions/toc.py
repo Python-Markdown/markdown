@@ -13,7 +13,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import etree
+from ..util import etree, parseBoolValue, AMP_SUBSTITUTE
 from .headerid import slugify, unique, itertext, stashedHTML2text
 import re
 
@@ -89,16 +89,24 @@ class TocTreeprocessor(Treeprocessor):
                 yield parent, child
     
     def add_anchor(self, c, elem_id): #@ReservedAssignment
-        if self.use_anchors:
-            anchor = etree.Element("a")
-            anchor.text = c.text
-            anchor.attrib["href"] = "#" + elem_id
-            anchor.attrib["class"] = "toclink"
-            c.text = ""
-            for elem in c.getchildren():
-                anchor.append(elem)
-                c.remove(elem)
-            c.append(anchor)
+        anchor = etree.Element("a")
+        anchor.text = c.text
+        anchor.attrib["href"] = "#" + elem_id
+        anchor.attrib["class"] = "toclink"
+        c.text = ""
+        for elem in c.getchildren():
+            anchor.append(elem)
+            c.remove(elem)
+        c.append(anchor)
+
+    def add_permalink(self, c, elem_id):
+        permalink = etree.Element("a")
+        permalink.text = ("%spara;" % AMP_SUBSTITUTE
+            if self.use_permalinks is True else self.use_permalinks)
+        permalink.attrib["href"] = "#" + elem_id
+        permalink.attrib["class"] = "headerlink"
+        permalink.attrib["title"] = "Permanent link"
+        c.append(permalink)
     
     def build_toc_etree(self, div, toc_list):
         # Add title to the div
@@ -127,7 +135,10 @@ class TocTreeprocessor(Treeprocessor):
         div.attrib["class"] = "toc"
         header_rgx = re.compile("[Hh][123456]")
         
-        self.use_anchors = self.config["anchorlink"] in [1, '1', True, 'True', 'true']
+        self.use_anchors = parseBoolValue(self.config["anchorlink"])
+        self.use_permalinks = parseBoolValue(self.config["permalink"], False)
+        if self.use_permalinks is None:
+            self.use_permalinks = self.config["permalink"]
         
         # Get a list of id attributes
         used_ids = set()
@@ -171,8 +182,11 @@ class TocTreeprocessor(Treeprocessor):
                 toc_list.append({'level': tag_level,
                     'id': elem_id,
                     'name': text})
-                
-                self.add_anchor(c, elem_id)
+
+                if self.use_anchors:
+                    self.add_anchor(c, elem_id)
+                if self.use_permalinks:
+                    self.add_permalink(c, elem_id)
                 
         toc_list_nested = order_toc_list(toc_list)
         self.build_toc_etree(div, toc_list_nested)
@@ -202,7 +216,11 @@ class TocExtension(Extension):
                             "Defaults to None"],
                         "anchorlink" : [0,
                             "1 if header should be a self link"
-                            "Defaults to 0"]}
+                            "Defaults to 0"],
+                        "permalink" : [0,
+                            "1 or link text if a Sphinx-style permalink should be added",
+                            "Defaults to 0"]
+                       }
 
         for key, value in configs:
             self.setConfig(key, value)

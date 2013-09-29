@@ -68,6 +68,7 @@
 from __future__ import unicode_literals
 from . import Extension
 from ..inlinepatterns import HtmlPattern
+from ..util import parseBoolValue
 
 def canonicalize(regex):
     """
@@ -173,15 +174,7 @@ class SmartyExtension(Extension):
             'smart_ellipses': [True, 'Educate ellipses']
         }
         for key, value in configs:
-            if not isinstance(value, str):
-                value = bool(value)
-            elif value.lower() in ('true', 't', 'yes', 'y', '1'):
-                value = True
-            elif value.lower() in ('false', 'f', 'no', 'n', '0'):
-                value = False
-            else:
-                raise ValueError('Cannot parse bool value: %s' % value)
-            self.setConfig(key, value)
+            self.setConfig(key, parseBoolValue(value))
 
     def _addPatterns(self, md, patterns, serie):
         for ind, pattern in enumerate(patterns):

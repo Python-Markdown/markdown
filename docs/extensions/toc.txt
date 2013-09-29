@@ -58,6 +58,8 @@ The following options are provided to configure the output:
 * **title**: Title to insert in TOC ``<div>``. Defaults to ``None``.
 * **anchorlink**: Set to ``True`` to have the headers link to themselves. 
   Default is ``False``.
+* **permalink**: Set to ``True`` to have this extension generate Sphinx-style
+  permanent links near the headers (for use with Sphinx stylesheets).
 
 If a 'marker' is not found in the document, then the toc is available as an
 attribute of the Markdown class. This allows one to insert the toc elsewhere 
