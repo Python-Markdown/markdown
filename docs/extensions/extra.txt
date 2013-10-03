@@ -47,11 +47,9 @@ Markdown Inside HTML Blocks
 
 Unlike the other Extra features, this feature is build into the markdown core and is turned on when `extra` is enabled.
 
-The content of any block-level element can be Markdown-formatted simply by adding a `markdown` attribute to the opening tag. The markdown attribute will be stripped from the output, but all other attributes will be preserved.
+The content of any raw html block element can be Markdown-formatted simply by adding a `markdown` attribute to the opening tag. The markdown attribute will be stripped from the output, but all other attributes will be preserved.
 
 If the markdown value is set to `1` (recommended) or any value other than `span` or `block`, the default behavior will be executed: `p`,`h[1-6]`,`li`,`dd`,`dt`,`td`,`th`,`legend`, and `address` elements skip block parsing while others do not. If the default is overrident by a value of `span`, *block parsing will be skipped* regardless of tag. If the default is overriden by a value of `block`, *block parsing will occur* regardless of tag.
-
-*An opening tag with the markdown attribute must start immediately on a line following a blank line.*
 
 #### Simple Example:
 ```
@@ -70,10 +68,10 @@ This is *true* markdown text.
 ```
 
 ### Nested Markdown Inside HTML BLocks
-Nested elements are more sensitive and must be used cautiously. Violation of the following will lead to unexpected behavior or unhandled exceptions.
-	* Only block mode elements may have further elements nested within them.
-	* The closing tag of inner elements must be followed by a blank line.
-	* More than one level of nesting is not supported (i.e., elements nested within elements nested within elements). This feature is not an alternative to templating. 
+Nested elements are more sensitive and must be used cautiously. To avoid unexpected results:
+	* Only nest elements within block mode elements.
+	* Follow the closing tag of inner elements with a blank line.
+	* Only have one level of nesting.
 
 #### Complex Example:
 ```
