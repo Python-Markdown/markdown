@@ -9,4 +9,38 @@ _bar_
 _blah_
 
 </div>
+ 
+<div markdown="1" name="Example">
 
+The text of the `Example` element.
+
+<div markdown="1" name="DefaultBlockMode">
+This text gets wrapped in `p` tags.
+</div>
+
+The tail of the `DefaultBlockMode` subelement.
+
+<p markdown="1" name="DefaultSpanMode">
+This text *is not* wrapped in additional `p` tags.
+</p>
+
+The tail of the `DefaultSpanMode` subelement.
+
+<div markdown="span" name="SpanModeOverride">
+This `div` block is not wrapped in paragraph tags.
+Note: Subelements are not required to have tail text.
+</div>
+
+<p markdown="block" name="BlockModeOverride">
+This `p` block *is* foolishly wrapped in further paragraph tags.
+</p>
+
+The tail of the `BlockModeOverride` subelement.
+
+<div name="RawHtml">
+Raw html blocks may also be nested.
+</div>
+
+</div>
+
+This text is after the markdown in html.

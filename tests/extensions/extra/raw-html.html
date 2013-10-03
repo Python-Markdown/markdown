@@ -1,14 +1,31 @@
 <div>
-
 <p><em>foo</em></p>
 </div>
-
 <div class="baz">
-
 <p><em>bar</em></p>
 </div>
-
 <div>
-
 <p><em>blah</em></p>
 </div>
+<div name="Example">
+<p>The text of the <code>Example</code> element.</p>
+<div name="DefaultBlockMode">
+<p>This text gets wrapped in <code>p</code> tags.</p>
+</div>
+<p>The tail of the <code>DefaultBlockMode</code> subelement.</p>
+<p name="DefaultSpanMode">
+This text <em>is not</em> wrapped in additional <code>p</code> tags.</p>
+<p>The tail of the <code>DefaultSpanMode</code> subelement.</p>
+<div name="SpanModeOverride">
+This <code>div</code> block is not wrapped in paragraph tags.
+Note: Subelements are not required to have tail text.</div>
+<p name="BlockModeOverride">
+<p>This <code>p</code> block <em>is</em> foolishly wrapped in further paragraph tags.</p>
+</p>
+<p>The tail of the <code>BlockModeOverride</code> subelement.</p>
+<div name="RawHtml">
+Raw html blocks may also be nested.
+</div>
+
+</div>
+<p>This text is after the markdown in html.</p>
