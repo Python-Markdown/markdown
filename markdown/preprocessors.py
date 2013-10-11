@@ -70,7 +70,7 @@ class HtmlBlockPreprocessor(Preprocessor):
     left_tag_pattern = r'^\<(?P<tag>[^> ]+)(?P<attrs>(%s)*)\s*\/?\>?' % attrs_pattern
     attrs_re = re.compile(attrs_pattern, re.VERBOSE)
     left_tag_re = re.compile(left_tag_pattern, re.VERBOSE)
-    contain_span_tags = re.compile("^(p|h[1-6]|li|dd|dt|td|th|legend|address)$", re.IGNORECASE)
+    left_tag_mkd_re = re.compile(r'^<\S*\s(\S*=".*"\s)*markdown=".*"(\s\S*=".*")*>')
     markdown_in_raw = False
 
     def _get_left_tag(self, block):
@@ -103,7 +103,7 @@ class HtmlBlockPreprocessor(Preprocessor):
             i = block.find(rtag, start_index)
             if i == -1:
                 return -1
-            j = block.find(ltag, start_index) 
+            j = block.find(ltag, start_index)
             # if no ltag, or rtag found before another ltag, return index
             if (j > i or j == -1):
                 return i + len(rtag)
@@ -140,35 +140,33 @@ class HtmlBlockPreprocessor(Preprocessor):
     def _is_oneliner(self, tag):
         return (tag in ['hr', 'hr/'])
 
-    def _get_start_end(self, left_index, items, right_tag):
-        start = re.sub(r'\smarkdown(=[\'"]?[^> ]*[\'"]?)?',
-                       '', items[0][:left_index])
-        end = items[-1][-len(right_tag) - 2:]
-        return start, end
+    def _stringindex_to_listindex(self, stringindex, items):
+        i = 0
+        count = 0
+        while count <= stringindex:
+            count += len(items[i])
+            i += 1
+        return i
 
-    def _process_html_block(self, left_tag, start, items, end, new_blocks,
-                            stripend=False):
-        """
-        Check if tag defaults to spanmode.
-        If so, add placeholders, tags, and items to new_blocks.
-        Otherwise, stash tags and add items to new_blocks.
-        """
-        if self.contain_span_tags.match(left_tag):
-            new_blocks.extend([self.start_spanmode_placeholder, start])
-            new_blocks.extend(items)
-            if stripend:
-                if end.strip():
-                    new_blocks.extend([end, self.end_spanmode_placeholder])
-            else:
-                new_blocks.extend([end, self.end_spanmode_placeholder])
-        else:
-            new_blocks.append(self.markdown.htmlStash.store(start))
-            new_blocks.extend(items)
-            if stripend:
-                if end.strip():
-                    new_blocks.append(self.markdown.htmlStash.store(end))
-            else:
-                new_blocks.append(self.markdown.htmlStash.store(end))
+    def _recursive_markdown_in_html(self, items):
+
+        i = 0
+        for item in items:
+            if self.left_tag_mkd_re.match(item):
+                left_tag, left_index, attrs = \
+                    self._get_left_tag(''.join(items[i:]))
+                right_tag, data_index = self._get_right_tag(
+                    left_tag, left_index, ''.join(items[i:]))
+                right_listindex = \
+                    self._stringindex_to_listindex(data_index, items[i:])
+                items[i + 1:] = [items[i][left_index:]] + items[i + 1:]
+                placeholder = self.markdown.htmlStash.store_tag(
+                    left_tag, attrs, i + 1, right_listindex + i)
+                items = items[:i] + [placeholder] + items[i + 1:]
+                items[right_listindex] = \
+                    items[right_listindex][:-len(right_tag) - 2]
+            i += 1
+        return items
 
     def run(self, lines):
         text = "\n".join(lines)
@@ -219,11 +217,10 @@ class HtmlBlockPreprocessor(Preprocessor):
                     if block.rstrip().endswith(">") \
                             and self._equal_tags(left_tag, right_tag):
                         if self.markdown_in_raw and 'markdown' in attrs.keys():
-                            start, end = self._get_start_end(left_index,
-                                                             [block], right_tag)
                             block = block[left_index:-len(right_tag) - 2]
-                            self._process_html_block(
-                                left_tag, start, [block], end, new_blocks)
+                            new_blocks.append(self.markdown.htmlStash.
+                                              store_tag(left_tag, attrs, 0, 2))
+                            new_blocks.extend([block])
                         else:
                             new_blocks.append(
                                 self.markdown.htmlStash.store(block.strip()))
@@ -241,7 +238,8 @@ class HtmlBlockPreprocessor(Preprocessor):
 
                         continue
 
-                new_blocks.append(block)
+                else:
+                    new_blocks.append(block)
 
             else:
                 items.append(block)
@@ -258,12 +256,12 @@ class HtmlBlockPreprocessor(Preprocessor):
 
                     in_tag = False
                     if self.markdown_in_raw and 'markdown' in attrs.keys():
-                        start, end = self._get_start_end(left_index, items,
-                                                         right_tag)
                         items[0] = items[0][left_index:]
                         items[-1] = items[-1][:-len(right_tag) - 2]
-                        self._process_html_block(
-                            left_tag, start, items, end, new_blocks)
+                        new_blocks.append(self.markdown.htmlStash.store_tag(
+                            left_tag, attrs, 0, len(items) + 2))
+                        new_blocks.extend(
+                            self._recursive_markdown_in_html(items))
                     else:
                         new_blocks.append(
                             self.markdown.htmlStash.store('\n\n'.join(items)))
@@ -271,11 +269,12 @@ class HtmlBlockPreprocessor(Preprocessor):
 
         if items:
             if self.markdown_in_raw and 'markdown' in attrs.keys():
-                start, end = self._get_start_end(left_index, items, right_tag)
                 items[0] = items[0][left_index:]
                 items[-1] = items[-1][:-len(right_tag) - 2]
-                self._process_html_block(
-                    left_tag, start, items, end, new_blocks, True)
+                new_blocks.append(
+                    self.markdown.htmlStash.store_tag(
+                        left_tag, attrs, 0, len(items) + 2))
+                new_blocks.extend(self._recursive_markdown_in_html(items))
             else:
                 new_blocks.append(
                     self.markdown.htmlStash.store('\n\n'.join(items)))

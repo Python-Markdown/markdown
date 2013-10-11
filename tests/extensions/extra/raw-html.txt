@@ -9,10 +9,3 @@ _bar_
 _blah_
 
 </div>
-
-<p markdown="1">
-    This is not a code block since Markdown parses paragraph
-    content as span.
-</p>
-
-<p markdown="1">_Hello_ _world_</p>
