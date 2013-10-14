@@ -41,3 +41,99 @@ therefore, not part of Python-Markdown Extra. If you really would
 like Extra to include additional extensions, we suggest creating 
 your own clone of Extra under a different name 
 (see the [Extension API](api.html)).  
+
+Markdown Inside HTML Blocks
+---------------------------
+
+Unlike the other Extra features, this feature is build into the markdown core and is turned on when `extra` is enabled.
+
+The content of any block-level element can be Markdown-formatted simply by adding a `markdown` attribute to the opening tag. The markdown attribute will be stripped from the output, but all other attributes will be preserved.
+
+If the markdown value is set to `1` (recommended) or any value other than `span` or `block`, the default behavior will be executed: `p`,`h[1-6]`,`li`,`dd`,`dt`,`td`,`th`,`legend`, and `address` elements skip block parsing while others do not. If the default is overrident by a value of `span`, *block parsing will be skipped* regardless of tag. If the default is overriden by a value of `block`, *block parsing will occur* regardless of tag.
+
+*An opening tag with the markdown attribute must start immediately on a line following a blank line.*
+
+#### Simple Example:
+```
+This is *true* markdown text.
+
+<div markdown="1">
+This is *true* markdown text.
+</div>
+```
+#### Result:
+```
+<p>This is <em>true</em> markdown text.</p>                                                                                                                                           
+<div>                                                                                                                                                                                 
+<p>This is <em>true</em> markdown text.</p>                                                                                                                                           
+</div>
+```
+
+### Nested Markdown Inside HTML BLocks
+Nested elements are more sensitive and must be used cautiously. Violation of the following will lead to unexpected behavior or unhandled exceptions.
+	* Only block mode elements may have further elements nested within them.
+	* The closing tag of inner elements must be followed by a blank line.
+	* More than one level of nesting is not supported (i.e., elements nested within elements nested within elements). This feature is not an alternative to templating. 
+
+#### Complex Example:
+```
+<div markdown="1" name="Example">
+
+The text of the `Example` element.
+
+<div markdown="1" name="DefaultBlockMode">
+This text gets wrapped in `p` tags.
+</div>
+
+The tail of the `DefaultBlockMode` subelement.
+
+<p markdown="1" name="DefaultSpanMode">
+This text *is not* wrapped in additional `p` tags.
+</p>
+
+The tail of the `DefaultSpanMode` subelement.
+
+<div markdown="span" name="SpanModeOverride">
+This `div` block is not wrapped in paragraph tags.
+Note: Subelements are not required to have tail text.
+</div>
+
+<p markdown="block" name="BlockModeOverride">
+This `p` block *is* foolishly wrapped in further paragraph tags.
+</p>
+
+The tail of the `BlockModeOverride` subelement.
+
+<div name="RawHtml">
+Raw html blocks may also be nested.
+</div>
+
+</div>
+
+This text is after the markdown in html.
+```
+#### Result:
+```
+<div name="Example">
+<p>The text of the <code>Example</code> element.</p>
+<div name="DefaultBlockMode">
+<p>This text gets wrapped in <code>p</code> tags.</p>
+</div>
+<p>The tail of the <code>DefaultBlockMode</code> subelement.</p>
+<p name="DefaultSpanMode">
+This text <em>is not</em> wrapped in additional <code>p</code> tags.</p>
+<p>The tail of the <code>DefaultSpanMode</code> subelement.</p>
+<div name="SpanModeOverride">
+This <code>div</code> block is not wrapped in paragraph tags.
+Note: Subelements are not required to have tail text.</div>
+<p name="BlockModeOverride">
+<p>This <code>p</code> block <em>is</em> foolishly wrapped in further paragraph tags.</p>
+</p>
+<p>The tail of the <code>BlockModeOverride</code> subelement.</p>
+<div name="RawHtml">
+Raw html blocks may also be nested.
+</div>
+
+</div>
+<p>This text is after the markdown in html.</p>
+```
