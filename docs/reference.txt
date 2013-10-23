@@ -221,7 +221,7 @@ The following options are available on the `markdown.markdown` function:
 
     By default markdown will ignore the fact the the first line started 
     with item number "4" and the HTML list will start with a number "1".
-    If `lazy_ol` is set to `True`, then markdown will output the following
+    If `lazy_ol` is set to `False`, then markdown will output the following
     HTML:
 
         <ol>
