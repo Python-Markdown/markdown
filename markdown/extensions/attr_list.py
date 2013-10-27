@@ -121,6 +121,8 @@ class AttrListTreeprocessor(Treeprocessor):
                 elif elem.text:
                     # no children. Get from text.
                     m = RE.search(elem.text)
+                    if not m and elem.tag == 'td':
+                        m = re.search(self.BASE_RE, elem.text)
                     if m:
                         self.assign_attrs(elem, m.group(1))
                         elem.text = elem.text[:m.start()]
