@@ -49,7 +49,7 @@ Usage
 From the Python interpreter:
 
     >>> text = "Some text with a [[WikiLink]]."
-    >>> html = markdown.markdown(text, ['wikilink'])
+    >>> html = markdown.markdown(text, ['wikilinks'])
 
 The default behavior is to point each link to the document root of the current
 domain and close with a trailing slash. Additionally, each link is assigned to
@@ -91,7 +91,7 @@ could also pass in a callable which must accept three arguments (``label``,
         return url
 
     md = markdown.Markdown(
-            extensions=['wikilinks'],
+            extensions=['wikilinks],
             extension_configs={'wikilinks' : [('build_url', my_url_builder)]}
     )
 
@@ -147,4 +147,3 @@ This document:
 would result in the following output (notice the blank `wiki_html_class`):
 
     <p>A <a href="http://example.com/WikiLink.html">WikiLink</a> in the first paragraph.</p>
-
