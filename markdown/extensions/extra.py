@@ -75,8 +75,8 @@ class MarkdownInHtmlProcessor(BlockProcessor):
         # Build list of indexes of each nest within the parent element.
         nest_index = []  # a list of tuples: (left index, right index)
         i = self.parser.blockprocessors.tag_counter + 1
-        while len(self.parser.markdown.htmlStash.tag_data) > i and self.\
-                parser.markdown.htmlStash.tag_data[i]['left_index']:
+        is_nest = self.parser.markdown.htmlStash.tag_data[i]['left_index']
+        while len(self.parser.markdown.htmlStash.tag_data) > i and is_nest:
             left_child_index = \
                 self.parser.markdown.htmlStash.tag_data[i]['left_index']
             right_child_index = \
@@ -85,11 +85,9 @@ class MarkdownInHtmlProcessor(BlockProcessor):
             i += 1
 
         # Create each nest subelement.
-        i = 0
-        for n in nest_index[:-1]:
-            self.run(element, block[n[0]:n[1]],
-                     block[n[1]:nest_index[i + 1][0]], True)
-            i += 1
+        for i, (left_index, right_index) in enumerate(nest_index[:-1]):
+            self.run(element, block[left_index:right_index],
+                     block[right_index:nest_index[i + 1][0]], True)
         self.run(element, block[nest_index[-1][0]:nest_index[-1][1]],  # last
                  block[nest_index[-1][1]:], True)                      # nest
 
