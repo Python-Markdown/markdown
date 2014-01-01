@@ -31,21 +31,21 @@ Example:
     [^1]: This is a footnote's content.
     [^@#$%]: A footnote on the label: "@#$%".
 
-A footnote label must start with a carot `^` and may contain any inline text 
+A footnote label must start with a caret `^` and may contain any inline text 
 (including spaces) between a set of square brackets `[]`. Only the first
-carot has any special meaning.
+caret has any special meaning.
 
 A footnote's content must start with the label followed by a colon and at least 
 one space. The label used to define the content must exactly match the label used
-in the body (inlcuding capitalization and whitespace). The content would then 
+in the body (including capitalization and whitespace). The content would then 
 follow the label either on the same line or on the next line. The content may 
 contain multiple lines, paragraphs, code blocks, blockquotes and most any other 
 markdown syntax. The additional lines must be indented one level (four spaces or 
 one tab). 
 
-When working with mutiple blocks, it may be helpful to start the content on a 
-seperate line from the label which defines the content. This way the entire block 
-is indented consistantly and any errors are more easily disernable by the author.
+When working with multiple blocks, it may be helpful to start the content on a 
+separate line from the label which defines the content. This way the entire block 
+is indented consistently and any errors are more easily discernible by the author.
 
 
     [^1]: 
