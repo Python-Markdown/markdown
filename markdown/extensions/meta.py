@@ -46,8 +46,8 @@ from ..preprocessors import Preprocessor
 import re
 
 # Global Vars
-META_RE = re.compile(r'^[ ]{0,3}(?P<key>[A-Za-z0-9_-]+):\s*(?P<value>.*)')
-META_MORE_RE = re.compile(r'^[ ]{4,}(?P<value>.*)')
+META_RE = re.compile(r'^[ ]{0,3}(?P<key>[-\w]+):\s*(?P<value>.*)', re.U)
+META_MORE_RE = re.compile(r'^[ ]{4,}(?P<value>.*)', re.U)
 
 class MetaExtension (Extension):
     """ Meta-Data extension for Python-Markdown. """
