@@ -126,12 +126,37 @@ class TestCodeHilite(unittest.TestCase):
                 '<pre class="codehilite"><code class="language-python"># A Code Comment'
                 '</code></pre>')
 
+    def testHighlightLinesWithColon(self):
+        # Test with hl_lines delimited by single or double quotes.
+        text0 = '\t:::Python hl_lines="2"\n\t#line 1\n\t#line 2\n\t#line 3'
+        text1 = "\t:::Python hl_lines='2'\n\t#line 1\n\t#line 2\n\t#line 3"
+
+        for text in (text0, text1):
+            md = markdown.Markdown(extensions=['codehilite'])
+            if self.has_pygments:
+                self.assertEqual(md.convert(text),
+                    '<div class="codehilite"><pre>'
+                    '<span class="c">#line 1</span>\n'
+                    '<span class="hll"><span class="c">#line 2</span>\n</span>'
+                    '<span class="c">#line 3</span>\n'
+                    '</pre></div>')
+            else:
+                self.assertEqual(md.convert(text),
+                    '<pre class="codehilite">'
+                    '<code class="language-python">#line 1\n'
+                    '#line 2\n'
+                    '#line 3</code></pre>')
 
 class TestFencedCode(unittest.TestCase):
     """ Test fenced_code extension. """
 
     def setUp(self):
         self.md = markdown.Markdown(extensions=['fenced_code'])
+        self.has_pygments = True
+        try:
+            import pygments
+        except ImportError:
+            self.has_pygments = False
 
     def testBasicFence(self):
         """ Test Fenced Code Blocks. """
@@ -190,6 +215,65 @@ Fenced code block
         '<pre><code># Arbitrary code\n'
         '~~~~~ # these tildes will not close the block\n'
         '</code></pre>')
+
+    def testFencedCodeWithHighlightLines(self):
+        """ Test Fenced Code with Highlighted Lines. """
+
+        text = '''
+```hl_lines="1 3"
+line 1
+line 2
+line 3
+```'''
+        md = markdown.Markdown(extensions=[
+            'codehilite(linenums=None,guess_lang=False)',
+            'fenced_code'])
+
+        if self.has_pygments:
+            self.assertEqual(md.convert(text),
+                '<div class="codehilite"><pre>'
+                '<span class="hll">line 1\n</span>'
+                'line 2\n'
+                '<span class="hll">line 3\n</span>'
+                '</pre></div>')
+        else:
+            self.assertEqual(md.convert(text),
+                '<pre class="codehilite"><code>line 1\n'
+                'line 2\n'
+                'line 3</code></pre>')
+
+    def testFencedLanguageAndHighlightLines(self):
+        """ Test Fenced Code with Highlighted Lines. """
+
+        text0 = '''
+```.python hl_lines="1 3"
+#line 1
+#line 2
+#line 3
+```'''
+        text1 = '''
+~~~{.python hl_lines='1 3'}
+#line 1
+#line 2
+#line 3
+~~~'''
+        for text in (text0, text1):
+            md = markdown.Markdown(extensions=[
+                'codehilite(linenums=None,guess_lang=False)',
+                'fenced_code'])
+
+            if self.has_pygments:
+                self.assertEqual(md.convert(text),
+                    '<div class="codehilite"><pre>'
+                    '<span class="hll"><span class="c">#line 1</span>\n</span>'
+                    '<span class="c">#line 2</span>\n'
+                    '<span class="hll"><span class="c">#line 3</span>\n</span>'
+                    '</pre></div>')
+            else:
+                self.assertEqual(md.convert(text),
+                    '<pre class="codehilite"><code class="language-python">#line 1\n'
+                    '#line 2\n'
+                    '#line 3</code></pre>')
 
 class TestHeaderId(unittest.TestCase):
     """ Test HeaderId Extension. """
