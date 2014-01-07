@@ -91,6 +91,17 @@ block contains and each one has a different result.
 
         # Code goes here ...
 
+    Certain lines can be selected for emphasis with the colon syntax. By
+    default, emphasized lines have a yellow background. This is useful to
+    direct the reader's attention.
+
+        :::python hl_lines="1 3"
+        # This line is emphasized
+        # This line isn't
+        # This line is emphasized
+
+    (`hl_lines` is named for Pygments' "highlighted lines" option.)
+
 * ###When No Language is Defined
 
     CodeHilite is completely backward compatible so that if a code block is
