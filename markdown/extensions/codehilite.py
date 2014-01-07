@@ -35,14 +35,14 @@ except ImportError:
 def parse_hl_lines(expr):
     """Support our syntax for emphasizing certain lines of code.
 
-    expr should be like '{1,2}' to emphasize lines 1 and 2 of a code block.
+    expr should be like '1 2' to emphasize lines 1 and 2 of a code block.
     Returns a list of ints, the line numbers to emphasize.
     """
     if not expr:
         return []
 
     try:
-        return map(int, expr.strip('{}').split(','))
+        return map(int, expr.split())
     except ValueError:
         return []
 
@@ -151,7 +151,9 @@ class CodeHilite(object):
         (e.i.: :::python), line numbering is left in the current state - off
         by default.
 
-        Also parses optional list of highlight lines, like :::python{1,3}
+        Also parses optional list of highlight lines, like:
+
+            :::python hl_lines="1 3"
         """
 
         import re
@@ -165,7 +167,8 @@ class CodeHilite(object):
             (?:(?:^::+)|(?P<shebang>^[#]!)) # Shebang or 2 or more colons
             (?P<path>(?:/\w+)*[/ ])?        # Zero or 1 path
             (?P<lang>[\w+-]*)               # The language
-            (?P<hl_lines>\{.*?})?           # Maybe hl_lines
+            \s*                             # Arbitrary whitespace
+            (hl_lines="(?P<hl_lines>.*?)")? # Maybe highlight lines
             ''',  re.VERBOSE)
         # search first line for shebang
         m = c.search(fl)

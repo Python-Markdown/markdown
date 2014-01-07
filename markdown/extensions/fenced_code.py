@@ -62,7 +62,7 @@ Optionally backticks instead of tildes as per how github's code block markdown i
 If the codehighlite extension and Pygments are installed, lines can be highlighted:
 
     >>> text = '''
-    ... ```{1,3}
+    ... ```hl_lines="1 3"
     ... line 1
     ... line 2
     ... line 3
@@ -108,7 +108,10 @@ class FencedCodeExtension(Extension):
 
 class FencedBlockPreprocessor(Preprocessor):
     FENCED_BLOCK_RE = re.compile(r'''
-(?P<fence>^(?:~{3,}|`{3,}))[ ]*(\{?\.?(?P<lang>[a-zA-Z0-9_+-]*)\}?)?[ ]*(?P<hl_lines>\{.*?})?[ ]*\n
+(?P<fence>^(?:~{3,}|`{3,}))[ ]*         # Opening ``` or ~~~
+(\{?\.?(?P<lang>[a-zA-Z0-9_+-]*))?[ ]*  # Optional {, and lang
+(hl_lines="(?P<hl_lines>.*?)")?[ ]*     # Optional highlight lines
+}?[ ]*\n                                # Optional closing }
 (?P<code>.*?)(?<=\n)
 (?P=fence)[ ]*$''', re.MULTILINE | re.DOTALL | re.VERBOSE)
     CODE_WRAP = '<pre><code%s>%s</code></pre>'
