@@ -168,7 +168,8 @@ class CodeHilite(object):
             (?P<path>(?:/\w+)*[/ ])?        # Zero or 1 path
             (?P<lang>[\w+-]*)               # The language
             \s*                             # Arbitrary whitespace
-            (hl_lines="(?P<hl_lines>.*?)")? # Maybe highlight lines
+            # Optional highlight lines, single- or double-quote-delimited
+            (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot))?
             ''',  re.VERBOSE)
         # search first line for shebang
         m = c.search(fl)

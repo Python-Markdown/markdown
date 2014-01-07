@@ -127,21 +127,25 @@ class TestCodeHilite(unittest.TestCase):
                 '</code></pre>')
 
     def testHighlightLinesWithColon(self):
-        text = '\t:::Python hl_lines="2"\n\t#line 1\n\t#line 2\n\t#line 3'
+        # Test with hl_lines delimited by single or double quotes.
+        text0 = '\t:::Python hl_lines="2"\n\t#line 1\n\t#line 2\n\t#line 3'
+        text1 = "\t:::Python hl_lines='2'\n\t#line 1\n\t#line 2\n\t#line 3"
 
-        md = markdown.Markdown(extensions=['codehilite'])
-        if self.has_pygments:
-            self.assertEqual(md.convert(text),
-                '<div class="codehilite"><pre>'
-                '<span class="c">#line 1</span>\n'
-                '<span class="hll"><span class="c">#line 2</span>\n</span>'
-                '<span class="c">#line 3</span>\n'
-                '</pre></div>')
-        else:
-            self.assertEqual(md.convert(text),
-                '<pre class="codehilite"><code class="language-python">#line 1\n'
-                '#line 2\n'
-                '#line 3</code></pre>')
+        for text in (text0, text1):
+            md = markdown.Markdown(extensions=['codehilite'])
+            if self.has_pygments:
+                self.assertEqual(md.convert(text),
+                    '<div class="codehilite"><pre>'
+                    '<span class="c">#line 1</span>\n'
+                    '<span class="hll"><span class="c">#line 2</span>\n</span>'
+                    '<span class="c">#line 3</span>\n'
+                    '</pre></div>')
+            else:
+                self.assertEqual(md.convert(text),
+                    '<pre class="codehilite">'
+                    '<code class="language-python">#line 1\n'
+                    '#line 2\n'
+                    '#line 3</code></pre>')
 
 class TestFencedCode(unittest.TestCase):
     """ Test fenced_code extension. """
@@ -248,7 +252,7 @@ line 3
 #line 3
 ```'''
         text1 = '''
-~~~{.python hl_lines="1 3"}
+~~~{.python hl_lines='1 3'}
 #line 1
 #line 2
 #line 3
