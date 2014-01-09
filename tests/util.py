@@ -1,16 +1,16 @@
 import sys
 if sys.version_info[0] == 3:
-    from configparser import SafeConfigParser
+    from configparser import ConfigParser
 else:
-    from ConfigParser import SafeConfigParser
+    from ConfigParser import SafeConfigParser as ConfigParser
 
 class MarkdownSyntaxError(Exception):
     pass
 
 
-class CustomConfigParser(SafeConfigParser):
+class CustomConfigParser(ConfigParser):
     def get(self, section, option):
-        value = SafeConfigParser.get(self, section, option)
+        value = ConfigParser.get(self, section, option)
         if option == 'extensions':
             if len(value.strip()):
                 return value.split(',')

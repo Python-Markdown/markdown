@@ -293,7 +293,7 @@ class Markdown(object):
         # Run the tree-processors
         for treeprocessor in self.treeprocessors.values():
             newRoot = treeprocessor.run(root)
-            if newRoot:
+            if newRoot is not None:
                 root = newRoot
 
         # Serialize _properly_.  Strip top-level tags.
