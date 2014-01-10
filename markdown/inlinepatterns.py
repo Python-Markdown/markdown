@@ -231,7 +231,7 @@ class EscapePattern(Pattern):
         if char in self.markdown.ESCAPED_CHARS:
             return '%s%s%s' % (util.STX, ord(char), util.ETX)
         else:
-            return '\\%s' % char
+            return None 
 
 
 class SimpleTagPattern(Pattern):
