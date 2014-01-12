@@ -62,15 +62,23 @@ Optionally backticks instead of tildes as per how github's code block markdown i
 If the codehighlite extension and Pygments are installed, lines can be highlighted:
 
     >>> text = '''
-    ... ```hl_lines="1 3"
+    ... ```hl_lines="1 3 5-7"
     ... line 1
     ... line 2
     ... line 3
+    ... line 4
+    ... line 5
+    ... line 6
+    ... line 7
     ... ```'''
     >>> print markdown.markdown(text, extensions=['codehilite', 'fenced_code'])
     <pre><code><span class="hilight">line 1</span>
     line 2
     <span class="hilight">line 3</span>
+    line 4
+    <span class="hilight">line 5</span>
+    <span class="hilight">line 6</span>
+    <span class="hilight">line 7</span>
     </code></pre>
 
 Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
