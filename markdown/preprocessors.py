@@ -201,7 +201,7 @@ class HtmlBlockPreprocessor(Preprocessor):
             if not in_tag:
                 if block.startswith("<") and len(block.strip()) > 1:
 
-                    if block[1] == "!":
+                    if block[1:4] == "!--":
                         # is a comment block
                         left_tag, left_index, attrs  = "--", 2, {}
                     else:
@@ -239,9 +239,8 @@ class HtmlBlockPreprocessor(Preprocessor):
                         continue
                     else:
                         # if is block level tag and is not complete
-
-                        if util.isBlockLevel(left_tag) or left_tag == "--" \
-                            and not block.rstrip().endswith(">"):
+                        if  (not self._equal_tags(left_tag, right_tag)) and \
+                            (util.isBlockLevel(left_tag) or left_tag == "--"):
                             items.append(block.strip())
                             in_tag = True
                         else:

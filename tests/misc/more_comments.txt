@@ -1,9 +1,11 @@
-<!--asd@asdfd.com>
-
-
 <!asd@asdfd.com>
 
+Foo
 
 <asd!@asdfd.com>
 
-Test
+Bar
+
+<!--asd@asdfd.com>
+
+Still in unclosed comment
