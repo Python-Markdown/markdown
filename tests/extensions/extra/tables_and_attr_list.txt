@@ -1,0 +1,4 @@
+First Header                                           | Second Header
+------------------------------------------------------ | -------------
+Content Cell{: class="foo bar" title="Some title!" }   | Content Cell
+Content Cell                                           | Content Cell{: class="foo bar" title="Some title!" }
