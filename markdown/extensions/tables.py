@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 from . import Extension
 from ..blockprocessors import BlockProcessor
 from ..util import etree
+import re
 
 class TableProcessor(BlockProcessor):
     """ Process Tables. """
@@ -41,7 +42,7 @@ class TableProcessor(BlockProcessor):
             border = True
         # Get alignment of columns
         align = []
-        for c in self._split_row(seperator, border):
+        for c in self._split_separator(seperator, border):
             if c.startswith(':') and c.endswith(':'):
                 align.append('center')
             elif c.startswith(':'):
@@ -76,13 +77,24 @@ class TableProcessor(BlockProcessor):
             if a:
                 c.set('align', a)
 
+    def _strip_border(self, row):
+        """ remove leading/trailing border indicators. """
+        if row.startswith('|'):
+            row = row[1:]
+        if row.endswith('|'):
+            row = row[:-1]
+        return row
+
+    def _split_separator(self, row, border):
+        """ split a separator row into list of cells. """
+        if border:
+            row = self._strip_border(row)
+        return re.split('[|+]', row)
+
     def _split_row(self, row, border):
         """ split a row of text into list of cells. """
         if border:
-            if row.startswith('|'):
-                row = row[1:]
-            if row.endswith('|'):
-                row = row[:-1]
+            row = self._strip_border(row)
         return row.split('|')
 
 
