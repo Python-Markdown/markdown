@@ -35,16 +35,32 @@ except ImportError:
 def parse_hl_lines(expr):
     """Support our syntax for emphasizing certain lines of code.
 
-    expr should be like '1 2' to emphasize lines 1 and 2 of a code block.
+    expr should be like '1 2' to emphasize lines 1 and 2 of a code block
+    or contains lines ranges like '1 3-5' to emplasize lines 1 and 3 to
+    5 included.
     Returns a list of ints, the line numbers to emphasize.
     """
     if not expr:
         return []
 
-    try:
-        return map(int, expr.split())
-    except ValueError:
-        return []
+    listsHL = []
+    for exp in expr.split():
+        lex = exp.split("-")
+        if len(lex) == 1:
+            try:
+                val = int(lex[0])
+                listsHL.append(val)
+            except ValueError:
+                pass
+        elif len(lex) ==2:
+            try:
+                valMin = int(lex[0])
+                valMax = int(lex[1])
+                for val in range(valMin, valMax+1):
+                    listsHL.append(val)
+            except ValueError:
+                pass
+    return listsHL
 
 
 # ------------------ The Main CodeHilite Class ----------------------
@@ -65,7 +81,8 @@ class CodeHilite(object):
 
     * css_class: Set class name of wrapper div ('codehilite' by default).
 
-    * hl_lines: (List of integers) Lines to emphasize, 1-indexed.
+    * hl_lines: (List of integers) Lines to emphasize, 1-indexed. Can also containts elements
+    range.
 
     Low Level Usage:
         >>> code = CodeHilite()
@@ -153,7 +170,7 @@ class CodeHilite(object):
 
         Also parses optional list of highlight lines, like:
 
-            :::python hl_lines="1 3"
+            :::python hl_lines="1 3 6-8"
         """
 
         import re
