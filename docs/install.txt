@@ -19,7 +19,7 @@ or
 
     easy_install markdown
 
-That's it! Your ready to [use](reference.html) Python-Markdown. Enjoy!
+That's it! You're ready to [use](reference.html) Python-Markdown. Enjoy!
 
 Installing on Windows {: #windows }
 -----------------------------------
