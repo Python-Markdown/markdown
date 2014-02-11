@@ -289,7 +289,7 @@ string must be passed to one of two instance methods:
         md.reset()
         html2 = md.convert(text2)
     
-    You can also change calls to `reset` together:
+    You can also chain calls to `reset` together:
     
         html3 = md.reset().convert(text3)
 
