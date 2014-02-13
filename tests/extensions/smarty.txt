@@ -6,6 +6,7 @@
 one two '60s  
 '60s
 
+It's fun. What's fun?  
 "Isn't this fun"? --- she said...  
 "'Quoted' words in a larger quote."  
 'Quoted "words" in a larger quote.'  
