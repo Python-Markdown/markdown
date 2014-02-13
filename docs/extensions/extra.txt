@@ -45,7 +45,7 @@ your own clone of Extra under a different name
 Markdown Inside HTML Blocks
 ---------------------------
 
-Unlike the other Extra features, this feature is build into the markdown core and is turned on when `extra` is enabled.
+Unlike the other Extra features, this feature is built into the markdown core and is turned on when `extra` is enabled.
 
 The content of any raw html block element can be Markdown-formatted simply by adding a `markdown` attribute to the opening tag. The markdown attribute will be stripped from the output, but all other attributes will be preserved.
 
@@ -61,9 +61,9 @@ This is *true* markdown text.
 ```
 #### Result:
 ```
-<p>This is <em>true</em> markdown text.</p>                                                                                                                                           
-<div>                                                                                                                                                                                 
-<p>This is <em>true</em> markdown text.</p>                                                                                                                                           
+<p>This is <em>true</em> markdown text.</p>
+<div>
+<p>This is <em>true</em> markdown text.</p>
 </div>
 ```
 

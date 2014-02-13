@@ -23,7 +23,11 @@ documentation for the [CodeHilite Extension] for an explanation of the new
 is set, but "force_linenos" will raise a DeprecationWarning and will likely 
 be removed in a future version of Python-Markdown.
 
-[CodeHilite Extension]: extensions/codehilite.html
+[CodeHilite Extension]: extensions/code_hilite.html
+
+* URLs are no longer percent-encoded. This improves compatibility with the
+original (written in Perl) Markdown implementation. Please percent-encode
+your URLs manually when needed.
 
 What's New in Python-Markdown 2.4
 ---------------------------------
@@ -38,6 +42,35 @@ it out and report bugs and/or improvements.
 [Dmitry Shachnev]: https://github.com/mitya57
 [Smarty Extension]: extensions/smarty.html
 [SmartyPants]: http://daringfireball.net/projects/smartypants/
+
+* The [Table of Contents Extension] now supports new `permalink` option
+for creating [Sphinx]-style anchor links.
+
+[Table of Contents Extension]: extensions/toc.html
+[Sphinx]: http://sphinx-doc.org/
+
+* It is now possible to enable Markdown formatting inside HTML blocks by
+appending `markdown=1` to opening tag attributes. See [Markdown Inside HTML
+Blocks] section for details. Thanks to [ryneeverett] for implementing this
+feature.
+
+[Markdown Inside HTML Blocks]: extensions/extra.html#nested-markdown-inside-html-blocks
+[ryneeverett]: https://github.com/ryneeverett
+
+* The code blocks now support emphasizing some of the code lines. To use this
+feature, specify `hl_lines` option after language name, for example (using
+the [Fenced Code Extension]):
+
+        ```.python hl_lines="1 3"
+        # This line will be emphasized.
+        # This one won't.
+        # This one will be also emphasized.
+        ```
+
+    Thanks to [A. Jesse Jiryu Davis] for implementing this feature.
+
+[Fenced Code Extension]: extensions/fenced_code_blocks.html
+[A. Jesse Jiryu Davis]: https://github.com/ajdavis
 
 * Various bug fixes have been made.  See the
 [commit log](https://github.com/waylan/Python-Markdown/commits/master)
