@@ -70,32 +70,20 @@ from . import Extension
 from ..inlinepatterns import HtmlPattern
 from ..util import parseBoolValue
 
-def canonicalize(regex):
-    """
-    Converts the regexp from the re.VERBOSE form to the canonical form,
-    i.e. remove all whitespace and ignore comments.
-    """
-    lines = regex.split('\n')
-    for i in range(len(lines)):
-        if ' #' in lines[i]:
-            lines[i] = lines[i][:lines[i].find(' #')]
-    return ''.join(lines).replace(' ', '')
-
 # Constants for quote education.
 punctClass = r"""[!"#\$\%'()*+,-.\/:;<=>?\@\[\\\]\^_`{|}~]"""
 endOfWordClass = r"[\s.,;:!?)]"
 closeClass = r"[^\ \t\r\n\[\{\(\-\u0002\u0003]"
 
-openingQuotesBase = r"""
-(
-    \s            | # a whitespace char, or
-    &nbsp;        | # a non-breaking space entity, or
-    --            | # dashes, or
-    –|—           | # unicode, or
-    &[mn]dash;    | # named dash entities, or
-    &#8211;|&#8212; # decimal entities
+openingQuotesBase = (
+   '(\s'              # a  whitespace char
+   '|&nbsp;'          # or a non-breaking space entity
+   '|--'              # or dashes
+   '|–|—'             # or unicode
+   '|&[mn]dash;'      # or named dash entities
+   '|&#8211;|&#8212;' # or decimal entities
+   ')'
 )
-"""
 
 # Special case if the very first character is a quote
 # followed by punctuation at a non-word-break. Close the quotes by brute force:
@@ -108,41 +96,18 @@ doubleQuoteSetsRe = r""""'(?=\w)"""
 singleQuoteSetsRe = r"""'"(?=\w)"""
 
 # Get most opening double quotes:
-openingDoubleQuotesRegex = canonicalize("""
-%s      # symbols before the quote
-"       # the quote
-(?=\w)  # followed by a word character
-""" % openingQuotesBase)
+openingDoubleQuotesRegex = r'%s"(?=\w)' % openingQuotesBase
 
 # Double closing quotes:
-closingDoubleQuotesRegex = canonicalize(r"""
-"
-(?=\s)
-""")
-
-closingDoubleQuotesRegex2 = canonicalize(r"""
-(?<=%s)  # character that indicates the quote should be closing
-"
-""" % closeClass)
+closingDoubleQuotesRegex = r'"(?=\s)'
+closingDoubleQuotesRegex2 = '(?<=%s)"' % closeClass
 
 # Get most opening single quotes:
-openingSingleQuotesRegex = canonicalize(r"""
-%s      # symbols before the quote
-'       # the quote
-(?=\w)  # followed by a word character
-""" % openingQuotesBase)
+openingSingleQuotesRegex = r"%s'(?=\w)" % openingQuotesBase
 
-closingSingleQuotesRegex = canonicalize(r"""
-(?<=%s)
-'
-(?!\s | s\b | \d)
-""" % closeClass)
-
-closingSingleQuotesRegex2 = canonicalize(r"""
-(?<=%s)
-'
-(\s | s\b)
-""" % closeClass)
+# Single closing quotes:
+closingSingleQuotesRegex  = r"(?<=%s)'(?!\s|s\b|\d)" % closeClass
+closingSingleQuotesRegex2 = r"(?<=%s)'(\s|s\b)" % closeClass
 
 # All remaining quotes should be opening ones
 remainingSingleQuotesRegex = "'"
