@@ -7,10 +7,16 @@ next_url:   sane_lists.html
 NL2BR Extension
 ===============
 
-A Python-Markdown extension to treat newlines as hard breaks; like
+Summary
+-------
+
+The NL2BR Extension will cause newlines to be treated as hard breaks; like
 StackOverflow and [GitHub][] flavored Markdown do.
 
-Usage:
+[Github]: http://github.github.com/github-flavored-markdown/
+
+Example
+-------
 
     >>> import markdown
     >>> text = """
@@ -22,4 +28,10 @@ Usage:
     <p>Line 1<br />
     Line 2</p>
 
-[Github]: http://github.github.com/github-flavored-markdown/
+Usage
+-----
+
+See [Extensions](./index.html) for general extension usage, specify `nl2br`
+as the name of the extension.
+
+This extension does not accept any special configuration options.
