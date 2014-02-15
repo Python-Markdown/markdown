@@ -10,15 +10,15 @@ Meta-Data
 Summary
 -------
 
-An extension to Python-Markdown that adds a syntax for defining meta-data about
-a document. The Meta-Data extension is inspired by and follows the syntax of 
-[MultiMarkdown][]. Currently, this extension does not use the meta-data in any 
-way, but simply provides it as a `Meta` attribute of a markdown instance for 
-use by other extensions or directly by your python code.
+The Meta-Data extension adds a syntax for defining meta-data about a document.
+It is inspired by and follows the syntax of [MultiMarkdown][]. Currently,
+this extension does not use the meta-data in any way, but simply provides it as
+a `Meta` attribute of a Markdown instance for use by other extensions or
+directly by your python code.
+
+This extension is included in the standard Markdown library.
 
 [MultiMarkdown]: http://fletcherpenney.net/MultiMarkdown_Syntax_Guide#metadata
-
-This extension has been a part of the Markdown library since 2.0.
 
 Syntax
 ------
@@ -38,12 +38,23 @@ of a markdown document like this:
 
 The keywords are case-insensitive and may consist of letters, numbers, 
 underscores and dashes and must end with a colon. The values consist of 
-anything following the colon on the line and may even be blank. If a line is 
-indented 4 or more spaces, that line is assumed to be an additional line of the
-value for the previous keyword. A keyword may have as many lines as desired. 
+anything following the colon on the line and may even be blank.
+
+If a line is indented by 4 or more spaces, that line is assumed to be an
+additional line of the value for the previous keyword. A keyword may have as
+many lines as desired. 
+
 The first blank line ends all meta-data for the document. Therefore, the first 
 line of a document must not be blank. All meta-data is stripped from the 
-document prior to any further processing by markdown.
+document prior to any further processing by Markdown.
+
+Usage
+-----
+
+See [Extensions](./index.html) for general extension usage, specify `meta`
+as the name of the extension.
+
+This extension does not accept any special configuration options.
 
 Accessing the Meta-Data
 -----------------------
@@ -75,14 +86,14 @@ assumptions are made regarding the data. It is simply passed as found to the
 `Meta` attribute.
 
 Perhaps the meta-data could be passed into a template system, or used by 
-various markdown extensions. The possibilities are left to the imagination of 
+various Markdown extensions. The possibilities are left to the imagination of 
 the developer.
 
 Compatible Extensions
 ---------------------
 
-The following are extensions currently known to work with the Meta-Data 
-Extension and the keywords they are known to support:
+The following extensions are currently known to work with the Meta-Data 
+Extension. The keywords they are known to support are also listed.
 
 * [HeaderId](header_id.html)
     * `header_level`
