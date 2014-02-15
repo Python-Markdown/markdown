@@ -10,16 +10,17 @@ Table of Contents
 Summary
 -------
 
-Adds a Table of Contents to a Markdown document.
+The Table of Contents extension generates a Table of Contents from a Markdown
+document and adds it into the resulting HTML document.
 
-This extension is included with the Markdown library since version 2.0.
+This extension is included in the standard Markdown library.
 
 Syntax
 ------
 
-Place a marker in the document where you would like the table of contents to
+Place a marker in the document where you would like the Table of Contents to
 appear. Then, a nested list of all the headers in the document will replace the
-marker. The marker defaults to ``[TOC]`` so the following document:
+marker. The marker defaults to `[TOC]` so the following document:
 
     [TOC]
 
@@ -43,33 +44,45 @@ would generate the following output:
 Usage
 -----
 
-From the Python interpreter:
+See [Extensions](./index.html) for general extension usage, specify `toc`
+as the name of the extension.
 
-    >>> html = markdown.markdown(some_text, extensions=['toc'])
+See the [Library Reference](../reference.html#extensions) for information about
+configuring extensions.
 
 The following options are provided to configure the output:
 
-* **marker**: Text to find and replace with the Table of Contents. Defaults
-  to ``[TOC]``.
-* **slugify**: Callable to generate anchors based on header text. Defaults to a
-  built in ``slugify`` method. The callable must accept one argument which 
-  contains the text content of the header and return a string which will be 
-  used as the anchor text.
-* **title**: Title to insert in TOC ``<div>``. Defaults to ``None``.
-* **anchorlink**: Set to ``True`` to have the headers link to themselves. 
-  Default is ``False``.
-* **permalink**: Set to ``True`` to have this extension generate Sphinx-style
-  permanent links near the headers (for use with Sphinx stylesheets).
+* **marker**:
+    Text to find and replace with the Table of Contents. Defaults
+    to `[TOC]`.
 
-If a 'marker' is not found in the document, then the toc is available as an
-attribute of the Markdown class. This allows one to insert the toc elsewhere 
-in their page template. For example:
+    If a `marker` is not found in the document, then the Table of Contents is
+    available as an attribute of the Markdown class. This allows one to insert
+    the Table of Contents elsewhere in their page template. For example:
 
-    >>> text = '''
-    # Header 1
-    
-    ## Header 2
-    '''
-    >>> md = markdown.Markdown(extensions=['toc'])
-    >>> html = md.convert(text)
-    >>> render_some_template(context={'body': html, 'toc': md.toc})
+        >>> text = '''
+        # Header 1
+        
+        ## Header 2
+        '''
+        >>> md = markdown.Markdown(extensions=['toc'])
+        >>> html = md.convert(text)
+        >>> render_some_template(context={'body': html, 'toc': md.toc})
+
+* **slugify**:
+    Callable to generate anchors based on header text. Defaults to a built in
+    `slugify` method. The callable must accept one argument which contains the
+    text content of the header and return a string which will be used as the
+    anchor text.
+
+* **title**:
+    Title to insert in the Table of Contents' `<div>`. Defaults to `None`.
+
+* **anchorlink**:
+    Setting to `True` will cause the headers link to themselves. Default is
+    `False`.
+
+* **permalink**:
+    Set to `True` to have this extension generate a Sphinx-style permanent links
+    near the headers (for use with Sphinx stylesheets).
+
