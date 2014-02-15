@@ -35,7 +35,7 @@ Fenced code blocks can have a blank line as the first  and/or last line of a
 code block and they can also come immediately after a list item without becoming
 part of the list.
 
-### Language
+### Language ###
 
 In addition to PHP Extra's syntax, you can define the language of the code 
 block for use by syntax highlighters etc. The language will be assigned as a 
@@ -60,7 +60,7 @@ The above will output:
     <pre><code class="html">&lt;p&gt;HTML Document&lt;/p&gt;
     </code></pre>
 
-[Github][]'s tilde (`\``) syntax is also supported:
+[Github][]'s backtick (`\``) syntax is also supported:
 
     ```python
     # more python code
@@ -68,17 +68,23 @@ The above will output:
 
 [Github]: http://github.github.com/github-flavored-markdown/
 
-### Emphasized Lines
+### Emphasized Lines ###
 
-If [Pygments][] is installed, this extension can emphasize certain lines of
-code. By default, emphasized lines have a yellow background. This is useful to
-direct the reader's attention. The lines can be specified with PHP Extra's
-syntax:
+If you would like to have your fenced code blocks highlighted with the 
+[CodeHilite][] extension, simply enable that extension (remember that
+[Pygments][] is its dependency) and the language of your fenced code blocks
+will be passed in and highlighted appropriately.
+
+Similar to the [colon][] syntax of the CodeHilite extension, fenced code blocks
+can also have emphasized certain lines of code.
+
+The lines can be specified with PHP Extra's syntax:
 
     ~~~~{.python hl_lines="1 3"}
     # This line is emphasized
     # This line isn't
     # This line is emphasized
+    ~~~~
 
 ... or with GitHub's:
 
@@ -86,22 +92,16 @@ syntax:
     # This line is emphasized
     # This line isn't
     # This line is emphasized
+    ```
 
-(`hl_lines` is named for Pygments' "highlighted lines" option.)
-
+[CodeHilite]: code_hilite.html
 [Pygments]: http://pygments.org/
+[colon]: ./code_hilite.html#colons
 
 Usage
 -----
 
-From the Python interpreter:
+See [Extensions](./index.html) for general extension usage, specify `fenced_code`
+as the name of the extension.
 
-    >>> html = markdown.markdown(text, ['fenced_code'])
-
-If you would like to have your fenced code blocks highlighted with the 
-[CodeHilite][] extension, simply include that extension and the language 
-of your fenced code blocks will be passed in and highlighted appropriately.
-
-    >>> html = markdown.markdown(text, ['fenced_code', 'codehilite'])
-
-[CodeHilite]: code_hilite.html
+This extension does not accept any special configuration options.

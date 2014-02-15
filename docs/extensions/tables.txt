@@ -52,7 +52,7 @@ will be rendered as:
 Usage
 -----
 
-From the Python interpreter:
+See [Extensions](./index.html) for general extension usage, specify `tables`
+as the name of the extension.
 
-    >>> html = markdown.markdown(text, ['tables'])
-
+This extension does not accept any special configuration options.

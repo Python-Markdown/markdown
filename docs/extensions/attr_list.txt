@@ -78,3 +78,11 @@ immediately after the inline element with no whitespace.
 The above results in the following output:
 
     <p><a href="http://example.com" class="foo bar" title="Some title!">link</a></p>
+
+Usage
+-----
+
+See [Extensions](./index.html) for general extension usage, specify `attr_list`
+as the name of the extension.
+
+This extension does not accept any special configuration options.
