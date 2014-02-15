@@ -1,5 +1,5 @@
-title:      Fenced Code Block Extension
-prev_title: Definition List Extension
+title:      Fenced Code Blocks Extension
+prev_title: Definition Lists Extension
 prev_url:   definition_lists.html
 next_title: Footnotes Extension
 next_url:   footnotes.html
@@ -10,8 +10,8 @@ Fenced Code Blocks
 Summary
 -------
 
-This extension adds a secondary way to define code blocks which overcomes a few
-limitations of the indented code blocks.
+The Fenced Code Blocks extension adds a secondary way to define code blocks,
+which overcomes a few limitations of the indented code blocks.
 
 This extension is included in the standard Markdown library.
 
@@ -96,12 +96,12 @@ The lines can be specified with PHP Extra's syntax:
 
 [CodeHilite]: code_hilite.html
 [Pygments]: http://pygments.org/
-[colon]: ./code_hilite.html#colons
+[colon]: code_hilite.html#colons
 
 Usage
 -----
 
-See [Extensions](./index.html) for general extension usage, specify `fenced_code`
+See [Extensions](index.html) for general extension usage, specify `fenced_code`
 as the name of the extension.
 
 This extension does not accept any special configuration options.

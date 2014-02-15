@@ -79,8 +79,9 @@ Third Party Extensions
 ----------------------
 
 Various individuals and/or organizations have developed extensions which they
-have made available to the public.  A [list of third party
-extensions](https://github.com/waylan/Python-Markdown/wiki/Third-Party-Extensions)
+have made available to the public. A [list of third party extensions][list]
 is maintained on the wiki for your convenience. The Python-Markdown team
 offers no official support for these extensions. Please see the developer of
 each extension for support.
+
+[list]: https://github.com/waylan/Python-Markdown/wiki/Third-Party-Extensions

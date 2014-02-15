@@ -1,5 +1,5 @@
 title:      Footnotes Extension
-prev_title: Fenced Code Block Extension
+prev_title: Fenced Code Blocks Extension
 prev_url:   fenced_code_blocks.html
 next_title: Tables Extension
 next_url:   tables.html
@@ -10,7 +10,8 @@ Footnotes
 Summary
 -------
 
-An extension to Python-Markdown that adds footnote syntax.
+The Footnotes extension adds syntax for defining footnotes in Markdown
+documents.
 
 This extension is included in the standard Markdown library.
 
@@ -63,7 +64,7 @@ is indented consistently and any errors are more easily discernible by the autho
 Usage
 -----
 
-See [Extensions](./index.html) for general extension usage, specify `footnotes`
+See [Extensions](index.html) for general extension usage, specify `footnotes`
 as the name of the extension.
 
 See the [Library Reference](../reference.html#extensions) for information about

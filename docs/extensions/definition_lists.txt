@@ -1,7 +1,7 @@
-title:      Definition List Extension
-prev_title: Attribute List Extension
+title:      Definition Lists Extension
+prev_title: Attribute Lists Extension
 prev_url:   attr_list.html
-next_title: Fenced Code Block Extension
+next_title: Fenced Code Blocks Extension
 next_url:   fenced_code_blocks.html
 
 Definition Lists
@@ -10,7 +10,7 @@ Definition Lists
 Summary
 -------
 
-The Definition List Extension adds the ability to create definition lists in
+The Definition Lists extension adds the ability to create definition lists in
 Markdown documents.
 
 This extension is included in the standard Markdown library.
@@ -47,7 +47,7 @@ will be rendered as:
 Usage
 -----
 
-See [Extensions](./index.html) for general extension usage, specify `def_list`
+See [Extensions](index.html) for general extension usage, specify `def_list`
 as the name of the extension.
 
 This extension does not accept any special configuration options.

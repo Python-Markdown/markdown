@@ -1,4 +1,4 @@
-title:      Admonition
+title:      Admonition Extension
 prev_title: Smart Strong Extension
 prev_url:   smart_strong.html
 next_title: CodeHilite Extension
@@ -10,7 +10,7 @@ Admonition
 Summary
 -------
 
-This extension adds [rST-style][rST] admonitions to Markdown documents.
+The Admonition extension adds [rST-style][rST] admonitions to Markdown documents.
 
 This extension is included in the standard Markdown library.
 

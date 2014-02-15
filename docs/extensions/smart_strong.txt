@@ -10,11 +10,11 @@ Smart_Strong
 Summary
 -------
 
-The Smart_Strong Extension adds smarter handling of double underscores within
+The Smart_Strong extension adds smarter handling of double underscores within
 words. This does for double underscores what [smart_emphasis][] does for single
 underscores.
 
-The Smart_Strong Extension is included in the standard Markdown library.
+The Smart_Strong extension is included in the standard Markdown library.
 
 [smart_emphasis]: ../reference.html#smart_emphasis
 
@@ -35,7 +35,7 @@ Example
 Usage
 -----
 
-See [Extensions](./index.html) for general extension usage, specify `smart_strong`
+See [Extensions](index.html) for general extension usage, specify `smart_strong`
 as the name of the extension.
 
 This extension does not accept any special configuration options.

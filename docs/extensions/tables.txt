@@ -1,4 +1,4 @@
-title:      Table Extension
+title:      Tables Extension
 prev_title: Footnotes Extension
 prev_url:   footnotes.html
 next_title: Smart Strong Extension
@@ -10,7 +10,7 @@ Tables
 Summary
 -------
 
-The Table Extension adds the ability to create tables in Markdown documents.
+The Tables extension adds the ability to create tables in Markdown documents.
 
 This extension is included in the standard Markdown library.
 
@@ -52,7 +52,7 @@ will be rendered as:
 Usage
 -----
 
-See [Extensions](./index.html) for general extension usage, specify `tables`
+See [Extensions](index.html) for general extension usage, specify `tables`
 as the name of the extension.
 
 This extension does not accept any special configuration options.

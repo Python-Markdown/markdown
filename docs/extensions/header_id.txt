@@ -35,7 +35,7 @@ Results in:
 Usage
 -----
 
-See [Extensions](./index.html) for general extension usage, specify `headerid`
+See [Extensions](index.html) for general extension usage, specify `headerid`
 as the name of the extension.
 
 See the [Library Reference](../reference.html#extensions) for information about
@@ -94,7 +94,7 @@ The following options are provided to configure the output:
 Using with Meta-Data
 --------------------
 
-The HeaderId Extension also supports the [Meta-Data](meta_data.html) Extension.
+The HeaderId extension also supports the [Meta-Data](meta_data.html) extension.
 Please see the documentation for that extension for specifics. The supported 
 meta-data keywords are:
 

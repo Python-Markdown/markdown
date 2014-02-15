@@ -46,7 +46,7 @@ becomes
 Usage
 -----
 
-See [Extensions](./index.html) for general extension usage, specify `wikilinks`
+See [Extensions](index.html) for general extension usage, specify `wikilinks`
 as the name of the extension.
 
 See the [Library Reference](../reference.html#extensions) for information about
@@ -111,7 +111,7 @@ Would cause all wikilinks to be assigned to the class `myclass`.
 Using with Meta-Data extension
 ------------------------------
 
-The WikiLink Extension also supports the [Meta-Data](meta_data.html) Extension.
+The WikiLink extension also supports the [Meta-Data](meta_data.html) extension.
 Please see the documentation for that extension for specifics. The supported
 meta-data keywords are:
 

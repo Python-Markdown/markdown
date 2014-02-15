@@ -4,13 +4,13 @@ prev_url:   meta_data.html
 next_title: Sane Lists Extension
 next_url:   sane_lists.html
 
-NL2BR Extension
-===============
+NL2BR
+=====
 
 Summary
 -------
 
-The NL2BR Extension will cause newlines to be treated as hard breaks; like
+The NL2BR extension will cause newlines to be treated as hard breaks; like
 StackOverflow and [GitHub][] flavored Markdown do.
 
 [Github]: http://github.github.com/github-flavored-markdown/
@@ -31,7 +31,7 @@ Example
 Usage
 -----
 
-See [Extensions](./index.html) for general extension usage, specify `nl2br`
+See [Extensions](index.html) for general extension usage, specify `nl2br`
 as the name of the extension.
 
 This extension does not accept any special configuration options.

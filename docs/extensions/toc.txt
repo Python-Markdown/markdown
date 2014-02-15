@@ -1,7 +1,7 @@
 title:      Table of Contents Extension
 prev_title: SmartyPants Extension
 prev_url:   smarty.html
-next_title: Wikilinks Extension
+next_title: WikiLinks Extension
 next_url:   wikilinks.html
 
 Table of Contents
@@ -44,7 +44,7 @@ would generate the following output:
 Usage
 -----
 
-See [Extensions](./index.html) for general extension usage, specify `toc`
+See [Extensions](index.html) for general extension usage, specify `toc`
 as the name of the extension.
 
 See the [Library Reference](../reference.html#extensions) for information about

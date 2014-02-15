@@ -51,7 +51,7 @@ document prior to any further processing by Markdown.
 Usage
 -----
 
-See [Extensions](./index.html) for general extension usage, specify `meta`
+See [Extensions](index.html) for general extension usage, specify `meta`
 as the name of the extension.
 
 This extension does not accept any special configuration options.
@@ -93,7 +93,7 @@ Compatible Extensions
 ---------------------
 
 The following extensions are currently known to work with the Meta-Data 
-Extension. The keywords they are known to support are also listed.
+extension. The keywords they are known to support are also listed.
 
 * [HeaderId](header_id.html)
     * `header_level`
