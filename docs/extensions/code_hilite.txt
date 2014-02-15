@@ -15,7 +15,7 @@ Python-Markdown code blocks using [Pygments][].
 
 [Pygments]: http://pygments.org/
 
-This extension is included in the  Markdown library.
+This extension is included in the standard Markdown library.
 
 Setup
 -----
@@ -51,111 +51,116 @@ block contains and each one has a different result.
 
 [syntax]: http://daringfireball.net/projects/markdown/syntax#precode
 
-* ###SheBang (with path)
+### SheBang (with path) ###
 
-    If the first line of the codeblock contains a shebang, the language is derived
-    from that and line numbers are used.
-
-            #!/usr/bin/python
-            # Code goes here ...
-
-    Will result in:
+If the first line of the codeblock contains a shebang, the language is derived
+from that and line numbers are used.
 
         #!/usr/bin/python
         # Code goes here ...
 
+Will result in:
 
-* ###SheBang (no path)
+    #!/usr/bin/python
+    # Code goes here ...
 
-    If the first line contains a shebang, but the shebang line does not contain a
-    path (a single `/` or even a space), then that line is removed from the code
-    block before processing. Line numbers are used.
+### SheBang (no path) ###
 
-            #!python
-            # Code goes here ...
+If the first line contains a shebang, but the shebang line does not contain a
+path (a single `/` or even a space), then that line is removed from the code
+block before processing. Line numbers are used.
 
-    Will result in:
+        #!python
+        # Code goes here ...
+
+Will result in:
+
+    # Code goes here ...
+
+### Colons ###
+
+If the first line begins with three or more colons, the text following the
+colons identifies the language. The first line is removed from the code block
+before processing and line numbers are not used.
+
+        :::python
+        # Code goes here ...
+
+Will result in:
+
+    # Code goes here ...
+
+Certain lines can be selected for emphasis with the colon syntax. By
+default, emphasized lines have a yellow background. This is useful to
+direct the reader's attention.
+
+    :::python hl_lines="1 3"
+    # This line is emphasized
+    # This line isn't
+    # This line is emphasized
+
+!!! Note
+    `hl_lines` is named for Pygments' option meaning "highlighted lines".
+
+### When No Language is Defined ###
+
+CodeHilite is completely backward compatible so that if a code block is
+encountered that does not define a language, the block is simply wrapped in
+`<pre>` tags and output. 
 
         # Code goes here ...
 
-* ###Colons
+Will result in:
 
-    If the first line begins with three or more colons, the text following the
-    colons identifies the language. The first line is removed from the code block
-    before processing and line numbers are not used.
+    # Code goes here ...
 
-            :::python
-            # Code goes here ...
+Lets see the source for that:
 
-    Will result in:
+    <div class="codehilite"><pre><code># Code goes here ...
+    </code></pre></div>
 
-        # Code goes here ...
-
-    Certain lines can be selected for emphasis with the colon syntax. By
-    default, emphasized lines have a yellow background. This is useful to
-    direct the reader's attention.
-
-        :::python hl_lines="1 3"
-        # This line is emphasized
-        # This line isn't
-        # This line is emphasized
-
-    (`hl_lines` is named for Pygments' "highlighted lines" option.)
-
-* ###When No Language is Defined
-
-    CodeHilite is completely backward compatible so that if a code block is
-    encountered that does not define a language, the block is simply wrapped in
-    `<pre>` tags and output. 
-
-            # Code goes here ...
-
-    Will result in:
-
-        # Code goes here ...
-
-    Lets see the source for that:
-
-        <div class="codehilite"><pre><code># Code goes here ...
-        </code></pre></div>
-
-    !!! Note
-        When no language is defined, the Pygments highlighting engine will try to guess 
-        the language (unless `guess_lang` is set to `False`). Upon failure, the same 
-        behavior will happen as described above.
+!!! Note
+    When no language is defined, the Pygments highlighting engine will try to guess 
+    the language (unless `guess_lang` is set to `False`). Upon failure, the same 
+    behavior will happen as described above.
 
 Usage
 -----
 
-From the Python interpreter:
+See [Extensions](./index.html) for general extension usage, specify `codehilite`
+as the name of the extension.
 
-    >>> html = markdown.markdown(text, extensions=['codehilite'])
+See the [Library Reference](../reference.html#extensions) for information about
+configuring extensions.
 
-To force every code block to have line numbers, even when using 
-colons (`:::`) for language identification, set `linenums` to `True`.
+The following options are provided to configure the output:
 
-    >>> html = markdown.markdown(text,
-    ...     extensions=['codehilite(linenums=True)']
-    ... )
+* **linenums**:
+    Use line numbers. Possible values are `True` for yes, `False` for no and
+    `None` for auto. Defaults to `None`.
 
-To turn off all line numbers, even when using SheBangs (`#!`) for 
-language identification, set `linenums` to `False`.
+    Using `True` will force every code block to have line numbers, even when
+    using colons (`:::`) for language identification.
 
-    >>> html = markdown.markdown(text,
-    ...     extensions=['codehilite(linenums=False)']
-    ... )
+    Using `False` will turn off all line numbers, even when using SheBangs
+    (`#!`) for language identification.
 
-To prevent Pygments from guessing the language (only highlighting
-blocks when you explicitly request it) set the `guess_lang` setting to `False`.
+* **guess_lang**:
+    Automatic language detection. Defaults to `True`.
 
-    >>> html = markdown.markdown(text,
-    ...     extensions=['codehilite(guess_lang=False)']
-    ... )
+    Using `False` will prevent Pygments from guessing the language, and thus
+    highlighting blocks only when you explicitly set the language.
 
-To assign a CSS class differant than the default ('codehilite') on the
-code's wrapping div, define a custom class with the `css_class` setting.
+* **css_class**:
+    Set CSS class name for the wrapper `<div>` tag. Defaults to
+    `codehilite`.
 
-    >>> html = markdown.markdown(text,
-    ...    extensions=['codehilite(css_class=myclass)']
-    ... )
+* **pygments_style**:
+    Pygments HTML Formatter Style (ColorScheme). Defaults to `default`.
 
+    !!! Note
+        This is useful only when `noclasses` is set to `True`, otherwise the
+        CSS style shall be provided by the end user.
+
+* **noclasses**:
+    Use inline styles instead of CSS classes. Defaults to `False`.
