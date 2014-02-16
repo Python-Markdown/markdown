@@ -52,7 +52,7 @@ configuring extensions.
 
 The following options are provided to configure the output:
 
-* **marker**:
+* **`marker`**:
     Text to find and replace with the Table of Contents. Defaults
     to `[TOC]`.
 
@@ -69,20 +69,20 @@ The following options are provided to configure the output:
         >>> html = md.convert(text)
         >>> render_some_template(context={'body': html, 'toc': md.toc})
 
-* **slugify**:
+* **`slugify`**:
     Callable to generate anchors based on header text. Defaults to a built in
     `slugify` method. The callable must accept one argument which contains the
     text content of the header and return a string which will be used as the
     anchor text.
 
-* **title**:
+* **`title`**:
     Title to insert in the Table of Contents' `<div>`. Defaults to `None`.
 
-* **anchorlink**:
+* **`anchorlink`**:
     Setting to `True` will cause the headers link to themselves. Default is
     `False`.
 
-* **permalink**:
+* **`permalink`**:
     Set to `True` to have this extension generate a Sphinx-style permanent links
     near the headers (for use with Sphinx stylesheets).
 

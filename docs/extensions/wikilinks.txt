@@ -58,19 +58,19 @@ the html class `wikilink`.
 
 The following options are provided to change the default behavior:
 
-* **base_url**: String to append to beginning of URL.
+* **`base_url`**: String to append to beginning of URL.
 
     Default: `'/'`
 
-* **end_url**: String to append to end of URL.
+* **`end_url`**: String to append to end of URL.
 
     Default: `'/'`
 
-* **html_class**: CSS class. Leave blank for none.
+* **`html_class`**: CSS class. Leave blank for none.
 
     Default: `'wikilink'`
 
-* **build_url**: Callable which formats the URL from its parts.
+* **`build_url`**: Callable which formats the URL from its parts.
 
 ### Examples ###
 

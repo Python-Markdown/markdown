@@ -43,7 +43,7 @@ configuring extensions.
 
 The following options are provided to configure the output:
 
-* **level**: Base level for headers.
+* **`level`**: Base level for headers.
 
     Default: `1`
 
@@ -60,7 +60,7 @@ The following options are provided to configure the output:
         <h3 id="some_header">Some Header</h3>
         <h4 id="next_level">Next Level</h4>'
 
-* **forceid**: Force all headers to have an id.
+* **`forceid`**: Force all headers to have an id.
 
     Default: `True`
 
@@ -77,11 +77,11 @@ The following options are provided to configure the output:
         <h1>Some Header</h1>
         <h1 id="foo">Header with ID</h1>
 
-* **separator**: Word separator. Character which replaces whitespace in id.
+* **`separator`**: Word separator. Character which replaces whitespace in id.
 
     Default: `-`
 
-* **slugify**: Callable to generate anchors.
+* **`slugify`**: Callable to generate anchors.
 
     Default: `markdown.extensions.headerid.slugify`
 

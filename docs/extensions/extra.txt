@@ -69,9 +69,10 @@ This is *true* markdown text.
 
 ### Nested Markdown Inside HTML BLocks
 Nested elements are more sensitive and must be used cautiously. To avoid unexpected results:
-	* Only nest elements within block mode elements.
-	* Follow the closing tag of inner elements with a blank line.
-	* Only have one level of nesting.
+
+* Only nest elements within block mode elements.
+* Follow the closing tag of inner elements with a blank line.
+* Only have one level of nesting.
 
 #### Complex Example:
 ```

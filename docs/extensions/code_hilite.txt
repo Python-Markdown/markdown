@@ -32,7 +32,8 @@ language. When that fails, the code block will display as un-highlighted code.
 
 !!! Note
     The css and/or javascript is not included as part of this extension
-    but shall always be provided by the end user.
+    but must be provided by the end user. The Pygments project provides
+    default css styles which you may find to be a useful starting point.
 
 Syntax
 ------
@@ -90,9 +91,9 @@ Will result in:
 
     # Code goes here ...
 
-Certain lines can be selected for emphasis with the colon syntax. By
-default, emphasized lines have a yellow background. This is useful to
-direct the reader's attention.
+Certain lines can be selected for emphasis with the colon syntax. When 
+using Pygments' default css styles, emphasized lines have a yellow background. 
+This is useful to direct the reader's attention to specific lines.
 
     :::python hl_lines="1 3"
     # This line is emphasized
@@ -135,7 +136,7 @@ configuring extensions.
 
 The following options are provided to configure the output:
 
-* **linenums**:
+* **`linenums`**:
     Use line numbers. Possible values are `True` for yes, `False` for no and
     `None` for auto. Defaults to `None`.
 
@@ -145,22 +146,22 @@ The following options are provided to configure the output:
     Using `False` will turn off all line numbers, even when using SheBangs
     (`#!`) for language identification.
 
-* **guess_lang**:
+* **`guess_lang`**:
     Automatic language detection. Defaults to `True`.
 
     Using `False` will prevent Pygments from guessing the language, and thus
     highlighting blocks only when you explicitly set the language.
 
-* **css_class**:
+* **`css_class`**:
     Set CSS class name for the wrapper `<div>` tag. Defaults to
     `codehilite`.
 
-* **pygments_style**:
+* **`pygments_style`**:
     Pygments HTML Formatter Style (ColorScheme). Defaults to `default`.
 
     !!! Note
         This is useful only when `noclasses` is set to `True`, otherwise the
-        CSS style shall be provided by the end user.
+        CSS styles must be provided by the end user.
 
-* **noclasses**:
+* **`noclasses`**:
     Use inline styles instead of CSS classes. Defaults to `False`.

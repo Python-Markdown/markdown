@@ -13,13 +13,25 @@ Summary
 The SmartyPants extension converts ASCII dashes, quotes and ellipses to
 their HTML entity equivalents.
 
-ASCII symbol | Unicode replacements
------------- | --------------------
-&#39;        | &lsquo; &rsquo;
-&quot;       | &ldquo; &rdquo;
-\...         | &hellip;
-\--          | &ndash;
--\--         | &mdash;
+ASCII symbol | Replacements    | HTML Entities
+------------ | --------------- | -------------------
+&#39;        | &lsquo; &rsquo; | `&lsquo;` `&rsquo;`
+&quot;       | &ldquo; &rdquo; | `&ldquo;` `&rdquo;`
+\...         | &hellip;        | `&hellip;`
+\--          | &ndash;         | `&ndash;`
+-\--         | &mdash;         | `&mdash;`
+
+!!! note
+    This extension reimplements the Python [SmartyPants] 
+    library by intregated it into the markdown parser.
+    While this does not provide any additional features,
+    it does offer a few advantages. Notably, it will not 
+    try to work on highlighted code blocks (using the 
+    [CodeHilite] Extension) like the third party library 
+    has been known to do.
+    
+[SmartyPants]: http://pythonhosted.org/smartypants/
+[CodeHilite]: code_hilite.html
 
 Usage
 -----

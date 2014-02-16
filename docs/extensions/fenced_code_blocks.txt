@@ -35,6 +35,11 @@ Fenced code blocks can have a blank line as the first  and/or last line of a
 code block and they can also come immediately after a list item without becoming
 part of the list.
 
+!!! warning
+
+    Fenced Code Blocks are only supported at the document root level.
+    Therefore, they cannot be nested inside lists or blockquotes.
+
 ### Language ###
 
 In addition to PHP Extra's syntax, you can define the language of the code 

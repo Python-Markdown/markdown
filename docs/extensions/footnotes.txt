@@ -72,17 +72,17 @@ configuring extensions.
 
 The following options are provided to configure the output:
 
-* **PLACE_MARKER**:
+* **`PLACE_MARKER`**:
     A text string used to mark the position where the footnotes are rendered.
     Defaults to `///Footnotes Go Here///`.
 
     If the place marker text is not found in the document, the footnote
     definitions are placed at the end of the resulting HTML document.
 
-* **UNIQUE_IDS**:
+* **`UNIQUE_IDS`**:
     Whether to avoid collisions across multiple calls to `reset()`. Defaults to
     `False`.
     
-* **BACKLINK_TEXT**:
+* **`BACKLINK_TEXT`**:
     The text string that links from the footnote definition back to the position
     in the document. Defaults to `&#8617;`.
