@@ -21,31 +21,22 @@ ASCII symbol | Unicode replacements
 \--          | &ndash;
 -\--         | &mdash;
 
-Arguments
----------
-
-All three arguments are set to `True` by default.
-
-Argument         | Description
---------         | -----------
-`smart_dashes`   | whether to convert dashes
-`smart_quotes`   | whether to convert quotes
-`smart_ellipses` | whether to convert ellipses
-
 Usage
 -----
 
-Default configuration:
+See [Extensions](index.html) for general extension usage, specify `smarty`
+as the name of the extension.
 
-    >>> html = markdown.markdown(text,
-    ...     extensions=['smarty']
-    ... )
+See the [Library Reference](../reference.html#extensions) for information about
+configuring extensions.
 
-Disable quotes convertation:
+The following options are provided to configure the output (all three are set to `True` by default):
 
-    >>> html = markdown.markdown(text,
-    ...     extensions=['smarty(smart_quotes=False)']
-    ... )
+Option           | Description
+------           | -----------
+`smart_dashes`   | whether to convert dashes
+`smart_quotes`   | whether to convert quotes
+`smart_ellipses` | whether to convert ellipses
 
 Further reading
 ---------------

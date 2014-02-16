@@ -1,7 +1,7 @@
-title:      Abbreviation Extension
+title:      Abbreviations Extension
 prev_title: Extra Extension
 prev_url:   extra.html
-next_title: Attribute List Extension
+next_title: Attribute Lists Extension
 next_url:   attr_list.html
 
 Abbreviations
@@ -10,10 +10,10 @@ Abbreviations
 Summary
 -------
 
-The Markdown Abbreviation Extension adds the ability to define abbreviations. 
+The Abbreviations extension adds the ability to define abbreviations. 
 Specifically, any defined abbreviation is wrapped in  an `<abbr>` tag.
 
-The Abbreviation extension is included in the standard Markdown library.
+The Abbreviations extension is included in the standard Markdown library.
 
 Syntax
 ------
@@ -31,7 +31,7 @@ Thus, the following text (taken from the above referenced PHP documentation):
     *[HTML]: Hyper Text Markup Language
     *[W3C]:  World Wide Web Consortium
 
-will be rendered like so:
+will be rendered as:
 
     <p>The <abbr title="Hyper Text Markup Language">HTML</abbr> specification 
     is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
@@ -39,21 +39,7 @@ will be rendered like so:
 Usage
 -----
 
-From the Python interpreter:
+See [Extensions](index.html) for general extension usage, specify `abbr`
+as the name of the extension.
 
-    >>> import markdown
-    >>> text = """
-    ... Some text with an ABBR.
-    ...
-    ... *[ABBR]: Abbreviation
-    ... """
-    >>> html = markdown.markdown(text, ['abbr'])
-
-To use with other extensions, just add them to the list, like this:
-
-    >>> html = markdown.markdown(text, ['abbr', 'footnotes'])
-
-Abbreviations can also be called from the command line using Markdown's `-x` 
-parameter, like so:
-
-    python -m markdown -x abbr source.txt > output.html
+This extension does not accept any special configuration options.

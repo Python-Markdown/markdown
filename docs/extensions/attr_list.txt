@@ -1,7 +1,7 @@
-title:      Attribute List Extension
-prev_title: Abbreviation Extension
+title:      Attribute Lists Extension
+prev_title: Abbreviations Extension
 prev_url:   abbreviations.html
-next_title: Definition List Extension
+next_title: Definition Lists Extension
 next_url:   definition_lists.html
 
 Attribute Lists
@@ -10,15 +10,15 @@ Attribute Lists
 Summary
 -------
 
-An extension to Python-Markdown that adds a syntax to define attributes on
-the various HTML elements in markdown's output.
+The Attribute Lists extension adds a syntax to define attributes on the various
+HTML elements in markdown's output.
 
 This extension is included in the standard Markdown library.
 
 Syntax
 ------
 
-The basic syntax was inspired by [Maruku][]'s Attribute List feature.
+The basic syntax was inspired by [Maruku][]'s Attribute Lists feature.
 
 [Maruku]: http://maruku.rubyforge.org/proposal.html#attribute_lists
 
@@ -78,3 +78,11 @@ immediately after the inline element with no whitespace.
 The above results in the following output:
 
     <p><a href="http://example.com" class="foo bar" title="Some title!">link</a></p>
+
+Usage
+-----
+
+See [Extensions](index.html) for general extension usage, specify `attr_list`
+as the name of the extension.
+
+This extension does not accept any special configuration options.

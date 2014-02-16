@@ -10,14 +10,16 @@ Smart_Strong
 Summary
 -------
 
-The Markdown Smart_Strong Extension adds smarter handling of double underscores
-within words. This does for double underscores what
-[smart_emphasis](../reference.html#smart_emphasis) does for single underscores.
+The Smart_Strong extension adds smarter handling of double underscores within
+words. This does for double underscores what [smart_emphasis][] does for single
+underscores.
 
-The Smart_Strong Extension is included in the standard Markdown library.
+The Smart_Strong extension is included in the standard Markdown library.
 
-Usage
------
+[smart_emphasis]: ../reference.html#smart_emphasis
+
+Example
+-------
 
     >>> import markdown
     >>> markdown.markdown('Text with double__underscore__words.', \
@@ -30,8 +32,10 @@ Usage
                           extensions=['smart_strong'])
     u'<p><strong>this__works__too</strong>.</p>'
 
-This extension is also included with the [Extra](extra.html) Extension. You may
-call that extension to get this behavior with all the other features of 'Extra'.
+Usage
+-----
 
-    >>> markdown.markdown(text, extensions=['extra'])
+See [Extensions](index.html) for general extension usage, specify `smart_strong`
+as the name of the extension.
 
+This extension does not accept any special configuration options.

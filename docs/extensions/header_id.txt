@@ -10,17 +10,17 @@ HeaderId
 Summary
 -------
 
-An extension to Python-Markdown that automatically generates 'id' attributes
-for HTML header elements (h1-h6) in markdown's output.
+The HeaderId extension automatically generates `id` attributes for the header
+elements (`h1`-`h6`) in the resulting HTML document.
 
 This extension is included in the standard Markdown library.
 
 Syntax
 ------
 
-By default, all headers will automatically have unique "id" attributes 
-generated based upon the text of the header (See below to turn this off). 
-Note this example in which all three headers would have the same "id":
+By default, all headers will automatically have unique `id` attributes 
+generated based upon the text of the header (see below to turn this off). 
+Note this example, in which all three headers would have the same `id`:
 
     #Header
     #Header
@@ -32,10 +32,16 @@ Results in:
     <h1 id="header_1">Header</h1>
     <h1 id="header_2">Header</h1>
 
-Configuring the Output
-----------------------
+Usage
+-----
 
-The HeaderId extension has four configuration settings:
+See [Extensions](index.html) for general extension usage, specify `headerid`
+as the name of the extension.
+
+See the [Library Reference](../reference.html#extensions) for information about
+configuring extensions.
+
+The following options are provided to configure the output:
 
 * **level**: Base level for headers.
 
@@ -59,8 +65,8 @@ The HeaderId extension has four configuration settings:
     Default: `True`
 
     The `forceid` setting turns on or off the automatically generated ids for 
-    headers that do not have one explicitly defined (using the attr_list 
-    extension).
+    headers that do not have one explicitly defined (using the
+    [Attribute List](attr_list.html) extension).
 
         >>> text = '''
         ... # Some Header
@@ -88,7 +94,7 @@ The HeaderId extension has four configuration settings:
 Using with Meta-Data
 --------------------
 
-The HeaderId Extension also supports the [Meta-Data](meta_data.html) Extension.
+The HeaderId extension also supports the [Meta-Data](meta_data.html) extension.
 Please see the documentation for that extension for specifics. The supported 
 meta-data keywords are:
 
