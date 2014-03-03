@@ -87,7 +87,7 @@ The following options are available on the `markdown.markdown` function:
     named `mdx_extra` ('mdx_' will be appended to the beginning of the string) 
     at the root of your PYTHONPATH. 
 
-    When loading an extension by name (as a sting), you may either pass in
+    When loading an extension by name (as a string), you may either pass in
     configuration settings to the extension using the 
     [extension_configs](#extension_configs) keyword or by appending the 
     settings to the name in the following format:
