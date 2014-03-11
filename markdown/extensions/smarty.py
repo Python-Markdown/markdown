@@ -73,7 +73,7 @@ from ..util import parseBoolValue
 # Constants for quote education.
 punctClass = r"""[!"#\$\%'()*+,-.\/:;<=>?\@\[\\\]\^_`{|}~]"""
 endOfWordClass = r"[\s.,;:!?)]"
-closeClass = r"[^\ \t\r\n\[\{\(\-\u0002\u0003]"
+closeClass = "[^\ \t\r\n\[\{\(\-\u0002\u0003]"
 
 openingQuotesBase = (
    '(\s'              # a  whitespace char
