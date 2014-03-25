@@ -1,6 +1,11 @@
 [Python-Markdown][]
 ===================
 
+[![Build Status](http://img.shields.io/travis/waylan/Python-Markdown.svg)](https://travis-ci.org/waylan/Python-Markdown)
+[![Downloads](http://img.shields.io/pypi/dm/Markdown.svg)](https://pypi.python.org/pypi/Markdown#downloads)
+[![Latest Version](http://img.shields.io/pypi/v/Markdown.svg)](http://pypi.python.org/pypi/Markdown)
+[![BSD License](http://img.shields.io/badge/license-BSD-yellow.svg)](http://opensource.org/licenses/BSD-3-Clause)
+
 This is a Python implementation of John Gruber's [Markdown][]. 
 It is almost completely compliant with the reference implementation,
 though there are a few known issues. See [Features][] for information 
@@ -27,4 +32,3 @@ You may ask for help and discuss various other issues on the [mailing list][] an
 
 [mailing list]: http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss
 [bug tracker]: http://github.com/waylan/Python-Markdown/issues 
-
