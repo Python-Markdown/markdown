@@ -422,7 +422,7 @@ class testAtomicString(unittest.TestCase):
 
 class TestConfigParsing(unittest.TestCase):
     def assertParses(self, value, result):
-        self.assertIs(markdown.util.parseBoolValue(value, False), result)
+        self.assertTrue(markdown.util.parseBoolValue(value, False) is result)
 
     def testBooleansParsing(self):
         self.assertParses(True, True)
