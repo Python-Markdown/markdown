@@ -25,10 +25,11 @@ The Details
 Python-Markdown provides two public functions ([`markdown.markdown`](#markdown)
 and [`markdown.markdownFromFile`](#markdownFromFile)) both of which wrap the 
 public class [`markdown.Markdown`](#Markdown). If you're processing one 
-document at a time, the functions will serve your needs. However, if you need 
+document at a time, these functions will serve your needs. However, if you need
 to process multiple documents, it may be advantageous to create a single 
 instance of the `markdown.Markdown` class and pass multiple documents through 
-it.
+it. If you do use a single instance though, make sure to call the `reset`
+method appropriately ([see below](#convert)).
 
 ### `markdown.markdown (text [, **kwargs])` {: #markdown }
 
@@ -282,16 +283,18 @@ string must be passed to one of two instance methods:
         html1 = md.convert(text1)
         html2 = md.convert(text2)
 
-    Note that depending on which options and/or extensions are being used,
-    the parser may need its state reset between each call to `convert`.
+    Depending on which options and/or extensions are being used, the parser may
+    need its state reset between each call to `convert`, otherwise performance
+    can degrade drastically:
 
         html1 = md.convert(text1)
         md.reset()
         html2 = md.convert(text2)
     
-    You can also chain calls to `reset` together:
+    To make this easier, you can also chain calls to `reset` together:
     
         html3 = md.reset().convert(text3)
+
 
 * `Markdown.convertFile(**kwargs)`{: #convertFile }
 
