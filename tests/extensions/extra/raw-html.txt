@@ -44,3 +44,10 @@ Raw html blocks may also be nested.
 </div>
 
 This text is after the markdown in html.
+
+<div markdown="1" name="issue308">
+
+<span>1</span>
+<span>2</span>
+
+</div>
