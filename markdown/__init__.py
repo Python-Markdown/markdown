@@ -194,7 +194,7 @@ class Markdown(object):
 
         # Try loading the extension first from one place, then another
         try: # New style (markdown.extensions.<extension>)
-            module = __import__(module_name, {}, {}, [module_name.rpartition('.')[0]])
+            module = __import__(module_name, {}, {}, [str(module_name.rpartition('.')[0])])
         except ImportError:
             module_name_old_style = '_'.join(['mdx', ext_name])
             try: # Old style (mdx_<extension>)
