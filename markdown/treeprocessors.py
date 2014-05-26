@@ -53,6 +53,7 @@ class InlineProcessor(Treeprocessor):
                                       + len(self.__placeholder_suffix)
         self.__placeholder_re = util.INLINE_PLACEHOLDER_RE
         self.markdown = md
+        self.inlinePatterns = md.inlinePatterns
 
     def __makePlaceholder(self, type):
         """ Generate a placeholder """
@@ -99,9 +100,9 @@ class InlineProcessor(Treeprocessor):
         """
         if not isinstance(data, util.AtomicString):
             startIndex = 0
-            while patternIndex < len(self.markdown.inlinePatterns):
+            while patternIndex < len(self.inlinePatterns):
                 data, matched, startIndex = self.__applyPattern(
-                    self.markdown.inlinePatterns.value_for_index(patternIndex),
+                    self.inlinePatterns.value_for_index(patternIndex),
                     data, patternIndex, startIndex)
                 if not matched:
                     patternIndex += 1
