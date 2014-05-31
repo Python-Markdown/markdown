@@ -68,10 +68,10 @@ If the codehighlite extension and Pygments are installed, lines can be highlight
     ... line 3
     ... ```'''
     >>> print markdown.markdown(text, extensions=['codehilite', 'fenced_code'])
-    <pre><code><span class="hilight">line 1</span>
-    line 2
-    <span class="hilight">line 3</span>
-    </code></pre>
+    <div class="codehilite"><pre><span class="hll"><span class="n">line</span> <span class="mi">1</span>
+    </span><span class="n">line</span> <span class="mi">2</span>
+    <span class="hll"><span class="n">line</span> <span class="mi">3</span>
+    </span></pre></div>
 
 Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
 
