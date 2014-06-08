@@ -13,7 +13,7 @@ Simple Usage:
     ... *[ABBR]: Abbreviation
     ... *[REF]: Abbreviation Reference
     ... """
-    >>> print markdown.markdown(text, ['abbr'])
+    >>> print(markdown.markdown(text, ['abbr']))
     <p>Some text with an <abbr title="Abbreviation">ABBR</abbr> and a <abbr title="Abbreviation Reference">REF</abbr>. Ignore REFERENCE and ref.</p>
 
 Copyright 2007-2008

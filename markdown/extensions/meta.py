@@ -15,16 +15,16 @@ Basic Usage:
     ... The body. This is paragraph one.
     ... '''
     >>> md = markdown.Markdown(['meta'])
-    >>> print md.convert(text)
+    >>> print(md.convert(text))
     <p>The body. This is paragraph one.</p>
-    >>> print md.Meta
-    {u'blank_data': [u''], u'author': [u'Waylan Limberg', u'John Doe'], u'title': [u'A Test Doc.']}
+    >>> print(md.Meta) # doctest: +SKIP
+    {'blank_data': [''], 'author': ['Waylan Limberg', 'John Doe'], 'title': ['A Test Doc.']}
 
 Make sure text without Meta Data still works (markdown < 1.6b returns a <p>).
 
     >>> text = '    Some Code - not extra lines of meta data.'
     >>> md = markdown.Markdown(['meta'])
-    >>> print md.convert(text)
+    >>> print(md.convert(text))
     <pre><code>Some Code - not extra lines of meta data.
     </code></pre>
     >>> md.Meta

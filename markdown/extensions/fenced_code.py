@@ -13,14 +13,14 @@ This extension adds Fenced Code Blocks to Python-Markdown.
     ... ~~~
     ... '''
     >>> html = markdown.markdown(text, extensions=['fenced_code'])
-    >>> print html
+    >>> print(html)
     <p>A paragraph before a fenced code block:</p>
     <pre><code>Fenced code block
     </code></pre>
 
 Works with safe_mode also (we check this because we are using the HtmlStash):
 
-    >>> print markdown.markdown(text, extensions=['fenced_code'], safe_mode='replace')
+    >>> print(markdown.markdown(text, extensions=['fenced_code'], safe_mode='replace'))
     <p>A paragraph before a fenced code block:</p>
     <pre><code>Fenced code block
     </code></pre>
@@ -32,7 +32,7 @@ Include tilde's in a code block and wrap with blank lines:
     ...
     ... ~~~~
     ... ~~~~~~~~'''
-    >>> print markdown.markdown(text, extensions=['fenced_code'])
+    >>> print(markdown.markdown(text, extensions=['fenced_code']))
     <pre><code>
     ~~~~
     </code></pre>
@@ -43,7 +43,7 @@ Language tags:
     ... ~~~~{.python}
     ... # Some python code
     ... ~~~~'''
-    >>> print markdown.markdown(text, extensions=['fenced_code'])
+    >>> print(markdown.markdown(text, extensions=['fenced_code']))
     <pre><code class="python"># Some python code
     </code></pre>
 
@@ -54,7 +54,7 @@ Optionally backticks instead of tildes as per how github's code block markdown i
     ... # Arbitrary code
     ... ~~~~~ # these tildes will not close the block
     ... `````'''
-    >>> print markdown.markdown(text, extensions=['fenced_code'])
+    >>> print(markdown.markdown(text, extensions=['fenced_code']))
     <pre><code># Arbitrary code
     ~~~~~ # these tildes will not close the block
     </code></pre>
@@ -67,7 +67,7 @@ If the codehighlite extension and Pygments are installed, lines can be highlight
     ... line 2
     ... line 3
     ... ```'''
-    >>> print markdown.markdown(text, extensions=['codehilite', 'fenced_code'])
+    >>> print(markdown.markdown(text, extensions=['codehilite', 'fenced_code']))
     <div class="codehilite"><pre><span class="hll"><span class="n">line</span> <span class="mi">1</span>
     </span><span class="n">line</span> <span class="mi">2</span>
     <span class="hll"><span class="n">line</span> <span class="mi">3</span>
