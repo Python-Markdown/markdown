@@ -182,12 +182,12 @@ class SmartyExtension(Extension):
     def extendMarkdown(self, md, md_globals):
         configs = self.getConfigs()
         self.inlinePatterns = OrderedDict()
+        if configs['smart_ellipses']:
+            self.educateEllipses(md)
         if configs['smart_quotes']:
             self.educateQuotes(md)
         if configs['smart_dashes']:
             self.educateDashes(md)
-        if configs['smart_ellipses']:
-            self.educateEllipses(md)
         inlineProcessor = InlineProcessor(md)
         inlineProcessor.inlinePatterns = self.inlinePatterns
         md.treeprocessors.add('smarty', inlineProcessor, '_end')
