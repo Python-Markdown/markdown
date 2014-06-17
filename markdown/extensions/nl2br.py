@@ -8,7 +8,7 @@ GitHub-flavored Markdown does.
 Usage:
 
     >>> import markdown
-    >>> print markdown.markdown('line 1\\nline 2', extensions=['nl2br'])
+    >>> print(markdown.markdown('line 1\\nline 2', extensions=['nl2br']))
     <p>line 1<br />
     line 2</p>
 
