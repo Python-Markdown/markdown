@@ -137,6 +137,7 @@ class SmartyExtension(Extension):
     def __init__(self, configs):
         self.config = {
             'smart_quotes': [True, 'Educate quotes'],
+            'smart_angled_quotes': [False, 'Educate angled quotes'],
             'smart_dashes': [True, 'Educate dashes'],
             'smart_ellipses': [True, 'Educate ellipses']
         }
@@ -162,6 +163,14 @@ class SmartyExtension(Extension):
         ellipsesPattern = SubstituteTextPattern(r'(?<!\.)\.{3}(?!\.)', ('&hellip;',), md)
         self.inlinePatterns.add('smarty-ellipses', ellipsesPattern, '_begin')
 
+    def educateAngledQuotes(self, md):
+        leftAngledQuotePattern = SubstituteTextPattern(r'\<\<', ('&laquo;',), md)
+        rightAngledQuotePattern = SubstituteTextPattern(r'\>\>', ('&raquo;',), md)
+        self.inlinePatterns.add('smarty-left-angle-quotes',
+                                leftAngledQuotePattern, '_begin')
+        self.inlinePatterns.add('smarty-right-angle-quotes',
+                                rightAngledQuotePattern, '>smarty-left-angle-quotes')
+
     def educateQuotes(self, md):
         patterns = (
             (singleQuoteStartRe, (rsquo,)),
@@ -186,6 +195,8 @@ class SmartyExtension(Extension):
             self.educateEllipses(md)
         if configs['smart_quotes']:
             self.educateQuotes(md)
+        if configs['smart_angled_quotes']:
+            self.educateAngledQuotes(md)
         if configs['smart_dashes']:
             self.educateDashes(md)
         inlineProcessor = InlineProcessor(md)
