@@ -32,6 +32,51 @@ foo|bar|baz
    | Q |
  W |   | W
 
+Cross section with +:
+
+First Header | Second Header
+-------------+--------------
+Content Cell | Content Cell
+Content Cell | Content Cell
+
+| First Header  | Second Header |
+| --------------+-------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
+
+| Item      | Value |
+| :---------+------:|
+| Computer  | $1600 |
+| Phone     |   $12 |
+| Pipe      |    $1 |
+
+| Function name | Description                    |
+| --------------+------------------------------- |
+| `help()`      | Display the help window.       |
+| `destroy()`   | **Destroy your computer!**     |
+
+|foo|bar|baz|
+|:--+:-:+--:|
+|   | Q |   |
+|W  |   |  W|
+
+foo|bar|baz
+---+---+---
+   | Q |
+ W |   | W
+
+Mixed cross section:
+
+|foo|bar|baz|
+|:--|:-:+--:|
+|   | Q |   |
+|W  |   |  W|
+
+foo|bar|baz
+---+---|---
+   | Q |
+ W |   | W
+
 Three spaces in front of a table:
 
    First Header | Second Header
@@ -45,7 +90,7 @@ Three spaces in front of a table:
    | Content Cell | Content Cell  |
 
 Four spaces is a code block:
-   
+
     First Header | Second Header
     ------------ | -------------
     Content Cell | Content Cell

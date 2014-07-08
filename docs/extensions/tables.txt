@@ -49,6 +49,14 @@ will be rendered as:
       </tbody>
     </table>
 
+Alternatively, as a convenience for [org-mode](http://orgmode.org/) users the
+following text will yield the same html:
+
+    | First Header | Second Header |
+    |--------------+---------------|
+    | Content Cell | Content Cell  |
+    | Content Cell | Content Cell  |
+
 Usage
 -----
 

@@ -25,8 +25,8 @@ class TableProcessor(BlockProcessor):
 
     def test(self, parent, block):
         rows = block.split('\n')
-        return (len(rows) > 2 and '|' in rows[0] and 
-                '|' in rows[1] and '-' in rows[1] and 
+        return (len(rows) > 2 and '|' in rows[0] and
+                '-' in rows[1] and ('|' in rows[1] or '+' in rows[1]) and
                 rows[1].strip()[0] in ['|', ':', '-'])
 
     def run(self, parent, blocks):
@@ -41,7 +41,7 @@ class TableProcessor(BlockProcessor):
             border = True
         # Get alignment of columns
         align = []
-        for c in self._split_row(seperator, border):
+        for c in self._split_header_row(seperator, border):
             if c.startswith(':') and c.endswith(':'):
                 align.append('center')
             elif c.startswith(':'):
@@ -65,7 +65,7 @@ class TableProcessor(BlockProcessor):
         if parent.tag == 'thead':
             tag = 'th'
         cells = self._split_row(row, border)
-        # We use align here rather than cells to ensure every row 
+        # We use align here rather than cells to ensure every row
         # contains the same number of columns.
         for i, a in enumerate(align):
             c = etree.SubElement(tr, tag)
@@ -75,6 +75,13 @@ class TableProcessor(BlockProcessor):
                 c.text = ""
             if a:
                 c.set('align', a)
+
+    def _split_header_row(self, row, border):
+        """ split a header row into list of cells. """
+        cells = []
+        for c in self._split_row(row, border):
+            cells.extend(c.split('+'))
+        return cells
 
     def _split_row(self, row, border):
         """ split a row of text into list of cells. """
@@ -91,7 +98,7 @@ class TableExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
         """ Add an instance of TableProcessor to BlockParser. """
-        md.parser.blockprocessors.add('table', 
+        md.parser.blockprocessors.add('table',
                                       TableProcessor(md.parser),
                                       '<hashheader')
 
