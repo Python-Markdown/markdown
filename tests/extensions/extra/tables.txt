@@ -65,6 +65,18 @@ foo|bar|baz
    | Q |
  W |   | W
 
+Mixed cross section:
+
+|foo|bar|baz|
+|:--|:-:+--:|
+|   | Q |   |
+|W  |   |  W|
+
+foo|bar|baz
+---+---|---
+   | Q |
+ W |   | W
+
 Three spaces in front of a table:
 
    First Header | Second Header
