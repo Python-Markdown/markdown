@@ -90,7 +90,7 @@ Three spaces in front of a table:
    | Content Cell | Content Cell  |
 
 Four spaces is a code block:
-   
+
     First Header | Second Header
     ------------ | -------------
     Content Cell | Content Cell
