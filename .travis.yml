@@ -4,6 +4,7 @@ env:
   - TOXENV=py27
   - TOXENV=py32
   - TOXENV=py33
+  - TOXENV=py34
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install libtidy-0.99-0

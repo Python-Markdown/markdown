@@ -9,21 +9,21 @@ Basic usage:
     >>> import markdown
     >>> text = "Some text with a [[WikiLink]]."
     >>> html = markdown.markdown(text, ['wikilinks'])
-    >>> print html
+    >>> print(html)
     <p>Some text with a <a class="wikilink" href="/WikiLink/">WikiLink</a>.</p>
 
 Whitespace behavior:
 
-    >>> print markdown.markdown('[[ foo bar_baz ]]', ['wikilinks'])
+    >>> print(markdown.markdown('[[ foo bar_baz ]]', ['wikilinks']))
     <p><a class="wikilink" href="/foo_bar_baz/">foo bar_baz</a></p>
-    >>> print markdown.markdown('foo [[ ]] bar', ['wikilinks'])
+    >>> print(markdown.markdown('foo [[ ]] bar', ['wikilinks']))
     <p>foo  bar</p>
 
 To define custom settings the simple way:
 
-    >>> print markdown.markdown(text, 
+    >>> print(markdown.markdown(text,
     ...     ['wikilinks(base_url=/wiki/,end_url=.html,html_class=foo)']
-    ... )
+    ... ))
     <p>Some text with a <a class="foo" href="/wiki/WikiLink.html">WikiLink</a>.</p>
     
 Custom settings the complex way:
@@ -35,7 +35,7 @@ Custom settings the complex way:
     ...                                 ('end_url', '.html'),
     ...                                 ('html_class', '') ]},
     ...     safe_mode = True)
-    >>> print md.convert(text)
+    >>> print(md.convert(text))
     <p>Some text with a <a href="http://example.com/WikiLink.html">WikiLink</a>.</p>
 
 Use MetaData with mdx_meta.py (Note the blank html_class in MetaData):
@@ -46,12 +46,12 @@ Use MetaData with mdx_meta.py (Note the blank html_class in MetaData):
     ...
     ... Some text with a [[WikiLink]]."""
     >>> md = markdown.Markdown(extensions=['meta', 'wikilinks'])
-    >>> print md.convert(text)
+    >>> print(md.convert(text))
     <p>Some text with a <a href="http://example.com/WikiLink.html">WikiLink</a>.</p>
 
 MetaData should not carry over to next document:
 
-    >>> print md.convert("No [[MetaData]] here.")
+    >>> print(md.convert("No [[MetaData]] here."))
     <p>No <a class="wikilink" href="/MetaData/">MetaData</a> here.</p>
 
 Define a custom URL builder:
@@ -60,7 +60,7 @@ Define a custom URL builder:
     ...     return '/bar/'
     >>> md = markdown.Markdown(extensions=['wikilinks'], 
     ...         extension_configs={'wikilinks' : [('build_url', my_url_builder)]})
-    >>> print md.convert('[[foo]]')
+    >>> print(md.convert('[[foo]]'))
     <p><a class="wikilink" href="/bar/">foo</a></p>
 
 From the command line:

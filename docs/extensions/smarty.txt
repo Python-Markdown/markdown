@@ -15,11 +15,12 @@ their HTML entity equivalents.
 
 ASCII symbol | Replacements    | HTML Entities
 ------------ | --------------- | -------------------
-&#39;        | &lsquo; &rsquo; | `&lsquo;` `&rsquo;`
-&quot;       | &ldquo; &rdquo; | `&ldquo;` `&rdquo;`
-\...         | &hellip;        | `&hellip;`
-\--          | &ndash;         | `&ndash;`
--\--         | &mdash;         | `&mdash;`
+`'`          | &lsquo; &rsquo; | `&lsquo;` `&rsquo;`
+`"`          | &ldquo; &rdquo; | `&ldquo;` `&rdquo;`
+`<< >>`      | &laquo; &raquo; | `&laquo;` `&raquo;`
+`...`        | &hellip;        | `&hellip;`
+`--`         | &ndash;         | `&ndash;`
+`---`        | &mdash;         | `&mdash;`
 
 !!! note
     This extension reimplements the Python [SmartyPants] 
@@ -42,13 +43,14 @@ as the name of the extension.
 See the [Library Reference](../reference.html#extensions) for information about
 configuring extensions.
 
-The following options are provided to configure the output (all three are set to `True` by default):
+The following options are provided to configure the output:
 
-Option           | Description
-------           | -----------
-`smart_dashes`   | whether to convert dashes
-`smart_quotes`   | whether to convert quotes
-`smart_ellipses` | whether to convert ellipses
+Option                | Default value | Description
+------                | ------------- | -----------
+`smart_dashes`        | enabled       | whether to convert dashes
+`smart_quotes`        | enabled       | whether to convert straight quotes
+`smart_angled_quotes` | disabled      | whether to convert angled quotes
+`smart_ellipses`      | enabled       | whether to convert ellipses
 
 Further reading
 ---------------

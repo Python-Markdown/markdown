@@ -68,6 +68,8 @@
 from __future__ import unicode_literals
 from . import Extension
 from ..inlinepatterns import HtmlPattern
+from ..odict import OrderedDict
+from ..treeprocessors import InlineProcessor
 from ..util import parseBoolValue
 
 # Constants for quote education.
@@ -135,6 +137,7 @@ class SmartyExtension(Extension):
     def __init__(self, configs):
         self.config = {
             'smart_quotes': [True, 'Educate quotes'],
+            'smart_angled_quotes': [False, 'Educate angled quotes'],
             'smart_dashes': [True, 'Educate dashes'],
             'smart_ellipses': [True, 'Educate ellipses']
         }
@@ -145,20 +148,28 @@ class SmartyExtension(Extension):
         for ind, pattern in enumerate(patterns):
             pattern += (md,)
             pattern = SubstituteTextPattern(*pattern)
-            after = ('>smarty-%s-%d' % (serie, ind - 1) if ind else '>entity')
+            after = ('>smarty-%s-%d' % (serie, ind - 1) if ind else '_begin')
             name = 'smarty-%s-%d' % (serie, ind)
-            md.inlinePatterns.add(name, pattern, after)
+            self.inlinePatterns.add(name, pattern, after)
 
     def educateDashes(self, md):
         emDashesPattern = SubstituteTextPattern(r'(?<!-)---(?!-)', ('&mdash;',), md)
         enDashesPattern = SubstituteTextPattern(r'(?<!-)--(?!-)', ('&ndash;',), md)
-        md.inlinePatterns.add('smarty-em-dashes', emDashesPattern, '>entity')
-        md.inlinePatterns.add('smarty-en-dashes', enDashesPattern,
+        self.inlinePatterns.add('smarty-em-dashes', emDashesPattern, '_begin')
+        self.inlinePatterns.add('smarty-en-dashes', enDashesPattern,
             '>smarty-em-dashes')
 
     def educateEllipses(self, md):
         ellipsesPattern = SubstituteTextPattern(r'(?<!\.)\.{3}(?!\.)', ('&hellip;',), md)
-        md.inlinePatterns.add('smarty-ellipses', ellipsesPattern, '>entity')
+        self.inlinePatterns.add('smarty-ellipses', ellipsesPattern, '_begin')
+
+    def educateAngledQuotes(self, md):
+        leftAngledQuotePattern = SubstituteTextPattern(r'\<\<', ('&laquo;',), md)
+        rightAngledQuotePattern = SubstituteTextPattern(r'\>\>', ('&raquo;',), md)
+        self.inlinePatterns.add('smarty-left-angle-quotes',
+                                leftAngledQuotePattern, '_begin')
+        self.inlinePatterns.add('smarty-right-angle-quotes',
+                                rightAngledQuotePattern, '>smarty-left-angle-quotes')
 
     def educateQuotes(self, md):
         patterns = (
@@ -179,12 +190,18 @@ class SmartyExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
         configs = self.getConfigs()
-        if configs['smart_quotes']:
-            self.educateQuotes(md)
-        if configs['smart_dashes']:
-            self.educateDashes(md)
+        self.inlinePatterns = OrderedDict()
         if configs['smart_ellipses']:
             self.educateEllipses(md)
+        if configs['smart_quotes']:
+            self.educateQuotes(md)
+        if configs['smart_angled_quotes']:
+            self.educateAngledQuotes(md)
+        if configs['smart_dashes']:
+            self.educateDashes(md)
+        inlineProcessor = InlineProcessor(md)
+        inlineProcessor.inlinePatterns = self.inlinePatterns
+        md.treeprocessors.add('smarty', inlineProcessor, '_end')
         md.ESCAPED_CHARS.extend(['"', "'"])
 
 def makeExtension(configs=None):
