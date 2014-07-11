@@ -18,6 +18,7 @@ More text and stuff.
 
 !!! Note "Did you know?"
     You can customize the title of the admonition
+Not part of an Admonition!
 
 !!! mycustomcssclass "And now..."
     For something completely different.
