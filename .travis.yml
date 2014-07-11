@@ -9,5 +9,8 @@ before_install:
   - sudo apt-get install libtidy-0.99-0
 install:
   - pip install tox
+  - pip install coveralls
 script:
   - tox
+after_success:
+  - coveralls
