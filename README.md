@@ -2,6 +2,7 @@
 ===================
 
 [![Build Status](http://img.shields.io/travis/waylan/Python-Markdown.svg)](https://travis-ci.org/waylan/Python-Markdown)
+[![Coverage Status](https://img.shields.io/coveralls/waylan/Python-Markdown.svg)](https://coveralls.io/r/waylan/Python-Markdown?branch=master)
 [![Downloads](http://img.shields.io/pypi/dm/Markdown.svg)](https://pypi.python.org/pypi/Markdown#downloads)
 [![Latest Version](http://img.shields.io/pypi/v/Markdown.svg)](http://pypi.python.org/pypi/Markdown)
 [![BSD License](http://img.shields.io/badge/license-BSD-yellow.svg)](http://opensource.org/licenses/BSD-3-Clause)
