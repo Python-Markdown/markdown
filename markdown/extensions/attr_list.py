@@ -27,7 +27,7 @@ import re
 
 try:
     Scanner = re.Scanner
-except AttributeError:
+except AttributeError: #pragma: no cover
     # must be on Python 2.4
     from sre import Scanner
 

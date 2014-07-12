@@ -10,11 +10,11 @@ Python 3 Stuff
 """
 PY3 = sys.version_info[0] == 3
 
-if PY3:
+if PY3: #pragma: no cover
     string_type = str
     text_type = str
     int2str = chr
-else:
+else: #pragma: no cover
     string_type = basestring
     text_type = unicode
     int2str = unichr
@@ -58,14 +58,15 @@ RTL_BIDI_RANGES = ( ('\u0590', '\u07FF'),
 # Extensions should use "markdown.util.etree" instead of "etree" (or do `from
 # markdown.util import etree`).  Do not import it by yourself.
 
-try: # Is the C implementation of ElementTree available?
+try: #pragma: no cover
+    # Is the C implementation of ElementTree available?
     import xml.etree.cElementTree as etree
     from xml.etree.ElementTree import Comment
     # Serializers (including ours) test with non-c Comment
     etree.test_comment = Comment
     if etree.VERSION < "1.0.5":
         raise RuntimeError("cElementTree version 1.0.5 or higher is required.")
-except (ImportError, RuntimeError):
+except (ImportError, RuntimeError): #pragma: no cover
     # Use the Python implementation of ElementTree?
     import xml.etree.ElementTree as etree
     if etree.VERSION < "1.1":

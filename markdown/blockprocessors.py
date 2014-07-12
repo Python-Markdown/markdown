@@ -99,7 +99,7 @@ class BlockProcessor:
         * ``block``: A block of text from the source which has been split at 
             blank lines.
         """
-        pass
+        pass #pragma: no cover
 
     def run(self, parent, blocks):
         """ Run processor. Must be overridden by subclasses. 
@@ -123,7 +123,7 @@ class BlockProcessor:
         * ``parent``: A etree element which is the parent of the current block.
         * ``blocks``: A list of all remaining blocks of the document.
         """
-        pass
+        pass #pragma: no cover
 
 
 class ListIndentProcessor(BlockProcessor):

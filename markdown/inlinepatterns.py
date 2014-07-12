@@ -178,7 +178,7 @@ class Pattern(object):
         * m: A re match object containing a match of the pattern.
 
         """
-        pass
+        pass #pragma: no cover
 
     def type(self):
         """ Return class name, to define pattern type """
@@ -188,9 +188,9 @@ class Pattern(object):
         """ Return unescaped text given text with an inline placeholder. """
         try:
             stash = self.markdown.treeprocessors['inline'].stashed_nodes
-        except KeyError:
+        except KeyError: #pragma: no cover
             return text
-        def itertext(el):
+        def itertext(el): #pragma: no cover
             ' Reimplement Element.itertext for older python versions '
             tag = el.tag
             if not isinstance(tag, util.string_type) and tag is not None:
@@ -293,7 +293,7 @@ class HtmlPattern(Pattern):
         """ Return unescaped text given text with an inline placeholder. """
         try:
             stash = self.markdown.treeprocessors['inline'].stashed_nodes
-        except KeyError:
+        except KeyError: #pragma: no cover
             return text
         def get_stash(m):
             id = m.group(1)
@@ -350,7 +350,7 @@ class LinkPattern(Pattern):
         
         try:
             scheme, netloc, path, params, query, fragment = url = urlparse(url)
-        except ValueError:
+        except ValueError: #pragma: no cover
             # Bad url - so bad it couldn't be parsed.
             return ''
         
@@ -360,7 +360,7 @@ class LinkPattern(Pattern):
             # Not a known (allowed) scheme. Not safe.
             return ''
             
-        if netloc == '' and scheme not in locless_schemes:
+        if netloc == '' and scheme not in locless_schemes: #pragma: no cover
             # This should not happen. Treat as suspect.
             return ''
 

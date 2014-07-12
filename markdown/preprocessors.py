@@ -41,7 +41,7 @@ class Preprocessor(util.Processor):
         the (possibly modified) list of lines.
 
         """
-        pass
+        pass #pragma: no cover
 
 
 class NormalizeWhitespace(Preprocessor):

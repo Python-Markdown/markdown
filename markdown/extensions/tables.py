@@ -71,7 +71,7 @@ class TableProcessor(BlockProcessor):
             c = etree.SubElement(tr, tag)
             try:
                 c.text = cells[i].strip()
-            except IndexError:
+            except IndexError: #pragma: no cover
                 c.text = ""
             if a:
                 c.set('align', a)

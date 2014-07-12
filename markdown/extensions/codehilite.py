@@ -244,7 +244,7 @@ class CodeHiliteExtension(Extension):
             if value == 'False': value = False
             if value == 'None': value = None
 
-            if key == 'force_linenos':
+            if key == 'force_linenos': #pragma: no cover
                 warnings.warn('The "force_linenos" config setting'
                     ' to the CodeHilite extension is deprecrecated.'
                     ' Use "linenums" instead.', DeprecationWarning)

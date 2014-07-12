@@ -112,7 +112,7 @@ class Markdown(object):
             if pos[c] not in kwargs:
                 kwargs[pos[c]] = arg
             c += 1
-            if c == len(pos):
+            if c == len(pos): #pragma: no cover
                 # ignore any additional args
                 break
 
@@ -303,7 +303,7 @@ class Markdown(object):
                 start = output.index('<%s>'%self.doc_tag)+len(self.doc_tag)+2
                 end = output.rindex('</%s>'%self.doc_tag)
                 output = output[start:end].strip()
-            except ValueError:
+            except ValueError: #pragma: no cover
                 if output.strip().endswith('<%s />'%self.doc_tag):
                     # We have an empty document
                     output = ''
