@@ -11,6 +11,29 @@ from __future__ import unicode_literals
 import unittest
 import markdown
 
+class TestExtensionClass(unittest.TestCase):
+    """ Test markdown.extensions.Extension. """
+
+    def setUp(self):
+        self.ext = markdown.extensions.Extension(configs={'foo':['bar', 'Description of foo']})
+
+    def testGetConfig(self):
+        self.assertEqual(self.ext.getConfig('foo'), 'bar')
+
+    def testGetConfigDefault(self):
+        self.assertEqual(self.ext.getConfig('baz', default='missing'), 'missing')
+
+    def testGetConfigs(self):
+        self.assertEqual(self.ext.getConfigs(), {'foo': 'bar'})
+
+    def testGetConfigInfo(self):
+        self.assertEqual(self.ext.getConfigInfo(), [('foo', 'Description of foo')])
+
+    def testSetConfig(self):
+        self.ext.setConfig('foo', 'baz')
+        self.assertEqual(self.ext.getConfigs(), {'foo': 'baz'})
+
+
 class TestAbbr(unittest.TestCase):
     """ Test abbr extension. """
 
