@@ -44,7 +44,7 @@ ElementTree = util.etree.ElementTree
 QName = util.etree.QName
 if hasattr(util.etree, 'test_comment'): #pragma: no cover
     Comment = util.etree.test_comment
-else: #prgama: no cover
+else: #pragma: no cover
     Comment = util.etree.Comment
 PI = util.etree.PI
 ProcessingInstruction = util.etree.ProcessingInstruction

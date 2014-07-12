@@ -433,7 +433,7 @@ class HashHeaderProcessor(BlockProcessor):
             if after:
                 # Insert remaining lines as first block for future parsing.
                 blocks.insert(0, after)
-        else:
+        else: #pragma: no cover
             # This should never happen, but just in case...
             logger.warn("We've got a problem header: %r" % block)
 
