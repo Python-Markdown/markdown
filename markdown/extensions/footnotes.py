@@ -55,8 +55,8 @@ class FootnoteExtension(Extension):
                        ["&#8617;",
                         "The text string that links from the footnote to the reader's place."]
                        }
-
-        for key, value in configs:
+        #Missed the iteritems() or items() here.              
+        for key, value in configs.iteritems():
             self.config[key][0] = value
 
         # In multiple invocations, emit links that don't get tangled.
