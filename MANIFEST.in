@@ -10,4 +10,4 @@ include makefile
 include LICENSE.md
 include README.md
 include INSTALL.md
-include MANIFEST
+include MANIFEST.in
