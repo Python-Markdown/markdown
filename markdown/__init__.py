@@ -272,7 +272,7 @@ class Markdown(object):
         """
 
         # Fixup the source text
-        if not source.strip():
+        if not source or not source.strip():
             return ''  # a blank unicode string
 
         try:
