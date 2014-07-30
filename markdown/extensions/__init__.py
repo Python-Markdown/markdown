@@ -7,14 +7,28 @@ from __future__ import unicode_literals
 
 class Extension(object):
     """ Base class for extensions to subclass. """
-    def __init__(self, configs = {}):
-        """Create an instance of an Extention.
+    
+    # Default config -- to be overriden by a subclass
+    # Must be of the following format:
+    #     {
+    #       'key': ['value', 'description']
+    #     }
+    # Note that Extension.setConfig will raise a KeyError
+    # if a default is not set here.
+    config = {}
+    
+    def __init__(self, *args, **kwargs):
+        """ Initiate Extension and set up configs. """
 
-        Keyword arguments:
-
-        * configs: A dict of configuration setting used by an Extension.
-        """
-        self.config = configs
+        # check for configs arg for backward compat.
+        # (there only ever used to be one so we use arg[0])
+        if len(args):
+            self.setConfigs(args[0])
+        # check for configs kwarg for backward compat.
+        self.setConfigs(kwargs.pop('configs', {}))
+        # finally, use kwargs
+        self.setConfigs(kwargs)
+            
 
     def getConfig(self, key, default=''):
         """ Return a setting for the given key or an empty string. """
@@ -34,6 +48,14 @@ class Extension(object):
     def setConfig(self, key, value):
         """ Set a config setting for `key` with the given `value`. """
         self.config[key][0] = value
+
+    def setConfigs(self, items):
+        """ Set multiple config settings given a dict or list of tuples. """
+        if hasattr(items, 'items'):
+            # it's a dict
+            items = items.items()
+        for key, value in items:
+            self.setConfig(key, value)
 
     def extendMarkdown(self, md, md_globals):
         """

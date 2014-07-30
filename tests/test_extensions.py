@@ -15,12 +15,17 @@ class TestExtensionClass(unittest.TestCase):
     """ Test markdown.extensions.Extension. """
 
     def setUp(self):
-        self.ext = markdown.extensions.Extension(configs={'foo':['bar', 'Description of foo']})
+        class TestExtension(markdown.extensions.Extension):
+            config = {'foo': ['bar', 'Description of foo']}
+
+        self.ext = TestExtension()
+        self.ExtKlass = TestExtension
 
     def testGetConfig(self):
         self.assertEqual(self.ext.getConfig('foo'), 'bar')
 
     def testGetConfigDefault(self):
+        self.assertEqual(self.ext.getConfig('baz'), '')
         self.assertEqual(self.ext.getConfig('baz', default='missing'), 'missing')
 
     def testGetConfigs(self):
@@ -32,6 +37,30 @@ class TestExtensionClass(unittest.TestCase):
     def testSetConfig(self):
         self.ext.setConfig('foo', 'baz')
         self.assertEqual(self.ext.getConfigs(), {'foo': 'baz'})
+
+    def testSetConfigWithBadKey(self):
+        # self.ext.setConfig('bad', 'baz) ==> KeyError
+        self.assertRaises(KeyError, self.ext.setConfig, 'bad', 'baz')
+
+    def testConfigAsArgListOnInit(self):
+        ext = self.ExtKlass([('foo', 'baz')])
+        self.assertEqual(ext.getConfigs(), {'foo': 'baz'})
+
+    def testConfigAsArgDictOnInit(self):
+        ext = self.ExtKlass({'foo': 'baz'})
+        self.assertEqual(ext.getConfigs(), {'foo': 'baz'})
+
+    def testConfigAsKwargListOnInit(self):
+        ext = self.ExtKlass(configs=[('foo', 'baz')])
+        self.assertEqual(ext.getConfigs(), {'foo': 'baz'})
+
+    def testConfigAsKwargDictOnInit(self):
+        ext = self.ExtKlass(configs={'foo': 'baz'})
+        self.assertEqual(ext.getConfigs(), {'foo': 'baz'})
+
+    def testConfigAsKwargsOnInit(self):
+        ext = self.ExtKlass(foo='baz')
+        self.assertEqual(ext.getConfigs(), {'foo': 'baz'})
 
 
 class TestAbbr(unittest.TestCase):
