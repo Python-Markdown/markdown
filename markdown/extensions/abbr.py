@@ -92,5 +92,5 @@ class AbbrPattern(Pattern):
         abbr.set('title', self.title)
         return abbr
 
-def makeExtension(configs=None):
-    return AbbrExtension(configs=configs)
+def makeExtension(*args, **kwargs):
+    return AbbrExtension(*args, **kwargs)

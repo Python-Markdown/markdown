@@ -34,5 +34,6 @@ class Nl2BrExtension(Extension):
         md.inlinePatterns.add('nl', br_tag, '_end')
 
 
-def makeExtension(configs=None):
-    return Nl2BrExtension(configs)
+def makeExtension(*args, **kwargs):
+    return Nl2BrExtension(*args, **kwargs)
+

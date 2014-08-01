@@ -4,6 +4,7 @@ Extensions
 """
 
 from __future__ import unicode_literals
+from ..util import parseBoolValue
 
 class Extension(object):
     """ Base class for extensions to subclass. """
@@ -47,6 +48,10 @@ class Extension(object):
 
     def setConfig(self, key, value):
         """ Set a config setting for `key` with the given `value`. """
+        if isinstance(self.config[key][0], bool):
+            value = parseBoolValue(value)
+        if self.config[key][0] is None:
+            value = parseBoolValue(value, preserve_none=True)
         self.config[key][0] = value
 
     def setConfigs(self, items):

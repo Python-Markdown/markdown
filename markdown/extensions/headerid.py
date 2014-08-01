@@ -204,5 +204,6 @@ class HeaderIdExtension(Extension):
         self.processor.IDs = set()
 
 
-def makeExtension(configs=None):
-    return HeaderIdExtension(configs=configs)
+def makeExtension(*args, **kwargs):
+    return HeaderIdExtension(*args, **kwargs)
+

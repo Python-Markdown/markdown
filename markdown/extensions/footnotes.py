@@ -42,23 +42,23 @@ TABBED_RE = re.compile(r'((\t)|(    ))(.*)')
 class FootnoteExtension(Extension):
     """ Footnote Extension. """
 
-    def __init__ (self, configs):
+    def __init__ (self, *args, **kwargs):
         """ Setup configs. """
-        self.config = {'PLACE_MARKER':
-                       ["///Footnotes Go Here///",
-                        "The text string that marks where the footnotes go"],
-                       'UNIQUE_IDS':
-                       [False,
-                        "Avoid name collisions across "
-                        "multiple calls to reset()."],
-                       "BACKLINK_TEXT":
-                       ["&#8617;",
-                        "The text string that links from the footnote to the reader's place."]
-                       }
 
-        for key, value in configs:
-            self.config[key][0] = value
-
+        self.config = {
+            'PLACE_MARKER':
+                 ["///Footnotes Go Here///",
+                  "The text string that marks where the footnotes go"],
+            'UNIQUE_IDS':
+                 [False,
+                  "Avoid name collisions across "
+                  "multiple calls to reset()."],
+            "BACKLINK_TEXT":
+                 ["&#8617;",
+                  "The text string that links from the footnote to the reader's place."]
+        }
+        super(FootnoteExtension, self).__init__(*args, **kwargs)
+        
         # In multiple invocations, emit links that don't get tangled.
         self.unique_prefix = 0
 
@@ -309,7 +309,7 @@ class FootnotePostprocessor(Postprocessor):
         text = text.replace(FN_BACKLINK_TEXT, self.footnotes.getConfig("BACKLINK_TEXT"))
         return text.replace(NBSP_PLACEHOLDER, "&#160;")
 
-def makeExtension(configs=[]):
+def makeExtension(*args, **kwargs):
     """ Return an instance of the FootnoteExtension """
-    return FootnoteExtension(configs=configs)
+    return FootnoteExtension(*args, **kwargs)
 

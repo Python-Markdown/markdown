@@ -60,8 +60,8 @@ class ExtraExtension(Extension):
                 r'^(p|h[1-6]|li|dd|dt|td|th|legend|address)$', re.IGNORECASE)
 
 
-def makeExtension(configs={}):
-    return ExtraExtension(configs=dict(configs))
+def makeExtension(*args, **kwargs):
+    return ExtraExtension(*args, **kwargs)
 
 
 class MarkdownInHtmlProcessor(BlockProcessor):

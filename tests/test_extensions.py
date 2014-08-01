@@ -16,7 +16,10 @@ class TestExtensionClass(unittest.TestCase):
 
     def setUp(self):
         class TestExtension(markdown.extensions.Extension):
-            config = {'foo': ['bar', 'Description of foo']}
+            config = {
+                'foo': ['bar', 'Description of foo'],
+                'bar': ['baz', 'Description of bar']
+            }
 
         self.ext = TestExtension()
         self.ExtKlass = TestExtension
@@ -29,38 +32,39 @@ class TestExtensionClass(unittest.TestCase):
         self.assertEqual(self.ext.getConfig('baz', default='missing'), 'missing')
 
     def testGetConfigs(self):
-        self.assertEqual(self.ext.getConfigs(), {'foo': 'bar'})
+        self.assertEqual(self.ext.getConfigs(), {'foo': 'bar', 'bar': 'baz'})
 
     def testGetConfigInfo(self):
-        self.assertEqual(self.ext.getConfigInfo(), [('foo', 'Description of foo')])
+        self.assertEqual(self.ext.getConfigInfo(), [('foo', 'Description of foo'),
+                                                    ('bar', 'Description of bar')])
 
     def testSetConfig(self):
         self.ext.setConfig('foo', 'baz')
-        self.assertEqual(self.ext.getConfigs(), {'foo': 'baz'})
+        self.assertEqual(self.ext.getConfigs(), {'foo': 'baz', 'bar': 'baz'})
 
     def testSetConfigWithBadKey(self):
         # self.ext.setConfig('bad', 'baz) ==> KeyError
         self.assertRaises(KeyError, self.ext.setConfig, 'bad', 'baz')
 
     def testConfigAsArgListOnInit(self):
-        ext = self.ExtKlass([('foo', 'baz')])
-        self.assertEqual(ext.getConfigs(), {'foo': 'baz'})
+        ext = self.ExtKlass([('foo', 'baz'), ('bar', 'blah')])
+        self.assertEqual(ext.getConfigs(), {'foo': 'baz', 'bar': 'blah'})
 
     def testConfigAsArgDictOnInit(self):
-        ext = self.ExtKlass({'foo': 'baz'})
-        self.assertEqual(ext.getConfigs(), {'foo': 'baz'})
+        ext = self.ExtKlass({'foo': 'baz', 'bar': 'blah', 'bar': 'blah'})
+        self.assertEqual(ext.getConfigs(), {'foo': 'baz', 'bar': 'blah'})
 
     def testConfigAsKwargListOnInit(self):
-        ext = self.ExtKlass(configs=[('foo', 'baz')])
-        self.assertEqual(ext.getConfigs(), {'foo': 'baz'})
+        ext = self.ExtKlass(configs=[('foo', 'baz'), ('bar', 'blah')])
+        self.assertEqual(ext.getConfigs(), {'foo': 'baz', 'bar': 'blah'})
 
     def testConfigAsKwargDictOnInit(self):
-        ext = self.ExtKlass(configs={'foo': 'baz'})
-        self.assertEqual(ext.getConfigs(), {'foo': 'baz'})
+        ext = self.ExtKlass(configs={'foo': 'baz', 'bar': 'blah'})
+        self.assertEqual(ext.getConfigs(), {'foo': 'baz', 'bar': 'blah'})
 
     def testConfigAsKwargsOnInit(self):
-        ext = self.ExtKlass(foo='baz')
-        self.assertEqual(ext.getConfigs(), {'foo': 'baz'})
+        ext = self.ExtKlass(foo='baz', bar='blah')
+        self.assertEqual(ext.getConfigs(), {'foo': 'baz', 'bar': 'blah'})
 
 
 class TestAbbr(unittest.TestCase):
@@ -515,11 +519,12 @@ Some text with a [[WikiLink]]."""
 
     def testURLCallback(self):
         """ Test used of a custom URL builder. """
+        
+        from markdown.extensions.wikilinks import WikiLinkExtension
 
         def my_url_builder(label, base, end):
             return '/bar/'
-        md = markdown.Markdown(extensions=['wikilinks'],
-            extension_configs={'wikilinks' : [('build_url', my_url_builder)]})
+        md = markdown.Markdown(extensions=[WikiLinkExtension(build_url=my_url_builder)])
         self.assertEqual(md.convert('[[foo]]'),
             '<p><a class="wikilink" href="/bar/">foo</a></p>')
 

@@ -114,5 +114,6 @@ class AdmonitionProcessor(BlockProcessor):
         return klass, title
 
 
-def makeExtension(configs={}):
-    return AdmonitionExtension(configs=configs)
+def makeExtension(*args, **kwargs):
+    return AdmonitionExtension(*args, **kwargs)
+

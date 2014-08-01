@@ -134,15 +134,14 @@ class SubstituteTextPattern(HtmlPattern):
         return result
 
 class SmartyExtension(Extension):
-    def __init__(self, configs):
+    def __init__(self, *args, **kwargs):
         self.config = {
             'smart_quotes': [True, 'Educate quotes'],
             'smart_angled_quotes': [False, 'Educate angled quotes'],
             'smart_dashes': [True, 'Educate dashes'],
             'smart_ellipses': [True, 'Educate ellipses']
         }
-        for key, value in configs:
-            self.setConfig(key, parseBoolValue(value))
+        super(SmartyExtension, self).__init__(*args, **kwargs)
 
     def _addPatterns(self, md, patterns, serie):
         for ind, pattern in enumerate(patterns):
@@ -204,5 +203,5 @@ class SmartyExtension(Extension):
         md.treeprocessors.add('smarty', inlineProcessor, '_end')
         md.ESCAPED_CHARS.extend(['"', "'"])
 
-def makeExtension(configs=None):
-    return SmartyExtension(configs)
+def makeExtension(*args, **kwargs):
+    return SmartyExtension(*args, **kwargs)

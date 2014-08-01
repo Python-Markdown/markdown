@@ -86,16 +86,21 @@ def isBlockLevel(tag):
     # Some ElementTree tags are not strings, so return False.
     return False
 
-def parseBoolValue(value, fail_on_errors=True):
+def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
     """Parses a string representing bool value. If parsing was successful,
-       returns True or False. If parsing was not successful, raises
-       ValueError, or, if fail_on_errors=False, returns None."""
+       returns True or False. If preserve_none=True, returns True, False, 
+       or None. If parsing was not successful, raises  ValueError, or, if 
+       fail_on_errors=False, returns None."""
     if not isinstance(value, string_type):
+        if preserve_none and value is None:
+            return  value
         return bool(value)
     elif value.lower() in ('true', 'yes', 'y', 'on', '1'):
         return True
     elif value.lower() in ('false', 'no', 'n', 'off', '0'):
         return False
+    elif preserve_none and value.lower() == 'none':
+        return None
     elif fail_on_errors:
         raise ValueError('Cannot parse bool value: %r' % value)
 

@@ -204,26 +204,26 @@ class TocExtension(Extension):
     
     TreeProcessorClass = TocTreeprocessor
     
-    def __init__(self, configs=[]):
-        self.config = { "marker" : ["[TOC]", 
-                            "Text to find and replace with Table of Contents -"
-                            "Defaults to \"[TOC]\""],
-                        "slugify" : [slugify,
-                            "Function to generate anchors based on header text-"
-                            "Defaults to the headerid ext's slugify function."],
-                        "title" : [None,
-                            "Title to insert into TOC <div> - "
-                            "Defaults to None"],
-                        "anchorlink" : [0,
-                            "1 if header should be a self link"
-                            "Defaults to 0"],
-                        "permalink" : [0,
-                            "1 or link text if a Sphinx-style permalink should be added",
-                            "Defaults to 0"]
-                       }
+    def __init__(self, *args, **kwargs):
+        self.config = { 
+            "marker" : ["[TOC]", 
+                "Text to find and replace with Table of Contents - "
+                "Defaults to \"[TOC]\""],
+            "slugify" : [slugify,
+                "Function to generate anchors based on header text - "
+                "Defaults to the headerid ext's slugify function."],
+            "title" : [None,
+                "Title to insert into TOC <div> - "
+                "Defaults to None"],
+            "anchorlink" : [0,
+                "1 if header should be a self link - "
+                "Defaults to 0"],
+            "permalink" : [0,
+                "1 or link text if a Sphinx-style permalink should be added - "
+                "Defaults to 0"]
+        }
 
-        for key, value in configs:
-            self.setConfig(key, value)
+        super(TocExtension, self).__init__(*args, **kwargs)
 
     def extendMarkdown(self, md, md_globals):
         tocext = self.TreeProcessorClass(md)
@@ -236,5 +236,5 @@ class TocExtension(Extension):
         md.treeprocessors.add("toc", tocext, "_end")
 
 
-def makeExtension(configs={}):
-    return TocExtension(configs=configs)
+def makeExtension(*args, **kwargs):
+    return TocExtension(*args, **kwargs)

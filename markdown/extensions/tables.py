@@ -96,5 +96,6 @@ class TableExtension(Extension):
                                       '<hashheader')
 
 
-def makeExtension(configs={}):
-    return TableExtension(configs=configs)
+def makeExtension(*args, **kwargs):
+    return TableExtension(*args, **kwargs)
+
