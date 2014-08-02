@@ -550,10 +550,13 @@ If an extension uses any parameters that the user may want to change,
 those parameters should be stored in ``self.config`` of your 
 ``markdown.Extension`` class in the following format:
 
-    self.config = {parameter_1_name : [value1, description1],
-                   parameter_2_name : [value2, description2] }
+    class MyExtension(markdown.extensions.Extension):
+    	def __init__(self, *args, **kwargs):
+    		self.config = {parameter_1_name : [value1, description1],
+                           parameter_2_name : [value2, description2] }
+            super(MyExtension, self).__init__(*args, **kwargs)
 
-When stored this way the config parameters can be over-ridden from the
+When implemented this way the config parameters can be over-ridden from the
 command line or at the time Markdown is initiated:
 
     markdown.py -x myextension(SOME_PARAM=2) inputfile.txt > output.txt
@@ -573,8 +576,7 @@ For example:
 
     import markdown
     import myextension
-    configs = {...}
-    myext = myextension.MyExtension(configs=configs)
+    myext = myextension.MyExtension(option='value')
     md = markdown.Markdown(extensions=[myext])
 
 This is especially useful if you need to implement a large number of extensions 
@@ -583,14 +585,21 @@ with more than one residing in a module.
 However, for historical reasons, Markdown also accepts "named" third party 
 extensions. In that case, only one extension can be defined per module
 and that extension must define a module-level function called 
-`makeExtension` that takes an optional parameter consisting of a dictionary 
-of configuration over-rides and returns an instance of the extension.  For example:
+`makeExtension` that takes `*args` and `**kwargs`.  For example:
 
     class MyExtension(markdown.extensions.Extension)
         # Define extension here...
 
-    def makeExtension(configs=None):
-        return MyExtension(configs=configs)
+    def makeExtension(*args, **kwargs):
+        return MyExtension(*args, **kwargs)
+
+!!! warning
+    Previous versions of Python-Markdown expected a `config` keyword which contained
+    a dictionary (or list of tuples) of options. To maintain backward compatability,
+    the `config` keyword is given special treatment and you should avoid using "config"
+    as an option name. Additionaly, in some past situations, the `config` dict may have
+    been passed in as a positional argument. Therefore, it is sugegsted that positional
+    arguments be avoided for any othe purpose.
 
 When Markdown is passed the "name" of your extension as a string, it will import 
 the module and call the `makeExtension` function to initiate your extension.
