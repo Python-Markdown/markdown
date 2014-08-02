@@ -68,6 +68,10 @@ The following options are available on the `markdown.markdown` function:
 
         extensions=[MyExtension(), 'path.to.my.ext', 'extra']
     
+    !!! warning
+        The prefered method is to pass in an instance of an extension. The other
+        methods may be removed in a future version of Python-Markdown.
+    
     When passing in extension instances, each class instance must be a subclass
     of `markdown.extensions.Extension` and any configuration options should be 
     defined when initiating the class instance rather than using the 
@@ -77,7 +81,7 @@ The following options are available on the `markdown.markdown` function:
         class MyExtension(Extension):
             # define your extension here...
     
-        markdown.markdown(text, extensions=[MyExtension(configs={'option': 'value'}))
+        markdown.markdown(text, extensions=[MyExtension(option='value')])
 
     If an extension name is provided as a string, the extension must be 
     importable as a python module on your PYTHONPATH. Python's dot notation is 
@@ -97,8 +101,9 @@ The following options are available on the `markdown.markdown` function:
     
     Note that there are no quotes or whitespace in the above format, which 
     severely limits how it can be used. For more complex settings, it is 
-    suggested that the [extension_configs](#extension_configs) keyword
-    be used or an instance of a class be passed in.
+    suggested that an instance of a class be passed in or, if that's not 
+    possible, the [extension_configs](#extension_configs) keyword
+    be used.
 
     !!! seealso "See Also"
         See the documentation of the [Extension API](extensions/api.html) for 
@@ -110,6 +115,11 @@ The following options are available on the `markdown.markdown` function:
     Any configuration settings will only be passed to extensions loaded by name 
     (as a string). When loading extensions as class instances, pass the 
     configuration settings directly to the class when initializing it. 
+    
+    !!! Note
+        The prefered method is to pass in an instance of an extension, which
+        does not require use of the `extension_configs` keyword at all.  
+        See the [extensions](#extensions) keyword for details.
     
     The dictionary of configuration settings must be in the following format:
 
