@@ -35,8 +35,9 @@ class TestExtensionClass(unittest.TestCase):
         self.assertEqual(self.ext.getConfigs(), {'foo': 'bar', 'bar': 'baz'})
 
     def testGetConfigInfo(self):
-        self.assertEqual(self.ext.getConfigInfo(), [('foo', 'Description of foo'),
-                                                    ('bar', 'Description of bar')])
+        self.assertEqual(dict(self.ext.getConfigInfo()), 
+                         dict([('foo', 'Description of foo'),
+                               ('bar', 'Description of bar')])
 
     def testSetConfig(self):
         self.ext.setConfig('foo', 'baz')
