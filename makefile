@@ -7,14 +7,17 @@ install:
 .PHONY : deploy
 deploy:
 	python setup.py register
+    python setup.py sdist --manifest-only
 	python setup.py sdist --formats zip,gztar upload
 
 .PHONY : build
 build:
+    python setup.py sdist --manifest-only
 	python setup.py sdist --formats zip,gztar
 
 .PHONY : build-win
 build-win:
+    python setup.py sdist --manifest-only
 	python setup.py bdist_wininst
 
 .PHONY : docs
