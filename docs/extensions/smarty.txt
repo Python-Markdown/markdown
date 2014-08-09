@@ -22,6 +22,15 @@ ASCII symbol | Replacements    | HTML Entities
 `--`         | &ndash;         | `&ndash;`
 `---`        | &mdash;         | `&mdash;`
 
+Using the options `smart_lsquo` etc. you can reconfigure the replacements for `'` and `"`. Use e.g. the following config to get correct quotes for the German language:
+
+    extensionConfigs = {
+        'smarty': [('smart_lsquo', '&sbquo;'), # sb is not a typo!
+                   ('smart_rsquo', '&lsquo;'),
+                   ('smart_ldquo', '&bdquo;'),
+                   ('smart_rdquo', '&ldquo;')]
+    }
+
 !!! note
     This extension reimplements the Python [SmartyPants] 
     library by intregated it into the markdown parser.
@@ -51,6 +60,10 @@ Option                | Default value | Description
 `smart_quotes`        | enabled       | whether to convert straight quotes
 `smart_angled_quotes` | disabled      | whether to convert angled quotes
 `smart_ellipses`      | enabled       | whether to convert ellipses
+`smart_lsquo`         | &lsquo;       | Replacement text for single left quote
+`smart_rsquo`         | &rsquo;       | Replacement text for single right quote
+`smart_ldquo`         | &ldquo;       | Replacement text for double left quote
+`smart_rdquo`         | &rdquo;       | Replacement text for double right quote
 
 Further reading
 ---------------

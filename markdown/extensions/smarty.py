@@ -115,8 +115,6 @@ closingSingleQuotesRegex2 = r"(?<=%s)'(\s|s\b)" % closeClass
 remainingSingleQuotesRegex = "'"
 remainingDoubleQuotesRegex = '"'
 
-lsquo, rsquo, ldquo, rdquo = '&lsquo;', '&rsquo;', '&ldquo;', '&rdquo;'
-
 class SubstituteTextPattern(HtmlPattern):
     def __init__(self, pattern, replace, markdown_instance):
         """ Replaces matches with some text. """
@@ -139,7 +137,11 @@ class SmartyExtension(Extension):
             'smart_quotes': [True, 'Educate quotes'],
             'smart_angled_quotes': [False, 'Educate angled quotes'],
             'smart_dashes': [True, 'Educate dashes'],
-            'smart_ellipses': [True, 'Educate ellipses']
+            'smart_ellipses': [True, 'Educate ellipses'],
+            'smart_lsquo' : ['&lsquo;', 'Replacement text for single left quote'],
+            'smart_rsquo' : ['&rsquo;', 'Replacement text for single right quote'],
+            'smart_ldquo' : ['&ldquo;', 'Replacement text for double left quote'],
+            'smart_rdquo' : ['&rdquo;', 'Replacement text for double right quote'],
         }
         super(SmartyExtension, self).__init__(*args, **kwargs)
 
@@ -171,6 +173,11 @@ class SmartyExtension(Extension):
                                 rightAngledQuotePattern, '>smarty-left-angle-quotes')
 
     def educateQuotes(self, md):
+        configs = self.getConfigs()
+        lsquo = configs['smart_lsquo']
+        rsquo = configs['smart_rsquo']
+        ldquo = configs['smart_ldquo']
+        rdquo = configs['smart_rdquo']
         patterns = (
             (singleQuoteStartRe, (rsquo,)),
             (doubleQuoteStartRe, (rdquo,)),
