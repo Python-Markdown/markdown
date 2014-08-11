@@ -102,8 +102,8 @@ substitutions = {
 
 # Special case if the very first character is a quote
 # followed by punctuation at a non-word-break. Close the quotes by brute force:
-singleQuoteStartRe = r"^'(?=%s\\B)" % punctClass
-doubleQuoteStartRe = r'^"(?=%s\\B)' % punctClass
+singleQuoteStartRe = r"^'(?=%s\B)" % punctClass
+doubleQuoteStartRe = r'^"(?=%s\B)' % punctClass
 
 # Special case for double sets of quotes, e.g.:
 #   <p>He said, "'Quoted' words in a larger quote."</p>
