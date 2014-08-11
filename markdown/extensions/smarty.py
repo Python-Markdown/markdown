@@ -85,7 +85,20 @@ openingQuotesBase = (
    '|&[mn]dash;'      # or named dash entities
    '|&#8211;|&#8212;' # or decimal entities
    ')'
-)
+) 
+
+substitutions = {
+    'mdash': '&mdash;',
+    'ndash': '&ndash;',
+    'ellipsis': '&hellip;',
+    'left-angle-quote': '&laquo;',
+    'right-angle-quote': '&raquo;',
+    'left-single-quote': '&lsquo;',
+    'right-single-quote': '&rsquo;',
+    'left-double-quote': '&ldquo;',
+    'right-double-quote': '&rdquo;',
+}
+
 
 # Special case if the very first character is a quote
 # followed by punctuation at a non-word-break. Close the quotes by brute force:
@@ -138,12 +151,12 @@ class SmartyExtension(Extension):
             'smart_angled_quotes': [False, 'Educate angled quotes'],
             'smart_dashes': [True, 'Educate dashes'],
             'smart_ellipses': [True, 'Educate ellipses'],
-            'smart_lsquo' : ['&lsquo;', 'Replacement text for single left quote'],
-            'smart_rsquo' : ['&rsquo;', 'Replacement text for single right quote'],
-            'smart_ldquo' : ['&ldquo;', 'Replacement text for double left quote'],
-            'smart_rdquo' : ['&rdquo;', 'Replacement text for double right quote'],
+            'smart_substitutions' : [{}, 'Overwrite default substitutions'],
         }
         super(SmartyExtension, self).__init__(*args, **kwargs)
+        self.substitutions = dict(substitutions)
+        self.substitutions.update(self.getConfig('smart_substitutions',
+                                                 default={}))
 
     def _addPatterns(self, md, patterns, serie):
         for ind, pattern in enumerate(patterns):
@@ -154,19 +167,24 @@ class SmartyExtension(Extension):
             self.inlinePatterns.add(name, pattern, after)
 
     def educateDashes(self, md):
-        emDashesPattern = SubstituteTextPattern(r'(?<!-)---(?!-)', ('&mdash;',), md)
-        enDashesPattern = SubstituteTextPattern(r'(?<!-)--(?!-)', ('&ndash;',), md)
+        emDashesPattern = SubstituteTextPattern(r'(?<!-)---(?!-)',
+                                            (self.substitutions['mdash'],), md)
+        enDashesPattern = SubstituteTextPattern(r'(?<!-)--(?!-)',
+                                            (self.substitutions['ndash'],), md)
         self.inlinePatterns.add('smarty-em-dashes', emDashesPattern, '_begin')
         self.inlinePatterns.add('smarty-en-dashes', enDashesPattern,
             '>smarty-em-dashes')
 
     def educateEllipses(self, md):
-        ellipsesPattern = SubstituteTextPattern(r'(?<!\.)\.{3}(?!\.)', ('&hellip;',), md)
+        ellipsesPattern = SubstituteTextPattern(r'(?<!\.)\.{3}(?!\.)',
+                                         (self.substitutions['ellipsis'],), md)
         self.inlinePatterns.add('smarty-ellipses', ellipsesPattern, '_begin')
 
     def educateAngledQuotes(self, md):
-        leftAngledQuotePattern = SubstituteTextPattern(r'\<\<', ('&laquo;',), md)
-        rightAngledQuotePattern = SubstituteTextPattern(r'\>\>', ('&raquo;',), md)
+        leftAngledQuotePattern = SubstituteTextPattern(r'\<\<',
+                                 (self.substitutions['left-angle-quote'],), md)
+        rightAngledQuotePattern = SubstituteTextPattern(r'\>\>',
+                                (self.substitutions['right-angle-quote'],), md)
         self.inlinePatterns.add('smarty-left-angle-quotes',
                                 leftAngledQuotePattern, '_begin')
         self.inlinePatterns.add('smarty-right-angle-quotes',
@@ -174,10 +192,10 @@ class SmartyExtension(Extension):
 
     def educateQuotes(self, md):
         configs = self.getConfigs()
-        lsquo = configs['smart_lsquo']
-        rsquo = configs['smart_rsquo']
-        ldquo = configs['smart_ldquo']
-        rdquo = configs['smart_rdquo']
+        lsquo = self.substitutions['left-single-quote']
+        rsquo = self.substitutions['right-single-quote']
+        ldquo = self.substitutions['left-double-quote']
+        rdquo = self.substitutions['right-double-quote']
         patterns = (
             (singleQuoteStartRe, (rsquo,)),
             (doubleQuoteStartRe, (rdquo,)),

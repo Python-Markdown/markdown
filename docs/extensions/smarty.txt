@@ -22,13 +22,24 @@ ASCII symbol | Replacements    | HTML Entities
 `--`         | &ndash;         | `&ndash;`
 `---`        | &mdash;         | `&mdash;`
 
-Using the options `smart_lsquo` etc. you can reconfigure the replacements for `'` and `"`. Use e.g. the following config to get correct quotes for the German language:
+Using the configuration option 'smart_substitutions' you can overwrite the
+default substitutions. Just pass a dict mapping (a subset of) the following
+keys to the substitution strings.
+
+    'mdash', 'ndash', 'ellipsis',
+    'left-angle-quote', 'right-angle-quote',
+    'left-single-quote', 'right-single-quote',
+    'left-double-quote', 'right-double-quote'
+    
+Use e.g. the following config to get correct quotes for the German language:
 
     extensionConfigs = {
-        'smarty': [('smart_lsquo', '&sbquo;'), # sb is not a typo!
-                   ('smart_rsquo', '&lsquo;'),
-                   ('smart_ldquo', '&bdquo;'),
-                   ('smart_rdquo', '&ldquo;')]
+        'smarty': [('smart_substitutions', {
+                    'left-single-quote': '&sbquo;', # sb is not a typo!
+                    'right-single-quote': '&lsquo;',
+                    'left-double-quote': '&bdquo;',
+                    'right-double-quote': '&ldquo;'
+                    })]
     }
 
 !!! note
@@ -60,10 +71,7 @@ Option                | Default value | Description
 `smart_quotes`        | enabled       | whether to convert straight quotes
 `smart_angled_quotes` | disabled      | whether to convert angled quotes
 `smart_ellipses`      | enabled       | whether to convert ellipses
-`smart_lsquo`         | &lsquo;       | Replacement text for single left quote
-`smart_rsquo`         | &rsquo;       | Replacement text for single right quote
-`smart_ldquo`         | &ldquo;       | Replacement text for double left quote
-`smart_rdquo`         | &rdquo;       | Replacement text for double right quote
+`smart_substitutions` | {}            | Overwrite default substitutions
 
 Further reading
 ---------------
