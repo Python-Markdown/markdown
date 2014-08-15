@@ -151,12 +151,11 @@ class SmartyExtension(Extension):
             'smart_angled_quotes': [False, 'Educate angled quotes'],
             'smart_dashes': [True, 'Educate dashes'],
             'smart_ellipses': [True, 'Educate ellipses'],
-            'smart_substitutions' : [{}, 'Overwrite default substitutions'],
+            'substitutions' : [{}, 'Overwrite default substitutions'],
         }
         super(SmartyExtension, self).__init__(*args, **kwargs)
         self.substitutions = dict(substitutions)
-        self.substitutions.update(self.getConfig('smart_substitutions',
-                                                 default={}))
+        self.substitutions.update(self.getConfig('substitutions', default={}))
 
     def _addPatterns(self, md, patterns, serie):
         for ind, pattern in enumerate(patterns):

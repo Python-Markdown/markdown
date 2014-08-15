@@ -590,7 +590,7 @@ class TestSmarty(unittest.TestCase):
         config = {
                 'smarty': [
                     ('smart_angled_quotes', True),
-                    ('smart_substitutions', {
+                    ('substitutions', {
                         'ndash': '\u2013',
                         'mdash': '\u2014',
                         'ellipsis': '\u2026',
