@@ -1,7 +1,11 @@
 import traceback
-from .util import MarkdownSyntaxError
 from nose.plugins import Plugin
 from nose.plugins.errorclass import ErrorClass, ErrorClassPlugin
+
+
+class MarkdownSyntaxError(Exception):
+    pass
+
 
 class Markdown(ErrorClassPlugin):
     """ Add MarkdownSyntaxError and ensure proper formatting. """

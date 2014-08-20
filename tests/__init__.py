@@ -1,63 +1,77 @@
-
 import os
 import markdown
 import codecs
 import difflib
 try:
     import nose
-except ImportError:
-    raise ImportError("The nose testing framework is required to run " \
-                       "Python-Markdown tests. Run `easy_install nose` " \
-                       "to install the latest version.")
-from . import util 
-from .plugins import HtmlOutput, Markdown
+except ImportError as e:
+    msg = e.args[0]
+    msg = msg + ". The nose testing framework is required to run the Python-" \
+          "Markdown tests. Run `pip install nose` to install the latest version."
+    e.args = (msg,) + e.args[1:]
+    raise
+from .plugins import HtmlOutput, Markdown, MarkdownSyntaxError
 try:
     import tidylib
 except ImportError:
     tidylib = None
-
+try:
+    import yaml
+except ImportError as e:
+    msg = e.args[0]
+    msg = msg + ". A YAML library is required to run the Python-Markdown " \
+          "tests. Run `pip install pyyaml` to install the latest version."
+    e.args = (msg,) + e.args[1:]
+    raise
 
 test_dir = os.path.abspath(os.path.dirname(__file__))
 
-def relpath(path, start=test_dir):
-    """ reimplement relpath for python 2.3-2.5 from 2.6 """
-    if not path:
-        raise ValueError('no path secified')
-    start_list = os.path.abspath(start).split(os.path.sep)
-    path_list = os.path.abspath(path).split(os.path.sep)
-    # Work out how much of the filepath is shared by start and path.
-    i = len(os.path.commonprefix([start_list, path_list]))
-    rel_list = [os.path.pardir] * (len(start_list)-i) + path_list[i:]
-    if not rel_list:
-        return test_dir
-    return os.path.join(*rel_list)
+class YamlConfig():
+    def __init__(self, defaults, filename):
+        """ Set defaults and load config file if it exists. """
+        self.DEFAULT_SECTION = 'DEFAULT'
+        self._defaults = defaults
+        self._config = {}
+        if os.path.exists(filename):
+            with codecs.open(filename, encoding="utf-8") as f:
+                self._config = yaml.load(f)
+
+    def get(self, section, option):
+        """ Get config value for given section and option key. """
+        if section in self._config and option in self._config[section]:
+            return self._config[section][option]
+        return self._defaults[option]
+
+    def get_section(self, file):
+        """ Get name of config section for given file. """
+        filename = os.path.basename(file)
+        if filename in self._config:
+            return filename
+        else:
+            return self.DEFAULT_SECTION
+
+    def get_args(self, file):
+        """ Get args to pass to markdown from config for a given file. """
+        args = {}
+        section = self.get_section(file)
+        if section in self._config:
+            for key in self._config[section].keys():
+                # Filter out args unique to testing framework
+                if key not in self._defaults.keys():
+                    args[key] = self.get(section, key)
+        return args
+
 
 def get_config(dir_name):
     """ Get config for given directory name. """
-    config = util.CustomConfigParser({'normalize': '0',
-                                      'skip': '0',
-                                      'input_ext': '.txt',
-                                      'output_ext': '.html'})
-    config.read(os.path.join(dir_name, 'test.cfg'))
+    defaults = {
+        'normalize': False,
+        'skip': False,
+        'input_ext': '.txt',
+        'output_ext': '.html'
+    }
+    config = YamlConfig(defaults, os.path.join(dir_name, 'test.cfg'))
     return config
-
-def get_section(file, config):
-    """ Get name of config section for given file. """
-    filename = os.path.basename(file)
-    if config.has_section(filename):
-        return filename
-    else:
-        return 'DEFAULT'
-
-def get_args(file, config):
-    """ Get args to pass to markdown from config for a given file. """
-    args = {}
-    section = get_section(file, config)
-    for key, v in config.items(section):
-        # Filter out args unique to testing framework
-        if key not in ['normalize', 'skip', 'input_ext', 'output_ext']:
-            args[key] = config.get(section, key)
-    return args
 
 def normalize(text):
     """ Normalize whitespace for a string of html using tidylib. """
@@ -81,7 +95,7 @@ class CheckSyntax(object):
 
     def __call__(self, file, config):
         """ Compare expected output to actual output and report result. """
-        cfg_section = get_section(file, config)
+        cfg_section = config.get_section(file)
         if config.get(cfg_section, 'skip'):
             raise nose.plugins.skip.SkipTest('Test skipped per config.')
         input_file = file + config.get(cfg_section, 'input_ext')
@@ -91,7 +105,7 @@ class CheckSyntax(object):
         with codecs.open(output_file, encoding="utf-8") as f:
             # Normalize line endings (on windows, git may have altered line endings).
             expected_output = f.read().replace("\r\n", "\n")
-        output = markdown.markdown(input, **get_args(file, config))
+        output = markdown.markdown(input, **config.get_args(file))
         if tidylib and config.get(cfg_section, 'normalize'):
             # Normalize whitespace with tidylib before comparing.
             expected_output = normalize(expected_output)
@@ -105,7 +119,7 @@ class CheckSyntax(object):
                                                 'actual_output.html', 
                                                 n=3)]
         if diff:
-            raise util.MarkdownSyntaxError('Output from "%s" failed to match expected '
+            raise MarkdownSyntaxError('Output from "%s" failed to match expected '
                                            'output.\n\n%s' % (input_file, ''.join(diff)))
 
 def TestSyntax():
@@ -115,9 +129,9 @@ def TestSyntax():
         # Loop through files and generate tests.
         for file in files:
             root, ext = os.path.splitext(file)
-            if ext == config.get(get_section(file, config), 'input_ext'):
+            if ext == config.get(config.get_section(file), 'input_ext'):
                 path = os.path.join(dir_name, root)
-                check_syntax = CheckSyntax(description=relpath(path, test_dir))
+                check_syntax = CheckSyntax(description=os.path.relpath(path, test_dir))
                 yield check_syntax, path, config
 
 def generate(file, config):
