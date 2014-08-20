@@ -1,11 +1,13 @@
 title:      Change Log
 prev_title: Test Suite
 prev_url:   test_suite.html
-next_title: Release Notes for v2.4
-next_url:   release-2.4.html
+next_title: Release Notes for v2.5
+next_url:   release-2.5.html
 
 Python-Markdown Changelog
 =========================
+
+[TBD]: Released version 2.5.0 ([Notes](release-2.5.html))
 
 Feb 16, 2014: Released version 2.4.0 ([Notes](release-2.4.html))
 

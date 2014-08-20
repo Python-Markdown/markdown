@@ -1,0 +1,44 @@
+title:      Release Notes for v2.5
+prev_title: Change Log
+prev_url:   change_log.html
+next_title: Release Notes for v2.4
+next_url:   release-2.4.html
+
+Python-Markdown 2.5 Release Notes
+=================================
+
+We are pleased to release Python-Markdown 2.5 which adds a few new features
+and fixes various bugs. See the list of changes below for details.
+
+Python-Markdown supports Python versions 2.6, 2.7, 3.2, 3.3, and 3.4.
+
+Backwards-incompatible Changes
+------------------------------
+
+* [TBD]
+
+What's New in Python-Markdown 2.5
+---------------------------------
+
+* The Extension Configuration code has been refactord to make it a little easier 
+for extension authors to work with config settings. As a result, the 
+[extension_configs] keyword now accepts a dictionary rather than requiring 
+a list of tuples. A list of tuples is still supported so no one needs to change 
+their existing code. This should simplify the learning curve for new users.
+
+[extension_configs]: reference.html#extension_configs
+
+* The [Smarty Extension] has had a number of additional configuration settings
+added, which allows one to define their own sustitutions to better support
+languages other than English. Thanks to [Martin Altmayer] for implementing this feature.
+
+[Smarty Extension]: extensions/smarty.html
+[Martin Altmayer]:https://github.com/MartinAltmayer
+
+There have been various refactors of the testing framework. While those changes
+will not directly effect end users, the code is being better tested whuch will 
+benefit everyone.
+
+* Various bug fixes have been made.  See the
+[commit log](https://github.com/waylan/Python-Markdown/commits/master)
+for a complete history of the changes.
