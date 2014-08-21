@@ -27,6 +27,10 @@ class TestMarkdownBasics(unittest.TestCase):
         """ Test blank input. """
         self.assertEqual(self.md.convert(''), '')
 
+    def testNoneInput(self):
+        """ Test None input. """
+        self.assertEqual(self.md.convert(None), '')
+
     def testWhitespaceOnly(self):
         """ Test input of only whitespace. """
         self.assertEqual(self.md.convert(' '), '')
@@ -47,7 +51,7 @@ class TestBlockParser(unittest.TestCase):
         root = markdown.util.etree.Element("div")
         text = 'foo'
         self.parser.parseChunk(root, text)
-        self.assertEqual(markdown.serializers.to_xhtml_string(root), 
+        self.assertEqual(markdown.serializers.to_xhtml_string(root),
                          "<div><p>foo</p></div>")
 
     def testParseDocument(self):
@@ -99,7 +103,7 @@ class TestBlockParserState(unittest.TestCase):
 
 class TestHtmlStash(unittest.TestCase):
     """ Test Markdown's HtmlStash. """
-    
+
     def setUp(self):
         self.stash = markdown.util.HtmlStash()
         self.placeholder = self.stash.store('foo')
@@ -115,13 +119,13 @@ class TestHtmlStash(unittest.TestCase):
         placeholder = self.stash.store('bar')
         self.assertEqual(placeholder, self.stash.get_placeholder(1))
         self.assertEqual(self.stash.html_counter, 2)
-        self.assertEqual(self.stash.rawHtmlBlocks, 
+        self.assertEqual(self.stash.rawHtmlBlocks,
                         [('foo', False), ('bar', False)])
 
     def testSafeStore(self):
         """ Test HtmlStash.store with 'safe' html. """
         self.stash.store('bar', True)
-        self.assertEqual(self.stash.rawHtmlBlocks, 
+        self.assertEqual(self.stash.rawHtmlBlocks,
                         [('foo', False), ('bar', True)])
 
     def testReset(self):
@@ -152,42 +156,42 @@ class TestOrderedDict(unittest.TestCase):
     def testItems(self):
         """ Test output of OrderedDict.items(). """
         self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('third', 'a'), 
+                    [('first', 'This'), ('third', 'a'),
                     ('fourth', 'self'), ('fifth', 'test')])
 
     def testAddBefore(self):
         """ Test adding an OrderedDict item before a given key. """
         self.odict.add('second', 'is', '<third')
         self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('second', 'is'), ('third', 'a'), 
+                    [('first', 'This'), ('second', 'is'), ('third', 'a'),
                     ('fourth', 'self'), ('fifth', 'test')])
 
     def testAddAfter(self):
         """ Test adding an OrderDict item after a given key. """
         self.odict.add('second', 'is', '>first')
         self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('second', 'is'), ('third', 'a'), 
+                    [('first', 'This'), ('second', 'is'), ('third', 'a'),
                     ('fourth', 'self'), ('fifth', 'test')])
 
     def testAddAfterEnd(self):
         """ Test adding an OrderedDict item after the last key. """
         self.odict.add('sixth', '.', '>fifth')
         self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('third', 'a'), 
+                    [('first', 'This'), ('third', 'a'),
                     ('fourth', 'self'), ('fifth', 'test'), ('sixth', '.')])
 
     def testAdd_begin(self):
         """ Test adding an OrderedDict item using "_begin". """
         self.odict.add('zero', 'CRAZY', '_begin')
         self.assertEqual(list(self.odict.items()),
-                    [('zero', 'CRAZY'), ('first', 'This'), ('third', 'a'), 
+                    [('zero', 'CRAZY'), ('first', 'This'), ('third', 'a'),
                     ('fourth', 'self'), ('fifth', 'test')])
 
     def testAdd_end(self):
         """ Test adding an OrderedDict item using "_end". """
         self.odict.add('sixth', '.', '_end')
         self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('third', 'a'), 
+                    [('first', 'This'), ('third', 'a'),
                     ('fourth', 'self'), ('fifth', 'test'), ('sixth', '.')])
 
     def testAddBadLocation(self):
@@ -205,7 +209,7 @@ class TestOrderedDict(unittest.TestCase):
         """ Test OrderedDict change value. """
         self.odict['fourth'] = 'CRAZY'
         self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('third', 'a'), 
+                    [('first', 'This'), ('third', 'a'),
                     ('fourth', 'CRAZY'), ('fifth', 'test')])
 
     def testChangeOrder(self):
@@ -220,7 +224,7 @@ class TestOrderedDict(unittest.TestCase):
         self.assertRaises(ValueError, self.odict.link('fourth', '<bad'))
         # Check for data integrity ("fourth" wasn't deleted).'
         self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('third', 'a'), 
+                    [('first', 'This'), ('third', 'a'),
                     ('fourth', 'self'), ('fifth', 'test')])
 
 class TestErrors(unittest.TestCase):
@@ -237,7 +241,7 @@ class TestErrors(unittest.TestCase):
     def testNonUnicodeSource(self):
         """ Test falure on non-unicode source text. """
         if sys.version_info < (3, 0):
-            source = "foo".encode('utf-16') 
+            source = "foo".encode('utf-16')
             self.assertRaises(UnicodeDecodeError, markdown.markdown, source)
 
     def testBadOutputFormat(self):
@@ -246,8 +250,8 @@ class TestErrors(unittest.TestCase):
 
     def testLoadExtensionFailure(self):
         """ Test failure of an extension to load. """
-        self.assertRaises(ImportError, 
-                        markdown.Markdown, extensions=['non_existant_ext']) 
+        self.assertRaises(ImportError,
+                        markdown.Markdown, extensions=['non_existant_ext'])
 
     def testLoadBadExtension(self):
         """ Test loading of an Extension with no makeExtension function. """
@@ -262,7 +266,7 @@ class TestErrors(unittest.TestCase):
     def testBaseExtention(self):
         """ Test that the base Extension class will raise NotImplemented. """
         _create_fake_extension(name='fake')
-        self.assertRaises(NotImplementedError, 
+        self.assertRaises(NotImplementedError,
                         markdown.Markdown, extensions=['fake'])
 
 
@@ -280,14 +284,14 @@ def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False):
             return markdown.extensions.Extension(configs=configs)
     if has_factory_func:
         ext_mod.makeExtension = makeExtension
-    # Warning: this brute forces the extenson module onto the system. Either 
-    # this needs to be specificly overriden or a new python session needs to 
+    # Warning: this brute forces the extenson module onto the system. Either
+    # this needs to be specificly overriden or a new python session needs to
     # be started to get rid of this. This should be ok in a testing context.
     sys.modules[mod_name] =  ext_mod
 
 
 class testETreeComments(unittest.TestCase):
-    """ 
+    """
     Test that ElementTree Comments work.
 
     These tests should only be a concern when using cElementTree with third
@@ -371,7 +375,7 @@ class testSerializers(unittest.TestCase):
         return registerFakeSerializer()
 
     def testRegisterSerializer(self):
-        self.assertEqual(markdown.markdown('baz', 
+        self.assertEqual(markdown.markdown('baz',
                 extensions=[self.buildExtension()], output_format='fake'),
                     '<p>foo</p>')
 
@@ -389,7 +393,7 @@ class testAtomicString(unittest.TestCase):
         p = markdown.util.etree.SubElement(tree, 'p')
         p.text = 'some *text*'
         new = self.inlineprocessor.run(tree)
-        self.assertEqual(markdown.serializers.to_html_string(new), 
+        self.assertEqual(markdown.serializers.to_html_string(new),
                     '<div><p>some <em>text</em></p></div>')
 
     def testSimpleAtomicString(self):
@@ -398,7 +402,7 @@ class testAtomicString(unittest.TestCase):
         p = markdown.util.etree.SubElement(tree, 'p')
         p.text = markdown.util.AtomicString('some *text*')
         new = self.inlineprocessor.run(tree)
-        self.assertEqual(markdown.serializers.to_html_string(new), 
+        self.assertEqual(markdown.serializers.to_html_string(new),
                     '<div><p>some *text*</p></div>')
 
     def testNestedAtomicString(self):
@@ -416,7 +420,7 @@ class testAtomicString(unittest.TestCase):
         span2.tail = markdown.util.AtomicString(' *test*')
         span1.tail = markdown.util.AtomicString(' *with*')
         new = self.inlineprocessor.run(tree)
-        self.assertEqual(markdown.serializers.to_html_string(new), 
+        self.assertEqual(markdown.serializers.to_html_string(new),
             '<div><p>*some* <span>*more* <span>*text* <span>*here*</span> '
             '*to*</span> *test*</span> *with*</p></div>')
 
