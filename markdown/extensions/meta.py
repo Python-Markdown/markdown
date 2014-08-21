@@ -32,7 +32,7 @@ Make sure text without Meta Data still works (markdown < 1.6b returns a <p>).
 
 Copyright 2007-2008 [Waylan Limberg](http://achinghead.com).
 
-Project website: <http://packages.python.org/Markdown/meta_data.html>
+Project website: <https://pythonhosted.org/Markdown/extensions/meta_data.html>
 Contact: markdown@freewisdom.org
 
 License: BSD (see ../LICENSE.md for details)

@@ -14,7 +14,7 @@ License: BSD (see ../LICENSE.md for details)
 
 Dependencies:
 * [Python 2.4+](http://python.org)
-* [Markdown 2.1+](http://packages.python.org/Markdown/)
+* [Markdown 2.1+](https://pythonhosted.org/Markdown/)
 
 """
 

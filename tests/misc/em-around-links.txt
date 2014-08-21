@@ -1,14 +1,14 @@
 # Title
 
-  - *[Python in Markdown](http://packages.python.org/Markdown/) by some
+  - *[Python in Markdown](https://pythonhosted.org/Markdown/) by some
     great folks* - This *does* work as expected.
-  - _[Python in Markdown](http://packages.python.org/Markdown/) by some
+  - _[Python in Markdown](https://pythonhosted.org/Markdown/) by some
     great folks_ - This *does* work as expected.
-  - [_Python in Markdown_](http://packages.python.org/Markdown/) by some
+  - [_Python in Markdown_](https://pythonhosted.org/Markdown/) by some
     great folks - This *does* work as expected.
-  - [_Python in Markdown_](http://packages.python.org/Markdown/) _by some
+  - [_Python in Markdown_](https://pythonhosted.org/Markdown/) _by some
     great folks_ - This *does* work as expected.
 
-_[Python in Markdown](http://packages.python.org/Markdown/) by some
+_[Python in Markdown](https://pythonhosted.org/Markdown/) by some
 great folks_ - This *does* work as expected.
 

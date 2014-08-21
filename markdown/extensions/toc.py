@@ -5,7 +5,7 @@ Table of Contents Extension for Python-Markdown
 (c) 2008 [Jack Miller](http://codezen.org)
 
 Dependencies:
-* [Markdown 2.1+](http://packages.python.org/Markdown/)
+* [Markdown 2.1+](https://pythonhosted.org/Markdown/)
 
 """
 

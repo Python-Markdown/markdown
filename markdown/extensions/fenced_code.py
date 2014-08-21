@@ -75,14 +75,14 @@ If the codehighlite extension and Pygments are installed, lines can be highlight
 
 Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
 
-Project website: <http://packages.python.org/Markdown/extensions/fenced_code_blocks.html>
+Project website: <https://pythonhosted.org/Markdown/extensions/fenced_code_blocks.html>
 Contact: markdown@freewisdom.org
 
 License: BSD (see ../docs/LICENSE for details)
 
 Dependencies:
 * [Python 2.4+](http://python.org)
-* [Markdown 2.0+](http://packages.python.org/Markdown/)
+* [Markdown 2.0+](https://pythonhosted.org/Markdown/)
 * [Pygments (optional)](http://pygments.org)
 
 """

@@ -73,7 +73,7 @@ License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 Dependencies:
 * [Python 2.3+](http://python.org)
-* [Markdown 2.0+](http://packages.python.org/Markdown/)
+* [Markdown 2.0+](https://pythonhosted.org/Markdown/)
 '''
 
 from __future__ import absolute_import

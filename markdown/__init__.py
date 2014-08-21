@@ -10,7 +10,7 @@ called from the command line.
     import markdown
     html = markdown.markdown(your_text_string)
 
-See <http://packages.python.org/Markdown/> for more
+See <https://pythonhosted.org/Markdown/> for more
 information and instructions on how to extend the functionality of
 Python Markdown.  Read that before you try modifying this file.
 

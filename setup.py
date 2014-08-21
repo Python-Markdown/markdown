@@ -200,8 +200,8 @@ on what exactly is supported and what is not. Additional features are
 supported by the `Available Extensions`_.
 
 .. _Markdown: http://daringfireball.net/projects/markdown/
-.. _Features: http://packages.python.org/Markdown/index.html#Features
-.. _`Available Extensions`: http://packages.python.org/Markdown/extensions/index.html
+.. _Features: https://pythonhosted.org/Markdown/index.html#Features
+.. _`Available Extensions`: https://pythonhosted.org/Markdown/extensions/index.html
 
 Support
 =======
@@ -216,7 +216,7 @@ You may ask for help and discuss various other issues on the
 setup(
     name =          'Markdown',
     version =       version,
-    url =           'http://packages.python.org/Markdown/',
+    url =           'https://pythonhosted.org/Markdown/',
     download_url =  'http://pypi.python.org/packages/source/M/Markdown/Markdown-%s.tar.gz' % version,
     description =   'Python implementation of Markdown.',
     long_description = long_description,
@@ -238,9 +238,9 @@ setup(
                      'Programming Language :: Python :: 2.6',
                      'Programming Language :: Python :: 2.7',
                      'Programming Language :: Python :: 3',
-                     'Programming Language :: Python :: 3.1',
                      'Programming Language :: Python :: 3.2',
                      'Programming Language :: Python :: 3.3',
+                     'Programming Language :: Python :: 3.4',
                      'Topic :: Communications :: Email :: Filters',
                      'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: CGI Tools/Libraries',
                      'Topic :: Internet :: WWW/HTTP :: Site Management',
