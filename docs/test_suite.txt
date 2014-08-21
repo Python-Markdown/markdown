@@ -6,12 +6,12 @@ next_url:   change_log.html
 
 # Test Suite
 
-Python-Markdown comes with a test suite which uses the [Nose][] testing
-framework.The test suite primarily serves to ensure that new bugs are not
-introduced as existing bugs are patched or new features are added. It also
-allows Python-Markdown to be tested with the tests from other implementations
-such as John Gruber's [Perl][] implementation or Michel Fortin's [PHP][]
-implementation.
+Python-Markdown comes with a test suite which uses the [Nose] testing
+framework and [YAML]. The test suite primarily serves to ensure that new bugs 
+are not introduced as existing bugs are patched or new features are added. It 
+also allows Python-Markdown to be tested with the tests from other 
+implementations such as John Gruber's [Perl] implementation or Michel 
+Fortin's [PHP] implementation.
 
 The test suite can be run by calling the `run_tests.py` command at the root of
 the distribution tarball or by calling the `nosetests` command directly. Either
@@ -24,8 +24,9 @@ temporary file in `test-output.html`. Open the file in a browser to view
 the report.
 
 A tox.ini file is also provided, so [tox] can be used to automatically create
-virtual environments and run the tests on each supported Python version. See
-the wiki for instructions on [setting up a testing environment] to use tox.
+virtual environments, install all testing dependencies and run the tests on 
+each supported Python version. See the wiki for instructions on 
+[setting up a testing environment] to use tox.
 
 The test suite contains two kinds of tests: Markdown Syntax Tests and Unit
 Tests.
@@ -97,22 +98,22 @@ tests from either PHP or Perl which are known to fail for various reasons. In
 fact, a number of different configuration settings can be set for any specific
 test.
 
-Each Syntax Test directory contains a `test.cfg` file in the ini format. The
+Each Syntax Test directory contains a `test.cfg` file in the [YAML] format. The
 file may contain a separate section for each txt file named exactly as the file
 is named minus the file extension (i.e.; the section for a test in `foo.txt`
-would be `[foo]`). All settings are optional. Default settings for the entire
-directory can be set under the `[DEFAULT]` section (must be all caps). Any
+would be `foo`). All settings are optional. Default settings for the entire
+directory can be set under the `DEFAULT` section (must be all caps). Any
 settings under a specific file section will override anything in the
-`[DEFAULT]` section for that specific test only.
+`DEFAULT` section for that specific test only.
 
-Below are each of the config options available and the defaults used when they
+Below are the config options available and the defaults used when they
 are not explicitly set.
 
 * `normalize`: Switches whitespace normalization of the test output on or off. 
-  Defaults to `0` (off). Note: This requires that [PyTidyLib] be installed on 
+  Defaults to `False` (off). Note: This requires that [PyTidyLib] be installed on 
   the system. Otherwise the test will be skipped, regardless of any other 
   settings.  
-* `skip`: Switches skipping of the test on and off. Defaults to `0` (off).  
+* `skip`: Switches skipping of the test on and off. Defaults to `False` (off).  
 * `input_ext`: Extension of input file. Defaults to `.txt`. Useful for tests 
   from other implementations.
 * `output_ext`: Extension of output file. Defaults to `.html`. Useful for tests
@@ -134,3 +135,4 @@ writing new tests, those standards and naming conventions should be followed.
 [PyTidyLib]: http://countergram.com/open-source/pytidylib/
 [tox]: http://testrun.org/tox/latest/
 [setting up a testing environment]: https://github.com/waylan/Python-Markdown/wiki/Test-Environment-Setup
+[YAML]: http://yaml.org/
