@@ -136,7 +136,7 @@ def TestSyntax():
 
 def generate(file, config):
     """ Write expected output file for given input. """
-    cfg_section = get_section(file, config)
+    cfg_section = config.get_section(file)
     if config.get(cfg_section, 'skip') or config.get(cfg_section, 'normalize'):
         print('Skipping:', file)
         return None
@@ -146,7 +146,7 @@ def generate(file, config):
             os.path.getmtime(output_file) < os.path.getmtime(input_file):
         print('Generating:', file)
         markdown.markdownFromFile(input=input_file, output=output_file, 
-                                  encoding='utf-8', **get_args(file, config))
+                                  encoding='utf-8', **config.get_args(file))
     else:
         print('Already up-to-date:', file)
 
@@ -158,7 +158,7 @@ def generate_all():
         # Loop through files and generate tests.
         for file in files:
             root, ext = os.path.splitext(file)
-            if ext == config.get(get_section(file, config), 'input_ext'):
+            if ext == config.get(config.get_section(file), 'input_ext'):
                 generate(os.path.join(dir_name, root), config)
 
 
