@@ -4,17 +4,14 @@ CodeHilite Extension for Python-Markdown
 
 Adds code/syntax highlighting to standard Python-Markdown code blocks.
 
-Copyright 2006-2008 [Waylan Limberg](http://achinghead.com/).
+See <https://pythonhosted.org/Markdown/extensions/code_hilite.html> 
+for documentation.
 
-Project website: <https://pythonhosted.org/Markdown/extensions/code_hilite.html>
-Contact: markdown@freewisdom.org
+Original code Copyright 2006-2008 [Waylan Limberg](http://achinghead.com/).
 
-License: BSD (see ../LICENSE.md for details)
+All changes Copyright 2008-2014 The Python Markdown Project
 
-Dependencies:
-* [Python 2.3+](http://python.org/)
-* [Markdown 2.0+](https://pythonhosted.org/Markdown/)
-* [Pygments](http://pygments.org/)
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 """
 

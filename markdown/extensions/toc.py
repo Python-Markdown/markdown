@@ -1,11 +1,15 @@
 """
 Table of Contents Extension for Python-Markdown
-* * *
+===============================================
 
-(c) 2008 [Jack Miller](http://codezen.org)
+See <https://pythonhosted.org/Markdown/extensions/toc.html> 
+for documentation.
 
-Dependencies:
-* [Markdown 2.1+](https://pythonhosted.org/Markdown/)
+Oringinal code Copyright 2008 [Jack Miller](http://codezen.org)
+
+All changes Copyright 2008-2014 The Python Markdown Project
+
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
 
 """
 

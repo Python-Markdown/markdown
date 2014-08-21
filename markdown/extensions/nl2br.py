@@ -5,18 +5,14 @@ NL2BR Extension
 A Python-Markdown extension to treat newlines as hard breaks; like
 GitHub-flavored Markdown does.
 
-Usage:
+See <https://pythonhosted.org/Markdown/extensions/nl2br.html> 
+for documentation.
 
-    >>> import markdown
-    >>> print(markdown.markdown('line 1\\nline 2', extensions=['nl2br']))
-    <p>line 1<br />
-    line 2</p>
+Oringinal code Copyright 2011 [Brian Neal](http://deathofagremmie.com/)
 
-Copyright 2011 [Brian Neal](http://deathofagremmie.com/)
+All changes Copyright 2011-2014 The Python Markdown Project
 
-Dependencies:
-* [Python 2.4+](http://python.org)
-* [Markdown 2.1+](https://pythonhosted.org/Markdown/)
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
 
 """
 

@@ -1,25 +1,15 @@
 """
-========================= FOOTNOTES =================================
+Footnotes Extension for Python-Markdown
+=======================================
 
-This section adds footnote handling to markdown.  It can be used as
-an example for extending python-markdown with relatively complex
-functionality.  While in this case the extension is included inside
-the module itself, it could just as easily be added from outside the
-module.  Not that all markdown classes above are ignorant about
-footnotes.  All footnote functionality is provided separately and
-then added to the markdown instance at the run time.
+Adds footnote handling to Python-Markdown.
 
-Footnote functionality is attached by calling extendMarkdown()
-method of FootnoteExtension.  The method also registers the
-extension to allow it's state to be reset by a call to reset()
-method.
+See <https://pythonhosted.org/Markdown/extensions/footnotes.html> 
+for documentation.
 
-Example:
-    Footnotes[^1] have a label[^label] and a definition[^!DEF].
+Copyright The Python Markdown Project
 
-    [^1]: This is a footnote
-    [^label]: A footnote on "label"
-    [^!DEF]: The footnote for definition
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
 
 """
 

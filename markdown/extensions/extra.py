@@ -11,10 +11,6 @@ convenience so that only one extension needs to be listed when
 initiating Markdown. See the documentation for each individual
 extension for specifics about that extension.
 
-In the event that one or more of the supported extensions are not
-available for import, Markdown will issue a warning and simply continue
-without that extension.
-
 There may be additional extensions that are distributed with
 Python-Markdown that are not included here in Extra. Those extensions
 are not part of PHP Markdown Extra, and therefore, not part of
@@ -23,6 +19,13 @@ additional extensions, we suggest creating your own clone of Extra
 under a differant name. You could also edit the `extensions` global
 variable defined below, but be aware that such changes may be lost
 when you upgrade to any future version of Python-Markdown.
+
+See <https://pythonhosted.org/Markdown/extensions/extra.html> 
+for documentation.
+
+Copyright The Python Markdown Project
+
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
 
 """
 
