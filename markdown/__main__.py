@@ -10,7 +10,7 @@ import optparse
 import codecs
 try: 
     import yaml
-except ImportError:
+except ImportError: #pragma: no cover
     import json as yaml
 
 import logging
@@ -92,7 +92,7 @@ def parse_options(args=None, values=None):
             'output_format': options.output_format,
             'lazy_ol': options.lazy_ol}, options.verbose
 
-def run():
+def run(): #pragma: no cover
     """Run Markdown from the command line."""
 
     # Parse options and adjust logging level if necessary
@@ -104,7 +104,7 @@ def run():
     # Run
     markdown.markdownFromFile(**options)
 
-if __name__ == '__main__':
+if __name__ == '__main__': #pragma: no cover
     # Support running module as a commandline command. 
     # Python 2.5 & 2.6 do: `python -m markdown.__main__ [options] [args]`.
     # Python 2.7 & 3.x do: `python -m markdown [options] [args]`.
