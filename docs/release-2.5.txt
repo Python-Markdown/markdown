@@ -15,13 +15,19 @@ Python-Markdown supports Python versions 2.6, 2.7, 3.2, 3.3, and 3.4.
 Backwards-incompatible Changes
 ------------------------------
 
-* [TBD]
+* The `force_linenos` config key on the [CodeHilite Extension] has been deprecated
+and will raise a `KeyError` if provided. In the previous release (2.4), it was issuing 
+a `DeprecationWarning`. The [`linenums`][linenums] keyword should be used instead,
+which provides more control of the output.
+
+[CodeHilite Extension]: extensions/code_hilite.html
+[linenumes]: extensions/code_hilite.html#usage
 
 What's New in Python-Markdown 2.5
 ---------------------------------
 
 * The [Smarty Extension] has had a number of additional configuration settings
-added, which allows one to define their own sustitutions to better support
+added, which allows one to define their own subtitutions to better support
 languages other than English. Thanks to [Martin Altmayer] for implementing this feature.
 
 [Smarty Extension]: extensions/smarty.html
@@ -37,7 +43,7 @@ their existing code. This should also simplify the learning curve for new users.
 
 * The [Command Line Interface][cli] now accepts a `--extensions_config` (or `-c`) option
 which accepts a filename and passes the parsed content of a [YAML] or [JSON] file to the 
-[`extension_configs`][ec] keyword of the `markdown.Markdown` class. The conetents of 
+[`extension_configs`][ec] keyword of the `markdown.Markdown` class. The contents of 
 the YAML or JSON must map to a Python Dictionary which matches the format required 
 by the `extension_configs` kerword. Note that [PyYAML] is required to parse YAML files.
 
