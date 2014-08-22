@@ -10,9 +10,14 @@ Tests of the various APIs with the python markdown lib.
 from __future__ import unicode_literals
 import unittest
 import sys
+import os
 import types
 import markdown
 import warnings
+from markdown.__main__ import parse_options
+from logging import DEBUG, INFO, CRITICAL
+import yaml
+import tempfile
 
 PY3 = sys.version_info[0] == 3
 
@@ -433,3 +438,139 @@ class TestConfigParsing(unittest.TestCase):
 
     def testInvalidBooleansParsing(self):
         self.assertRaises(ValueError, markdown.util.parseBoolValue, 'novalue')
+
+class TestCliOptionParsing(unittest.TestCase):
+    """ Test parsing of Command Line Interface Options. """
+
+    def setUp(self):
+        self.default_options = {
+            'input': None,
+            'output': None,
+            'encoding': None,
+            'safe_mode': False,
+            'output_format': 'xhtml1',
+            'lazy_ol': True,
+            'extensions': [],
+            'extension_configs': {},  
+        }
+        self.tempfile = ''
+
+    def tearDown(self):
+        if os.path.isfile(self.tempfile):
+            os.remove(self.tempfile)
+
+    def testNoOptions(self):
+        options, logging_level = parse_options([])
+        self.assertEqual(options, self.default_options)
+        self.assertEqual(logging_level, CRITICAL)
+    
+    def testQuietOption(self):
+        options, logging_level = parse_options(['-q'])
+        self.assertTrue(logging_level > CRITICAL)
+
+    def testVerboseOption(self):
+        options, logging_level = parse_options(['-v'])
+        self.assertEqual(logging_level, INFO)
+
+    def testNoisyOption(self):
+        options, logging_level = parse_options(['--noisy'])
+        self.assertEqual(logging_level, DEBUG)
+
+    def testInputFileOption(self):
+        options, logging_level = parse_options(['foo.txt'])
+        self.default_options['input'] = 'foo.txt'
+        self.assertEqual(options, self.default_options)
+
+    def testOutputFileOption(self):
+        options, logging_level = parse_options(['-f', 'foo.html'])
+        self.default_options['output'] = 'foo.html'
+        self.assertEqual(options, self.default_options)
+
+    def testInputAndOutputFileOptions(self):
+        options, logging_level = parse_options(['-f', 'foo.html', 'foo.txt'])
+        self.default_options['output'] = 'foo.html'
+        self.default_options['input'] = 'foo.txt'
+        self.assertEqual(options, self.default_options)
+
+    def testEncodingOption(self):
+        options, logging_level = parse_options(['-e', 'utf-8'])
+        self.default_options['encoding'] = 'utf-8'
+        self.assertEqual(options, self.default_options)
+
+    def testSafeModeOption(self):
+        options, logging_level = parse_options(['-s', 'escape'])
+        self.default_options['safe_mode'] = 'escape'
+        self.assertEqual(options, self.default_options)
+
+    def testOutputFormatOption(self):
+        options, logging_level = parse_options(['-o', 'html5'])
+        self.default_options['output_format'] = 'html5'
+        self.assertEqual(options, self.default_options)
+
+    def testNoLazyOlOption(self):
+        options, logging_level = parse_options(['-n'])
+        self.default_options['lazy_ol'] = False
+        self.assertEqual(options, self.default_options)
+
+    def testExtensionOption(self):
+        options, logging_level = parse_options(['-x', 'footnotes'])
+        self.default_options['extensions'] = ['footnotes']
+        self.assertEqual(options, self.default_options)
+
+    def testMultipleExtensionOptions(self):
+        options, logging_level = parse_options(['-x', 'footnotes', '-x', 'smarty'])
+        self.default_options['extensions'] = ['footnotes', 'smarty']
+        self.assertEqual(options, self.default_options)
+
+    def create_config_file(self, config):
+        """ Helper to create temp config files. """
+        if not isinstance(config, markdown.util.string_type):
+            # convert to string
+            config = yaml.dump(config)
+        fd, self.tempfile = tempfile.mkstemp('.yml')
+        with os.fdopen(fd, 'w') as fp:
+            fp.write(config)
+
+    def testExtensonConfigOption(self):
+        config = {
+        'wikilinks': {
+            'base_url': 'http://example.com/',
+            'end_url': '.html',
+            'html_class': 'test',
+            },
+        'footnotes': {
+            'PLACE_MARKER': '~~~footnotes~~~'
+            }
+        }
+        self.create_config_file(config)
+        options, logging_level = parse_options(['-c', self.tempfile])
+        self.default_options['extension_configs'] = config
+        self.assertEqual(options, self.default_options)
+
+    def testExtensonConfigOptionAsJSON(self):
+        config = {
+        'wikilinks': {
+            'base_url': 'http://example.com/',
+            'end_url': '.html',
+            'html_class': 'test',
+            },
+        'footnotes': {
+            'PLACE_MARKER': '~~~footnotes~~~'
+            }
+        }
+        import json
+        self.create_config_file(json.dumps(config))
+        options, logging_level = parse_options(['-c', self.tempfile])
+        self.default_options['extension_configs'] = config
+        self.assertEqual(options, self.default_options)
+
+    def testExtensonConfigOptionMissingFile(self):
+        self.assertRaises(IOError, parse_options, ['-c', 'missing_file.yaml'])
+
+    def testExtensonConfigOptionBadFormat(self):
+        config = """
+[footnotes] 
+PLACE_MARKER= ~~~footnotes~~~
+"""
+        self.create_config_file(config)
+        self.assertRaises(yaml.YAMLError, parse_options, ['-c', self.tempfile])

@@ -20,14 +20,6 @@ Backwards-incompatible Changes
 What's New in Python-Markdown 2.5
 ---------------------------------
 
-* The Extension Configuration code has been refactord to make it a little easier 
-for extension authors to work with config settings. As a result, the 
-[extension_configs] keyword now accepts a dictionary rather than requiring 
-a list of tuples. A list of tuples is still supported so no one needs to change 
-their existing code. This should simplify the learning curve for new users.
-
-[extension_configs]: reference.html#extension_configs
-
 * The [Smarty Extension] has had a number of additional configuration settings
 added, which allows one to define their own sustitutions to better support
 languages other than English. Thanks to [Martin Altmayer] for implementing this feature.
@@ -35,8 +27,27 @@ languages other than English. Thanks to [Martin Altmayer] for implementing this 
 [Smarty Extension]: extensions/smarty.html
 [Martin Altmayer]:https://github.com/MartinAltmayer
 
-There have been various refactors of the testing framework. While those changes
-will not directly effect end users, the code is being better tested whuch will 
+* The Extension Configuration code has been refactord to make it a little easier 
+for extension authors to work with config settings. As a result, the 
+[`extension_configs`][ec] keyword now accepts a dictionary rather than requiring 
+a list of tuples. A list of tuples is still supported so no one needs to change 
+their existing code. This should also simplify the learning curve for new users.
+
+[ec]: reference.html#extension_configs
+
+* The [Command Line Interface][cli] now accepts a `--extensions_config` (or `-c`) option
+which accepts a filename and passes the parsed content of a [YAML] or [JSON] file to the 
+[`extension_configs`][ec] keyword of the `markdown.Markdown` class. The conetents of 
+the YAML or JSON must map to a Python Dictionary which matches the format required 
+by the `extension_configs` kerword. Note that [PyYAML] is required to parse YAML files.
+
+[cli]: cli.html#using-extensions
+[YAML]: http://yaml.org/
+[JSON]: http://json.org/
+[PyYAML]: http://pyyaml.org/
+
+* There have been various refactors of the testing framework. While those changes
+will not directly effect end users, the code is being better tested which will 
 benefit everyone.
 
 * Various bug fixes have been made.  See the

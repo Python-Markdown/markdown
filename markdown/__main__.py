@@ -7,13 +7,18 @@ COMMAND-LINE SPECIFIC STUFF
 import markdown
 import sys
 import optparse
+import codecs
+try: 
+    import yaml
+except ImportError:
+    import json as yaml
 
 import logging
 from logging import DEBUG, INFO, CRITICAL
 
 logger =  logging.getLogger('MARKDOWN')
 
-def parse_options():
+def parse_options(args=None, values=None):
     """
     Define and parse `optparse` options for command-line usage.
     """
@@ -29,28 +34,36 @@ def parse_options():
                       metavar="OUTPUT_FILE")
     parser.add_option("-e", "--encoding", dest="encoding",
                       help="Encoding for input and output files.",)
-    parser.add_option("-q", "--quiet", default = CRITICAL,
-                      action="store_const", const=CRITICAL+10, dest="verbose",
-                      help="Suppress all warnings.")
-    parser.add_option("-v", "--verbose",
-                      action="store_const", const=INFO, dest="verbose",
-                      help="Print all warnings.")
     parser.add_option("-s", "--safe", dest="safe", default=False,
                       metavar="SAFE_MODE",
                       help="'replace', 'remove' or 'escape' HTML tags in input")
     parser.add_option("-o", "--output_format", dest="output_format", 
                       default='xhtml1', metavar="OUTPUT_FORMAT",
                       help="'xhtml1' (default), 'html4' or 'html5'.")
-    parser.add_option("--noisy",
-                      action="store_const", const=DEBUG, dest="verbose",
-                      help="Print debug messages.")
-    parser.add_option("-x", "--extension", action="append", dest="extensions",
-                      help = "Load extension EXTENSION.", metavar="EXTENSION")
     parser.add_option("-n", "--no_lazy_ol", dest="lazy_ol", 
                       action='store_false', default=True,
                       help="Observe number of first item of ordered lists.")
+    parser.add_option("-x", "--extension", action="append", dest="extensions",
+                      help = "Load extension EXTENSION.", metavar="EXTENSION")
+    parser.add_option("-c", "--extension_configs", dest="configfile", default=None,
+                      help="Read extension configurations from CONFIG_FILE. "
+                      "CONFIG_FILE must be of JSON or YAML format. YAML format requires "
+                      "that a python YAML library be installed. The parsed JSON or YAML "
+                      "must result in a python dictionary which would be accepted by the "
+                      "'extension_configs' keyword on the markdown.Markdown class. "
+                      "The extensions must also be loaded with the `--extension` option.",
+                      metavar="CONFIG_FILE")
+    parser.add_option("-q", "--quiet", default = CRITICAL,
+                      action="store_const", const=CRITICAL+10, dest="verbose",
+                      help="Suppress all warnings.")
+    parser.add_option("-v", "--verbose",
+                      action="store_const", const=INFO, dest="verbose",
+                      help="Print all warnings.")
+    parser.add_option("--noisy",
+                      action="store_const", const=DEBUG, dest="verbose",
+                      help="Print debug messages.")
 
-    (options, args) = parser.parse_args()
+    (options, args) = parser.parse_args(args, values)
 
     if len(args) == 0:
         input_file = None
@@ -60,10 +73,21 @@ def parse_options():
     if not options.extensions:
         options.extensions = []
 
+    extension_configs = {}
+    if options.configfile:
+        with codecs.open(options.configfile, mode="r", encoding=options.encoding) as fp:
+            try:
+                extension_configs = yaml.load(fp)
+            except yaml.YAMLError as e:
+                message = "Failed parsing extension config file: %s" % options.configfile
+                e.args = (message,) + e.args[1:]
+                raise
+
     return {'input': input_file,
             'output': options.filename,
             'safe_mode': options.safe,
             'extensions': options.extensions,
+            'extension_configs': extension_configs,
             'encoding': options.encoding,
             'output_format': options.output_format,
             'lazy_ol': options.lazy_ol}, options.verbose
