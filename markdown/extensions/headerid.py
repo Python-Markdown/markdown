@@ -68,7 +68,7 @@ def stashedHTML2text(text, md):
     def _html_sub(m):
         """ Substitute raw html with plain text. """
         try:
-    	    raw, safe = md.htmlStash.rawHtmlBlocks[int(m.group(1))]
+            raw, safe = md.htmlStash.rawHtmlBlocks[int(m.group(1))]
         except (IndexError, TypeError):
             return m.group(0)
         if md.safeMode and not safe:
