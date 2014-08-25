@@ -95,12 +95,12 @@ def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
         if preserve_none and value is None:
             return  value
         return bool(value)
-    elif value.lower() in ('true', 'yes', 'y', 'on', '1'):
-        return True
-    elif value.lower() in ('false', 'no', 'n', 'off', '0'):
-        return False
     elif preserve_none and value.lower() == 'none':
         return None
+    elif value.lower() in ('true', 'yes', 'y', 'on', '1'):
+        return True
+    elif value.lower() in ('false', 'no', 'n', 'off', '0', 'none'):
+        return False
     elif fail_on_errors:
         raise ValueError('Cannot parse bool value: %r' % value)
 

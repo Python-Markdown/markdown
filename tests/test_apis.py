@@ -455,6 +455,11 @@ class TestConfigParsing(unittest.TestCase):
         self.assertParses('yES', True)
         self.assertParses('FALSE', False)
         self.assertParses(0., False)
+        self.assertParses('none', False)
+
+    def testPreserveNone(self):
+        self.assertTrue(markdown.util.parseBoolValue('None', preserve_none=True) is None)
+        self.assertTrue(markdown.util.parseBoolValue(None, preserve_none=True) is None)
 
     def testInvalidBooleansParsing(self):
         self.assertRaises(ValueError, markdown.util.parseBoolValue, 'novalue')
