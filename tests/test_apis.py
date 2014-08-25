@@ -135,6 +135,26 @@ class TestHtmlStash(unittest.TestCase):
         self.assertEqual(self.stash.html_counter, 0)
         self.assertEqual(self.stash.rawHtmlBlocks, [])
 
+    def testUnsafeHtmlInSafeMode(self):
+        """ Test that unsafe HTML gets escaped in safe_mode. """
+        output = markdown.markdown('foo', extensions=[self.build_extension()], safe_mode='escape')
+        self.assertEqual(output, '<p>&lt;script&gt;print(&quot;evil&quot;)&lt;/script&gt;</p>')
+
+    def build_extension(self):
+        """ Build an extention that addes unsafe html to Stash in same_mode. """
+        class Unsafe(markdown.treeprocessors.Treeprocessor):
+            def run(self, root):
+                el = root.find('p')
+                el.text = self.markdown.htmlStash.store('<script>print("evil")</script>', safe=False)
+                return root
+
+        class StoreUnsafeHtml(markdown.extensions.Extension):
+            def extendMarkdown(self, md, md_globals):
+                md.treeprocessors.add('unsafe', Unsafe(md), '_end')
+
+        return StoreUnsafeHtml()
+
+
 class TestOrderedDict(unittest.TestCase):
     """ Test OrderedDict storage class. """
 
