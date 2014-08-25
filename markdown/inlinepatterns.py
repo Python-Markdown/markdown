@@ -217,10 +217,7 @@ class Pattern(object):
 class SimpleTextPattern(Pattern):
     """ Return a simple text of group(2) of a Pattern. """
     def handleMatch(self, m):
-        text = m.group(2)
-        if text == util.INLINE_PLACEHOLDER_PREFIX:
-            return None
-        return text
+        return m.group(2)
 
 
 class EscapePattern(Pattern):
