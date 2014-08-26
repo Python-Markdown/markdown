@@ -78,7 +78,7 @@ def parse_options(args=None, values=None):
         with codecs.open(options.configfile, mode="r", encoding=options.encoding) as fp:
             try:
                 extension_configs = yaml.load(fp)
-            except yaml.YAMLError as e:
+            except Exception as e:
                 message = "Failed parsing extension config file: %s" % options.configfile
                 e.args = (message,) + e.args[1:]
                 raise
