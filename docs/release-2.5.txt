@@ -36,6 +36,36 @@ languages other than English. Thanks to [Martin Altmayer] for implementing this 
 [Smarty Extension]: extensions/smarty.html
 [Martin Altmayer]:https://github.com/MartinAltmayer
 
+* Named Extensions (strings passed to the [`extensions`][ex] keyword of `markdown.Markdown`) 
+  can now point to any module and/or Class on your PYTHONPATH. While dot notation was 
+  previously supported, a module could not be at the root of your PYTHONPATH. The name had 
+  to contain at least one dot (requiring it to be a submodule). This restriction no longer 
+  exists. 
+
+	Additionaly, a Class may be specified in the name. The class must be at the end of the 
+	name (usig dot notation from PYTHONPATH) and seperated by a colon from the module. 
+
+	Therefore, if you were to import the class like this:
+	
+		from path.to.module import SomeExtensionClass
+
+	Then the named extension would be the string:
+
+		"path.to.module:SomeExtensionClass"
+	
+	This allows multiple extensions to be implemented within the same module and still 
+	accessable when the user isn't able to import the extension directly (perhaps from 
+	a template filter or the command line).
+
+	This also means that extension modules are no longer required to include the 
+	`makeExtension`	funtion which returns an instance of the extension class. However, 
+	if the user does not specify the class name (she only provides `"path.to.module"`)
+	the extension will fail to load without the `makeExtension` function included in
+	the module. Extension authors will want to document carfully what is required to
+	load their extensions.
+
+[ex]: reference.html#extensions
+
 * The Extension Configuration code has been refactord to make it a little easier 
 for extension authors to work with config settings. As a result, the 
 [`extension_configs`][ec] keyword now accepts a dictionary rather than requiring 

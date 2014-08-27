@@ -40,6 +40,19 @@ class TestMarkdownBasics(unittest.TestCase):
         """ Test simple input. """
         self.assertEqual(self.md.convert('foo'), '<p>foo</p>')
 
+    def testInstanceExtension(self):
+        """ Test Extension loading with a class instance. """
+        from markdown.extensions.footnotes import FootnoteExtension
+        markdown.Markdown(extensions=[FootnoteExtension()])
+
+    def testNamedExtension(self):
+        """ Test Extension loading with Name (`path.to.module`). """
+        markdown.Markdown(extensions=['markdown.extensions.footnotes'])
+
+    def TestNamedExtensionWithClass(self):
+        """ Test Extension loading with class name (`path.to.module:Class`). """
+        markdown.Markdown(extensions=['markdown.extensions.footnotes:FootnoteExtension'])
+
 class TestBlockParser(unittest.TestCase):
     """ Tests of the BlockParser class. """
 
@@ -572,7 +585,7 @@ class TestCliOptionParsing(unittest.TestCase):
             'end_url': '.html',
             'html_class': 'test',
             },
-        'footnotes': {
+        'footnotes:FootnotesExtension': {
             'PLACE_MARKER': '~~~footnotes~~~'
             }
         }
@@ -588,7 +601,7 @@ class TestCliOptionParsing(unittest.TestCase):
             'end_url': '.html',
             'html_class': 'test',
             },
-        'footnotes': {
+        'footnotes:FootnotesExtension': {
             'PLACE_MARKER': '~~~footnotes~~~'
             }
         }

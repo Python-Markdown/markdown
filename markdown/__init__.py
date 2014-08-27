@@ -190,6 +190,9 @@ class Markdown(object):
             pairs = [x.split("=") for x in ext_args.split(",")]
             configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
 
+        # Get class name (if provided): `path.to.module:ClassName`
+        ext_name, class_name = ext_name.split(':', 1) if ':' in ext_name else (ext_name, '')
+
         # Try loading the extension first from one place, then another
         try: 
             # Assume string uses dot syntax (`path.to.some.module`)
@@ -213,16 +216,19 @@ class Markdown(object):
                     e.args = (message,) + e.args[1:]
                     raise
 
-        # If the module is loaded successfully, we expect it to define a
-        # function called makeExtension()
-        try:
-            return module.makeExtension(configs.items())
-        except AttributeError as e:
-            message = e.args[0]
-            message = "Failed to initiate extension " \
-                      "'%s': %s" % (ext_name, message)
-            e.args = (message,) + e.args[1:]
-            raise
+        if class_name:
+            # Load given class name from module.
+            return getattr(module, class_name)(configs.items())
+        else:
+            # Expect  makeExtension() function to return a class.
+            try:
+                return module.makeExtension(configs.items())
+            except AttributeError as e:
+                message = e.args[0]
+                message = "Failed to initiate extension " \
+                          "'%s': %s" % (ext_name, message)
+                e.args = (message,) + e.args[1:]
+                raise
 
     def registerExtension(self, extension):
         """ This gets called by the extension """
