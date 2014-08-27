@@ -276,24 +276,33 @@ class TestErrors(unittest.TestCase):
 
     def testLoadBadExtension(self):
         """ Test loading of an Extension with no makeExtension function. """
-        _create_fake_extension(name='fake', has_factory_func=False)
-        self.assertRaises(AttributeError, markdown.Markdown, extensions=['fake'])
+        _create_fake_extension(name='fake_a', has_factory_func=False)
+        self.assertRaises(AttributeError, markdown.Markdown, extensions=['fake_a'])
 
     def testNonExtension(self):
         """ Test loading a non Extension object as an extension. """
-        _create_fake_extension(name='fake', is_wrong_type=True)
-        self.assertRaises(TypeError, markdown.Markdown, extensions=['fake'])
+        _create_fake_extension(name='fake_b', is_wrong_type=True)
+        self.assertRaises(TypeError, markdown.Markdown, extensions=['fake_b'])
 
     def testBaseExtention(self):
         """ Test that the base Extension class will raise NotImplemented. """
-        _create_fake_extension(name='fake')
+        _create_fake_extension(name='fake_c')
         self.assertRaises(NotImplementedError, 
-                        markdown.Markdown, extensions=['fake'])
+                        markdown.Markdown, extensions=['fake_c'])
+
+    def testDotSyntaxExtention(self):
+        """ Test that dot syntax imports properly (not using mdx_). """
+        _create_fake_extension(name='fake_d', use_old_style=False)
+        self.assertRaises(NotImplementedError, 
+                        markdown.Markdown, extensions=['fake_d'])
 
 
-def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False):
+def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False, use_old_style=True):
     """ Create a fake extension module for testing. """
-    mod_name = '_'.join(['mdx', name])
+    if use_old_style:
+        mod_name = '_'.join(['mdx', name])
+    else:
+        mod_name = name
     if not PY3:
         # mod_name must be bytes in Python 2.x
         mod_name = bytes(mod_name)

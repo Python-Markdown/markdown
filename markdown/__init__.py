@@ -36,6 +36,7 @@ from .__version__ import version, version_info
 import codecs
 import sys
 import logging
+import importlib
 from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
@@ -163,6 +164,8 @@ class Markdown(object):
                 ext = self.build_extension(ext, configs.get(ext, []))
             if isinstance(ext, Extension):
                 ext.extendMarkdown(self, globals())
+                logger.info('Successfully loaded extension "%s.%s".' 
+                            % (ext.__class__.__module__, ext.__class__.__name__))
             elif ext is not None:
                 raise TypeError(
                     'Extension "%s.%s" must be of type: "markdown.Extension"'
@@ -187,23 +190,28 @@ class Markdown(object):
             pairs = [x.split("=") for x in ext_args.split(",")]
             configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
 
-        # Setup the module name
-        module_name = ext_name
-        if '.' not in ext_name:
-            module_name = '.'.join(['markdown.extensions', ext_name])
-
         # Try loading the extension first from one place, then another
-        try: # New style (markdown.extensions.<extension>)
-            module = __import__(module_name, {}, {}, [str(module_name.rpartition('.')[0])])
+        try: 
+            # Assume string uses dot syntax (`path.to.some.module`)
+            module = importlib.import_module(ext_name)
+            logger.debug('Successfuly imported extension module "%s".' % ext_name)
         except ImportError:
-            module_name_old_style = '_'.join(['mdx', ext_name])
-            try: # Old style (mdx_<extension>)
-                module = __import__(module_name_old_style)
-            except ImportError as e:
-                message = "Failed loading extension '%s' from '%s' or '%s'" \
-                    % (ext_name, module_name, module_name_old_style)
-                e.args = (message,) + e.args[1:]
-                raise
+            # Preppend `markdown.extensions.` to name
+            module_name = '.'.join(['markdown.extensions', ext_name])
+            try: 
+                module = importlib.import_module(module_name)
+                logger.debug('Successfuly imported extension module "%s".' % module_name)
+            except ImportError:
+                # Preppend `mdx_` to name
+                module_name_old_style = '_'.join(['mdx', ext_name])
+                try: 
+                    module = importlib.import_module(module_name_old_style)
+                    logger.debug('Successfuly imported extension module "%s".' % module_name_old_style)
+                except ImportError as e:
+                    message = "Failed loading extension '%s' from '%s', '%s' or '%s'" \
+                        % (ext_name, ext_name, module_name, module_name_old_style)
+                    e.args = (message,) + e.args[1:]
+                    raise
 
         # If the module is loaded successfully, we expect it to define a
         # function called makeExtension()
