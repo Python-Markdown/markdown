@@ -10,18 +10,23 @@ Python-Markdown 2.5 Release Notes
 We are pleased to release Python-Markdown 2.5 which adds a few new features
 and fixes various bugs. See the list of changes below for details.
 
-Python-Markdown supports Python versions 2.7, 3.2, 3.3, and 3.4.
+Python-Markdown version 2.5 supports Python versions 2.7, 3.2, 3.3, and 3.4.
 
 Backwards-incompatible Changes
 ------------------------------
 
-* Python-Markdown no longer supports Python version 2.6. You must be using Python 2.7+
-or Python-Markdown 2.5 will not load.
+* Python-Markdown no longer supports Python version 2.6. You must be using Python 
+  versions 2.7, 3.2, 3.3, or 3.4. While Python-Markdown is no longer tested against
+  Python 2.6, you may be able to get it working if you install a copy of [importlib] 
+  which has been backported for Python 2.6. However, the developers of Python-Markdown 
+  offer no guarentees in that situation.
+
+[importlib]: https://pypi.python.org/pypi/importlib
 
 * The `force_linenos` config key on the [CodeHilite Extension] has been deprecated
-and will raise a `KeyError` if provided. In the previous release (2.4), it was issuing 
-a `DeprecationWarning`. The [`linenums`][linenums] keyword should be used instead,
-which provides more control of the output.
+  and will raise a `KeyError` if provided. In the previous release (2.4), it was 
+  issuing a `DeprecationWarning`. The [`linenums`][linenums] keyword should be used 
+  instead, which provides more control of the output.
 
 [CodeHilite Extension]: extensions/code_hilite.html
 [linenumes]: extensions/code_hilite.html#usage
@@ -29,27 +34,29 @@ which provides more control of the output.
 What's New in Python-Markdown 2.5
 ---------------------------------
 
-* The [Smarty Extension] has had a number of additional configuration settings
-added, which allows one to define their own subtitutions to better support
-languages other than English. Thanks to [Martin Altmayer] for implementing this feature.
+*   The [Smarty Extension] has had a number of additional configuration settings
+    added, which allows one to define their own subtitutions to better support
+    languages other than English. Thanks to [Martin Altmayer] for implementing this 
+	feature.
 
 [Smarty Extension]: extensions/smarty.html
 [Martin Altmayer]:https://github.com/MartinAltmayer
 
-* Named Extensions (strings passed to the [`extensions`][ex] keyword of `markdown.Markdown`) 
-  can now point to any module and/or Class on your PYTHONPATH. While dot notation was 
-  previously supported, a module could not be at the root of your PYTHONPATH. The name had 
-  to contain at least one dot (requiring it to be a submodule). This restriction no longer 
-  exists. 
+*   Named Extensions (strings passed to the [`extensions`][ex] keyword of 
+    `markdown.Markdown`) can now point to any module and/or Class on your PYTHONPATH. 
+	While dot notation was previously supported, a module could not be at the root of 
+	your PYTHONPATH. The name had to contain at least one dot (requiring it to be a 
+	submodule). This restriction no longer exists. 
 
-	Additionaly, a Class may be specified in the name. The class must be at the end of the 
-	name (usig dot notation from PYTHONPATH) and seperated by a colon from the module. 
+	Additionaly, a Class may be specified in the name. The class must be at the end of 
+	the name (which uses dot notation from PYTHONPATH) and be seperated by a colon from 
+	the module. 
 
 	Therefore, if you were to import the class like this:
 	
 		from path.to.module import SomeExtensionClass
 
-	Then the named extension would be the string:
+	Then the named extension would comprise this string:
 
 		"path.to.module:SomeExtensionClass"
 	
@@ -58,7 +65,7 @@ languages other than English. Thanks to [Martin Altmayer] for implementing this 
 	a template filter or the command line).
 
 	This also means that extension modules are no longer required to include the 
-	`makeExtension`	funtion which returns an instance of the extension class. However, 
+	`makeExtension`	function which returns an instance of the extension class. However, 
 	if the user does not specify the class name (she only provides `"path.to.module"`)
 	the extension will fail to load without the `makeExtension` function included in
 	the module. Extension authors will want to document carfully what is required to
@@ -66,29 +73,34 @@ languages other than English. Thanks to [Martin Altmayer] for implementing this 
 
 [ex]: reference.html#extensions
 
-* The Extension Configuration code has been refactord to make it a little easier 
-for extension authors to work with config settings. As a result, the 
-[`extension_configs`][ec] keyword now accepts a dictionary rather than requiring 
-a list of tuples. A list of tuples is still supported so no one needs to change 
-their existing code. This should also simplify the learning curve for new users.
+*   The Extension Configuration code has been refactord to make it a little easier 
+    for extension authors to work with config settings. As a result, the 
+    [`extension_configs`][ec] keyword now accepts a dictionary rather than requiring 
+    a list of tuples. A list of tuples is still supported so no one needs to change 
+    their existing code. This should also simplify the learning curve for new users.
+
+	Extension authors are encouraged to review the new methods available on the 
+	`markdown.extnesions.Extension` class for handling configs and adjust their
+	code going forward. The included extensions provide a model for best practices.
 
 [ec]: reference.html#extension_configs
 
-* The [Command Line Interface][cli] now accepts a `--extensions_config` (or `-c`) option
-which accepts a filename and passes the parsed content of a [YAML] or [JSON] file to the 
-[`extension_configs`][ec] keyword of the `markdown.Markdown` class. The contents of 
-the YAML or JSON must map to a Python Dictionary which matches the format required 
-by the `extension_configs` kerword. Note that [PyYAML] is required to parse YAML files.
+*   The [Command Line Interface][cli] now accepts a `--extensions_config` (or `-c`) 
+    option which accepts a filename and passes the parsed content of a [YAML] or 
+	[JSON]   file to the [`extension_configs`][ec] keyword of the `markdown.Markdown`
+	class. The contents of the YAML or JSON must map to a Python Dictionary which 
+	matches the format required by the `extension_configs` kerword. Note that 
+	[PyYAML] is required to parse YAML files.
 
 [cli]: cli.html#using-extensions
 [YAML]: http://yaml.org/
 [JSON]: http://json.org/
 [PyYAML]: http://pyyaml.org/
 
-* There have been various refactors of the testing framework. While those changes
-will not directly effect end users, the code is being better tested which will 
-benefit everyone.
+*   There have been various refactors of the testing framework. While those changes
+    will not directly effect end users, the code is being better tested which will 
+    benefit everyone.
 
-* Various bug fixes have been made.  See the
-[commit log](https://github.com/waylan/Python-Markdown/commits/master)
-for a complete history of the changes.
+*   Various bug fixes have been made.  See the
+    [commit log](https://github.com/waylan/Python-Markdown/commits/master)
+    for a complete history of the changes.
