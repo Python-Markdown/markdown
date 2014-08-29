@@ -57,7 +57,7 @@ Use e.g. the following config to get correct quotes for the German language:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `smarty`
+See [Extensions](index.html) for general extension usage, specify `markdown.extensions.smarty`
 as the name of the extension.
 
 See the [Library Reference](../reference.html#extensions) for information about

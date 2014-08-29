@@ -113,14 +113,7 @@ Using Extensions
 ----------------
 
 To load a Python-Markdown extension from the command line use the `-x` 
-(or `--extension`) option. For extensions included with Python-Markdown, use 
-the short "Name" [documented] for that extension. 
-
-[documented]: index.html#officially-supported-extensions
-
-    $ python -m markdown -x footnotes text_with_footnotes.txt
-
-For third party extensions, the extension module must be on your `PYTHONPATH` 
+(or `--extension`) option. The extension module must be on your `PYTHONPATH` 
 (see the [Extension API](extensions/api.html) for details). The extension can 
 then be invoked by the name of that module using Python's dot syntax:
 
@@ -128,13 +121,13 @@ then be invoked by the name of that module using Python's dot syntax:
 
 To load multiple extensions, specify an `-x` option for each extension:
 
-	$ python -m markdown -x footnotes -x codehilite input.txt
+	$ python -m markdown -x markdown.extensions.footnotes -x markdown.extensions.codehilite input.txt
 
 If the extension supports configuration options (see the documentation for the 
 extension you are using to determine what settings it supports, if any), you 
 can pass them in as well:
 
-	$ python -m markdown -x footnotes -c config.yml input.txt
+	$ python -m markdown -x markdown.extensions.footnotes -c config.yml input.txt
 
 The `-c` (or `--extension_configs`) option accepts a file name. The file must be in
 either the [YAML] or [JSON] format and contain YAML or JSON data that would map to
@@ -142,12 +135,12 @@ a Python Dictionary in the format required by the [`extension_configs`][ec] keyw
 of the `markdown.Markdown` class. Therefore, the file `config.yaml` referenced in the 
 above example might look like this:
 
-	footnotes:
+	markdown.extensions.footnotes:
 		PLACE_MARKER: ~~~~~~~~
 		UNIQUE_IDS: True
 
-Note that while the `--extension_configs` option does specify the "footnotes" extension,
-you still need to load the extension with the `-x` option, or the configs for that
+Note that while the `--extension_configs` option does specify the "markdown.extensions.footnotes" 
+extension, you still need to load the extension with the `-x` option, or the configs for that
 extension will be ignored.
 
 The `--extension_configs` option will only support YAML config files if [PyYaml] is
@@ -157,7 +150,7 @@ of your config file is automatically detected.
 As an alternative, you may append the extension configs as a string to the extension name 
 that is provided to the `-x-` option in the following format:
 
-	$ python -m markdown -x "footnotes(PLACE_MARKER=~~~~~~~~,UNIQUE_IDS=1)" input.txt
+	$ python -m markdown -x "markdown.extensions.footnotes(PLACE_MARKER=~~~~~~~~,UNIQUE_IDS=1)" input.txt
 
 Note that there are no quotes or whitespace in the above format, which severely limits 
 how it can be used. For more complex settings, it is suggested that the 

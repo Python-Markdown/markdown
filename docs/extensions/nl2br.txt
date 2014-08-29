@@ -31,7 +31,7 @@ Example
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `nl2br`
+See [Extensions](index.html) for general extension usage, specify `markdown.extensions.nl2br`
 as the name of the extension.
 
 This extension does not accept any special configuration options.

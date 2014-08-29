@@ -46,7 +46,7 @@ becomes
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `wikilinks`
+See [Extensions](index.html) for general extension usage, specify `markdown.extensions.wikilinks`
 as the name of the extension.
 
 See the [Library Reference](../reference.html#extensions) for information about
@@ -78,7 +78,7 @@ For an example, let us suppose links should always point to the subdirectory
 `/wiki/` and end with `.html`
 
     >>> html = markdown.markdown(text,
-    ...     ['wikilinks(base_url=/wiki/,end_url=.html)']
+    ...     ['markdown.extensions.wikilinks(base_url=/wiki/,end_url=.html)']
     ... )
 
 The above would result in the following link for `[[WikiLink]]`.
@@ -94,14 +94,14 @@ could also pass in a callable which must accept three arguments (``label``,
         return url
 
     md = markdown.Markdown(
-            extensions=['wikilinks],
-            extension_configs={'wikilinks' : [('build_url', my_url_builder)]}
+            extensions=['markdown.extensions.wikilinks],
+            extension_configs={'markdown.extensions.wikilinks' : [('build_url', my_url_builder)]}
     )
 
 The option is also provided to change or remove the class attribute.
 
     >>> html = markdown.markdown(text,
-    ...     ['wikilinks(html_class=myclass)']
+    ...     ['markdown.extensions.wikilinks(html_class=myclass)']
     ... )
 
 Would cause all wikilinks to be assigned to the class `myclass`.

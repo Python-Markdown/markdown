@@ -82,7 +82,7 @@ The above results in the following output:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `attr_list`
+See [Extensions](index.html) for general extension usage, specify `markdown.extensions.attr_list`
 as the name of the extension.
 
 This extension does not accept any special configuration options.

@@ -35,7 +35,7 @@ Results in:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `headerid`
+See [Extensions](index.html) for general extension usage, specify `markdown.extensions.headerid`
 as the name of the extension.
 
 See the [Library Reference](../reference.html#extensions) for information about

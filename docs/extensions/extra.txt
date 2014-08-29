@@ -32,7 +32,7 @@ Usage
 From the Python interpreter:
 
     >>> import markdown
-    >>> html = markdown.markdown(text, ['extra'])
+    >>> html = markdown.markdown(text, ['markdown.extensions.extra'])
 
 There may be [additional extensions](index.html) that are distributed with
 Python-Markdown that are not included here in Extra. The features 
@@ -45,7 +45,7 @@ your own clone of Extra under a different name
 Markdown Inside HTML Blocks
 ---------------------------
 
-Unlike the other Extra features, this feature is built into the markdown core and is turned on when `extra` is enabled.
+Unlike the other Extra features, this feature is built into the markdown core and is turned on when `markdown.extensions.extra` is enabled.
 
 The content of any raw html block element can be Markdown-formatted simply by adding a `markdown` attribute to the opening tag. The markdown attribute will be stripped from the output, but all other attributes will be preserved.
 

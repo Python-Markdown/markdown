@@ -14,13 +14,13 @@ actual source files.
 
 To use an extension, pass it to markdown with the `extensions` keyword.
 
-    markdown.markdown(some_text, extensions=[MyExtension(), 'path.to.my.ext', 'footnotes'])
+    markdown.markdown(some_text, extensions=[MyExtension(), 'path.to.my.ext', 'markdown.extensions.footnotes'])
 
 See the [Library Reference](../reference.html#extensions) for more details.
 
 From the command line, specify an extension with the `-x` option. 
 
-    $ python -m markdown -x footnotes -x tables input.txt > output.html
+    $ python -m markdown -x markdown.extensions.footnotes -x markdown.extensions.tables input.txt > output.html
 
 See the [Command Line docs](../cli.html) or use the `--help` option for more details.
 
@@ -39,23 +39,23 @@ available to you using the "name" listed in the second column below.
 
 Extension                            | "Name"
 ------------------------------------ | ---------------
-[Extra]                              | `extra`
-&nbsp; &nbsp; [Abbreviations][]      | `abbr`
-&nbsp; &nbsp; [Attribute Lists][]    | `attr_list`
-&nbsp; &nbsp; [Definition Lists][]   | `def_list`
-&nbsp; &nbsp; [Fenced Code Blocks][] | `fenced_code`
-&nbsp; &nbsp; [Footnotes][]          | `footnotes`
-&nbsp; &nbsp; [Tables][]             | `tables`
-&nbsp; &nbsp; [Smart Strong][]       | `smart_strong`
-[Admonition][]                       | `admonition`
-[CodeHilite][]                       | `codehilite`
-[HeaderId]                           | `headerid`
-[Meta-Data]                          | `meta`
-[New Line to Break]                  | `nl2br`
-[Sane Lists]                         | `sane_lists`
-[SmartyPants]                        | `smarty`
-[Table of Contents]                  | `toc`
-[WikiLinks]                          | `wikilinks`
+[Extra]                              | `markdown.extensions.extra`
+&nbsp; &nbsp; [Abbreviations][]      | `markdown.extensions.abbr`
+&nbsp; &nbsp; [Attribute Lists][]    | `markdown.extensions.attr_list`
+&nbsp; &nbsp; [Definition Lists][]   | `markdown.extensions.def_list`
+&nbsp; &nbsp; [Fenced Code Blocks][] | `markdown.extensions.fenced_code`
+&nbsp; &nbsp; [Footnotes][]          | `markdown.extensions.footnotes`
+&nbsp; &nbsp; [Tables][]             | `markdown.extensions.tables`
+&nbsp; &nbsp; [Smart Strong][]       | `markdown.extensions.smart_strong`
+[Admonition][]                       | `markdown.extensions.admonition`
+[CodeHilite][]                       | `markdown.extensions.codehilite`
+[HeaderId]                           | `markdown.extensions.headerid`
+[Meta-Data]                          | `markdown.extensions.meta`
+[New Line to Break]                  | `markdown.extensions.nl2br`
+[Sane Lists]                         | `markdown.extensions.sane_lists`
+[SmartyPants]                        | `markdown.extensions.smarty`
+[Table of Contents]                  | `markdown.extensions.toc`
+[WikiLinks]                          | `markdown.extensions.wikilinks`
 
 [Extra]: extra.html
 [Abbreviations]: abbreviations.html

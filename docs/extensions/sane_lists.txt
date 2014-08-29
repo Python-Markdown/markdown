@@ -67,7 +67,7 @@ In all other ways, Sane Lists should behave as normal Markdown lists.
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `sane_lists`
+See [Extensions](index.html) for general extension usage, specify `markdown.extensions.sane_lists`
 as the name of the extension.
 
 This extension does not accept any special configuration options.
