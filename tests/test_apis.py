@@ -320,11 +320,11 @@ def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False, use
         # mod_name must be bytes in Python 2.x
         mod_name = bytes(mod_name)
     ext_mod = types.ModuleType(mod_name)
-    def makeExtension(configs=None):
+    def makeExtension(*args, **kwargs):
         if is_wrong_type:
             return object
         else:
-            return markdown.extensions.Extension(configs=configs)
+            return markdown.extensions.Extension(*args, **kwargs)
     if has_factory_func:
         ext_mod.makeExtension = makeExtension
     # Warning: this brute forces the extenson module onto the system. Either 

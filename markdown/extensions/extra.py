@@ -36,18 +36,24 @@ from ..blockprocessors import BlockProcessor
 from .. import util
 import re
 
-extensions = ['smart_strong',
-              'fenced_code',
-              'footnotes',
-              'attr_list',
-              'def_list',
-              'tables',
-              'abbr',
-              ]
+extensions = [
+    'markdown.extensions.smart_strong',
+    'markdown.extensions.fenced_code',
+    'markdown.extensions.footnotes',
+    'markdown.extensions.attr_list',
+    'markdown.extensions.def_list',
+    'markdown.extensions.tables',
+    'markdown.extensions.abbr'
+]
 
 
 class ExtraExtension(Extension):
     """ Add various extensions to Markdown class."""
+
+    def __init__(self, *args, **kwargs):
+        """ config is just a dumb holder which gets passed to actual ext later. """
+        self.config = kwargs.pop('configs', {})
+        self.config.update(kwargs)
 
     def extendMarkdown(self, md, md_globals):
         """ Register extension instances. """

@@ -117,7 +117,7 @@ class HeaderIdTreeprocessor(Treeprocessor):
 
 
 class HeaderIdExtension(Extension):
-    def __init__(self, configs):
+    def __init__(self, *args, **kwargs):
         # set defaults
         self.config = {
                 'level' : ['1', 'Base level for headers.'],
@@ -126,8 +126,7 @@ class HeaderIdExtension(Extension):
                 'slugify' : [slugify, 'Callable to generate anchors'], 
             }
 
-        for key, value in configs:
-            self.setConfig(key, value)
+        super(HeaderIdExtension, self).__init__(*args, **kwargs)
 
     def extendMarkdown(self, md, md_globals):
         md.registerExtension(self)

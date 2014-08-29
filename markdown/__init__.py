@@ -218,11 +218,11 @@ class Markdown(object):
 
         if class_name:
             # Load given class name from module.
-            return getattr(module, class_name)(configs.items())
+            return getattr(module, class_name)(configs=configs)
         else:
             # Expect  makeExtension() function to return a class.
             try:
-                return module.makeExtension(configs.items())
+                return module.makeExtension(configs=configs)
             except AttributeError as e:
                 message = e.args[0]
                 message = "Failed to initiate extension " \
