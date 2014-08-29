@@ -55,7 +55,8 @@ The following options are provided to configure the output:
         >>>  text = '''
         ... #Some Header
         ... ## Next Level'''
-        >>> html = markdown.markdown(text, extensions=['headerid(level=3)'])
+		>>> from markdown.extensions.headerid import HeaderIdExtension
+        >>> html = markdown.markdown(text, extensions=[HeaderIdExtension(level=3)])
         >>> print html
         <h3 id="some_header">Some Header</h3>
         <h4 id="next_level">Next Level</h4>'
@@ -72,7 +73,7 @@ The following options are provided to configure the output:
         ... # Some Header
         ... # Header with ID # { #foo }'''
         >>> html = markdown.markdown(text, 
-                        extensions=['attr_list', 'headerid(forceid=False)'])
+                        extensions=['attr_list', HeaderIdExtension(forceid=False)])
         >>> print html
         <h1>Some Header</h1>
         <h1 id="foo">Header with ID</h1>

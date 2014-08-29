@@ -77,8 +77,9 @@ The following options are provided to change the default behavior:
 For an example, let us suppose links should always point to the subdirectory
 `/wiki/` and end with `.html`
 
-    >>> html = markdown.markdown(text,
-    ...     ['markdown.extensions.wikilinks(base_url=/wiki/,end_url=.html)']
+    >>> from markdown.extensions.wikilinks import WikiLinkExtension
+	>>> html = markdown.markdown(text,
+    ...     extensions=[WikiLinkExtension(base_url='/wiki/', end_url='.html')]
     ... )
 
 The above would result in the following link for `[[WikiLink]]`.
@@ -89,19 +90,18 @@ If you want to do more that just alter the base and/or end of the URL, you
 could also pass in a callable which must accept three arguments (``label``,
 ``base``, and ``end``). The callable must return the URL in it's entirety.
 
-    def my_url_builder(label, base, end):
-        # do stuff
-        return url
-
-    md = markdown.Markdown(
-            extensions=['markdown.extensions.wikilinks],
-            extension_configs={'markdown.extensions.wikilinks' : [('build_url', my_url_builder)]}
-    )
+    >>> def my_url_builder(label, base, end):
+    ...    # do stuff
+    ...    return url
+	...
+    >>> html = markdown.markdown(text,
+    ...     extensions=[WikiLinkExtension(build_url=my_url_builder)],
+    ... )
 
 The option is also provided to change or remove the class attribute.
 
     >>> html = markdown.markdown(text,
-    ...     ['markdown.extensions.wikilinks(html_class=myclass)']
+    ...     extensions=[WikiLinkExtension(html_class='myclass')]
     ... )
 
 Would cause all wikilinks to be assigned to the class `myclass`.
