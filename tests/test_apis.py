@@ -560,13 +560,15 @@ class TestCliOptionParsing(unittest.TestCase):
         self.assertEqual(options, self.default_options)
 
     def testExtensionOption(self):
-        options, logging_level = parse_options(['-x', 'footnotes'])
-        self.default_options['extensions'] = ['footnotes']
+        options, logging_level = parse_options(['-x', 'markdown.extensions.footnotes'])
+        self.default_options['extensions'] = ['markdown.extensions.footnotes']
         self.assertEqual(options, self.default_options)
 
     def testMultipleExtensionOptions(self):
-        options, logging_level = parse_options(['-x', 'footnotes', '-x', 'smarty'])
-        self.default_options['extensions'] = ['footnotes', 'smarty']
+        options, logging_level = parse_options(['-x', 'markdown.extensions.footnotes', 
+                                                '-x', 'markdown.extensions.smarty'])
+        self.default_options['extensions'] = ['markdown.extensions.footnotes', 
+                                              'markdown.extensions.smarty']
         self.assertEqual(options, self.default_options)
 
     def create_config_file(self, config):
@@ -580,12 +582,12 @@ class TestCliOptionParsing(unittest.TestCase):
 
     def testExtensonConfigOption(self):
         config = {
-        'wikilinks': {
+        'markdown.extensions.wikilinks': {
             'base_url': 'http://example.com/',
             'end_url': '.html',
             'html_class': 'test',
             },
-        'footnotes:FootnotesExtension': {
+        'markdown.extensions.footnotes:FootnotesExtension': {
             'PLACE_MARKER': '~~~footnotes~~~'
             }
         }
@@ -596,12 +598,12 @@ class TestCliOptionParsing(unittest.TestCase):
 
     def testExtensonConfigOptionAsJSON(self):
         config = {
-        'wikilinks': {
+        'markdown.extensions.wikilinks': {
             'base_url': 'http://example.com/',
             'end_url': '.html',
             'html_class': 'test',
             },
-        'footnotes:FootnotesExtension': {
+        'markdown.extensions.footnotes:FootnotesExtension': {
             'PLACE_MARKER': '~~~footnotes~~~'
             }
         }
