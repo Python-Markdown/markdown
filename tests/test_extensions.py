@@ -118,7 +118,8 @@ class TestCodeHilite(unittest.TestCase):
     
     def testLinenumsTrue(self):
         text = '\t# A Code Comment'
-        md = markdown.Markdown(extensions=['markdown.extensions.codehilite(linenums=True)'])
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=True)])
         if self.has_pygments:
             # Differant versions of pygments output slightly different markup.
             # So we use 'startwith' and test just enough to confirm that 
@@ -132,7 +133,8 @@ class TestCodeHilite(unittest.TestCase):
 
     def testLinenumsFalse(self):
         text = '\t#!Python\n\t# A Code Comment'
-        md = markdown.Markdown(extensions=['markdown.extensions.codehilite(linenums=False)'])
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=False)])
         if self.has_pygments:
             self.assertEqual(md.convert(text),
                 '<div class="codehilite">'
@@ -145,7 +147,8 @@ class TestCodeHilite(unittest.TestCase):
 
     def testLinenumsNone(self):
         text = '\t# A Code Comment'
-        md = markdown.Markdown(extensions=['markdown.extensions.codehilite(linenums=None)'])
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=None)])
         if self.has_pygments:
             self.assertEqual(md.convert(text),
                 '<div class="codehilite">'
@@ -158,7 +161,8 @@ class TestCodeHilite(unittest.TestCase):
 
     def testLinenumsNoneWithShebang(self):
         text = '\t#!Python\n\t# A Code Comment'
-        md = markdown.Markdown(extensions=['markdown.extensions.codehilite(linenums=None)'])
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=None)])
         if self.has_pygments:
             # Differant versions of pygments output slightly different markup.
             # So we use 'startwith' and test just enough to confirm that 
@@ -172,7 +176,8 @@ class TestCodeHilite(unittest.TestCase):
 
     def testLinenumsNoneWithColon(self):
         text = '\t:::Python\n\t# A Code Comment'
-        md = markdown.Markdown(extensions=['markdown.extensions.codehilite(linenums=None)'])
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=None)])
         if self.has_pygments:
             self.assertEqual(md.convert(text),
                 '<div class="codehilite">'
@@ -283,7 +288,7 @@ line 2
 line 3
 ```'''
         md = markdown.Markdown(extensions=[
-            'markdown.extensions.codehilite(linenums=None,guess_lang=False)',
+             markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
             'markdown.extensions.fenced_code'])
 
         if self.has_pygments:
@@ -316,7 +321,7 @@ line 3
 ~~~'''
         for text in (text0, text1):
             md = markdown.Markdown(extensions=[
-                'markdown.extensions.codehilite(linenums=None,guess_lang=False)',
+                 markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
                 'markdown.extensions.fenced_code'])
 
             if self.has_pygments:
@@ -365,7 +370,8 @@ class TestHeaderId(unittest.TestCase):
         """ Test Header Base Level. """
 
         text = '#Some Header\n## Next Level'
-        self.assertEqual(markdown.markdown(text, ['markdown.extensions.headerid(level=3)']),
+        self.assertEqual(
+            markdown.markdown(text, [markdown.extensions.headerid.HeaderIdExtension(level=3)]),
             '<h3 id="some-header">Some Header</h3>\n'
             '<h4 id="next-level">Next Level</h4>')
 
@@ -393,7 +399,8 @@ class TestHeaderId(unittest.TestCase):
         """ Test HeaderIDs with no auto generated IDs. """
 
         text = '# Some Header\n# Another Header'
-        self.assertEqual(markdown.markdown(text, ['markdown.extensions.headerid(forceid=False)']),
+        self.assertEqual(
+            markdown.markdown(text, [markdown.extensions.headerid.HeaderIdExtension(forceid=False)]),
             '<h1>Some Header</h1>\n'
             '<h1>Another Header</h1>')
 
@@ -482,7 +489,9 @@ class TestWikiLinks(unittest.TestCase):
         """ Test Simple Settings. """
 
         self.assertEqual(markdown.markdown(self.text,
-            ['markdown.extensions.wikilinks(base_url=/wiki/,end_url=.html,html_class=foo)']),
+            [markdown.extensions.wikilinks.WikiLinkExtension(base_url='/wiki/', 
+                                                             end_url='.html', 
+                                                             html_class='foo')]),
             '<p>Some text with a '
             '<a class="foo" href="/wiki/WikiLink.html">WikiLink</a>.</p>')
 
