@@ -25,13 +25,6 @@ following format:
 
 That will run the module as a script with the options and args provided. 
 
-!!! Note 
-    Unfortunately, Python 2.6 does not fully support the `-m` flag. Therefore, you 
-    may need to specify the module in which the command line script exists 
-    (`markdown.__main__`):
-
-        $ python -m markdown.__main__ [options] [args]
-
 At its most basic usage, one would simply pass in a file name as the only argument:
 
     $ python -m markdown input_file.txt

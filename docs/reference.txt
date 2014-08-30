@@ -68,7 +68,7 @@ The following options are available on the `markdown.markdown` function:
 
         extensions=[MyExtension(), 'path.to.my.ext']
     
-    !!! warning
+    !!! note
         The prefered method is to pass in an instance of an extension. Strings
 		should only be used when it is impossable to import the Extension Class
 		directly (from the command line or in a template).
@@ -101,9 +101,10 @@ The following options are available on the `markdown.markdown` function:
 		"path.to.module:SomeExtensionClass"
 
 	!!! note
-	You should only need to specify the class name if more than one extension is defined
-	within the same module. The extensions that come with Python-Markdown do *not*
-	need to have the class name specified.
+		You should only need to specify the class name if more than one extension 
+		is defined	within the same module. The extensions that come with 
+		Python-Markdown do *not* need to have the class name specified. However,
+		doing so will not effect the behavior of the parser.
 
     When loading an extension by name (as a string), you may pass in
     configuration settings to the extension using the 
@@ -122,7 +123,7 @@ The following options are available on the `markdown.markdown` function:
     
     !!! Note
         The prefered method is to pass in an instance of an extension, which
-        does not require use of the `extension_configs` keyword at all.  
+        does not require use of the `extension_configs` keyword at all.
         See the [extensions](#extensions) keyword for details.
     
     The dictionary of configuration settings must be in the following format:

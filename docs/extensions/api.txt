@@ -589,7 +589,8 @@ following methods available to assist in working with config settings:
 	a boolean value except when it is `None`. No conversion takes place
 	when the previous value of `key` is a string.
 
-* **``setConfigs(items):
+* **``setConfigs(items)``**:
+
 	Sets multiple config settings given a dict of key/value pairs.
 
 ### makeExtension {: #makeextension }
@@ -611,7 +612,7 @@ within templates).
 
 The "name" of your extension must be a string consisting of the importable path to
 your module using Python's dot notation. Therefore, if you are providing a library
-to your users and would like to include a custom markdown extensions within your 
+to your users and would like to include a custom markdown extension within your 
 library, that extension would be named `"mylib.mdext.myext"` where `mylib/mdext/myext.py`
 contains the extension and the `mylib` directory is on the PYTHONPATH.
 

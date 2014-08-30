@@ -13,33 +13,31 @@ Summary
 The SmartyPants extension converts ASCII dashes, quotes and ellipses to
 their HTML entity equivalents.
 
-ASCII symbol | Replacements    | HTML Entities
------------- | --------------- | -------------------
-`'`          | &lsquo; &rsquo; | `&lsquo;` `&rsquo;`
-`"`          | &ldquo; &rdquo; | `&ldquo;` `&rdquo;`
-`<< >>`      | &laquo; &raquo; | `&laquo;` `&raquo;`
-`...`        | &hellip;        | `&hellip;`
-`--`         | &ndash;         | `&ndash;`
-`---`        | &mdash;         | `&mdash;`
+ASCII symbol | Replacements    | HTML Entities       | Substitution Keys
+------------ | --------------- | ------------------- | ----------------------------------------
+`'`          | &lsquo; &rsquo; | `&lsquo;` `&rsquo;` | `'left-single-quote'`, `'right-single-quote'`
+`"`          | &ldquo; &rdquo; | `&ldquo;` `&rdquo;` | `'left-double-quote'`, `'right-double-quote'`
+`<< >>`      | &laquo; &raquo; | `&laquo;` `&raquo;` | `'left-angle-quote'`, `'right-angle-quote'`
+`...`        | &hellip;        | `&hellip;`          | `'ellipsis'`
+`--`         | &ndash;         | `&ndash;`           | `'ndash'`
+`---`        | &mdash;         | `&mdash;`           | `'mdash'`
 
 Using the configuration option 'substitutions' you can overwrite the
-default substitutions. Just pass a dict mapping (a subset of) the following
+default substitutions. Just pass a dict mapping (a subset of) the 
 keys to the substitution strings.
-
-    'mdash', 'ndash', 'ellipsis',
-    'left-angle-quote', 'right-angle-quote',
-    'left-single-quote', 'right-single-quote',
-    'left-double-quote', 'right-double-quote'
     
-Use e.g. the following config to get correct quotes for the German language:
+For example, one might use the following config to get correct quotes for 
+the German language:
 
     extensionConfigs = {
-        'smarty': [('substitutions', {
-                    'left-single-quote': '&sbquo;', # sb is not a typo!
-                    'right-single-quote': '&lsquo;',
-                    'left-double-quote': '&bdquo;',
-                    'right-double-quote': '&ldquo;'
-                    })]
+        'smarty': {
+			'substitutions': {
+				'left-single-quote': '&sbquo;', # sb is not a typo!
+                'right-single-quote': '&lsquo;',
+                'left-double-quote': '&bdquo;',
+                'right-double-quote': '&ldquo;'
+            }
+		}
     }
 
 !!! note
@@ -57,8 +55,8 @@ Use e.g. the following config to get correct quotes for the German language:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.smarty`
-as the name of the extension.
+See [Extensions](index.html) for general extension usage, specify 
+`markdown.extensions.smarty` as the name of the extension.
 
 See the [Library Reference](../reference.html#extensions) for information about
 configuring extensions.
@@ -67,11 +65,11 @@ The following options are provided to configure the output:
 
 Option                | Default value | Description
 ------                | ------------- | -----------
-`smart_dashes`        | enabled       | whether to convert dashes
-`smart_quotes`        | enabled       | whether to convert straight quotes
-`smart_angled_quotes` | disabled      | whether to convert angled quotes
-`smart_ellipses`      | enabled       | whether to convert ellipses
-`substitutions`       | {}            | overwrite default substitutions
+`smart_dashes`        | `True`        | whether to convert dashes
+`smart_quotes`        | `True`        | whether to convert straight quotes
+`smart_angled_quotes` | `False`       | whether to convert angled quotes
+`smart_ellipses`      | `True`        | whether to convert ellipses
+`substitutions`       | `{}`          | overwrite default substitutions
 
 Further reading
 ---------------

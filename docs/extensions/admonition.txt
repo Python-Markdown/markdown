@@ -14,10 +14,6 @@ The Admonition extension adds [rST-style][rST] admonitions to Markdown documents
 
 This extension is included in the standard Markdown library.
 
-!!! Warning
-    This Extension is experimental and subject to change without notice.
-    Consider yourself warned.
-
 [rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions
 
 Syntax
