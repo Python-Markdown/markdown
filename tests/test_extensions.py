@@ -47,22 +47,6 @@ class TestExtensionClass(unittest.TestCase):
         # self.ext.setConfig('bad', 'baz) ==> KeyError
         self.assertRaises(KeyError, self.ext.setConfig, 'bad', 'baz')
 
-    def testConfigAsArgListOnInit(self):
-        ext = self.ExtKlass([('foo', 'baz'), ('bar', 'blah')])
-        self.assertEqual(ext.getConfigs(), {'foo': 'baz', 'bar': 'blah'})
-
-    def testConfigAsArgDictOnInit(self):
-        ext = self.ExtKlass({'foo': 'baz', 'bar': 'blah', 'bar': 'blah'})
-        self.assertEqual(ext.getConfigs(), {'foo': 'baz', 'bar': 'blah'})
-
-    def testConfigAsKwargListOnInit(self):
-        ext = self.ExtKlass(configs=[('foo', 'baz'), ('bar', 'blah')])
-        self.assertEqual(ext.getConfigs(), {'foo': 'baz', 'bar': 'blah'})
-
-    def testConfigAsKwargDictOnInit(self):
-        ext = self.ExtKlass(configs={'foo': 'baz', 'bar': 'blah'})
-        self.assertEqual(ext.getConfigs(), {'foo': 'baz', 'bar': 'blah'})
-
     def testConfigAsKwargsOnInit(self):
         ext = self.ExtKlass(foo='baz', bar='blah')
         self.assertEqual(ext.getConfigs(), {'foo': 'baz', 'bar': 'blah'})

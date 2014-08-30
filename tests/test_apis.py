@@ -303,14 +303,24 @@ class TestErrors(unittest.TestCase):
         self.assertRaises(NotImplementedError, 
                         markdown.Markdown, extensions=['fake_c'])
 
-    def testDotSyntaxExtention(self):
-        """ Test that dot syntax imports properly (not using mdx_). """
-        _create_fake_extension(name='fake_d', use_old_style=False)
-        self.assertRaises(NotImplementedError, 
+    def testMdxExtention(self):
+        """ Test that appending mdx_ raises a PendingDeprecationWarning. """
+        _create_fake_extension(name='fake_d', use_old_style=True)
+        self.assertRaises(PendingDeprecationWarning, 
                         markdown.Markdown, extensions=['fake_d'])
 
+    def testShortNameExtention(self):
+        """ Test that using a short name raises a PendingDeprecationWarning. """
+        self.assertRaises(PendingDeprecationWarning, 
+                        markdown.Markdown, extensions=['footnotes'])
 
-def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False, use_old_style=True):
+    def testStringConfigExtention(self):
+        """ Test that passing configs to an Extension in the name raises a PendingDeprecationWarning. """
+        self.assertRaises(PendingDeprecationWarning, 
+                        markdown.Markdown, extensions=['markdown.extension.footnotes(PLACE_MARKER=FOO)'])
+
+
+def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False, use_old_style=False):
     """ Create a fake extension module for testing. """
     if use_old_style:
         mod_name = '_'.join(['mdx', name])

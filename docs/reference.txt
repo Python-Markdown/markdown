@@ -66,11 +66,12 @@ The following options are available on the `markdown.markdown` function:
     The list of extensions may contain instances of extensions and/or strings 
     of extension names. 
 
-        extensions=[MyExtension(), 'path.to.my.ext', 'extra']
+        extensions=[MyExtension(), 'path.to.my.ext']
     
     !!! warning
-        The prefered method is to pass in an instance of an extension. The other
-        methods may be removed in a future version of Python-Markdown.
+        The prefered method is to pass in an instance of an extension. Strings
+		should only be used when it is impossable to import the Extension Class
+		directly (from the command line or in a template).
     
     When passing in extension instances, each class instance must be a subclass
     of `markdown.extensions.Extension` and any configuration options should be 
@@ -86,24 +87,27 @@ The following options are available on the `markdown.markdown` function:
     If an extension name is provided as a string, the extension must be 
     importable as a python module on your PYTHONPATH. Python's dot notation is 
     supported. Therefore, to import the 'extra' extension, one could do 
-    `extensions=['markdown.extensions.extra']` However, if no dots are provided 
-    in the string (`extensions=['extra']`) Markdown will first look for the 
-    module `markdown.extensions.extra` (the built-in extension), then a module 
-    named `mdx_extra` ('mdx_' will be appended to the beginning of the string) 
-    at the root of your PYTHONPATH. 
+    `extensions=['markdown.extensions.extra']`  
 
-    When loading an extension by name (as a string), you may either pass in
+	Additionaly, a Class may be specified in the name. The class must be at the end of 
+	the name and be seperated by a colon from the module. 
+
+	Therefore, if you were to import the class like this:
+	
+		from path.to.module import SomeExtensionClass
+
+	Then the named extension would comprise this string:
+
+		"path.to.module:SomeExtensionClass"
+
+	!!! note
+	You should only need to specify the class name if more than one extension is defined
+	within the same module. The extensions that come with Python-Markdown do *not*
+	need to have the class name specified.
+
+    When loading an extension by name (as a string), you may pass in
     configuration settings to the extension using the 
-    [extension_configs](#extension_configs) keyword or by appending the 
-    settings to the name in the following format:
-
-        extensions=['name(option1=value,option2=value)']
-    
-    Note that there are no quotes or whitespace in the above format, which 
-    severely limits how it can be used. For more complex settings, it is 
-    suggested that an instance of a class be passed in or, if that's not 
-    possible, the [extension_configs](#extension_configs) keyword
-    be used.
+    [extension_configs](#extension_configs) keyword.
 
     !!! seealso "See Also"
         See the documentation of the [Extension API](extensions/api.html) for 

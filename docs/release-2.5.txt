@@ -31,6 +31,33 @@ Backwards-incompatible Changes
 [CodeHilite Extension]: extensions/code_hilite.html
 [linenumes]: extensions/code_hilite.html#usage
 
+* In previous versions of Python-Markdown, the builtin extensions received
+  special status and did not require the full path to be provided. Additionaly,  
+  third party extensions whose name started with "mdx_" received the same 
+  special treatment. This behavior will be deprecated in version 2.6 and will
+  raise a PendingDeprecationWarning in 2.5. Ensure that you always use the full 
+  path to your extensions. For example, if you previously did the following:
+
+       markdown.markdown(text, extensions=['extra'])
+
+  You should change your code to the following:
+
+	   markdown.markdown(text, extensions=['markdown.extensions.extra'])
+
+  The same applies to the command line:
+
+       $ python -m markdown -x markdown.extensions.extra input.txt
+
+  See the [documentation](reference.html#extensions) for a full explaination
+  of the current behavior.
+
+* The previously documented method of appending the extension configs as 
+  a string to the extension name will be deprecated in Python-Markdown 
+  version 2.6 and will raise a PendingDeprecationWarning in 2.5. The 
+  [extension_configs](reference.html#extension_configs) keyword should 
+  be used instead. See the [documentation](reference.html#extension-configs) 
+  for a full explaination of the current behavior.
+
 What's New in Python-Markdown 2.5
 ---------------------------------
 

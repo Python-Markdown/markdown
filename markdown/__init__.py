@@ -36,6 +36,7 @@ from .__version__ import version, version_info
 import codecs
 import sys
 import logging
+import warnings
 import importlib
 from . import util
 from .preprocessors import build_preprocessors
@@ -161,7 +162,7 @@ class Markdown(object):
         """
         for ext in extensions:
             if isinstance(ext, util.string_type):
-                ext = self.build_extension(ext, configs.get(ext, []))
+                ext = self.build_extension(ext, configs.get(ext, {}))
             if isinstance(ext, Extension):
                 ext.extendMarkdown(self, globals())
                 logger.info('Successfully loaded extension "%s.%s".' 
@@ -173,22 +174,29 @@ class Markdown(object):
 
         return self
 
-    def build_extension(self, ext_name, configs = []):
+    def build_extension(self, ext_name, configs):
         """Build extension by name, then return the module.
 
         The extension name may contain arguments as part of the string in the
         following format: "extname(key1=value1,key2=value2)"
 
         """
-
-        # Parse extensions config params (ignore the order)
+        
         configs = dict(configs)
+        
+        # Parse extensions config params (ignore the order)
         pos = ext_name.find("(") # find the first "("
         if pos > 0:
             ext_args = ext_name[pos+1:-1]
             ext_name = ext_name[:pos]
             pairs = [x.split("=") for x in ext_args.split(",")]
             configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
+            warnings.warn('Setting configs in the Named Extension string is pending deprecation. '
+                          'It is recommended that you pass an instance of the extension class to '
+                          'Markdown or use the "extension_configs" keyword. The current behavior '
+                          'will be deprecated in version 2.6 and raise an error in version 2.7. '
+                          'See the Release Notes for Python-Markdown version 2.5 for more info.', 
+                          PendingDeprecationWarning)
 
         # Get class name (if provided): `path.to.module:ClassName`
         ext_name, class_name = ext_name.split(':', 1) if ':' in ext_name else (ext_name, '')
@@ -204,12 +212,25 @@ class Markdown(object):
             try: 
                 module = importlib.import_module(module_name)
                 logger.debug('Successfuly imported extension module "%s".' % module_name)
+                warnings.warn('Using short names for Markdown\'s builtin extensions is pending deprecation. '
+                              'Use the full path to the extension with Python\'s dot notation '
+                              '(eg: "%s" instead of "%s"). The current behavior will be deprecated in '
+                              'version 2.6 and raise an error in version 2.7. See the Release Notes for '
+                              'Python-Markdown version 2.5 for more info.' % (module_name, ext_name), 
+                              PendingDeprecationWarning) 
             except ImportError:
                 # Preppend `mdx_` to name
                 module_name_old_style = '_'.join(['mdx', ext_name])
                 try: 
                     module = importlib.import_module(module_name_old_style)
                     logger.debug('Successfuly imported extension module "%s".' % module_name_old_style)
+                    warnings.warn('Markdown\'s behavuor of appending "mdx_" to an extension name '
+                                  'is pending deprecation. Use the full path to the extension with '
+                                  'Python\'s dot notation (eg: "%s" instead of "%s"). The '
+                                  'current behavior will be deprecated in version 2.6 and raise an '
+                                  'error in version 2.7. See the Release Notes for Python-Markdown '
+                                  'version 2.5 for more info.' % (module_name_old_style, ext_name),
+                                  PendingDeprecationWarning) 
                 except ImportError as e:
                     message = "Failed loading extension '%s' from '%s', '%s' or '%s'" \
                         % (ext_name, ext_name, module_name, module_name_old_style)
@@ -218,11 +239,11 @@ class Markdown(object):
 
         if class_name:
             # Load given class name from module.
-            return getattr(module, class_name)(configs=configs)
+            return getattr(module, class_name)(**configs)
         else:
             # Expect  makeExtension() function to return a class.
             try:
-                return module.makeExtension(configs=configs)
+                return module.makeExtension(**configs)
             except AttributeError as e:
                 message = e.args[0]
                 message = "Failed to initiate extension " \

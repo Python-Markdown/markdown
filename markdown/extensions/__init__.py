@@ -5,6 +5,7 @@ Extensions
 
 from __future__ import unicode_literals
 from ..util import parseBoolValue
+import warnings
 
 class Extension(object):
     """ Base class for extensions to subclass. """
@@ -25,8 +26,20 @@ class Extension(object):
         # (there only ever used to be one so we use arg[0])
         if len(args):
             self.setConfigs(args[0])
+            warnings.warn('Extension classes accepting positional args is pending Deprecation. '
+                          'Each setting should be passed into the Class as a keyword. Positional '
+                          'args will be deprecated in version 2.6 and raise an error in version '
+                          '2.7. See the Release Notes for Python-Markdown version 2.5 for more info.',
+                          PendingDeprecationWarning)
         # check for configs kwarg for backward compat.
-        self.setConfigs(kwargs.pop('configs', {}))
+        if 'configs' in kwargs.keys():
+            self.setConfigs(kwargs.pop('configs', {}))
+            warnings.warn('Extension classes accepting a dict on the single keyword "config" is '
+                          'pending Deprecation. Each setting should be passed into the Class as '
+                          'a keyword directly. The "config" keyword will be deprecated in version '
+                          '2.6 and raise an error in version 2.7. See the Release Notes for '
+                          'Python-Markdown version 2.5 for more info.',
+                          PendingDeprecationWarning)
         # finally, use kwargs
         self.setConfigs(kwargs)
             

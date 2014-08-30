@@ -147,17 +147,14 @@ The `--extension_configs` option will only support YAML config files if [PyYaml]
 installed on your system. JSON should work with no additional dependencies. The format
 of your config file is automatically detected.
 
-As an alternative, you may append the extension configs as a string to the extension name 
-that is provided to the `-x-` option in the following format:
-
-	$ python -m markdown -x "markdown.extensions.footnotes(PLACE_MARKER=~~~~~~~~,UNIQUE_IDS=1)" input.txt
-
-Note that there are no quotes or whitespace in the above format, which severely limits 
-how it can be used. For more complex settings, it is suggested that the 
-`--extension_configs` option be used.
+!!!warning
+	The previously documented method of appending the extension configs as a string to the 
+	extension name will be deprecated in Python-Markdown version 2.6. The `--extension_configs` 
+	option should be used instead. See the [2.5 release notes] for more information.
 
 [ec]: reference.html#extension_configs
 [YAML]: http://yaml.org/
 [JSON]: http://json.org/
 [PyYAML]: http://pyyaml.org/
+[2.5 release notes]: release-2.5.txt
 
