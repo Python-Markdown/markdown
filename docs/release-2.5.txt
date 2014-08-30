@@ -109,8 +109,10 @@ What's New in Python-Markdown 2.5
 	Extension authors are encouraged to review the new methods available on the 
 	`markdown.extnesions.Extension` class for handling configs and adjust their
 	code going forward. The included extensions provide a model for best practices.
+	See the [API] documentation for a full explaination.
 
 [ec]: reference.html#extension_configs
+[API]: extensions/api.txt#configsettings
 
 *   The [Command Line Interface][cli] now accepts a `--extensions_config` (or `-c`) 
     option which accepts a filename and passes the parsed content of a [YAML] or 

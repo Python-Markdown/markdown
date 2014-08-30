@@ -548,23 +548,49 @@ initialized the first time. Keep that in mind when over-riding the extension's
 
 If an extension uses any parameters that the user may want to change,
 those parameters should be stored in ``self.config`` of your 
-``markdown.Extension`` class in the following format:
+``markdown.extensions.Extension`` class in the following format:
 
     class MyExtension(markdown.extensions.Extension):
-    	def __init__(self, *args, **kwargs):
-    		self.config = {parameter_1_name : [value1, description1],
-                           parameter_2_name : [value2, description2] }
-            super(MyExtension, self).__init__(*args, **kwargs)
+    	def __init__(self, **kwargs):
+    		self.config = {'option1' : ['value1', 'description1'],
+                           'option2' : ['value2', 'description2'] }
+            super(MyExtension, self).__init__(**kwargs)
 
-When implemented this way the config parameters can be over-ridden from the
-command line or at the time Markdown is initiated:
+When implemented this way the config parameters can be over-ridden at 
+run time (thus the call to `super`). For example:
 
-    markdown.py -x myextension(SOME_PARAM=2) inputfile.txt > output.txt
+    markdown.Markdown(extensions=[MyExtension(option1='other value'])
 
-Note that parameters should always be assumed to be set to string
-values, and should be converted at run time. For example:
+Note that if a keyword is passed in that is not already defined in 
+`self.config`, then a `KeyError` is raised.
 
-    i = int(self.getConfig("SOME_PARAM"))
+The `markdown.extensions.Extension` class and its subclasses have the
+following methods available to assist in working with config settings:
+
+* **``getConfig(key [, default])``**: 
+
+	Returns the stored value for the given `key` or `default` if the `key`
+	does not exist. If not set, `default` returns an empty string.
+
+* **``getConfigs()``**:
+
+	Returns a dict of all key/value pairs.
+
+* **``getConfigInfo()``**:
+
+	Returns all config descriptions as a list of tuples.
+
+* **``setConfig(key, value)``**:
+	
+	Sets a config setting for `key` with the given `value`. If `key` is
+	unknown, a `KeyError` is raised. If the previous value of `key` was
+	a boolean value, then `value` is converted to a boolean value. If
+	the previous value of `key` is `None`, then `value` is converted to
+	a boolean value except when it is `None`. No conversion takes place
+	when the previous value of `key` is a string.
+
+* **``setConfigs(items):
+	Sets multiple config settings given a dict of key/value pairs.
 
 ### makeExtension {: #makeextension }
 
@@ -579,49 +605,45 @@ For example:
     myext = myextension.MyExtension(option='value')
     md = markdown.Markdown(extensions=[myext])
 
-This is especially useful if you need to implement a large number of extensions 
-with more than one residing in a module.
-
-However, for historical reasons, Markdown also accepts "named" third party 
-extensions. In that case, only one extension can be defined per module
-and that extension must define a module-level function called 
-`makeExtension` that takes `*args` and `**kwargs`.  For example:
-
-    class MyExtension(markdown.extensions.Extension)
-        # Define extension here...
-
-    def makeExtension(*args, **kwargs):
-        return MyExtension(*args, **kwargs)
-
-!!! warning
-    Previous versions of Python-Markdown expected a `config` keyword which contained
-    a dictionary (or list of tuples) of options. To maintain backward compatability,
-    the `config` keyword is given special treatment and you should avoid using "config"
-    as an option name. Additionaly, in some past situations, the `config` dict may have
-    been passed in as a positional argument. Therefore, it is sugegsted that positional
-    arguments be avoided for any othe purpose.
-
-When Markdown is passed the "name" of your extension as a string, it will import 
-the module and call the `makeExtension` function to initiate your extension.
+Markdown also accepts "named" third party extensions for those occassions
+when it is impractical to import an extension directly (from the command line or from
+within templates). 
 
 The "name" of your extension must be a string consisting of the importable path to
 your module using Python's dot notation. Therefore, if you are providing a library
 to your users and would like to include a custom markdown extensions within your 
 library, that extension would be named `"mylib.mdext.myext"` where `mylib/mdext/myext.py`
-contains the `makeExtension` function and the `mylib` directory is on the PYTHONPATH.
+contains the extension and the `mylib` directory is on the PYTHONPATH.
 
-You may have noted that the extensions packaged with Python-Markdown do not
-use  Python's dot notation in their names. This is because they are 
-all part of the `markdown.extensions` package. If a "name" contains any dots 
-(`.`), then it will be imported as-is. Otherwise, Markdown will first try to 
-import from `markdown.extensions.extname` and upon failure, `mdx_extname` where
-`"extname"` is the "name" passed to Markdown.
+The string can also include the name of the class seperated by a colon.
+Therefore, if you were to import the class like this:
+	
+	from path.to.module import SomeExtensionClass
 
-!!! Note
-    While the `mdx_extname` method of naming extensions is still supported, it 
-    remains solely for historical reasons to support the various existing 
-    third-party extensions. This method is discouraged going forward and support
-    may be removed in a future release.
+Then the named extension would comprise this string:
+
+	"path.to.module:SomeExtensionClass"
+
+You do not need to do anything special to support this feature. As long as your extension
+class is able to be imported, a user can include it with the above syntax.
+
+The above two methods are especially useful if you need to implement a large number of 
+extensions with more than one residing in a module. However, if you do not want to require 
+that your users include the class name in their string, you must define only one extension 
+per module and that module must contain a module-level function called `makeExtension` 
+that accepts `**kwargs` and returns an extension instance.  
+
+For example:
+
+    class MyExtension(markdown.extensions.Extension)
+        # Define extension here...
+
+    def makeExtension(**kwargs):
+        return MyExtension(**kwargs)
+
+When Markdown is passed the "name" of your extension as a dot notation string, it will import 
+the module and call the `makeExtension` function to initiate your extension.
+
 
 [Preprocessors]: #preprocessors
 [InlinePatterns]: #inlinepatterns
