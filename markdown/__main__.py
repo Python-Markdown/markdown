@@ -36,7 +36,7 @@ def parse_options(args=None, values=None):
                       help="Encoding for input and output files.",)
     parser.add_option("-s", "--safe", dest="safe", default=False,
                       metavar="SAFE_MODE",
-                      help="'replace', 'remove' or 'escape' HTML tags in input")
+                      help="Deprecated! 'replace', 'remove' or 'escape' HTML tags in input")
     parser.add_option("-o", "--output_format", dest="output_format", 
                       default='xhtml1', metavar="OUTPUT_FORMAT",
                       help="'xhtml1' (default), 'html4' or 'html5'.")

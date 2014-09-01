@@ -54,13 +54,6 @@ features:
     Python-Markdown can output documents in HTML4, XHTML and HTML5. See the
     [Library Reference](reference.html#output_format) for details.
 
-* __"Safe Mode"__
-
-    When using Python-Markdown to parse input from untrusted users on the web,
-    the handling of raw HTML can be controlled in various ways to prevent 
-    harmful code from being injected into your site. See the
-    [Library Reference](reference.html#safe_mode) for details.
-
 * __Command Line Interface__
 
     In addition to being a Python Library, a 

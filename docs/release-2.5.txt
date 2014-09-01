@@ -23,7 +23,7 @@ Backwards-incompatible Changes
 
 [importlib]: https://pypi.python.org/pypi/importlib
 
-* The `force_linenos` config key on the [CodeHilite Extension] has been deprecated
+* The `force_linenos` config key on the [CodeHilite Extension] has been **deprecated**
   and will raise a `KeyError` if provided. In the previous release (2.4), it was 
   issuing a `DeprecationWarning`. The [`linenums`][linenums] keyword should be used 
   instead, which provides more control of the output.
@@ -31,11 +31,62 @@ Backwards-incompatible Changes
 [CodeHilite Extension]: extensions/code_hilite.html
 [linenums]: extensions/code_hilite.html#usage
 
+* Both `safe_mode` and the associated `html_replacement_text` keywords will be deprecated 
+  in version 2.6 and will raise a **`PendingDeprecationWarning`** in 2.5. The so-called
+  "safe mode" was never actually "safe" which has resulted in many people having a false 
+  sense of security when using it. As an alternative, the developers of Python-Markdown 
+  recommend that any untrusted content be passed through an HTML sanitizer (like [Bleach])
+  after being converted to HTML by markdown.
+
+    If your code previously looked like this:
+
+	    html = markdown.markdown(text, same_mode=True)
+
+	Then it is recommended that you change your code to read something like this:
+
+	    import bleach
+        html = bleach.clean(markdown.markdown(text))
+
+	If you are not interested in sanitizing untrusted text, but simply desire to escape
+	raw HTML, then that can be accomplished through an extension which removes HTML parsing:
+
+		from markdown.extensions import Extension
+
+		class EscapeHtml(Extension):
+			def extendMarkdown(self, md, md_globals):
+				del md.preprocessors['html_block']
+				del md.inlinePatterns['html']
+
+		html = markdown.markdown(text, extensions=[EscapeHtml()])
+
+	As the HTML would not be parsed with the above Extension, then the searializer will
+	escape the raw HTML, which is exactly what happens now when `safe_mode="escape"`.
+
+[Bleach]: http://bleach.readthedocs.org/
+
+* Positional arguments on the `markdown.Markdown()` are pending deprecation as are
+  all except the `text` argument on the `markdown.markdown()` wrapper function.
+  Only keyword arguments should be used. For example, if your code previosuly
+  looked like this:
+
+         html = markdown.markdown(text, ['extra'])
+    
+	Then it is recommended that you change it to read something like this:
+
+	    html = markdown.markdown(text, extensions=['extra'])
+
+	!!! Note
+	    This change is being made as a result of deprecating `"safe_mode"` as the 
+		`safe_mode` argumnet was one of the positional arguments. When that argument 
+		is removed, the two arguments following it will no longer be at the correct 
+		position. It is recomended that you always use keywords when they are supported
+		for this reason.
+
 * In previous versions of Python-Markdown, the builtin extensions received
   special status and did not require the full path to be provided. Additionaly,
   third party extensions whose name started with "mdx_" received the same 
   special treatment. This behavior will be deprecated in version 2.6 and will
-  raise a `PendingDeprecationWarning` in 2.5. Ensure that you always use the full 
+  raise a **`PendingDeprecationWarning`** in 2.5. Ensure that you always use the full 
   path to your extensions. For example, if you previously did the following:
 
         markdown.markdown(text, extensions=['extra'])
@@ -53,7 +104,7 @@ Backwards-incompatible Changes
 
 * The previously documented method of appending the extension configs as 
   a string to the extension name will be deprecated in Python-Markdown 
-  version 2.6 and will raise a `PendingDeprecationWarning` in 2.5. The 
+  version 2.6 and will raise a **`PendingDeprecationWarning`** in 2.5. The 
   [extension_configs](reference.html#extension_configs) keyword should 
   be used instead. See the [documentation](reference.html#extension-configs) 
   for a full explaination of the current behavior.

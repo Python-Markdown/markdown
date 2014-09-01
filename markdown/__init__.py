@@ -50,6 +50,7 @@ from .serializers import to_html_string, to_xhtml_string
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
 logger = logging.getLogger('MARKDOWN')
+logging.captureWarnings(True)
 
 
 class Markdown(object):
@@ -98,8 +99,8 @@ class Markdown(object):
             Note that it is suggested that the more specific formats ("xhtml1"
             and "html4") be used as "xhtml" or "html" may change in the future
             if it makes sense at that time.
-        * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
-        * html_replacement_text: Text used when safe_mode is set to "replace".
+        * safe_mode: Deprecated! Disallow raw html. One of "remove", "replace" or "escape".
+        * html_replacement_text: Deprecated! Text used when safe_mode is set to "replace".
         * tab_length: Length of tabs in the source. Default: 4
         * enable_attributes: Enable the conversion of attributes. Default: True
         * smart_emphasis: Treat `_connected_words_` intelligently Default: True
@@ -109,14 +110,16 @@ class Markdown(object):
 
         # For backward compatibility, loop through old positional args
         pos = ['extensions', 'extension_configs', 'safe_mode', 'output_format']
-        c = 0
-        for arg in args:
+        for c, arg in enumerate(args):
             if pos[c] not in kwargs:
                 kwargs[pos[c]] = arg
-            c += 1
-            if c == len(pos): #pragma: no cover
+            if c+1 == len(pos): #pragma: no cover
                 # ignore any additional args
                 break
+        if len(args):
+            warnings.warn('Positional arguments are pending depreacted in Markdown '
+                          'and will be deprecated in version 2.6. Use keyword '
+                          'arguments only.', PendingDeprecationWarning)
 
         # Loop through kwargs and assign defaults
         for option, default in self.option_defaults.items():
@@ -126,6 +129,18 @@ class Markdown(object):
         if self.safeMode and 'enable_attributes' not in kwargs:
             # Disable attributes in safeMode when not explicitly set
             self.enable_attributes = False
+
+        if 'safe_mode' in kwargs:
+            warnings.warn('"safe_mode" is pending deprecation in Python-Markdown '
+                          'and will be deprecated in version 2.6. Use an HTML '
+                          'sanitizer (like Bleach http://bleach.readthedocs.org/) '
+                          'if you are parsing untrusted markdown text. See the '
+                          '2.5 release notes for more info', PendingDeprecationWarning)
+
+        if 'html_replacement_text' in kwargs:
+            warnings.warn('The "html_replacement_text" keyword is pending deprecation '
+                          'in Python-Markdown and will be deprecated in version 2.6 '
+                          'along with "safe_mode".', PendingDeprecationWarning)
 
         self.registeredExtensions = []
         self.docType = ""
