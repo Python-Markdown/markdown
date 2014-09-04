@@ -4,12 +4,12 @@ Footnotes Extension for Python-Markdown
 
 Adds footnote handling to Python-Markdown.
 
-See <https://pythonhosted.org/Markdown/extensions/footnotes.html> 
+See <https://pythonhosted.org/Markdown/extensions/footnotes.html>
 for documentation.
 
 Copyright The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 """
 
@@ -21,7 +21,7 @@ from ..inlinepatterns import Pattern
 from ..treeprocessors import Treeprocessor
 from ..postprocessors import Postprocessor
 from ..util import etree, text_type
-from ..odict import OrderedDict
+from collections import OrderedDict
 import re
 
 FN_BACKLINK_TEXT = "zz1337820767766393qq"
@@ -48,7 +48,7 @@ class FootnoteExtension(Extension):
                   "The text string that links from the footnote to the reader's place."]
         }
         super(FootnoteExtension, self).__init__(*args, **kwargs)
-        
+
         # In multiple invocations, emit links that don't get tangled.
         self.unique_prefix = 0
 
@@ -67,7 +67,7 @@ class FootnoteExtension(Extension):
         md.inlinePatterns.add("footnote", FootnotePattern(FOOTNOTE_RE, self),
                               "<reference")
         # Insert a tree-processor that would actually add the footnote div
-        # This must be before all other treeprocessors (i.e., inline and 
+        # This must be before all other treeprocessors (i.e., inline and
         # codehilite) so they can run on the the contents of the div.
         md.treeprocessors.add("footnote", FootnoteTreeprocessor(self),
                                  "_begin")
@@ -92,7 +92,7 @@ class FootnoteExtension(Extension):
                         return child, element, False
                 finder(child)
             return None
-                
+
         res = finder(root)
         return res
 

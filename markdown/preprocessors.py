@@ -9,13 +9,13 @@ complicated.
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import util
-from . import odict
+from collections import OrderedDict
 import re
 
 
 def build_preprocessors(md_instance, **kwargs):
     """ Build the default set of preprocessors used by Markdown. """
-    preprocessors = odict.OrderedDict()
+    preprocessors = OrderedDict()
     preprocessors['normalize_whitespace'] = NormalizeWhitespace(md_instance)
     if md_instance.safeMode != 'escape':
         preprocessors["html_block"] = HtmlBlockPreprocessor(md_instance)
