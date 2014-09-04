@@ -3,17 +3,17 @@
 Smarty extension for Python-Markdown
 ====================================
 
-Adds conversion of ASCII dashes, quotes and ellipses to their HTML 
+Adds conversion of ASCII dashes, quotes and ellipses to their HTML
 entity equivalents.
 
-See <https://pythonhosted.org/Markdown/extensions/smarty.html> 
+See <https://pythonhosted.org/Markdown/extensions/smarty.html>
 for documentation.
 
 Author: 2013, Dmitry Shachnev <mitya57@gmail.com>
 
 All changes Copyright 2013-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 SmartyPants license:
 
@@ -32,7 +32,7 @@ SmartyPants license:
       the documentation and/or other materials provided with the
       distribution.
 
-   *  Neither the name "SmartyPants" nor the names of its contributors 
+   *  Neither the name "SmartyPants" nor the names of its contributors
       may be used to endorse or promote products derived from this
       software without specific prior written permission.
 
@@ -84,9 +84,10 @@ smartypants.py license:
 from __future__ import unicode_literals
 from . import Extension
 from ..inlinepatterns import HtmlPattern
-from ..odict import OrderedDict
 from ..treeprocessors import InlineProcessor
 from ..util import parseBoolValue
+from collections import OrderedDict
+
 
 # Constants for quote education.
 punctClass = r"""[!"#\$\%'()*+,-.\/:;<=>?\@\[\\\]\^_`{|}~]"""
@@ -101,7 +102,7 @@ openingQuotesBase = (
    '|&[mn]dash;'      # or named dash entities
    '|&#8211;|&#8212;' # or decimal entities
    ')'
-) 
+)
 
 substitutions = {
     'mdash': '&mdash;',

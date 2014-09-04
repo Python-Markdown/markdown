@@ -11,13 +11,13 @@ processing.
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import util
-from . import odict
+from collections immport OrderedDict
 import re
 
 
 def build_postprocessors(md_instance, **kwargs):
     """ Build the default postprocessors for Markdown. """
-    postprocessors = odict.OrderedDict()
+    postprocessors = OrderedDict()
     postprocessors["raw_html"] = RawHtmlPostprocessor(md_instance)
     postprocessors["amp_substitute"] = AndSubstitutePostprocessor()
     postprocessors["unescape"] = UnescapePostprocessor()
@@ -60,10 +60,10 @@ class RawHtmlPostprocessor(Postprocessor):
                 else:
                     html = self.markdown.html_replacement_text
             if self.isblocklevel(html) and (safe or not self.markdown.safeMode):
-                text = text.replace("<p>%s</p>" % 
+                text = text.replace("<p>%s</p>" %
                             (self.markdown.htmlStash.get_placeholder(i)),
                             html + "\n")
-            text =  text.replace(self.markdown.htmlStash.get_placeholder(i), 
+            text =  text.replace(self.markdown.htmlStash.get_placeholder(i),
                                  html)
         return text
 

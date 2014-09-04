@@ -18,6 +18,7 @@ from markdown.__main__ import parse_options
 from logging import DEBUG, INFO, CRITICAL
 import yaml
 import tempfile
+import collections
 
 PY3 = sys.version_info[0] == 3
 
@@ -65,7 +66,7 @@ class TestBlockParser(unittest.TestCase):
         root = markdown.util.etree.Element("div")
         text = 'foo'
         self.parser.parseChunk(root, text)
-        self.assertEqual(markdown.serializers.to_xhtml_string(root), 
+        self.assertEqual(markdown.serializers.to_xhtml_string(root),
                          "<div><p>foo</p></div>")
 
     def testParseDocument(self):
@@ -117,7 +118,7 @@ class TestBlockParserState(unittest.TestCase):
 
 class TestHtmlStash(unittest.TestCase):
     """ Test Markdown's HtmlStash. """
-    
+
     def setUp(self):
         self.stash = markdown.util.HtmlStash()
         self.placeholder = self.stash.store('foo')
@@ -133,13 +134,13 @@ class TestHtmlStash(unittest.TestCase):
         placeholder = self.stash.store('bar')
         self.assertEqual(placeholder, self.stash.get_placeholder(1))
         self.assertEqual(self.stash.html_counter, 2)
-        self.assertEqual(self.stash.rawHtmlBlocks, 
+        self.assertEqual(self.stash.rawHtmlBlocks,
                         [('foo', False), ('bar', False)])
 
     def testSafeStore(self):
         """ Test HtmlStash.store with 'safe' html. """
         self.stash.store('bar', True)
-        self.assertEqual(self.stash.rawHtmlBlocks, 
+        self.assertEqual(self.stash.rawHtmlBlocks,
                         [('foo', False), ('bar', True)])
 
     def testReset(self):
@@ -168,99 +169,6 @@ class TestHtmlStash(unittest.TestCase):
         return StoreUnsafeHtml()
 
 
-class TestOrderedDict(unittest.TestCase):
-    """ Test OrderedDict storage class. """
-
-    def setUp(self):
-        self.odict = markdown.odict.OrderedDict()
-        self.odict['first'] = 'This'
-        self.odict['third'] = 'a'
-        self.odict['fourth'] = 'self'
-        self.odict['fifth'] = 'test'
-
-    def testValues(self):
-        """ Test output of OrderedDict.values(). """
-        self.assertEqual(list(self.odict.values()), ['This', 'a', 'self', 'test'])
-
-    def testKeys(self):
-        """ Test output of OrderedDict.keys(). """
-        self.assertEqual(list(self.odict.keys()),
-                    ['first', 'third', 'fourth', 'fifth'])
-
-    def testItems(self):
-        """ Test output of OrderedDict.items(). """
-        self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('third', 'a'), 
-                    ('fourth', 'self'), ('fifth', 'test')])
-
-    def testAddBefore(self):
-        """ Test adding an OrderedDict item before a given key. """
-        self.odict.add('second', 'is', '<third')
-        self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('second', 'is'), ('third', 'a'), 
-                    ('fourth', 'self'), ('fifth', 'test')])
-
-    def testAddAfter(self):
-        """ Test adding an OrderDict item after a given key. """
-        self.odict.add('second', 'is', '>first')
-        self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('second', 'is'), ('third', 'a'), 
-                    ('fourth', 'self'), ('fifth', 'test')])
-
-    def testAddAfterEnd(self):
-        """ Test adding an OrderedDict item after the last key. """
-        self.odict.add('sixth', '.', '>fifth')
-        self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('third', 'a'), 
-                    ('fourth', 'self'), ('fifth', 'test'), ('sixth', '.')])
-
-    def testAdd_begin(self):
-        """ Test adding an OrderedDict item using "_begin". """
-        self.odict.add('zero', 'CRAZY', '_begin')
-        self.assertEqual(list(self.odict.items()),
-                    [('zero', 'CRAZY'), ('first', 'This'), ('third', 'a'), 
-                    ('fourth', 'self'), ('fifth', 'test')])
-
-    def testAdd_end(self):
-        """ Test adding an OrderedDict item using "_end". """
-        self.odict.add('sixth', '.', '_end')
-        self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('third', 'a'), 
-                    ('fourth', 'self'), ('fifth', 'test'), ('sixth', '.')])
-
-    def testAddBadLocation(self):
-        """ Test Error on bad location in OrderedDict.add(). """
-        self.assertRaises(ValueError, self.odict.add, 'sixth', '.', '<seventh')
-        self.assertRaises(ValueError, self.odict.add, 'second', 'is', 'third')
-
-    def testDeleteItem(self):
-        """ Test deletion of an OrderedDict item. """
-        del self.odict['fourth']
-        self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('third', 'a'), ('fifth', 'test')])
-
-    def testChangeValue(self):
-        """ Test OrderedDict change value. """
-        self.odict['fourth'] = 'CRAZY'
-        self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('third', 'a'), 
-                    ('fourth', 'CRAZY'), ('fifth', 'test')])
-
-    def testChangeOrder(self):
-        """ Test OrderedDict change order. """
-        self.odict.link('fourth', '<third')
-        self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('fourth', 'self'),
-                    ('third', 'a'), ('fifth', 'test')])
-
-    def textBadLink(self):
-        """ Test OrderedDict change order with bad location. """
-        self.assertRaises(ValueError, self.odict.link('fourth', '<bad'))
-        # Check for data integrity ("fourth" wasn't deleted).'
-        self.assertEqual(list(self.odict.items()),
-                    [('first', 'This'), ('third', 'a'), 
-                    ('fourth', 'self'), ('fifth', 'test')])
-
 class TestErrors(unittest.TestCase):
     """ Test Error Reporting. """
 
@@ -275,7 +183,7 @@ class TestErrors(unittest.TestCase):
     def testNonUnicodeSource(self):
         """ Test falure on non-unicode source text. """
         if sys.version_info < (3, 0):
-            source = "foo".encode('utf-16') 
+            source = "foo".encode('utf-16')
             self.assertRaises(UnicodeDecodeError, markdown.markdown, source)
 
     def testBadOutputFormat(self):
@@ -284,8 +192,8 @@ class TestErrors(unittest.TestCase):
 
     def testLoadExtensionFailure(self):
         """ Test failure of an extension to load. """
-        self.assertRaises(ImportError, 
-                        markdown.Markdown, extensions=['non_existant_ext']) 
+        self.assertRaises(ImportError,
+                        markdown.Markdown, extensions=['non_existant_ext'])
 
     def testLoadBadExtension(self):
         """ Test loading of an Extension with no makeExtension function. """
@@ -300,23 +208,23 @@ class TestErrors(unittest.TestCase):
     def testBaseExtention(self):
         """ Test that the base Extension class will raise NotImplemented. """
         _create_fake_extension(name='fake_c')
-        self.assertRaises(NotImplementedError, 
+        self.assertRaises(NotImplementedError,
                         markdown.Markdown, extensions=['fake_c'])
 
     def testMdxExtention(self):
         """ Test that appending mdx_ raises a PendingDeprecationWarning. """
         _create_fake_extension(name='fake_d', use_old_style=True)
-        self.assertRaises(PendingDeprecationWarning, 
+        self.assertRaises(PendingDeprecationWarning,
                         markdown.Markdown, extensions=['fake_d'])
 
     def testShortNameExtention(self):
         """ Test that using a short name raises a PendingDeprecationWarning. """
-        self.assertRaises(PendingDeprecationWarning, 
+        self.assertRaises(PendingDeprecationWarning,
                         markdown.Markdown, extensions=['footnotes'])
 
     def testStringConfigExtention(self):
         """ Test that passing configs to an Extension in the name raises a PendingDeprecationWarning. """
-        self.assertRaises(PendingDeprecationWarning, 
+        self.assertRaises(PendingDeprecationWarning,
                         markdown.Markdown, extensions=['markdown.extension.footnotes(PLACE_MARKER=FOO)'])
 
 
@@ -337,14 +245,14 @@ def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False, use
             return markdown.extensions.Extension(*args, **kwargs)
     if has_factory_func:
         ext_mod.makeExtension = makeExtension
-    # Warning: this brute forces the extenson module onto the system. Either 
-    # this needs to be specificly overriden or a new python session needs to 
+    # Warning: this brute forces the extenson module onto the system. Either
+    # this needs to be specificly overriden or a new python session needs to
     # be started to get rid of this. This should be ok in a testing context.
     sys.modules[mod_name] =  ext_mod
 
 
 class testETreeComments(unittest.TestCase):
-    """ 
+    """
     Test that ElementTree Comments work.
 
     These tests should only be a concern when using cElementTree with third
@@ -428,7 +336,7 @@ class testSerializers(unittest.TestCase):
         return registerFakeSerializer()
 
     def testRegisterSerializer(self):
-        self.assertEqual(markdown.markdown('baz', 
+        self.assertEqual(markdown.markdown('baz',
                 extensions=[self.buildExtension()], output_format='fake'),
                     '<p>foo</p>')
 
@@ -446,7 +354,7 @@ class testAtomicString(unittest.TestCase):
         p = markdown.util.etree.SubElement(tree, 'p')
         p.text = 'some *text*'
         new = self.inlineprocessor.run(tree)
-        self.assertEqual(markdown.serializers.to_html_string(new), 
+        self.assertEqual(markdown.serializers.to_html_string(new),
                     '<div><p>some <em>text</em></p></div>')
 
     def testSimpleAtomicString(self):
@@ -455,7 +363,7 @@ class testAtomicString(unittest.TestCase):
         p = markdown.util.etree.SubElement(tree, 'p')
         p.text = markdown.util.AtomicString('some *text*')
         new = self.inlineprocessor.run(tree)
-        self.assertEqual(markdown.serializers.to_html_string(new), 
+        self.assertEqual(markdown.serializers.to_html_string(new),
                     '<div><p>some *text*</p></div>')
 
     def testNestedAtomicString(self):
@@ -473,7 +381,7 @@ class testAtomicString(unittest.TestCase):
         span2.tail = markdown.util.AtomicString(' *test*')
         span1.tail = markdown.util.AtomicString(' *with*')
         new = self.inlineprocessor.run(tree)
-        self.assertEqual(markdown.serializers.to_html_string(new), 
+        self.assertEqual(markdown.serializers.to_html_string(new),
             '<div><p>*some* <span>*more* <span>*text* <span>*here*</span> '
             '*to*</span> *test*</span> *with*</p></div>')
 
@@ -508,7 +416,7 @@ class TestCliOptionParsing(unittest.TestCase):
             'output_format': 'xhtml1',
             'lazy_ol': True,
             'extensions': [],
-            'extension_configs': {},  
+            'extension_configs': {},
         }
         self.tempfile = ''
 
@@ -520,7 +428,7 @@ class TestCliOptionParsing(unittest.TestCase):
         options, logging_level = parse_options([])
         self.assertEqual(options, self.default_options)
         self.assertEqual(logging_level, CRITICAL)
-    
+
     def testQuietOption(self):
         options, logging_level = parse_options(['-q'])
         self.assertTrue(logging_level > CRITICAL)
@@ -575,9 +483,9 @@ class TestCliOptionParsing(unittest.TestCase):
         self.assertEqual(options, self.default_options)
 
     def testMultipleExtensionOptions(self):
-        options, logging_level = parse_options(['-x', 'markdown.extensions.footnotes', 
+        options, logging_level = parse_options(['-x', 'markdown.extensions.footnotes',
                                                 '-x', 'markdown.extensions.smarty'])
-        self.default_options['extensions'] = ['markdown.extensions.footnotes', 
+        self.default_options['extensions'] = ['markdown.extensions.footnotes',
                                               'markdown.extensions.smarty']
         self.assertEqual(options, self.default_options)
 
@@ -628,7 +536,7 @@ class TestCliOptionParsing(unittest.TestCase):
 
     def testExtensonConfigOptionBadFormat(self):
         config = """
-[footnotes] 
+[footnotes]
 PLACE_MARKER= ~~~footnotes~~~
 """
         self.create_config_file(config)
