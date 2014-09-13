@@ -484,6 +484,10 @@ def markdownFromFile(*args, **kwargs):
         c += 1
         if c == len(pos):
             break
+    if len(args):
+        warnings.warn('Positional arguments are pending depreacted in Markdown '
+                      'and will be deprecated in version 2.6. Use keyword '
+                      'arguments only.', PendingDeprecationWarning)
 
     md = Markdown(**kwargs)
     md.convertFile(kwargs.get('input', None),
