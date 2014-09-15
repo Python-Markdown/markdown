@@ -177,7 +177,7 @@ What's New in Python-Markdown 2.5
 [JSON]: http://json.org/
 [PyYAML]: http://pyyaml.org/
 
-*   The [amonition extension][ae] is no longer considered "experimental."
+*   The [admonition extension][ae] is no longer considered "experimental."
 
 [ae]: extensions/admonition.html
 

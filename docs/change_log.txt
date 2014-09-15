@@ -7,7 +7,7 @@ next_url:   release-2.5.html
 Python-Markdown Changelog
 =========================
 
-[TBD]: Released version 2.5.0 ([Notes](release-2.5.html))
+Sep 12, 2014: Released version 2.5.0 ([Notes](release-2.5.html))
 
 Feb 16, 2014: Released version 2.4.0 ([Notes](release-2.4.html))
 
