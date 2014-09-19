@@ -383,6 +383,20 @@ class testETreeComments(unittest.TestCase):
                     '<!--foo-->\n')
 
 
+class testElementTailTests(unittest.TestCase):
+    """ Element Tail Tests """
+    def setUp(self):
+        self.pretty = markdown.treeprocessors.PrettifyTreeprocessor()
+
+    def testBrTailNoNewline(self):
+        """ Test that last <br> in tree has a new line tail """
+        root = markdown.util.etree.Element('root')
+        br = markdown.util.etree.SubElement(root, 'br')
+        self.assertEqual(br.tail, None)
+        self.pretty.run(root)
+        self.assertEqual(br.tail, "\n")
+
+
 class testSerializers(unittest.TestCase):
     """ Test the html and xhtml serializers. """
 
