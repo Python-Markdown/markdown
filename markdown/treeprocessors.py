@@ -34,8 +34,8 @@ class Treeprocessor(util.Processor):
     def run(self, root):
         """
         Subclasses of Treeprocessor should implement a `run` method, which
-        takes a root ElementTree. This method can return another ElementTree 
-        object, and the existing root ElementTree will be replaced, or it can 
+        takes a root ElementTree. This method can return another ElementTree
+        object, and the existing root ElementTree will be replaced, or it can
         modify the current tree and return None.
         """
         pass #pragma: no cover
@@ -71,7 +71,7 @@ class InlineProcessor(Treeprocessor):
         * index: index, from which we start search
 
         Returns: placeholder id and string index, after the found placeholder.
-        
+
         """
         m = self.__placeholder_re.search(data, index)
         if m:
@@ -151,7 +151,7 @@ class InlineProcessor(Treeprocessor):
         * parent: Element, which contains processing inline data
 
         Returns: list with ElementTree elements with applied inline patterns.
-        
+
         """
         def linkText(text):
             if text:
@@ -240,7 +240,7 @@ class InlineProcessor(Treeprocessor):
                 # We need to process current node too
                 for child in [node] + list(node):
                     if not isString(node):
-                        if child.text: 
+                        if child.text:
                             child.text = self.__handleInline(child.text,
                                                             patternIndex + 1)
                         if child.tail:
@@ -304,7 +304,7 @@ class InlineProcessor(Treeprocessor):
                 if self.markdown.enable_attributes:
                     if element.text and isString(element.text):
                         element.text = \
-                            inlinepatterns.handleAttributes(element.text, 
+                            inlinepatterns.handleAttributes(element.text,
                                                                     element)
                 i = 0
                 for newChild in lst:
