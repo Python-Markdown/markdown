@@ -156,7 +156,7 @@ class Pattern(object):
 
         """
         self.pattern = pattern
-        self.compiled_re = re.compile("^(.*?)%s(.*?)$" % pattern, 
+        self.compiled_re = re.compile("^(.*?)%s(.*?)$" % pattern,
                                       re.DOTALL | re.UNICODE)
 
         # Api for Markdown to pass safe_mode into instance
@@ -210,7 +210,7 @@ class Pattern(object):
                     return value
                 else:
                     # An etree Element - return text content only
-                    return ''.join(itertext(value)) 
+                    return ''.join(itertext(value))
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
@@ -228,7 +228,7 @@ class EscapePattern(Pattern):
         if char in self.markdown.ESCAPED_CHARS:
             return '%s%s%s' % (util.STX, ord(char), util.ETX)
         else:
-            return None 
+            return None
 
 
 class SimpleTagPattern(Pattern):
@@ -300,7 +300,7 @@ class HtmlPattern(Pattern):
                     return self.markdown.serializer(value)
                 except:
                     return '\%s' % value
-            
+
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
@@ -320,7 +320,7 @@ class LinkPattern(Pattern):
             el.set("href", "")
 
         if title:
-            title = dequote(self.unescape(title)) 
+            title = dequote(self.unescape(title))
             el.set("title", title)
         return el
 
@@ -344,19 +344,19 @@ class LinkPattern(Pattern):
         if not self.markdown.safeMode:
             # Return immediately bipassing parsing.
             return url
-        
+
         try:
             scheme, netloc, path, params, query, fragment = url = urlparse(url)
         except ValueError: #pragma: no cover
             # Bad url - so bad it couldn't be parsed.
             return ''
-        
+
         locless_schemes = ['', 'mailto', 'news']
         allowed_schemes = locless_schemes + ['http', 'https', 'ftp', 'ftps']
         if scheme not in allowed_schemes:
             # Not a known (allowed) scheme. Not safe.
             return ''
-            
+
         if netloc == '' and scheme not in locless_schemes: #pragma: no cover
             # This should not happen. Treat as suspect.
             return ''

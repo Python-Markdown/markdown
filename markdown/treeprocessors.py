@@ -34,8 +34,8 @@ class Treeprocessor(util.Processor):
     def run(self, root):
         """
         Subclasses of Treeprocessor should implement a `run` method, which
-        takes a root ElementTree. This method can return another ElementTree 
-        object, and the existing root ElementTree will be replaced, or it can 
+        takes a root ElementTree. This method can return another ElementTree
+        object, and the existing root ElementTree will be replaced, or it can
         modify the current tree and return None.
         """
         pass #pragma: no cover
@@ -71,7 +71,7 @@ class InlineProcessor(Treeprocessor):
         * index: index, from which we start search
 
         Returns: placeholder id and string index, after the found placeholder.
-        
+
         """
         m = self.__placeholder_re.search(data, index)
         if m:
@@ -129,11 +129,10 @@ class InlineProcessor(Treeprocessor):
             text = subnode.tail
             subnode.tail = None
 
-        childResult = self.__processPlaceholders(text, subnode)
+        childResult = self.__processPlaceholders(text, subnode, isText)
 
         if not isText and node is not subnode:
             pos = list(node).index(subnode)
-            node.remove(subnode)
         else:
             pos = 0
 
@@ -141,7 +140,7 @@ class InlineProcessor(Treeprocessor):
         for newChild in childResult:
             node.insert(pos, newChild)
 
-    def __processPlaceholders(self, data, parent):
+    def __processPlaceholders(self, data, parent, isText=True):
         """
         Process string with placeholders and generate ElementTree tree.
 
@@ -151,7 +150,7 @@ class InlineProcessor(Treeprocessor):
         * parent: Element, which contains processing inline data
 
         Returns: list with ElementTree elements with applied inline patterns.
-        
+
         """
         def linkText(text):
             if text:
@@ -160,6 +159,11 @@ class InlineProcessor(Treeprocessor):
                         result[-1].tail += text
                     else:
                         result[-1].tail = text
+                elif not isText:
+                    if parent.tail:
+                        parent.tail += text
+                    else:
+                        parent.tail = text
                 else:
                     if parent.text:
                         parent.text += text
@@ -183,7 +187,7 @@ class InlineProcessor(Treeprocessor):
                         for child in [node] + list(node):
                             if child.tail:
                                 if child.tail.strip():
-                                    self.__processElementText(node, child,False)
+                                    self.__processElementText(node, child, False)
                             if child.text:
                                 if child.text.strip():
                                     self.__processElementText(child, child)
@@ -240,7 +244,7 @@ class InlineProcessor(Treeprocessor):
                 # We need to process current node too
                 for child in [node] + list(node):
                     if not isString(node):
-                        if child.text: 
+                        if child.text:
                             child.text = self.__handleInline(child.text,
                                                             patternIndex + 1)
                         if child.tail:
@@ -288,11 +292,10 @@ class InlineProcessor(Treeprocessor):
                 if child.tail:
                     tail = self.__handleInline(child.tail)
                     dumby = util.etree.Element('d')
-                    tailResult = self.__processPlaceholders(tail, dumby)
-                    if dumby.text:
-                        child.tail = dumby.text
-                    else:
-                        child.tail = None
+                    child.tail = None
+                    tailResult = self.__processPlaceholders(tail, dumby, False)
+                    if dumby.tail:
+                        child.tail = dumby.tail
                     pos = list(currElement).index(child) + 1
                     tailResult.reverse()
                     for newChild in tailResult:
@@ -304,7 +307,7 @@ class InlineProcessor(Treeprocessor):
                 if self.markdown.enable_attributes:
                     if element.text and isString(element.text):
                         element.text = \
-                            inlinepatterns.handleAttributes(element.text, 
+                            inlinepatterns.handleAttributes(element.text,
                                                                     element)
                 i = 0
                 for newChild in lst:
