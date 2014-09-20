@@ -187,7 +187,7 @@ class InlineProcessor(Treeprocessor):
                         for child in [node] + list(node):
                             if child.tail:
                                 if child.tail.strip():
-                                    self.__processElementText(node, child,False)
+                                    self.__processElementText(node, child, False)
                             if child.text:
                                 if child.text.strip():
                                     self.__processElementText(child, child)
@@ -292,11 +292,10 @@ class InlineProcessor(Treeprocessor):
                 if child.tail:
                     tail = self.__handleInline(child.tail)
                     dumby = util.etree.Element('d')
+                    child.tail = None
                     tailResult = self.__processPlaceholders(tail, dumby, False)
                     if dumby.tail:
                         child.tail = dumby.tail
-                    else:
-                        child.tail = None
                     pos = list(currElement).index(child) + 1
                     tailResult.reverse()
                     for newChild in tailResult:

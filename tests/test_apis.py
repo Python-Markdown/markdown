@@ -382,12 +382,18 @@ class testETreeComments(unittest.TestCase):
         self.assertEqual(markdown.serializers.to_html_string(self.comment),
                     '<!--foo-->\n')
 
-    def testBrPrettify(self):
-        pretty = markdown.treeprocessors.PrettifyTreeprocessor()
+
+class testElementTailTests(unittest.TestCase):
+    """ Element Tail Tests """
+    def setUp(self):
+        self.pretty = markdown.treeprocessors.PrettifyTreeprocessor()
+
+    def testBrTailNoNewline(self):
+        """ Test that last <br> in tree has a new line tail """
         root = markdown.util.etree.Element('root')
         br = markdown.util.etree.SubElement(root, 'br')
         self.assertEqual(br.tail, None)
-        pretty.run(root)
+        self.pretty.run(root)
         self.assertEqual(br.tail, "\n")
 
 
