@@ -382,6 +382,14 @@ class testETreeComments(unittest.TestCase):
         self.assertEqual(markdown.serializers.to_html_string(self.comment),
                     '<!--foo-->\n')
 
+    def testBrPrettify(self):
+        pretty = markdown.treeprocessors.PrettifyTreeprocessor()
+        root = markdown.util.etree.Element('root')
+        br = markdown.util.etree.SubElement(root, 'br')
+        self.assertEqual(br.tail, None)
+        pretty.run(root)
+        self.assertEqual(br.tail, "\n")
+
 
 class testSerializers(unittest.TestCase):
     """ Test the html and xhtml serializers. """
