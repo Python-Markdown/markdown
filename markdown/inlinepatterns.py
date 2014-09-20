@@ -76,7 +76,13 @@ def build_inlinepatterns(md_instance, **kwargs):
     inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md_instance)
     inlinePatterns["not_strong"] = SimpleTextPattern(NOT_STRONG_RE)
     inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'strong,em')
+    inlinePatterns["strong_em2"] = DoubleTagPattern(STRONG_EM_2_RE, 'strong,em')
+    inlinePatterns["strong_em3"] = DoubleTagPattern(STRONG_EM_3_RE, 'strong,em')
+    inlinePatterns["strong_em4"] = DoubleTagPattern(STRONG_EM_4_RE, 'strong,em')
+    inlinePatterns["em_strong"] = DoubleTagPattern(EM_STRONG_RE, 'em,strong')
+    inlinePatterns["em_strong2"] = DoubleTagPattern(EM_STRONG_2_RE, 'em,strong')
     inlinePatterns["strong"] = SimpleTagPattern(STRONG_RE, 'strong')
+    inlinePatterns["strong2"] = SimpleTagPattern(STRONG_2_RE, 'strong')
     inlinePatterns["emphasis"] = SimpleTagPattern(EMPHASIS_RE, 'em')
     if md_instance.smart_emphasis:
         inlinePatterns["emphasis2"] = SimpleTagPattern(SMART_EMPHASIS_RE, 'em')
@@ -96,13 +102,19 @@ BRK = ( r'\[('
         + NOBRACKET + r')\]' )
 NOIMG = r'(?<!\!)'
 
-BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)' # `e=f()` or ``e=f("`")``
-ESCAPE_RE = r'\\(.)'                             # \<
-EMPHASIS_RE = r'(\*)([^\*]+)\2'                    # *emphasis*
-STRONG_RE = r'(\*{2}|_{2})(.+?)\2'                      # **strong**
-STRONG_EM_RE = r'(\*{3}|_{3})(.+?)\2'            # ***strong***
-SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\2(?!\w)'  # _smart_emphasis_
-EMPHASIS_2_RE = r'(_)(.+?)\2'                 # _emphasis_
+BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)'                    # `e=f()` or ``e=f("`")``
+ESCAPE_RE = r'\\(.)'                                              # \<
+STRONG_RE = r'(\*{2})(?!\s)(.+?)(?<!\s)\2'                        # **strong**
+STRONG_2_RE = r'(_{2})(?!\s)(.+?)(?<!\s)\2'                       # __strong__
+STRONG_EM_RE = r'(\*{3})(?!\s)(.+?)(?<!\s)\2'                     # ***strong,em***
+STRONG_EM_2_RE = r'(_{3})(?!\s)(.+?)(?<!\s)\2'                    # ___strong,em___
+STRONG_EM_3_RE = r'(\*{3})(?!\s)(.+?)(?<!\s)\*{2}(.+?)(?<!\s)\*'  # ***strong**em*
+STRONG_EM_4_RE = r'(_{3})(?!\s)(.+?)(?<!\s)_{2}(.+?)(?<!\s)_'     # ___strong__em_
+EMPHASIS_RE = r'(\*)(?!\s)(.+?)(?<!\s)\2'                         # *emphasis*
+EMPHASIS_2_RE = r'(_)(?!\s)(.+?)(?<!\s)\2'                        # _emphasis_
+SMART_EMPHASIS_RE = r'(?<!\w)(_)(?![_\s])(.+?_*?)(?<!\s)\2(?!\w)' # _smart_emphasis_
+EM_STRONG_RE = r'(\*{3})(?!\s)(.+?)(?<!\s)\*(.+?)(?<!\s)\*{2}'    # ***em*strong**
+EM_STRONG_2_RE = r'(_{3})(?!\s)(.+?)(?<!\s)_(.+?)(?<!\s)_{2}'     # ___em_strong__
 LINK_RE = NOIMG + BRK + \
 r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\12\s*)?\)'''
 # [text](url) or [text](<url>) or [text](url "title")
@@ -276,6 +288,8 @@ class DoubleTagPattern(SimpleTagPattern):
         el1 = util.etree.Element(tag1)
         el2 = util.etree.SubElement(el1, tag2)
         el2.text = m.group(3)
+        if len(m.groups()) == 5:
+            el2.tail = m.group(4)
         return el1
 
 
@@ -476,4 +490,3 @@ class AutomailPattern(Pattern):
                           ord(letter) for letter in mailto])
         el.set('href', mailto)
         return el
-
