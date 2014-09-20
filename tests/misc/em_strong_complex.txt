@@ -1,0 +1,15 @@
+***Strong Em** Just Em*
+
+___Strong Em__ Just Em_
+
+***Em Strong* Just Strong**
+
+___Em Strong_ Just Strong__
+
+***Em Asterisk* with Plain Text*
+
+___Smart Rule_ Prevents Match_
+
+**Em* Plain Text*
+
+__Smart Rule_ Prevents Match_
