@@ -292,9 +292,9 @@ class InlineProcessor(Treeprocessor):
                 if child.tail:
                     tail = self.__handleInline(child.tail)
                     dumby = util.etree.Element('d')
-                    tailResult = self.__processPlaceholders(tail, dumby)
-                    if dumby.text:
-                        child.tail = dumby.text
+                    tailResult = self.__processPlaceholders(tail, dumby, False)
+                    if dumby.tail:
+                        child.tail = dumby.tail
                     else:
                         child.tail = None
                     pos = list(currElement).index(child) + 1
