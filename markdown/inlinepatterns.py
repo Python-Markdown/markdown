@@ -76,11 +76,20 @@ def build_inlinepatterns(md_instance, **kwargs):
     inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md_instance)
     inlinePatterns["not_strong"] = SimpleTextPattern(NOT_STRONG_RE)
     inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'strong,em')
-    inlinePatterns["strong_em2"] = DoubleTagPattern(STRONG_EM_2_RE, 'strong,em')
-    inlinePatterns["strong_em3"] = DoubleTagPattern(STRONG_EM_3_RE, 'strong,em')
-    inlinePatterns["strong_em4"] = DoubleTagPattern(STRONG_EM_4_RE, 'strong,em')
+    if md_instance.smart_emphasis:
+        inlinePatterns["strong_em2"] = DoubleTagPattern(SMART_STRONG_EM_RE, 'strong,em')
+    else:
+        inlinePatterns["strong_em2"] = DoubleTagPattern(STRONG_EM_2_RE, 'strong,em')
     inlinePatterns["em_strong"] = DoubleTagPattern(EM_STRONG_RE, 'em,strong')
-    inlinePatterns["em_strong2"] = DoubleTagPattern(EM_STRONG_2_RE, 'em,strong')
+    if md_instance.smart_emphasis:
+        inlinePatterns["em_strong2"] = DoubleTagPattern(SMART_EM_STRONG_2_RE, 'em,strong')
+    else:
+        inlinePatterns["em_strong2"] = DoubleTagPattern(EM_STRONG_2_RE, 'em,strong')
+    inlinePatterns["strong_em3"] = DoubleTagPattern(STRONG_EM_3_RE, 'strong,em')
+    if md_instance.smart_emphasis:
+        inlinePatterns["strong_em4"] = DoubleTagPattern(SMART_STRONG_EM_4_RE, 'strong,em')
+    else:
+        inlinePatterns["strong_em4"] = DoubleTagPattern(STRONG_EM_4_RE, 'strong,em')
     inlinePatterns["strong"] = SimpleTagPattern(STRONG_RE, 'strong')
     inlinePatterns["strong2"] = SimpleTagPattern(STRONG_2_RE, 'strong')
     inlinePatterns["emphasis"] = SimpleTagPattern(EMPHASIS_RE, 'em')
@@ -102,19 +111,51 @@ BRK = ( r'\[('
         + NOBRACKET + r')\]' )
 NOIMG = r'(?<!\!)'
 
-BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)'                    # `e=f()` or ``e=f("`")``
-ESCAPE_RE = r'\\(.)'                                              # \<
-STRONG_RE = r'(\*{2})(?!\s)(.+?)(?<!\s)\2'                        # **strong**
-STRONG_2_RE = r'(_{2})(?!\s)(.+?)(?<!\s)\2'                       # __strong__
-STRONG_EM_RE = r'(\*{3})(?!\s)(.+?)(?<!\s)\2'                     # ***strong,em***
-STRONG_EM_2_RE = r'(_{3})(?!\s)(.+?)(?<!\s)\2'                    # ___strong,em___
-STRONG_EM_3_RE = r'(\*{3})(?!\s)(.+?)(?<!\s)\*{2}(.+?)(?<!\s)\*'  # ***strong**em*
-STRONG_EM_4_RE = r'(_{3})(?!\s)(.+?)(?<!\s)_{2}(.+?)(?<!\s)_'     # ___strong__em_
-EMPHASIS_RE = r'(\*)(?!\s)(.+?)(?<!\s)\2'                         # *emphasis*
-EMPHASIS_2_RE = r'(_)(?!\s)(.+?)(?<!\s)\2'                        # _emphasis_
-SMART_EMPHASIS_RE = r'(?<!\w)(_)(?![_\s])(.+?_*?)(?<!\s)\2(?!\w)' # _smart_emphasis_
-EM_STRONG_RE = r'(\*{3})(?!\s)(.+?)(?<!\s)\*(.+?)(?<!\s)\*{2}'    # ***em*strong**
-EM_STRONG_2_RE = r'(_{3})(?!\s)(.+?)(?<!\s)_(.+?)(?<!\s)_{2}'     # ___em_strong__
+BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)'        # `e=f()` or ``e=f("`")``
+ESCAPE_RE = r'\\(.)'                                  # \<
+SMART_CONTENT = r'((?:[^_]|(?<!_)_(?=[^\W_]))+?_*)'
+UNDER_CONTENT = r'(_|[^_]+?)'
+UNDER_CONTENT2 = r'((?:[^_]|(?<!_)_(?=[^\W_]))+?)'
+STAR_CONTENT = r'(\*|[^\*]+?)'
+STAR_CONTENT2 = r'((?:[^\*]|(?<!\*)\*(?=[^\W\*]))+?)'
+
+# ***strong,em***
+STRONG_EM_RE = r'(\*{3})(?!\s)(\*{1,2}|[^\*]+?)(?<!\s)\2'
+# ___strong,em___
+STRONG_EM_2_RE = r'(_{3})(?!\s)(_{1,2}|[^_]+?)(?<!\s)\2'
+# ***strong,em*strong**
+STRONG_EM_3_RE = \
+r'(\*{3})(?!\s)%s(?<!\s)\*%s(?<!\s)\*{2}' % (STAR_CONTENT, STAR_CONTENT2)
+# ___strong,em_strong__
+STRONG_EM_4_RE = \
+r'(_{3})(?!\s)%s(?<!\s)_%s(?<!\s)_{2}' % (UNDER_CONTENT2, UNDER_CONTENT)
+# ***em,strong**em*
+EM_STRONG_RE = \
+r'(\*{3})(?!\s)%s(?<!\s)\*{2}%s(?<!\s)\*' % (STAR_CONTENT2, STAR_CONTENT)
+# ___em,strong__em_
+EM_STRONG_2_RE = \
+r'(_{3})(?!\s)%s(?<!\s)_{2}%s(?<!\s)_' % (UNDER_CONTENT2, UNDER_CONTENT)
+# **strong**
+STRONG_RE = r'(\*{2})(?!\s)%s(?<!\s)\2' % STAR_CONTENT2
+# __strong__
+STRONG_2_RE = r'(_{2})(?!\s)%s(?<!\s)\2' % UNDER_CONTENT2
+# *emphasis*
+EMPHASIS_RE = r'(\*)(?!\s)%s(?<!\s)\2' % STAR_CONTENT
+# _emphasis_
+EMPHASIS_2_RE = r'(_)(?!\s)%s(?<!\s)\2' % UNDER_CONTENT
+
+# SMART: ___strong,em___
+SMART_STRONG_EM_RE = \
+r'(?<!\w)(_{3})(?![\s_])((?:[^_]|_(?=[^\W]))+?_*)(?<!\s)\2(?!\w)'
+# SMART: ___strong,em_strong__
+SMART_STRONG_EM_4_RE = \
+r'(?<!\w)(_{3})(?!\s)(?![\s_])%s(?<!\s)_(?!\w)%s(?<!\s)_{2}' % (SMART_CONTENT, UNDER_CONTENT2)
+# SMART: ___em,strong__em_
+SMART_EM_STRONG_2_RE = \
+r'(?<!\w)(_{3})(?!\s)%s(?<!\s)_{2}(?![\s_])%s(?<!\s)_(?!\w)' % (UNDER_CONTENT2, SMART_CONTENT)
+# SMART _em_
+SMART_EMPHASIS_RE = r'(?<!\w)(_)(?![\s_])%s(?<!\s)\2(?!\w)' % SMART_CONTENT
+
 LINK_RE = NOIMG + BRK + \
 r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\12\s*)?\)'''
 # [text](url) or [text](<url>) or [text](url "title")
