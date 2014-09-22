@@ -34,6 +34,11 @@ if version_info[3] == 'alpha' and version_info[4] == 0:
 else:
     DEVSTATUS = dev_status_map[version_info[3]]
 
+if sys.version_info[:2] == (2, 6):
+    install_dependencies = ['importlib']
+else:
+    install_dependencies = []
+
 # The command line script name.  Currently set to "markdown_py" so as not to
 # conflict with the perl implimentation (which uses "markdown").  We can't use
 # "markdown.py" as the default config on some systems will cause the script to
@@ -193,10 +198,10 @@ class md_build(build):
     sub_commands = build.sub_commands + [('build_docs', has_docs)]
 
 long_description = \
-'''This is a Python implementation of John Gruber's Markdown_. 
+'''This is a Python implementation of John Gruber's Markdown_.
 It is almost completely compliant with the reference implementation,
-though there are a few known issues. See Features_ for information 
-on what exactly is supported and what is not. Additional features are 
+though there are a few known issues. See Features_ for information
+on what exactly is supported and what is not. Additional features are
 supported by the `Available Extensions`_.
 
 .. _Markdown: http://daringfireball.net/projects/markdown/
@@ -226,6 +231,7 @@ setup(
     maintainer_email = 'waylan [at] gmail.com',
     license =       'BSD License',
     packages =      ['markdown', 'markdown.extensions'],
+    install_requires = install_dependencies,
     scripts =       ['bin/%s' % SCRIPT_NAME],
     cmdclass =      {'install_scripts': md_install_scripts,
                      'build_docs': build_docs,
@@ -235,6 +241,7 @@ setup(
                      'Operating System :: OS Independent',
                      'Programming Language :: Python',
                      'Programming Language :: Python :: 2',
+                     'Programming Language :: Python :: 2.6',
                      'Programming Language :: Python :: 2.7',
                      'Programming Language :: Python :: 3',
                      'Programming Language :: Python :: 3.2',

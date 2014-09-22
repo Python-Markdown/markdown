@@ -50,7 +50,12 @@ from .serializers import to_html_string, to_xhtml_string
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
 logger = logging.getLogger('MARKDOWN')
-logging.captureWarnings(True)
+
+try:
+    logging.captureWarnings(True)
+except AttributeError:
+    # Python 2.6 does not contain `captureWarnings`, ignore for now.
+    pass
 
 
 class Markdown(object):
@@ -180,7 +185,7 @@ class Markdown(object):
                 ext = self.build_extension(ext, configs.get(ext, {}))
             if isinstance(ext, Extension):
                 ext.extendMarkdown(self, globals())
-                logger.info('Successfully loaded extension "%s.%s".' 
+                logger.info('Successfully loaded extension "%s.%s".'
                             % (ext.__class__.__module__, ext.__class__.__name__))
             elif ext is not None:
                 raise TypeError(
@@ -196,9 +201,9 @@ class Markdown(object):
         following format: "extname(key1=value1,key2=value2)"
 
         """
-        
+
         configs = dict(configs)
-        
+
         # Parse extensions config params (ignore the order)
         pos = ext_name.find("(") # find the first "("
         if pos > 0:
@@ -210,33 +215,33 @@ class Markdown(object):
                           'It is recommended that you pass an instance of the extension class to '
                           'Markdown or use the "extension_configs" keyword. The current behavior '
                           'will be deprecated in version 2.6 and raise an error in version 2.7. '
-                          'See the Release Notes for Python-Markdown version 2.5 for more info.', 
+                          'See the Release Notes for Python-Markdown version 2.5 for more info.',
                           PendingDeprecationWarning)
 
         # Get class name (if provided): `path.to.module:ClassName`
         ext_name, class_name = ext_name.split(':', 1) if ':' in ext_name else (ext_name, '')
 
         # Try loading the extension first from one place, then another
-        try: 
+        try:
             # Assume string uses dot syntax (`path.to.some.module`)
             module = importlib.import_module(ext_name)
             logger.debug('Successfuly imported extension module "%s".' % ext_name)
         except ImportError:
             # Preppend `markdown.extensions.` to name
             module_name = '.'.join(['markdown.extensions', ext_name])
-            try: 
+            try:
                 module = importlib.import_module(module_name)
                 logger.debug('Successfuly imported extension module "%s".' % module_name)
                 warnings.warn('Using short names for Markdown\'s builtin extensions is pending deprecation. '
                               'Use the full path to the extension with Python\'s dot notation '
                               '(eg: "%s" instead of "%s"). The current behavior will be deprecated in '
                               'version 2.6 and raise an error in version 2.7. See the Release Notes for '
-                              'Python-Markdown version 2.5 for more info.' % (module_name, ext_name), 
-                              PendingDeprecationWarning) 
+                              'Python-Markdown version 2.5 for more info.' % (module_name, ext_name),
+                              PendingDeprecationWarning)
             except ImportError:
                 # Preppend `mdx_` to name
                 module_name_old_style = '_'.join(['mdx', ext_name])
-                try: 
+                try:
                     module = importlib.import_module(module_name_old_style)
                     logger.debug('Successfuly imported extension module "%s".' % module_name_old_style)
                     warnings.warn('Markdown\'s behavuor of appending "mdx_" to an extension name '
@@ -245,7 +250,7 @@ class Markdown(object):
                                   'current behavior will be deprecated in version 2.6 and raise an '
                                   'error in version 2.7. See the Release Notes for Python-Markdown '
                                   'version 2.5 for more info.' % (module_name_old_style, ext_name),
-                                  PendingDeprecationWarning) 
+                                  PendingDeprecationWarning)
                 except ImportError as e:
                     message = "Failed loading extension '%s' from '%s', '%s' or '%s'" \
                         % (ext_name, ext_name, module_name, module_name_old_style)
@@ -293,7 +298,7 @@ class Markdown(object):
             valid_formats = list(self.output_formats.keys())
             valid_formats.sort()
             message = 'Invalid Output Format: "%s". Use one of %s.' \
-                       % (self.output_format, 
+                       % (self.output_format,
                           '"' + '", "'.join(valid_formats) + '"')
             e.args = (message,) + e.args[1:]
             raise
@@ -422,7 +427,7 @@ class Markdown(object):
                 output_file.write(html)
                 # Don't close here. User may want to write more.
         else:
-            # Encode manually and write bytes to stdout. 
+            # Encode manually and write bytes to stdout.
             html = html.encode(encoding, "xmlcharrefreplace")
             try:
                 # Write bytes directly to buffer (Python 3).
