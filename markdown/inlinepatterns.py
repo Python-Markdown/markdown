@@ -149,7 +149,7 @@ SMART_STRONG_EM_RE = \
 r'(?<!\w)(_{3})(?![\s_])((?:[^_]|_(?=[^\W]))+?_*)(?<!\s)\2(?!\w)'
 # SMART: ___strong,em_strong__
 SMART_STRONG_EM_4_RE = \
-r'(?<!\w)(_{3})(?!\s)(?![\s_])%s(?<!\s)_(?!\w)%s(?<!\s)_{2}' % (SMART_CONTENT, UNDER_CONTENT2)
+r'(?<!\w)(_{3})(?![\s_])%s(?<!\s)_(?!\w)%s(?<!\s)_{2}' % (SMART_CONTENT, UNDER_CONTENT2)
 # SMART: ___em,strong__em_
 SMART_EM_STRONG_2_RE = \
 r'(?<!\w)(_{3})(?!\s)%s(?<!\s)_{2}(?![\s_])%s(?<!\s)_(?!\w)' % (UNDER_CONTENT2, SMART_CONTENT)
