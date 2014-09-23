@@ -26,15 +26,15 @@ SMART_STRONG_2_RE = r'(?<!\w)(_{2})(?![\s_])%s(?<!\s)\2(?!\w)' % SMART_CONTENT
 # Smart rules for when "smart emphasis" is enabled
 # ___strong,em_strong__
 SMART_STRONG_EM_4_RE = \
-r'(?<!\w)(_{3})(?![\s_])%s(?<!\s)_%s(?<!\s)_{2}(?!\w)' % (SMART_CONTENT, SMART_CONTENT)
+r'(?<!\w)(_{3})(?![\s_])%s(?<!\s)_(?!\w)%s(?<!\s)_{2}(?!\w)' % (SMART_CONTENT, SMART_CONTENT)
 # ___em,strong__em_
 SMART_EM_STRONG_2_RE = \
-r'(?<!\w)(_{3})(?![\s_])%s(?<!\s)_{2}(?![\s_])%s(?<!\s)_(?!\w)' % (SMART_CONTENT, SMART_CONTENT)
+r'(?<!\w)(_{3})(?![\s_])%s(?<!\s)_{2}(?!\w)%s(?<!\s)_(?!\w)' % (SMART_CONTENT, SMART_CONTENT)
 
 # Smart rules for when "smart emphasis" is disabled
 # ___strong,em_strong__
 STRONG_EM_4_RE = \
-r'(?<!\w)(_{3})(?!\s)%s(?<!\s)_%s(?<!\s)_{2}(?!\w)' % (UNDER_CONTENT, SMART_CONTENT)
+r'(?<!\w)(_{3})(?![\s_])%s(?<!\s)_%s(?<!\s)_{2}(?!\w)' % (UNDER_CONTENT, SMART_CONTENT)
 # ___em,strong__em_
 EM_STRONG_2_RE = \
 r'(?<!\w)(_{3})(?![\s_])%s(?<!\s)_{2}(?!\w)%s(?<!\s)_' % (SMART_CONTENT, UNDER_CONTENT)
