@@ -75,7 +75,8 @@ def build_inlinepatterns(md_instance, **kwargs):
         inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
     inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md_instance)
     inlinePatterns["not_strong"] = SimpleTextPattern(NOT_STRONG_RE)
-    inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'strong,em')
+    inlinePatterns["em_strong"] = DoubleTagPattern(EM_STRONG_RE, 'strong,em')
+    inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'em,strong')
     inlinePatterns["strong"] = SimpleTagPattern(STRONG_RE, 'strong')
     inlinePatterns["emphasis"] = SimpleTagPattern(EMPHASIS_RE, 'em')
     if md_instance.smart_emphasis:
@@ -100,7 +101,8 @@ BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)' # `e=f()` or ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                             # \<
 EMPHASIS_RE = r'(\*)([^\*]+)\2'                    # *emphasis*
 STRONG_RE = r'(\*{2}|_{2})(.+?)\2'                      # **strong**
-STRONG_EM_RE = r'(\*{3}|_{3})(.+?)\2'            # ***strong***
+EM_STRONG_RE = r'(\*|_){3}(.+?)\2(.*?)\2{2}'            # ***strongem*** or ***em*strong**
+STRONG_EM_RE = r'(\*|_){3}(.+?)\2{2}(.*?)\2'            #  ***strong**em*
 SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\2(?!\w)'  # _smart_emphasis_
 EMPHASIS_2_RE = r'(_)(.+?)\2'                 # _emphasis_
 LINK_RE = NOIMG + BRK + \
@@ -276,6 +278,8 @@ class DoubleTagPattern(SimpleTagPattern):
         el1 = util.etree.Element(tag1)
         el2 = util.etree.SubElement(el1, tag2)
         el2.text = m.group(3)
+        if len(m.groups())==5:
+            el2.tail = m.group(4)
         return el1
 
 
