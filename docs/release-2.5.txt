@@ -16,10 +16,7 @@ Backwards-incompatible Changes
 ------------------------------
 
 * Python-Markdown no longer supports Python version 2.6. You must be using Python 
-  versions 2.7, 3.2, 3.3, or 3.4. While Python-Markdown is no longer tested against
-  Python 2.6, you may be able to get it working if you install a copy of [importlib] 
-  which has been backported for Python 2.6. However, the developers of Python-Markdown 
-  offer no guarentees in that situation.
+  versions 2.7, 3.2, 3.3, or 3.4.
 
 [importlib]: https://pypi.python.org/pypi/importlib
 
