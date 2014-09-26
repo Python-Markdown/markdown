@@ -1,103 +1,108 @@
-___test test__ test test_
+# Underscore
 
-___test test_ test test__
+___normal _ strong em___
 
-___test test_ test test_
+Whole thing strong em with sub strongs. ___strong,em_____strong,em____strong,em___
 
-__test test_ test test_
+Breaks normal strong em. ___strong em_ just strong with trailing underscore___
 
-__test_
+___eat trailing tokens_______
 
-___test_
+____strong___
 
-____test_
+___normal_strong__and_em___
 
-_____test_
+___strong em_ just strong__
 
-______test_
+___em strong__ just em_
 
-___test___
+___ not valid ___
 
-__test___
+__ not valid __
 
-_____test___
+_ not valid _
 
-______test___
+___not valid__ not valid _
 
-___test___test___
+___not valid_ not valid _
 
-___test__test___
+___ not valid __not valid_
 
-____test___test___
+___ not valid _em__
 
-___test_ test___
+__strong__ text_
 
-__test_ test__
+_em_ text_
 
-___test_ test__
+text___strong___ text
 
-___test_test test___
+text ___strong___text
 
-___test__test test___
+text ___strong,em___ text
 
-_test_test test_test_
+text__strong__ text
 
-___test_test_test_ test_test test__
+text __strong__text
 
-___test_test_test__ test_test_test_
+text __strong__ text
 
-___test_ test_ test__
+text_not valid_ text
 
-___test_test __test_____test test___
+text _not valid_text
 
-***test test** test test*
+text _em_ text
 
-***test test* test test**
 
-***test test* test test*
+# Asterisk
 
-**test test* test test*
+text ***normal * strong em***
 
-**test*
+text ***strong,em*****em****strong,em***
 
-***test*
+Breaks normal strong em. ***strong em* just strong***
 
-****test*
+text ***trailing tokens are eaten by ems*******
 
-*****test*
+text ****dumb rules make this strong,em***
 
-******test*
+Whole thing is em. ***strong*text**and*em text***
 
-***test***
+text ***strong em* just strong**
 
-**test***
+text ***em strong** just em*
 
-*****test***
+text *** em claims asterisks ***
 
-******test***
+text ** not valid **
 
-***test***test***
+text * not valid *
 
-***test**test***
+text ***strong** not valid *
 
-****test***test***
+text ***em* not valid *
 
-***test* test***
+text *** em to the left **em*
 
-**test* test**
+text *** em to the left *em**
 
-***test* test**
+text **strong** text*
 
-***test*test test***
+text *em* text*
 
-***test**test test***
+text***strong,em*** text
 
-*test*test test*test*
+text ***strong,em***text
 
-***test*test*test* test*test test**
+text ***strong,em*** text
 
-***test*test*test** test*test*test*
+text**strong** text
 
-***test* test* test**
+text **strong**text
 
-***test*test **test*****test test***
+text **strong** text
+
+text*em* text
+
+text *em*text
+
+text *em* text

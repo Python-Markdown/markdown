@@ -1,1 +1,51 @@
-_connected_words_
+___normal _ strong em___
+
+___strong,em_____em____strong,em___
+
+Breaks normal strong em. ___strong em_ just strong___
+
+___trailing tokens are eaten by ems_______
+
+____dumb rules make this strong,em___
+
+Whole thing is em. ___strong_text__and_em text___
+
+___strong em_ just strong__
+
+___em strong__ just em_
+
+___ em claims asterisks ___
+
+__ not valid __
+
+_ not valid _
+
+___strong__ not valid _
+
+___em_ not valid _
+
+___ em to the left __em_
+
+___ em to the left _em__
+
+__strong__ text_
+
+_em_ text_
+
+text___strong,em___ text
+
+text ___strong,em___text
+
+text ___strong,em___ text
+
+text__strong__ text
+
+text __strong__text
+
+text __strong__ text
+
+text_em_ text
+
+text _em_text
+
+text _em_ text
