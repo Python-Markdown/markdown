@@ -221,6 +221,10 @@ class Markdown(object):
             # Assume string uses dot syntax (`path.to.some.module`)
             module = importlib.import_module(ext_name)
             logger.debug('Successfuly imported extension module "%s".' % ext_name)
+            # For backward compat (until deprecation) check that this is an extension
+            if '.' not in ext_name and not (hasattr(module, 'extendMarkdown') or (class_name and hasattr(module, class_name))):
+                # We have a name conflict (eg: extensions=['tables'] and PyTables is installed)
+                raise ImportError
         except ImportError:
             # Preppend `markdown.extensions.` to name
             module_name = '.'.join(['markdown.extensions', ext_name])

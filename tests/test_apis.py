@@ -289,25 +289,22 @@ class TestErrors(unittest.TestCase):
 
     def testLoadBadExtension(self):
         """ Test loading of an Extension with no makeExtension function. """
-        _create_fake_extension(name='fake_a', has_factory_func=False)
-        self.assertRaises(AttributeError, markdown.Markdown, extensions=['fake_a'])
+        self.assertRaises(AttributeError, markdown.Markdown, extensions=['markdown.util'])
 
     def testNonExtension(self):
         """ Test loading a non Extension object as an extension. """
-        _create_fake_extension(name='fake_b', is_wrong_type=True)
-        self.assertRaises(TypeError, markdown.Markdown, extensions=['fake_b'])
+        self.assertRaises(TypeError, markdown.Markdown, extensions=[object])
 
     def testBaseExtention(self):
         """ Test that the base Extension class will raise NotImplemented. """
-        _create_fake_extension(name='fake_c')
         self.assertRaises(NotImplementedError, 
-                        markdown.Markdown, extensions=['fake_c'])
+                        markdown.Markdown, extensions=[markdown.extensions.Extension()])
 
     def testMdxExtention(self):
         """ Test that appending mdx_ raises a PendingDeprecationWarning. """
-        _create_fake_extension(name='fake_d', use_old_style=True)
+        _create_fake_extension(name='fake', use_old_style=True)
         self.assertRaises(PendingDeprecationWarning, 
-                        markdown.Markdown, extensions=['fake_d'])
+                        markdown.Markdown, extensions=['fake'])
 
     def testShortNameExtention(self):
         """ Test that using a short name raises a PendingDeprecationWarning. """
@@ -604,7 +601,7 @@ class TestCliOptionParsing(unittest.TestCase):
         with os.fdopen(fd, 'w') as fp:
             fp.write(config)
 
-    def testExtensonConfigOption(self):
+    def testExtensionConfigOption(self):
         config = {
         'markdown.extensions.wikilinks': {
             'base_url': 'http://example.com/',
@@ -613,6 +610,19 @@ class TestCliOptionParsing(unittest.TestCase):
             },
         'markdown.extensions.footnotes:FootnotesExtension': {
             'PLACE_MARKER': '~~~footnotes~~~'
+            }
+        }
+        self.create_config_file(config)
+        options, logging_level = parse_options(['-c', self.tempfile])
+        self.default_options['extension_configs'] = config
+        self.assertEqual(options, self.default_options)
+
+    def textBoolExtensionConfigOption(self):
+        config = {
+        'markdown.extensions.toc': {
+            'title': 'Some Title',
+            'anchorlink': True,
+            'permalink': True
             }
         }
         self.create_config_file(config)

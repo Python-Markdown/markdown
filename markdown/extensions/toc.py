@@ -216,9 +216,9 @@ class TocExtension(Extension):
             "slugify" : [slugify,
                 "Function to generate anchors based on header text - "
                 "Defaults to the headerid ext's slugify function."],
-            "title" : [None,
+            "title" : ["",
                 "Title to insert into TOC <div> - "
-                "Defaults to None"],
+                "Defaults to an empty string"],
             "anchorlink" : [0,
                 "1 if header should be a self link - "
                 "Defaults to 0"],
