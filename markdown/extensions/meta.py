@@ -23,7 +23,7 @@ import re
 
 # Global Vars
 META_RE = re.compile(r'^[ ]{0,3}(?P<key>[A-Za-z0-9_-]+):\s*(?P<value>.*)')
-META_MORE_RE = re.compile(r'^[ ]{4,}(?P<value>.*)')
+META_MORE_RE = re.compile(r'^(?:[ ]{4,}|\t{1,})(?P<value>.*)')
 
 class MetaExtension (Extension):
     """ Meta-Data extension for Python-Markdown. """
