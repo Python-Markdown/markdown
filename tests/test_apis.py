@@ -590,7 +590,7 @@ class TestCliOptionParsing(unittest.TestCase):
         with os.fdopen(fd, 'w') as fp:
             fp.write(config)
 
-    def testExtensonConfigOption(self):
+    def testExtensionConfigOption(self):
         config = {
         'markdown.extensions.wikilinks': {
             'base_url': 'http://example.com/',
@@ -599,6 +599,19 @@ class TestCliOptionParsing(unittest.TestCase):
             },
         'markdown.extensions.footnotes:FootnotesExtension': {
             'PLACE_MARKER': '~~~footnotes~~~'
+            }
+        }
+        self.create_config_file(config)
+        options, logging_level = parse_options(['-c', self.tempfile])
+        self.default_options['extension_configs'] = config
+        self.assertEqual(options, self.default_options)
+
+    def textBoolExtensionConfigOption(self):
+        config = {
+        'markdown.extensions.toc': {
+            'title': 'Some Title',
+            'anchorlink': True,
+            'permalink': True
             }
         }
         self.create_config_file(config)
