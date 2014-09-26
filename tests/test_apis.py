@@ -289,25 +289,22 @@ class TestErrors(unittest.TestCase):
 
     def testLoadBadExtension(self):
         """ Test loading of an Extension with no makeExtension function. """
-        _create_fake_extension(name='fake_a', has_factory_func=False)
-        self.assertRaises(AttributeError, markdown.Markdown, extensions=['fake_a'])
+        self.assertRaises(AttributeError, markdown.Markdown, extensions=['markdown.util'])
 
     def testNonExtension(self):
         """ Test loading a non Extension object as an extension. """
-        _create_fake_extension(name='fake_b', is_wrong_type=True)
-        self.assertRaises(TypeError, markdown.Markdown, extensions=['fake_b'])
+        self.assertRaises(TypeError, markdown.Markdown, extensions=[object])
 
     def testBaseExtention(self):
         """ Test that the base Extension class will raise NotImplemented. """
-        _create_fake_extension(name='fake_c')
         self.assertRaises(NotImplementedError, 
-                        markdown.Markdown, extensions=['fake_c'])
+                        markdown.Markdown, extensions=[markdown.extensions.Extension()])
 
     def testMdxExtention(self):
         """ Test that appending mdx_ raises a PendingDeprecationWarning. """
-        _create_fake_extension(name='fake_d', use_old_style=True)
+        _create_fake_extension(name='fake', use_old_style=True)
         self.assertRaises(PendingDeprecationWarning, 
-                        markdown.Markdown, extensions=['fake_d'])
+                        markdown.Markdown, extensions=['fake'])
 
     def testShortNameExtention(self):
         """ Test that using a short name raises a PendingDeprecationWarning. """
