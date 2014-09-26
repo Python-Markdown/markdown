@@ -8,6 +8,8 @@ __strong______strong__
 
 _smart____em_
 
+__dumb_strong__
+
 Breaks normal strong em. ___strong em_ just strong with trailing underscore___
 
 ___eat trailing tokens_______
@@ -66,6 +68,8 @@ text ***strong,em*****em****strong,em***
 **strong******strong**
 
 *em****em*
+
+**dumb*strong**
 
 Breaks normal strong em. ***strong em* just strong***
 

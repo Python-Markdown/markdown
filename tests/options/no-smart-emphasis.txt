@@ -6,6 +6,8 @@ __strong______strong__
 
 _em____em_
 
+__dumb_strong__
+
 Breaks normal strong em. ___strong em_ just strong___
 
 ___trailing tokens are eaten by ems_______

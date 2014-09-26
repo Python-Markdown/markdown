@@ -6,6 +6,8 @@ __smart______strong__
 
 _smart____em_
 
+__dumb_strong__
+
 Breaks normal strong em. ___strong em_ just strong with trailing underscore___
 
 ___eat trailing tokens_______

@@ -117,7 +117,7 @@ SMART_CONTENT = r'((?:[^_]|_(?=\w))+?_*)'
 UNDER_CONTENT = r'(_|[^_]+?)'
 UNDER_CONTENT2 = r'((?:[^_]|(?<!_)_(?=\w))+?)'
 STAR_CONTENT = r'(\*|[^\*]+?)'
-STAR_CONTENT2 = r'((?:[^\*]|(?<!\*)\*(?=[^\W_]))+?)'
+STAR_CONTENT2 = r'((?:[^\*]|(?<!\*)\*(?=[^\W_]|\*))+?)'
 
 # ***strong,em***
 STRONG_EM_RE = r'(\*{3})(?!\s)(\*{1,2}|[^\*]+?)(?<!\s)\2'
