@@ -2,6 +2,10 @@ ___normal _ strong em___
 
 ___normal_____strong____em___
 
+__smart______strong__
+
+_smart____em_
+
 Breaks normal strong em. ___strong em_ just strong with trailing underscore___
 
 ___eat trailing tokens_______

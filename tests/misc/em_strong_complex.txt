@@ -4,6 +4,10 @@ ___normal _ strong em___
 
 Whole thing strong em with sub strongs. ___strong,em_____strong,em____strong,em___
 
+__strong______strong__
+
+_smart____em_
+
 Breaks normal strong em. ___strong em_ just strong with trailing underscore___
 
 ___eat trailing tokens_______
@@ -58,6 +62,10 @@ text _em_ text
 text ***normal * strong em***
 
 text ***strong,em*****em****strong,em***
+
+**strong******strong**
+
+*em****em*
 
 Breaks normal strong em. ***strong em* just strong***
 

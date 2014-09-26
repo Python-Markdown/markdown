@@ -2,6 +2,10 @@ ___normal _ strong em___
 
 ___strong,em_____em____strong,em___
 
+__strong______strong__
+
+_em____em_
+
 Breaks normal strong em. ___strong em_ just strong___
 
 ___trailing tokens are eaten by ems_______

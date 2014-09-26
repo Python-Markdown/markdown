@@ -113,11 +113,11 @@ NOIMG = r'(?<!\!)'
 
 BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)'        # `e=f()` or ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                                  # \<
-SMART_CONTENT = r'((?:[^_]|(?<!_)_(?=[^\W_]))+?_*)'
+SMART_CONTENT = r'((?:[^_]|_(?=\w))+?_*)'
 UNDER_CONTENT = r'(_|[^_]+?)'
-UNDER_CONTENT2 = r'((?:[^_]|(?<!_)_(?=[^\W_]))+?)'
+UNDER_CONTENT2 = r'((?:[^_]|(?<!_)_(?=\w))+?)'
 STAR_CONTENT = r'(\*|[^\*]+?)'
-STAR_CONTENT2 = r'((?:[^\*]|(?<!\*)\*(?=[^\W\*]))+?)'
+STAR_CONTENT2 = r'((?:[^\*]|(?<!\*)\*(?=[^\W_]))+?)'
 
 # ***strong,em***
 STRONG_EM_RE = r'(\*{3})(?!\s)(\*{1,2}|[^\*]+?)(?<!\s)\2'
@@ -125,16 +125,16 @@ STRONG_EM_RE = r'(\*{3})(?!\s)(\*{1,2}|[^\*]+?)(?<!\s)\2'
 STRONG_EM_2_RE = r'(_{3})(?!\s)(_{1,2}|[^_]+?)(?<!\s)\2'
 # ***strong,em*strong**
 STRONG_EM_3_RE = \
-r'(\*{3})(?!\s)%s(?<!\s)\*%s(?<!\s)\*{2}' % (STAR_CONTENT, STAR_CONTENT2)
+r'(\*{3})(?![\s\*])%s(?<!\s)\*%s(?<!\s)\*{2}' % (STAR_CONTENT, STAR_CONTENT2)
 # ___strong,em_strong__
 STRONG_EM_4_RE = \
-r'(_{3})(?!\s)%s(?<!\s)_%s(?<!\s)_{2}' % (UNDER_CONTENT, UNDER_CONTENT2)
+r'(_{3})(?![\s_])%s(?<!\s)_%s(?<!\s)_{2}' % (UNDER_CONTENT, UNDER_CONTENT2)
 # ***em,strong**em*
 EM_STRONG_RE = \
-r'(\*{3})(?!\s)%s(?<!\s)\*{2}%s(?<!\s)\*' % (STAR_CONTENT2, STAR_CONTENT)
+r'(\*{3})(?![\s\*])%s(?<!\s)\*{2}%s(?<!\s)\*' % (STAR_CONTENT2, STAR_CONTENT)
 # ___em,strong__em_
 EM_STRONG_2_RE = \
-r'(_{3})(?!\s)%s(?<!\s)_{2}%s(?<!\s)_' % (UNDER_CONTENT2, UNDER_CONTENT)
+r'(_{3})(?![\s_])%s(?<!\s)_{2}%s(?<!\s)_' % (UNDER_CONTENT2, UNDER_CONTENT)
 # **strong**
 STRONG_RE = r'(\*{2})(?!\s)%s(?<!\s)\2' % STAR_CONTENT2
 # __strong__
@@ -146,7 +146,7 @@ EMPHASIS_2_RE = r'(_)(?!\s)%s(?<!\s)\2' % UNDER_CONTENT
 
 # SMART: ___strong,em___
 SMART_STRONG_EM_RE = \
-r'(?<!\w)(_{3})(?![\s_])((?:[^_]|_(?=[^\W]))+?_*)(?<!\s)\2(?!\w)'
+r'(?<!\w)(_{3})(?![\s_])%s(?<!\s)\2(?!\w)' % SMART_CONTENT
 # SMART: ___strong,em_strong__
 SMART_STRONG_EM_4_RE = \
 r'(?<!\w)(_{3})(?![\s_])%s(?<!\s)_(?!\w)%s(?<!\s)_{2}' % (SMART_CONTENT, UNDER_CONTENT2)

@@ -2,6 +2,10 @@ ___normal _ strong em___
 
 Whole thing will be strong with sub em. ___em_____em____em___
 
+__smart______strong__
+
+_em____em_
+
 ___strong em_ just strong with trailing underscore___
 
 ___eat trailing tokens (but regular em will claim an underscore)_______
