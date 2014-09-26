@@ -1,0 +1,120 @@
+# Underscore
+
+___normal _ strong em___
+
+Whole thing strong em with sub strongs. ___strong,em_____strong,em____strong,em___
+
+__strong______strong__
+
+_smart____em_
+
+__dumb_strong__
+
+Breaks normal strong em. ___strong em_ just strong with trailing underscore___
+
+___eat trailing tokens_______
+
+____strong___
+
+___normal_strong__and_em___
+
+___strong em_ just strong__
+
+___em strong__ just em_
+
+___ not valid ___
+
+__ not valid __
+
+_ not valid _
+
+___not valid__ not valid _
+
+___not valid_ not valid _
+
+___ not valid __not valid_
+
+___ not valid _em__
+
+__strong__ text_
+
+_em_ text_
+
+text___strong___ text
+
+text ___strong___text
+
+text ___strong,em___ text
+
+text__strong__ text
+
+text __strong__text
+
+text __strong__ text
+
+text_not valid_ text
+
+text _not valid_text
+
+text _em_ text
+
+
+# Asterisk
+
+text ***normal * strong em***
+
+text ***strong,em*****em****strong,em***
+
+**strong******strong**
+
+*em****em*
+
+**dumb*strong**
+
+Breaks normal strong em. ***strong em* just strong***
+
+text ***trailing tokens are eaten by ems*******
+
+text ****dumb rules make this strong,em***
+
+Whole thing is em. ***strong*text**and*em text***
+
+text ***strong em* just strong**
+
+text ***em strong** just em*
+
+text *** em claims asterisks ***
+
+text ** not valid **
+
+text * not valid *
+
+text ***strong** not valid *
+
+text ***em* not valid *
+
+text *** em to the left **em*
+
+text *** em to the left *em**
+
+text **strong** text*
+
+text *em* text*
+
+text***strong,em*** text
+
+text ***strong,em***text
+
+text ***strong,em*** text
+
+text**strong** text
+
+text **strong**text
+
+text **strong** text
+
+text*em* text
+
+text *em*text
+
+text *em* text

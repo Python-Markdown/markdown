@@ -1,0 +1,57 @@
+___normal _ strong em___
+
+___normal_____strong____em___
+
+__smart______strong__
+
+_smart____em_
+
+__dumb_strong__
+
+Breaks normal strong em. ___strong em_ just strong with trailing underscore___
+
+___eat trailing tokens_______
+
+____smart boundary to left wont let this trigger___
+
+___normal_strong__and_em___
+
+___strong em_ just strong__
+
+___em strong__ just em_
+
+___ not valid ___
+
+__ not valid __
+
+_ not valid _
+
+___not valid__ not valid _
+
+___not valid_ not valid _
+
+___ not valid __em_
+
+___ not valid _em__
+
+__strong__ text_
+
+_em_ text_
+
+text___not valid___ text
+
+text ___not valid___text
+
+text ___valid___ text
+
+text__not valid__ text
+
+text __not valid__text
+
+text __valid__ text
+
+text_not valid_ text
+
+text _not valid_text
+
+text _valid_ text
