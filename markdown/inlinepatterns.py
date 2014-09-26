@@ -128,7 +128,7 @@ STRONG_EM_3_RE = \
 r'(\*{3})(?!\s)%s(?<!\s)\*%s(?<!\s)\*{2}' % (STAR_CONTENT, STAR_CONTENT2)
 # ___strong,em_strong__
 STRONG_EM_4_RE = \
-r'(_{3})(?!\s)%s(?<!\s)_%s(?<!\s)_{2}' % (UNDER_CONTENT2, UNDER_CONTENT)
+r'(_{3})(?!\s)%s(?<!\s)_%s(?<!\s)_{2}' % (UNDER_CONTENT, UNDER_CONTENT2)
 # ***em,strong**em*
 EM_STRONG_RE = \
 r'(\*{3})(?!\s)%s(?<!\s)\*{2}%s(?<!\s)\*' % (STAR_CONTENT2, STAR_CONTENT)
