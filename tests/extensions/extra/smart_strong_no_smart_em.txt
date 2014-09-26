@@ -1,51 +1,51 @@
-___test test__ test test_
+___normal _ strong em___
 
-___test test_ test test__
+Whole thing will be strong with sub em. ___em_____em____em___
 
-___test test_ test test_
+___strong em_ just strong with trailing underscore___
 
-__test test_ test test_
+___eat trailing tokens (but regular em will claim an underscore)_______
 
-__test_
+____only em will trigger on this___
 
-___test_
+Em strong for entire scope, and sub ems. ___Here are some words_and more__and_more___
 
-____test_
+___strong em_ just strong__
 
-_____test_
+___em strong__ just em_
 
-______test_
+___ em will claim the underscores ___
 
-___test___
+__ not valid __
 
-__test___
+_ not valid _
 
-_____test___
+___em__ not valid _
 
-______test___
+___em_ not valid _
 
-___test___test___
+___ not valid __em_
 
-___test__test___
+___ not valid _em__
 
-____test___test___
+__strong__ text_
 
-___test_ test___
+_em_ text_
 
-__test_ test__
+text___em underscores___ text
 
-___test_ test__
+text ___em underscores___text
 
-___test_test test___
+text ___em strong___ text
 
-___test__test test___
+text__em__ text
 
-_test_test test_test_
+text __em__text
 
-___test_test_test_ test_test test__
+text __strong__ text
 
-___test_test_test__ test_test_test_
+text_em_ text
 
-___test_ test_ test__
+text _em_text
 
-___test_test __test_____test test___
+text _em_ text
