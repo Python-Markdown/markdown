@@ -22,8 +22,8 @@ from ..treeprocessors import Treeprocessor
 import warnings
 try:
     from pygments import highlight
-    from pygments.lexers import get_lexer_by_name, guess_lexer, TextLexer
-    from pygments.formatters import HtmlFormatter
+    from pygments.lexers import get_lexer_by_name, guess_lexer
+    from pygments.formatters import get_formatter_by_name
     pygments = True
 except ImportError:
     pygments = False
@@ -109,14 +109,15 @@ class CodeHilite(object):
                     if self.guess_lang:
                         lexer = guess_lexer(self.src)
                     else:
-                        lexer = TextLexer()
+                        lexer = get_lexer_by_name('text')
                 except ValueError:
-                    lexer = TextLexer()
-            formatter = HtmlFormatter(linenos=self.linenums,
-                                      cssclass=self.css_class,
-                                      style=self.style,
-                                      noclasses=self.noclasses,
-                                      hl_lines=self.hl_lines)
+                    lexer = get_lexer_by_name('text')
+            formatter = get_formatter_by_name('html',
+                                              linenos=self.linenums,
+                                              cssclass=self.css_class,
+                                              style=self.style,
+                                              noclasses=self.noclasses,
+                                              hl_lines=self.hl_lines)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
@@ -247,4 +248,3 @@ class CodeHiliteExtension(Extension):
 
 def makeExtension(*args, **kwargs):
   return CodeHiliteExtension(*args, **kwargs)
-
