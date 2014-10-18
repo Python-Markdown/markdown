@@ -5,3 +5,5 @@ __[_link_](http://example.com)__
 __[*link*](http://example.com)__
 **[_link_](http://example.com)**
 [***link***](http://example.com)
+
+***I am ___italic_ and__ bold* I am `just` bold**
