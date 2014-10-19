@@ -132,7 +132,7 @@ class InlineProcessor(Treeprocessor):
         childResult = self.__processPlaceholders(text, subnode, isText)
 
         if not isText and node is not subnode:
-            pos = list(node).index(subnode)
+            pos = list(node).index(subnode) + 1
         else:
             pos = 0
 
