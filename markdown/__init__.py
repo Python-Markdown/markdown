@@ -180,7 +180,7 @@ class Markdown(object):
                 ext = self.build_extension(ext, configs.get(ext, {}))
             if isinstance(ext, Extension):
                 ext.extendMarkdown(self, globals())
-                logger.info('Successfully loaded extension "%s.%s".' 
+                logger.debug('Successfully loaded extension "%s.%s".' 
                             % (ext.__class__.__module__, ext.__class__.__name__))
             elif ext is not None:
                 raise TypeError(
