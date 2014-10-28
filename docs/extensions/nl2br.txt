@@ -23,7 +23,7 @@ Example
     ... Line 1
     ... Line 2
     ... """
-    >>> html = markdown.markdown(text, extensions=['nl2br'])
+    >>> html = markdown.markdown(text, extensions=['markdown.extensions.nl2br'])
     >>> print html
     <p>Line 1<br />
     Line 2</p>
