@@ -91,10 +91,8 @@ class TestCodeHilite(unittest.TestCase):
         text = '\t# A Code Comment'
         md = markdown.Markdown(extensions=['markdown.extensions.codehilite'])
         if self.has_pygments:
-            self.assertEqual(md.convert(text),
-                '<div class="codehilite">'
-                '<pre><span class="c"># A Code Comment</span>\n'
-                '</pre></div>')
+            # Pygments can use random lexer here as we did not specify the language
+            self.assertTrue(md.convert(text).startswith('<div class="codehilite"><pre>'))
         else:
             self.assertEqual(md.convert(text),
                 '<pre class="codehilite"><code># A Code Comment'
@@ -105,7 +103,7 @@ class TestCodeHilite(unittest.TestCase):
         md = markdown.Markdown(
             extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=True)])
         if self.has_pygments:
-            # Differant versions of pygments output slightly different markup.
+            # Different versions of pygments output slightly different markup.
             # So we use 'startwith' and test just enough to confirm that 
             # pygments received and processed linenums.
             self.assertTrue(md.convert(text).startswith(
@@ -134,10 +132,8 @@ class TestCodeHilite(unittest.TestCase):
         md = markdown.Markdown(
             extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=None)])
         if self.has_pygments:
-            self.assertEqual(md.convert(text),
-                '<div class="codehilite">'
-                '<pre><span class="c"># A Code Comment</span>\n'
-                '</pre></div>')
+            # Pygments can use random lexer here as we did not specify the language
+            self.assertTrue(md.convert(text).startswith('<div class="codehilite"><pre>'))
         else:
             self.assertEqual(md.convert(text),
                 '<pre class="codehilite"><code># A Code Comment'
