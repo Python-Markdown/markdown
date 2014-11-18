@@ -7,3 +7,7 @@ __[*link*](http://example.com)__
 [***link***](http://example.com)
 
 ***I am ___italic_ and__ bold* I am `just` bold**
+
+Example __*bold italic*__ on the same line __*bold italic*__.
+
+Example **_bold italic_** on the same line **_bold italic_**.
