@@ -101,8 +101,8 @@ BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)' # `e=f()` or ``e=f("`")``
 ESCAPE_RE = r'\\(.)'                             # \<
 EMPHASIS_RE = r'(\*)([^\*]+)\2'                    # *emphasis*
 STRONG_RE = r'(\*{2}|_{2})(.+?)\2'                      # **strong**
-EM_STRONG_RE = r'(\*|_){3}(.+?)\2(.*?)\2{2}'            # ***strongem*** or ***em*strong**
-STRONG_EM_RE = r'(\*|_){3}(.+?)\2{2}(.*?)\2'            #  ***strong**em*
+EM_STRONG_RE = r'(\*|_)\2{2}(.+?)\2(.*?)\2{2}'            # ***strongem*** or ***em*strong**
+STRONG_EM_RE = r'(\*|_)\2{2}(.+?)\2{2}(.*?)\2'            #  ***strong**em*
 SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\2(?!\w)'  # _smart_emphasis_
 EMPHASIS_2_RE = r'(_)(.+?)\2'                 # _emphasis_
 LINK_RE = NOIMG + BRK + \
