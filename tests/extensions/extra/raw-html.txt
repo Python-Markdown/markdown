@@ -51,3 +51,17 @@ This text is after the markdown in html.
 <span>2</span>
 
 </div>
+
+<div markdown="1" name="issue368">
+
+Markdown is *active* here.
+
+<div name="RawHtml">
+Raw html blocks may also be nested.
+</div>
+
+Markdown is *still* active here.
+
+</div>
+
+Markdown is *active again* here.
