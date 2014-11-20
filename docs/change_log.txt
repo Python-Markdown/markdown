@@ -7,6 +7,8 @@ next_url:   release-2.5.html
 Python-Markdown Changelog
 =========================
 
+Nov 19, 2014: Released version 2.5.2 (a bugfix release).
+
 Sept 26, 2014: Released version 2.5.1 (a bugfix release).
 
 Sept 12, 2014: Released version 2.5.0 ([Notes](release-2.5.html)).
