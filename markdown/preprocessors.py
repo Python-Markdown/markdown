@@ -41,7 +41,7 @@ class Preprocessor(util.Processor):
         the (possibly modified) list of lines.
 
         """
-        pass #pragma: no cover
+        pass  # pragma: no cover
 
 
 class NormalizeWhitespace(Preprocessor):
@@ -61,13 +61,14 @@ class HtmlBlockPreprocessor(Preprocessor):
 
     right_tag_patterns = ["</%s>", "%s>"]
     attrs_pattern = r"""
-        \s+(?P<attr>[^>"'/= ]+)=(?P<q>['"])(?P<value>.*?)(?P=q)   # attr="value"
-        |                                                         # OR
-        \s+(?P<attr1>[^>"'/= ]+)=(?P<value1>[^> ]+)               # attr=value
-        |                                                         # OR
-        \s+(?P<attr2>[^>"'/= ]+)                                  # attr
+        \s+(?P<attr>[^>"'/= ]+)=(?P<q>['"])(?P<value>.*?)(?P=q) # attr="value"
+        |                                                       # OR
+        \s+(?P<attr1>[^>"'/= ]+)=(?P<value1>[^> ]+)             # attr=value
+        |                                                       # OR
+        \s+(?P<attr2>[^>"'/= ]+)                                # attr
         """
-    left_tag_pattern = r'^\<(?P<tag>[^> ]+)(?P<attrs>(%s)*)\s*\/?\>?' % attrs_pattern
+    left_tag_pattern = r'^\<(?P<tag>[^> ]+)(?P<attrs>(%s)*)\s*\/?\>?' % \
+                       attrs_pattern
     attrs_re = re.compile(attrs_pattern, re.VERBOSE)
     left_tag_re = re.compile(left_tag_pattern, re.VERBOSE)
     markdown_in_raw = False
@@ -87,7 +88,9 @@ class HtmlBlockPreprocessor(Preprocessor):
                             attrs[ma.group('attr').strip()] = ""
                     elif ma.group('attr1'):
                         if ma.group('value1'):
-                            attrs[ma.group('attr1').strip()] = ma.group('value1')
+                            attrs[ma.group('attr1').strip()] = ma.group(
+                                'value1'
+                            )
                         else:
                             attrs[ma.group('attr1').strip()] = ""
                     elif ma.group('attr2'):
@@ -118,20 +121,21 @@ class HtmlBlockPreprocessor(Preprocessor):
     def _get_right_tag(self, left_tag, left_index, block):
         for p in self.right_tag_patterns:
             tag = p % left_tag
-            i = self._recursive_tagfind("<%s" % left_tag, tag, left_index, block)
+            i = self._recursive_tagfind(
+                "<%s" % left_tag, tag, left_index, block
+            )
             if i > 2:
                 return tag.lstrip("<").rstrip(">"), i
         return block.rstrip()[-left_index:-1].lower(), len(block)
 
     def _equal_tags(self, left_tag, right_tag):
-        if left_tag[0] in ['?', '@', '%']: # handle PHP, etc.
+        if left_tag[0] in ['?', '@', '%']:  # handle PHP, etc.
             return True
         if ("/" + left_tag) == right_tag:
             return True
         if (right_tag == "--" and left_tag == "--"):
             return True
-        elif left_tag == right_tag[1:] \
-            and right_tag[0] == "/":
+        elif left_tag == right_tag[1:] and right_tag[0] == "/":
             return True
         else:
             return False
@@ -188,7 +192,7 @@ class HtmlBlockPreprocessor(Preprocessor):
         items = []
         left_tag = ''
         right_tag = ''
-        in_tag = False # flag
+        in_tag = False  # flag
 
         while text:
             block = text[0]
@@ -204,7 +208,7 @@ class HtmlBlockPreprocessor(Preprocessor):
 
                     if block[1:4] == "!--":
                         # is a comment block
-                        left_tag, left_index, attrs  = "--", 2, {}
+                        left_tag, left_index, attrs = "--", 2, {}
                     else:
                         left_tag, left_index, attrs = self._get_left_tag(block)
                     right_tag, data_index = self._get_right_tag(left_tag,
@@ -213,13 +217,13 @@ class HtmlBlockPreprocessor(Preprocessor):
                     # keep checking conditions below and maybe just append
 
                     if data_index < len(block) \
-                        and (util.isBlockLevel(left_tag)
-                        or left_tag == '--'):
+                       and (util.isBlockLevel(left_tag)
+                       or left_tag == '--'):
                         text.insert(0, block[data_index:])
                         block = block[:data_index]
 
-                    if not (util.isBlockLevel(left_tag) \
-                        or block[1] in ["!", "?", "@", "%"]):
+                    if not (util.isBlockLevel(left_tag)
+                       or block[1] in ["!", "?", "@", "%"]):
                         new_blocks.append(block)
                         continue
 
@@ -240,14 +244,14 @@ class HtmlBlockPreprocessor(Preprocessor):
                         continue
                     else:
                         # if is block level tag and is not complete
-                        if  (not self._equal_tags(left_tag, right_tag)) and \
-                            (util.isBlockLevel(left_tag) or left_tag == "--"):
+                        if (not self._equal_tags(left_tag, right_tag)) and \
+                           (util.isBlockLevel(left_tag) or left_tag == "--"):
                             items.append(block.strip())
                             in_tag = True
                         else:
                             new_blocks.append(
-                            self.markdown.htmlStash.store(block.strip()))
-
+                                self.markdown.htmlStash.store(block.strip())
+                            )
                         continue
 
                 else:
@@ -317,11 +321,13 @@ class ReferencePreprocessor(Preprocessor):
     """ Remove reference definitions from text and store for later use. """
 
     TITLE = r'[ ]*(\"(.*)\"|\'(.*)\'|\((.*)\))[ ]*'
-    RE = re.compile(r'^[ ]{0,3}\[([^\]]*)\]:\s*([^ ]*)[ ]*(%s)?$' % TITLE, re.DOTALL)
+    RE = re.compile(
+        r'^[ ]{0,3}\[([^\]]*)\]:\s*([^ ]*)[ ]*(%s)?$' % TITLE, re.DOTALL
+    )
     TITLE_RE = re.compile(r'^%s$' % TITLE)
 
-    def run (self, lines):
-        new_text = [];
+    def run(self, lines):
+        new_text = []
         while lines:
             line = lines.pop(0)
             m = self.RE.match(line)
@@ -339,4 +345,4 @@ class ReferencePreprocessor(Preprocessor):
             else:
                 new_text.append(line)
 
-        return new_text #+ "\n"
+        return new_text  # + "\n"

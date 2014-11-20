@@ -20,12 +20,12 @@ under a differant name. You could also edit the `extensions` global
 variable defined below, but be aware that such changes may be lost
 when you upgrade to any future version of Python-Markdown.
 
-See <https://pythonhosted.org/Markdown/extensions/extra.html> 
+See <https://pythonhosted.org/Markdown/extensions/extra.html>
 for documentation.
 
 Copyright The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 """
 
@@ -51,7 +51,7 @@ class ExtraExtension(Extension):
     """ Add various extensions to Markdown class."""
 
     def __init__(self, *args, **kwargs):
-        """ config is just a dumb holder which gets passed to actual ext later. """
+        """ config is a dumb holder which gets passed to actual ext later. """
         self.config = kwargs.pop('configs', {})
         self.config.update(kwargs)
 

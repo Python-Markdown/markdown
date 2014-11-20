@@ -7,7 +7,7 @@ try:
 except ImportError as e:
     msg = e.args[0]
     msg = msg + ". The nose testing framework is required to run the Python-" \
-          "Markdown tests. Run `pip install nose` to install the latest version."
+        "Markdown tests. Run `pip install nose` to install the latest version."
     e.args = (msg,) + e.args[1:]
     raise
 from .plugins import HtmlOutput, Markdown, MarkdownSyntaxError
@@ -20,11 +20,12 @@ try:
 except ImportError as e:
     msg = e.args[0]
     msg = msg + ". A YAML library is required to run the Python-Markdown " \
-          "tests. Run `pip install pyyaml` to install the latest version."
+        "tests. Run `pip install pyyaml` to install the latest version."
     e.args = (msg,) + e.args[1:]
     raise
 
 test_dir = os.path.abspath(os.path.dirname(__file__))
+
 
 class YamlConfig():
     def __init__(self, defaults, filename):
@@ -73,20 +74,23 @@ def get_config(dir_name):
     config = YamlConfig(defaults, os.path.join(dir_name, 'test.cfg'))
     return config
 
+
 def normalize(text):
     """ Normalize whitespace for a string of html using tidylib. """
     output, errors = tidylib.tidy_fragment(text, options={
-                                    'drop_empty_paras':0,
-                                    'fix_backslash':0,
-                                    'fix_bad_comments':0,
-                                    'fix_uri':0,
-                                    'join_styles':0,
-                                    'lower_literals':0,
-                                    'merge_divs':0,
-                                    'output_xhtml':1,
-                                    'quote_ampersand':0,
-                                    'newline':'LF'})
+        'drop_empty_paras': 0,
+        'fix_backslash': 0,
+        'fix_bad_comments': 0,
+        'fix_uri': 0,
+        'join_styles': 0,
+        'lower_literals': 0,
+        'merge_divs': 0,
+        'output_xhtml': 1,
+        'quote_ampersand': 0,
+        'newline': 'LF'
+    })
     return output
+
 
 class CheckSyntax(object):
     def __init__(self, description=None):
@@ -101,9 +105,10 @@ class CheckSyntax(object):
         input_file = file + config.get(cfg_section, 'input_ext')
         with codecs.open(input_file, encoding="utf-8") as f:
             input = f.read()
-        output_file = file + config.get(cfg_section, 'output_ext') 
+        output_file = file + config.get(cfg_section, 'output_ext')
         with codecs.open(output_file, encoding="utf-8") as f:
-            # Normalize line endings (on windows, git may have altered line endings).
+            # Normalize line endings
+            # (on windows, git may have altered line endings).
             expected_output = f.read().replace("\r\n", "\n")
         output = markdown.markdown(input, **config.get_args(file))
         if tidylib and config.get(cfg_section, 'normalize'):
@@ -112,15 +117,22 @@ class CheckSyntax(object):
             output = normalize(output)
         elif config.get(cfg_section, 'normalize'):
             # Tidylib is not available. Skip this test.
-            raise nose.plugins.skip.SkipTest('Test skipped. Tidylib not available on system.')
-        diff = [l for l in difflib.unified_diff(expected_output.splitlines(True),
-                                                output.splitlines(True), 
-                                                output_file, 
-                                                'actual_output.html', 
-                                                n=3)]
+            raise nose.plugins.skip.SkipTest(
+                'Test skipped. Tidylib not available on system.'
+            )
+        diff = [l for l in difflib.unified_diff(
+            expected_output.splitlines(True),
+            output.splitlines(True),
+            output_file,
+            'actual_output.html',
+            n=3
+        )]
         if diff:
-            raise MarkdownSyntaxError('Output from "%s" failed to match expected '
-                                           'output.\n\n%s' % (input_file, ''.join(diff)))
+            raise MarkdownSyntaxError(
+                'Output from "%s" failed to match expected '
+                'output.\n\n%s' % (input_file, ''.join(diff))
+            )
+
 
 def TestSyntax():
     for dir_name, sub_dirs, files in os.walk(test_dir):
@@ -131,8 +143,11 @@ def TestSyntax():
             root, ext = os.path.splitext(file)
             if ext == config.get(config.get_section(file), 'input_ext'):
                 path = os.path.join(dir_name, root)
-                check_syntax = CheckSyntax(description=os.path.relpath(path, test_dir))
+                check_syntax = CheckSyntax(
+                    description=os.path.relpath(path, test_dir)
+                )
                 yield check_syntax, path, config
+
 
 def generate(file, config):
     """ Write expected output file for given input. """
@@ -141,14 +156,15 @@ def generate(file, config):
         print('Skipping:', file)
         return None
     input_file = file + config.get(cfg_section, 'input_ext')
-    output_file = file + config.get(cfg_section, 'output_ext') 
+    output_file = file + config.get(cfg_section, 'output_ext')
     if not os.path.isfile(output_file) or \
             os.path.getmtime(output_file) < os.path.getmtime(input_file):
         print('Generating:', file)
-        markdown.markdownFromFile(input=input_file, output=output_file, 
+        markdown.markdownFromFile(input=input_file, output=output_file,
                                   encoding='utf-8', **config.get_args(file))
     else:
         print('Already up-to-date:', file)
+
 
 def generate_all():
     """ Generate expected output for all outdated tests. """
@@ -164,4 +180,3 @@ def generate_all():
 
 def run():
     nose.main(addplugins=[HtmlOutput(), Markdown()])
-

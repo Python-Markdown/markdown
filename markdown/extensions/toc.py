@@ -2,14 +2,14 @@
 Table of Contents Extension for Python-Markdown
 ===============================================
 
-See <https://pythonhosted.org/Markdown/extensions/toc.html> 
+See <https://pythonhosted.org/Markdown/extensions/toc.html>
 for documentation.
 
 Oringinal code Copyright 2008 [Jack Miller](http://codezen.org)
 
 All changes Copyright 2008-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 """
 
@@ -68,9 +68,11 @@ def order_toc_list(toc_list):
                 # Note current level as last
                 levels.append(current_level)
 
-            # Level is the same, so append to the current parent (if available)
+            # Level is the same, so append to
+            # the current parent (if available)
             if current_level == levels[-1]:
-                (parents[-1]['children'] if parents else ordered_list).append(t)
+                (parents[-1]['children'] if parents
+                 else ordered_list).append(t)
 
             # Current level is > last item's level,
             # So make last item a parent and append current as child
@@ -84,14 +86,14 @@ def order_toc_list(toc_list):
 
 
 class TocTreeprocessor(Treeprocessor):
-    
+
     # Iterator wrapper to get parent and child all at once
     def iterparent(self, root):
         for parent in root.getiterator():
             for child in parent:
                 yield parent, child
-    
-    def add_anchor(self, c, elem_id): #@ReservedAssignment
+
+    def add_anchor(self, c, elem_id):  # @ReservedAssignment
         anchor = etree.Element("a")
         anchor.text = c.text
         anchor.attrib["href"] = "#" + elem_id
@@ -105,12 +107,13 @@ class TocTreeprocessor(Treeprocessor):
     def add_permalink(self, c, elem_id):
         permalink = etree.Element("a")
         permalink.text = ("%spara;" % AMP_SUBSTITUTE
-            if self.use_permalinks is True else self.use_permalinks)
+                          if self.use_permalinks is True
+                          else self.use_permalinks)
         permalink.attrib["href"] = "#" + elem_id
         permalink.attrib["class"] = "headerlink"
         permalink.attrib["title"] = "Permanent link"
         c.append(permalink)
-    
+
     def build_toc_etree(self, div, toc_list):
         # Add title to the div
         if self.config["title"]:
@@ -129,20 +132,20 @@ class TocTreeprocessor(Treeprocessor):
                 if item['children']:
                     build_etree_ul(item['children'], li)
             return ul
-        
+
         return build_etree_ul(toc_list, div)
-        
+
     def run(self, doc):
 
         div = etree.Element("div")
         div.attrib["class"] = "toc"
         header_rgx = re.compile("[Hh][123456]")
-        
+
         self.use_anchors = parseBoolValue(self.config["anchorlink"])
         self.use_permalinks = parseBoolValue(self.config["permalink"], False)
         if self.use_permalinks is None:
             self.use_permalinks = self.config["permalink"]
-        
+
         # Get a list of id attributes
         used_ids = set()
         for c in doc.getiterator():
@@ -160,7 +163,7 @@ class TocTreeprocessor(Treeprocessor):
             # validation by putting a <div> inside of a <p>
             # we actually replace the <p> in its entirety.
             # We do not allow the marker inside a header as that
-            # would causes an enless loop of placing a new TOC 
+            # would causes an enless loop of placing a new TOC
             # inside previously generated TOC.
             if c.text and c.text.strip() == self.config["marker"] and \
                not header_rgx.match(c.tag) and c.tag not in ['pre', 'code']:
@@ -169,32 +172,34 @@ class TocTreeprocessor(Treeprocessor):
                         p[i] = div
                         break
                 marker_found = True
-                            
+
             if header_rgx.match(c.tag):
-                
-                # Do not override pre-existing ids 
-                if not "id" in c.attrib:
+
+                # Do not override pre-existing ids
+                if "id" not in c.attrib:
                     elem_id = stashedHTML2text(text, self.markdown)
-                    elem_id = unique(self.config["slugify"](elem_id, '-'), used_ids)
+                    elem_id = unique(self.config["slugify"](elem_id, '-'),
+                                     used_ids)
                     c.attrib["id"] = elem_id
                 else:
                     elem_id = c.attrib["id"]
 
                 tag_level = int(c.tag[-1])
-                
+
                 toc_list.append({'level': tag_level,
-                    'id': elem_id,
-                    'name': text})
+                                 'id': elem_id,
+                                 'name': text})
 
                 if self.use_anchors:
                     self.add_anchor(c, elem_id)
                 if self.use_permalinks:
                     self.add_permalink(c, elem_id)
-                
+
         toc_list_nested = order_toc_list(toc_list)
         self.build_toc_etree(div, toc_list_nested)
         prettify = self.markdown.treeprocessors.get('prettify')
-        if prettify: prettify.run(div)
+        if prettify:
+            prettify.run(div)
         if not marker_found:
             # serialize and attach to markdown instance.
             toc = self.markdown.serializer(div)
@@ -204,26 +209,26 @@ class TocTreeprocessor(Treeprocessor):
 
 
 class TocExtension(Extension):
-    
+
     TreeProcessorClass = TocTreeprocessor
-    
+
     def __init__(self, *args, **kwargs):
-        self.config = { 
-            "marker" : ["[TOC]", 
-                "Text to find and replace with Table of Contents - "
-                "Defaults to \"[TOC]\""],
-            "slugify" : [slugify,
-                "Function to generate anchors based on header text - "
-                "Defaults to the headerid ext's slugify function."],
-            "title" : ["",
-                "Title to insert into TOC <div> - "
-                "Defaults to an empty string"],
-            "anchorlink" : [0,
-                "1 if header should be a self link - "
-                "Defaults to 0"],
-            "permalink" : [0,
-                "1 or link text if a Sphinx-style permalink should be added - "
-                "Defaults to 0"]
+        self.config = {
+            "marker": ["[TOC]",
+                       "Text to find and replace with Table of Contents - "
+                       "Defaults to \"[TOC]\""],
+            "slugify": [slugify,
+                        "Function to generate anchors based on header text - "
+                        "Defaults to the headerid ext's slugify function."],
+            "title": ["",
+                      "Title to insert into TOC <div> - "
+                      "Defaults to an empty string"],
+            "anchorlink": [0,
+                           "1 if header should be a self link - "
+                           "Defaults to 0"],
+            "permalink": [0,
+                          "1 or link text if a Sphinx-style permalink should "
+                          "be added - Defaults to 0"]
         }
 
         super(TocExtension, self).__init__(*args, **kwargs)
@@ -232,8 +237,8 @@ class TocExtension(Extension):
         tocext = self.TreeProcessorClass(md)
         tocext.config = self.getConfigs()
         # Headerid ext is set to '>prettify'. With this set to '_end',
-        # it should always come after headerid ext (and honor ids assinged 
-        # by the header id extension) if both are used. Same goes for 
+        # it should always come after headerid ext (and honor ids assinged
+        # by the header id extension) if both are used. Same goes for
         # attr_list extension. This must come last because we don't want
         # to redefine ids after toc is created. But we do want toc prettified.
         md.treeprocessors.add("toc", tocext, "_end")

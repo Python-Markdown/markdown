@@ -4,16 +4,16 @@ Admonition extension for Python-Markdown
 
 Adds rST-style admonitions. Inspired by [rST][] feature with the same name.
 
-[rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions
+[rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions  # flake8: noqa
 
-See <https://pythonhosted.org/Markdown/extensions/admonition.html> 
+See <https://pythonhosted.org/Markdown/extensions/admonition.html>
 for documentation.
 
 Original code Copyright [Tiago Serafim](http://www.tiagoserafim.com/).
 
 All changes Copyright The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 """
 
@@ -46,8 +46,8 @@ class AdmonitionProcessor(BlockProcessor):
     def test(self, parent, block):
         sibling = self.lastChild(parent)
         return self.RE.search(block) or \
-            (block.startswith(' ' * self.tab_length) and sibling and \
-                sibling.get('class', '').find(self.CLASSNAME) != -1)
+            (block.startswith(' ' * self.tab_length) and sibling and
+             sibling.get('class', '').find(self.CLASSNAME) != -1)
 
     def run(self, parent, blocks):
         sibling = self.lastChild(parent)
@@ -82,7 +82,8 @@ class AdmonitionProcessor(BlockProcessor):
         klass, title = match.group(1).lower(), match.group(2)
         if title is None:
             # no title was provided, use the capitalized classname as title
-            # e.g.: `!!! note` will render `<p class="admonition-title">Note</p>`
+            # e.g.: `!!! note` will render
+            # `<p class="admonition-title">Note</p>`
             title = klass.capitalize()
         elif title == '':
             # an explicit blank title should not be rendered
@@ -93,4 +94,3 @@ class AdmonitionProcessor(BlockProcessor):
 
 def makeExtension(*args, **kwargs):
     return AdmonitionExtension(*args, **kwargs)
-

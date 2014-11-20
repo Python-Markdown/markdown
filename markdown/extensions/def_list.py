@@ -4,14 +4,14 @@ Definition List Extension for Python-Markdown
 
 Adds parsing of Definition Lists to Python-Markdown.
 
-See <https://pythonhosted.org/Markdown/extensions/definition_lists.html> 
+See <https://pythonhosted.org/Markdown/extensions/definition_lists.html>
 for documentation.
 
 Original code Copyright 2008 [Waylan Limberg](http://achinghead.com)
 
 All changes Copyright 2008-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 """
 
@@ -36,7 +36,8 @@ class DefListProcessor(BlockProcessor):
 
         raw_block = blocks.pop(0)
         m = self.RE.search(raw_block)
-        terms = [l.strip() for l in raw_block[:m.start()].split('\n') if l.strip()]
+        terms = [l.strip() for l in
+                 raw_block[:m.start()].split('\n') if l.strip()]
         block = raw_block[m.end():]
         no_indent = self.NO_INDENT_RE.match(block)
         if no_indent:
@@ -49,7 +50,7 @@ class DefListProcessor(BlockProcessor):
             d = m.group(2)
         sibling = self.lastChild(parent)
         if not terms and sibling is None:
-            # This is not a definition item. Most likely a paragraph that 
+            # This is not a definition item. Most likely a paragraph that
             # starts with a colon at the begining of a document or list.
             blocks.insert(0, raw_block)
             return False
@@ -84,6 +85,7 @@ class DefListProcessor(BlockProcessor):
         if theRest:
             blocks.insert(0, theRest)
 
+
 class DefListIndentProcessor(ListIndentProcessor):
     """ Process indented children of definition list items. """
 
@@ -94,7 +96,6 @@ class DefListIndentProcessor(ListIndentProcessor):
         """ Create a new dd and parse the block with it as the parent. """
         dd = etree.SubElement(parent, 'dd')
         self.parser.parseBlocks(dd, [block])
- 
 
 
 class DefListExtension(Extension):
@@ -105,11 +106,10 @@ class DefListExtension(Extension):
         md.parser.blockprocessors.add('defindent',
                                       DefListIndentProcessor(md.parser),
                                       '>indent')
-        md.parser.blockprocessors.add('deflist', 
+        md.parser.blockprocessors.add('deflist',
                                       DefListProcessor(md.parser),
                                       '>ulist')
 
 
 def makeExtension(*args, **kwargs):
     return DefListExtension(*args, **kwargs)
-

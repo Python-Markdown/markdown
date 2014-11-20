@@ -1,13 +1,13 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import
 from . import util
-
 from copy import deepcopy
+
 
 class OrderedDict(dict):
     """
     A dictionary that keeps its keys in the order in which they're inserted.
-    
+
     Copied from Django's SortedDict with some modifications.
 
     """
@@ -82,11 +82,11 @@ class OrderedDict(dict):
         for key in self.keyOrder:
             yield self[key]
 
-    if util.PY3: #pragma: no cover
+    if util.PY3:  # pragma: no cover
         items = _iteritems
         keys = _iterkeys
         values = _itervalues
-    else: #pragma: no cover
+    else:  # pragma: no cover
         iteritems = _iteritems
         iterkeys = _iterkeys
         itervalues = _itervalues
@@ -133,7 +133,9 @@ class OrderedDict(dict):
         Replaces the normal dict.__repr__ with a version that returns the keys
         in their Ordered order.
         """
-        return '{%s}' % ', '.join(['%r: %r' % (k, v) for k, v in self._iteritems()])
+        return '{%s}' % ', '.join(
+            ['%r: %r' % (k, v) for k, v in self._iteritems()]
+        )
 
     def clear(self):
         super(OrderedDict, self).clear()

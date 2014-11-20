@@ -38,7 +38,7 @@ class Treeprocessor(util.Processor):
         object, and the existing root ElementTree will be replaced, or it can
         modify the current tree and return None.
         """
-        pass #pragma: no cover
+        pass  # pragma: no cover
 
 
 class InlineProcessor(Treeprocessor):
@@ -183,15 +183,17 @@ class InlineProcessor(Treeprocessor):
                         text = data[strartIndex:index]
                         linkText(text)
 
-                    if not isString(node): # it's Element
+                    if not isString(node):  # it's Element
                         for child in [node] + list(node):
                             if child.tail:
                                 if child.tail.strip():
-                                    self.__processElementText(node, child, False)
+                                    self.__processElementText(
+                                        node, child, False
+                                    )
                             if child.text:
                                 if child.text.strip():
                                     self.__processElementText(child, child)
-                    else: # it's just a string
+                    else:  # it's just a string
                         linkText(node)
                         strartIndex = phEndIndex
                         continue
@@ -199,7 +201,7 @@ class InlineProcessor(Treeprocessor):
                     strartIndex = phEndIndex
                     result.append(node)
 
-                else: # wrong placeholder
+                else:  # wrong placeholder
                     end = index + len(self.__placeholder_prefix)
                     linkText(data[strartIndex:end])
                     strartIndex = end
@@ -245,11 +247,13 @@ class InlineProcessor(Treeprocessor):
                 for child in [node] + list(node):
                     if not isString(node):
                         if child.text:
-                            child.text = self.__handleInline(child.text,
-                                                            patternIndex + 1)
+                            child.text = self.__handleInline(
+                                child.text, patternIndex + 1
+                            )
                         if child.tail:
-                            child.tail = self.__handleInline(child.tail,
-                                                            patternIndex)
+                            child.tail = self.__handleInline(
+                                child.tail, patternIndex
+                            )
 
         placeholder = self.__stashNode(node, pattern.type())
 
@@ -262,8 +266,8 @@ class InlineProcessor(Treeprocessor):
 
         Iterate over ElementTree, find elements with inline tag, apply inline
         patterns and append newly created Elements to tree.  If you don't
-        want to process your data with inline paterns, instead of normal string,
-        use subclass AtomicString:
+        want to process your data with inline paterns, instead of normal
+        string, use subclass AtomicString:
 
             node.text = markdown.AtomicString("This will not be processed.")
 
@@ -282,11 +286,14 @@ class InlineProcessor(Treeprocessor):
             currElement = stack.pop()
             insertQueue = []
             for child in currElement:
-                if child.text and not isinstance(child.text, util.AtomicString):
+                if child.text and not isinstance(
+                    child.text, util.AtomicString
+                ):
                     text = child.text
                     child.text = None
-                    lst = self.__processPlaceholders(self.__handleInline(
-                                                    text), child)
+                    lst = self.__processPlaceholders(
+                        self.__handleInline(text), child
+                    )
                     stack += lst
                     insertQueue.append((child, lst))
                 if child.tail:
@@ -306,21 +313,21 @@ class InlineProcessor(Treeprocessor):
             for element, lst in insertQueue:
                 if self.markdown.enable_attributes:
                     if element.text and isString(element.text):
-                        element.text = \
-                            inlinepatterns.handleAttributes(element.text,
-                                                                    element)
+                        element.text = inlinepatterns.handleAttributes(
+                            element.text, element
+                        )
                 i = 0
                 for newChild in lst:
                     if self.markdown.enable_attributes:
                         # Processing attributes
                         if newChild.tail and isString(newChild.tail):
-                            newChild.tail = \
-                                inlinepatterns.handleAttributes(newChild.tail,
-                                                                    element)
+                            newChild.tail = inlinepatterns.handleAttributes(
+                                newChild.tail, element
+                            )
                         if newChild.text and isString(newChild.text):
-                            newChild.text = \
-                                inlinepatterns.handleAttributes(newChild.text,
-                                                                    newChild)
+                            newChild.text = inlinepatterns.handleAttributes(
+                                newChild.text, newChild
+                            )
                     element.insert(i, newChild)
                     i += 1
         return tree

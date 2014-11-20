@@ -2,18 +2,18 @@
 Attribute List Extension for Python-Markdown
 ============================================
 
-Adds attribute list syntax. Inspired by 
+Adds attribute list syntax. Inspired by
 [maruku](http://maruku.rubyforge.org/proposal.html#attribute_lists)'s
 feature of the same name.
 
-See <https://pythonhosted.org/Markdown/extensions/attr_list.html> 
+See <https://pythonhosted.org/Markdown/extensions/attr_list.html>
 for documentation.
 
 Original code Copyright 2011 [Waylan Limberg](http://achinghead.com/).
 
 All changes Copyright 2011-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 """
 
@@ -26,20 +26,24 @@ import re
 
 try:
     Scanner = re.Scanner
-except AttributeError: #pragma: no cover
+except AttributeError:  # pragma: no cover
     # must be on Python 2.4
     from sre import Scanner
+
 
 def _handle_double_quote(s, t):
     k, v = t.split('=')
     return k, v.strip('"')
 
+
 def _handle_single_quote(s, t):
     k, v = t.split('=')
     return k, v.strip("'")
 
-def _handle_key_value(s, t): 
+
+def _handle_key_value(s, t):
     return t.split('=')
+
 
 def _handle_word(s, t):
     if t.startswith('.'):
@@ -56,22 +60,26 @@ _scanner = Scanner([
     (r' ', None)
 ])
 
+
 def get_attrs(str):
     """ Parse attribute list and return a list of attribute tuples. """
     return _scanner.scan(str)[0]
 
+
 def isheader(elem):
     return elem.tag in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
+
 class AttrListTreeprocessor(Treeprocessor):
-    
+
     BASE_RE = r'\{\:?([^\}]*)\}'
     HEADER_RE = re.compile(r'[ ]+%s[ ]*$' % BASE_RE)
     BLOCK_RE = re.compile(r'\n[ ]*%s[ ]*$' % BASE_RE)
     INLINE_RE = re.compile(r'^%s' % BASE_RE)
-    NAME_RE = re.compile(r'[^A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff\u0370-\u037d'
-                         r'\u037f-\u1fff\u200c-\u200d\u2070-\u218f\u2c00-\u2fef'
-                         r'\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd'
+    NAME_RE = re.compile(r'[^A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff'
+                         r'\u0370-\u037d\u037f-\u1fff\u200c-\u200d'
+                         r'\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff'
+                         r'\uf900-\ufdcf\ufdf0-\ufffd'
                          r'\:\-\.0-9\u00b7\u0300-\u036f\u203f-\u2040]+')
 
     def run(self, doc):
@@ -160,7 +168,9 @@ class AttrListTreeprocessor(Treeprocessor):
 
 class AttrListExtension(Extension):
     def extendMarkdown(self, md, md_globals):
-        md.treeprocessors.add('attr_list', AttrListTreeprocessor(md), '>prettify')
+        md.treeprocessors.add(
+            'attr_list', AttrListTreeprocessor(md), '>prettify'
+        )
 
 
 def makeExtension(*args, **kwargs):

@@ -10,11 +10,11 @@ Python 3 Stuff
 """
 PY3 = sys.version_info[0] == 3
 
-if PY3: #pragma: no cover
+if PY3:  # pragma: no cover
     string_type = str
     text_type = str
     int2str = chr
-else: #pragma: no cover
+else:  # pragma: no cover
     string_type = basestring
     text_type = unicode
     int2str = unichr
@@ -25,12 +25,16 @@ Constants you might want to modify
 -----------------------------------------------------------------------------
 """
 
-BLOCK_LEVEL_ELEMENTS = re.compile("^(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
-                                  "|script|noscript|form|fieldset|iframe|math"
-                                  "|hr|hr/|style|li|dt|dd|thead|tbody"
-                                  "|tr|th|td|section|footer|header|group|figure"
-                                  "|figcaption|aside|article|canvas|output"
-                                  "|progress|video|nav)$", re.IGNORECASE)
+
+BLOCK_LEVEL_ELEMENTS = re.compile(
+    "^(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
+    "|script|noscript|form|fieldset|iframe|math"
+    "|hr|hr/|style|li|dt|dd|thead|tbody"
+    "|tr|th|td|section|footer|header|group|figure"
+    "|figcaption|aside|article|canvas|output"
+    "|progress|video|nav)$",
+    re.IGNORECASE
+)
 # Placeholders
 STX = '\u0002'  # Use STX ("Start of text") for start-of-placeholder
 ETX = '\u0003'  # Use ETX ("End of text") for end-of-placeholder
@@ -48,17 +52,18 @@ Constants you probably do not need to change
 -----------------------------------------------------------------------------
 """
 
-RTL_BIDI_RANGES = ( ('\u0590', '\u07FF'),
-                     # Hebrew (0590-05FF), Arabic (0600-06FF),
-                     # Syriac (0700-074F), Arabic supplement (0750-077F),
-                     # Thaana (0780-07BF), Nko (07C0-07FF).
-                    ('\u2D30', '\u2D7F'), # Tifinagh
-                    )
+RTL_BIDI_RANGES = (
+    ('\u0590', '\u07FF'),
+    # Hebrew (0590-05FF), Arabic (0600-06FF),
+    # Syriac (0700-074F), Arabic supplement (0750-077F),
+    # Thaana (0780-07BF), Nko (07C0-07FF).
+    ('\u2D30', '\u2D7F')  # Tifinagh
+)
 
 # Extensions should use "markdown.util.etree" instead of "etree" (or do `from
 # markdown.util import etree`).  Do not import it by yourself.
 
-try: #pragma: no cover
+try:  # pragma: no cover
     # Is the C implementation of ElementTree available?
     import xml.etree.cElementTree as etree
     from xml.etree.ElementTree import Comment
@@ -66,7 +71,7 @@ try: #pragma: no cover
     etree.test_comment = Comment
     if etree.VERSION < "1.0.5":
         raise RuntimeError("cElementTree version 1.0.5 or higher is required.")
-except (ImportError, RuntimeError): #pragma: no cover
+except (ImportError, RuntimeError):  # pragma: no cover
     # Use the Python implementation of ElementTree?
     import xml.etree.ElementTree as etree
     if etree.VERSION < "1.1":
@@ -86,14 +91,15 @@ def isBlockLevel(tag):
     # Some ElementTree tags are not strings, so return False.
     return False
 
+
 def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
     """Parses a string representing bool value. If parsing was successful,
-       returns True or False. If preserve_none=True, returns True, False, 
-       or None. If parsing was not successful, raises  ValueError, or, if 
+       returns True or False. If preserve_none=True, returns True, False,
+       or None. If parsing was not successful, raises  ValueError, or, if
        fail_on_errors=False, returns None."""
     if not isinstance(value, string_type):
         if preserve_none and value is None:
-            return  value
+            return value
         return bool(value)
     elif preserve_none and value.lower() == 'none':
         return None
@@ -104,10 +110,12 @@ def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
     elif fail_on_errors:
         raise ValueError('Cannot parse bool value: %r' % value)
 
+
 """
 MISC AUXILIARY CLASSES
 =============================================================================
 """
+
 
 class AtomicString(text_type):
     """A string which should not be further processed."""

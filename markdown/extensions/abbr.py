@@ -4,7 +4,7 @@ Abbreviation Extension for Python-Markdown
 
 This extension adds abbreviation handling to Python-Markdown.
 
-See <https://pythonhosted.org/Markdown/extensions/abbreviations.html> 
+See <https://pythonhosted.org/Markdown/extensions/abbreviations.html>
 for documentation.
 
 Oringinal code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/) and
@@ -12,7 +12,7 @@ Oringinal code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/) and
 
 All changes Copyright 2008-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 '''
 
@@ -27,14 +27,15 @@ import re
 # Global Vars
 ABBR_REF_RE = re.compile(r'[*]\[(?P<abbr>[^\]]*)\][ ]?:\s*(?P<title>.*)')
 
+
 class AbbrExtension(Extension):
     """ Abbreviation Extension for Python-Markdown. """
 
     def extendMarkdown(self, md, md_globals):
         """ Insert AbbrPreprocessor before ReferencePreprocessor. """
         md.preprocessors.add('abbr', AbbrPreprocessor(md), '<reference')
-        
-           
+
+
 class AbbrPreprocessor(Preprocessor):
     """ Abbreviation Preprocessor - parse text for abbr references. """
 
@@ -42,7 +43,7 @@ class AbbrPreprocessor(Preprocessor):
         '''
         Find and remove all Abbreviation references from the text.
         Each reference is set as a new AbbrPattern in the markdown instance.
-        
+
         '''
         new_text = []
         for line in lines:
@@ -50,19 +51,19 @@ class AbbrPreprocessor(Preprocessor):
             if m:
                 abbr = m.group('abbr').strip()
                 title = m.group('title').strip()
-                self.markdown.inlinePatterns['abbr-%s'%abbr] = \
+                self.markdown.inlinePatterns['abbr-%s' % abbr] = \
                     AbbrPattern(self._generate_pattern(abbr), title)
             else:
                 new_text.append(line)
         return new_text
-    
+
     def _generate_pattern(self, text):
         '''
-        Given a string, returns an regex pattern to match that string. 
-        
-        'HTML' -> r'(?P<abbr>[H][T][M][L])' 
-        
-        Note: we force each char as a literal match (in brackets) as we don't 
+        Given a string, returns an regex pattern to match that string.
+
+        'HTML' -> r'(?P<abbr>[H][T][M][L])'
+
+        Note: we force each char as a literal match (in brackets) as we don't
         know what they will be beforehand.
 
         '''
@@ -84,6 +85,7 @@ class AbbrPattern(Pattern):
         abbr.text = AtomicString(m.group('abbr'))
         abbr.set('title', self.title)
         return abbr
+
 
 def makeExtension(*args, **kwargs):
     return AbbrExtension(*args, **kwargs)

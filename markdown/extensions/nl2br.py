@@ -5,14 +5,14 @@ NL2BR Extension
 A Python-Markdown extension to treat newlines as hard breaks; like
 GitHub-flavored Markdown does.
 
-See <https://pythonhosted.org/Markdown/extensions/nl2br.html> 
+See <https://pythonhosted.org/Markdown/extensions/nl2br.html>
 for documentation.
 
 Oringinal code Copyright 2011 [Brian Neal](http://deathofagremmie.com/)
 
 All changes Copyright 2011-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 """
 
@@ -23,6 +23,7 @@ from ..inlinepatterns import SubstituteTagPattern
 
 BR_RE = r'\n'
 
+
 class Nl2BrExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
@@ -32,4 +33,3 @@ class Nl2BrExtension(Extension):
 
 def makeExtension(*args, **kwargs):
     return Nl2BrExtension(*args, **kwargs)
-

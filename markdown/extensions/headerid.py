@@ -4,14 +4,14 @@ HeaderID Extension for Python-Markdown
 
 Auto-generate id attributes for HTML headers.
 
-See <https://pythonhosted.org/Markdown/extensions/header_id.html> 
+See <https://pythonhosted.org/Markdown/extensions/header_id.html>
 for documentation.
 
 Original code Copyright 2007-2011 [Waylan Limberg](http://achinghead.com/).
 
 All changes Copyright 2011-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php) 
+License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 """
 
@@ -41,18 +41,18 @@ def unique(id, ids):
     while id in ids or not id:
         m = IDCOUNT_RE.match(id)
         if m:
-            id = '%s_%d'% (m.group(1), int(m.group(2))+1)
+            id = '%s_%d' % (m.group(1), int(m.group(2))+1)
         else:
-            id = '%s_%d'% (id, 1)
+            id = '%s_%d' % (id, 1)
     ids.add(id)
     return id
 
 
 def itertext(elem):
-    """ Loop through all children and return text only. 
-    
+    """ Loop through all children and return text only.
+
     Reimplements method of same name added to ElementTree in Python 2.7
-    
+
     """
     if elem.text:
         yield elem.text
@@ -103,7 +103,6 @@ class HeaderIdTreeprocessor(Treeprocessor):
                         level = 6
                     elem.tag = 'h%d' % level
 
-
     def _get_meta(self):
         """ Return meta data suported by this ext as a tuple """
         level = int(self.config['level']) - 1
@@ -111,7 +110,7 @@ class HeaderIdTreeprocessor(Treeprocessor):
         if hasattr(self.md, 'Meta'):
             if 'header_level' in self.md.Meta:
                 level = int(self.md.Meta['header_level'][0]) - 1
-            if 'header_forceid' in self.md.Meta: 
+            if 'header_forceid' in self.md.Meta:
                 force = parseBoolValue(self.md.Meta['header_forceid'][0])
         return level, force
 
@@ -120,11 +119,11 @@ class HeaderIdExtension(Extension):
     def __init__(self, *args, **kwargs):
         # set defaults
         self.config = {
-                'level' : ['1', 'Base level for headers.'],
-                'forceid' : ['True', 'Force all headers to have an id.'],
-                'separator' : ['-', 'Word separator.'],
-                'slugify' : [slugify, 'Callable to generate anchors'], 
-            }
+            'level': ['1', 'Base level for headers.'],
+            'forceid': ['True', 'Force all headers to have an id.'],
+            'separator': ['-', 'Word separator.'],
+            'slugify': [slugify, 'Callable to generate anchors']
+        }
 
         super(HeaderIdExtension, self).__init__(*args, **kwargs)
 
@@ -146,4 +145,3 @@ class HeaderIdExtension(Extension):
 
 def makeExtension(*args, **kwargs):
     return HeaderIdExtension(*args, **kwargs)
-

@@ -8,15 +8,16 @@ import markdown
 import sys
 import optparse
 import codecs
-try: 
+try:
     import yaml
-except ImportError: #pragma: no cover
+except ImportError:  # pragma: no cover
     import json as yaml
 
 import logging
 from logging import DEBUG, INFO, CRITICAL
 
-logger =  logging.getLogger('MARKDOWN')
+logger = logging.getLogger('MARKDOWN')
+
 
 def parse_options(args=None, values=None):
     """
@@ -27,7 +28,7 @@ def parse_options(args=None, values=None):
     desc = "A Python implementation of John Gruber's Markdown. " \
            "https://pythonhosted.org/Markdown/"
     ver = "%%prog %s" % markdown.version
-    
+
     parser = optparse.OptionParser(usage=usage, description=desc, version=ver)
     parser.add_option("-f", "--file", dest="filename", default=None,
                       help="Write output to OUTPUT_FILE. Defaults to STDOUT.",
@@ -36,24 +37,28 @@ def parse_options(args=None, values=None):
                       help="Encoding for input and output files.",)
     parser.add_option("-s", "--safe", dest="safe", default=False,
                       metavar="SAFE_MODE",
-                      help="Deprecated! 'replace', 'remove' or 'escape' HTML tags in input")
-    parser.add_option("-o", "--output_format", dest="output_format", 
+                      help="Deprecated! 'replace', 'remove' or 'escape' HTML "
+                      "tags in input")
+    parser.add_option("-o", "--output_format", dest="output_format",
                       default='xhtml1', metavar="OUTPUT_FORMAT",
                       help="'xhtml1' (default), 'html4' or 'html5'.")
-    parser.add_option("-n", "--no_lazy_ol", dest="lazy_ol", 
+    parser.add_option("-n", "--no_lazy_ol", dest="lazy_ol",
                       action='store_false', default=True,
                       help="Observe number of first item of ordered lists.")
     parser.add_option("-x", "--extension", action="append", dest="extensions",
-                      help = "Load extension EXTENSION.", metavar="EXTENSION")
-    parser.add_option("-c", "--extension_configs", dest="configfile", default=None,
+                      help="Load extension EXTENSION.", metavar="EXTENSION")
+    parser.add_option("-c", "--extension_configs",
+                      dest="configfile", default=None,
                       help="Read extension configurations from CONFIG_FILE. "
-                      "CONFIG_FILE must be of JSON or YAML format. YAML format requires "
-                      "that a python YAML library be installed. The parsed JSON or YAML "
-                      "must result in a python dictionary which would be accepted by the "
-                      "'extension_configs' keyword on the markdown.Markdown class. "
-                      "The extensions must also be loaded with the `--extension` option.",
+                      "CONFIG_FILE must be of JSON or YAML format. YAML"
+                      "format requires that a python YAML library be "
+                      "installed. The parsed JSON or YAML must result in a "
+                      "python dictionary which would be accepted by the "
+                      "'extension_configs' keyword on the markdown.Markdown "
+                      "class. The extensions must also be loaded with the "
+                      "`--extension` option.",
                       metavar="CONFIG_FILE")
-    parser.add_option("-q", "--quiet", default = CRITICAL,
+    parser.add_option("-q", "--quiet", default=CRITICAL,
                       action="store_const", const=CRITICAL+10, dest="verbose",
                       help="Suppress all warnings.")
     parser.add_option("-v", "--verbose",
@@ -75,11 +80,14 @@ def parse_options(args=None, values=None):
 
     extension_configs = {}
     if options.configfile:
-        with codecs.open(options.configfile, mode="r", encoding=options.encoding) as fp:
+        with codecs.open(
+            options.configfile, mode="r", encoding=options.encoding
+        ) as fp:
             try:
                 extension_configs = yaml.load(fp)
             except Exception as e:
-                message = "Failed parsing extension config file: %s" % options.configfile
+                message = "Failed parsing extension config file: %s" % \
+                          options.configfile
                 e.args = (message,) + e.args[1:]
                 raise
 
@@ -92,20 +100,23 @@ def parse_options(args=None, values=None):
             'output_format': options.output_format,
             'lazy_ol': options.lazy_ol}, options.verbose
 
-def run(): #pragma: no cover
+
+def run():  # pragma: no cover
     """Run Markdown from the command line."""
 
     # Parse options and adjust logging level if necessary
     options, logging_level = parse_options()
-    if not options: sys.exit(2)
+    if not options:
+        sys.exit(2)
     logger.setLevel(logging_level)
     logger.addHandler(logging.StreamHandler())
 
     # Run
     markdown.markdownFromFile(**options)
 
-if __name__ == '__main__': #pragma: no cover
-    # Support running module as a commandline command. 
+
+if __name__ == '__main__':  # pragma: no cover
+    # Support running module as a commandline command.
     # Python 2.5 & 2.6 do: `python -m markdown.__main__ [options] [args]`.
     # Python 2.7 & 3.x do: `python -m markdown [options] [args]`.
     run()
