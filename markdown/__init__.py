@@ -32,7 +32,7 @@ License: BSD (see LICENSE for details).
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
-from .__version__ import version, version_info # flake8: noqa
+from .__version__ import version, version_info  # noqa
 import codecs
 import sys
 import logging

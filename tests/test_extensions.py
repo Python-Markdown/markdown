@@ -11,6 +11,7 @@ from __future__ import unicode_literals
 import unittest
 import markdown
 
+
 class TestExtensionClass(unittest.TestCase):
     """ Test markdown.extensions.Extension. """
 
@@ -35,9 +36,13 @@ class TestExtensionClass(unittest.TestCase):
         self.assertEqual(self.ext.getConfigs(), {'foo': 'bar', 'bar': 'baz'})
 
     def testGetConfigInfo(self):
-        self.assertEqual(dict(self.ext.getConfigInfo()), 
-                         dict([('foo', 'Description of foo'),
-                               ('bar', 'Description of bar')]))
+        self.assertEqual(
+            dict(self.ext.getConfigInfo()),
+            dict([
+                ('foo', 'Description of foo'),
+                ('bar', 'Description of bar')
+            ])
+        )
 
     def testSetConfig(self):
         self.ext.setConfig('foo', 'baz')
@@ -63,18 +68,22 @@ class TestAbbr(unittest.TestCase):
         text = 'Some text with an ABBR and a REF. Ignore REFERENCE and ref.' + \
                '\n\n*[ABBR]: Abbreviation\n' + \
                '*[REF]: Abbreviation Reference'
-        self.assertEqual(self.md.convert(text),
+        self.assertEqual(
+            self.md.convert(text),
             '<p>Some text with an <abbr title="Abbreviation">ABBR</abbr> '
             'and a <abbr title="Abbreviation Reference">REF</abbr>. Ignore '
-            'REFERENCE and ref.</p>')
+            'REFERENCE and ref.</p>'
+        )
 
     def testNestedAbbr(self):
         """ Test Nested Abbreviations. """
         text = '[ABBR](/foo) and _ABBR_\n\n' + \
                '*[ABBR]: Abreviation'
-        self.assertEqual(self.md.convert(text),
+        self.assertEqual(
+            self.md.convert(text),
             '<p><a href="/foo"><abbr title="Abreviation">ABBR</abbr></a> '
-            'and <em><abbr title="Abreviation">ABBR</abbr></em></p>')
+            'and <em><abbr title="Abreviation">ABBR</abbr></em></p>'
+        )
 
 
 class TestCodeHilite(unittest.TestCase):
@@ -83,7 +92,7 @@ class TestCodeHilite(unittest.TestCase):
     def setUp(self):
         self.has_pygments = True
         try:
-            import pygments
+            import pygments  # noqa
         except ImportError:
             self.has_pygments = False
 
@@ -94,38 +103,49 @@ class TestCodeHilite(unittest.TestCase):
             # Pygments can use random lexer here as we did not specify the language
             self.assertTrue(md.convert(text).startswith('<div class="codehilite"><pre>'))
         else:
-            self.assertEqual(md.convert(text),
+            self.assertEqual(
+                md.convert(text),
                 '<pre class="codehilite"><code># A Code Comment'
-                '</code></pre>')
-    
+                '</code></pre>'
+            )
+
     def testLinenumsTrue(self):
         text = '\t# A Code Comment'
         md = markdown.Markdown(
             extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=True)])
         if self.has_pygments:
             # Different versions of pygments output slightly different markup.
-            # So we use 'startwith' and test just enough to confirm that 
+            # So we use 'startwith' and test just enough to confirm that
             # pygments received and processed linenums.
-            self.assertTrue(md.convert(text).startswith(
-                '<table class="codehilitetable"><tr><td class="linenos">'))
+            self.assertTrue(
+                md.convert(text).startswith(
+                    '<table class="codehilitetable"><tr><td class="linenos">'
+                )
+            )
         else:
-            self.assertEqual(md.convert(text),
+            self.assertEqual(
+                md.convert(text),
                 '<pre class="codehilite"><code class="linenums"># A Code Comment'
-                '</code></pre>')
+                '</code></pre>'
+            )
 
     def testLinenumsFalse(self):
         text = '\t#!Python\n\t# A Code Comment'
         md = markdown.Markdown(
             extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=False)])
         if self.has_pygments:
-            self.assertEqual(md.convert(text),
+            self.assertEqual(
+                md.convert(text),
                 '<div class="codehilite">'
                 '<pre><span class="c"># A Code Comment</span>\n'
-                '</pre></div>')
+                '</pre></div>'
+            )
         else:
-            self.assertEqual(md.convert(text),
+            self.assertEqual(
+                md.convert(text),
                 '<pre class="codehilite"><code class="language-python"># A Code Comment'
-                '</code></pre>')
+                '</code></pre>'
+            )
 
     def testLinenumsNone(self):
         text = '\t# A Code Comment'
@@ -135,9 +155,11 @@ class TestCodeHilite(unittest.TestCase):
             # Pygments can use random lexer here as we did not specify the language
             self.assertTrue(md.convert(text).startswith('<div class="codehilite"><pre>'))
         else:
-            self.assertEqual(md.convert(text),
+            self.assertEqual(
+                md.convert(text),
                 '<pre class="codehilite"><code># A Code Comment'
-                '</code></pre>')
+                '</code></pre>'
+            )
 
     def testLinenumsNoneWithShebang(self):
         text = '\t#!Python\n\t# A Code Comment'
@@ -145,28 +167,38 @@ class TestCodeHilite(unittest.TestCase):
             extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=None)])
         if self.has_pygments:
             # Differant versions of pygments output slightly different markup.
-            # So we use 'startwith' and test just enough to confirm that 
+            # So we use 'startwith' and test just enough to confirm that
             # pygments received and processed linenums.
-            self.assertTrue(md.convert(text).startswith(
-                '<table class="codehilitetable"><tr><td class="linenos">'))
+            self.assertTrue(
+                md.convert(text).startswith(
+                    '<table class="codehilitetable"><tr><td class="linenos">'
+                )
+            )
         else:
-            self.assertEqual(md.convert(text),
+            self.assertEqual(
+                md.convert(text),
                 '<pre class="codehilite"><code class="language-python linenums"># A Code Comment'
-                '</code></pre>')
+                '</code></pre>'
+            )
 
     def testLinenumsNoneWithColon(self):
         text = '\t:::Python\n\t# A Code Comment'
         md = markdown.Markdown(
-            extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=None)])
+            extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=None)]
+        )
         if self.has_pygments:
-            self.assertEqual(md.convert(text),
+            self.assertEqual(
+                md.convert(text),
                 '<div class="codehilite">'
                 '<pre><span class="c"># A Code Comment</span>\n'
-                '</pre></div>')
+                '</pre></div>'
+            )
         else:
-            self.assertEqual(md.convert(text),
+            self.assertEqual(
+                md.convert(text),
                 '<pre class="codehilite"><code class="language-python"># A Code Comment'
-                '</code></pre>')
+                '</code></pre>'
+            )
 
     def testHighlightLinesWithColon(self):
         # Test with hl_lines delimited by single or double quotes.
@@ -176,18 +208,23 @@ class TestCodeHilite(unittest.TestCase):
         for text in (text0, text1):
             md = markdown.Markdown(extensions=['markdown.extensions.codehilite'])
             if self.has_pygments:
-                self.assertEqual(md.convert(text),
+                self.assertEqual(
+                    md.convert(text),
                     '<div class="codehilite"><pre>'
                     '<span class="c">#line 1</span>\n'
                     '<span class="hll"><span class="c">#line 2</span>\n</span>'
                     '<span class="c">#line 3</span>\n'
-                    '</pre></div>')
+                    '</pre></div>'
+                )
             else:
-                self.assertEqual(md.convert(text),
+                self.assertEqual(
+                    md.convert(text),
                     '<pre class="codehilite">'
                     '<code class="language-python">#line 1\n'
                     '#line 2\n'
-                    '#line 3</code></pre>')
+                    '#line 3</code></pre>'
+                )
+
 
 class TestFencedCode(unittest.TestCase):
     """ Test fenced_code extension. """
@@ -196,7 +233,7 @@ class TestFencedCode(unittest.TestCase):
         self.md = markdown.Markdown(extensions=['markdown.extensions.fenced_code'])
         self.has_pygments = True
         try:
-            import pygments
+            import pygments  # noqa
         except ImportError:
             self.has_pygments = False
 
@@ -208,18 +245,22 @@ A paragraph before a fenced code block:
 ~~~
 Fenced code block
 ~~~'''
-        self.assertEqual(self.md.convert(text),
+        self.assertEqual(
+            self.md.convert(text),
             '<p>A paragraph before a fenced code block:</p>\n'
             '<pre><code>Fenced code block\n'
-            '</code></pre>')
+            '</code></pre>'
+        )
 
     def testSafeFence(self):
         """ Test Fenced Code with safe_mode. """
         text = '~~~\nCode\n~~~'
         self.md.safeMode = 'replace'
-        self.assertEqual(self.md.convert(text),
+        self.assertEqual(
+            self.md.convert(text),
             '<pre><code>Code\n'
-            '</code></pre>')
+            '</code></pre>'
+        )
 
     def testNestedFence(self):
         """ Test nested fence. """
@@ -229,10 +270,12 @@ Fenced code block
 
 ~~~~
 ~~~~~~~~'''
-        self.assertEqual(self.md.convert(text),
+        self.assertEqual(
+            self.md.convert(text),
             '<pre><code>\n'
             '~~~~\n'
-            '</code></pre>')
+            '</code></pre>'
+        )
 
     def testFencedLanguage(self):
         """ Test Language Tags. """
@@ -241,9 +284,11 @@ Fenced code block
 ~~~~{.python}
 # Some python code
 ~~~~'''
-        self.assertEqual(self.md.convert(text),
+        self.assertEqual(
+            self.md.convert(text),
             '<pre><code class="python"># Some python code\n'
-            '</code></pre>')
+            '</code></pre>'
+        )
 
     def testFencedBackticks(self):
         """ Test Code Fenced with Backticks. """
@@ -253,10 +298,12 @@ Fenced code block
 # Arbitrary code
 ~~~~~ # these tildes will not close the block
 `````'''
-        self.assertEqual(self.md.convert(text),
-        '<pre><code># Arbitrary code\n'
-        '~~~~~ # these tildes will not close the block\n'
-        '</code></pre>')
+        self.assertEqual(
+            self.md.convert(text),
+            '<pre><code># Arbitrary code\n'
+            '~~~~~ # these tildes will not close the block\n'
+            '</code></pre>'
+        )
 
     def testFencedCodeWithHighlightLines(self):
         """ Test Fenced Code with Highlighted Lines. """
@@ -267,22 +314,29 @@ line 1
 line 2
 line 3
 ```'''
-        md = markdown.Markdown(extensions=[
-             markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
-            'markdown.extensions.fenced_code'])
+        md = markdown.Markdown(
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
+                'markdown.extensions.fenced_code'
+            ]
+        )
 
         if self.has_pygments:
-            self.assertEqual(md.convert(text),
+            self.assertEqual(
+                md.convert(text),
                 '<div class="codehilite"><pre>'
                 '<span class="hll">line 1\n</span>'
                 'line 2\n'
                 '<span class="hll">line 3\n</span>'
-                '</pre></div>')
+                '</pre></div>'
+            )
         else:
-            self.assertEqual(md.convert(text),
+            self.assertEqual(
+                md.convert(text),
                 '<pre class="codehilite"><code>line 1\n'
                 'line 2\n'
-                'line 3</code></pre>')
+                'line 3</code></pre>'
+            )
 
     def testFencedLanguageAndHighlightLines(self):
         """ Test Fenced Code with Highlighted Lines. """
@@ -300,22 +354,29 @@ line 3
 #line 3
 ~~~'''
         for text in (text0, text1):
-            md = markdown.Markdown(extensions=[
-                 markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
-                'markdown.extensions.fenced_code'])
-
+            md = markdown.Markdown(
+                extensions=[
+                    markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
+                    'markdown.extensions.fenced_code'
+                ]
+            )
             if self.has_pygments:
-                self.assertEqual(md.convert(text),
+                self.assertEqual(
+                    md.convert(text),
                     '<div class="codehilite"><pre>'
                     '<span class="hll"><span class="c">#line 1</span>\n</span>'
                     '<span class="c">#line 2</span>\n'
                     '<span class="hll"><span class="c">#line 3</span>\n</span>'
-                    '</pre></div>')
+                    '</pre></div>'
+                )
             else:
-                self.assertEqual(md.convert(text),
+                self.assertEqual(
+                    md.convert(text),
                     '<pre class="codehilite"><code class="language-python">#line 1\n'
                     '#line 2\n'
-                    '#line 3</code></pre>')
+                    '#line 3</code></pre>'
+                )
+
 
 class TestHeaderId(unittest.TestCase):
     """ Test HeaderId Extension. """
@@ -327,8 +388,10 @@ class TestHeaderId(unittest.TestCase):
         """ Test Basic HeaderID """
 
         text = "# Some Header #"
-        self.assertEqual(self.md.convert(text),
-            '<h1 id="some-header">Some Header</h1>')
+        self.assertEqual(
+            self.md.convert(text),
+            '<h1 id="some-header">Some Header</h1>'
+        )
 
     def testUniqueFunc(self):
         """ Test 'unique' function. """
@@ -341,10 +404,12 @@ class TestHeaderId(unittest.TestCase):
         """ Test Unique IDs. """
 
         text = '#Header\n#Header\n#Header'
-        self.assertEqual(self.md.convert(text),
+        self.assertEqual(
+            self.md.convert(text),
             '<h1 id="header">Header</h1>\n'
             '<h1 id="header_1">Header</h1>\n'
-            '<h1 id="header_2">Header</h1>')
+            '<h1 id="header_2">Header</h1>'
+        )
 
     def testBaseLevel(self):
         """ Test Header Base Level. """
@@ -353,27 +418,34 @@ class TestHeaderId(unittest.TestCase):
         self.assertEqual(
             markdown.markdown(text, [markdown.extensions.headerid.HeaderIdExtension(level=3)]),
             '<h3 id="some-header">Some Header</h3>\n'
-            '<h4 id="next-level">Next Level</h4>')
+            '<h4 id="next-level">Next Level</h4>'
+        )
 
     def testHeaderInlineMarkup(self):
         """ Test Header IDs with inline markup. """
 
         text = '#Some *Header* with [markup](http://example.com).'
-        self.assertEqual(self.md.convert(text),
+        self.assertEqual(
+            self.md.convert(text),
             '<h1 id="some-header-with-markup">Some <em>Header</em> with '
-            '<a href="http://example.com">markup</a>.</h1>')
+            '<a href="http://example.com">markup</a>.</h1>'
+        )
 
     def testHtmlEntities(self):
         """ Test HeaderIDs with HTML Entities. """
         text = '# Foo &amp; bar'
-        self.assertEqual(self.md.convert(text),
-            '<h1 id="foo-bar">Foo &amp; bar</h1>')
+        self.assertEqual(
+            self.md.convert(text),
+            '<h1 id="foo-bar">Foo &amp; bar</h1>'
+        )
 
     def testRawHtml(self):
         """ Test HeaderIDs with raw HTML. """
         text = '# Foo <b>Bar</b> Baz.'
-        self.assertEqual(self.md.convert(text),
-            '<h1 id="foo-bar-baz">Foo <b>Bar</b> Baz.</h1>')
+        self.assertEqual(
+            self.md.convert(text),
+            '<h1 id="foo-bar-baz">Foo <b>Bar</b> Baz.</h1>'
+        )
 
     def testNoAutoIds(self):
         """ Test HeaderIDs with no auto generated IDs. """
@@ -382,7 +454,8 @@ class TestHeaderId(unittest.TestCase):
         self.assertEqual(
             markdown.markdown(text, [markdown.extensions.headerid.HeaderIdExtension(forceid=False)]),
             '<h1>Some Header</h1>\n'
-            '<h1>Another Header</h1>')
+            '<h1>Another Header</h1>'
+        )
 
     def testHeaderIdWithMetaData(self):
         """ Test Header IDs with MetaData extension. """
@@ -391,20 +464,27 @@ class TestHeaderId(unittest.TestCase):
 header_forceid: Off
 
 # A Header'''
-        self.assertEqual(markdown.markdown(text, ['markdown.extensions.headerid', 'markdown.extensions.meta']),
-            '<h2>A Header</h2>')
+        self.assertEqual(
+            markdown.markdown(text, ['markdown.extensions.headerid', 'markdown.extensions.meta']),
+            '<h2>A Header</h2>'
+        )
 
     def testHeaderIdWithAttr_List(self):
         """ Test HeaderIDs with Attr_List extension. """
-        
+
         text = '# Header1 {: #foo }\n# Header2 {: .bar }'
-        self.assertEqual(markdown.markdown(text, ['markdown.extensions.headerid', 'markdown.extensions.attr_list']),
+        self.assertEqual(
+            markdown.markdown(text, ['markdown.extensions.headerid', 'markdown.extensions.attr_list']),
             '<h1 id="foo">Header1</h1>\n'
-            '<h1 class="bar" id="header2">Header2</h1>')
+            '<h1 class="bar" id="header2">Header2</h1>'
+        )
         # Switch order extensions are loaded - should be no change in behavior.
-        self.assertEqual(markdown.markdown(text, ['markdown.extensions.attr_list', 'markdown.extensions.headerid']),
+        self.assertEqual(
+            markdown.markdown(text, ['markdown.extensions.attr_list', 'markdown.extensions.headerid']),
             '<h1 id="foo">Header1</h1>\n'
-            '<h1 class="bar" id="header2">Header2</h1>')
+            '<h1 class="bar" id="header2">Header2</h1>'
+        )
+
 
 class TestMetaData(unittest.TestCase):
     """ Test MetaData extension. """
@@ -421,20 +501,27 @@ Author: Waylan Limberg
 Blank_Data:
 
 The body. This is paragraph one.'''
-        self.assertEqual(self.md.convert(text),
-            '<p>The body. This is paragraph one.</p>')
-        self.assertEqual(self.md.Meta,
-            {'author': ['Waylan Limberg', 'John Doe'],
-             'blank_data': [''],
-             'title': ['A Test Doc.']})
+        self.assertEqual(
+            self.md.convert(text),
+            '<p>The body. This is paragraph one.</p>'
+        )
+        self.assertEqual(
+            self.md.Meta, {
+                'author': ['Waylan Limberg', 'John Doe'],
+                'blank_data': [''],
+                'title': ['A Test Doc.']
+            }
+        )
 
     def testMissingMetaData(self):
         """ Test document without Meta Data. """
 
         text = '    Some Code - not extra lines of meta data.'
-        self.assertEqual(self.md.convert(text),
+        self.assertEqual(
+            self.md.convert(text),
             '<pre><code>Some Code - not extra lines of meta data.\n'
-            '</code></pre>')
+            '</code></pre>'
+        )
         self.assertEqual(self.md.Meta, {})
 
     def testMetaDataWithoutNewline(self):
@@ -454,24 +541,34 @@ class TestWikiLinks(unittest.TestCase):
     def testBasicWikilinks(self):
         """ Test [[wikilinks]]. """
 
-        self.assertEqual(self.md.convert(self.text),
+        self.assertEqual(
+            self.md.convert(self.text),
             '<p>Some text with a '
-            '<a class="wikilink" href="/WikiLink/">WikiLink</a>.</p>')
+            '<a class="wikilink" href="/WikiLink/">WikiLink</a>.</p>'
+        )
 
     def testWikilinkWhitespace(self):
         """ Test whitespace in wikilinks. """
-        self.assertEqual(self.md.convert('[[ foo bar_baz ]]'),
-            '<p><a class="wikilink" href="/foo_bar_baz/">foo bar_baz</a></p>')
-        self.assertEqual(self.md.convert('foo [[ ]] bar'),
-            '<p>foo  bar</p>')
+        self.assertEqual(
+            self.md.convert('[[ foo bar_baz ]]'),
+            '<p><a class="wikilink" href="/foo_bar_baz/">foo bar_baz</a></p>'
+        )
+        self.assertEqual(
+            self.md.convert('foo [[ ]] bar'),
+            '<p>foo  bar</p>'
+        )
 
     def testSimpleSettings(self):
         """ Test Simple Settings. """
 
-        self.assertEqual(markdown.markdown(self.text,
-            [markdown.extensions.wikilinks.WikiLinkExtension(base_url='/wiki/', 
-                                                             end_url='.html', 
-                                                             html_class='foo')]),
+        self.assertEqual(markdown.markdown(
+            self.text, [
+                markdown.extensions.wikilinks.WikiLinkExtension(
+                    base_url='/wiki/',
+                    end_url='.html',
+                    html_class='foo')
+                ]
+            ),
             '<p>Some text with a '
             '<a class="foo" href="/wiki/WikiLink.html">WikiLink</a>.</p>')
 
@@ -479,15 +576,21 @@ class TestWikiLinks(unittest.TestCase):
         """ Test Complex Settings. """
 
         md = markdown.Markdown(
-            extensions = ['markdown.extensions.wikilinks'],
-            extension_configs = {'markdown.extensions.wikilinks': [
-                                        ('base_url', 'http://example.com/'),
-                                        ('end_url', '.html'),
-                                        ('html_class', '') ]},
-            safe_mode = True)
-        self.assertEqual(md.convert(self.text),
+            extensions=['markdown.extensions.wikilinks'],
+            extension_configs={
+                'markdown.extensions.wikilinks': [
+                    ('base_url', 'http://example.com/'),
+                    ('end_url', '.html'),
+                    ('html_class', '')
+                ]
+            },
+            safe_mode=True
+        )
+        self.assertEqual(
+            md.convert(self.text),
             '<p>Some text with a '
-            '<a href="http://example.com/WikiLink.html">WikiLink</a>.</p>')
+            '<a href="http://example.com/WikiLink.html">WikiLink</a>.</p>'
+        )
 
     def testWikilinksMetaData(self):
         """ test MetaData with Wikilinks Extension. """
@@ -498,25 +601,33 @@ wiki_html_class:
 
 Some text with a [[WikiLink]]."""
         md = markdown.Markdown(extensions=['markdown.extensions.meta', 'markdown.extensions.wikilinks'])
-        self.assertEqual(md.convert(text),
+        self.assertEqual(
+            md.convert(text),
             '<p>Some text with a '
-            '<a href="http://example.com/WikiLink.html">WikiLink</a>.</p>')
+            '<a href="http://example.com/WikiLink.html">WikiLink</a>.</p>'
+        )
 
         # MetaData should not carry over to next document:
-        self.assertEqual(md.convert("No [[MetaData]] here."),
+        self.assertEqual(
+            md.convert("No [[MetaData]] here."),
             '<p>No <a class="wikilink" href="/MetaData/">MetaData</a> '
-            'here.</p>')
+            'here.</p>'
+        )
 
     def testURLCallback(self):
         """ Test used of a custom URL builder. """
-        
+
         from markdown.extensions.wikilinks import WikiLinkExtension
 
         def my_url_builder(label, base, end):
             return '/bar/'
+
         md = markdown.Markdown(extensions=[WikiLinkExtension(build_url=my_url_builder)])
-        self.assertEqual(md.convert('[[foo]]'),
-            '<p><a class="wikilink" href="/bar/">foo</a></p>')
+        self.assertEqual(
+            md.convert('[[foo]]'),
+            '<p><a class="wikilink" href="/bar/">foo</a></p>'
+        )
+
 
 class TestAdmonition(unittest.TestCase):
     """ Test Admonition Extension. """
@@ -534,74 +645,82 @@ class TestAdmonition(unittest.TestCase):
         for test, expected in tests:
             self.assertEqual(RE.match(test).groups(), expected)
 
+
 class TestTOC(unittest.TestCase):
     """ Test TOC Extension. """
-    
+
     def setUp(self):
         self.md = markdown.Markdown(extensions=['markdown.extensions.toc'])
 
     def testMarker(self):
         """ Test TOC with a Marker. """
         text = '[TOC]\n\n# Header 1\n\n## Header 2'
-        self.assertEqual(self.md.convert(text),
+        self.assertEqual(
+            self.md.convert(text),
             '<div class="toc">\n'
-              '<ul>\n'
-                '<li><a href="#header-1">Header 1</a>'
-                  '<ul>\n'
-                    '<li><a href="#header-2">Header 2</a></li>\n'
-                  '</ul>\n'
-                '</li>\n'
-              '</ul>\n'
+              '<ul>\n'                                             # noqa
+                '<li><a href="#header-1">Header 1</a>'             # noqa
+                  '<ul>\n'                                         # noqa
+                    '<li><a href="#header-2">Header 2</a></li>\n'  # noqa
+                  '</ul>\n'                                        # noqa
+                '</li>\n'                                          # noqa
+              '</ul>\n'                                            # noqa
             '</div>\n'
             '<h1 id="header-1">Header 1</h1>\n'
-            '<h2 id="header-2">Header 2</h2>')
-    
+            '<h2 id="header-2">Header 2</h2>'
+        )
+
     def testNoMarker(self):
         """ Test TOC without a Marker. """
         text = '# Header 1\n\n## Header 2'
-        self.assertEqual(self.md.convert(text),
+        self.assertEqual(
+            self.md.convert(text),
             '<h1 id="header-1">Header 1</h1>\n'
-            '<h2 id="header-2">Header 2</h2>')
-        self.assertEqual(self.md.toc,
+            '<h2 id="header-2">Header 2</h2>'
+        )
+        self.assertEqual(
+            self.md.toc,
             '<div class="toc">\n'
-              '<ul>\n'
-                '<li><a href="#header-1">Header 1</a>'
-                  '<ul>\n'
-                    '<li><a href="#header-2">Header 2</a></li>\n'
-                  '</ul>\n'
-                '</li>\n'
-              '</ul>\n'
-            '</div>\n')
+              '<ul>\n'                                             # noqa
+                '<li><a href="#header-1">Header 1</a>'             # noqa
+                  '<ul>\n'                                         # noqa
+                    '<li><a href="#header-2">Header 2</a></li>\n'  # noqa
+                  '</ul>\n'                                        # noqa
+                '</li>\n'                                          # noqa
+              '</ul>\n'                                            # noqa
+            '</div>\n'
+        )
 
 
 class TestSmarty(unittest.TestCase):
     def setUp(self):
         config = {
-                'markdown.extensions.smarty': [
-                    ('smart_angled_quotes', True),
-                    ('substitutions', {
-                        'ndash': '\u2013',
-                        'mdash': '\u2014',
-                        'ellipsis': '\u2026',
-                        'left-single-quote': '&sbquo;', # sb is not a typo!
-                        'right-single-quote': '&lsquo;',
-                        'left-double-quote': '&bdquo;',
-                        'right-double-quote': '&ldquo;',
-                        'left-angle-quote': '[',
-                        'right-angle-quote': ']',
-                    }),]
+            'markdown.extensions.smarty': [
+                ('smart_angled_quotes', True),
+                ('substitutions', {
+                    'ndash': '\u2013',
+                    'mdash': '\u2014',
+                    'ellipsis': '\u2026',
+                    'left-single-quote': '&sbquo;',  # sb is not a typo!
+                    'right-single-quote': '&lsquo;',
+                    'left-double-quote': '&bdquo;',
+                    'right-double-quote': '&ldquo;',
+                    'left-angle-quote': '[',
+                    'right-angle-quote': ']',
+                }),
+            ]
         }
-        self.md = markdown.Markdown(extensions=['markdown.extensions.smarty'],
-                                    extension_configs=config)
-        
+        self.md = markdown.Markdown(
+            extensions=['markdown.extensions.smarty'],
+            extension_configs=config
+        )
+
     def testCustomSubstitutions(self):
-        text = \
-"""<< The "Unicode char of the year 2014"
+        text = """<< The "Unicode char of the year 2014"
 is the 'mdash': ---
 Must not be confused with 'ndash'  (--) ... >>
 """
-        correct = \
-"""<p>[ The &bdquo;Unicode char of the year 2014&ldquo;
+        correct = """<p>[ The &bdquo;Unicode char of the year 2014&ldquo;
 is the &sbquo;mdash&lsquo;: \u2014
 Must not be confused with &sbquo;ndash&lsquo;  (\u2013) \u2026 ]</p>"""
         self.assertEqual(self.md.convert(text), correct)
