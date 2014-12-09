@@ -12,6 +12,15 @@ import codecs
 import imp
 
 
+install_requires = []
+
+try:
+    import importlib  # noqa
+except ImportError:
+    # E.g.: Python 2.6
+    install_requires.append('importlib')
+
+
 def get_version():
     " Get version & version_info without importing markdown.__init__ "
     path = os.path.join(os.path.dirname(__file__), 'markdown')
@@ -243,6 +252,7 @@ setup(
     maintainer='Waylan Limberg',
     maintainer_email='waylan.limberg [at] icloud.com',
     license='BSD License',
+    install_requires=install_requires,
     packages=['markdown', 'markdown.extensions'],
     scripts=['bin/%s' % SCRIPT_NAME],
     cmdclass={
@@ -256,6 +266,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.2',

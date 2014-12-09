@@ -50,7 +50,11 @@ from .serializers import to_html_string, to_xhtml_string
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
 logger = logging.getLogger('MARKDOWN')
-logging.captureWarnings(True)
+try:
+    logging.captureWarnings(True)
+except AttributeError:
+    # E.g.: Python 2.6 doesn't have logging.captureWarnings
+    pass
 
 
 class Markdown(object):
