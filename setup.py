@@ -44,7 +44,9 @@ SCRIPT_NAME = 'markdown_py'
 
 
 class md_install_scripts(install_scripts):
+
     """ Customized install_scripts. Create markdown_py.bat for win32. """
+
     def run(self):
         install_scripts.run(self)
 
@@ -59,13 +61,14 @@ class md_install_scripts(install_scripts):
                 f = open(bat_path, 'w')
                 f.write(bat_str)
                 f.close()
-                print ('Created: %s' % bat_path)
+                print('Created: %s' % bat_path)
             except Exception:
                 _, err, _ = sys.exc_info()  # for both 2.x & 3.x compatability
-                print ('ERROR: Unable to create %s: %s' % (bat_path, err))
+                print('ERROR: Unable to create %s: %s' % (bat_path, err))
 
 
 class build_docs(Command):
+
     """ Build markdown documentation into html."""
 
     description = '"build" documentation (convert markdown text to html)'
@@ -73,7 +76,7 @@ class build_docs(Command):
     user_options = [
         ('build-base=', 'd', 'directory to "build" to'),
         ('force', 'f', 'forcibly build everything (ignore file timestamps)'),
-        ]
+    ]
 
     boolean_options = ['force']
 
@@ -121,7 +124,7 @@ class build_docs(Command):
         name, ext = os.path.splitext(file)
         parts = [x for x in dir.split(os.sep) if x]
         c['source'] = '%s.txt' % name
-        c['base'] = '../'*len(parts)
+        c['base'] = '../' * len(parts)
         # Build page title
         if name.lower() != 'index' or parts:
             c['page_title'] = '%s &#8212; Python Markdown' % c['title']
@@ -131,7 +134,7 @@ class build_docs(Command):
         crumbs = []
         ctemp = '<li><a href="%s">%s</a> &raquo;</li>'
         for n, part in enumerate(parts):
-            href = ('../'*n) + 'index.html'
+            href = ('../' * n) + 'index.html'
             label = part.replace('_', ' ').capitalize()
             crumbs.append(ctemp % (href, label))
         if c['title'] and name.lower() != 'index':
@@ -147,7 +150,7 @@ class build_docs(Command):
         try:
             import markdown
         except ImportError:
-            print ('skipping build_docs: Markdown "import" failed!')
+            print('skipping build_docs: Markdown "import" failed!')
         else:
             with codecs.open('docs/_template.html', encoding='utf-8') as f:
                 template = f.read()
@@ -174,7 +177,7 @@ class build_docs(Command):
                     self.mkpath(os.path.split(outfile)[0])
                     if self.force or newer(infile, outfile):
                         if self.verbose:
-                            print ('Converting %s -> %s' % (infile, outfile))
+                            print('Converting %s -> %s' % (infile, outfile))
                         if not self.dry_run:
                             with codecs.open(infile, encoding='utf-8') as f:
                                 src = f.read()
@@ -189,11 +192,12 @@ class build_docs(Command):
 
 
 class md_build(build):
+
     """ Run "build_docs" command from "build" command. """
 
     user_options = build.user_options + [
         ('no-build-docs', None, 'do not build documentation'),
-        ]
+    ]
 
     boolean_options = build.boolean_options + ['build-docs']
 
