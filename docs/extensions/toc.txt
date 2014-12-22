@@ -62,7 +62,7 @@ The following options are provided to configure the output:
 
         >>> text = '''
         # Header 1
-        
+
         ## Header 2
         '''
         >>> md = markdown.Markdown(extensions=['markdown.extensions.toc'])
@@ -71,9 +71,10 @@ The following options are provided to configure the output:
 
 * **`slugify`**:
     Callable to generate anchors based on header text. Defaults to a built in
-    `slugify` method. The callable must accept one argument which contains the
-    text content of the header and return a string which will be used as the
-    anchor text.
+    `slugify` method. The callable must accept two arguments, the first
+    contains the text content of the header and the second contains the
+    separator. It should then return a string which will be used as the anchor
+    text.
 
 * **`title`**:
     Title to insert in the Table of Contents' `<div>`. Defaults to `None`.
