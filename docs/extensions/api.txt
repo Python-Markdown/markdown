@@ -136,7 +136,8 @@ the tree and runs the InlinePatterns on the text of each Element in the tree.
 
 A Treeprocessor should inherit from ``markdown.treeprocessors.Treeprocessor``,
 over-ride the ``run`` method which takes one argument ``root`` (an Elementree 
-object) and returns either that root element or a modified root element.
+object) and either modifies that root element and returns `None` or returns a 
+new ElementTree object.
 
 A pseudo example:
 
@@ -144,8 +145,18 @@ A pseudo example:
 
     class MyTreeprocessor(Treeprocessor):
         def run(self, root):
-            #do stuff
-            return my_modified_root
+            root.text = 'modified content'
+
+Note that Python class methods return `None` by default when no `return` 
+statement is defined.  Additionly all Python variables refer to objects by
+reference.  Therefore, the above `run` method modifies the `root` element
+in place and returns `None`. The changes made to the `root` element and its 
+children are retained.
+
+Some may be inclined to return the modified `root` element. While that would
+work, it would cause a copy of the entire ElemetTree to be generated each
+time the treeprocessor is run. Therefore, it is generally expected that
+the `run` method would only return `None` or a new ElementTree object.
 
 For specifics on manipulating the ElementTree, see 
 [Working with the ElementTree][] below.
