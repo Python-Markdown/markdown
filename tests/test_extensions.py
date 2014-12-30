@@ -733,6 +733,14 @@ class TestTOC(unittest.TestCase):
             '</div>\n'
         )
 
+    def testReset(self):
+        """ Test TOC Reset. """
+        self.assertEqual(self.md.toc, '')
+        self.md.convert('# Header 1\n\n## Header 2')
+        self.assertTrue(self.md.toc.startswith('<div class="toc">'))
+        self.md.reset()
+        self.assertEqual(self.md.toc, '')
+
 
 class TestSmarty(unittest.TestCase):
     def setUp(self):
