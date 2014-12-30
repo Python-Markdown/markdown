@@ -56,8 +56,8 @@ The following options are provided to configure the output:
     Text to find and replace with the Table of Contents. Defaults
     to `[TOC]`.
 
-    If a `marker` is not found in the document, then the Table of Contents is
-    available as an attribute of the Markdown class. This allows one to insert
+    Regardless of whether a `marker` is found in the document, the Table of Contents is
+    also available as an attribute (`toc`) of the Markdown class. This allows one to insert
     the Table of Contents elsewhere in their page template. For example:
 
         >>> text = '''

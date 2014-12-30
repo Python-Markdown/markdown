@@ -1,6 +1,6 @@
 title:      Release Notes for v2.5
-prev_title: Change Log
-prev_url:   change_log.html
+prev_title: Release Notes for v2.6
+prev_url:   release-2.6.html
 next_title: Release Notes for v2.4
 next_url:   release-2.4.html
 

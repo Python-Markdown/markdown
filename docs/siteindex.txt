@@ -66,6 +66,7 @@ Table of Contents
     * [Syntax Test Config Settings](test_suite.html#syntax-test-config-settings)
     * [Unit Tests](test_suite.html#unit-tests)
 * [Change Log](change_log.html)
+    * [Release Notes for v.2.6](release-2.6.html)
     * [Release Notes for v.2.5](release-2.5.html)
     * [Release Notes for v.2.4](release-2.4.html)
     * [Release Notes for v.2.3](release-2.3.html)
