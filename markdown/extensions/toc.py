@@ -86,12 +86,44 @@ def order_toc_list(toc_list):
 
 
 class TocTreeprocessor(Treeprocessor):
+    def __init__(self, md, config):
+        super(TocTreeprocessor, self).__init__(md)
+        
+        self.marker = config["marker"]
+        self.title = config["title"]
+        self.slugify = config["slugify"]
+        self.use_anchors = parseBoolValue(config["anchorlink"])
+        self.use_permalinks = parseBoolValue(config["permalink"], False)
+        if self.use_permalinks is None:
+            self.use_permalinks = config["permalink"]
 
-    # Iterator wrapper to get parent and child all at once
+        self.header_rgx = re.compile("[Hh][123456]")
+
     def iterparent(self, root):
-        for parent in root.getiterator():
+        ''' Iterator wrapper to get parent and child all at once. '''
+        for parent in root.iter():
             for child in parent:
                 yield parent, child
+    
+    def replace_marker(self, root, elem):
+        ''' Replace marker with elem. '''
+        for (p, c) in self.iterparent(root):
+            text = ''.join(itertext(c)).strip()
+            if not text:
+                continue
+
+            # To keep the output from screwing up the
+            # validation by putting a <div> inside of a <p>
+            # we actually replace the <p> in its entirety.
+            # We do not allow the marker inside a header as that
+            # would causes an enless loop of placing a new TOC
+            # inside previously generated TOC.
+            if c.text and c.text.strip() == self.marker and \
+               not self.header_rgx.match(c.tag) and c.tag not in ['pre', 'code']:
+                for i in range(len(p)):
+                    if p[i] == c:
+                        p[i] = elem
+                        break
 
     def add_anchor(self, c, elem_id):  # @ReservedAssignment
         anchor = etree.Element("a")
@@ -116,10 +148,10 @@ class TocTreeprocessor(Treeprocessor):
 
     def build_toc_etree(self, div, toc_list):
         # Add title to the div
-        if self.config["title"]:
+        if self.title:
             header = etree.SubElement(div, "span")
             header.attrib["class"] = "toctitle"
-            header.text = self.config["title"]
+            header.text = self.title
 
         def build_etree_ul(toc_list, parent):
             ul = etree.SubElement(parent, "ul")
@@ -136,62 +168,37 @@ class TocTreeprocessor(Treeprocessor):
         return build_etree_ul(toc_list, div)
 
     def run(self, doc):
+        # Get a list of id attributes
+        used_ids = set()
+        for el in doc.iter():
+            if "id" in el.attrib:
+                used_ids.add(el.attrib["id"])
 
         div = etree.Element("div")
         div.attrib["class"] = "toc"
-        header_rgx = re.compile("[Hh][123456]")
-
-        self.use_anchors = parseBoolValue(self.config["anchorlink"])
-        self.use_permalinks = parseBoolValue(self.config["permalink"], False)
-        if self.use_permalinks is None:
-            self.use_permalinks = self.config["permalink"]
-
-        # Get a list of id attributes
-        used_ids = set()
-        for c in doc.getiterator():
-            if "id" in c.attrib:
-                used_ids.add(c.attrib["id"])
-
+        self.replace_marker(doc, div)
+        
         toc_list = []
-        for (p, c) in self.iterparent(doc):
-            text = ''.join(itertext(c)).strip()
-            if not text:
-                continue
-
-            # To keep the output from screwing up the
-            # validation by putting a <div> inside of a <p>
-            # we actually replace the <p> in its entirety.
-            # We do not allow the marker inside a header as that
-            # would causes an enless loop of placing a new TOC
-            # inside previously generated TOC.
-            if c.text and c.text.strip() == self.config["marker"] and \
-               not header_rgx.match(c.tag) and c.tag not in ['pre', 'code']:
-                for i in range(len(p)):
-                    if p[i] == c:
-                        p[i] = div
-                        break
-
-            if header_rgx.match(c.tag):
-
+        for el in doc.iter():
+            if self.header_rgx.match(el.tag):
+                text = ''.join(itertext(el)).strip()
+                
                 # Do not override pre-existing ids
-                if "id" not in c.attrib:
+                if "id" not in el.attrib:
                     elem_id = stashedHTML2text(text, self.markdown)
-                    elem_id = unique(self.config["slugify"](elem_id, '-'),
-                                     used_ids)
-                    c.attrib["id"] = elem_id
+                    elem_id = unique(self.slugify(elem_id, '-'), used_ids)
+                    el.attrib["id"] = elem_id
                 else:
-                    elem_id = c.attrib["id"]
+                    elem_id = el.attrib["id"]
 
-                tag_level = int(c.tag[-1])
-
-                toc_list.append({'level': tag_level,
+                toc_list.append({'level': int(el.tag[-1]),
                                  'id': elem_id,
                                  'name': text})
 
                 if self.use_anchors:
-                    self.add_anchor(c, elem_id)
+                    self.add_anchor(el, elem_id)
                 if self.use_permalinks:
-                    self.add_permalink(c, elem_id)
+                    self.add_permalink(el, elem_id)
 
         toc_list_nested = order_toc_list(toc_list)
         self.build_toc_etree(div, toc_list_nested)
@@ -235,8 +242,7 @@ class TocExtension(Extension):
         md.registerExtension(self)
         self.md = md
         self.reset()
-        tocext = self.TreeProcessorClass(md)
-        tocext.config = self.getConfigs()
+        tocext = self.TreeProcessorClass(md, self.getConfigs())
         # Headerid ext is set to '>prettify'. With this set to '_end',
         # it should always come after headerid ext (and honor ids assinged
         # by the header id extension) if both are used. Same goes for
