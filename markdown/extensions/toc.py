@@ -200,12 +200,12 @@ class TocTreeprocessor(Treeprocessor):
         prettify = self.markdown.treeprocessors.get('prettify')
         if prettify:
             prettify.run(div)
-        if not marker_found:
-            # serialize and attach to markdown instance.
-            toc = self.markdown.serializer(div)
-            for pp in self.markdown.postprocessors.values():
-                toc = pp.run(toc)
-            self.markdown.toc = toc
+
+        # serialize and attach to markdown instance.
+        toc = self.markdown.serializer(div)
+        for pp in self.markdown.postprocessors.values():
+            toc = pp.run(toc)
+        self.markdown.toc = toc
 
 
 class TocExtension(Extension):
