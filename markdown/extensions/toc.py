@@ -88,7 +88,7 @@ def order_toc_list(toc_list):
 class TocTreeprocessor(Treeprocessor):
     def __init__(self, md, config):
         super(TocTreeprocessor, self).__init__(md)
-        
+
         self.marker = config["marker"]
         self.title = config["title"]
         self.slugify = config["slugify"]
@@ -104,7 +104,7 @@ class TocTreeprocessor(Treeprocessor):
         for parent in root.iter():
             for child in parent:
                 yield parent, child
-    
+
     def replace_marker(self, root, elem):
         ''' Replace marker with elem. '''
         for (p, c) in self.iterparent(root):
@@ -177,12 +177,12 @@ class TocTreeprocessor(Treeprocessor):
         div = etree.Element("div")
         div.attrib["class"] = "toc"
         self.replace_marker(doc, div)
-        
+
         toc_list = []
         for el in doc.iter():
             if self.header_rgx.match(el.tag):
                 text = ''.join(itertext(el)).strip()
-                
+
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
                     elem_id = stashedHTML2text(text, self.markdown)

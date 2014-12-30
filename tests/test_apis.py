@@ -371,24 +371,24 @@ class TestErrors(unittest.TestCase):
         )
 
     def testMdxExtention(self):
-        """ Test that appending mdx_ raises a PendingDeprecationWarning. """
+        """ Test that prepending mdx_ raises a DeprecationWarning. """
         _create_fake_extension(name='fake', use_old_style=True)
         self.assertRaises(
-            PendingDeprecationWarning,
+            DeprecationWarning,
             markdown.Markdown, extensions=['fake']
         )
 
     def testShortNameExtention(self):
-        """ Test that using a short name raises a PendingDeprecationWarning. """
+        """ Test that using a short name raises a DeprecationWarning. """
         self.assertRaises(
-            PendingDeprecationWarning,
+            DeprecationWarning,
             markdown.Markdown, extensions=['footnotes']
         )
 
     def testStringConfigExtention(self):
-        """ Test that passing configs to an Extension in the name raises a PendingDeprecationWarning. """
+        """ Test that passing configs to an Extension in the name raises a DeprecationWarning. """
         self.assertRaises(
-            PendingDeprecationWarning,
+            DeprecationWarning,
             markdown.Markdown, extensions=['markdown.extension.footnotes(PLACE_MARKER=FOO)']
         )
 

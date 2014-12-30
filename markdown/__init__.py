@@ -121,10 +121,9 @@ class Markdown(object):
                 # ignore any additional args
                 break
         if len(args):
-            warnings.warn('Positional arguments are pending depreacted in '
-                          'Markdown and will be deprecated in version 2.6. '
+            warnings.warn('Positional arguments are depreacted in Markdown'
                           'Use keyword arguments only.',
-                          PendingDeprecationWarning)
+                          DeprecationWarning)
 
         # Loop through kwargs and assign defaults
         for option, default in self.option_defaults.items():
@@ -136,19 +135,17 @@ class Markdown(object):
             self.enable_attributes = False
 
         if 'safe_mode' in kwargs:
-            warnings.warn('"safe_mode" is pending deprecation in '
-                          'Python-Markdown and will be deprecated in '
-                          'version 2.6. Use an HTML sanitizer (like '
+            warnings.warn('"safe_mode" is deprecated in Python-Markdown'
+                          'Use an HTML sanitizer (like '
                           'Bleach http://bleach.readthedocs.org/) '
                           'if you are parsing untrusted markdown text. '
-                          'See the 2.5 release notes for more info',
-                          PendingDeprecationWarning)
+                          'See the 2.6 release notes for more info',
+                          DeprecationWarning)
 
         if 'html_replacement_text' in kwargs:
-            warnings.warn('The "html_replacement_text" keyword is pending '
-                          'deprecation in Python-Markdown and will be '
-                          'deprecated in version 2.6 along with "safe_mode".',
-                          PendingDeprecationWarning)
+            warnings.warn('The "html_replacement_text" keyword is '
+                          'deprecated along with "safe_mode".',
+                          DeprecationWarning)
 
         self.registeredExtensions = []
         self.docType = ""
@@ -217,13 +214,12 @@ class Markdown(object):
             pairs = [x.split("=") for x in ext_args.split(",")]
             configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
             warnings.warn('Setting configs in the Named Extension string is '
-                          'pending deprecation. It is recommended that you '
+                          'deprecated. It is recommended that you '
                           'pass an instance of the extension class to '
                           'Markdown or use the "extension_configs" keyword. '
-                          'The current behavior will be deprecated in '
-                          'version 2.6 and raise an error in version 2.7. '
+                          'The current behavior will raise an error in version 2.7. '
                           'See the Release Notes for Python-Markdown version '
-                          '2.5 for more info.', PendingDeprecationWarning)
+                          '2.6 for more info.', DeprecationWarning)
 
         # Get class name (if provided): `path.to.module:ClassName`
         ext_name, class_name = ext_name.split(':', 1) \
@@ -253,15 +249,14 @@ class Markdown(object):
                     module_name
                 )
                 warnings.warn('Using short names for Markdown\'s builtin '
-                              'extensions is pending deprecation. Use the '
+                              'extensions is deprecated. Use the '
                               'full path to the extension with Python\'s dot '
                               'notation (eg: "%s" instead of "%s"). The '
-                              'current behavior will be deprecated in '
-                              'version 2.6 and raise an error in version '
+                              'current behavior will raise an error in version '
                               '2.7. See the Release Notes for '
-                              'Python-Markdown version 2.5 for more info.' %
+                              'Python-Markdown version 2.6 for more info.' %
                               (module_name, ext_name),
-                              PendingDeprecationWarning)
+                              DeprecationWarning)
             except ImportError:
                 # Preppend `mdx_` to name
                 module_name_old_style = '_'.join(['mdx', ext_name])
@@ -270,17 +265,16 @@ class Markdown(object):
                     logger.debug(
                         'Successfuly imported extension module "%s".' %
                         module_name_old_style)
-                    warnings.warn('Markdown\'s behavuor of appending "mdx_" '
-                                  'to an extension name is pending '
-                                  'deprecation. Use the full path to the '
+                    warnings.warn('Markdown\'s behavior of prepending "mdx_" '
+                                  'to an extension name is deprecated. '
+                                  'Use the full path to the '
                                   'extension with Python\'s dot notation '
                                   '(eg: "%s" instead of "%s"). The current '
-                                  'behavior will be deprecated in version '
-                                  '2.6 and raise an error in version 2.7. '
+                                  'behavior will raise an error in version 2.7. '
                                   'See the Release Notes for Python-Markdown '
-                                  'version 2.5 for more info.' %
+                                  'version 2.6 for more info.' %
                                   (module_name_old_style, ext_name),
-                                  PendingDeprecationWarning)
+                                  DeprecationWarning)
                 except ImportError as e:
                     message = "Failed loading extension '%s' from '%s', '%s' " \
                         "or '%s'" % (ext_name, ext_name, module_name,
@@ -524,10 +518,10 @@ def markdownFromFile(*args, **kwargs):
         if c == len(pos):
             break
     if len(args):
-        warnings.warn('Positional arguments are pending depreacted in '
-                      'Markdown and will be deprecated in version 2.6. '
+        warnings.warn('Positional arguments are depreacted in '
+                      'Markdown and will raise an error in version 2.7. '
                       'Use keyword arguments only.',
-                      PendingDeprecationWarning)
+                      DeprecationWarning)
 
     md = Markdown(**kwargs)
     md.convertFile(kwargs.get('input', None),
