@@ -59,7 +59,7 @@ def order_toc_list(toc_list):
                 for p in reversed(parents):
                     if current_level <= p['level']:
                         to_pop += 1
-                    else:
+                    else:  # pragma: no cover
                         break
                 if to_pop:
                     levels = levels[:-to_pop]
@@ -153,7 +153,6 @@ class TocTreeprocessor(Treeprocessor):
                 used_ids.add(c.attrib["id"])
 
         toc_list = []
-        marker_found = False
         for (p, c) in self.iterparent(doc):
             text = ''.join(itertext(c)).strip()
             if not text:
@@ -171,7 +170,6 @@ class TocTreeprocessor(Treeprocessor):
                     if p[i] == c:
                         p[i] = div
                         break
-                marker_found = True
 
             if header_rgx.match(c.tag):
 
@@ -223,12 +221,12 @@ class TocExtension(Extension):
             "title": ["",
                       "Title to insert into TOC <div> - "
                       "Defaults to an empty string"],
-            "anchorlink": [0,
-                           "1 if header should be a self link - "
-                           "Defaults to 0"],
+            "anchorlink": [False,
+                           "True if header should be a self link - "
+                           "Defaults to False"],
             "permalink": [0,
-                          "1 or link text if a Sphinx-style permalink should "
-                          "be added - Defaults to 0"]
+                          "True or link text if a Sphinx-style permalink should "
+                          "be added - Defaults to False"]
         }
 
         super(TocExtension, self).__init__(*args, **kwargs)
