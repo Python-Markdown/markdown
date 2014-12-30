@@ -741,6 +741,48 @@ class TestTOC(unittest.TestCase):
         self.md.reset()
         self.assertEqual(self.md.toc, '')
 
+    def testAnchorLink(self):
+        """ Test TOC Anchorlink. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(anchorlink=True)]
+        )
+        text = '# Header 1\n\n## Header *2*'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="header-1"><a class="toclink" href="#header-1">Header 1</a></h1>\n'
+            '<h2 id="header-2"><a class="toclink" href="#header-2">Header <em>2</em></a></h2>'
+        )
+
+    def testTitle(self):
+        """ Test TOC Title. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(title='Table of Contents')]
+        )
+        md.convert('# Header 1\n\n## Header 2')
+        self.assertTrue(md.toc.startswith('<div class="toc"><span class="toctitle">Table of Contents</span><ul>'))
+
+    def testWithAttrList(self):
+        """ Test TOC with attr_list Extension. """
+        md = markdown.Markdown(extensions=['markdown.extensions.toc', 'markdown.extensions.attr_list'])
+        text = '# Header 1\n\n## Header 2 { #foo }'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="header-1">Header 1</h1>\n'
+            '<h2 id="foo">Header 2</h2>'
+        )
+        self.assertEqual(
+            md.toc,
+            '<div class="toc">\n'
+              '<ul>\n'                                        # noqa
+                '<li><a href="#header-1">Header 1</a>'        # noqa
+                  '<ul>\n'                                    # noqa
+                    '<li><a href="#foo">Header 2</a></li>\n'  # noqa
+                  '</ul>\n'                                   # noqa
+                '</li>\n'                                     # noqa
+              '</ul>\n'                                       # noqa
+            '</div>\n'
+        )
+
 
 class TestSmarty(unittest.TestCase):
     def setUp(self):
