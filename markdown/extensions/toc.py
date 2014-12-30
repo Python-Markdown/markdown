@@ -234,6 +234,9 @@ class TocExtension(Extension):
         super(TocExtension, self).__init__(*args, **kwargs)
 
     def extendMarkdown(self, md, md_globals):
+        md.registerExtension(self)
+        self.md = md
+        self.reset()
         tocext = self.TreeProcessorClass(md)
         tocext.config = self.getConfigs()
         # Headerid ext is set to '>prettify'. With this set to '_end',
@@ -242,6 +245,9 @@ class TocExtension(Extension):
         # attr_list extension. This must come last because we don't want
         # to redefine ids after toc is created. But we do want toc prettified.
         md.treeprocessors.add("toc", tocext, "_end")
+
+    def reset(self):
+        self.md.toc = ''
 
 
 def makeExtension(*args, **kwargs):
