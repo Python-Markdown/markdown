@@ -90,13 +90,11 @@ The following options are provided to configure the output:
     Set to `True` or a string to generate permanent links at the end of each header.
     Useful with Sphinx stylesheets.
     
-    When set to `True` the paragraph symbol (&para; -- `&para;`) is used as the link
+    When set to `True` the paragraph symbol (&para; or "`&para;`") is used as the link
     text. When set to a string, the provided string is used as the link text.
 
 * **`baselevel`**:
-    Base level for headers.
-
-    Default: `1`
+    Base level for headers. Defaults to `1`.
 
     The `baselevel` setting allows the header levels to be automatically adjusted to
     fit within the hierarchy of your html templates. For example, suppose the 
@@ -106,7 +104,7 @@ The following options are provided to configure the output:
         >>>  text = '''
         ... #Some Header
         ... ## Next Level'''
-	>>> from markdown.extensions.toc import TocExtension
+        >>> from markdown.extensions.toc import TocExtension
         >>> html = markdown.markdown(text, extensions=[TocExtension(baselevel=3)])
         >>> print html
         <h3 id="some_header">Some Header</h3>
@@ -126,6 +124,4 @@ The following options are provided to configure the output:
     The callable must return a string appropriate for use in HTML `id` attributes.
 
 * **`separator`**:
-    Word separator. Character which replaces whitespace in id.
-
-    Default: `-`
+    Word separator. Character which replaces whitespace in id. Defaults to "`-`".
