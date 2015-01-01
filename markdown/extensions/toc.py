@@ -60,7 +60,7 @@ def stashedHTML2text(text, md):
     return HTML_PLACEHOLDER_RE.sub(_html_sub, text)
 
 
-def order_toc_list(toc_list):
+def nest_toc_tokens(toc_list):
     """Given an unsorted list with errors and skips, return a nested one.
     [{'level': 1}, {'level': 2}]
     =>
@@ -193,7 +193,11 @@ class TocTreeprocessor(Treeprocessor):
         permalink.attrib["title"] = "Permanent link"
         c.append(permalink)
 
-    def build_toc_etree(self, div, toc_list):
+    def build_toc_div(self, toc_list):
+        """ Return a string div given a toc list. """
+        div = etree.Element("div")
+        div.attrib["class"] = "toc"
+
         # Add title to the div
         if self.title:
             header = etree.SubElement(div, "span")
@@ -212,7 +216,11 @@ class TocTreeprocessor(Treeprocessor):
                     build_etree_ul(item['children'], li)
             return ul
 
-        return build_etree_ul(toc_list, div)
+        build_etree_ul(toc_list, div)
+        prettify = self.markdown.treeprocessors.get('prettify')
+        if prettify:
+            prettify.run(div)
+        return div
 
     def run(self, doc):
         # Get a list of id attributes
@@ -221,12 +229,7 @@ class TocTreeprocessor(Treeprocessor):
             if "id" in el.attrib:
                 used_ids.add(el.attrib["id"])
 
-        div = etree.Element("div")
-        div.attrib["class"] = "toc"
-        if self.marker:
-            self.replace_marker(doc, div)
-
-        toc_list = []
+        toc_tokens = []
         for el in doc.iter():
             if self.header_rgx.match(el.tag):
                 self.set_level(el)
@@ -234,26 +237,23 @@ class TocTreeprocessor(Treeprocessor):
 
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
-                    elem_id = stashedHTML2text(text, self.markdown)
-                    elem_id = unique(self.slugify(elem_id, self.sep), used_ids)
-                    el.attrib["id"] = elem_id
-                else:
-                    elem_id = el.attrib["id"]
+                    innertext = stashedHTML2text(text, self.markdown)
+                    el.attrib["id"] = unique(self.slugify(innertext, self.sep), used_ids)
 
-                toc_list.append({'level': int(el.tag[-1]),
-                                 'id': elem_id,
-                                 'name': text})
+                toc_tokens.append({
+                    'level': int(el.tag[-1]),
+                    'id': el.attrib["id"],
+                    'name': text
+                })
 
                 if self.use_anchors:
-                    self.add_anchor(el, elem_id)
+                    self.add_anchor(el, el.attrib["id"])
                 if self.use_permalinks:
-                    self.add_permalink(el, elem_id)
+                    self.add_permalink(el, el.attrib["id"])
 
-        toc_list_nested = order_toc_list(toc_list)
-        self.build_toc_etree(div, toc_list_nested)
-        prettify = self.markdown.treeprocessors.get('prettify')
-        if prettify:
-            prettify.run(div)
+        div = self.build_toc_div(nest_toc_tokens(toc_tokens))
+        if self.marker:
+            self.replace_marker(doc, div)
 
         # serialize and attach to markdown instance.
         toc = self.markdown.serializer(div)
