@@ -25,7 +25,7 @@ Backwards-incompatible Changes
 
     If your code previously looked like this:
 
-	    html = markdown.markdown(text, same_mode=True)
+	    html = markdown.markdown(text, safe_mode=True)
 
 	Then it is recommended that you change your code to read something like this:
 
