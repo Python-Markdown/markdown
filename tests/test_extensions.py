@@ -394,60 +394,6 @@ class TestHeaderId(unittest.TestCase):
             '<h1 id="some-header">Some Header</h1>'
         )
 
-    def testUniqueFunc(self):
-        """ Test 'unique' function. """
-        from markdown.extensions.headerid import unique
-        ids = set(['foo'])
-        self.assertEqual(unique('foo', ids), 'foo_1')
-        self.assertEqual(ids, set(['foo', 'foo_1']))
-
-    def testUniqueIds(self):
-        """ Test Unique IDs. """
-
-        text = '#Header\n#Header\n#Header'
-        self.assertEqual(
-            self.md.convert(text),
-            '<h1 id="header">Header</h1>\n'
-            '<h1 id="header_1">Header</h1>\n'
-            '<h1 id="header_2">Header</h1>'
-        )
-
-    def testBaseLevel(self):
-        """ Test Header Base Level. """
-
-        text = '#Some Header\n## Next Level'
-        self.assertEqual(
-            markdown.markdown(text, [markdown.extensions.headerid.HeaderIdExtension(level=3)]),
-            '<h3 id="some-header">Some Header</h3>\n'
-            '<h4 id="next-level">Next Level</h4>'
-        )
-
-    def testHeaderInlineMarkup(self):
-        """ Test Header IDs with inline markup. """
-
-        text = '#Some *Header* with [markup](http://example.com).'
-        self.assertEqual(
-            self.md.convert(text),
-            '<h1 id="some-header-with-markup">Some <em>Header</em> with '
-            '<a href="http://example.com">markup</a>.</h1>'
-        )
-
-    def testHtmlEntities(self):
-        """ Test HeaderIDs with HTML Entities. """
-        text = '# Foo &amp; bar'
-        self.assertEqual(
-            self.md.convert(text),
-            '<h1 id="foo-bar">Foo &amp; bar</h1>'
-        )
-
-    def testRawHtml(self):
-        """ Test HeaderIDs with raw HTML. """
-        text = '# Foo <b>Bar</b> Baz.'
-        self.assertEqual(
-            self.md.convert(text),
-            '<h1 id="foo-bar-baz">Foo <b>Bar</b> Baz.</h1>'
-        )
-
     def testNoAutoIds(self):
         """ Test HeaderIDs with no auto generated IDs. """
 
@@ -733,6 +679,41 @@ class TestTOC(unittest.TestCase):
             '</div>\n'
         )
 
+    def testAlternateMarker(self):
+        """ Test TOC with user defined marker. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(marker='{{marker}}')]
+        )
+        text = '{{marker}}\n\n# Header 1\n\n## Header 2'
+        self.assertEqual(
+            md.convert(text),
+            '<div class="toc">\n'
+              '<ul>\n'                                             # noqa
+                '<li><a href="#header-1">Header 1</a>'             # noqa
+                  '<ul>\n'                                         # noqa
+                    '<li><a href="#header-2">Header 2</a></li>\n'  # noqa
+                  '</ul>\n'                                        # noqa
+                '</li>\n'                                          # noqa
+              '</ul>\n'                                            # noqa
+            '</div>\n'
+            '<h1 id="header-1">Header 1</h1>\n'
+            '<h2 id="header-2">Header 2</h2>'
+        )
+
+    def testDisabledMarker(self):
+        """ Test TOC with disabled marker. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(marker='')]
+        )
+        text = '[TOC]\n\n# Header 1\n\n## Header 2'
+        self.assertEqual(
+            md.convert(text),
+            '<p>[TOC]</p>\n'
+            '<h1 id="header-1">Header 1</h1>\n'
+            '<h2 id="header-2">Header 2</h2>'
+        )
+        self.assertTrue(md.toc.startswith('<div class="toc">'))
+
     def testReset(self):
         """ Test TOC Reset. """
         self.assertEqual(self.md.toc, '')
@@ -740,6 +721,69 @@ class TestTOC(unittest.TestCase):
         self.assertTrue(self.md.toc.startswith('<div class="toc">'))
         self.md.reset()
         self.assertEqual(self.md.toc, '')
+
+    def testUniqueIds(self):
+        """ Test Unique IDs. """
+
+        text = '#Header\n#Header\n#Header'
+        self.assertEqual(
+            self.md.convert(text),
+            '<h1 id="header">Header</h1>\n'
+            '<h1 id="header_1">Header</h1>\n'
+            '<h1 id="header_2">Header</h1>'
+        )
+
+    def testHtmlEntities(self):
+        """ Test Headers with HTML Entities. """
+        text = '# Foo &amp; bar'
+        self.assertEqual(
+            self.md.convert(text),
+            '<h1 id="foo-bar">Foo &amp; bar</h1>'
+        )
+
+    def testRawHtml(self):
+        """ Test Headers with raw HTML. """
+        text = '# Foo <b>Bar</b> Baz.'
+        self.assertEqual(
+            self.md.convert(text),
+            '<h1 id="foo-bar-baz">Foo <b>Bar</b> Baz.</h1>'
+        )
+
+    def testBaseLevel(self):
+        """ Test Header Base Level. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(baselevel=5)]
+        )
+        text = '# Some Header\n\n## Next Level\n\n### Too High'
+        self.assertEqual(
+            md.convert(text),
+            '<h5 id="some-header">Some Header</h5>\n'
+            '<h6 id="next-level">Next Level</h6>\n'
+            '<h6 id="too-high">Too High</h6>'
+        )
+        self.assertEqual(
+            md.toc,
+            '<div class="toc">\n'
+              '<ul>\n'                                                 # noqa
+                '<li><a href="#some-header">Some Header</a>'           # noqa
+                  '<ul>\n'                                             # noqa
+                    '<li><a href="#next-level">Next Level</a></li>\n'  # noqa
+                    '<li><a href="#too-high">Too High</a></li>\n'      # noqa
+                  '</ul>\n'                                            # noqa
+                '</li>\n'                                              # noqa
+              '</ul>\n'                                                # noqa
+            '</div>\n'
+        )
+
+    def testHeaderInlineMarkup(self):
+        """ Test Headers with inline markup. """
+
+        text = '#Some *Header* with [markup](http://example.com).'
+        self.assertEqual(
+            self.md.convert(text),
+            '<h1 id="some-header-with-markup">Some <em>Header</em> with '
+            '<a href="http://example.com">markup</a>.</h1>'
+        )
 
     def testAnchorLink(self):
         """ Test TOC Anchorlink. """
@@ -782,6 +826,13 @@ class TestTOC(unittest.TestCase):
               '</ul>\n'                                       # noqa
             '</div>\n'
         )
+
+    def testUniqueFunc(self):
+        """ Test 'unique' function. """
+        from markdown.extensions.toc import unique
+        ids = set(['foo'])
+        self.assertEqual(unique('foo', ids), 'foo_1')
+        self.assertEqual(ids, set(['foo', 'foo_1']))
 
 
 class TestSmarty(unittest.TestCase):

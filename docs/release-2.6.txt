@@ -96,6 +96,19 @@ Backwards-incompatible Changes
   be used instead. See the [documentation](reference.html#extension-configs) 
   for a full explaination of the current behavior.
 
+*   The [HeaderId][hid] Extension is pending deprecation and will raise a
+    **`PendingDeprecationWarning`** in version 2.6. The extension will be
+    deprecated in version 2.7 and raise an error in version 2.8. Use the
+    [Table of Contents][TOC] Extension instead, which offers most of the
+    features of the HeaderId Extension and more (support for meta data is missing).
+  
+    Extension authors who have been using the `slugify` and `unique` functions
+    defined in the HeaderId Extension should note that those functions are now
+    defined in the Table of Contents extension and should adjust their import
+    statements accordingly (`from markdown.extensions.toc import slugify, unique`).
+
+[hid]: extensions/headerid.html
+
 What's New in Python-Markdown 2.6
 ---------------------------------
 
@@ -110,15 +123,29 @@ What's New in Python-Markdown 2.6
 [Meta-Data]: extensions/meta_data.html
 [YAML]: http://yaml.org/
 
-*   The [TOC] Extension has been refactored. Significantly, the extension now
-    assigns the Table of Contents to the `toc` attrbibute of the Markdown class
-    regardless of whether a "marker" was found in the document. Third party
-    frameworks no longer need to insert a "marker," run the document through
-    Markdown, then extract the TOC from the document.
+*   The [Table fo Contents][TOC] Extension has been refactored and some new features
+    have been added.  See the documentation for a full explaination of each feature
+    listed below:
+
+      * The extension now assigns the Table of Contents to the `toc` attribute of
+        the Markdown class regardless of whether a "marker" was found in the document.
+	Third party frameworks no longer need to insert a "marker," run the document
+	through Markdown, then extract the TOC from the document.
     
-    Additionaly, the TOC Extension is now a "registered extension." Therefore,
-    when the `reset` method of the Markdown class is called, the `toc` attribute
-    on the Markdown class is cleared (set to an empty string).
+      * The TOC Extension is now a "registered extension." Therefore, when the `reset`
+        method of the Markdown class is called, the `toc` attribute on the Markdown
+	class is cleared (set to an empty string).
+  
+      * When the `marker` config option is set to an empty string, the parser completely
+        skips the process of searching the document for markers. This should save parsing
+	time when the TOC Extension is being used only to assign ids to headers.
+
+      * A `separator` config option has been added allowing users to override the
+        separator character used by the slugify function.
+  
+      * A `baselevel` config option has been added allowing users to set the base level
+        of headers in their documents (h1-h6). This allows the header levels to be
+        automatically adjusted to fit within the hierarchy of an html template.
 
 [TOC]: extensions/toc.html
 

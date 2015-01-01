@@ -15,6 +15,13 @@ elements (`h1`-`h6`) in the resulting HTML document.
 
 This extension is included in the standard Markdown library.
 
+!!! warning
+    This extension is **Pending Deprecation**. The [Table of Contents][toc]
+    Extension should be used instead, which offers most the features of this
+    extension and more.
+    
+[toc]: toc.html
+
 Syntax
 ------
 
@@ -55,7 +62,7 @@ The following options are provided to configure the output:
         >>>  text = '''
         ... #Some Header
         ... ## Next Level'''
-		>>> from markdown.extensions.headerid import HeaderIdExtension
+	>>> from markdown.extensions.headerid import HeaderIdExtension
         >>> html = markdown.markdown(text, extensions=[HeaderIdExtension(level=3)])
         >>> print html
         <h3 id="some_header">Some Header</h3>

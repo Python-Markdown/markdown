@@ -19,64 +19,13 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import HTML_PLACEHOLDER_RE, parseBoolValue
-import re
+from ..util import parseBoolValue
+from .toc import slugify, unique, stashedHTML2text
 import logging
-import unicodedata
+import warnings
 
 logger = logging.getLogger('MARKDOWN')
-
-IDCOUNT_RE = re.compile(r'^(.*)_([0-9]+)$')
-
-
-def slugify(value, separator):
-    """ Slugify a string, to make it URL friendly. """
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = re.sub('[^\w\s-]', '', value.decode('ascii')).strip().lower()
-    return re.sub('[%s\s]+' % separator, separator, value)
-
-
-def unique(id, ids):
-    """ Ensure id is unique in set of ids. Append '_1', '_2'... if not """
-    while id in ids or not id:
-        m = IDCOUNT_RE.match(id)
-        if m:
-            id = '%s_%d' % (m.group(1), int(m.group(2))+1)
-        else:
-            id = '%s_%d' % (id, 1)
-    ids.add(id)
-    return id
-
-
-def itertext(elem):
-    """ Loop through all children and return text only.
-
-    Reimplements method of same name added to ElementTree in Python 2.7
-
-    """
-    if elem.text:
-        yield elem.text
-    for e in elem:
-        for s in itertext(e):
-            yield s
-        if e.tail:
-            yield e.tail
-
-
-def stashedHTML2text(text, md):
-    """ Extract raw HTML, reduce to plain text and swap with placeholder. """
-    def _html_sub(m):
-        """ Substitute raw html with plain text. """
-        try:
-            raw, safe = md.htmlStash.rawHtmlBlocks[int(m.group(1))]
-        except (IndexError, TypeError):
-            return m.group(0)
-        if md.safeMode and not safe:
-            return ''
-        # Strip out tags and entities - leaveing text
-        return re.sub(r'(<[^>]+>)|(&[\#a-zA-Z0-9]+;)', '', raw)
-
-    return HTML_PLACEHOLDER_RE.sub(_html_sub, text)
+logging.captureWarnings(True)
 
 
 class HeaderIdTreeprocessor(Treeprocessor):
@@ -94,7 +43,7 @@ class HeaderIdTreeprocessor(Treeprocessor):
                     if "id" in elem.attrib:
                         id = elem.get('id')
                     else:
-                        id = stashedHTML2text(''.join(itertext(elem)), self.md)
+                        id = stashedHTML2text(''.join(elem.itertext()), self.md)
                         id = slugify(id, sep)
                     elem.set('id', unique(id, self.IDs))
                 if start_level:
@@ -126,6 +75,11 @@ class HeaderIdExtension(Extension):
         }
 
         super(HeaderIdExtension, self).__init__(*args, **kwargs)
+
+        warnings.warn(
+            'The HeaderId Extension is pending deprecation. Use the TOC Extension instead.',
+            PendingDeprecationWarning
+        )
 
     def extendMarkdown(self, md, md_globals):
         md.registerExtension(self)

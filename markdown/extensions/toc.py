@@ -17,9 +17,47 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import etree, parseBoolValue, AMP_SUBSTITUTE
-from .headerid import slugify, unique, itertext, stashedHTML2text
+from ..util import etree, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE
 import re
+import unicodedata
+
+
+def slugify(value, separator):
+    """ Slugify a string, to make it URL friendly. """
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = re.sub('[^\w\s-]', '', value.decode('ascii')).strip().lower()
+    return re.sub('[%s\s]+' % separator, separator, value)
+
+
+IDCOUNT_RE = re.compile(r'^(.*)_([0-9]+)$')
+
+
+def unique(id, ids):
+    """ Ensure id is unique in set of ids. Append '_1', '_2'... if not """
+    while id in ids or not id:
+        m = IDCOUNT_RE.match(id)
+        if m:
+            id = '%s_%d' % (m.group(1), int(m.group(2))+1)
+        else:
+            id = '%s_%d' % (id, 1)
+    ids.add(id)
+    return id
+
+
+def stashedHTML2text(text, md):
+    """ Extract raw HTML from stash, reduce to plain text and swap with placeholder. """
+    def _html_sub(m):
+        """ Substitute raw html with plain text. """
+        try:
+            raw, safe = md.htmlStash.rawHtmlBlocks[int(m.group(1))]
+        except (IndexError, TypeError):  # pragma: no cover
+            return m.group(0)
+        if md.safeMode and not safe:  # pragma: no cover
+            return ''
+        # Strip out tags and entities - leaveing text
+        return re.sub(r'(<[^>]+>)|(&[\#a-zA-Z0-9]+;)', '', raw)
+
+    return HTML_PLACEHOLDER_RE.sub(_html_sub, text)
 
 
 def order_toc_list(toc_list):
@@ -91,7 +129,9 @@ class TocTreeprocessor(Treeprocessor):
 
         self.marker = config["marker"]
         self.title = config["title"]
+        self.base_level = int(config["baselevel"]) - 1
         self.slugify = config["slugify"]
+        self.sep = config["separator"]
         self.use_anchors = parseBoolValue(config["anchorlink"])
         self.use_permalinks = parseBoolValue(config["permalink"], False)
         if self.use_permalinks is None:
@@ -108,7 +148,7 @@ class TocTreeprocessor(Treeprocessor):
     def replace_marker(self, root, elem):
         ''' Replace marker with elem. '''
         for (p, c) in self.iterparent(root):
-            text = ''.join(itertext(c)).strip()
+            text = ''.join(c.itertext()).strip()
             if not text:
                 continue
 
@@ -124,6 +164,13 @@ class TocTreeprocessor(Treeprocessor):
                     if p[i] == c:
                         p[i] = elem
                         break
+
+    def set_level(self, elem):
+        ''' Adjust header level according to base level. '''
+        level = int(elem.tag[-1]) + self.base_level
+        if level > 6:
+            level = 6
+        elem.tag = 'h%d' % level
 
     def add_anchor(self, c, elem_id):  # @ReservedAssignment
         anchor = etree.Element("a")
@@ -176,17 +223,19 @@ class TocTreeprocessor(Treeprocessor):
 
         div = etree.Element("div")
         div.attrib["class"] = "toc"
-        self.replace_marker(doc, div)
+        if self.marker:
+            self.replace_marker(doc, div)
 
         toc_list = []
         for el in doc.iter():
             if self.header_rgx.match(el.tag):
-                text = ''.join(itertext(el)).strip()
+                self.set_level(el)
+                text = ''.join(el.itertext()).strip()
 
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
                     elem_id = stashedHTML2text(text, self.markdown)
-                    elem_id = unique(self.slugify(elem_id, '-'), used_ids)
+                    elem_id = unique(self.slugify(elem_id, self.sep), used_ids)
                     el.attrib["id"] = elem_id
                 else:
                     elem_id = el.attrib["id"]
@@ -219,12 +268,9 @@ class TocExtension(Extension):
 
     def __init__(self, *args, **kwargs):
         self.config = {
-            "marker": ["[TOC]",
-                       "Text to find and replace with Table of Contents - "
-                       "Defaults to \"[TOC]\""],
-            "slugify": [slugify,
-                        "Function to generate anchors based on header text - "
-                        "Defaults to the headerid ext's slugify function."],
+            "marker": ['[TOC]',
+                       'Text to find and replace with Table of Contents - '
+                       'Set to an empty string to disable. Defaults to "[TOC]"'],
             "title": ["",
                       "Title to insert into TOC <div> - "
                       "Defaults to an empty string"],
@@ -233,7 +279,12 @@ class TocExtension(Extension):
                            "Defaults to False"],
             "permalink": [0,
                           "True or link text if a Sphinx-style permalink should "
-                          "be added - Defaults to False"]
+                          "be added - Defaults to False"],
+            "baselevel": ['1', 'Base level for headers.'],
+            "slugify": [slugify,
+                        "Function to generate anchors based on header text - "
+                        "Defaults to the headerid ext's slugify function."],
+            'separator': ['-', 'Word separator. Defaults to "-".']
         }
 
         super(TocExtension, self).__init__(*args, **kwargs)
