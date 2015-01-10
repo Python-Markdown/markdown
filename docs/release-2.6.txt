@@ -10,7 +10,7 @@ Python-Markdown 2.6 Release Notes
 We are pleased to release Python-Markdown 2.6 which adds a few new features
 and fixes various bugs. See the list of changes below for details.
 
-Python-Markdown version 2.6 supports Python versions 2.7, 3.2, 3.3, and 3.4.
+Python-Markdown version 2.6 supports Python versions 2.7, 3.2, 3.3, and 3.4 as well as PyPy.
 
 Backwards-incompatible Changes
 ------------------------------
@@ -111,6 +111,11 @@ Backwards-incompatible Changes
 
 What's New in Python-Markdown 2.6
 ---------------------------------
+
+*   Official support for [PyPy] has been added. While Python-Markdown has most likley
+worked on PyPy for some time, it is now offically supported and tested on PyPy.
+
+[PyPy]: http://pypy.org/
 
 *   The [Meta-Data] Extension now includes optional support for [YAML] style
     meta-data. By default, the YAML deliminators are recognized, however, the
