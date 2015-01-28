@@ -112,7 +112,7 @@ Backwards-incompatible Changes
 What's New in Python-Markdown 2.6
 ---------------------------------
 
-*   Official support for [PyPy] has been added. While Python-Markdown has most likeley
+*   Official support for [PyPy] has been added. While Python-Markdown has most likely
 worked on PyPy for some time, it is now offically supported and tested on PyPy.
 
 [PyPy]: http://pypy.org/
