@@ -64,7 +64,7 @@ class DefListProcessor(BlockProcessor):
         else:
             state = 'list'
 
-        if sibling and sibling.tag == 'dl':
+        if sibling is not None and sibling.tag == 'dl':
             # This is another item on an existing list
             dl = sibling
             if not terms and len(dl) and dl[-1].tag == 'dd' and len(dl[-1]):

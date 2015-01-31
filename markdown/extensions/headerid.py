@@ -33,7 +33,7 @@ class HeaderIdTreeprocessor(Treeprocessor):
         start_level, force_id = self._get_meta()
         slugify = self.config['slugify']
         sep = self.config['separator']
-        for elem in doc.getiterator():
+        for elem in doc:
             if elem.tag in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
                 if force_id:
                     if "id" in elem.attrib:

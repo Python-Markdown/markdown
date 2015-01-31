@@ -46,7 +46,7 @@ class AdmonitionProcessor(BlockProcessor):
     def test(self, parent, block):
         sibling = self.lastChild(parent)
         return self.RE.search(block) or \
-            (block.startswith(' ' * self.tab_length) and sibling and
+            (block.startswith(' ' * self.tab_length) and sibling is not None and
              sibling.get('class', '').find(self.CLASSNAME) != -1)
 
     def run(self, parent, blocks):

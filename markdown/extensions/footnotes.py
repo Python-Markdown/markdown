@@ -287,7 +287,7 @@ class FootnoteTreeprocessor(Treeprocessor):
 
     def run(self, root):
         footnotesDiv = self.footnotes.makeFootnotesDiv(root)
-        if footnotesDiv:
+        if footnotesDiv is not None:
             result = self.footnotes.findFootnotesPlaceholder(root)
             if result:
                 child, parent, isText = result

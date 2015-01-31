@@ -178,7 +178,7 @@ class TocTreeprocessor(Treeprocessor):
         anchor.attrib["href"] = "#" + elem_id
         anchor.attrib["class"] = "toclink"
         c.text = ""
-        for elem in c.getchildren():
+        for elem in c:
             anchor.append(elem)
             c.remove(elem)
         c.append(anchor)

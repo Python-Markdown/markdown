@@ -201,12 +201,11 @@ class HiliteTreeprocessor(Treeprocessor):
 
     def run(self, root):
         """ Find code blocks and store in htmlStash. """
-        blocks = root.getiterator('pre')
+        blocks = root.iter('pre')
         for block in blocks:
-            children = block.getchildren()
-            if len(children) == 1 and children[0].tag == 'code':
+            if len(block) == 1 and block[0].tag == 'code':
                 code = CodeHilite(
-                    children[0].text,
+                    block[0].text,
                     linenums=self.config['linenums'],
                     guess_lang=self.config['guess_lang'],
                     css_class=self.config['css_class'],
