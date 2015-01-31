@@ -21,11 +21,7 @@ from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import parseBoolValue
 from .toc import slugify, unique, stashedHTML2text
-import logging
 import warnings
-
-logger = logging.getLogger('MARKDOWN')
-logging.captureWarnings(True)
 
 
 class HeaderIdTreeprocessor(Treeprocessor):

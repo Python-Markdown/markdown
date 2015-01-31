@@ -49,8 +49,8 @@ from .serializers import to_html_string, to_xhtml_string
 
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
+
 logger = logging.getLogger('MARKDOWN')
-logging.captureWarnings(True)
 
 
 class Markdown(object):

@@ -15,7 +15,7 @@ import types
 import markdown
 import warnings
 from markdown.__main__ import parse_options
-from logging import DEBUG, INFO, CRITICAL
+from logging import DEBUG, WARNING, CRITICAL
 import yaml
 import tempfile
 
@@ -613,7 +613,6 @@ class TestCliOptionParsing(unittest.TestCase):
             'input': None,
             'output': None,
             'encoding': None,
-            'safe_mode': False,
             'output_format': 'xhtml1',
             'lazy_ol': True,
             'extensions': [],
@@ -636,7 +635,7 @@ class TestCliOptionParsing(unittest.TestCase):
 
     def testVerboseOption(self):
         options, logging_level = parse_options(['-v'])
-        self.assertEqual(logging_level, INFO)
+        self.assertEqual(logging_level, WARNING)
 
     def testNoisyOption(self):
         options, logging_level = parse_options(['--noisy'])

@@ -4,17 +4,18 @@ COMMAND-LINE SPECIFIC STUFF
 
 """
 
-import markdown
 import sys
 import optparse
 import codecs
+import warnings
+import markdown
 try:
     import yaml
 except ImportError:  # pragma: no cover
     import json as yaml
 
 import logging
-from logging import DEBUG, INFO, CRITICAL
+from logging import DEBUG, WARNING, CRITICAL
 
 logger = logging.getLogger('MARKDOWN')
 
@@ -62,7 +63,7 @@ def parse_options(args=None, values=None):
                       action="store_const", const=CRITICAL+10, dest="verbose",
                       help="Suppress all warnings.")
     parser.add_option("-v", "--verbose",
-                      action="store_const", const=INFO, dest="verbose",
+                      action="store_const", const=WARNING, dest="verbose",
                       help="Print all warnings.")
     parser.add_option("--noisy",
                       action="store_const", const=DEBUG, dest="verbose",
@@ -91,14 +92,21 @@ def parse_options(args=None, values=None):
                 e.args = (message,) + e.args[1:]
                 raise
 
-    return {'input': input_file,
-            'output': options.filename,
-            'safe_mode': options.safe,
-            'extensions': options.extensions,
-            'extension_configs': extension_configs,
-            'encoding': options.encoding,
-            'output_format': options.output_format,
-            'lazy_ol': options.lazy_ol}, options.verbose
+    opts = {
+        'input': input_file,
+        'output': options.filename,
+        'extensions': options.extensions,
+        'extension_configs': extension_configs,
+        'encoding': options.encoding,
+        'output_format': options.output_format,
+        'lazy_ol': options.lazy_ol
+    }
+
+    if options.safe:
+        # Avoid deprecation warning if user didn't set option
+        opts['safe_mode'] = options.safe
+
+    return opts, options.verbose
 
 
 def run():  # pragma: no cover
@@ -109,7 +117,14 @@ def run():  # pragma: no cover
     if not options:
         sys.exit(2)
     logger.setLevel(logging_level)
-    logger.addHandler(logging.StreamHandler())
+    console_handler = logging.StreamHandler()
+    logger.addHandler(console_handler)
+    if logging_level <= WARNING:
+        # Ensure deprecation warnings get displayed
+        warnings.filterwarnings('default')
+        logging.captureWarnings(True)
+        warn_logger = logging.getLogger('py.warnings')
+        warn_logger.addHandler(console_handler)
 
     # Run
     markdown.markdownFromFile(**options)
@@ -117,6 +132,5 @@ def run():  # pragma: no cover
 
 if __name__ == '__main__':  # pragma: no cover
     # Support running module as a commandline command.
-    # Python 2.5 & 2.6 do: `python -m markdown.__main__ [options] [args]`.
     # Python 2.7 & 3.x do: `python -m markdown [options] [args]`.
     run()
