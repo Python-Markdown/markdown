@@ -76,8 +76,9 @@ class Extension(object):
         if hasattr(items, 'items'):
             # it's a dict
             items = items.items()
-        for key, value in items:
-            self.setConfig(key, value)
+        if items:
+            for key, value in items:
+                self.setConfig(key, value)
 
     def extendMarkdown(self, md, md_globals):
         """
