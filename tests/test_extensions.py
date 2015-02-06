@@ -226,6 +226,17 @@ class TestCodeHilite(unittest.TestCase):
                     '#line 3</code></pre>'
                 )
 
+    def testUsePygmentsFalse(self):
+        text = '\t:::Python\n\t# A Code Comment'
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.codehilite.CodeHiliteExtension(use_pygments=False)]
+        )
+        self.assertEqual(
+            md.convert(text),
+            '<pre class="codehilite"><code class="language-python"># A Code Comment'
+            '</code></pre>'
+        )
+
 
 class TestFencedCode(unittest.TestCase):
     """ Test fenced_code extension. """

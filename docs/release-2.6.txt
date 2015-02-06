@@ -202,6 +202,18 @@ worked on PyPy for some time, it is now officially supported and tested on PyPy.
 
 [TOC]: extensions/toc.html
 
+*   The [CodeHilite][ch] Extension has gained a new config option: `use_pygments`.
+    The option is `True` by default, however, it allows one to turn off Pygments code
+    highlighting (set to `False`) while preserving the language detection features of
+    the extension. Note that Pygments language detection is not used as that would 'use
+    Pygments`. If a language is defined for a code block, it will be assigned to the
+    `<code>` tag as a class in the manner suggested by the [HTML5 spec][spec]
+    (alternate output will not be entertained) and might be used by a JavaScript
+    library in the browser to highlight the code block.
+
+[ch]: extensions/code_hilite.html
+[spec]: http://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
+
 *   Test coverage has been improved including running [flake8]. While those changes
     will not directly effect end users, the code is being better tested which will 
     benefit everyone.

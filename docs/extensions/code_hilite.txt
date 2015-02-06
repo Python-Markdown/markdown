@@ -31,7 +31,7 @@ language. When that fails, the code block will display as un-highlighted code.
 [documentation]: http://pygments.org/docs
 
 !!! Note
-    The css and/or javascript is not included as part of this extension
+    The css and/or JavaScript is not included as part of this extension
     but must be provided by the end user. The Pygments project provides
     default css styles which you may find to be a useful starting point.
 
@@ -165,3 +165,12 @@ The following options are provided to configure the output:
 
 * **`noclasses`**:
     Use inline styles instead of CSS classes. Defaults to `False`.
+
+* **`use_pygments`**:
+    Defaults to `True`. Set to `False` to disable the use of Pygments.
+    If a language is defined for a code block, it will be assigned to the
+    `<code>` tag as a class in the manner suggested by the [HTML5 spec][spec]
+    (alternate output will not be entertained) and might be used by a JavaScript
+    library in the browser to highlight the code block.
+
+[spec]: http://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
