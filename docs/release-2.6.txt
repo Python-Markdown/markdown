@@ -53,7 +53,7 @@ Backwards-incompatible Changes
     all except the `text` argument on the `markdown.markdown()` wrapper function.
     Using positional arguments will raise a **`DeprecationWarning`** in 2.6 and an error
     in version 2.7. Only keyword arguments should be used. For example, if your code
-    previosuly looked like this:
+    previously looked like this:
 
         html = markdown.markdown(text, [SomeExtension()])
     
@@ -65,11 +65,11 @@ Backwards-incompatible Changes
         This change is being made as a result of deprecating `"safe_mode"` as the 
         `safe_mode` argument was one of the positional arguments. When that argument 
         is removed, the two arguments following it will no longer be at the correct 
-        position. It is recomended that you always use keywords when they are supported
+        position. It is recommended that you always use keywords when they are supported
         for this reason.
 
-* In previous versions of Python-Markdown, the builtin extensions received
-  special status and did not require the full path to be provided. Additionaly,
+* In previous versions of Python-Markdown, the built-in extensions received
+  special status and did not require the full path to be provided. Additionally,
   third party extensions whose name started with "mdx_" received the same 
   special treatment. This behavior is deprecated and will raise a
   **`DeprecationWarning`** in version 2.6 and an error in 2.7. Ensure that you
@@ -86,7 +86,7 @@ Backwards-incompatible Changes
 
         $ python -m markdown -x markdown.extensions.extra input.txt
 
-    See the [documentation](reference.html#extensions) for a full explaination
+    See the [documentation](reference.html#extensions) for a full explanation
     of the current behavior.
 
 *   The previously documented method of appending the extension configs as 
@@ -94,7 +94,7 @@ Backwards-incompatible Changes
     **`DeprecationWarning`** in version 2.6 and an error in 2.7.
     The [extension_configs](reference.html#extension_configs) keyword should 
     be used instead. See the [documentation](reference.html#extension-configs) 
-    for a full explaination of the current behavior.
+    for a full explanation of the current behavior.
 
 *   The [HeaderId][hid] Extension is pending deprecation and will raise a
     **`PendingDeprecationWarning`** in version 2.6. The extension will be
@@ -109,11 +109,59 @@ Backwards-incompatible Changes
 
 [hid]: extensions/header_id.html
 
+*   Positional arguments and the `configs` keyword on the `markdown.extension.Extension` class
+    (and its subclasses) are deprecated. Each individual config option should be passed
+    to the class as a keyword/value pair. For example. one might have previously initiated
+    an extension subclass like this:
+
+        ext = SomeExtension(configs={'somekey': 'somevalue'})
+
+    That code should be updated to pass in the options directly:
+    
+        ext = SomeExtension(somekey='somevalue')
+    
+    Extension authors will want to note that this affects the `makeExtension` function as well.
+    Previously it was common for the function to be defined as follows:
+    
+        def makeExtension(configs=None):
+            return SomeExtension(configs=configs)
+
+    Extension authors will want to update their code to the following instead:
+
+        def makeExtension(**kwargs):
+            return SomeExtension(**kwargs)
+
+    Failing to do so will result in a DeprecationWarning and will raise an error in the next
+    release. See the [Extension API][mext] documentation for more information.
+
+    In the event that an `markdown.extension.Extension` subclass overrides the `__init__` method
+    and implements its own config handling, then the above may not apply. However, it is
+    recommended that the subclass still calls the parent `__init__` method to handle configs
+    like so:
+    
+        class SomeExtension(markdown.extension.Extension):
+            def __init__(**kwargs):
+                # Do pre-config stuff here
+                # Set config defaults
+                self.config = {
+                    'option1' : ['value1', 'description1'],
+                    'option2' : ['value2', 'description2']
+                }
+                # Set user defined configs
+                super(MyExtension, self).__init__(**kwargs)
+                # Do post-config stuff here
+
+    Note the call to `super` to get the benefits of config handling from the parent class.
+    See the [documentation][config] for more information.
+
+[config]: extensions/api.html#configsettings
+[mext]: extensions/api.html#makeextension
+
 What's New in Python-Markdown 2.6
 ---------------------------------
 
 *   Official support for [PyPy] has been added. While Python-Markdown has most likely
-worked on PyPy for some time, it is now offically supported and tested on PyPy.
+worked on PyPy for some time, it is now officially supported and tested on PyPy.
 
 [PyPy]: http://pypy.org/
 
@@ -129,7 +177,7 @@ worked on PyPy for some time, it is now offically supported and tested on PyPy.
 [YAML]: http://yaml.org/
 
 *   The [Table fo Contents][TOC] Extension has been refactored and some new features
-    have been added.  See the documentation for a full explaination of each feature
+    have been added.  See the documentation for a full explanation of each feature
     listed below:
 
       * The extension now assigns the Table of Contents to the `toc` attribute of
@@ -150,7 +198,7 @@ worked on PyPy for some time, it is now offically supported and tested on PyPy.
   
       * A `baselevel` config option has been added allowing users to set the base level
         of headers in their documents (h1-h6). This allows the header levels to be
-        automatically adjusted to fit within the hierarchy of an html template.
+        automatically adjusted to fit within the hierarchy of an HTML template.
 
 [TOC]: extensions/toc.html
 

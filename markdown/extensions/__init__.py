@@ -26,25 +26,27 @@ class Extension(object):
         # check for configs arg for backward compat.
         # (there only ever used to be one so we use arg[0])
         if len(args):
-            self.setConfigs(args[0])
+            if args[0] is not None:
+                self.setConfigs(args[0])
             warnings.warn('Extension classes accepting positional args is '
                           'pending Deprecation. Each setting should be '
                           'passed into the Class as a keyword. Positional '
-                          'args will be deprecated in version 2.6 and raise '
+                          'args are deprecated and will raise '
                           'an error in version 2.7. See the Release Notes for '
-                          'Python-Markdown version 2.5 for more info.',
-                          PendingDeprecationWarning)
+                          'Python-Markdown version 2.6 for more info.',
+                          DeprecationWarning)
         # check for configs kwarg for backward compat.
         if 'configs' in kwargs.keys():
-            self.setConfigs(kwargs.pop('configs', {}))
+            if kwargs['configs'] is not None:
+                self.setConfigs(kwargs.pop('configs', {}))
             warnings.warn('Extension classes accepting a dict on the single '
                           'keyword "config" is pending Deprecation. Each '
                           'setting should be passed into the Class as a '
-                          'keyword directly. The "config" keyword will be '
-                          'deprecated in version 2.6 and raise an error in '
+                          'keyword directly. The "config" keyword is '
+                          'deprecated and raise an error in '
                           'version 2.7. See the Release Notes for '
-                          'Python-Markdown version 2.5 for more info.',
-                          PendingDeprecationWarning)
+                          'Python-Markdown version 2.6 for more info.',
+                          DeprecationWarning)
         # finally, use kwargs
         self.setConfigs(kwargs)
 
