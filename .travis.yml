@@ -6,9 +6,11 @@ env:
   - TOXENV=py34
   - TOXENV=pypy
   - TOXENV=flake8
+  - TOXENV=checkspelling
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install libtidy-0.99-0
+  - sudo apt-get install aspell
 install:
   - pip install tox
   - pip install coveralls
