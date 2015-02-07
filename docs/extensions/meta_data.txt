@@ -49,7 +49,7 @@ line of a document must not be blank.
 
 Alternatively, if the first line in the document is `---`, a YAML document
 separator, then the meta-data is searched for between it and the next `---`
-(or `...`) line. Even though YAML delimitors are supported, meta-data is
+(or `...`) line. Even though YAML deliminators are supported, meta-data is
 not parsed as YAML unless the `yaml` option is set (see below).
 
 All meta-data is stripped from the document prior to any further processing
@@ -69,7 +69,7 @@ The following options are provided to configure the output:
 
     If `yaml` is set to `True`, the lines between `---` separators are parsed
     as a full YAML object. PyYAML is required for this, and a warning is
-    issued if PyYAML (or equivalent) isn't available.
+    issued if PyYAML (or equivalent) is not available.
 
 Accessing the Meta-Data
 -----------------------
@@ -102,7 +102,7 @@ assumptions are made regarding the data. It is simply passed as found to the
 
 Note, if `yaml` option is set, the resulting `Meta` attribute is the object as
 returned by `yaml.load()` and may deviate significantly from the above
-description (e.g. may be a list of dicts, with value objects other than
+description (e.g. may be a list of dictionaries, with value objects other than
 strings, ...).
 
 Perhaps the meta-data could be passed into a template system, or used by

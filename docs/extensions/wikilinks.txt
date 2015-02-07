@@ -25,12 +25,12 @@ number, dashes, underscores and spaces surrounded by double brackets. Therefore
 
     [[Bracketed]]
 
-would produce the following html:
+would produce the following HTML:
 
     <a href="/Bracketed/" class="wikilink">Bracketed</a>
 
-Note that wikilinks are automatically assigned `class="wikilink"` making it
-easy to style wikilinks differently from other links on a page if one so
+Note that WikiLinks are automatically assigned `class="wikilink"` making it
+easy to style WikiLinks differently from other links on a page if one so
 desires. See below for ways to alter the class.
 
 Also note that when a space is used, the space is converted to an underscore in
@@ -54,7 +54,7 @@ configuring extensions.
 
 The default behavior is to point each link to the document root of the current
 domain and close with a trailing slash. Additionally, each link is assigned to
-the html class `wikilink`.
+the HTML class `wikilink`.
 
 The following options are provided to change the default behavior:
 
@@ -74,7 +74,7 @@ The following options are provided to change the default behavior:
 
 ### Examples ###
 
-For an example, let us suppose links should always point to the subdirectory
+For an example, let us suppose links should always point to the sub-directory
 `/wiki/` and end with `.html`
 
     >>> from markdown.extensions.wikilinks import WikiLinkExtension
@@ -104,7 +104,7 @@ The option is also provided to change or remove the class attribute.
     ...     extensions=[WikiLinkExtension(html_class='myclass')]
     ... )
 
-Would cause all wikilinks to be assigned to the class `myclass`.
+Would cause all WikiLinks to be assigned to the class `myclass`.
 
     <a href="/WikiLink/" class="myclass">WikiLink</a>
 

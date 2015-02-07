@@ -26,37 +26,37 @@ longer try to import a third-party installation of ElementTree.
 subclass from 'object'. While this is not likely to affect most users, 
 extension authors may need to make a few minor adjustments to their code.
 
-* "safe_mode" has been further restricted. Markdown formated links must be
-of a known whitelisted scheme when in "safe_mode" or the url is discarded.
-The whitelisted schemes are: 'http', 'https', 'ftp', 'ftps', 'mailto', and
-'news'. Schemeless urls are also permitted, but are checked in other ways - 
+* "safe_mode" has been further restricted. Markdown formatted links must be
+of a known white-listed scheme when in "safe_mode" or the URL is discarded.
+The white-listed schemes are: 'HTTP', 'HTTPS', 'FTP', 'FTPS', 'MAILTO', and
+'news'. Schemeless URLs are also permitted, but are checked in other ways - 
 as they have been for some time.
 
 * The ids assigned to footnotes now contain a dash (`-`) rather than a colon
-(`:`) when `output_format` it set to "html5" or "xhtml5". If you are making
+(`:`) when `output_format` it set to `"html5"` or `"xhtml5"`. If you are making
 reference to those ids in your JavaScript or CSS and using the HTML5 output,
 you will need to update your code accordingly. No changes are necessary if
-you are outputing XHTML (the default) or HTML4.
+you are outputting XHTML (the default) or HTML4.
 
-* The "force_linenos" config setting of the CodeHilite extension has been
-marked as **Pending Deprecation** and a new setting "linenums" has been added to
+* The `force_linenos` configuration setting of the CodeHilite extension has been
+marked as **Pending Deprecation** and a new setting `linenums` has been added to
 replace it. See documentation for the [CodeHilite Extension] for an explanation
-of the new "linenums" setting. The new setting will honor the old 
-"force_linenos" if it is set, but it will raise a PendingDeprecationWarning 
+of the new `linenums` setting. The new setting will honor the old 
+`force_linenos` if it is set, but it will raise a `PendingDeprecationWarning` 
 and will likely be removed in a future version of Python-Markdown.
 
 [CodeHilite Extension]: extensions/codehilite.html
 
 * The "RSS" extension has been removed and no longer ships with Python-Markdown.
-If you would like to continue using the extension (not recomended), it is 
-archived on [Github](https://gist.github.com/waylan/4773365).
+If you would like to continue using the extension (not recommended), it is 
+archived on [GitHub](https://gist.github.com/waylan/4773365).
 
 * The "HTML Tidy" Extension has been removed and no longer ships with Python-Markdown.
-If you would like to continue using the extension (not recomended), it is 
-archived on [Github](https://gist.github.com/waylan/5152650). Note that the 
-underlying library, uTidylib, is not Python 3 compatable. Instead, it is 
+If you would like to continue using the extension (not recommended), it is 
+archived on [GitHub](https://gist.github.com/waylan/5152650). Note that the 
+underlying library, uTidylib, is not Python 3 compatible. Instead, it is 
 recommended that the newer [PyTidyLib] (version 0.2.2+ for Python 3 
-compatability - install from github not PyPI) be used. As the API for that 
+comparability - install from GitHub not PyPI) be used. As the API for that 
 library is rather simple, it is recommended that the output of Markdown be 
 wrapped in a call to PyTidyLib rather than using an extension (for example: 
 `tidylib.tidy_fragment(markdown.markdown(source), options={...})`).
@@ -68,10 +68,10 @@ What's New in Python-Markdown 2.3
 
 * The entire code base now universally runs in Python 2 and Python 3 without
 any need for running the 2to3 conversion tool. This not only simplifies testing,
-but by using unicode_literals, results in more consistent behavior across
+but by using Unicode_literals, results in more consistent behavior across
 Python versions. Additionally, the relative imports (made possible in Python 2
 via absolute_import) allows the entire library to more easily be embedded in a 
-subdirectory of another project. The various files within the library will 
+sub-directory of another project. The various files within the library will 
 still import each other properly even though 'markdown' may not be in Python's
 root namespace.
 

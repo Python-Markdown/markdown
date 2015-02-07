@@ -88,7 +88,7 @@ The following options are provided to configure the output:
 
 * **`permalink`**:
     Set to `True` or a string to generate permanent links at the end of each header.
-    Useful with Sphinx stylesheets.
+    Useful with Sphinx style sheets.
     
     When set to `True` the paragraph symbol (&para; or "`&para;`") is used as the link
     text. When set to a string, the provided string is used as the link text.
@@ -97,7 +97,7 @@ The following options are provided to configure the output:
     Base level for headers. Defaults to `1`.
 
     The `baselevel` setting allows the header levels to be automatically adjusted to
-    fit within the hierarchy of your html templates. For example, suppose the 
+    fit within the hierarchy of your HTML templates. For example, suppose the 
     Markdown text for a page should not contain any headers higher than level 3
     (`<h3>`). The following will accomplish that:
 
@@ -124,4 +124,4 @@ The following options are provided to configure the output:
     The callable must return a string appropriate for use in HTML `id` attributes.
 
 * **`separator`**:
-    Word separator. Character which replaces whitespace in id. Defaults to "`-`".
+    Word separator. Character which replaces white space in id. Defaults to "`-`".

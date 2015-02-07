@@ -14,7 +14,7 @@ extensions to the distribution (including an extension that mimics PHP Markdown
 Extra), all while maintaining backward compatibility with the end user API in
 version 1.7.
 
-Python-Markdown supports Python versions 2.3, 2.4, 2.5, and 2.6. We've even 
+Python-Markdown supports Python versions 2.3, 2.4, 2.5, and 2.6. We have even 
 released a version converted to Python 3.0!
 
 Backwards-incompatible Changes

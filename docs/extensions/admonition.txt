@@ -26,7 +26,7 @@ Admonitions are created using the following syntax:
 
         This is the second paragraph.
 
-`type` will be used as the CSS classname and as default title. It must be a
+`type` will be used as the CSS class name and as default title. It must be a
 single word. So, for instance:
 
     !!! note

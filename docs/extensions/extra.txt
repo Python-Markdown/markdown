@@ -1,7 +1,7 @@
 title:      Extra Extension
 prev_title: Extensions
 prev_url:   index.html
-next_title: Abreviations Extension
+next_title: Abbreviations Extension
 next_url:   abbreviations.html
 
 Python-Markdown Extra
@@ -45,11 +45,19 @@ your own clone of Extra under a different name
 Markdown Inside HTML Blocks
 ---------------------------
 
-Unlike the other Extra features, this feature is built into the markdown core and is turned on when `markdown.extensions.extra` is enabled.
+Unlike the other Extra features, this feature is built into the markdown core and
+is turned on when `markdown.extensions.extra` is enabled.
 
-The content of any raw html block element can be Markdown-formatted simply by adding a `markdown` attribute to the opening tag. The markdown attribute will be stripped from the output, but all other attributes will be preserved.
+The content of any raw HTML block element can be Markdown-formatted simply by
+adding a `markdown` attribute to the opening tag. The markdown attribute will be
+stripped from the output, but all other attributes will be preserved.
 
-If the markdown value is set to `1` (recommended) or any value other than `span` or `block`, the default behavior will be executed: `p`,`h[1-6]`,`li`,`dd`,`dt`,`td`,`th`,`legend`, and `address` elements skip block parsing while others do not. If the default is overrident by a value of `span`, *block parsing will be skipped* regardless of tag. If the default is overriden by a value of `block`, *block parsing will occur* regardless of tag.
+If the markdown value is set to `1` (recommended) or any value other than `span`
+or `block`, the default behavior will be executed: `p`,`h[1-6]`,`li`,`dd`,`dt`,
+`td`,`th`,`legend`, and `address` elements skip block parsing while others do not.
+If the default is overridden by a value of `span`, *block parsing will be skipped*
+regardless of tag. If the default is overridden by a value of `block`,
+*block parsing will occur* regardless of tag.
 
 #### Simple Example:
 ```
@@ -67,8 +75,9 @@ This is *true* markdown text.
 </div>
 ```
 
-### Nested Markdown Inside HTML BLocks
-Nested elements are more sensitive and must be used cautiously. To avoid unexpected results:
+### Nested Markdown Inside HTML Blocks
+Nested elements are more sensitive and must be used cautiously. To avoid
+unexpected results:
 
 * Only nest elements within block mode elements.
 * Follow the closing tag of inner elements with a blank line.
@@ -104,12 +113,12 @@ This `p` block *is* foolishly wrapped in further paragraph tags.
 The tail of the `BlockModeOverride` subelement.
 
 <div name="RawHtml">
-Raw html blocks may also be nested.
+Raw HTML blocks may also be nested.
 </div>
 
 </div>
 
-This text is after the markdown in html.
+This text is after the markdown in HTML.
 ```
 #### Result:
 ```
@@ -130,9 +139,9 @@ Note: Subelements are not required to have tail text.</div>
 </p>
 <p>The tail of the <code>BlockModeOverride</code> subelement.</p>
 <div name="RawHtml">
-Raw html blocks may also be nested.
+Raw HTML blocks may also be nested.
 </div>
 
 </div>
-<p>This text is after the markdown in html.</p>
+<p>This text is after the markdown in HTML.</p>
 ```

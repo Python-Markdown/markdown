@@ -9,15 +9,15 @@ Primary Authors
 
 [Yuri Takteyev](http://freewisdom.org/)
 
-: Yuri has written much of the current code while procrastingating his Ph.D.
+: Yuri has written much of the current code while procrastinating his Ph.D.
 
 [Waylan Limberg](http://achinghead.com/)
 
 : Waylan is the current maintainer of the code and has written much the current 
   code base, included a complete refactor of the core.  He started out by 
-  authoring mmany of the available extensions and later was asked to join Yuri, 
-  where he began fixing nummrious bugs, adding documentation and making general 
-  improvements to the existing codebase.
+  authoring many of the available extensions and later was asked to join Yuri, 
+  where he began fixing numerous bugs, adding documentation and making general 
+  improvements to the existing code base.
 
 Artem Yunusov
 
@@ -28,7 +28,7 @@ Artem Yunusov
 [Manfed Stienstra](http://www.dwerg.net/)
 
 : Manfed wrote the original version of the script and is responsible for 
-  various parts of the existing codebase.
+  various parts of the existing code base.
 
 David Wolever
 
@@ -40,7 +40,7 @@ Other Contributors
 
 The incomplete list of individuals below have provided patches or otherwise 
 contributed to the project in various ways. We would like to thank everyone 
-who has contributed to the progect in any way.
+who has contributed to the project in any way.
 
 * Eric Abrahamsen
 * Jeff Balogh

@@ -26,7 +26,7 @@ Using the configuration option 'substitutions' you can overwrite the
 default substitutions. Just pass a dict mapping (a subset of) the 
 keys to the substitution strings.
     
-For example, one might use the following config to get correct quotes for 
+For example, one might use the following configuration to get correct quotes for 
 the German language:
 
     extensionConfigs = {
@@ -41,8 +41,8 @@ the German language:
     }
 
 !!! note
-    This extension reimplements the Python [SmartyPants] 
-    library by intregated it into the markdown parser.
+    This extension re-implements the Python [SmartyPants] 
+    library by integrating it into the markdown parser.
     While this does not provide any additional features,
     it does offer a few advantages. Notably, it will not 
     try to work on highlighted code blocks (using the 

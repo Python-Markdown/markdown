@@ -71,7 +71,7 @@ The above results in the following output:
 ### Inline ###
 
 To define attributes on inline elements, the attribute list should be defined 
-immediately after the inline element with no whitespace.
+immediately after the inline element with no white space.
 
     [link](http://example.com){: class="foo bar" title="Some title!" }
 

@@ -45,7 +45,7 @@ part of the list.
 In addition to PHP Extra's syntax, you can define the language of the code 
 block for use by syntax highlighters etc. The language will be assigned as a 
 class attribute of the ``<code>`` element in the output. Therefore, you should 
-define the language as you would a css class - ``.language``. For consistency 
+define the language as you would a CSS class - ``.language``. For consistency 
 with other markdown syntax, the language can *optionally* be wrapped in curly 
 brackets:
 
@@ -65,13 +65,13 @@ The above will output:
     <pre><code class="html">&lt;p&gt;HTML Document&lt;/p&gt;
     </code></pre>
 
-[Github][]'s backtick (`\``) syntax is also supported:
+[GitHub][]'s backtick (`\``) syntax is also supported:
 
     ```python
     # more python code
     ```
 
-[Github]: http://github.github.com/github-flavored-markdown/
+[GitHub]: http://github.github.com/github-flavored-markdown/
 
 ### Emphasized Lines ###
 

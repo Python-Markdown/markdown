@@ -20,7 +20,7 @@ Backwards-incompatible Changes
 
 [importlib]: https://pypi.python.org/pypi/importlib
 
-* The `force_linenos` config key on the [CodeHilite Extension] has been **deprecated**
+* The `force_linenos` configuration key on the [CodeHilite Extension] has been **deprecated**
   and will raise a `KeyError` if provided. In the previous release (2.4), it was 
   issuing a `DeprecationWarning`. The [`linenums`][linenums] keyword should be used 
   instead, which provides more control of the output.
@@ -56,14 +56,14 @@ Backwards-incompatible Changes
 
 		html = markdown.markdown(text, extensions=[EscapeHtml()])
 
-	As the HTML would not be parsed with the above Extension, then the searializer will
+	As the HTML would not be parsed with the above Extension, then the serializer will
 	escape the raw HTML, which is exactly what happens now when `safe_mode="escape"`.
 
 [Bleach]: http://bleach.readthedocs.org/
 
 * Positional arguments on the `markdown.Markdown()` are pending deprecation as are
   all except the `text` argument on the `markdown.markdown()` wrapper function.
-  Only keyword arguments should be used. For example, if your code previosuly
+  Only keyword arguments should be used. For example, if your code previously
   looked like this:
 
          html = markdown.markdown(text, ['extra'])
@@ -74,14 +74,14 @@ Backwards-incompatible Changes
 
 	!!! Note
 	    This change is being made as a result of deprecating `"safe_mode"` as the 
-		`safe_mode` argumnet was one of the positional arguments. When that argument 
+		`safe_mode` argument was one of the positional arguments. When that argument 
 		is removed, the two arguments following it will no longer be at the correct 
-		position. It is recomended that you always use keywords when they are supported
+		position. It is recommended that you always use keywords when they are supported
 		for this reason.
 
-* In previous versions of Python-Markdown, the builtin extensions received
-  special status and did not require the full path to be provided. Additionaly,
-  third party extensions whose name started with "mdx_" received the same 
+* In previous versions of Python-Markdown, the built-in extensions received
+  special status and did not require the full path to be provided. Additionally,
+  third party extensions whose name started with `"mdx_"` received the same 
   special treatment. This behavior will be deprecated in version 2.6 and will
   raise a **`PendingDeprecationWarning`** in 2.5. Ensure that you always use the full 
   path to your extensions. For example, if you previously did the following:
@@ -96,21 +96,21 @@ Backwards-incompatible Changes
 
         $ python -m markdown -x markdown.extensions.extra input.txt
 
-    See the [documentation](reference.html#extensions) for a full explaination
+    See the [documentation](reference.html#extensions) for a full explanation
     of the current behavior.
 
-* The previously documented method of appending the extension configs as 
+* The previously documented method of appending the extension configuration as 
   a string to the extension name will be deprecated in Python-Markdown 
   version 2.6 and will raise a **`PendingDeprecationWarning`** in 2.5. The 
-  [extension_configs](reference.html#extension_configs) keyword should 
+  [`extension_configs`](reference.html#extension_configs) keyword should 
   be used instead. See the [documentation](reference.html#extension-configs) 
-  for a full explaination of the current behavior.
+  for a full explanation of the current behavior.
 
 What's New in Python-Markdown 2.5
 ---------------------------------
 
 *   The [Smarty Extension] has had a number of additional configuration settings
-    added, which allows one to define their own subtitutions to better support
+    added, which allows one to define their own substitutions to better support
     languages other than English. Thanks to [Martin Altmayer] for implementing this 
 	feature.
 
@@ -121,10 +121,10 @@ What's New in Python-Markdown 2.5
     `markdown.Markdown`) can now point to any module and/or Class on your PYTHONPATH. 
 	While dot notation was previously supported, a module could not be at the root of 
 	your PYTHONPATH. The name had to contain at least one dot (requiring it to be a 
-	submodule). This restriction no longer exists. 
+	sub-module). This restriction no longer exists. 
 
-	Additionaly, a Class may be specified in the name. The class must be at the end of 
-	the name (which uses dot notation from PYTHONPATH) and be seperated by a colon from 
+	Additionally, a Class may be specified in the name. The class must be at the end of 
+	the name (which uses dot notation from PYTHONPATH) and be separated by a colon from 
 	the module. 
 
 	Therefore, if you were to import the class like this:
@@ -136,37 +136,37 @@ What's New in Python-Markdown 2.5
 		"path.to.module:SomeExtensionClass"
 	
 	This allows multiple extensions to be implemented within the same module and still 
-	accessable when the user isn't able to import the extension directly (perhaps from 
+	accessible when the user is not able to import the extension directly (perhaps from 
 	a template filter or the command line).
 
 	This also means that extension modules are no longer required to include the 
 	`makeExtension`	function which returns an instance of the extension class. However, 
 	if the user does not specify the class name (she only provides `"path.to.module"`)
 	the extension will fail to load without the `makeExtension` function included in
-	the module. Extension authors will want to document carfully what is required to
+	the module. Extension authors will want to document carefully what is required to
 	load their extensions.
 
 [ex]: reference.html#extensions
 
-*   The Extension Configuration code has been refactord to make it a little easier 
-    for extension authors to work with config settings. As a result, the 
+*   The Extension Configuration code has been refactored to make it a little easier 
+    for extension authors to work with configuration settings. As a result, the 
     [`extension_configs`][ec] keyword now accepts a dictionary rather than requiring 
     a list of tuples. A list of tuples is still supported so no one needs to change 
     their existing code. This should also simplify the learning curve for new users.
 
 	Extension authors are encouraged to review the new methods available on the 
-	`markdown.extnesions.Extension` class for handling configs and adjust their
+	`markdown.extnesions.Extension` class for handling configuration and adjust their
 	code going forward. The included extensions provide a model for best practices.
-	See the [API] documentation for a full explaination.
+	See the [API] documentation for a full explanation.
 
 [ec]: reference.html#extension_configs
 [API]: extensions/api.html#configsettings
 
 *   The [Command Line Interface][cli] now accepts a `--extensions_config` (or `-c`) 
-    option which accepts a filename and passes the parsed content of a [YAML] or 
+    option which accepts a file name and passes the parsed content of a [YAML] or 
 	[JSON]   file to the [`extension_configs`][ec] keyword of the `markdown.Markdown`
 	class. The contents of the YAML or JSON must map to a Python Dictionary which 
-	matches the format required by the `extension_configs` kerword. Note that 
+	matches the format required by the `extension_configs` keyword. Note that 
 	[PyYAML] is required to parse YAML files.
 
 [cli]: cli.html#using-extensions

@@ -16,7 +16,7 @@ Backwards-incompatible Changes
 ------------------------------
 
 Due to various complications in how Python handles command line scripts in 
-differance systems and with differant installation tools, we were forced to 
-rename the commandline script to ``markdown`` (no ".py"). A matching batch
+difference systems and with different installation tools, we were forced to 
+rename the command line script to `markdown` (no `.py`). A matching batch
 script will get installed on Windows. Any shell scripts which call 
-``markdown.py`` will need to be altered to call ``markdown`` instead.
+`markdown.py` will need to be altered to call `markdown` instead.

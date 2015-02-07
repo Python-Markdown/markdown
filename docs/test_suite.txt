@@ -16,14 +16,14 @@ Fortin's [PHP] implementation.
 The test suite can be run by calling the `run_tests.py` command at the root of
 the distribution tarball or by calling the `nosetests` command directly. Either
 way, Nose will need to be installed on your system first (run `easy_install
-nose`). Any standard nosetests config options can be passed in on the command
+nose`). Any standard nosetests configuration options can be passed in on the command
 line (i.e.: verbosity level or use of a plugin like coverage).
 
 Additionally, a nicely formatted HTML report of all output is written to a
 temporary file in `test-output.html`. Open the file in a browser to view
 the report.
 
-A tox.ini file is also provided, so [tox] can be used to automatically create
+A `tox.ini` file is also provided, so [tox] can be used to automatically create
 virtual environments, install all testing dependencies and run the tests on 
 each supported Python version. See the wiki for instructions on 
 [setting up a testing environment] to use tox.
@@ -34,11 +34,11 @@ Tests.
 ## Markdown Syntax Tests
 
 The Syntax Tests are in the various directories contained within the 'tests'
-directory of the packaged tarball. Each test consists of a matching pair of txt
-and html files. The txt file contains a snippet of Markdown source text
-formated for a specific syntax feature and the html file contains the expected
-HTML output of that snippet. When the test suite is run, each txt file is run
-through Markdown and the output is compared with the html file as a separate
+directory of the packaged tarball. Each test consists of a matching pair of text
+and HTML files. The text file contains a snippet of Markdown source text
+formatted for a specific syntax feature and the HTML file contains the expected
+HTML output of that snippet. When the test suite is run, each text file is run
+through Markdown and the output is compared with the HTML file as a separate
 Unit Test.
 
 In fact, this is the primary reason for using Nose, it gives us an easy way to
@@ -80,7 +80,7 @@ insignificant white space differences:
 Note that 219 tests were run, one of which failed with a `MarkdownSyntaxError`.
 Only Markdown Syntax Tests should fail with a `MarkdownSyntaxError`. Nose then
 formats the error reports for `MarkdownSyntaxError`s so that they only include
-useful information. Namely the txt file which failed and a unified diff showing
+useful information. Namely the text file which failed and a unified diff showing
 the failure. Without the plugin, you would also get a useless traceback showing
 how the code stepped through the test framework, but nothing about how Markdown
 actually ran.
@@ -90,7 +90,7 @@ raised by either Markdown or the test suite, then that would be reported as per
 a normal unit test failure with the appropriate traceback for debugging
 purposes.
 
-### Syntax Test Config Settings
+### Syntax Test Configuration Settings
 
 The other thing to note about the above example is that 53 tests were skipped.
 Those tests have been explicitly configured to be skipped as they are primarily
@@ -99,17 +99,17 @@ fact, a number of different configuration settings can be set for any specific
 test.
 
 Each Syntax Test directory contains a `test.cfg` file in the [YAML] format. The
-file may contain a separate section for each txt file named exactly as the file
+file may contain a separate section for each text file named exactly as the file
 is named minus the file extension (i.e.; the section for a test in `foo.txt`
 would be `foo`). All settings are optional. Default settings for the entire
 directory can be set under the `DEFAULT` section (must be all caps). Any
 settings under a specific file section will override anything in the
 `DEFAULT` section for that specific test only.
 
-Below are the config options available and the defaults used when they
+Below are the configuration options available and the defaults used when they
 are not explicitly set.
 
-* `normalize`: Switches whitespace normalization of the test output on or off. 
+* `normalize`: Switches white space normalization of the test output on or off. 
   Defaults to `False` (off). Note: This requires that [PyTidyLib] be installed on 
   the system. Otherwise the test will be skipped, regardless of any other 
   settings.  
@@ -118,7 +118,7 @@ are not explicitly set.
   from other implementations.
 * `output_ext`: Extension of output file. Defaults to `.html`. Useful for tests
   from other implementations.
-* Any keyword arguement accepted by the Markdown class. If not set, Markdown's 
+* Any keyword argument accepted by the Markdown class. If not set, Markdown's 
   defaults are used. 
 
 ## Unit Tests

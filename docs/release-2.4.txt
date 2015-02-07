@@ -15,12 +15,12 @@ Python-Markdown supports Python versions 2.6, 2.7, 3.1, 3.2, and 3.3.
 Backwards-incompatible Changes
 ------------------------------
 
-* The "force_linenos" config setting of the CodeHilite extension has been
+* The `force_linenos` configuration setting of the CodeHilite extension has been
 marked as **Deprecated**. It had previously been marked as "Pending Deprecation"
-in version 2.3 when a new setting "linenums" was added to replace it. See 
+in version 2.3 when a new setting `linenums` was added to replace it. See 
 documentation for the [CodeHilite Extension] for an explanation of the new 
-"linenums" setting. The new setting will honor the old "force_linenos" if it 
-is set, but "force_linenos" will raise a DeprecationWarning and will likely 
+`linenums` setting. The new setting will honor the old `force_linenos` if it 
+is set, but `force_linenos` will raise a `DeprecationWarning` and will likely 
 be removed in a future version of Python-Markdown.
 
 [CodeHilite Extension]: extensions/code_hilite.html
@@ -34,7 +34,7 @@ What's New in Python-Markdown 2.4
 
 * Thanks to the hard work of [Dmitry Shachnev] the [Smarty Extension] has been 
 added, which implements [SmartyPants] using Python-Markdown's Extension API. 
-This offers a few benefits over a third party sript. The HTML does not need
+This offers a few benefits over a third party script. The HTML does not need
 to be "tokenized" twice, no hacks are required to combine SmartyPants and
 code highlighting, and we get markdown's escaping feature for free. Please try 
 it out and report bugs and/or improvements.

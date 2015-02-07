@@ -24,7 +24,7 @@ That's it! You're ready to [use](reference.html) Python-Markdown. Enjoy!
 Installing on Windows {: #windows }
 -----------------------------------
 
-Download the Windows installer (.exe) from 
+Download the Windows installer (`.exe`) from 
 [PyPI](http://pypi.python.org/pypi/Markdown)
 
 Double-click the file and follow the instructions.
@@ -58,7 +58,7 @@ Using the Git Repository {: #git }
 
 If you're the type that likes to live on the edge, you may want to keep up with 
 the latest additions and bug fixes in the repository between releases.
-Python-Markdown is maintained in a Git repository on github.com. To
+Python-Markdown is maintained in a Git repository on GitHub.com. To
 get a copy of Python-Markdown from the repository do the following from the
 command line:
 

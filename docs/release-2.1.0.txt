@@ -11,10 +11,10 @@ We are pleased to release Python-Markdown 2.1 which makes many
 improvements on 2.0. In fact, we consider 2.1 to be what 2.0 should have been. 
 While 2.1 consists mostly of bug fixes, bringing Python-Markdown more inline 
 with other implementations, some internal improvements were made to the parser, 
-a few new builtin extensions were added, and HTML5 support was added.
+a few new built-in extensions were added, and HTML5 support was added.
 
 Python-Markdown supports Python versions 2.4, 2.5, 2.6, 2.7, 3.1, and 3.2 out 
-of the box. In fact, the same codebase installs on Python 3.1 and 3.2 with no 
+of the box. In fact, the same code base installs on Python 3.1 and 3.2 with no 
 extra work by the end user.
 
 Backwards-incompatible Changes
@@ -46,7 +46,7 @@ variables (either by editing the source or by overriding them in your code),
 you should now set them on the class. See the 
 [Library Reference](reference.html) for the options available.
 
-* If you have been using the [HeaderID](extensions/header_id.html) extension 
+* If you have been using the [HeaderId](extensions/header_id.html) extension 
 to define custom ids on headers, you will want to switch to using the new 
 [Attribute List](extensions/attr_list.html) extension. The HeaderId extension 
 now only auto-generates ids on headers which have not already had ids defined. 
@@ -57,9 +57,9 @@ Attribute Lists instead of HeaderId as it did previously.
 in the `markdown` namespace. Extension authors may need to adjust a few
 import statements in their extensions to work with the changes.
 
-* The commandline script name was changed to `markdown_py`. The previous name
+* The command line script name was changed to `markdown_py`. The previous name
 (`markdown`) was conflicting with people (and Linux package systems) who also
-had markdown.pl installed on there system as markdown.pl's commandline script
+had markdown.pl installed on there system as markdown.pl's command line script
 was also named `markdown`. Be aware that installing Python-Markdown 2.1
 will not remove the old versions of the script with different names. You
 may want to remove them yourself as they are unlikely to work properly.
@@ -69,18 +69,18 @@ What's New in Python-Markdown 2.1
 
 Three new extensions were added. [Attribute Lists](extensions/attr_list.html), 
 which was inspired by Maruku's feature of the same name, 
-[Newline to Break](extensions/nl2br.html), which was inspired by Github 
+[Newline to Break](extensions/nl2br.html), which was inspired by GitHub 
 Flavored Markdown, and [Smart Strong](extensions/smart_strong.html), which 
 fills a hole in the Extra extension.
 
 HTML5 is now supported. All this really means is that new block level elements 
 introduced in the HTML5 spec are now properly recognized as raw HTML. As
 valid  HTML5 can consist of either HTML4 or XHTML1, there is no need to add a
-new HTML5  searializers. That said, `html5` and `xhtml5` have been added as 
-aliases of the `html4` and `xhtml1` searializers respectively.
+new HTML5  serializers. That said, `html5` and `xhtml5` have been added as 
+aliases of the `html4` and `xhtml1` serializers respectively.
 
-An XHTML searializer has been added. Previously, ElementTree's XML searializer 
-was being used for XHTML output. With the new searliazer we are able to avoid
+An XHTML serializer has been added. Previously, ElementTree's XML serializer 
+was being used for XHTML output. With the new serializer we are able to avoid
 more invalid output like empty elements (i.e., `<p />`) which can choke 
 browsers.
 
@@ -100,7 +100,7 @@ build a parser of a different markup language without the overhead of building
 the markdown parser and throwing it away.
 
 Import statements within markdown have been improved so that third party 
-libraries can embed the markdown library if they desire (licencing permitting).
+libraries can embed the markdown library if they desire (licensing permitting).
 
 Added support for Python's `-m` command line option. You can run the markdown 
 package as a command line script. Do `python -m markdown [options] [args]`. 
@@ -108,13 +108,13 @@ Note that this is only fully supported in Python 2.7+. Python 2.5 & 2.6
 require you to call the module directly (`markdown.__main__`) rather than
 the package (`markdown`). This does not work in Python 2.4.
 
-The commandline script has been renamed to `markdown_py` which avoids all the 
-various problems we had with previous names.  Also improved the commandline 
-script to accept input on stdin.
+The command line script has been renamed to `markdown_py` which avoids all the 
+various problems we had with previous names.  Also improved the command line 
+script to accept input on `stdin`.
 
 The testing framework has been completely rebuilt using the Nose testing 
 framework. This provides a number of benefits including the ability to better
-test the builtin extensions and other options available to change the parsing 
+test the built-in extensions and other options available to change the parsing 
 behavior. See the [Test Suite](test_suite.html) documentation for details.
 
 Various bug fixes have been made, which are too numerous to list here. See the 

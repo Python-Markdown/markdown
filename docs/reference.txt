@@ -35,7 +35,7 @@ method appropriately ([see below](#convert)).
 
 The following options are available on the `markdown.markdown` function:
 
-* __`text`__{: #text } (required): The source unicode string.
+* __`text`__{: #text } (required): The source Unicode string.
 
     !!! note "Important"
         Python-Markdown expects **Unicode** as input (although
@@ -69,14 +69,14 @@ The following options are available on the `markdown.markdown` function:
         extensions=[MyExtension(), 'path.to.my.ext']
     
     !!! note
-        The prefered method is to pass in an instance of an extension. Strings
-		should only be used when it is impossable to import the Extension Class
+        The preferred method is to pass in an instance of an extension. Strings
+		should only be used when it is impossible to import the Extension Class
 		directly (from the command line or in a template).
     
     When passing in extension instances, each class instance must be a subclass
     of `markdown.extensions.Extension` and any configuration options should be 
     defined when initiating the class instance rather than using the 
-    [extension_configs](#extension_configs) keyword. For example:
+    [`extension_configs`](#extension_configs) keyword. For example:
 
         from markdown.extensions import Extension
         class MyExtension(Extension):
@@ -89,8 +89,8 @@ The following options are available on the `markdown.markdown` function:
     supported. Therefore, to import the 'extra' extension, one could do 
     `extensions=['markdown.extensions.extra']`  
 
-	Additionaly, a Class may be specified in the name. The class must be at the end of 
-	the name and be seperated by a colon from the module. 
+	Additionally, a Class may be specified in the name. The class must be at the end of 
+	the name and be separated by a colon from the module. 
 
 	Therefore, if you were to import the class like this:
 	
@@ -108,7 +108,7 @@ The following options are available on the `markdown.markdown` function:
 
     When loading an extension by name (as a string), you may pass in
     configuration settings to the extension using the 
-    [extension_configs](#extension_configs) keyword.
+    [`extension_configs`](#extension_configs) keyword.
 
     !!! seealso "See Also"
         See the documentation of the [Extension API](extensions/api.html) for 
@@ -122,7 +122,7 @@ The following options are available on the `markdown.markdown` function:
     configuration settings directly to the class when initializing it. 
     
     !!! Note
-        The prefered method is to pass in an instance of an extension, which
+        The preferred method is to pass in an instance of an extension, which
         does not require use of the `extension_configs` keyword at all.
         See the [extensions](#extensions) keyword for details.
     
@@ -159,14 +159,14 @@ The following options are available on the `markdown.markdown` function:
     The values can be in either lowercase or uppercase.
 
     !!! warning
-        It is suggested that the more specific formats ("xhtml1", "html5", & 
-        "html4") be used as the more general formats ("xhtml" or "html") may 
+        It is suggested that the more specific formats (`"xhtml1"`, `"html5"`, & 
+        `"html4"`) be used as the more general formats (`"xhtml"` or `"html"`) may 
         change in the future if it makes sense at that time. 
 
-* __`safe_mode`__{: #safe_mode }: Disallow raw html.
+* __`safe_mode`__{: #safe_mode }: Disallow raw HTML.
 
     !!! warning
-        "`safe_mode`" is pending deprecation and should not be used.
+        "`safe_mode`" is deprecated and should not be used.
 
         HTML sanitizers (like [Bleach]) provide a better solution for 
         dealing with markdown text submitted by untrusted users. 
@@ -178,7 +178,7 @@ The following options are available on the `markdown.markdown` function:
         See the [release notes] for more info.
     
 [Bleach]: https://github.com/jsocol/bleach
-[release notes]: release-2.5.html
+[release notes]: release-2.6.html
     
     The following values are accepted:
 
@@ -215,7 +215,7 @@ The following options are available on the `markdown.markdown` function:
   safe_mode is set to `replace`. Defaults to `[HTML_REMOVED]`.
 
     !!! warning
-        "`html_replacement_text`" is pending deprecation and should not be used.
+        "`html_replacement_text`" is deprecated and should not be used.
         See the [release notes] for more info.
 
 * __`tab_length`__{: #tab_length }: Length of tabs in the source. Default: 4
@@ -277,11 +277,11 @@ Instead, it accepts the following required options:
     * or `None` (default) which will write to `stdout`.
 
 * __`encoding`__{: #encoding }: The encoding of the source text file. Defaults 
-  to "utf-8". The same encoding will always be used for input and output. 
-  The 'xmlcharrefreplace' error handler is used when encoding the output.
+  to `"utf-8"`. The same encoding will always be used for input and output. 
+  The `xmlcharrefreplace` error handler is used when encoding the output.
 
     !!! Note 
-        This is the only place that decoding and encoding of unicode
+        This is the only place that decoding and encoding of Unicode
         takes place in Python-Markdown. If this rather naive solution does not
         meet your specific needs, it is suggested that you write your own code
         to handle your encoding/decoding needs.

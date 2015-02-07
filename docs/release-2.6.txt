@@ -44,7 +44,7 @@ Backwards-incompatible Changes
 
         html = markdown.markdown(text, extensions=[EscapeHtml()])
 
-    As the HTML would not be parsed with the above Extension, then the searializer will
+    As the HTML would not be parsed with the above Extension, then the serializer will
     escape the raw HTML, which is exactly what happens now when `safe_mode="escape"`.
 
 [Bleach]: http://bleach.readthedocs.org/
@@ -70,7 +70,7 @@ Backwards-incompatible Changes
 
 * In previous versions of Python-Markdown, the built-in extensions received
   special status and did not require the full path to be provided. Additionally,
-  third party extensions whose name started with "mdx_" received the same 
+  third party extensions whose name started with `"mdx_"` received the same 
   special treatment. This behavior is deprecated and will raise a
   **`DeprecationWarning`** in version 2.6 and an error in 2.7. Ensure that you
   always use the full path to your extensions. For example, if you previously
@@ -89,10 +89,10 @@ Backwards-incompatible Changes
     See the [documentation](reference.html#extensions) for a full explanation
     of the current behavior.
 
-*   The previously documented method of appending the extension configs as 
+*   The previously documented method of appending the extension configuration options as 
     a string to the extension name is deprecated and will raise a
     **`DeprecationWarning`** in version 2.6 and an error in 2.7.
-    The [extension_configs](reference.html#extension_configs) keyword should 
+    The [`extension_configs`](reference.html#extension_configs) keyword should 
     be used instead. See the [documentation](reference.html#extension-configs) 
     for a full explanation of the current behavior.
 
@@ -110,7 +110,7 @@ Backwards-incompatible Changes
 [hid]: extensions/header_id.html
 
 *   Positional arguments and the `configs` keyword on the `markdown.extension.Extension` class
-    (and its subclasses) are deprecated. Each individual config option should be passed
+    (and its subclasses) are deprecated. Each individual configuration option should be passed
     to the class as a keyword/value pair. For example. one might have previously initiated
     an extension subclass like this:
 
@@ -131,13 +131,13 @@ Backwards-incompatible Changes
         def makeExtension(**kwargs):
             return SomeExtension(**kwargs)
 
-    Failing to do so will result in a DeprecationWarning and will raise an error in the next
+    Failing to do so will result in a **`DeprecationWarning`** and will raise an error in the next
     release. See the [Extension API][mext] documentation for more information.
 
     In the event that an `markdown.extension.Extension` subclass overrides the `__init__` method
-    and implements its own config handling, then the above may not apply. However, it is
-    recommended that the subclass still calls the parent `__init__` method to handle configs
-    like so:
+    and implements its own configuration handling, then the above may not apply. However, it is
+    recommended that the subclass still calls the parent `__init__` method to handle configuration
+    options like so:
     
         class SomeExtension(markdown.extension.Extension):
             def __init__(**kwargs):
@@ -151,7 +151,7 @@ Backwards-incompatible Changes
                 super(MyExtension, self).__init__(**kwargs)
                 # Do post-config stuff here
 
-    Note the call to `super` to get the benefits of config handling from the parent class.
+    Note the call to `super` to get the benefits of configuration handling from the parent class.
     See the [documentation][config] for more information.
 
 [config]: extensions/api.html#configsettings
@@ -176,39 +176,39 @@ worked on PyPy for some time, it is now officially supported and tested on PyPy.
 [Meta-Data]: extensions/meta_data.html
 [YAML]: http://yaml.org/
 
-*   The [Table fo Contents][TOC] Extension has been refactored and some new features
+*   The [Table of Contents][TOC] Extension has been refactored and some new features
     have been added.  See the documentation for a full explanation of each feature
     listed below:
 
       * The extension now assigns the Table of Contents to the `toc` attribute of
         the Markdown class regardless of whether a "marker" was found in the document.
         Third party frameworks no longer need to insert a "marker," run the document
-        through Markdown, then extract the TOC from the document.
+        through Markdown, then extract the Table of Contents from the document.
     
-      * The TOC Extension is now a "registered extension." Therefore, when the `reset`
+      * The Table of Contents Extension is now a "registered extension." Therefore, when the `reset`
         method of the Markdown class is called, the `toc` attribute on the Markdown
         class is cleared (set to an empty string).
   
-      * When the `marker` config option is set to an empty string, the parser completely
+      * When the `marker` configuration option is set to an empty string, the parser completely
         skips the process of searching the document for markers. This should save parsing
-        time when the TOC Extension is being used only to assign ids to headers.
+        time when the Table of Contents Extension is being used only to assign ids to headers.
 
-      * A `separator` config option has been added allowing users to override the
+      * A `separator` configuration option has been added allowing users to override the
         separator character used by the slugify function.
   
-      * A `baselevel` config option has been added allowing users to set the base level
+      * A `baselevel` configuration option has been added allowing users to set the base level
         of headers in their documents (h1-h6). This allows the header levels to be
         automatically adjusted to fit within the hierarchy of an HTML template.
 
 [TOC]: extensions/toc.html
 
-*   The [CodeHilite][ch] Extension has gained a new config option: `use_pygments`.
+*   The [CodeHilite][ch] Extension has gained a new configuration option: `use_pygments`.
     The option is `True` by default, however, it allows one to turn off Pygments code
     highlighting (set to `False`) while preserving the language detection features of
-    the extension. Note that Pygments language detection is not used as that would 'use
-    Pygments`. If a language is defined for a code block, it will be assigned to the
+    the extension. Note that Pygments language guessing is not used as that would 'use
+    Pygments'. If a language is defined for a code block, it will be assigned to the
     `<code>` tag as a class in the manner suggested by the [HTML5 spec][spec]
-    (alternate output will not be entertained) and might be used by a JavaScript
+    (alternate output will not be entertained) and could potentially be used by a JavaScript
     library in the browser to highlight the code block.
 
 [ch]: extensions/code_hilite.html

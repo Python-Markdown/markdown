@@ -55,14 +55,14 @@ The following options are provided to configure the output:
     Default: `1`
 
     The `level` setting allows you to automatically adjust the header levels to
-    fit within the hierarchy of your html templates. For example, suppose the 
+    fit within the hierarchy of your HTML templates. For example, suppose the 
     markdown text for a page should not contain any headers higher than level 3
     (`<h3>`). The following will accomplish that:
 
         >>>  text = '''
         ... #Some Header
         ... ## Next Level'''
-	>>> from markdown.extensions.headerid import HeaderIdExtension
+        >>> from markdown.extensions.headerid import HeaderIdExtension
         >>> html = markdown.markdown(text, extensions=[HeaderIdExtension(level=3)])
         >>> print html
         <h3 id="some_header">Some Header</h3>
@@ -79,13 +79,14 @@ The following options are provided to configure the output:
         >>> text = '''
         ... # Some Header
         ... # Header with ID # { #foo }'''
-        >>> html = markdown.markdown(text, 
-                        extensions=['attr_list', HeaderIdExtension(forceid=False)])
+        >>> html = markdown.markdown(text,
+                                     extensions=['markdown.extensions.attr_list',
+                                                 HeaderIdExtension(forceid=False)])
         >>> print html
         <h1>Some Header</h1>
         <h1 id="foo">Header with ID</h1>
 
-* **`separator`**: Word separator. Character which replaces whitespace in id.
+* **`separator`**: Word separator. Character which replaces white space in id.
 
     Default: `-`
 
