@@ -92,7 +92,7 @@ The same applies to the command line:
 
     $ python -m markdown -x markdown.extensions.extra input.txt
 
-Similarly, if you have used a third party extension (eg: `mdx_math`), previously
+Similarly, if you have used a third party extension (for example `mdx_math`), previously
 you might have called it like this:
 
     markdown.markdown(text, extensions=['math'])
@@ -107,7 +107,7 @@ Extension authors will want to update their documentation to reflect the new beh
 See the [documentation](reference.html#extensions) for a full explanation
 of the current behavior.
 
-### Extension Configs as Part of Extension Name Deprecated
+### Extension Configuration as Part of Extension Name Deprecated
 
 The previously documented method of appending the extension configuration options as 
 a string to the extension name is deprecated and will raise a
@@ -131,7 +131,7 @@ statements accordingly (`from markdown.extensions.toc import slugify, unique`).
 
 [hid]: extensions/header_id.html
 
-### `configs` Keyword Deprecated
+### The `configs` Keyword is Deprecated
 
 Positional arguments and the `configs` keyword on the `markdown.extension.Extension` class
 (and its subclasses) are deprecated. Each individual configuration option should be passed
@@ -204,7 +204,7 @@ Alternatively, if the `yaml` option is set, then the data is parsed as YAML.
 [Meta-Data]: extensions/meta_data.html
 [YAML]: http://yaml.org/
 
-### TOC Extension Refactored
+### Table of Contents Extension Refactored
 
 The [Table of Contents][TOC] Extension has been refactored and some new features
 have been added.  See the documentation for a full explanation of each feature
