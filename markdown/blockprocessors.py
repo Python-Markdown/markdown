@@ -231,8 +231,8 @@ class CodeBlockProcessor(BlockProcessor):
         sibling = self.lastChild(parent)
         block = blocks.pop(0)
         theRest = ''
-        if (sibling is not None and sibling.tag == "pre"
-           and len(sibling) and sibling[0].tag == "code"):
+        if (sibling is not None and sibling.tag == "pre" and
+           len(sibling) and sibling[0].tag == "code"):
             # The previous block was a code block. As blank lines do not start
             # new code blocks, append this block to the previous, adding back
             # linebreaks removed from the split into a list.
@@ -517,8 +517,8 @@ class EmptyBlockProcessor(BlockProcessor):
                 # Add remaining lines to master blocks for later.
                 blocks.insert(0, theRest)
         sibling = self.lastChild(parent)
-        if (sibling is not None and sibling.tag == 'pre'
-           and len(sibling) and sibling[0].tag == 'code'):
+        if (sibling is not None and sibling.tag == 'pre' and
+           len(sibling) and sibling[0].tag == 'code'):
             # Last block is a codeblock. Append to preserve whitespace.
             sibling[0].text = util.AtomicString(
                 '%s%s' % (sibling[0].text, filler)

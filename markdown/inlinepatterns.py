@@ -94,10 +94,10 @@ The actual regular expressions for patterns
 
 NOBRACKET = r'[^\]\[]*'
 BRK = (
-    r'\[('
-    + (NOBRACKET + r'(\[')*6
-    + (NOBRACKET + r'\])*')*6
-    + NOBRACKET + r')\]'
+    r'\[(' +
+    (NOBRACKET + r'(\[')*6 +
+    (NOBRACKET + r'\])*')*6 +
+    NOBRACKET + r')\]'
 )
 NOIMG = r'(?<!\!)'
 
@@ -162,8 +162,8 @@ LINE_BREAK_RE = r'  \n'
 
 def dequote(string):
     """Remove quotes from around a string."""
-    if ((string.startswith('"') and string.endswith('"'))
-       or (string.startswith("'") and string.endswith("'"))):
+    if ((string.startswith('"') and string.endswith('"')) or
+       (string.startswith("'") and string.endswith("'"))):
         return string[1:-1]
     else:
         return string

@@ -234,8 +234,8 @@ class Markdown(object):
             )
             # For backward compat (until deprecation)
             # check that this is an extension.
-            if ('.' not in ext_name and not (hasattr(module, 'makeExtension')
-               or (class_name and hasattr(module, class_name)))):
+            if ('.' not in ext_name and not (hasattr(module, 'makeExtension') or
+               (class_name and hasattr(module, class_name)))):
                 # We have a name conflict
                 # eg: extensions=['tables'] and PyTables is installed
                 raise ImportError

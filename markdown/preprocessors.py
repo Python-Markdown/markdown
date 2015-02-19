@@ -216,14 +216,11 @@ class HtmlBlockPreprocessor(Preprocessor):
                                                                 block)
                     # keep checking conditions below and maybe just append
 
-                    if data_index < len(block) \
-                       and (util.isBlockLevel(left_tag)
-                       or left_tag == '--'):
+                    if data_index < len(block) and (util.isBlockLevel(left_tag) or left_tag == '--'):
                         text.insert(0, block[data_index:])
                         block = block[:data_index]
 
-                    if not (util.isBlockLevel(left_tag)
-                       or block[1] in ["!", "?", "@", "%"]):
+                    if not (util.isBlockLevel(left_tag) or block[1] in ["!", "?", "@", "%"]):
                         new_blocks.append(block)
                         continue
 
