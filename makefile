@@ -1,5 +1,19 @@
 # Python-Markdown makefile
 
+.PHONY : help
+help:
+	@echo 'Usage: make <subcommand>'
+	@echo ''
+	@echo 'Subcommands:'
+	@echo '    install       Install Python-Markdown locally'
+	@echo '    deploy        Register and upload a new release to PyPI'
+	@echo '    build         Build a source distribution'
+	@echo '    build-win     Build a Windows exe distribution'
+	@echo '    docs          Build documentation'
+	@echo '    test          Run all tests'
+	@echo '    update-tests  Generate html files for updated text files in tests'
+	@echo '    clean         Clean up the source directories'
+
 .PHONY : install
 install:
 	python setup.py install
