@@ -121,7 +121,7 @@ class Markdown(object):
                 # ignore any additional args
                 break
         if len(args):
-            warnings.warn('Positional arguments are depreacted in Markdown'
+            warnings.warn('Positional arguments are deprecated in Markdown. '
                           'Use keyword arguments only.',
                           DeprecationWarning)
 
@@ -135,7 +135,7 @@ class Markdown(object):
             self.enable_attributes = False
 
         if 'safe_mode' in kwargs:
-            warnings.warn('"safe_mode" is deprecated in Python-Markdown'
+            warnings.warn('"safe_mode" is deprecated in Python-Markdown. '
                           'Use an HTML sanitizer (like '
                           'Bleach http://bleach.readthedocs.org/) '
                           'if you are parsing untrusted markdown text. '
