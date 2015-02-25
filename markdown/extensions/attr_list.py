@@ -55,8 +55,8 @@ def _handle_word(s, t):
 _scanner = Scanner([
     (r'[^ ]+=".*?"', _handle_double_quote),
     (r"[^ ]+='.*?'", _handle_single_quote),
-    (r'[^ ]+=[^ ]*', _handle_key_value),
-    (r'[^ ]+', _handle_word),
+    (r'[^ ]+=[^ =]+', _handle_key_value),
+    (r'[^ =]+', _handle_word),
     (r' ', None)
 ])
 

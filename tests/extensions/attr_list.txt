@@ -76,3 +76,15 @@ DT2 {.term}
 *DT3*{.inline}
 :   Some dd
 
+# Bad attributes
+
+Key without *value*{ foo= }
+
+Value without *key*{ =bar }
+
+No *key or value*{ = }
+
+*Weirdness*{ == }
+
+*More weirdness*{ === }
+
