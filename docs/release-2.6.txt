@@ -198,11 +198,15 @@ meta-data. By default, the YAML deliminators are recognized, however, the
 actual data is parsed as previously.  This follows the syntax of
 [MultiMarkdown], which inspired this extension.
 
-Alternatively, if the `yaml` option is set, then the data is parsed as YAML.
+<del>Alternatively, if the `yaml` option is set, then the data is parsed as YAML.</del>
+<ins>As the `yaml` option was buggy, it was removed in 2.6.1. It is suggested that a third
+party extension be used if you want true YAML support. See [Issue #390][#390] for a full
+explanation.</ins>
 
 [MultiMarkdown]: http://fletcherpenney.net/MultiMarkdown_Syntax_Guide#metadata
 [Meta-Data]: extensions/meta_data.html
 [YAML]: http://yaml.org/
+[#390]: https://github.com/waylan/Python-Markdown/issues/390
 
 ### Table of Contents Extension Refactored
 

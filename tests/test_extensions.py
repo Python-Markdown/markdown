@@ -8,7 +8,6 @@ continue to work as advertised. This used to be accomplished by doctests.
 """
 
 from __future__ import unicode_literals
-import datetime
 import unittest
 import markdown
 
@@ -509,25 +508,6 @@ The body. This is paragraph one.'''
         text = 'title: No newline'
         self.assertEqual(self.md.convert(text), '')
         self.assertEqual(self.md.Meta, {'title': ['No newline']})
-
-    def testYamlObjectMetaData(self):
-        """ Test metadata specified as a complex YAML object. """
-        md = markdown.Markdown(extensions=[markdown.extensions.meta.MetaExtension(yaml=True)])
-        text = '''---
-Author: John Doe
-Date: 2014-11-29 14:15:16
-Integer: 0x16
----
-
-Some content.'''
-        self.assertEqual(md.convert(text), '<p>Some content.</p>')
-        self.assertEqual(
-            md.Meta, {
-                'Author': 'John Doe',
-                'Date': datetime.datetime(2014, 11, 29, 14, 15, 16),
-                'Integer': 22
-            }
-        )
 
 
 class TestWikiLinks(unittest.TestCase):

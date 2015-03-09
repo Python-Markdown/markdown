@@ -47,10 +47,11 @@ many lines as desired.
 The first blank line ends all meta-data for the document. Therefore, the first
 line of a document must not be blank.
 
-Alternatively, if the first line in the document is `---`, a YAML document
-separator, then the meta-data is searched for between it and the next `---`
-(or `...`) line. Even though YAML deliminators are supported, meta-data is
-not parsed as YAML unless the `yaml` option is set (see below).
+Alternatively, You may use YAML style deliminators to mark the start and/or end
+of your meta-data. When doing so, the first line of your document must be `---`.
+The meta-data ends at the first blank line or the first line containing an end
+deliminator (either `---` or `...`), whichever comes first. Even though YAML
+deliminators are supported, meta-data is not parsed as YAML.
 
 All meta-data is stripped from the document prior to any further processing
 by Markdown.
@@ -60,16 +61,6 @@ Usage
 
 See [Extensions](index.html) for general extension usage, specify `markdown.extensions.meta`
 as the name of the extension.
-
-The following options are provided to configure the output:
-
-* **`yaml`**: Support meta-data specified in YAML format.
-
-    Default: `False`
-
-    If `yaml` is set to `True`, the lines between `---` separators are parsed
-    as a full YAML object. PyYAML is required for this, and a warning is
-    issued if PyYAML (or equivalent) is not available.
 
 Accessing the Meta-Data
 -----------------------
@@ -99,11 +90,6 @@ strings where each item is one line for that key. This way, one could preserve
 line breaks if desired. Or the items could be joined where appropriate. No 
 assumptions are made regarding the data. It is simply passed as found to the 
 `Meta` attribute.
-
-Note, if `yaml` option is set, the resulting `Meta` attribute is the object as
-returned by `yaml.load()` and may deviate significantly from the above
-description (e.g. may be a list of dictionaries, with value objects other than
-strings, ...).
 
 Perhaps the meta-data could be passed into a template system, or used by
 various Markdown extensions. The possibilities are left to the imagination of
