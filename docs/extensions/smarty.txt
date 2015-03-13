@@ -29,15 +29,15 @@ keys to the substitution strings.
 For example, one might use the following configuration to get correct quotes for 
 the German language:
 
-    extensionConfigs = {
-        'smarty': {
-			'substitutions': {
-				'left-single-quote': '&sbquo;', # sb is not a typo!
+    extension_configs = {
+        'markdown.extensions.smarty': {
+            'substitutions': {
+                'left-single-quote': '&sbquo;', # sb is not a typo!
                 'right-single-quote': '&lsquo;',
                 'left-double-quote': '&bdquo;',
                 'right-double-quote': '&ldquo;'
             }
-		}
+        }
     }
 
 !!! note
