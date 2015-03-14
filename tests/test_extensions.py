@@ -409,7 +409,7 @@ class TestHeaderId(unittest.TestCase):
 
         text = '# Some Header\n# Another Header'
         self.assertEqual(
-            markdown.markdown(text, [markdown.extensions.headerid.HeaderIdExtension(forceid=False)]),
+            markdown.markdown(text, extensions=[markdown.extensions.headerid.HeaderIdExtension(forceid=False)]),
             '<h1>Some Header</h1>\n'
             '<h1>Another Header</h1>'
         )
@@ -422,7 +422,7 @@ header_forceid: Off
 
 # A Header'''
         self.assertEqual(
-            markdown.markdown(text, ['markdown.extensions.headerid', 'markdown.extensions.meta']),
+            markdown.markdown(text, extensions=['markdown.extensions.headerid', 'markdown.extensions.meta']),
             '<h2>A Header</h2>'
         )
 
@@ -431,13 +431,13 @@ header_forceid: Off
 
         text = '# Header1 {: #foo }\n# Header2 {: .bar }'
         self.assertEqual(
-            markdown.markdown(text, ['markdown.extensions.headerid', 'markdown.extensions.attr_list']),
+            markdown.markdown(text, extensions=['markdown.extensions.headerid', 'markdown.extensions.attr_list']),
             '<h1 id="foo">Header1</h1>\n'
             '<h1 class="bar" id="header2">Header2</h1>'
         )
         # Switch order extensions are loaded - should be no change in behavior.
         self.assertEqual(
-            markdown.markdown(text, ['markdown.extensions.attr_list', 'markdown.extensions.headerid']),
+            markdown.markdown(text, extensions=['markdown.extensions.attr_list', 'markdown.extensions.headerid']),
             '<h1 id="foo">Header1</h1>\n'
             '<h1 class="bar" id="header2">Header2</h1>'
         )
@@ -541,7 +541,7 @@ class TestWikiLinks(unittest.TestCase):
         """ Test Simple Settings. """
 
         self.assertEqual(markdown.markdown(
-            self.text, [
+            self.text, extensions=[
                 markdown.extensions.wikilinks.WikiLinkExtension(
                     base_url='/wiki/',
                     end_url='.html',

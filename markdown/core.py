@@ -45,7 +45,7 @@ class Markdown(object):
     ESCAPED_CHARS = ['\\', '`', '*', '_', '{', '}', '[', ']',
                      '(', ')', '>', '#', '+', '-', '.', '!']
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         """
         Creates a new Markdown instance.
 
@@ -78,19 +78,6 @@ class Markdown(object):
         * lazy_ol: Ignore number of first item of ordered lists. Default: True
 
         """
-
-        # For backward compatibility, loop through old positional args
-        pos = ['extensions', 'extension_configs', 'safe_mode', 'output_format']
-        for c, arg in enumerate(args):
-            if pos[c] not in kwargs:
-                kwargs[pos[c]] = arg
-            if c+1 == len(pos):  # pragma: no cover
-                # ignore any additional args
-                break
-        if len(args):
-            warnings.warn('Positional arguments are deprecated in Markdown. '
-                          'Use keyword arguments only.',
-                          DeprecationWarning)
 
         # Loop through kwargs and assign defaults
         for option, default in self.option_defaults.items():
@@ -442,7 +429,7 @@ markdownFromFile().
 """
 
 
-def markdown(text, *args, **kwargs):
+def markdown(text, **kwargs):
     """Convert a markdown string to HTML and return HTML as a unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
@@ -457,11 +444,11 @@ def markdown(text, *args, **kwargs):
     Returns: An HTML document as a string.
 
     """
-    md = Markdown(*args, **kwargs)
+    md = Markdown(**kwargs)
     return md.convert(text)
 
 
-def markdownFromFile(*args, **kwargs):
+def markdownFromFile(**kwargs):
     """Read markdown code from a file and write it to a file or a stream.
 
     This is a shortcut function which initializes an instance of Markdown,
@@ -475,21 +462,6 @@ def markdownFromFile(*args, **kwargs):
     * Any arguments accepted by the Markdown class.
 
     """
-    # For backward compatibility loop through positional args
-    pos = ['input', 'output', 'extensions', 'encoding']
-    c = 0
-    for arg in args:
-        if pos[c] not in kwargs:
-            kwargs[pos[c]] = arg
-        c += 1
-        if c == len(pos):
-            break
-    if len(args):
-        warnings.warn('Positional arguments are depreacted in '
-                      'Markdown and will raise an error in version 2.7. '
-                      'Use keyword arguments only.',
-                      DeprecationWarning)
-
     md = Markdown(**kwargs)
     md.convertFile(kwargs.get('input', None),
                    kwargs.get('output', None),
