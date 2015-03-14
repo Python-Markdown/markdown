@@ -17,7 +17,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import etree, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE
+from ..util import etree, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE, string_type
 import re
 import unicodedata
 
@@ -231,7 +231,7 @@ class TocTreeprocessor(Treeprocessor):
 
         toc_tokens = []
         for el in doc.iter():
-            if self.header_rgx.match(el.tag):
+            if isinstance(el.tag, string_type) and self.header_rgx.match(el.tag):
                 self.set_level(el)
                 text = ''.join(el.itertext()).strip()
 
