@@ -385,13 +385,6 @@ class TestErrors(unittest.TestCase):
             markdown.Markdown, extensions=['footnotes']
         )
 
-    def testStringConfigExtention(self):
-        """ Test that passing configs to an Extension in the name raises a DeprecationWarning. """
-        self.assertRaises(
-            DeprecationWarning,
-            markdown.Markdown, extensions=['markdown.extension.footnotes(PLACE_MARKER=FOO)']
-        )
-
 
 def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False, use_old_style=False):
     """ Create a fake extension module for testing. """

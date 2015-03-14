@@ -146,11 +146,14 @@ class build_docs(Command):
             self.md = markdown.Markdown(
                 extensions=[
                     'extra',
-                    'toc(permalink=true)',
+                    'toc',
                     'meta',
                     'admonition',
                     'smarty'
-                ]
+                ],
+                extension_configs={
+                    'toc': {'permalink': True}
+                }
             )
             for infile in self.docs:
                 outfile, ext = os.path.splitext(infile)
