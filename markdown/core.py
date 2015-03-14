@@ -151,29 +151,12 @@ class Markdown(object):
         return self
 
     def build_extension(self, ext_name, configs):
-        """Build extension by name, then return the module.
-
-        The extension name may contain arguments as part of the string in the
-        following format: "extname(key1=value1,key2=value2)"
+        """
+        Build extension by name, then return the module.
 
         """
 
         configs = dict(configs)
-
-        # Parse extensions config params (ignore the order)
-        pos = ext_name.find("(")  # find the first "("
-        if pos > 0:
-            ext_args = ext_name[pos+1:-1]
-            ext_name = ext_name[:pos]
-            pairs = [x.split("=") for x in ext_args.split(",")]
-            configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
-            warnings.warn('Setting configs in the Named Extension string is '
-                          'deprecated. It is recommended that you '
-                          'pass an instance of the extension class to '
-                          'Markdown or use the "extension_configs" keyword. '
-                          'The current behavior will raise an error in version 2.7. '
-                          'See the Release Notes for Python-Markdown version '
-                          '2.6 for more info.', DeprecationWarning)
 
         # Get class name (if provided): `path.to.module:ClassName`
         ext_name, class_name = ext_name.split(':', 1) \
