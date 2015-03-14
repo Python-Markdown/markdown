@@ -10,19 +10,8 @@ from distutils.core import Command
 from distutils.util import change_root, newer
 import codecs
 import imp
+from markdown import __version__, __version_info__
 
-
-def get_version():
-    " Get version & version_info without importing markdown.__init__ "
-    path = os.path.join(os.path.dirname(__file__), 'markdown')
-    fp, pathname, desc = imp.find_module('__version__', [path])
-    try:
-        v = imp.load_module('__version__', fp, pathname, desc)
-        return v.version, v.version_info
-    finally:
-        fp.close()
-
-version, version_info = get_version()
 
 # Get development Status for classifiers
 dev_status_map = {
@@ -31,10 +20,10 @@ dev_status_map = {
     'rc':    '4 - Beta',
     'final': '5 - Production/Stable'
 }
-if version_info[3] == 'alpha' and version_info[4] == 0:
+if __version_info__[3] == 'alpha' and __version_info__[4] == 0:
     DEVSTATUS = '2 - Pre-Alpha'
 else:
-    DEVSTATUS = dev_status_map[version_info[3]]
+    DEVSTATUS = dev_status_map[__version_info__[3]]
 
 # The command line script name.  Currently set to "markdown_py" so as not to
 # conflict with the perl implimentation (which uses "markdown").  We can't use
@@ -111,7 +100,7 @@ class build_docs(Command):
             'next_url':   '',
             'next_title': '',
             'crumb':      '',
-            'version':    version,
+            'version':    __version__,
         }
         c['body'] = self.md.convert(src)
         c['toc'] = self.md.toc
@@ -233,9 +222,9 @@ You may ask for help and discuss various other issues on the
 
 setup(
     name='Markdown',
-    version=version,
+    version=__version__,
     url='https://pythonhosted.org/Markdown/',
-    download_url='http://pypi.python.org/packages/source/M/Markdown/Markdown-%s.tar.gz' % version,
+    download_url='http://pypi.python.org/packages/source/M/Markdown/Markdown-%s.tar.gz' % __version__,
     description='Python implementation of Markdown.',
     long_description=long_description,
     author='Manfred Stienstra, Yuri takhteyev and Waylan limberg',
