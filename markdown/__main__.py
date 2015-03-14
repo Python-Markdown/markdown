@@ -28,7 +28,7 @@ def parse_options(args=None, values=None):
        (STDIN is assumed if no INPUTFILE is given)"""
     desc = "A Python implementation of John Gruber's Markdown. " \
            "https://Python-Markdown.github.io/"
-    ver = "%%prog %s" % markdown.version
+    ver = "%%prog %s" % markdown.__version__
 
     parser = optparse.OptionParser(usage=usage, description=desc, version=ver)
     parser.add_option("-f", "--file", dest="filename", default=None,
