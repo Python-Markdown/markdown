@@ -31,15 +31,6 @@ class TestOptions(LegacyTestCase):
     no_smart_emphasis = Kwargs(smart_emphasis=False)
 
 
-class TestSafeMode(LegacyTestCase):
-    location = os.path.join(parent_test_dir, 'safe_mode')
-    default_kwargs = Kwargs(safe_mode='escape')
-
-    remove = Kwargs(safe_mode='remove')
-
-    replace = Kwargs(safe_mode='replace')
-
-
 class TestPhp(LegacyTestCase):
     """
     Notes on "excluded" tests:

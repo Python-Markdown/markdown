@@ -133,7 +133,7 @@ class TestHtmlStash(unittest.TestCase):
         """ Test HtmlStash.store. """
         self.assertEqual(self.placeholder, self.stash.get_placeholder(0))
         self.assertEqual(self.stash.html_counter, 1)
-        self.assertEqual(self.stash.rawHtmlBlocks, [('foo', False)])
+        self.assertEqual(self.stash.rawHtmlBlocks, ['foo'])
 
     def testStoreMore(self):
         """ Test HtmlStash.store with additional blocks. """
@@ -142,15 +142,7 @@ class TestHtmlStash(unittest.TestCase):
         self.assertEqual(self.stash.html_counter, 2)
         self.assertEqual(
             self.stash.rawHtmlBlocks,
-            [('foo', False), ('bar', False)]
-        )
-
-    def testSafeStore(self):
-        """ Test HtmlStash.store with 'safe' html. """
-        self.stash.store('bar', True)
-        self.assertEqual(
-            self.stash.rawHtmlBlocks,
-            [('foo', False), ('bar', True)]
+            ['foo', 'bar']
         )
 
     def testReset(self):
@@ -158,25 +150,6 @@ class TestHtmlStash(unittest.TestCase):
         self.stash.reset()
         self.assertEqual(self.stash.html_counter, 0)
         self.assertEqual(self.stash.rawHtmlBlocks, [])
-
-    def testUnsafeHtmlInSafeMode(self):
-        """ Test that unsafe HTML gets escaped in safe_mode. """
-        output = markdown.markdown('foo', extensions=[self.build_extension()], safe_mode='escape')
-        self.assertEqual(output, '<p>&lt;script&gt;print(&quot;evil&quot;)&lt;/script&gt;</p>')
-
-    def build_extension(self):
-        """ Build an extention that addes unsafe html to Stash in same_mode. """
-        class Unsafe(markdown.treeprocessors.Treeprocessor):
-            def run(self, root):
-                el = root.find('p')
-                el.text = self.markdown.htmlStash.store('<script>print("evil")</script>', safe=False)
-                return root
-
-        class StoreUnsafeHtml(markdown.extensions.Extension):
-            def extendMarkdown(self, md, md_globals):
-                md.treeprocessors.add('unsafe', Unsafe(md), '_end')
-
-        return StoreUnsafeHtml()
 
 
 class TestOrderedDict(unittest.TestCase):
@@ -653,11 +626,6 @@ class TestCliOptionParsing(unittest.TestCase):
     def testEncodingOption(self):
         options, logging_level = parse_options(['-e', 'utf-8'])
         self.default_options['encoding'] = 'utf-8'
-        self.assertEqual(options, self.default_options)
-
-    def testSafeModeOption(self):
-        options, logging_level = parse_options(['-s', 'escape'])
-        self.default_options['safe_mode'] = 'escape'
         self.assertEqual(options, self.default_options)
 
     def testOutputFormatOption(self):

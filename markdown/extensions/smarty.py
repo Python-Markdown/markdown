@@ -163,7 +163,7 @@ class SubstituteTextPattern(HtmlPattern):
             if isinstance(part, int):
                 result += m.group(part)
             else:
-                result += self.markdown.htmlStash.store(part, safe=True)
+                result += self.markdown.htmlStash.store(part)
         return result
 
 

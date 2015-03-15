@@ -49,11 +49,9 @@ def stashedHTML2text(text, md):
     def _html_sub(m):
         """ Substitute raw html with plain text. """
         try:
-            raw, safe = md.htmlStash.rawHtmlBlocks[int(m.group(1))]
+            raw = md.htmlStash.rawHtmlBlocks[int(m.group(1))]
         except (IndexError, TypeError):  # pragma: no cover
             return m.group(0)
-        if md.safeMode and not safe:  # pragma: no cover
-            return ''
         # Strip out tags and entities - leaveing text
         return re.sub(r'(<[^>]+>)|(&[\#a-zA-Z0-9]+;)', '', raw)
 
