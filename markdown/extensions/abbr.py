@@ -87,5 +87,5 @@ class AbbrPattern(Pattern):
         return abbr
 
 
-def makeExtension(*args, **kwargs):
-    return AbbrExtension(*args, **kwargs)
+def makeExtension(**kwargs):
+    return AbbrExtension(**kwargs)

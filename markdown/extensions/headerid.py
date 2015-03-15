@@ -61,7 +61,7 @@ class HeaderIdTreeprocessor(Treeprocessor):
 
 
 class HeaderIdExtension(Extension):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         # set defaults
         self.config = {
             'level': ['1', 'Base level for headers.'],
@@ -70,7 +70,7 @@ class HeaderIdExtension(Extension):
             'slugify': [slugify, 'Callable to generate anchors']
         }
 
-        super(HeaderIdExtension, self).__init__(*args, **kwargs)
+        super(HeaderIdExtension, self).__init__(**kwargs)
 
         warnings.warn(
             'The HeaderId Extension is pending deprecation. Use the TOC Extension instead.',
@@ -93,5 +93,5 @@ class HeaderIdExtension(Extension):
         self.processor.IDs = set()
 
 
-def makeExtension(*args, **kwargs):
-    return HeaderIdExtension(*args, **kwargs)
+def makeExtension(**kwargs):
+    return HeaderIdExtension(**kwargs)

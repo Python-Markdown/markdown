@@ -43,5 +43,5 @@ class SaneListExtension(Extension):
         md.parser.blockprocessors['ulist'] = SaneUListProcessor(md.parser)
 
 
-def makeExtension(*args, **kwargs):
-    return SaneListExtension(*args, **kwargs)
+def makeExtension(**kwargs):
+    return SaneListExtension(**kwargs)

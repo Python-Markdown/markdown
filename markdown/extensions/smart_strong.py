@@ -37,5 +37,5 @@ class SmartEmphasisExtension(Extension):
         )
 
 
-def makeExtension(*args, **kwargs):
-    return SmartEmphasisExtension(*args, **kwargs)
+def makeExtension(**kwargs):
+    return SmartEmphasisExtension(**kwargs)

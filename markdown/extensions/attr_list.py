@@ -173,5 +173,5 @@ class AttrListExtension(Extension):
         )
 
 
-def makeExtension(*args, **kwargs):
-    return AttrListExtension(*args, **kwargs)
+def makeExtension(**kwargs):
+    return AttrListExtension(**kwargs)

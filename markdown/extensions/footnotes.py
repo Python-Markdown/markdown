@@ -33,7 +33,7 @@ TABBED_RE = re.compile(r'((\t)|(    ))(.*)')
 class FootnoteExtension(Extension):
     """ Footnote Extension. """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         """ Setup configs. """
 
         self.config = {
@@ -49,7 +49,7 @@ class FootnoteExtension(Extension):
                  "The text string that links from the footnote "
                  "to the reader's place."]
         }
-        super(FootnoteExtension, self).__init__(*args, **kwargs)
+        super(FootnoteExtension, self).__init__(**kwargs)
 
         # In multiple invocations, emit links that don't get tangled.
         self.unique_prefix = 0
@@ -314,6 +314,6 @@ class FootnotePostprocessor(Postprocessor):
         return text.replace(NBSP_PLACEHOLDER, "&#160;")
 
 
-def makeExtension(*args, **kwargs):
+def makeExtension(**kwargs):
     """ Return an instance of the FootnoteExtension """
-    return FootnoteExtension(*args, **kwargs)
+    return FootnoteExtension(**kwargs)

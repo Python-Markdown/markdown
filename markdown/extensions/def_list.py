@@ -111,5 +111,5 @@ class DefListExtension(Extension):
                                       '>ulist')
 
 
-def makeExtension(*args, **kwargs):
-    return DefListExtension(*args, **kwargs)
+def makeExtension(**kwargs):
+    return DefListExtension(**kwargs)

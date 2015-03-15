@@ -31,7 +31,7 @@ def build_url(label, base, end):
 
 class WikiLinkExtension(Extension):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         self.config = {
             'base_url': ['/', 'String to append to beginning or URL.'],
             'end_url': ['/', 'String to append to end of URL.'],
@@ -39,7 +39,7 @@ class WikiLinkExtension(Extension):
             'build_url': [build_url, 'Callable formats URL from label.'],
         }
 
-        super(WikiLinkExtension, self).__init__(*args, **kwargs)
+        super(WikiLinkExtension, self).__init__(**kwargs)
 
     def extendMarkdown(self, md, md_globals):
         self.md = md
@@ -85,5 +85,5 @@ class WikiLinks(Pattern):
         return base_url, end_url, html_class
 
 
-def makeExtension(*args, **kwargs):
-    return WikiLinkExtension(*args, **kwargs)
+def makeExtension(**kwargs):
+    return WikiLinkExtension(**kwargs)

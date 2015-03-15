@@ -108,5 +108,5 @@ class FencedBlockPreprocessor(Preprocessor):
         return txt
 
 
-def makeExtension(*args, **kwargs):
-    return FencedCodeExtension(*args, **kwargs)
+def makeExtension(**kwargs):
+    return FencedCodeExtension(**kwargs)

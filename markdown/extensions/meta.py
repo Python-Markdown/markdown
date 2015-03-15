@@ -74,5 +74,5 @@ class MetaPreprocessor(Preprocessor):
         return lines
 
 
-def makeExtension(*args, **kwargs):
-    return MetaExtension(*args, **kwargs)
+def makeExtension(**kwargs):
+    return MetaExtension(**kwargs)
