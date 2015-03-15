@@ -150,8 +150,7 @@ class Markdown(object):
             return ext(**configs)
 
         # Get class name (if provided): `path.to.module:ClassName`
-        ext_name, class_name = ext_name.split(':', 1) \
-            if ':' in ext_name else (ext_name, '')
+        ext_name, class_name = ext_name.split(':', 1) if ':' in ext_name else (ext_name, '')
 
         try:
             module = importlib.import_module(ext_name)
@@ -238,7 +237,7 @@ class Markdown(object):
 
         try:
             source = util.text_type(source)
-        except UnicodeDecodeError as e:
+        except UnicodeDecodeError as e:  # pragma: no cover
             # Customise error message while maintaining original trackback
             e.reason += '. -- Note: Markdown only accepts unicode input!'
             raise
@@ -313,7 +312,7 @@ class Markdown(object):
             input_file.close()
         else:
             text = sys.stdin.read()
-            if not isinstance(text, util.text_type):
+            if not isinstance(text, util.text_type):  # pragma: no cover
                 text = text.decode(encoding)
 
         text = text.lstrip('\ufeff')  # remove the byte-order mark
@@ -340,7 +339,7 @@ class Markdown(object):
             try:
                 # Write bytes directly to buffer (Python 3).
                 sys.stdout.buffer.write(html)
-            except AttributeError:
+            except AttributeError:  # pragma: no cover
                 # Probably Python 2, which works with bytes by default.
                 sys.stdout.write(html)
 
