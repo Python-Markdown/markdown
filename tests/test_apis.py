@@ -370,21 +370,6 @@ class TestErrors(unittest.TestCase):
             markdown.Markdown, extensions=[markdown.extensions.Extension()]
         )
 
-    def testMdxExtention(self):
-        """ Test that prepending mdx_ raises a DeprecationWarning. """
-        _create_fake_extension(name='fake', use_old_style=True)
-        self.assertRaises(
-            DeprecationWarning,
-            markdown.Markdown, extensions=['fake']
-        )
-
-    def testShortNameExtention(self):
-        """ Test that using a short name raises a DeprecationWarning. """
-        self.assertRaises(
-            DeprecationWarning,
-            markdown.Markdown, extensions=['footnotes']
-        )
-
 
 def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False, use_old_style=False):
     """ Create a fake extension module for testing. """

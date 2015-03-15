@@ -145,14 +145,14 @@ class build_docs(Command):
                 template = f.read()
             self.md = markdown.Markdown(
                 extensions=[
-                    'extra',
-                    'toc',
-                    'meta',
-                    'admonition',
-                    'smarty'
+                    'markdown.extensions.extra',
+                    'markdown.extensions.toc',
+                    'markdown.extensions.meta',
+                    'markdown.extensions.admonition',
+                    'markdown.extensions.smarty'
                 ],
                 extension_configs={
-                    'toc': {'permalink': True}
+                    'markdown.extensions.toc': {'permalink': True}
                 }
             )
             for infile in self.docs:
