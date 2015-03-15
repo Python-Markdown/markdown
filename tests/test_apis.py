@@ -11,15 +11,21 @@ from __future__ import unicode_literals
 import unittest
 import sys
 import os
-import types
 import markdown
 import warnings
 from markdown.__main__ import parse_options
 from logging import DEBUG, WARNING, CRITICAL
 import yaml
 import tempfile
+from io import BytesIO
+
 
 PY3 = sys.version_info[0] == 3
+
+
+if not PY3:
+    def bytes(string, encoding):
+        return string.encode(encoding)
 
 
 class TestMarkdownBasics(unittest.TestCase):
@@ -53,6 +59,45 @@ class TestMarkdownBasics(unittest.TestCase):
     def TestNamedExtensionWithClass(self):
         """ Test Extension loading with class name (`path.to.module:Class`). """
         markdown.Markdown(extensions=['markdown.extensions.footnotes:FootnoteExtension'])
+
+
+class TestConvertFile(unittest.TestCase):
+    """ Tests of ConvertFile. """
+
+    def setUp(self):
+        self.saved = sys.stdin, sys.stdout
+        sys.stdin = BytesIO(bytes('foo', encoding='utf-8'))
+        sys.stdout = BytesIO()
+
+    def tearDown(self):
+        sys.stdin, sys.stdout = self.saved
+
+    def getTempFiles(self, src):
+        """ Return the file names for two temp files. """
+        infd, infile = tempfile.mkstemp(suffix='.txt')
+        with os.fdopen(infd, 'w') as fp:
+            fp.write(src)
+        outfd, outfile = tempfile.mkstemp(suffix='.html')
+        return infile, outfile, outfd
+
+    def testFileNames(self):
+        infile, outfile, outfd = self.getTempFiles('foo')
+        markdown.markdownFromFile(input=infile, output=outfile)
+        with os.fdopen(outfd, 'r') as fp:
+            output = fp.read()
+        self.assertEqual(output, '<p>foo</p>')
+
+    def testFileObjects(self):
+        infile = BytesIO(bytes('foo', encoding='utf-8'))
+        outfile = BytesIO()
+        markdown.markdownFromFile(input=infile, output=outfile)
+        outfile.seek(0)
+        self.assertEqual(outfile.read().decode('utf-8'), '<p>foo</p>')
+
+    def testStdinStdout(self):
+        markdown.markdownFromFile()
+        sys.stdout.seek(0)
+        self.assertEqual(sys.stdout.read().decode('utf-8'), '<p>foo</p>')
 
 
 class TestBlockParser(unittest.TestCase):
@@ -313,7 +358,7 @@ class TestErrors(unittest.TestCase):
 
     def testNonUnicodeSource(self):
         """ Test falure on non-unicode source text. """
-        if sys.version_info < (3, 0):
+        if not PY3:
             source = "foo".encode('utf-16')
             self.assertRaises(UnicodeDecodeError, markdown.markdown, source)
 

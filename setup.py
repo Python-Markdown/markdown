@@ -9,7 +9,6 @@ from distutils.command.build import build
 from distutils.core import Command
 from distutils.util import change_root, newer
 import codecs
-import imp
 from markdown import __version__, __version_info__
 
 

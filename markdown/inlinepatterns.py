@@ -47,10 +47,6 @@ from . import util
 from . import odict
 import re
 try:  # pragma: no cover
-    from urllib.parse import urlparse, urlunparse
-except ImportError:  # pragma: no cover
-    from urlparse import urlparse, urlunparse
-try:  # pragma: no cover
     from html import entities
 except ImportError:  # pragma: no cover
     import htmlentitydefs as entities
