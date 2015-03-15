@@ -141,7 +141,7 @@ class HtmlStash(object):
         self.tag_counter = 0
         self.tag_data = []  # list of dictionaries in the order tags appear
 
-    def store(self, html, safe=False):
+    def store(self, html):
         """
         Saves an HTML segment for later reinsertion.  Returns a
         placeholder string that needs to be inserted into the
@@ -150,12 +150,11 @@ class HtmlStash(object):
         Keyword arguments:
 
         * html: an html segment
-        * safe: label an html segment as safe for safemode
 
         Returns : a placeholder string
 
         """
-        self.rawHtmlBlocks.append((html, safe))
+        self.rawHtmlBlocks.append(html)
         placeholder = self.get_placeholder(self.html_counter)
         self.html_counter += 1
         return placeholder

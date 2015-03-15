@@ -50,19 +50,11 @@ class RawHtmlPostprocessor(Postprocessor):
     """ Restore raw html to the document. """
 
     def run(self, text):
-        """ Iterate over html stash and restore "safe" html. """
+        """ Iterate over html stash and restore html. """
         replacements = OrderedDict()
         for i in range(self.markdown.htmlStash.html_counter):
-            html, safe = self.markdown.htmlStash.rawHtmlBlocks[i]
-            if self.markdown.safeMode and not safe:
-                if str(self.markdown.safeMode).lower() == 'escape':
-                    html = self.escape(html)
-                elif str(self.markdown.safeMode).lower() == 'remove':
-                    html = ''
-                else:
-                    html = self.markdown.html_replacement_text
-            if (self.isblocklevel(html) and
-               (safe or not self.markdown.safeMode)):
+            html = self.markdown.htmlStash.rawHtmlBlocks[i]
+            if self.isblocklevel(html):
                 replacements["<p>%s</p>" %
                              (self.markdown.htmlStash.get_placeholder(i))] = \
                     html + "\n"
@@ -73,13 +65,6 @@ class RawHtmlPostprocessor(Postprocessor):
             text = pattern.sub(lambda m: replacements[m.group(0)], text)
 
         return text
-
-    def escape(self, html):
-        """ Basic html escaping """
-        html = html.replace('&', '&amp;')
-        html = html.replace('<', '&lt;')
-        html = html.replace('>', '&gt;')
-        return html.replace('"', '&quot;')
 
     def isblocklevel(self, html):
         m = re.match(r'^\<\/?([^ >]+)', html)
