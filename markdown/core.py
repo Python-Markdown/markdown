@@ -2,7 +2,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 import codecs
 import sys
-import warnings
 import logging
 import importlib
 from . import util
@@ -140,62 +139,15 @@ class Markdown(object):
         ext_name, class_name = ext_name.split(':', 1) \
             if ':' in ext_name else (ext_name, '')
 
-        # Try loading the extension first from one place, then another
         try:
-            # Assume string uses dot syntax (`path.to.some.module`)
             module = importlib.import_module(ext_name)
             logger.debug(
                 'Successfuly imported extension module "%s".' % ext_name
             )
-            # For backward compat (until deprecation)
-            # check that this is an extension.
-            if ('.' not in ext_name and not (hasattr(module, 'makeExtension') or
-               (class_name and hasattr(module, class_name)))):
-                # We have a name conflict
-                # eg: extensions=['tables'] and PyTables is installed
-                raise ImportError
-        except ImportError:
-            # Preppend `markdown.extensions.` to name
-            module_name = '.'.join(['markdown.extensions', ext_name])
-            try:
-                module = importlib.import_module(module_name)
-                logger.debug(
-                    'Successfuly imported extension module "%s".' %
-                    module_name
-                )
-                warnings.warn('Using short names for Markdown\'s builtin '
-                              'extensions is deprecated. Use the '
-                              'full path to the extension with Python\'s dot '
-                              'notation (eg: "%s" instead of "%s"). The '
-                              'current behavior will raise an error in version '
-                              '2.7. See the Release Notes for '
-                              'Python-Markdown version 2.6 for more info.' %
-                              (module_name, ext_name),
-                              DeprecationWarning)
-            except ImportError:
-                # Preppend `mdx_` to name
-                module_name_old_style = '_'.join(['mdx', ext_name])
-                try:
-                    module = importlib.import_module(module_name_old_style)
-                    logger.debug(
-                        'Successfuly imported extension module "%s".' %
-                        module_name_old_style)
-                    warnings.warn('Markdown\'s behavior of prepending "mdx_" '
-                                  'to an extension name is deprecated. '
-                                  'Use the full path to the '
-                                  'extension with Python\'s dot notation '
-                                  '(eg: "%s" instead of "%s"). The current '
-                                  'behavior will raise an error in version 2.7. '
-                                  'See the Release Notes for Python-Markdown '
-                                  'version 2.6 for more info.' %
-                                  (module_name_old_style, ext_name),
-                                  DeprecationWarning)
-                except ImportError as e:
-                    message = "Failed loading extension '%s' from '%s', '%s' " \
-                        "or '%s'" % (ext_name, ext_name, module_name,
-                                     module_name_old_style)
-                    e.args = (message,) + e.args[1:]
-                    raise
+        except ImportError as e:
+            message = 'Failed loading extension "%s".' % ext_name
+            e.args = (message,) + e.args[1:]
+            raise
 
         if class_name:
             # Load given class name from module.

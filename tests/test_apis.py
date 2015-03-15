@@ -11,7 +11,6 @@ from __future__ import unicode_literals
 import unittest
 import sys
 import os
-import types
 import markdown
 import warnings
 from markdown.__main__ import parse_options
@@ -342,46 +341,6 @@ class TestErrors(unittest.TestCase):
             NotImplementedError,
             markdown.Markdown, extensions=[markdown.extensions.Extension()]
         )
-
-    def testMdxExtention(self):
-        """ Test that prepending mdx_ raises a DeprecationWarning. """
-        _create_fake_extension(name='fake', use_old_style=True)
-        self.assertRaises(
-            DeprecationWarning,
-            markdown.Markdown, extensions=['fake']
-        )
-
-    def testShortNameExtention(self):
-        """ Test that using a short name raises a DeprecationWarning. """
-        self.assertRaises(
-            DeprecationWarning,
-            markdown.Markdown, extensions=['footnotes']
-        )
-
-
-def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False, use_old_style=False):
-    """ Create a fake extension module for testing. """
-    if use_old_style:
-        mod_name = '_'.join(['mdx', name])
-    else:
-        mod_name = name
-    if not PY3:
-        # mod_name must be bytes in Python 2.x
-        mod_name = bytes(mod_name)
-    ext_mod = types.ModuleType(mod_name)
-
-    def makeExtension(*args, **kwargs):
-        if is_wrong_type:
-            return object
-        else:
-            return markdown.extensions.Extension(*args, **kwargs)
-
-    if has_factory_func:
-        ext_mod.makeExtension = makeExtension
-    # Warning: this brute forces the extenson module onto the system. Either
-    # this needs to be specificly overriden or a new python session needs to
-    # be started to get rid of this. This should be ok in a testing context.
-    sys.modules[mod_name] = ext_mod
 
 
 class testETreeComments(unittest.TestCase):

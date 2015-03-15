@@ -158,12 +158,6 @@ The `--extension_configs` option will only support YAML configuration files if
 [PyYAML] is installed on your system. JSON should work with no additional
 dependencies. The format of your configuration file is automatically detected.
 
-!!!warning
-    The previously documented method of appending the extension configuration
-    options as a string to the extension name will be deprecated in
-    Python-Markdown version 2.6. The `--extension_configs` option should be used
-    instead. See the [2.5 release notes] for more information.
-
 [ec]: reference.html#extension_configs
 [YAML]: http://yaml.org/
 [JSON]: http://json.org/
