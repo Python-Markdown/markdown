@@ -178,7 +178,7 @@ class TocTreeprocessor(Treeprocessor):
         c.text = ""
         for elem in c:
             anchor.append(elem)
-        while c:
+        while len(c):
             c.remove(c[0])
         c.append(anchor)
 
@@ -304,5 +304,5 @@ class TocExtension(Extension):
         self.md.toc = ''
 
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs):  # pragma: no cover
     return TocExtension(*args, **kwargs)

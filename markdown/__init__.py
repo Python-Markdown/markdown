@@ -46,7 +46,7 @@ __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 __version_info__ = (3, 0, 0, 'alpha', 0)
 
 
-def _get_version():
+def _get_version():  # pragma: no cover
     " Returns a PEP 386-compliant version number from version_info. "
     assert len(__version_info__) == 5
     assert __version_info__[3] in ('alpha', 'beta', 'rc', 'final')

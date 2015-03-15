@@ -1,5 +1,5 @@
 [run]
 omit=
-    markdown/__version__.py
     *site-packages*
     tests/*
+    markdown/test_tools.py

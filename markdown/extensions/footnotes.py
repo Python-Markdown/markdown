@@ -426,6 +426,6 @@ class FootnotePostprocessor(Postprocessor):
         return text.replace(NBSP_PLACEHOLDER, "&#160;")
 
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs):  # pragma: no cover
     """ Return an instance of the FootnoteExtension """
     return FootnoteExtension(*args, **kwargs)

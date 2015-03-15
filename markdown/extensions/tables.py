@@ -223,5 +223,5 @@ class TableExtension(Extension):
                                       '<hashheader')
 
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs):  # pragma: no cover
     return TableExtension(*args, **kwargs)

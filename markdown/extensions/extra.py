@@ -68,7 +68,7 @@ class ExtraExtension(Extension):
             r'^(p|h[1-6]|li|dd|dt|td|th|legend|address)$', re.IGNORECASE)
 
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs):  # pragma: no cover
     return ExtraExtension(*args, **kwargs)
 
 

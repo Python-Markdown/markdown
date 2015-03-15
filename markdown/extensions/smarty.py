@@ -264,5 +264,5 @@ class SmartyExtension(Extension):
         md.ESCAPED_CHARS.extend(['"', "'"])
 
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs):  # pragma: no cover
     return SmartyExtension(*args, **kwargs)

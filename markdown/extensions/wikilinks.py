@@ -85,5 +85,5 @@ class WikiLinks(Pattern):
         return base_url, end_url, html_class
 
 
-def makeExtension(*args, **kwargs):
+def makeExtension(*args, **kwargs):  # pragma: no cover
     return WikiLinkExtension(*args, **kwargs)
