@@ -86,7 +86,7 @@ The following options are available on the `markdown.markdown` function:
 
     If an extension name is provided as a string, the extension must be 
     importable as a python module on your PYTHONPATH. Python's dot notation is 
-    supported. Therefore, to import the 'extra' extension, one could do 
+    required. Therefore, to import the 'extra' extension, one could do 
     `extensions=['markdown.extensions.extra']`  
 
 	Additionally, a Class may be specified in the name. The class must be at the end of 
@@ -102,7 +102,7 @@ The following options are available on the `markdown.markdown` function:
 
 	!!! note
 		You should only need to specify the class name if more than one extension 
-		is defined	within the same module. The extensions that come with 
+		is defined within the same module. The extensions that come with 
 		Python-Markdown do *not* need to have the class name specified. However,
 		doing so will not effect the behavior of the parser.
 
@@ -162,61 +162,6 @@ The following options are available on the `markdown.markdown` function:
         It is suggested that the more specific formats (`"xhtml1"`, `"html5"`, & 
         `"html4"`) be used as the more general formats (`"xhtml"` or `"html"`) may 
         change in the future if it makes sense at that time. 
-
-* __`safe_mode`__{: #safe_mode }: Disallow raw HTML.
-
-    !!! warning
-        "`safe_mode`" is deprecated and should not be used.
-
-        HTML sanitizers (like [Bleach]) provide a better solution for 
-        dealing with markdown text submitted by untrusted users. 
-
-            import markdown
-            import bleach
-            html = bleach.clean(markdown.markdown(untrusted_text))
-
-        See the [release notes] for more info.
-    
-[Bleach]: https://github.com/jsocol/bleach
-[release notes]: release-2.6.html
-    
-    The following values are accepted:
-
-    * `False` (Default): Raw HTML is passed through unaltered.
-
-    * `replace`: Replace all HTML blocks with the text assigned to 
-      `html_replacement_text` To maintain backward compatibility, setting 
-      `safe_mode=True` will have the same effect as `safe_mode='replace'`.   
-
-        To replace raw HTML with something other than the default, do:
-
-            md = markdown.Markdown(safe_mode='replace', 
-                               html_replacement_text='--RAW HTML NOT ALLOWED--')
-
-    * `remove`: All raw HTML will be completely stripped from the text with
-      no warning to the author.
-
-    * `escape`: All raw HTML will be escaped and included in the document.
-
-        For example, the following source:
-
-            Foo <b>bar</b>.
-
-        Will result in the following HTML:
-
-            <p>Foo &lt;b&gt;bar&lt;/b&gt;.</p>
-
-    !!! Note 
-        "safe_mode" also alters the default value for the 
-        [`enable_attributes`](#enable_attributes) option.
-    
-
-* __`html_replacement_text`__{: #html_replacement_text }: Text used when 
-  safe_mode is set to `replace`. Defaults to `[HTML_REMOVED]`.
-
-    !!! warning
-        "`html_replacement_text`" is deprecated and should not be used.
-        See the [release notes] for more info.
 
 * __`tab_length`__{: #tab_length }: Length of tabs in the source. Default: 4
 
