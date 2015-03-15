@@ -5,7 +5,6 @@ Extensions
 
 from __future__ import unicode_literals
 from ..util import parseBoolValue
-import warnings
 
 
 class Extension(object):
