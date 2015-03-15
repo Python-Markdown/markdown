@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import codecs
 import sys
 import logging
-import warnings
 import importlib
 from . import util
 from .preprocessors import build_preprocessors
