@@ -371,31 +371,6 @@ class TestErrors(unittest.TestCase):
         )
 
 
-def _create_fake_extension(name, has_factory_func=True, is_wrong_type=False, use_old_style=False):
-    """ Create a fake extension module for testing. """
-    if use_old_style:
-        mod_name = '_'.join(['mdx', name])
-    else:
-        mod_name = name
-    if not PY3:
-        # mod_name must be bytes in Python 2.x
-        mod_name = bytes(mod_name)
-    ext_mod = types.ModuleType(mod_name)
-
-    def makeExtension(*args, **kwargs):
-        if is_wrong_type:
-            return object
-        else:
-            return markdown.extensions.Extension(*args, **kwargs)
-
-    if has_factory_func:
-        ext_mod.makeExtension = makeExtension
-    # Warning: this brute forces the extenson module onto the system. Either
-    # this needs to be specificly overriden or a new python session needs to
-    # be started to get rid of this. This should be ok in a testing context.
-    sys.modules[mod_name] = ext_mod
-
-
 class testETreeComments(unittest.TestCase):
     """
     Test that ElementTree Comments work.
