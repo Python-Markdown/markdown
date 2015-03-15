@@ -215,8 +215,7 @@ class HiliteTreeprocessor(Treeprocessor):
                     tab_length=self.markdown.tab_length,
                     use_pygments=self.config['use_pygments']
                 )
-                placeholder = self.markdown.htmlStash.store(code.hilite(),
-                                                            safe=True)
+                placeholder = self.markdown.htmlStash.store(code.hilite())
                 # Clear codeblock in etree instance
                 block.clear()
                 # Change to p element which will later

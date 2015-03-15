@@ -68,10 +68,6 @@ class Markdown(object):
             Note that it is suggested that the more specific formats ("xhtml1"
             and "html4") be used as "xhtml" or "html" may change in the future
             if it makes sense at that time.
-        * safe_mode: Deprecated! Disallow raw html. One of "remove", "replace"
-          or "escape".
-        * html_replacement_text: Deprecated! Text used when safe_mode is set
-          to "replace".
         * tab_length: Length of tabs in the source. Default: 4
         * enable_attributes: Enable the conversion of attributes. Default: True
         * smart_emphasis: Treat `_connected_words_` intelligently Default: True
@@ -82,24 +78,6 @@ class Markdown(object):
         # Loop through kwargs and assign defaults
         for option, default in self.option_defaults.items():
             setattr(self, option, kwargs.get(option, default))
-
-        self.safeMode = kwargs.get('safe_mode', False)
-        if self.safeMode and 'enable_attributes' not in kwargs:
-            # Disable attributes in safeMode when not explicitly set
-            self.enable_attributes = False
-
-        if 'safe_mode' in kwargs:
-            warnings.warn('"safe_mode" is deprecated in Python-Markdown. '
-                          'Use an HTML sanitizer (like '
-                          'Bleach http://bleach.readthedocs.org/) '
-                          'if you are parsing untrusted markdown text. '
-                          'See the 2.6 release notes for more info',
-                          DeprecationWarning)
-
-        if 'html_replacement_text' in kwargs:
-            warnings.warn('The "html_replacement_text" keyword is '
-                          'deprecated along with "safe_mode".',
-                          DeprecationWarning)
 
         self.registeredExtensions = []
         self.docType = ""
