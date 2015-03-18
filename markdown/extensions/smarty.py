@@ -126,6 +126,9 @@ doubleQuoteStartRe = r'^"(?=%s\B)' % punctClass
 doubleQuoteSetsRe = r""""'(?=\w)"""
 singleQuoteSetsRe = r"""'"(?=\w)"""
 
+# Special case for decade abbreviations (the '80s):
+decadeAbbrRe = r"(?<!\w)'(?=\d{2}s)"
+
 # Get most opening double quotes:
 openingDoubleQuotesRegex = r'%s"(?=\w)' % openingQuotesBase
 
@@ -227,6 +230,7 @@ class SmartyExtension(Extension):
             (doubleQuoteStartRe, (rdquo,)),
             (doubleQuoteSetsRe, (ldquo + lsquo,)),
             (singleQuoteSetsRe, (lsquo + ldquo,)),
+            (decadeAbbrRe, (rsquo,)),
             (openingSingleQuotesRegex, (2, lsquo)),
             (closingSingleQuotesRegex, (rsquo,)),
             (closingSingleQuotesRegex2, (rsquo, 2)),
