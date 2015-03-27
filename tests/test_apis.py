@@ -53,12 +53,8 @@ class TestMarkdownBasics(unittest.TestCase):
         markdown.Markdown(extensions=[FootnoteExtension()])
 
     def testNamedExtension(self):
-        """ Test Extension loading with Name (`path.to.module`). """
+        """ Test Extension loading with Name. """
         markdown.Markdown(extensions=['markdown.extensions.footnotes'])
-
-    def TestNamedExtensionWithClass(self):
-        """ Test Extension loading with class name (`path.to.module:Class`). """
-        markdown.Markdown(extensions=['markdown.extensions.footnotes:FootnoteExtension'])
 
 
 class TestConvertFile(unittest.TestCase):
@@ -372,10 +368,6 @@ class TestErrors(unittest.TestCase):
             ImportError,
             markdown.Markdown, extensions=['non_existant_ext']
         )
-
-    def testLoadBadExtension(self):
-        """ Test loading of an Extension with no makeExtension function. """
-        self.assertRaises(AttributeError, markdown.Markdown, extensions=['markdown.util'])
 
     def testNonExtension(self):
         """ Test loading a non Extension object as an extension. """

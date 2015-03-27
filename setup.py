@@ -3,7 +3,7 @@
 from __future__ import with_statement
 import sys
 import os
-from distutils.core import setup
+from setuptools import setup
 from distutils.command.install_scripts import install_scripts
 from distutils.command.build import build
 from distutils.core import Command
@@ -240,6 +240,28 @@ setup(
         'install_scripts': md_install_scripts,
         'build_docs': build_docs,
         'build': md_build
+    },
+    entry_points={
+        # Register the built in extensions
+        'markdown.extensions': [
+            'markdown.extensions.abbr = markdown.extensions.abbr:AbbrExtension',
+            'markdown.extensions.admonition = markdown.extensions.admonition:AdmonitionExtension',
+            'markdown.extensions.attr_list = markdown.extensions.attr_list:AttrListExtension',
+            'markdown.extensions.codehilite = markdown.extensions.codehilite:CodeHiliteExtension',
+            'markdown.extensions.def_list = markdown.extensions.def_list:DefListExtension',
+            'markdown.extensions.extra = markdown.extensions.extra:ExtraExtension',
+            'markdown.extensions.fenced_code = markdown.extensions.fenced_code:FencedCodeExtension',
+            'markdown.extensions.footnotes = markdown.extensions.footnotes:FootnoteExtension',
+            'markdown.extensions.headerid = markdown.extensions.headerid:HeaderIdExtension',
+            'markdown.extensions.meta = markdown.extensions.meta:MetaExtension',
+            'markdown.extensions.nl2br = markdown.extensions.nl2br:Nl2BrExtension',
+            'markdown.extensions.sane_lists = markdown.extensions.sane_lists:SaneListExtension',
+            'markdown.extensions.smart_strong = markdown.extensions.smart_strong:SmartEmphasisExtension',
+            'markdown.extensions.smarty = markdown.extensions.smarty:SmartyExtension',
+            'markdown.extensions.tables = markdown.extensions.tables:TableExtension',
+            'markdown.extensions.toc = markdown.extensions.toc:TocExtension',
+            'markdown.extensions.wikilinks = markdown.extensions.wikilinks:WikiLinkExtension',
+        ]
     },
     classifiers=[
         'Development Status :: %s' % DEVSTATUS,

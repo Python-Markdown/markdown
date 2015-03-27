@@ -557,11 +557,11 @@ class TestWikiLinks(unittest.TestCase):
         md = markdown.Markdown(
             extensions=['markdown.extensions.wikilinks'],
             extension_configs={
-                'markdown.extensions.wikilinks': [
-                    ('base_url', 'http://example.com/'),
-                    ('end_url', '.html'),
-                    ('html_class', '')
-                ]
+                'markdown.extensions.wikilinks': {
+                    'base_url': 'http://example.com/',
+                    'end_url': '.html',
+                    'html_class': ''
+                }
             },
             safe_mode=True
         )
@@ -829,9 +829,9 @@ class TestTOC(unittest.TestCase):
 class TestSmarty(unittest.TestCase):
     def setUp(self):
         config = {
-            'markdown.extensions.smarty': [
-                ('smart_angled_quotes', True),
-                ('substitutions', {
+            'markdown.extensions.smarty': {
+                'smart_angled_quotes': True,
+                'substitutions': {
                     'ndash': '\u2013',
                     'mdash': '\u2014',
                     'ellipsis': '\u2026',
@@ -841,8 +841,8 @@ class TestSmarty(unittest.TestCase):
                     'right-double-quote': '&ldquo;',
                     'left-angle-quote': '[',
                     'right-angle-quote': ']',
-                }),
-            ]
+                },
+            }
         }
         self.md = markdown.Markdown(
             extensions=['markdown.extensions.smarty'],

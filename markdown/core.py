@@ -4,6 +4,7 @@ import codecs
 import sys
 import logging
 import importlib
+import pkg_resources
 from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
@@ -51,10 +52,10 @@ class Markdown(object):
         Keyword arguments:
 
         * extensions: A list of extensions.
-           If they are of type string, the module mdx_name.py will be loaded.
-           If they are a subclass of markdown.Extension, they will be used
-           as-is.
-        * extension_configs: Configuration settingis for extensions.
+           If they are of type string, an entry point will be loaded.
+           If they are a subclass of `markdown.extensions.Extension`,
+           they will be used as-is.
+        * extension_configs: Configuration settings for extensions.
         * output_format: Format of output. Supported formats are:
             * "xhtml1": Outputs XHTML 1.x. Default.
             * "xhtml5": Outputs XHTML style tags of HTML 5
@@ -107,8 +108,8 @@ class Markdown(object):
         Keyword arguments:
 
         * extensions: A list of extensions, which can either
-           be strings or objects.  See the docstring on Markdown.
-        * configs: A dictionary mapping module names to config options.
+           be strings or objects. 
+        * configs: A dictionary mapping extension names to config options.
 
         """
         for ext in extensions:
@@ -127,41 +128,24 @@ class Markdown(object):
 
         return self
 
-    def build_extension(self, ext_name, configs):
+    def build_extension(self, name, configs):
         """
-        Build extension by name, then return the module.
-
+        Build an extension from a string name, and return an instance.
+        
+        The string name must be registered as an entry point in the
+        `markdown.extensions` group which points to a subclass of
+        the `markdown.extensions.Extension` class.  If multiple
+        distributions have registered the same name, the first one
+        found by `pkg_resources.iter_entry_points` is returned.
         """
-
-        configs = dict(configs)
-
-        # Get class name (if provided): `path.to.module:ClassName`
-        ext_name, class_name = ext_name.split(':', 1) \
-            if ':' in ext_name else (ext_name, '')
-
-        try:
-            module = importlib.import_module(ext_name)
-            logger.debug(
-                'Successfuly imported extension module "%s".' % ext_name
-            )
-        except ImportError as e:
-            message = 'Failed loading extension "%s".' % ext_name
-            e.args = (message,) + e.args[1:]
-            raise
-
-        if class_name:
-            # Load given class name from module.
-            return getattr(module, class_name)(**configs)
-        else:
-            # Expect  makeExtension() function to return a class.
-            try:
-                return module.makeExtension(**configs)
-            except AttributeError as e:
-                message = e.args[0]
-                message = "Failed to initiate extension " \
-                          "'%s': %s" % (ext_name, message)
-                e.args = (message,) + e.args[1:]
-                raise
+        ep = None
+        for x in pkg_resources.iter_entry_points('markdown.extensions', name):
+            ep = x
+            break
+        if ep is None:
+            raise ImportError('Can\'t find entry point "%s" in group "markdown.extensions".' % name)
+        ext = ep.load()
+        return ext(**configs)
 
     def registerExtension(self, extension):
         """ This gets called by the extension """
