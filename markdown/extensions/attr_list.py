@@ -167,7 +167,7 @@ class AttrListTreeprocessor(Treeprocessor):
 
 
 class AttrListExtension(Extension):
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         md.treeprocessors.add(
             'attr_list', AttrListTreeprocessor(md), '>prettify'
         )

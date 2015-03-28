@@ -28,7 +28,7 @@ import re
 class AdmonitionExtension(Extension):
     """ Admonition extension for Python-Markdown. """
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Add Admonition to Markdown instance. """
         md.registerExtension(self)
 

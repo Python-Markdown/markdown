@@ -31,7 +31,7 @@ ABBR_REF_RE = re.compile(r'[*]\[(?P<abbr>[^\]]*)\][ ]?:\s*(?P<title>.*)')
 class AbbrExtension(Extension):
     """ Abbreviation Extension for Python-Markdown. """
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Insert AbbrPreprocessor before ReferencePreprocessor. """
         md.preprocessors.add('abbr', AbbrPreprocessor(md), '<reference')
 

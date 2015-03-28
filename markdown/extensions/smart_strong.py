@@ -27,7 +27,7 @@ STRONG_RE = r'(\*{2})(.+?)\2'
 class SmartEmphasisExtension(Extension):
     """ Add smart_emphasis extension to Markdown class."""
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Modify inline patterns. """
         md.inlinePatterns['strong'] = SimpleTagPattern(STRONG_RE, 'strong')
         md.inlinePatterns.add(

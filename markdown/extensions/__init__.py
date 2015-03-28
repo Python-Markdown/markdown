@@ -54,7 +54,7 @@ class Extension(object):
         for key, value in items:
             self.setConfig(key, value)
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """
         Add the various proccesors and patterns to the Markdown Instance.
 
@@ -63,8 +63,6 @@ class Extension(object):
         Keyword arguments:
 
         * md: The Markdown instance.
-
-        * md_globals: Global variables in the markdown module namespace.
 
         """
         raise NotImplementedError(

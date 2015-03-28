@@ -34,7 +34,7 @@ END_RE = re.compile(r'^(-{3}|\.{3})(\s.*)?')
 class MetaExtension (Extension):
     """ Meta-Data extension for Python-Markdown. """
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Add MetaPreprocessor to Markdown instance. """
         md.preprocessors.add("meta",
                              MetaPreprocessor(md),

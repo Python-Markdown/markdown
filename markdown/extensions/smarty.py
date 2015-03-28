@@ -242,7 +242,7 @@ class SmartyExtension(Extension):
         )
         self._addPatterns(md, patterns, 'quotes')
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         configs = self.getConfigs()
         self.inlinePatterns = OrderedDict()
         if configs['smart_ellipses']:

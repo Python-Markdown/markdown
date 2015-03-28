@@ -26,6 +26,6 @@ BR_RE = r'\n'
 
 class Nl2BrExtension(Extension):
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         br_tag = SubstituteTagPattern(BR_RE, 'br')
         md.inlinePatterns.add('nl', br_tag, '_end')

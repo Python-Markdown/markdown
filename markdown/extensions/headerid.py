@@ -77,7 +77,7 @@ class HeaderIdExtension(Extension):
             PendingDeprecationWarning
         )
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         md.registerExtension(self)
         self.processor = HeaderIdTreeprocessor()
         self.processor.md = md
