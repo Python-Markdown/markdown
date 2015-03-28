@@ -72,7 +72,3 @@ class MetaPreprocessor(Preprocessor):
                     break  # no meta data - done
         self.markdown.Meta = meta
         return lines
-
-
-def makeExtension(**kwargs):
-    return MetaExtension(**kwargs)

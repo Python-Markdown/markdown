@@ -29,7 +29,3 @@ class Nl2BrExtension(Extension):
     def extendMarkdown(self, md, md_globals):
         br_tag = SubstituteTagPattern(BR_RE, 'br')
         md.inlinePatterns.add('nl', br_tag, '_end')
-
-
-def makeExtension(**kwargs):
-    return Nl2BrExtension(**kwargs)

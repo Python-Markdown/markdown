@@ -91,7 +91,3 @@ class HeaderIdExtension(Extension):
 
     def reset(self):
         self.processor.IDs = set()
-
-
-def makeExtension(**kwargs):
-    return HeaderIdExtension(**kwargs)

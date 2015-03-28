@@ -85,7 +85,3 @@ class AbbrPattern(Pattern):
         abbr.text = AtomicString(m.group('abbr'))
         abbr.set('title', self.title)
         return abbr
-
-
-def makeExtension(**kwargs):
-    return AbbrExtension(**kwargs)

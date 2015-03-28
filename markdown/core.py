@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import codecs
 import sys
 import logging
-import importlib
 import pkg_resources
 from . import util
 from .preprocessors import build_preprocessors
@@ -108,7 +107,7 @@ class Markdown(object):
         Keyword arguments:
 
         * extensions: A list of extensions, which can either
-           be strings or objects. 
+           be strings or objects.
         * configs: A dictionary mapping extension names to config options.
 
         """
@@ -131,7 +130,7 @@ class Markdown(object):
     def build_extension(self, name, configs):
         """
         Build an extension from a string name, and return an instance.
-        
+
         The string name must be registered as an entry point in the
         `markdown.extensions` group which points to a subclass of
         the `markdown.extensions.Extension` class.  If multiple

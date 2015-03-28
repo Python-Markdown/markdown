@@ -106,7 +106,3 @@ class FencedBlockPreprocessor(Preprocessor):
         txt = txt.replace('>', '&gt;')
         txt = txt.replace('"', '&quot;')
         return txt
-
-
-def makeExtension(**kwargs):
-    return FencedCodeExtension(**kwargs)

@@ -35,7 +35,3 @@ class SmartEmphasisExtension(Extension):
             SimpleTagPattern(SMART_STRONG_RE, 'strong'),
             '>emphasis2'
         )
-
-
-def makeExtension(**kwargs):
-    return SmartEmphasisExtension(**kwargs)

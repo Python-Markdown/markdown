@@ -109,7 +109,3 @@ class DefListExtension(Extension):
         md.parser.blockprocessors.add('deflist',
                                       DefListProcessor(md.parser),
                                       '>ulist')
-
-
-def makeExtension(**kwargs):
-    return DefListExtension(**kwargs)

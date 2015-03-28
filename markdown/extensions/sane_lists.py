@@ -41,7 +41,3 @@ class SaneListExtension(Extension):
         """ Override existing Processors. """
         md.parser.blockprocessors['olist'] = SaneOListProcessor(md.parser)
         md.parser.blockprocessors['ulist'] = SaneUListProcessor(md.parser)
-
-
-def makeExtension(**kwargs):
-    return SaneListExtension(**kwargs)

@@ -171,7 +171,3 @@ class AttrListExtension(Extension):
         md.treeprocessors.add(
             'attr_list', AttrListTreeprocessor(md), '>prettify'
         )
-
-
-def makeExtension(**kwargs):
-    return AttrListExtension(**kwargs)

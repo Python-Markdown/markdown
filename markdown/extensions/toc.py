@@ -301,7 +301,3 @@ class TocExtension(Extension):
 
     def reset(self):
         self.md.toc = ''
-
-
-def makeExtension(**kwargs):
-    return TocExtension(**kwargs)

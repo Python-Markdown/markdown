@@ -83,7 +83,3 @@ class WikiLinks(Pattern):
             if 'wiki_html_class' in self.md.Meta:
                 html_class = self.md.Meta['wiki_html_class'][0]
         return base_url, end_url, html_class
-
-
-def makeExtension(**kwargs):
-    return WikiLinkExtension(**kwargs)

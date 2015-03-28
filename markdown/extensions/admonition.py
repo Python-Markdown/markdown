@@ -90,7 +90,3 @@ class AdmonitionProcessor(BlockProcessor):
             # e.g.: `!!! warning ""` will *not* render `p` with a title
             title = None
         return klass, title
-
-
-def makeExtension(**kwargs):
-    return AdmonitionExtension(**kwargs)

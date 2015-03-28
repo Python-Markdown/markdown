@@ -257,7 +257,3 @@ class SmartyExtension(Extension):
         inlineProcessor.inlinePatterns = self.inlinePatterns
         md.treeprocessors.add('smarty', inlineProcessor, '_end')
         md.ESCAPED_CHARS.extend(['"', "'"])
-
-
-def makeExtension(**kwargs):
-    return SmartyExtension(**kwargs)

@@ -258,7 +258,3 @@ class CodeHiliteExtension(Extension):
         md.treeprocessors.add("hilite", hiliter, "<inline")
 
         md.registerExtension(self)
-
-
-def makeExtension(**kwargs):
-    return CodeHiliteExtension(**kwargs)

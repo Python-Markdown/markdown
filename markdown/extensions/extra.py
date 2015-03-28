@@ -66,10 +66,6 @@ class ExtraExtension(Extension):
             r'^(p|h[1-6]|li|dd|dt|td|th|legend|address)$', re.IGNORECASE)
 
 
-def makeExtension(**kwargs):
-    return ExtraExtension(**kwargs)
-
-
 class MarkdownInHtmlProcessor(BlockProcessor):
     """Process Markdown Inside HTML Blocks."""
     def test(self, parent, block):

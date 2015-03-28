@@ -312,8 +312,3 @@ class FootnotePostprocessor(Postprocessor):
             FN_BACKLINK_TEXT, self.footnotes.getConfig("BACKLINK_TEXT")
         )
         return text.replace(NBSP_PLACEHOLDER, "&#160;")
-
-
-def makeExtension(**kwargs):
-    """ Return an instance of the FootnoteExtension """
-    return FootnoteExtension(**kwargs)
