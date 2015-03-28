@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
-from __future__ import with_statement
 import sys
 import os
 from setuptools import setup
-from distutils.command.build import build
 from distutils.core import Command
 from distutils.util import change_root, newer
 import codecs
@@ -151,25 +149,6 @@ class build_docs(Command):
                     self.copy_file(infile, outfile)
 
 
-class md_build(build):
-
-    """ Run "build_docs" command from "build" command. """
-
-    user_options = build.user_options + [
-        ('no-build-docs', None, 'do not build documentation'),
-    ]
-
-    boolean_options = build.boolean_options + ['build-docs']
-
-    def initialize_options(self):
-        build.initialize_options(self)
-        self.no_build_docs = False
-
-    def has_docs(self):
-        return not self.no_build_docs
-
-    sub_commands = build.sub_commands + [('build_docs', has_docs)]
-
 long_description = '''
 This is a Python implementation of John Gruber's Markdown_.
 It is almost completely compliant with the reference implementation,
@@ -206,7 +185,6 @@ setup(
     packages=['markdown', 'markdown.extensions'],
     cmdclass={
         'build_docs': build_docs,
-        'build': md_build
     },
     entry_points={
         'console_scripts': [
