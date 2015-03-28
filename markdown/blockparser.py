@@ -45,10 +45,10 @@ class BlockParser:
     looping through them and creating an ElementTree object.
     """
 
-    def __init__(self, markdown):
+    def __init__(self, md):
         self.blockprocessors = odict.OrderedDict()
         self.state = State()
-        self.markdown = markdown
+        self.md = md
 
     def parseDocument(self, lines):
         """ Parse a markdown document into an ElementTree.
@@ -61,7 +61,7 @@ class BlockParser:
 
         """
         # Create a ElementTree from the lines
-        self.root = util.etree.Element(self.markdown.doc_tag)
+        self.root = util.etree.Element(self.md.doc_tag)
         self.parseChunk(self.root, '\n'.join(lines))
         return util.etree.ElementTree(self.root)
 

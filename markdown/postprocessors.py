@@ -15,10 +15,10 @@ from . import odict
 import re
 
 
-def build_postprocessors(md_instance, **kwargs):
+def build_postprocessors(md, **kwargs):
     """ Build the default postprocessors for Markdown. """
     postprocessors = odict.OrderedDict()
-    postprocessors["raw_html"] = RawHtmlPostprocessor(md_instance)
+    postprocessors["raw_html"] = RawHtmlPostprocessor(md)
     postprocessors["amp_substitute"] = AndSubstitutePostprocessor()
     postprocessors["unescape"] = UnescapePostprocessor()
     return postprocessors
@@ -50,15 +50,15 @@ class RawHtmlPostprocessor(Postprocessor):
 
     def run(self, text):
         """ Iterate over html stash and restore html. """
-        for i in range(self.markdown.htmlStash.html_counter):
-            html = self.markdown.htmlStash.rawHtmlBlocks[i]
+        for i in range(self.md.htmlStash.html_counter):
+            html = self.md.htmlStash.rawHtmlBlocks[i]
             if self.isblocklevel(html):
                 text = text.replace(
-                    "<p>%s</p>" % (self.markdown.htmlStash.get_placeholder(i)),
+                    "<p>%s</p>" % (self.md.htmlStash.get_placeholder(i)),
                     html + "\n"
                 )
             text = text.replace(
-                self.markdown.htmlStash.get_placeholder(i), html
+                self.md.htmlStash.get_placeholder(i), html
             )
         return text
 

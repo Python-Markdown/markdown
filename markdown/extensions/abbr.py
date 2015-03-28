@@ -51,7 +51,7 @@ class AbbrPreprocessor(Preprocessor):
             if m:
                 abbr = m.group('abbr').strip()
                 title = m.group('title').strip()
-                self.markdown.inlinePatterns['abbr-%s' % abbr] = \
+                self.md.inlinePatterns['abbr-%s' % abbr] = \
                     AbbrPattern(self._generate_pattern(abbr), title)
             else:
                 new_text.append(line)

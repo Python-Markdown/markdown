@@ -5,11 +5,11 @@ from . import odict
 from . import inlinepatterns
 
 
-def build_treeprocessors(md_instance, **kwargs):
+def build_treeprocessors(md, **kwargs):
     """ Build the default treeprocessors for Markdown. """
     treeprocessors = odict.OrderedDict()
-    treeprocessors["inline"] = InlineProcessor(md_instance)
-    treeprocessors["prettify"] = PrettifyTreeprocessor(md_instance)
+    treeprocessors["inline"] = InlineProcessor(md)
+    treeprocessors["prettify"] = PrettifyTreeprocessor(md)
     return treeprocessors
 
 
@@ -52,7 +52,7 @@ class InlineProcessor(Treeprocessor):
         self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
                                       + len(self.__placeholder_suffix)
         self.__placeholder_re = util.INLINE_PLACEHOLDER_RE
-        self.markdown = md
+        self.md = md
         self.inlinePatterns = md.inlinePatterns
 
     def __makePlaceholder(self, type):
@@ -311,14 +311,14 @@ class InlineProcessor(Treeprocessor):
                     stack.append(child)
 
             for element, lst in insertQueue:
-                if self.markdown.enable_attributes:
+                if self.md.enable_attributes:
                     if element.text and isString(element.text):
                         element.text = inlinepatterns.handleAttributes(
                             element.text, element
                         )
                 i = 0
                 for newChild in lst:
-                    if self.markdown.enable_attributes:
+                    if self.md.enable_attributes:
                         # Processing attributes
                         if newChild.tail and isString(newChild.tail):
                             newChild.tail = inlinepatterns.handleAttributes(

@@ -52,31 +52,31 @@ except ImportError:  # pragma: no cover
     import htmlentitydefs as entities
 
 
-def build_inlinepatterns(md_instance, **kwargs):
+def build_inlinepatterns(md, **kwargs):
     """ Build the default set of inline patterns for Markdown. """
     inlinePatterns = odict.OrderedDict()
     inlinePatterns["backtick"] = BacktickPattern(BACKTICK_RE)
-    inlinePatterns["escape"] = EscapePattern(ESCAPE_RE, md_instance)
-    inlinePatterns["reference"] = ReferencePattern(REFERENCE_RE, md_instance)
-    inlinePatterns["link"] = LinkPattern(LINK_RE, md_instance)
-    inlinePatterns["image_link"] = ImagePattern(IMAGE_LINK_RE, md_instance)
+    inlinePatterns["escape"] = EscapePattern(ESCAPE_RE, md)
+    inlinePatterns["reference"] = ReferencePattern(REFERENCE_RE, md)
+    inlinePatterns["link"] = LinkPattern(LINK_RE, md)
+    inlinePatterns["image_link"] = ImagePattern(IMAGE_LINK_RE, md)
     inlinePatterns["image_reference"] = ImageReferencePattern(
-        IMAGE_REFERENCE_RE, md_instance
+        IMAGE_REFERENCE_RE, md
     )
     inlinePatterns["short_reference"] = ReferencePattern(
-        SHORT_REF_RE, md_instance
+        SHORT_REF_RE, md
     )
-    inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md_instance)
-    inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md_instance)
+    inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md)
+    inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md)
     inlinePatterns["linebreak"] = SubstituteTagPattern(LINE_BREAK_RE, 'br')
-    inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
-    inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md_instance)
+    inlinePatterns["html"] = HtmlPattern(HTML_RE, md)
+    inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md)
     inlinePatterns["not_strong"] = SimpleTextPattern(NOT_STRONG_RE)
     inlinePatterns["em_strong"] = DoubleTagPattern(EM_STRONG_RE, 'strong,em')
     inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'em,strong')
     inlinePatterns["strong"] = SimpleTagPattern(STRONG_RE, 'strong')
     inlinePatterns["emphasis"] = SimpleTagPattern(EMPHASIS_RE, 'em')
-    if md_instance.smart_emphasis:
+    if md.smart_emphasis:
         inlinePatterns["emphasis2"] = SimpleTagPattern(SMART_EMPHASIS_RE, 'em')
     else:
         inlinePatterns["emphasis2"] = SimpleTagPattern(EMPHASIS_2_RE, 'em')
@@ -183,7 +183,7 @@ The pattern classes
 class Pattern(object):
     """Base class that inline patterns subclass. """
 
-    def __init__(self, pattern, markdown_instance=None):
+    def __init__(self, pattern, md=None):
         """
         Create an instant of an inline pattern.
 
@@ -196,8 +196,8 @@ class Pattern(object):
         self.compiled_re = re.compile("^(.*?)%s(.*?)$" % pattern,
                                       re.DOTALL | re.UNICODE)
 
-        if markdown_instance:
-            self.markdown = markdown_instance
+        if md:
+            self.md = md
 
     def getCompiledRegExp(self):
         """ Return a compiled regular expression. """
@@ -222,7 +222,7 @@ class Pattern(object):
     def unescape(self, text):
         """ Return unescaped text given text with an inline placeholder. """
         try:
-            stash = self.markdown.treeprocessors['inline'].stashed_nodes
+            stash = self.md.treeprocessors['inline'].stashed_nodes
         except KeyError:  # pragma: no cover
             return text
 
@@ -262,7 +262,7 @@ class EscapePattern(Pattern):
 
     def handleMatch(self, m):
         char = m.group(2)
-        if char in self.markdown.ESCAPED_CHARS:
+        if char in self.md.ESCAPED_CHARS:
             return '%s%s%s' % (util.STX, ord(char), util.ETX)
         else:
             return None
@@ -322,13 +322,13 @@ class HtmlPattern(Pattern):
     """ Store raw inline html and return a placeholder. """
     def handleMatch(self, m):
         rawhtml = self.unescape(m.group(2))
-        place_holder = self.markdown.htmlStash.store(rawhtml)
+        place_holder = self.md.htmlStash.store(rawhtml)
         return place_holder
 
     def unescape(self, text):
         """ Return unescaped text given text with an inline placeholder. """
         try:
-            stash = self.markdown.treeprocessors['inline'].stashed_nodes
+            stash = self.md.treeprocessors['inline'].stashed_nodes
         except KeyError:  # pragma: no cover
             return text
 
@@ -337,7 +337,7 @@ class HtmlPattern(Pattern):
             value = stash.get(id)
             if value is not None:
                 try:
-                    return self.markdown.serializer(value)
+                    return self.md.serializer(value)
                 except:
                     return '\%s' % value
 
@@ -380,7 +380,7 @@ class ImagePattern(LinkPattern):
         if len(src_parts) > 1:
             el.set('title', dequote(self.unescape(" ".join(src_parts[1:]))))
 
-        if self.markdown.enable_attributes:
+        if self.md.enable_attributes:
             truealt = handleAttributes(m.group(2), el)
         else:
             truealt = m.group(2)
@@ -406,9 +406,9 @@ class ReferencePattern(LinkPattern):
 
         # Clean up linebreaks in id
         id = self.NEWLINE_CLEANUP_RE.sub(' ', id)
-        if id not in self.markdown.references:  # ignore undefined refs
+        if id not in self.md.references:  # ignore undefined refs
             return None
-        href, title = self.markdown.references[id]
+        href, title = self.md.references[id]
 
         text = m.group(2)
         return self.makeTag(href, title, text)
@@ -432,7 +432,7 @@ class ImageReferencePattern(ReferencePattern):
         if title:
             el.set("title", title)
 
-        if self.markdown.enable_attributes:
+        if self.md.enable_attributes:
             text = handleAttributes(text, el)
 
         el.set("alt", self.unescape(text))

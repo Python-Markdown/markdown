@@ -70,5 +70,5 @@ class MetaPreprocessor(Preprocessor):
                 else:
                     lines.insert(0, line)
                     break  # no meta data - done
-        self.markdown.Meta = meta
+        self.md.Meta = meta
         return lines

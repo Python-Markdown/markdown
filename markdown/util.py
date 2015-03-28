@@ -123,9 +123,9 @@ class AtomicString(text_type):
 
 
 class Processor(object):
-    def __init__(self, markdown_instance=None):
-        if markdown_instance:
-            self.markdown = markdown_instance
+    def __init__(self, md=None):
+        if md:
+            self.md = md
 
 
 class HtmlStash(object):

@@ -22,9 +22,9 @@ from .blockparser import BlockParser
 logger = logging.getLogger('MARKDOWN')
 
 
-def build_block_parser(md_instance, **kwargs):
+def build_block_parser(md, **kwargs):
     """ Build the default block parser used by Markdown. """
-    parser = BlockParser(md_instance)
+    parser = BlockParser(md)
     parser.blockprocessors['empty'] = EmptyBlockProcessor(parser)
     parser.blockprocessors['indent'] = ListIndentProcessor(parser)
     parser.blockprocessors['code'] = CodeBlockProcessor(parser)
@@ -51,7 +51,7 @@ class BlockProcessor:
 
     def __init__(self, parser):
         self.parser = parser
-        self.tab_length = parser.markdown.tab_length
+        self.tab_length = parser.md.tab_length
 
     def lastChild(self, parent):
         """ Return the last child of an etree element. """
@@ -360,7 +360,7 @@ class OListProcessor(BlockProcessor):
             # This is a new list so create parent with appropriate tag.
             lst = util.etree.SubElement(parent, self.TAG)
             # Check if a custom start integer is set
-            if not self.parser.markdown.lazy_ol and self.STARTSWITH != '1':
+            if not self.parser.md.lazy_ol and self.STARTSWITH != '1':
                 lst.attrib['start'] = self.STARTSWITH
 
         self.parser.state.set('list')

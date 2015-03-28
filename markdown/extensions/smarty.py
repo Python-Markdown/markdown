@@ -149,11 +149,11 @@ remainingDoubleQuotesRegex = '"'
 
 
 class SubstituteTextPattern(HtmlPattern):
-    def __init__(self, pattern, replace, markdown_instance):
+    def __init__(self, pattern, replace, md):
         """ Replaces matches with some text. """
         HtmlPattern.__init__(self, pattern)
         self.replace = replace
-        self.markdown = markdown_instance
+        self.md = md
 
     def handleMatch(self, m):
         result = ''
@@ -161,7 +161,7 @@ class SubstituteTextPattern(HtmlPattern):
             if isinstance(part, int):
                 result += m.group(part)
             else:
-                result += self.markdown.htmlStash.store(part)
+                result += self.md.htmlStash.store(part)
         return result
 
 
