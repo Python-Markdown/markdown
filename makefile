@@ -45,7 +45,7 @@ test:
 
 .PHONY : update-tests
 update-tests:
-	python run-tests.py update
+	python -m markdown.test update
 
 .PHONY : clean
 clean:

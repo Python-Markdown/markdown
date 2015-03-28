@@ -122,7 +122,7 @@ class Markdown(object):
                 )
             elif ext is not None:
                 raise TypeError(
-                    'Extension "%s.%s" must be of type: "markdown.Extension"'
+                    'Extension "%s.%s" must be of type: "markdown.extensions.Extension"'
                     % (ext.__class__.__module__, ext.__class__.__name__))
 
         return self
