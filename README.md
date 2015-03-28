@@ -1,8 +1,8 @@
 Python-Markdown
 ===============
 
-[![Build Status](https://travis-ci.org/Python-Markdown/markdown.svg)](https://travis-ci.org/Python-Markdown/markdown)
-[![Coverage Status](https://img.shields.io/coveralls/Python-Markdown/markdown.svg)](https://coveralls.io/r/Python-Markdown/markdown?branch=master)
+[![Build Status](https://travis-ci.org/Python-Markdown/markdown.svg?branch=master)](https://travis-ci.org/Python-Markdown/markdown)
+[![Coverage Status](https://coveralls.io/repos/Python-Markdown/markdown/badge.svg?branch=master)](https://coveralls.io/r/Python-Markdown/markdown?branch=master)
 [![Downloads](http://img.shields.io/pypi/dm/Markdown.svg)](https://pypi.python.org/pypi/Markdown#downloads)
 [![Latest Version](http://img.shields.io/pypi/v/Markdown.svg)](http://pypi.python.org/pypi/Markdown)
 [![BSD License](http://img.shields.io/badge/license-BSD-yellow.svg)](http://opensource.org/licenses/BSD-3-Clause)
