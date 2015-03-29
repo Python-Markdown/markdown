@@ -229,19 +229,6 @@ class Pattern(object):
         except KeyError:  # pragma: no cover
             return text
 
-        def itertext(el):  # pragma: no cover
-            ' Reimplement Element.itertext for older python versions '
-            tag = el.tag
-            if not isinstance(tag, util.string_type) and tag is not None:
-                return
-            if el.text:
-                yield el.text
-            for e in el:
-                for s in itertext(e):
-                    yield s
-                if e.tail:
-                    yield e.tail
-
         def get_stash(m):
             id = m.group(1)
             if id in stash:
@@ -250,7 +237,7 @@ class Pattern(object):
                     return value
                 else:
                     # An etree Element - return text content only
-                    return ''.join(itertext(value))
+                    return ''.join(value.itertext())
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
