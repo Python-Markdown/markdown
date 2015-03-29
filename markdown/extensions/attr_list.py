@@ -24,12 +24,6 @@ from ..treeprocessors import Treeprocessor
 from ..util import isBlockLevel
 import re
 
-try:
-    Scanner = re.Scanner
-except AttributeError:  # pragma: no cover
-    # must be on Python 2.4
-    from sre import Scanner
-
 
 def _handle_double_quote(s, t):
     k, v = t.split('=')
@@ -52,7 +46,7 @@ def _handle_word(s, t):
         return 'id', t[1:]
     return t, t
 
-_scanner = Scanner([
+_scanner = re.Scanner([
     (r'[^ ]+=".*?"', _handle_double_quote),
     (r"[^ ]+='.*?'", _handle_single_quote),
     (r'[^ ]+=[^ =]+', _handle_key_value),
