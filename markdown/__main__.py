@@ -37,8 +37,8 @@ def parse_options(args=None, values=None):
     parser.add_option("-e", "--encoding", dest="encoding",
                       help="Encoding for input and output files.",)
     parser.add_option("-o", "--output_format", dest="output_format",
-                      default='xhtml1', metavar="OUTPUT_FORMAT",
-                      help="'xhtml1' (default), 'html4' or 'html5'.")
+                      default='xhtml', metavar="OUTPUT_FORMAT",
+                      help="Use output format 'xhtml' (default) or 'html'.")
     parser.add_option("-n", "--no_lazy_ol", dest="lazy_ol",
                       action='store_false', default=True,
                       help="Observe number of first item of ordered lists.")

@@ -596,7 +596,7 @@ class TestCliOptionParsing(unittest.TestCase):
             'input': None,
             'output': None,
             'encoding': None,
-            'output_format': 'xhtml1',
+            'output_format': 'xhtml',
             'lazy_ol': True,
             'extensions': [],
             'extension_configs': {},
@@ -646,8 +646,8 @@ class TestCliOptionParsing(unittest.TestCase):
         self.assertEqual(options, self.default_options)
 
     def testOutputFormatOption(self):
-        options, logging_level = parse_options(['-o', 'html5'])
-        self.default_options['output_format'] = 'html5'
+        options, logging_level = parse_options(['-o', 'html'])
+        self.default_options['output_format'] = 'html'
         self.assertEqual(options, self.default_options)
 
     def testNoLazyOlOption(self):

@@ -172,19 +172,10 @@ __output_format__{: #output_format }:
 
     Supported formats are:
 
-    * `"xhtml1"`: Outputs XHTML 1.x. **Default**.
-    * `"xhtml5"`: Outputs XHTML style tags of HTML 5
-    * `"xhtml"`: Outputs latest supported version of XHTML (currently XHTML 1.1).
-    * `"html4"`: Outputs HTML 4
-    * `"html5"`: Outputs HTML style tags of HTML 5
-    * `"html"`: Outputs latest supported version of HTML (currently HTML 4).
+    * `"xhtml"`: Outputs XHTML style tags. **Default**.
+    * `"html5"`: Outputs HTML style tags.
 
     The values can be in either lowercase or uppercase.
-
-    !!! warning
-        It is suggested that the more specific formats (`"xhtml1"`, `"html5"`, &
-        `"html4"`) be used as the more general formats (`"xhtml"` or `"html"`) may
-        change in the future if it makes sense at that time.
 
 __tab_length__{: #tab_length }:
 
