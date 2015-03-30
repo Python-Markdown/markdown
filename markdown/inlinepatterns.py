@@ -154,17 +154,6 @@ def dequote(string):
         return string
 
 
-ATTR_RE = re.compile(r"\{@([^\}]*)=([^\}]*)}")  # {@id=123}
-
-
-def handleAttributes(text, parent):
-    """Set values of an element based on attribute definitions ({@id=123})."""
-    def attributeCallback(match):
-        parent.set(match.group(1), match.group(2).replace('\n', ' '))
-        return ''
-    return ATTR_RE.sub(attributeCallback, text)
-
-
 """
 The pattern classes
 -----------------------------------------------------------------------------
@@ -601,12 +590,7 @@ class ImageInlineProcessor(LinkInlineProcessor):
         if title is not None:
             el.set("title", title)
 
-        if self.markdown.enable_attributes:
-            truealt = handleAttributes(text, el)
-        else:
-            truealt = text
-
-        el.set('alt', self.unescape(truealt))
+        el.set('alt', self.unescape(text))
         return el, m.start(0), index
 
 
@@ -676,10 +660,6 @@ class ImageReferenceInlineProcessor(ReferenceInlineProcessor):
         el.set("src", href)
         if title:
             el.set("title", title)
-
-        if self.markdown.enable_attributes:
-            text = handleAttributes(text, el)
-
         el.set("alt", self.unescape(text))
         return el
 
