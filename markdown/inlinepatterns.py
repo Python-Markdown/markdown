@@ -164,16 +164,6 @@ def dequote(string):
         return string
 
 
-ATTR_RE = re.compile("\{@([^\}]*)=([^\}]*)}")  # {@id=123}
-
-
-def handleAttributes(text, parent):
-    """Set values of an element based on attribute definitions ({@id=123})."""
-    def attributeCallback(match):
-        parent.set(match.group(1), match.group(2).replace('\n', ' '))
-    return ATTR_RE.sub(attributeCallback, text)
-
-
 """
 The pattern classes
 -----------------------------------------------------------------------------
@@ -366,13 +356,7 @@ class ImagePattern(LinkPattern):
             el.set('src', "")
         if len(src_parts) > 1:
             el.set('title', dequote(self.unescape(" ".join(src_parts[1:]))))
-
-        if self.md.enable_attributes:
-            truealt = handleAttributes(m.group(2), el)
-        else:
-            truealt = m.group(2)
-
-        el.set('alt', self.unescape(truealt))
+        el.set('alt', self.unescape(m.group(2)))
         return el
 
 
@@ -418,10 +402,6 @@ class ImageReferencePattern(ReferencePattern):
         el.set("src", href)
         if title:
             el.set("title", title)
-
-        if self.md.enable_attributes:
-            text = handleAttributes(text, el)
-
         el.set("alt", self.unescape(text))
         return el
 

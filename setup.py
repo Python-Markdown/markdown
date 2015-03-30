@@ -210,6 +210,7 @@ setup(
             'markdown.extensions.tables = markdown.extensions.tables:TableExtension',
             'markdown.extensions.toc = markdown.extensions.toc:TocExtension',
             'markdown.extensions.wikilinks = markdown.extensions.wikilinks:WikiLinkExtension',
+            'legacy_attrs = markdown.extensions.legacy_attrs:LegacyAttrExtension',
         ]
     },
     classifiers=[
