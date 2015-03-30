@@ -27,7 +27,6 @@ class Markdown(object):
 
     option_defaults = {
         'tab_length':            4,
-        'enable_attributes':     True,
         'smart_emphasis':        True,
         'lazy_ol':               True,
     }
@@ -53,7 +52,6 @@ class Markdown(object):
             * "xhtml": Outputs XHTML style tags. Default.
             * "html": Outputs HTML style tags.
         * tab_length: Length of tabs in the source. Default: 4
-        * enable_attributes: Enable the conversion of attributes. Default: True
         * smart_emphasis: Treat `_connected_words_` intelligently Default: True
         * lazy_ol: Ignore number of first item of ordered lists. Default: True
 

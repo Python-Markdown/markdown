@@ -1,9 +1,3 @@
-
-# Header {@id=inthebeginning}
-
-Now, let's try something *inline{@class=special}*, to see if it works
-
-
 Blah blah blah <http://www.slashdot.org>
 
 * Basic list

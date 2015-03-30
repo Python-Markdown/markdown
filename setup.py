@@ -78,6 +78,7 @@ setup(
             'tables = markdown.extensions.tables:TableExtension',
             'toc = markdown.extensions.toc:TocExtension',
             'wikilinks = markdown.extensions.wikilinks:WikiLinkExtension',
+            'legacy_attrs = markdown.extensions.legacy_attrs:LegacyAttrExtension',
         ]
     },
     classifiers=[
