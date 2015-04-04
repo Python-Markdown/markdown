@@ -50,3 +50,6 @@ Four spaces is a code block:
     ------------ | -------------
     Content Cell | Content Cell
     Content Cell | Content Cell
+
+| First Header | Second Header |
+| ------------ | ------------- |
