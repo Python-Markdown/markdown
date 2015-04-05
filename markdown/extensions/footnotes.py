@@ -311,7 +311,9 @@ class FootnotePostprocessor(Postprocessor):
         text = text.replace(
             FN_BACKLINK_TEXT, self.footnotes.getConfig("BACKLINK_TEXT")
         )
-        return text.replace(NBSP_PLACEHOLDER, "&#160;")
+        result = text.replace(NBSP_PLACEHOLDER, "&#160;")
+        self.footnotes.reset()
+        return result
 
 
 def makeExtension(*args, **kwargs):
