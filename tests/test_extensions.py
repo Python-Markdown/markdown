@@ -858,3 +858,40 @@ Must not be confused with 'ndash'  (--) ... >>
 is the &sbquo;mdash&lsquo;: \u2014
 Must not be confused with &sbquo;ndash&lsquo;  (\u2013) \u2026 ]</p>"""
         self.assertEqual(self.md.convert(text), correct)
+
+
+class TestFootnotes(unittest.TestCase):
+    """ Test Footnotes extension. """
+
+    def setUp(self):
+        self.md = markdown.Markdown(extensions=['markdown.extensions.footnotes'])
+
+    def testSimpleFootnotes(self):
+        """ Test Footnotes. """
+        text = "Foo[^1] Bar\n[^1]: Baz"
+        self.assertEqual(
+            self.md.convert(text),
+            '<p>Foo<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup> Bar</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>Baz&#160;'
+            '<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">'
+            '&#8617;'
+            '</a>'
+            '</p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def testFootnotesReset(self):
+        """ Test whether FootnotesExtension got reset properly """
+        text1 = "Foo[^1] Bar\n[^1]: Baz"
+        text2 = "Foo"
+        self.md.convert(text1)
+        self.assertEqual(
+            self.md.convert(text2),
+            '<p>Foo</p>'
+        )
