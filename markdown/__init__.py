@@ -88,7 +88,7 @@ class Markdown(object):
            If they are of type string, the module mdx_name.py will be loaded.
            If they are a subclass of markdown.Extension, they will be used
            as-is.
-        * extension_configs: Configuration settingis for extensions.
+        * extension_configs: Configuration settings for extensions.
         * output_format: Format of output. Supported formats are:
             * "xhtml1": Outputs XHTML 1.x. Default.
             * "xhtml5": Outputs XHTML style tags of HTML 5
@@ -400,7 +400,7 @@ class Markdown(object):
         return output.strip()
 
     def convertFile(self, input=None, output=None, encoding=None):
-        """Converts a markdown file and returns the HTML as a unicode string.
+        """Converts a Markdown file and returns the HTML as a Unicode string.
 
         Decodes the file using the provided encoding (defaults to utf-8),
         passes the file content to markdown, and outputs the html to either
@@ -408,9 +408,9 @@ class Markdown(object):
         encoding as the source file. The 'xmlcharrefreplace' error handler is
         used when encoding the output.
 
-        **Note:** This is the only place that decoding and encoding of unicode
-        takes place in Python-Markdown.  (All other code is unicode-in /
-        unicode-out.)
+        **Note:** This is the only place that decoding and encoding of Unicode
+        takes place in Python-Markdown.  (All other code is Unicode-in /
+        Unicode-out.)
 
         Keyword arguments:
 
@@ -476,7 +476,7 @@ markdownFromFile().
 
 
 def markdown(text, *args, **kwargs):
-    """Convert a markdown string to HTML and return HTML as a unicode string.
+    """Convert a Markdown string to HTML and return HTML as a Unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
     basic use case.  It initializes an instance of Markdown, loads the
