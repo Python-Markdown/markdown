@@ -27,7 +27,7 @@ class TableProcessor(BlockProcessor):
 
     def test(self, parent, block):
         rows = block.split('\n')
-        return (len(rows) > 2 and '|' in rows[0] and
+        return (len(rows) > 1 and '|' in rows[0] and
                 '|' in rows[1] and '-' in rows[1] and
                 rows[1].strip()[0] in ['|', ':', '-'])
 
@@ -36,7 +36,7 @@ class TableProcessor(BlockProcessor):
         block = blocks.pop(0).split('\n')
         header = block[0].strip()
         seperator = block[1].strip()
-        rows = block[2:]
+        rows = [] if len(block) < 3 else block[2:]
         # Get format type (bordered by pipes or not)
         border = False
         if header.startswith('|'):
