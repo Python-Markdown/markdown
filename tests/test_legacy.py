@@ -44,8 +44,6 @@ class TestMisc(LegacyTestCase):
 class TestOptions(LegacyTestCase):
     location = os.path.join(parent_test_dir, 'options')
 
-    lazy_ol_off = Kwargs(lazy_ol=False)
-
     html4 = Kwargs(output_format='html4')
 
     no_smart_emphasis = Kwargs(smart_emphasis=False)

@@ -325,6 +325,8 @@ class OListProcessor(BlockProcessor):
     #   3. Item
     # The ol tag will get starts="3" attribute
     STARTSWITH = '1'
+    # Lazy ol - ignore startswith
+    LAZY_OL = True
     # List of allowed sibling tags.
     SIBLING_TAGS = ['ol', 'ul']
 
@@ -385,7 +387,7 @@ class OListProcessor(BlockProcessor):
             # This is a new list so create parent with appropriate tag.
             lst = util.etree.SubElement(parent, self.TAG)
             # Check if a custom start integer is set
-            if not self.parser.md.lazy_ol and self.STARTSWITH != '1':
+            if not self.LAZY_OL and self.STARTSWITH != '1':
                 lst.attrib['start'] = self.STARTSWITH
 
         self.parser.state.set('list')
