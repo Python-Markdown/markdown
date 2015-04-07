@@ -25,6 +25,7 @@ import re
 class SaneOListProcessor(OListProcessor):
 
     SIBLING_TAGS = ['ol']
+    LAZY_OL = False
 
     def __init__(self, parser):
         super(SaneOListProcessor, self).__init__(parser)
