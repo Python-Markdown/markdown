@@ -26,6 +26,7 @@ class SaneOListProcessor(OListProcessor):
 
     CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.))[ ]+(.*)')
     SIBLING_TAGS = ['ol']
+    LAZY_OL = False
 
 
 class SaneUListProcessor(UListProcessor):

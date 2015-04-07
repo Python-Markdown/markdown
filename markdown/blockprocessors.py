@@ -306,7 +306,9 @@ class OListProcessor(BlockProcessor):
     CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.)|[*+-])[ ]+(.*)')
     # Detect indented (nested) items of either type
     INDENT_RE = re.compile(r'^[ ]{4,7}((\d+\.)|[*+-])[ ]+.*')
-    # The integer (python string) with which the lists starts (default=1)
+    # Lazy ol - ignore startswith
+    LAZY_OL = True
+    # The integer (if LAZY_OL = False) with which a list starts (default=1)
     # Eg: If list is intialized as)
     #   3. Item
     # The ol tag will get starts="3" attribute
@@ -360,7 +362,7 @@ class OListProcessor(BlockProcessor):
             # This is a new list so create parent with appropriate tag.
             lst = util.etree.SubElement(parent, self.TAG)
             # Check if a custom start integer is set
-            if not self.parser.md.lazy_ol and self.STARTSWITH != '1':
+            if not self.LAZY_OL and self.STARTSWITH != '1':
                 lst.attrib['start'] = self.STARTSWITH
 
         self.parser.state.set('list')

@@ -27,7 +27,6 @@ class Markdown(object):
     option_defaults = {
         'tab_length':            4,
         'smart_emphasis':        True,
-        'lazy_ol':               True,
     }
 
     output_formats = {
@@ -54,7 +53,6 @@ class Markdown(object):
             * "html": Outputs HTML style tags.
         * tab_length: Length of tabs in the source. Default: 4
         * smart_emphasis: Treat `_connected_words_` intelligently Default: True
-        * lazy_ol: Ignore number of first item of ordered lists. Default: True
 
         """
 
