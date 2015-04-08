@@ -496,6 +496,18 @@ class testSerializers(unittest.TestCase):
             '<p>foo</p>'
         )
 
+    def testXHTMLOutput(self):
+        self.assertEqual(
+            markdown.markdown('foo  \nbar', output_format='xhtml'),
+            '<p>foo<br />\nbar</p>'
+        )
+
+    def testHTMLOutput(self):
+        self.assertEqual(
+            markdown.markdown('foo  \nbar', output_format='html'),
+            '<p>foo<br>\nbar</p>'
+        )
+
 
 class testAtomicString(unittest.TestCase):
     """ Test that AtomicStrings are honored (not parsed). """
