@@ -41,12 +41,6 @@ class TestMisc(LegacyTestCase):
     location = os.path.join(parent_test_dir, 'misc')
 
 
-class TestOptions(LegacyTestCase):
-    location = os.path.join(parent_test_dir, 'options')
-
-    html4 = Kwargs(output_format='html4')
-
-
 class TestPhp(LegacyTestCase):
     """
     Notes on "excluded" tests:
