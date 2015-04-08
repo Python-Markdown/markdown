@@ -37,12 +37,12 @@ from .. import util
 import re
 
 extensions = [
-    'markdown.extensions.fenced_code',
-    'markdown.extensions.footnotes',
-    'markdown.extensions.attr_list',
-    'markdown.extensions.def_list',
-    'markdown.extensions.tables',
-    'markdown.extensions.abbr'
+    'fenced_code',
+    'footnotes',
+    'attr_list',
+    'def_list',
+    'tables',
+    'abbr'
 ]
 
 

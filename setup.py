@@ -111,14 +111,14 @@ class build_docs(Command):
                 template = f.read()
             self.md = markdown.Markdown(
                 extensions=[
-                    'markdown.extensions.extra',
-                    'markdown.extensions.toc',
-                    'markdown.extensions.meta',
-                    'markdown.extensions.admonition',
-                    'markdown.extensions.smarty'
+                    'extra',
+                    'toc',
+                    'meta',
+                    'admonition',
+                    'smarty'
                 ],
                 extension_configs={
-                    'markdown.extensions.toc': {'permalink': True}
+                    'toc': {'permalink': True}
                 }
             )
             for infile in self.docs:
@@ -193,22 +193,22 @@ setup(
         ],
         # Register the built in extensions
         'markdown.extensions': [
-            'markdown.extensions.abbr = markdown.extensions.abbr:AbbrExtension',
-            'markdown.extensions.admonition = markdown.extensions.admonition:AdmonitionExtension',
-            'markdown.extensions.attr_list = markdown.extensions.attr_list:AttrListExtension',
-            'markdown.extensions.codehilite = markdown.extensions.codehilite:CodeHiliteExtension',
-            'markdown.extensions.def_list = markdown.extensions.def_list:DefListExtension',
-            'markdown.extensions.extra = markdown.extensions.extra:ExtraExtension',
-            'markdown.extensions.fenced_code = markdown.extensions.fenced_code:FencedCodeExtension',
-            'markdown.extensions.footnotes = markdown.extensions.footnotes:FootnoteExtension',
-            'markdown.extensions.headerid = markdown.extensions.headerid:HeaderIdExtension',
-            'markdown.extensions.meta = markdown.extensions.meta:MetaExtension',
-            'markdown.extensions.nl2br = markdown.extensions.nl2br:Nl2BrExtension',
-            'markdown.extensions.sane_lists = markdown.extensions.sane_lists:SaneListExtension',
-            'markdown.extensions.smarty = markdown.extensions.smarty:SmartyExtension',
-            'markdown.extensions.tables = markdown.extensions.tables:TableExtension',
-            'markdown.extensions.toc = markdown.extensions.toc:TocExtension',
-            'markdown.extensions.wikilinks = markdown.extensions.wikilinks:WikiLinkExtension',
+            'abbr = markdown.extensions.abbr:AbbrExtension',
+            'admonition = markdown.extensions.admonition:AdmonitionExtension',
+            'attr_list = markdown.extensions.attr_list:AttrListExtension',
+            'codehilite = markdown.extensions.codehilite:CodeHiliteExtension',
+            'def_list = markdown.extensions.def_list:DefListExtension',
+            'extra = markdown.extensions.extra:ExtraExtension',
+            'fenced_code = markdown.extensions.fenced_code:FencedCodeExtension',
+            'footnotes = markdown.extensions.footnotes:FootnoteExtension',
+            'headerid = markdown.extensions.headerid:HeaderIdExtension',
+            'meta = markdown.extensions.meta:MetaExtension',
+            'nl2br = markdown.extensions.nl2br:Nl2BrExtension',
+            'sane_lists = markdown.extensions.sane_lists:SaneListExtension',
+            'smarty = markdown.extensions.smarty:SmartyExtension',
+            'tables = markdown.extensions.tables:TableExtension',
+            'toc = markdown.extensions.toc:TocExtension',
+            'wikilinks = markdown.extensions.wikilinks:WikiLinkExtension',
             'legacy_attrs = markdown.extensions.legacy_attrs:LegacyAttrExtension',
             'legacy_em = markdown.extensions.legacy_em:LegacyEmExtension',
         ]

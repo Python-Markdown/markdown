@@ -54,7 +54,7 @@ class TestMarkdownBasics(unittest.TestCase):
 
     def testNamedExtension(self):
         """ Test Extension loading with Name. """
-        markdown.Markdown(extensions=['markdown.extensions.footnotes'])
+        markdown.Markdown(extensions=['footnotes'])
 
 
 class TestConvertFile(unittest.TestCase):
