@@ -37,7 +37,6 @@ from .. import util
 import re
 
 extensions = [
-    'markdown.extensions.smart_strong',
     'markdown.extensions.fenced_code',
     'markdown.extensions.footnotes',
     'markdown.extensions.attr_list',

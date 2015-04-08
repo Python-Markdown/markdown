@@ -205,12 +205,12 @@ setup(
             'markdown.extensions.meta = markdown.extensions.meta:MetaExtension',
             'markdown.extensions.nl2br = markdown.extensions.nl2br:Nl2BrExtension',
             'markdown.extensions.sane_lists = markdown.extensions.sane_lists:SaneListExtension',
-            'markdown.extensions.smart_strong = markdown.extensions.smart_strong:SmartEmphasisExtension',
             'markdown.extensions.smarty = markdown.extensions.smarty:SmartyExtension',
             'markdown.extensions.tables = markdown.extensions.tables:TableExtension',
             'markdown.extensions.toc = markdown.extensions.toc:TocExtension',
             'markdown.extensions.wikilinks = markdown.extensions.wikilinks:WikiLinkExtension',
             'legacy_attrs = markdown.extensions.legacy_attrs:LegacyAttrExtension',
+            'legacy_em = markdown.extensions.legacy_em:LegacyEmExtension',
         ]
     },
     classifiers=[
