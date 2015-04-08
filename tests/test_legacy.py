@@ -46,8 +46,6 @@ class TestOptions(LegacyTestCase):
 
     html4 = Kwargs(output_format='html4')
 
-    no_smart_emphasis = Kwargs(smart_emphasis=False)
-
 
 class TestPhp(LegacyTestCase):
     """

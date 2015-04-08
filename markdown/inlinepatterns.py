@@ -95,10 +95,8 @@ def build_inlinepatterns(md, **kwargs):
     inlinePatterns.register(DoubleTagInlineProcessor(STRONG_EM_RE, 'em,strong'), 'strong_em', 50)
     inlinePatterns.register(SimpleTagInlineProcessor(STRONG_RE, 'strong'), 'strong', 40)
     inlinePatterns.register(SimpleTagInlineProcessor(EMPHASIS_RE, 'em'), 'emphasis', 30)
-    if md.smart_emphasis:
-        inlinePatterns.register(SimpleTagInlineProcessor(SMART_EMPHASIS_RE, 'em'), 'emphasis2', 20)
-    else:
-        inlinePatterns.register(SimpleTagInlineProcessor(EMPHASIS_2_RE, 'em'), 'emphasis2', 20)
+    inlinePatterns.register(SimpleTagInlineProcessor(SMART_STRONG_RE, 'strong'), 'strong2', 20)
+    inlinePatterns.register(SimpleTagInlineProcessor(SMART_EMPHASIS_RE, 'em'), 'emphasis2', 10)
     return inlinePatterns
 
 
@@ -119,19 +117,19 @@ ESCAPE_RE = r'\\(.)'
 EMPHASIS_RE = r'(\*)([^\*]+)\1'
 
 # **strong**
-STRONG_RE = r'(\*{2}|_{2})(.+?)\1'
+STRONG_RE = r'(\*{2})(.+?)\1'
+
+# __smart__strong__
+SMART_STRONG_RE = r'(?<!\w)(_{2})(?!_)(.+?)(?<!_)\1(?!\w)'
+
+# _smart_emphasis_
+SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\1(?!\w)'
 
 # ***strongem*** or ***em*strong**
 EM_STRONG_RE = r'(\*|_)\1{2}(.+?)\1(.*?)\1{2}'
 
 # ***strong**em*
 STRONG_EM_RE = r'(\*|_)\1{2}(.+?)\1{2}(.*?)\1'
-
-# _smart_emphasis_
-SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\1(?!\w)'
-
-# _emphasis_
-EMPHASIS_2_RE = r'(_)(.+?)\1'
 
 # [text](url) or [text](<url>) or [text](url "title")
 LINK_RE = NOIMG + r'\['

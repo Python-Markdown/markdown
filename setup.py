@@ -96,12 +96,12 @@ setup(
             'meta = markdown.extensions.meta:MetaExtension',
             'nl2br = markdown.extensions.nl2br:Nl2BrExtension',
             'sane_lists = markdown.extensions.sane_lists:SaneListExtension',
-            'smart_strong = markdown.extensions.smart_strong:SmartEmphasisExtension',
             'smarty = markdown.extensions.smarty:SmartyExtension',
             'tables = markdown.extensions.tables:TableExtension',
             'toc = markdown.extensions.toc:TocExtension',
             'wikilinks = markdown.extensions.wikilinks:WikiLinkExtension',
             'legacy_attrs = markdown.extensions.legacy_attrs:LegacyAttrExtension',
+            'legacy_em = markdown.extensions.legacy_em:LegacyEmExtension',
         ]
     },
     classifiers=[
