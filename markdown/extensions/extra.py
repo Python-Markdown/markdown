@@ -37,7 +37,6 @@ from .. import util
 import re
 
 extensions = [
-    'smart_strong',
     'fenced_code',
     'footnotes',
     'attr_list',

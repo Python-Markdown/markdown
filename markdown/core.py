@@ -47,11 +47,6 @@ class Markdown(object):
 
     doc_tag = "div"     # Element used to wrap document - later removed
 
-    option_defaults = {
-        'tab_length':            4,
-        'smart_emphasis':        True,
-    }
-
     output_formats = {
         'html':   to_html_string,
         'xhtml':  to_xhtml_string,
@@ -73,13 +68,10 @@ class Markdown(object):
             * "xhtml": Outputs XHTML style tags. Default.
             * "html": Outputs HTML style tags.
         * tab_length: Length of tabs in the source. Default: 4
-        * smart_emphasis: Treat `_connected_words_` intelligently Default: True
 
         """
 
-        # Loop through kwargs and assign defaults
-        for option, default in self.option_defaults.items():
-            setattr(self, option, kwargs.get(option, default))
+        self.tab_length = kwargs.get('tab_length', 4)
 
         self.ESCAPED_CHARS = ['\\', '`', '*', '_', '{', '}', '[', ']',
                               '(', ')', '>', '#', '+', '-', '.', '!']
