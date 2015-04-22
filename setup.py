@@ -174,7 +174,7 @@ setup(
     name='Markdown',
     version=__version__,
     url='https://pythonhosted.org/Markdown/',
-    download_url='http://pypi.python.org/packages/source/M/Markdown/Markdown-%s.tar.gz' % __version__,
+    download_url='http://pypi.python.org/packages/source/M/Markdown/Markdown-%s-py2.py3-none-any.whl' % __version__,
     description='Python implementation of Markdown.',
     long_description=long_description,
     author='Manfred Stienstra, Yuri takhteyev and Waylan limberg',
