@@ -22,12 +22,12 @@ install:
 deploy:
 	python setup.py register
 	python setup.py sdist --manifest-only
-	python setup.py sdist --formats zip,gztar upload
+	python setup.py sdist --formats zip,gztar bdist_wheel --universal upload
 
 .PHONY : build
 build:
 	python setup.py sdist --manifest-only
-	python setup.py sdist --formats zip,gztar
+	python setup.py sdist --formats zip,gztar bdist_wheel --universal
 
 .PHONY : build-win
 build-win:
