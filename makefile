@@ -20,9 +20,11 @@ install:
 
 .PHONY : deploy
 deploy:
+	rm -rf dist
 	python setup.py register
 	python setup.py sdist --manifest-only
-	python setup.py sdist --formats zip,gztar bdist_wheel --universal upload
+	python setup.py sdist --formats zip,gztar bdist_wheel --universal
+	twine upload dist/*
 
 .PHONY : build
 build:
