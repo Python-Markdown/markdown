@@ -1,14 +1,14 @@
 #!/bin/bash
 
 echo "Building docs..."
-python setup.py --quiet build_docs --force
+mkdocs build --clean
 echo "Compiling Dictionary..."
 aspell --lang=en create master ./tmp <.spell-dict
-echo "Checking spelling...\n"
+echo "Checking spelling..."
 
 let "fails=0"
 
-for file in $(find build/docs/ -type f -name "*.html"); do
+for file in $(find site/ -type f -name "*.html"); do
     words=$(aspell list --lang=en --mode=html --add-html-skip=code --extra-dicts=./tmp  <$file)
     if [ "$words" ]; then
         uniquewords=$(tr ' ' '\n' <<< "${words[@]}" | sort -u | tr '\n' ' ')
@@ -22,7 +22,7 @@ for file in $(find build/docs/ -type f -name "*.html"); do
     fi
 done
 rm -f ./tmp
-rm -rf build
+rm -rf site
 
 if [ $fails -gt 0 ]; then
     echo "$fails files with misspelled words."

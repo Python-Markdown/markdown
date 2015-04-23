@@ -1,8 +1,4 @@
 title:      Release Notes for v2.0
-prev_title: Release Notes for v2.0.1
-prev_url:   release-2.0.1.html
-next_title: Authors
-next_url:   authors.html
 
 Python-Markdown 2.0 Release Notes
 =================================
@@ -26,7 +22,7 @@ extensions, then you should not need to make any changes to your code.
 However, you may want to ensure that any third party extensions you are using
 are compatible with the new API.
 
-The new extension API is fully [documented](extensions/api.html) in the docs. 
+The new extension API is fully [documented](../extensions/api.md) in the docs. 
 Below is a summary of the significant changes:
 
 * The old home-grown NanoDOM has been replaced with ElementTree. Therefore all
@@ -67,7 +63,7 @@ accepts either the extension names as strings or instances of extensions. This
 makes it possible to include multiple extensions in a single module.
 
 Numerous extensions are included in the distribution by default. See
-[available_extensions](extensions/index.html) for a complete list.
+[available_extensions](../extensions/index.md) for a complete list.
 
-See the [Change Log](change_log.html) for a full list of changes.
+See the [Change Log](index.md) for a full list of changes.
 

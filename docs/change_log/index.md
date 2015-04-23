@@ -1,8 +1,4 @@
 title:      Change Log
-prev_title: Test Suite
-prev_url:   test_suite.html
-next_title: Release Notes for v2.6
-next_url:   release-2.6.html
 
 Python-Markdown Change Log
 =========================
@@ -13,35 +9,35 @@ Mar 8, 2015: Released version 2.6.1 (a bug-fix release). The (new)
 `yaml` option has been removed from the Meta-Data Extension as it was buggy
 (see [#390](https://github.com/waylan/Python-Markdown/issues/390)).
 
-Feb 19, 2015: Released version 2.6 ([Notes](release-2.6.html)).
+Feb 19, 2015: Released version 2.6 ([Notes](release-2.6.md)).
 
 Nov 19, 2014: Released version 2.5.2 (a bug-fix release).
 
 Sept 26, 2014: Released version 2.5.1 (a bug-fix release).
 
-Sept 12, 2014: Released version 2.5.0 ([Notes](release-2.5.html)).
+Sept 12, 2014: Released version 2.5.0 ([Notes](release-2.5.md)).
 
-Feb 16, 2014: Released version 2.4.0 ([Notes](release-2.4.html)).
+Feb 16, 2014: Released version 2.4.0 ([Notes](release-2.4.md)).
 
 Mar 22, 2013: Released version 2.3.1 (a bug-fix release).
 
-Mar 14, 2013: Released version 2.3.0 ([Notes](release-2.3.html))
+Mar 14, 2013: Released version 2.3.0 ([Notes](release-2.3.md))
 
-Nov 4, 2012: Released version 2.2.1 ([Notes](release-2.2.1.html)).
+Nov 4, 2012: Released version 2.2.1 (a bug-fix release).
 
-Jul 5, 2012: Released version 2.2.0 ([Notes](release-2.2.0.html)).
+Jul 5, 2012: Released version 2.2.0 ([Notes](release-2.2.md)).
 
-Jan 22, 2012: Released version 2.1.1 ([Notes](release-2.1.1.html)).
+Jan 22, 2012: Released version 2.1.1 (a bug-fix release).
 
-Nov 24, 2011: Released version 2.1.0 ([Notes](release-2.1.0.html)).
+Nov 24, 2011: Released version 2.1.0 ([Notes](release-2.1.md)).
 
-Oct 7, 2009: Released version 2.0.3.
+Oct 7, 2009: Released version 2.0.3. (a bug-fix release).
 
-Sept 28, 2009: Released version 2.0.2 ([Notes](release-2.0.2.html)).
+Sept 28, 2009: Released version 2.0.2 (a bug-fix release).
 
-May 20, 2009: Released version 2.0.1 ([Notes](release-2.0.1.html)).
+May 20, 2009: Released version 2.0.1 (a bug-fix release).
 
-Mar 30, 2009: Released version 2.0 ([Notes](release-2.0.html)).
+Mar 30, 2009: Released version 2.0 ([Notes](release-2.0.md)).
 
 Mar 8, 2009: Release Candidate 2.0-rc-1.
 

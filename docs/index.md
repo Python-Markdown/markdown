@@ -1,7 +1,4 @@
-next_url:   install.html
-next_title: Installation
-prev_title: Table of Contents
-prev_url:   siteindex.html
+title: Python-Markdown
 
 Python-Markdown
 ===============
@@ -13,7 +10,7 @@ though there are a few very minor [differences](#differences). See John's
 [Syntax Documentation](http://daringfireball.net/projects/markdown/syntax) 
 for the syntax rules.
 
-See the [installation instructions](install.html) to get started.
+See the [installation instructions](install.md) to get started.
 
 Goals
 -----
@@ -27,7 +24,7 @@ The Python-Markdown project is developed with the following goals in mind:
   and the behavior of the original (markdown.pl) implementation as reasonably
   as possible (see [differences](#differences) for a few exceptions).
 
-* Provide an [Extension API](extensions/api.html) which makes it possible
+* Provide an [Extension API](extensions/api.md) which makes it possible
   to change and/or extend the behavior of the parser.
 
 Features
@@ -38,26 +35,25 @@ features:
 
 * __International Input__
 
-    Python-Markdown will accept [input](reference.html#text) in any language 
+    Python-Markdown will accept [input](reference.md#text) in any language 
     supported by Unicode including bi-directional text. In fact the test suite 
     includes documents written in Russian and Arabic.
 
 * __Extensions__
 
-    Various [extensions](extensions/index.html) are provided (including 
-    [extra](extensions/extra.html)) to change and/or extend the base syntax. 
-    Additionally, a public [Extension API](extensions/api.html) is available 
-    to write your own extensions.
+    Various [extensions](extensions/index.md) are avaiable to change and/or
+    extend the base syntax. Additionally, a public [Extension API](extensions/api.md)
+    is available to write your own extensions.
 
 * __Output Formats__
 
-    Python-Markdown can output documents in HTML4, XHTML and HTML5. See the
-    [Library Reference](reference.html#output_format) for details.
+    Python-Markdown can output documents with either HTML or XHTML styel tags. See the
+    [Library Reference](reference.md#output_format) for details.
 
 * __Command Line Interface__
 
     In addition to being a Python Library, a 
-    [command line script](cli.html) is available for your convenience.
+    [command line script](cli.md) is available for your convenience.
 
 Differences
 -----------
@@ -74,8 +70,7 @@ are summarized below:
 
     Python-Markdown defaults to ignoring middle-word emphasis. In other words,
     `some_long_filename.txt` will not become `some<em>long</em>filename.txt`.
-    This can be switched off if desired. See the 
-    [Library Reference](reference.html#smart_emphasis) for details.
+    This can be disabled with an extension.
 
 * __Indentation/Tab Length__
 
@@ -91,7 +86,7 @@ are summarized below:
     be indented by at least four spaces (or one tab) for each level of nesting.
 
     In the event that one would prefer different behavior,
-    [tab_length](reference.html#tab_length) can be set to whatever length is 
+    [tab_length](reference.md#tab_length) can be set to whatever length is 
     desired. Be warned however, as this will affect indentation for all aspects 
     of the syntax (including root level code blocks).
 
@@ -101,7 +96,7 @@ are summarized below:
     the original) do not end one list and start a second list when the list marker
     (asterisks, pluses, hyphens, and numbers) changes. For consistency, 
     Python-Markdown maintains the same behavior with no plans to change in the 
-    foreseeable future. That said, the [Sane List Extension](extensions/sane_lists.html)
+    foreseeable future. That said, the Sane List Extension
     is available to provide a less surprising behavior.
     
 

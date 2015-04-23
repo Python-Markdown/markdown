@@ -1,8 +1,4 @@
 title:      Release Notes for v2.4
-prev_title: Release Notes for v2.5
-prev_url:   release-2.5.html
-next_title: Release Notes for v2.3
-next_url:   release-2.3.html
 
 Python-Markdown 2.4 Release Notes
 =================================
@@ -18,12 +14,10 @@ Backwards-incompatible Changes
 * The `force_linenos` configuration setting of the CodeHilite extension has been
 marked as **Deprecated**. It had previously been marked as "Pending Deprecation"
 in version 2.3 when a new setting `linenums` was added to replace it. See 
-documentation for the [CodeHilite Extension] for an explanation of the new 
+documentation for the CodeHilite Extension for an explanation of the new 
 `linenums` setting. The new setting will honor the old `force_linenos` if it 
 is set, but `force_linenos` will raise a `DeprecationWarning` and will likely 
 be removed in a future version of Python-Markdown.
-
-[CodeHilite Extension]: extensions/code_hilite.html
 
 * URLs are no longer percent-encoded. This improves compatibility with the
 original (written in Perl) Markdown implementation. Please percent-encode
@@ -32,7 +26,7 @@ your URLs manually when needed.
 What's New in Python-Markdown 2.4
 ---------------------------------
 
-* Thanks to the hard work of [Dmitry Shachnev] the [Smarty Extension] has been 
+* Thanks to the hard work of [Dmitry Shachnev] the Smarty Extension has been 
 added, which implements [SmartyPants] using Python-Markdown's Extension API. 
 This offers a few benefits over a third party script. The HTML does not need
 to be "tokenized" twice, no hacks are required to combine SmartyPants and
@@ -40,26 +34,23 @@ code highlighting, and we get markdown's escaping feature for free. Please try
 it out and report bugs and/or improvements.
 
 [Dmitry Shachnev]: https://github.com/mitya57
-[Smarty Extension]: extensions/smarty.html
 [SmartyPants]: http://daringfireball.net/projects/smartypants/
 
-* The [Table of Contents Extension] now supports new `permalink` option
+* The Table of Contents Extension now supports new `permalink` option
 for creating [Sphinx]-style anchor links.
 
-[Table of Contents Extension]: extensions/toc.html
 [Sphinx]: http://sphinx-doc.org/
 
 * It is now possible to enable Markdown formatting inside HTML blocks by
-appending `markdown=1` to opening tag attributes. See [Markdown Inside HTML
-Blocks] section for details. Thanks to [ryneeverett] for implementing this
+appending `markdown=1` to opening tag attributes. See Markdown Inside HTML
+Blocks section for details. Thanks to [ryneeverett] for implementing this
 feature.
 
-[Markdown Inside HTML Blocks]: extensions/extra.html#nested-markdown-inside-html-blocks
 [ryneeverett]: https://github.com/ryneeverett
 
 * The code blocks now support emphasizing some of the code lines. To use this
 feature, specify `hl_lines` option after language name, for example (using
-the [Fenced Code Extension]):
+the Fenced Code Extension):
 
         ```.python hl_lines="1 3"
         # This line will be emphasized.
@@ -69,7 +60,6 @@ the [Fenced Code Extension]):
 
     Thanks to [A. Jesse Jiryu Davis] for implementing this feature.
 
-[Fenced Code Extension]: extensions/fenced_code_blocks.html
 [A. Jesse Jiryu Davis]: https://github.com/ajdavis
 
 * Various bug fixes have been made.  See the

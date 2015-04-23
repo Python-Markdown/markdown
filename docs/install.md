@@ -1,8 +1,4 @@
 title:      Installation
-prev_title: Summary
-prev_url:   index.html
-next_title: Library Reference
-next_url:   reference.html
 
 Installing Python-Markdown
 ==========================
@@ -19,7 +15,7 @@ or
 
     easy_install markdown
 
-That's it! You're ready to [use](reference.html) Python-Markdown. Enjoy!
+That's it! You're ready to [use](reference.md) Python-Markdown. Enjoy!
 
 Installing on Windows {: #windows }
 -----------------------------------
@@ -41,8 +37,8 @@ the Scripts directory is `C:\PythonXX\Scripts\` (were "XX" is the Python version
 number, i.e., "27"). Adjust the path according to your system and add to your 
 system path.
 
-Installing on *nix Systems {: #linux }
---------------------------------------
+Installing on \*nix Systems {: #linux }
+---------------------------------------
 
 From the command line do the following (where 2.x is the version number):
 

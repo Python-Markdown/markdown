@@ -23,8 +23,8 @@ on what exactly is supported and what is not. Additional features are
 supported by the [Available Extensions][].
 
 [Markdown]: http://daringfireball.net/projects/markdown/
-[Features]: https://pythonhosted.org/Markdown/index.html#Features
-[Available Extensions]: https://pythonhosted.org/Markdown/extensions/index.html
+[Features]: https://pythonhosted.org/Markdown/index/#Features
+[Available Extensions]: https://pythonhosted.org/Markdown/extensions/
 
 
 Documentation
@@ -40,4 +40,4 @@ Support
 You may ask for help and discuss various other issues on the [mailing list][] and report bugs on the [bug tracker][].
 
 [mailing list]: http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss
-[bug tracker]: http://github.com/waylan/Python-Markdown/issues 
+[bug tracker]: http://github.com/Python-Markdown/markdown/issues 

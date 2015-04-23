@@ -1,9 +1,4 @@
 title: Command Line
-prev_title: Library Reference
-prev_url:   reference.html
-next_title: Extensions
-next_url:   extensions/index.html
-
 
 Using Python-Markdown on the Command Line
 =========================================
@@ -15,7 +10,7 @@ Python-Markdown's various extensions.
 
 Generally, you will want to have the Markdown library fully installed on your
 system to run the command line script. See the 
-[Installation instructions](install.html) for details.
+[Installation instructions](install.md) for details.
 
 Python-Markdown's command line script takes advantage of Python's `-m` flag.
 Therefore, assuming the python executable is on your system path, use the 
@@ -60,7 +55,7 @@ path.
 
 * __*nix__ (Linux, OSX, BSD, Unix, etc.):
 
-    As each *nix distribution is different and we can't possibly document all 
+    As each \*nix distribution is different and we can't possibly document all 
     of them here, we'll provide a few helpful pointers:
 
     * Some systems will automatically install the script on your path. Try it 
@@ -107,7 +102,7 @@ Using Extensions
 
 To load a Python-Markdown extension from the command line use the `-x` 
 (or `--extension`) option. The extension module must be on your `PYTHONPATH` 
-(see the [Extension API](extensions/api.html) for details). The extension can 
+(see the [Extension API](extensions/api.md) for details). The extension can 
 then be invoked by the name of that module using Python's dot syntax:
 
 	$ python -m markdown -x path.to.module input.txt
@@ -144,5 +139,5 @@ of your configuration file is automatically detected.
 [YAML]: http://yaml.org/
 [JSON]: http://json.org/
 [PyYAML]: http://pyyaml.org/
-[2.5 release notes]: release-2.5.txt
+[2.5 release notes]: change_log/release-2.5.md
 

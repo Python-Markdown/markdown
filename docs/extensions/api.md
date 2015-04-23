@@ -672,7 +672,7 @@ the module and call the `makeExtension` function to initiate your extension.
 [Config Settings]: #configsettings
 [makeExtension]: #makeextension
 [ElementTree]: http://effbot.org/zone/element-index.htm
-[Available Extensions]: index.html 
-[Footnotes]: footnotes.html
-[Definition Lists]: definition_lists.html
-[library reference]: ../reference.html
+[Available Extensions]: index.md 
+[Footnotes]: https://github.com/Python-Markdown/mdx_footnotes
+[Definition Lists]: https://github.com/Python-Markdown/mdx_definition_lists
+[library reference]: ../reference.md

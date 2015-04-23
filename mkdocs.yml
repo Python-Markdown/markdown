@@ -1,0 +1,30 @@
+site_name: Python-Markdown
+
+repo_url: https://github.com/Python-Markdown/markdown
+
+use_directory_urls: true
+
+theme: readthedocs
+
+pages:
+    - ['index.md', 'Python-Markdown']
+    - ['install.md', 'Installation']
+    - ['reference.md', 'Library Reference']
+    - ['cli.md', 'Command Line']
+    - ['extensions/index.md', 'Extensions']
+    - ['extensions/api.md', 'Extension API']
+    - ['test_suite.md', 'Test Suite']
+    - ['change_log/index.md', 'Change Log']
+    - ['change_log/release-2.6.md', 'Release Notes for v.2.6']
+    - ['change_log/release-2.5.md', 'Release Notes for v.2.5']
+    - ['change_log/release-2.4.md', 'Release Notes for v.2.4']
+    - ['change_log/release-2.3.md', 'Release Notes for v.2.3']
+    - ['change_log/release-2.2.md', 'Release Notes for v.2.2']
+    - ['change_log/release-2.1.md', 'Release Notes for v.2.1']
+    - ['change_log/release-2.0.md', 'Release Notes for v.2.0']
+    - ['authors.md', 'Authors']
+
+markdown_extensions:
+    - extra
+    - admonition
+    - smarty

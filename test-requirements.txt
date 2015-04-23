@@ -2,3 +2,4 @@ nose
 coverage
 pyyaml
 pytidylib
+mkdocs

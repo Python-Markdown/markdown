@@ -1,8 +1,4 @@
 title:      Release Notes for v2.3
-prev_title: Release Notes for v2.4
-prev_url:   release-2.4.html
-next_title: Release Notes for v2.2.1
-next_url:   release-2.2.1.html
 
 Python-Markdown 2.3 Release Notes
 =================================
@@ -40,12 +36,11 @@ you are outputting XHTML (the default) or HTML4.
 
 * The `force_linenos` configuration setting of the CodeHilite extension has been
 marked as **Pending Deprecation** and a new setting `linenums` has been added to
-replace it. See documentation for the [CodeHilite Extension] for an explanation
+replace it. See documentation for the CodeHilite Extension for an explanation
 of the new `linenums` setting. The new setting will honor the old 
 `force_linenos` if it is set, but it will raise a `PendingDeprecationWarning` 
 and will likely be removed in a future version of Python-Markdown.
 
-[CodeHilite Extension]: extensions/codehilite.html
 
 * The "RSS" extension has been removed and no longer ships with Python-Markdown.
 If you would like to continue using the extension (not recommended), it is 
@@ -75,12 +70,11 @@ sub-directory of another project. The various files within the library will
 still import each other properly even though 'markdown' may not be in Python's
 root namespace.
 
-* The [Admonition Extension] has been added, which implements [rST-style][rST] 
+* The Admonition Extension has been added, which implements [rST-style][rST] 
 admonitions in the Markdown syntax. However, be warned that this extension 
 is experimental and the syntax and behavior is still subject to change. Please 
 try it out and report bugs and/or improvements.
 
-[Admonition Extension]: extensions/admonition.html
 [rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions
 
 * Various bug fixes have been made.  See the

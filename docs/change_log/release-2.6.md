@@ -1,8 +1,4 @@
 title:      Release Notes for v2.6
-prev_title: Change Log
-prev_url:   change_log.html
-next_title: Release Notes for v2.5
-next_url:   release-2.5.html
 
 Python-Markdown 2.6 Release Notes
 =================================
@@ -104,7 +100,7 @@ as follows (assuming the file `mdx_math.py` is installed at the root of your PYT
 
 Extension authors will want to update their documentation to reflect the new behavior.
 
-See the [documentation](reference.html#extensions) for a full explanation
+See the [documentation](../reference.md#extensions) for a full explanation
 of the current behavior.
 
 ### Extension Configuration as Part of Extension Name Deprecated
@@ -112,24 +108,22 @@ of the current behavior.
 The previously documented method of appending the extension configuration options as 
 a string to the extension name is deprecated and will raise a
 **`DeprecationWarning`** in version 2.6 and an error in 2.7.
-The [`extension_configs`](reference.html#extension_configs) keyword should 
-be used instead. See the [documentation](reference.html#extension-configs) 
+The [`extension_configs`](../reference.md#extension_configs) keyword should 
+be used instead. See the [documentation](../reference.md#extension-configs) 
 for a full explanation of the current behavior.
 
 ### HeaderId Extension Pending Deprecation
 
-The [HeaderId][hid] Extension is pending deprecation and will raise a
+The HeaderId Extension is pending deprecation and will raise a
 **`PendingDeprecationWarning`** in version 2.6. The extension will be
 deprecated in version 2.7 and raise an error in version 2.8. Use the
-[Table of Contents][TOC] Extension instead, which offers most of the
+Table of Contents Extension instead, which offers most of the
 features of the HeaderId Extension and more (support for meta data is missing).
 
 Extension authors who have been using the `slugify` and `unique` functions
 defined in the HeaderId Extension should note that those functions are now
 defined in the Table of Contents extension and should adjust their import
 statements accordingly (`from markdown.extensions.toc import slugify, unique`).
-
-[hid]: extensions/header_id.html
 
 ### The `configs` Keyword is Deprecated
 
@@ -178,8 +172,8 @@ options like so:
 Note the call to `super` to get the benefits of configuration handling from the parent class.
 See the [documentation][config] for more information.
 
-[config]: extensions/api.html#configsettings
-[mext]: extensions/api.html#makeextension
+[config]: ../extensions/api.md#configsettings
+[mext]: ../extensions/api.md#makeextension
 
 What's New in Python-Markdown 2.6
 ---------------------------------
@@ -193,7 +187,7 @@ worked on PyPy for some time, it is now officially supported and tested on PyPy.
 
 ### YAML Style Meta-Data
 
-The [Meta-Data] Extension now includes optional support for [YAML] style
+The Meta-Data Extension now includes optional support for [YAML] style
 meta-data. By default, the YAML deliminators are recognized, however, the
 actual data is parsed as previously.  This follows the syntax of
 [MultiMarkdown], which inspired this extension.
@@ -204,13 +198,12 @@ party extension be used if you want true YAML support. See [Issue #390][#390] fo
 explanation.</ins>
 
 [MultiMarkdown]: http://fletcherpenney.net/MultiMarkdown_Syntax_Guide#metadata
-[Meta-Data]: extensions/meta_data.html
 [YAML]: http://yaml.org/
 [#390]: https://github.com/waylan/Python-Markdown/issues/390
 
 ### Table of Contents Extension Refactored
 
-The [Table of Contents][TOC] Extension has been refactored and some new features
+The Table of Contents Extension has been refactored and some new features
 have been added.  See the documentation for a full explanation of each feature
 listed below:
 
@@ -234,11 +227,9 @@ listed below:
     of headers in their documents (h1-h6). This allows the header levels to be
     automatically adjusted to fit within the hierarchy of an HTML template.
 
-[TOC]: extensions/toc.html
-
 ### Pygments can now be disabled
 
-The [CodeHilite][ch] Extension has gained a new configuration option: `use_pygments`.
+The CodeHilite Extension has gained a new configuration option: `use_pygments`.
 The option is `True` by default, however, it allows one to turn off Pygments code
 highlighting (set to `False`) while preserving the language detection features of
 the extension. Note that Pygments language guessing is not used as that would 'use
@@ -247,7 +238,6 @@ Pygments'. If a language is defined for a code block, it will be assigned to the
 (alternate output will not be entertained) and could potentially be used by a JavaScript
 library in the browser to highlight the code block.
 
-[ch]: extensions/code_hilite.html
 [spec]: http://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
 
 ### Miscellaneous

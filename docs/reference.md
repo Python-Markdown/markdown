@@ -31,11 +31,13 @@ instance of the `markdown.Markdown` class and pass multiple documents through
 it. If you do use a single instance though, make sure to call the `reset`
 method appropriately ([see below](#convert)).
 
-### `markdown.markdown (text [, **kwargs])` {: #markdown }
+### markdown.markdown(text [, **kwargs]) {: #markdown }
 
 The following options are available on the `markdown.markdown` function:
 
-* __`text`__{: #text } (required): The source Unicode string.
+__text__{: #text }
+
+:   The source Unicode string. (required)
 
     !!! note "Important"
         Python-Markdown expects **Unicode** as input (although
@@ -55,12 +57,14 @@ The following options are available on the `markdown.markdown` function:
             )
             output_file.write(html)
 
-* __`extensions`__{: #extensions }: A list of extensions.
+__extensions__{: #extensions }
 
-    Python-Markdown provides an [API](extensions/api.html) for third parties to
+:   A list of extensions.
+
+    Python-Markdown provides an [API](extensions/api.md) for third parties to
     write extensions to the parser adding their own additions or changes to the
     syntax. A few commonly used extensions are shipped with the markdown 
-    library. See the [extension documentation](extensions/index.html) for a 
+    library. See the [extension documentation](extensions/index.md) for a 
     list of available extensions.
 
     The list of extensions may contain instances of extensions and/or strings 
@@ -111,11 +115,12 @@ The following options are available on the `markdown.markdown` function:
     [`extension_configs`](#extension_configs) keyword.
 
     !!! seealso "See Also"
-        See the documentation of the [Extension API](extensions/api.html) for 
+        See the documentation of the [Extension API](extensions/api.md) for 
         assistance in creating extensions.
 
-* __`extension_configs`__{: #extension_configs }: A dictionary of
-  configuration settings for extensions.
+__extension_configs__{: #extension_configs }
+
+:   A dictionary of configuration settings for extensions.
 
     Any configuration settings will only be passed to extensions loaded by name 
     (as a string). When loading extensions as class instances, pass the 
@@ -145,59 +150,20 @@ The following options are available on the `markdown.markdown` function:
     See the documentation specific to the extension you are using for help in 
     specifying configuration settings for that extension.
 
-* __`output_format`__{: #output_format }: Format of output. 
+__output_format__{: #output_format }:
+
+:   Format of output. 
 
     Supported formats are:
 
-    * `"xhtml1"`: Outputs XHTML 1.x. **Default**.
-    * `"xhtml5"`: Outputs XHTML style tags of HTML 5
-    * `"xhtml"`: Outputs latest supported version of XHTML (currently XHTML 1.1).
-    * `"html4"`: Outputs HTML 4
-    * `"html5"`: Outputs HTML style tags of HTML 5
-    * `"html"`: Outputs latest supported version of HTML (currently HTML 4).
+    * `"xhtml"`: Outputs XHTML style tags. **Default**.
+    * `"html"`: Outputs HTML style tags.
 
     The values can be in either lowercase or uppercase.
 
-    !!! warning
-        It is suggested that the more specific formats (`"xhtml1"`, `"html5"`, & 
-        `"html4"`) be used as the more general formats (`"xhtml"` or `"html"`) may 
-        change in the future if it makes sense at that time. 
+__tab_length__{: #tab_length }
 
-* __`tab_length`__{: #tab_length }: Length of tabs in the source. Default: 4
-
-* __`enable_attributes`__{: #enable_attributes}: Enable the conversion of 
-  attributes. Defaults to `True`, unless [`safe_mode`](#safe_mode) is enabled, 
-  in which case the default is `False`.
-
-    !!! Note 
-        `safe_mode` only overrides the default. If `enable_attributes` 
-        is explicitly set, the explicit value is used regardless of `safe_mode`.
-        However, this could potentially allow an untrusted user to inject
-        JavaScript into your documents.
-
-* __`smart_emphasis`__{: #smart_emphasis }: Treat `_connected_words_` 
-  intelligently Default: True
-
-* __`lazy_ol`__{: #lazy_ol }: Ignore number of first item of ordered lists. 
-  Default: True
-
-    Given the following list:
-
-        4. Apples
-        5. Oranges
-        6. Pears
-
-    By default markdown will ignore the fact the the first line started 
-    with item number "4" and the HTML list will start with a number "1".
-    If `lazy_ol` is set to `False`, then markdown will output the following
-    HTML:
-
-        <ol>
-          <li start="4">Apples</li>
-          <li>Oranges</li>
-          <li>Pears</li>
-        </ol>
-
+:   Length of tabs in the source. Default: 4
 
 ### `markdown.markdownFromFile (**kwargs)` {: #markdownFromFile }
 
@@ -205,7 +171,9 @@ With a few exceptions, `markdown.markdownFromFile` accepts the same options as
 `markdown.markdown`. It does **not** accept a `text` (or Unicode) string. 
 Instead, it accepts the following required options:
 
-* __`input`__{: #input } (required): The source text file.
+__input__{: #input } (required)
+
+:   The source text file.
 
     `input` may be set to one of three options:
 
@@ -213,7 +181,9 @@ Instead, it accepts the following required options:
     * a readable file-like object,
     * or `None` (default) which will read from `stdin`.
 
-* __`output`__{: #output }: The target which output is written to.
+__output__{: #output }
+
+:   The target which output is written to.
 
     `output` may be set to one of three options:
 
@@ -221,9 +191,12 @@ Instead, it accepts the following required options:
     * a writable file-like object,
     * or `None` (default) which will write to `stdout`.
 
-* __`encoding`__{: #encoding }: The encoding of the source text file. Defaults 
-  to `"utf-8"`. The same encoding will always be used for input and output. 
-  The `xmlcharrefreplace` error handler is used when encoding the output.
+__encoding__{: #encoding }
+
+:   The encoding of the source text file.
+
+    Defaults to `"utf-8"`. The same encoding will always be used for input and output. 
+    The `xmlcharrefreplace` error handler is used when encoding the output.
 
     !!! Note 
         This is the only place that decoding and encoding of Unicode
@@ -231,44 +204,44 @@ Instead, it accepts the following required options:
         meet your specific needs, it is suggested that you write your own code
         to handle your encoding/decoding needs.
 
-### `markdown.Markdown ([**kwargs])` {: #Markdown }
+### markdown.Markdown([**kwargs]) {: #Markdown }
 
 The same options are available when initializing the `markdown.Markdown` class
 as on the [`markdown.markdown`](#markdown) function, except that the class does
 **not** accept a source text string on initialization. Rather, the source text
 string must be passed to one of two instance methods:
 
-* `Markdown.convert(source)`{: #convert }
+#### Markdown.convert(source) {: #convert }
 
-    The `source` text must meet the same requirements as the [`text`](#text) 
-    argument of the [`markdown.markdown`](#markdown) function.
+The `source` text must meet the same requirements as the [`text`](#text) 
+argument of the [`markdown.markdown`](#markdown) function.
 
-    You should also use this method if you want to process multiple strings
-    without creating a new instance of the class for each string.
+You should also use this method if you want to process multiple strings
+without creating a new instance of the class for each string.
 
-        md = markdown.Markdown()
-        html1 = md.convert(text1)
-        html2 = md.convert(text2)
+    md = markdown.Markdown()
+    html1 = md.convert(text1)
+    html2 = md.convert(text2)
 
-    Depending on which options and/or extensions are being used, the parser may
-    need its state reset between each call to `convert`, otherwise performance
-    can degrade drastically:
+Depending on which options and/or extensions are being used, the parser may
+need its state reset between each call to `convert`, otherwise performance
+can degrade drastically:
 
-        html1 = md.convert(text1)
-        md.reset()
-        html2 = md.convert(text2)
-    
-    To make this easier, you can also chain calls to `reset` together:
-    
-        html3 = md.reset().convert(text3)
+    html1 = md.convert(text1)
+    md.reset()
+    html2 = md.convert(text2)
+
+To make this easier, you can also chain calls to `reset` together:
+
+    html3 = md.reset().convert(text3)
 
 
-* `Markdown.convertFile(**kwargs)`{: #convertFile }
+#### Markdown.convertFile(**kwargs) {: #convertFile }
 
-    The arguments of this method are identical to the arguments of the same
-    name on the `markdown.markdownFromFile` function ([`input`](#input), 
-    [`output`](#output), and [`encoding`](#encoding)). As with the 
-    [`convert`](#convert) method, this method should be used to 
-    process multiple files without creating a new instance of the class for 
-    each document. State may need to be `reset` between each call to 
-    `convertFile` as is the case with `convert`.
+The arguments of this method are identical to the arguments of the same
+name on the `markdown.markdownFromFile` function ([`input`](#input), 
+[`output`](#output), and [`encoding`](#encoding)). As with the 
+[`convert`](#convert) method, this method should be used to 
+process multiple files without creating a new instance of the class for 
+each document. State may need to be `reset` between each call to 
+`convertFile` as is the case with `convert`.
