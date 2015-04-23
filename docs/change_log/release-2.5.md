@@ -1,8 +1,4 @@
 title:      Release Notes for v2.5
-prev_title: Release Notes for v2.6
-prev_url:   release-2.6.html
-next_title: Release Notes for v2.4
-next_url:   release-2.4.html
 
 Python-Markdown 2.5 Release Notes
 =================================
@@ -20,13 +16,10 @@ Backwards-incompatible Changes
 
 [importlib]: https://pypi.python.org/pypi/importlib
 
-* The `force_linenos` configuration key on the [CodeHilite Extension] has been **deprecated**
+* The `force_linenos` configuration key on the CodeHilite Extension has been **deprecated**
   and will raise a `KeyError` if provided. In the previous release (2.4), it was 
-  issuing a `DeprecationWarning`. The [`linenums`][linenums] keyword should be used 
+  issuing a `DeprecationWarning`. The `linenums` keyword should be used 
   instead, which provides more control of the output.
-
-[CodeHilite Extension]: extensions/code_hilite.html
-[linenums]: extensions/code_hilite.html#usage
 
 * Both `safe_mode` and the associated `html_replacement_text` keywords will be deprecated 
   in version 2.6 and will raise a **`PendingDeprecationWarning`** in 2.5. The so-called
@@ -96,25 +89,24 @@ Backwards-incompatible Changes
 
         $ python -m markdown -x markdown.extensions.extra input.txt
 
-    See the [documentation](reference.html#extensions) for a full explanation
+    See the [documentation](../reference.md#extensions) for a full explanation
     of the current behavior.
 
 * The previously documented method of appending the extension configuration as 
   a string to the extension name will be deprecated in Python-Markdown 
   version 2.6 and will raise a **`PendingDeprecationWarning`** in 2.5. The 
-  [`extension_configs`](reference.html#extension_configs) keyword should 
-  be used instead. See the [documentation](reference.html#extension-configs) 
+  [`extension_configs`](../reference.md#extension_configs) keyword should 
+  be used instead. See the [documentation](../reference.md#extension-configs) 
   for a full explanation of the current behavior.
 
 What's New in Python-Markdown 2.5
 ---------------------------------
 
-*   The [Smarty Extension] has had a number of additional configuration settings
+*   The Smarty Extension has had a number of additional configuration settings
     added, which allows one to define their own substitutions to better support
     languages other than English. Thanks to [Martin Altmayer] for implementing this 
 	feature.
 
-[Smarty Extension]: extensions/smarty.html
 [Martin Altmayer]:https://github.com/MartinAltmayer
 
 *   Named Extensions (strings passed to the [`extensions`][ex] keyword of 
@@ -146,7 +138,7 @@ What's New in Python-Markdown 2.5
 	the module. Extension authors will want to document carefully what is required to
 	load their extensions.
 
-[ex]: reference.html#extensions
+[ex]: ../reference.md#extensions
 
 *   The Extension Configuration code has been refactored to make it a little easier 
     for extension authors to work with configuration settings. As a result, the 
@@ -159,8 +151,8 @@ What's New in Python-Markdown 2.5
 	code going forward. The included extensions provide a model for best practices.
 	See the [API] documentation for a full explanation.
 
-[ec]: reference.html#extension_configs
-[API]: extensions/api.html#configsettings
+[ec]: ../reference.md#extension_configs
+[API]: ../extensions/api.md#configsettings
 
 *   The [Command Line Interface][cli] now accepts a `--extensions_config` (or `-c`) 
     option which accepts a file name and passes the parsed content of a [YAML] or 
@@ -169,14 +161,12 @@ What's New in Python-Markdown 2.5
 	matches the format required by the `extension_configs` keyword. Note that 
 	[PyYAML] is required to parse YAML files.
 
-[cli]: cli.html#using-extensions
+[cli]: ../cli.md#using-extensions
 [YAML]: http://yaml.org/
 [JSON]: http://json.org/
 [PyYAML]: http://pyyaml.org/
 
-*   The [admonition extension][ae] is no longer considered "experimental."
-
-[ae]: extensions/admonition.html
+*   The Admonition Extension is no longer considered "experimental."
 
 *   There have been various refactors of the testing framework. While those changes
     will not directly effect end users, the code is being better tested which will 

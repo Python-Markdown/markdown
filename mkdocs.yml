@@ -1,0 +1,39 @@
+site_name: Python-Markdown
+site_url: https://Python-Markdown.github.io
+repo_url: https://github.com/Python-Markdown/markdown
+site_author: "The Python-Markdown Project"
+copyright: "Copyright &copy; 2010-2017"
+
+use_directory_urls: true
+
+theme:
+  name: nature
+  icon: py.png
+  release: 2.6.9
+  issue_tracker: https://github.com/Python-Markdown/markdown/issues
+
+pages:
+  - Python-Markdown: index.md
+  - Installation: install.md
+  - Library Reference: reference.md
+  - Command Line: cli.md
+  - Extensions: extensions/index.md
+  - Extension API: extensions/api.md
+  - Test Suite: test_suite.md
+  - Change Log: change_log/index.md
+  - Release Notes for v.2.6: change_log/release-2.6.md
+  - Release Notes for v.2.5: change_log/release-2.5.md
+  - Release Notes for v.2.4: change_log/release-2.4.md
+  - Release Notes for v.2.3: change_log/release-2.3.md
+  - Release Notes for v.2.2: change_log/release-2.2.md
+  - Release Notes for v.2.1: change_log/release-2.1.md
+  - Release Notes for v.2.0: change_log/release-2.0.md
+  - Authors: authors.md
+
+markdown_extensions:
+  - extra
+  - admonition
+  - smarty
+  - codehilite
+  - toc:
+      permalink: true

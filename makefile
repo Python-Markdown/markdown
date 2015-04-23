@@ -35,8 +35,8 @@ build-win:
 
 .PHONY : docs
 docs:
-	python setup.py build_docs --force
-	cd build/docs && zip -r ../docs.zip .
+	mkdocs build --clean
+	cd site && zip -r ../docs.zip .
 
 .PHONY : test
 test:

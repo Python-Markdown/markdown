@@ -1,11 +1,7 @@
-title:      Release Notes for v2.1.0
-prev_title: Release Notes for v2.1.1
-prev_url:   release-2.1.1.html
-next_title: Release Notes for v2.0.2
-next_url:   release-2.0.2.html
+title:      Release Notes for v2.1
 
-Python-Markdown 2.1.0 Release Notes
-===================================
+Python-Markdown 2.1 Release Notes
+=================================
 
 We are pleased to release Python-Markdown 2.1 which makes many 
 improvements on 2.0. In fact, we consider 2.1 to be what 2.0 should have been. 
@@ -35,7 +31,7 @@ is suggested you manually use Python 3.1's 2to3 tool to do a conversion.
 wrapper methods. It now expects keyword arguments. Currently, the positional
 arguments should continue to work, but the solution feels hacky and may be 
 removed in a future version. All users are encouraged to use keyword arguments 
-as documented in the [Library Reference](reference.html).
+as documented in the [Library Reference](../reference.md).
 
 * Past versions of Python-Markdown provided module level Global variables which
 controlled the behavior of a few different aspects of the parser. Those global
@@ -44,13 +40,13 @@ Additionally, those attributes are settable as keyword arguments when
 initializing a class instance. Therefore, if you were editing the global 
 variables (either by editing the source or by overriding them in your code), 
 you should now set them on the class. See the 
-[Library Reference](reference.html) for the options available.
+[Library Reference](../reference.md) for the options available.
 
-* If you have been using the [HeaderId](extensions/header_id.html) extension 
+* If you have been using the HeaderId extension 
 to define custom ids on headers, you will want to switch to using the new 
-[Attribute List](extensions/attr_list.html) extension. The HeaderId extension 
+Attribute List extension. The HeaderId extension 
 now only auto-generates ids on headers which have not already had ids defined. 
-Note that the [Extra](extensions/extra.html) extension has been switched to use 
+Note that the Extra extension has been switched to use 
 Attribute Lists instead of HeaderId as it did previously.
 
 * Some code was moved into the `markdown.util` namespace which was previously
@@ -67,10 +63,10 @@ may want to remove them yourself as they are unlikely to work properly.
 What's New in Python-Markdown 2.1
 ---------------------------------
 
-Three new extensions were added. [Attribute Lists](extensions/attr_list.html), 
+Three new extensions were added. Attribute Lists, 
 which was inspired by Maruku's feature of the same name, 
-[Newline to Break](extensions/nl2br.html), which was inspired by GitHub 
-Flavored Markdown, and [Smart Strong](extensions/smart_strong.html), which 
+Newline to Break, which was inspired by GitHub 
+Flavored Markdown, and Smart Strong, which 
 fills a hole in the Extra extension.
 
 HTML5 is now supported. All this really means is that new block level elements 
@@ -115,7 +111,7 @@ script to accept input on `stdin`.
 The testing framework has been completely rebuilt using the Nose testing 
 framework. This provides a number of benefits including the ability to better
 test the built-in extensions and other options available to change the parsing 
-behavior. See the [Test Suite](test_suite.html) documentation for details.
+behavior. See the [Test Suite](../test_suite.md) documentation for details.
 
 Various bug fixes have been made, which are too numerous to list here. See the 
 [commit log](https://github.com/Python-Markdown/markdown/commits/master) for a 
