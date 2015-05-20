@@ -162,7 +162,7 @@ class FootnoteExtension(Extension):
                     break;
                 elem = children[-1]
         
-            elem.text = node.text + NBSP_PLACEHOLDER
+            elem.text += NBSP_PLACEHOLDER
             elem.append(backlink)
         return div
 
