@@ -311,18 +311,13 @@ class OListProcessor(BlockProcessor):
     def __init__(self, parser):
         BlockProcessor.__init__(self, parser)
         # Detect an item (``1. item``). ``group(1)`` contains contents of item.
-        self.RE = re.compile(
-                ''.join([r'^[ ]{0,', str(self.tab_length - 1), 
-                         r'}\d+\.[ ]+(.*)']))
+        self.RE = re.compile(r'^[ ]{0,%d}\d+\.[ ]+(.*)' % (self.tab_length - 1))
         # Detect items on secondary lines. they can be of either list type.
-        self.CHILD_RE = re.compile(
-                ''.join([r'^[ ]{0,', str(self.tab_length - 1), 
-                         r'}((\d+\.)|[*+-])[ ]+(.*)']))
+        self.CHILD_RE = re.compile(r'^[ ]{0,%d}((\d+\.)|[*+-])[ ]+(.*)' %
+                                   (self.tab_length - 1))
         # Detect indented (nested) items of either type
-        self.INDENT_RE = re.compile(
-                ''.join([r'^[ ]{', str(self.tab_length), ',', 
-                         str(self.tab_length * 2 - 1), 
-                         r'}((\d+\.)|[*+-])[ ]+.*']))
+        self.INDENT_RE = re.compile(r'^[ ]{%d,%d}((\d+\.)|[*+-])[ ]+.*' %
+                                    (self.tab_length, self.tab_length * 2 - 1))
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
@@ -421,9 +416,7 @@ class UListProcessor(OListProcessor):
     def __init__(self, parser):
         OListProcessor.__init__(self, parser)
         # Detect an item (``1. item``). ``group(1)`` contains contents of item.
-        self.RE = re.compile(
-                ''.join([r'^[ ]{0,', str(self.tab_length - 1), 
-                         r'}[*+-][ ]+(.*)']))
+        self.RE = re.compile(r'^[ ]{0,%d}[*+-][ ]+(.*)' % (self.tab_length - 1))
 
 
 class HashHeaderProcessor(BlockProcessor):
