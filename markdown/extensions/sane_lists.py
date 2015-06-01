@@ -28,8 +28,9 @@ class SaneOListProcessor(OListProcessor):
 
     def __init__(self, parser):
         OListProcessor.__init__(self, parser)
-        self.CHILD_RE = re.compile(''.join([
-            r'^[ ]{0,', str(self.tab_length - 1), r'}((\d+\.))[ ]+(.*)']))
+        self.CHILD_RE = re.compile(
+                ''.join([r'^[ ]{0,', str(self.tab_length - 1), 
+                         r'}((\d+\.))[ ]+(.*)']))
 
 
 class SaneUListProcessor(UListProcessor):
@@ -38,8 +39,9 @@ class SaneUListProcessor(UListProcessor):
 
     def __init__(self, parser):
         UListProcessor.__init__(self, parser)
-        self.CHILD_RE = re.compile(''.join([
-            r'^[ ]{0,', str(self.tab_length - 1), r'}(([*+-]))[ ]+(.*)']))
+        self.CHILD_RE = re.compile(
+                ''.join([r'^[ ]{0,', str(self.tab_length - 1), 
+                         r'}(([*+-]))[ ]+(.*)']))
 
 
 class SaneListExtension(Extension):
