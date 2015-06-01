@@ -300,21 +300,27 @@ class OListProcessor(BlockProcessor):
     """ Process ordered list blocks. """
 
     TAG = 'ol'
-    # Detect an item (``1. item``). ``group(1)`` contains contents of item.
-    RE = re.compile(r'^[ ]{0,3}\d+\.[ ]+(.*)')
-    # Detect items on secondary lines. they can be of either list type.
-    CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.)|[*+-])[ ]+(.*)')
-    # Detect indented (nested) items of either type
-    INDENT_RE = re.compile(r'^[ ]{4,7}((\d+\.)|[*+-])[ ]+.*')
-    # Lazy ol - ignore startswith
-    LAZY_OL = True
-    # The integer (if LAZY_OL = False) with which a list starts (default=1)
+    # The integer (python string) with which the lists starts (default=1)
     # Eg: If list is intialized as)
     #   3. Item
     # The ol tag will get starts="3" attribute
     STARTSWITH = '1'
     # List of allowed sibling tags.
     SIBLING_TAGS = ['ol', 'ul']
+
+    def __init__(self, parser):
+        BlockProcessor.__init__(self, parser)
+        # Detect an item (``1. item``). ``group(1)`` contains contents of item.
+        self.RE = re.compile(''.join([
+            r'^[ ]{0,', str(self.tab_length - 1), r'}\d+\.[ ]+(.*)']))
+        # Detect items on secondary lines. they can be of either list type.
+        self.CHILD_RE = re.compile(''.join([
+            r'^[ ]{0,', str(self.tab_length - 1), '}((\d+\.)|[*+-])[ ]+(.*)']))
+        # Detect indented (nested) items of either type
+        self.INDENT_RE = re.compile(''.join([
+            r'^[ ]{', str(self.tab_length), ',', str(self.tab_length * 2 - 1), 
+            r'}((\d+\.)|[*+-])[ ]+.*']))
+
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
@@ -409,7 +415,12 @@ class UListProcessor(OListProcessor):
     """ Process unordered list blocks. """
 
     TAG = 'ul'
-    RE = re.compile(r'^[ ]{0,3}[*+-][ ]+(.*)')
+
+    def __init__(self, parser):
+        OListProcessor.__init__(self, parser)
+        # Detect an item (``1. item``). ``group(1)`` contains contents of item.
+        self.RE = re.compile(''.join([
+            r'^[ ]{0,', str(self.tab_length - 1), r'}[*+-][ ]+(.*)']))
 
 
 class HashHeaderProcessor(BlockProcessor):
