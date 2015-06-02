@@ -27,7 +27,7 @@ class SaneOListProcessor(OListProcessor):
     SIBLING_TAGS = ['ol']
 
     def __init__(self, parser):
-        OListProcessor.__init__(self, parser)
+        super(SaneOListProcessor, self).__init__(parser)
         self.CHILD_RE = re.compile(r'^[ ]{0,%d}((\d+\.))[ ]+(.*)' %
                                    (self.tab_length - 1))
 
@@ -37,7 +37,7 @@ class SaneUListProcessor(UListProcessor):
     SIBLING_TAGS = ['ul']
 
     def __init__(self, parser):
-        UListProcessor.__init__(self, parser)
+        super(SaneUListProcessor, self).__init__(parser)
         self.CHILD_RE = re.compile(r'^[ ]{0,%d}(([*+-]))[ ]+(.*)' %
                                    (self.tab_length - 1))
 
