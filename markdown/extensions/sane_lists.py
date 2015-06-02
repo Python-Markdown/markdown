@@ -24,14 +24,22 @@ import re
 
 class SaneOListProcessor(OListProcessor):
 
-    CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.))[ ]+(.*)')
     SIBLING_TAGS = ['ol']
+
+    def __init__(self, parser):
+        super(SaneOListProcessor, self).__init__(parser)
+        self.CHILD_RE = re.compile(r'^[ ]{0,%d}((\d+\.))[ ]+(.*)' %
+                                   (self.tab_length - 1))
 
 
 class SaneUListProcessor(UListProcessor):
 
-    CHILD_RE = re.compile(r'^[ ]{0,3}(([*+-]))[ ]+(.*)')
     SIBLING_TAGS = ['ul']
+
+    def __init__(self, parser):
+        super(SaneUListProcessor, self).__init__(parser)
+        self.CHILD_RE = re.compile(r'^[ ]{0,%d}(([*+-]))[ ]+(.*)' %
+                                   (self.tab_length - 1))
 
 
 class SaneListExtension(Extension):
