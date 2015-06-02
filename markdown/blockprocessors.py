@@ -38,7 +38,7 @@ def build_block_parser(md, **kwargs):
     return parser
 
 
-class BlockProcessor:
+class BlockProcessor(object):
     """ Base class for block processors.
 
     Each subclass will provide the methods below to work with the source and
@@ -141,7 +141,7 @@ class ListIndentProcessor(BlockProcessor):
     LIST_TYPES = ['ul', 'ol']
 
     def __init__(self, *args):
-        BlockProcessor.__init__(self, *args)
+        super(ListIndentProcessor, self).__init__(*args)
         self.INDENT_RE = re.compile(r'^(([ ]{%s})+)' % self.tab_length)
 
     def test(self, parent, block):
@@ -309,7 +309,7 @@ class OListProcessor(BlockProcessor):
     SIBLING_TAGS = ['ol', 'ul']
 
     def __init__(self, parser):
-        BlockProcessor.__init__(self, parser)
+        super(OListProcessor, self).__init__(parser)
         # Detect an item (``1. item``). ``group(1)`` contains contents of item.
         self.RE = re.compile(r'^[ ]{0,%d}\d+\.[ ]+(.*)' % (self.tab_length - 1))
         # Detect items on secondary lines. they can be of either list type.
@@ -414,7 +414,7 @@ class UListProcessor(OListProcessor):
     TAG = 'ul'
 
     def __init__(self, parser):
-        OListProcessor.__init__(self, parser)
+        super(UListProcessor, self).__init__(parser)
         # Detect an item (``1. item``). ``group(1)`` contains contents of item.
         self.RE = re.compile(r'^[ ]{0,%d}[*+-][ ]+(.*)' % (self.tab_length - 1))
 
