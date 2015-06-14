@@ -75,7 +75,9 @@ class CodeHilite(object):
 
     def __init__(self, src=None, linenums=None, guess_lang=True,
                  css_class="codehilite", lang=None, style='default',
-                 noclasses=False, tab_length=4, hl_lines=None, use_pygments=True):
+                 noclasses=False, tab_length=4, hl_lines=None, linenostart=1,
+                 use_pygments=True):
+        self.linenostart = linenostart
         self.src = src
         self.lang = lang
         self.linenums = linenums
@@ -119,7 +121,8 @@ class CodeHilite(object):
                                               cssclass=self.css_class,
                                               style=self.style,
                                               noclasses=self.noclasses,
-                                              hl_lines=self.hl_lines)
+                                              hl_lines=self.hl_lines,
+                                              linenostart=self.linenostart,)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
@@ -170,6 +173,7 @@ class CodeHilite(object):
             \s*                             # Arbitrary whitespace
             # Optional highlight lines, single- or double-quote-delimited
             (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot))?
+            (linenostart=(?P<linenostart>[0-9]*))?
             ''',  re.VERBOSE)
         # search first line for shebang
         m = c.search(fl)
@@ -187,6 +191,10 @@ class CodeHilite(object):
                 self.linenums = True
 
             self.hl_lines = parse_hl_lines(m.group('hl_lines'))
+            linenostart = m.group('linenostart')
+            if linenostart:
+                # this will allow starting line 0
+                self.linenostart = int(linenostart)
         else:
             # No match
             lines.insert(0, fl)
