@@ -14,6 +14,7 @@ before_install:
 install:
   - pip install tox
   - pip install coveralls
+  - pip install Pygments
 script:
   - tox
 after_success:
