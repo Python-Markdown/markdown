@@ -211,10 +211,10 @@ class SmartyExtension(Extension):
         rightAngledQuotePattern = SubstituteTextPattern(
             r'\>\>', (self.substitutions['right-angle-quote'],), md
         )
-        self.inlinePatterns.add(
+        self.angledQuotesPatterns.add(
             'smarty-left-angle-quotes', leftAngledQuotePattern, '_begin'
         )
-        self.inlinePatterns.add(
+        self.angledQuotesPatterns.add(
             'smarty-right-angle-quotes',
             rightAngledQuotePattern,
             '>smarty-left-angle-quotes'
@@ -249,11 +249,19 @@ class SmartyExtension(Extension):
             self.educateEllipses(md)
         if configs['smart_quotes']:
             self.educateQuotes(md)
-        if configs['smart_angled_quotes']:
-            self.educateAngledQuotes(md)
         if configs['smart_dashes']:
             self.educateDashes(md)
         inlineProcessor = InlineProcessor(md)
         inlineProcessor.inlinePatterns = self.inlinePatterns
         md.treeprocessors.add('smarty', inlineProcessor, '_end')
         md.ESCAPED_CHARS.extend(['"', "'"])
+        if configs['smart_angled_quotes']:
+            self.angledQuotesPatterns = OrderedDict()
+            self.educateAngledQuotes(md)
+            angledQuotesProcessor = InlineProcessor(md)
+            angledQuotesProcessor.inlinePatterns = self.angledQuotesPatterns
+            md.treeprocessors.add('smarty-angledquotes', angledQuotesProcessor, '<inline')
+
+
+def makeExtension(*args, **kwargs):
+    return SmartyExtension(*args, **kwargs)
