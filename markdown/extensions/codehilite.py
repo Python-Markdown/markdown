@@ -122,7 +122,7 @@ class CodeHilite(object):
                                               style=self.style,
                                               noclasses=self.noclasses,
                                               hl_lines=self.hl_lines,
-                                              linenostart=self.linenostart,)
+                                              linenostart=self.linenostart)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
