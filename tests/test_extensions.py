@@ -237,12 +237,13 @@ class TestCodeHilite(unittest.TestCase):
         )
 
     def testUseLineNoStart(self):
+        if not self.has_pygments:
+            self.skipTest("linenos only supported with Pygments")
         text = '\t:::Python linenostart=42\n\t# A Code Comment'
         md = markdown.Markdown(extensions=[
             markdown.extensions.codehilite.CodeHiliteExtension(linenums=True)
         ])
-        if self.has_pygments:
-            self.assertIn("42", md.convert(text))
+        self.assertIn("42", md.convert(text))
 
 
 class TestFencedCode(unittest.TestCase):
