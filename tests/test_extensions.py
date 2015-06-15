@@ -236,6 +236,14 @@ class TestCodeHilite(unittest.TestCase):
             '</code></pre>'
         )
 
+    def testUseLineNoStart(self):
+        text = '\t:::Python linenostart=42\n\t# A Code Comment'
+        md = markdown.Markdown(extensions=[
+            markdown.extensions.codehilite.CodeHiliteExtension(linenums=True)
+        ])
+        if self.has_pygments:
+            self.assertIn("42", md.convert(text))
+
 
 class TestFencedCode(unittest.TestCase):
     """ Test fenced_code extension. """
