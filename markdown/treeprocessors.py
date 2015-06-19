@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import
+import re
 from . import util
 from . import odict
 
@@ -41,6 +42,115 @@ class Treeprocessor(util.Processor):
 
 
 class InlineProcessor(Treeprocessor):
+    """
+    A Treeprocessor that traverses a tree, applying inline patterns.
+    """
+    
+    def __init__(self, md):
+        super(InlineProcessor, self).__init__(md)
+        self.TOKEN_RE = re.compile(r'|'.join('\\{0}'.format(x) for x in md.ESCAPED_CHARS))
+
+    def apply_patterns(self, text):
+        """
+        Match patterns at begining og given text.
+        
+        """
+
+        match = node = None
+        for pattern in self.md.inlinePatterns.values():
+            match = pattern.getCompiledRegExp().match(text)
+            if match:
+                node = pattern.handleMatch(match)
+                text = text[match.end():]
+                break
+        
+        if not match:
+            # Step forward one character
+            return text[0], None, text[1:]
+
+        if isString(node):
+            return node, None, text
+
+        return '', node,  text
+
+    def handle_inline(self, text):
+        """
+        Apply inline patterns to the given text.
+        
+        """
+
+        elem_text = ''
+        children = []
+        while text:
+            m = self.TOKEN_RE.search(text)
+            if m:
+                if children:
+                    children[-1].tail = children[-1].tail + text[:m.start()] if children[-1].tail else text[:m.start()]
+                else:
+                    elem_text += text[:m.start()]
+
+                pre_text, node, text = self.apply_patterns(text[m.start():])
+
+                if children:
+                    children[-1].tail = children[-1].tail + pre_text if children[-1].tail else pre_text
+                else:
+                    elem_text += pre_text
+
+                if node is not None:
+                    children.append(node)
+            else:
+                # No more matches.
+                if children:
+                    children[-1].tail = children[-1].tail + text if children[-1].tail else text
+                else:
+                    elem_text += text
+                break
+        return elem_text, children
+    
+    def handle_elem(self, elem, parent, pos):
+        """
+        Apply patterns to an element and its children recursively.
+        
+        """
+    
+        if elem.text and elem.text.strip() and not isinstance(elem.text, util.AtomicString):
+            text = elem.text
+            elem.text = None
+            elem.text, children = self.handle_inline(text)
+            elem.extend(children)
+        if elem.tail and elem.tail.strip() and not isinstance(elem.tail, util.AtomicString):
+            tail = elem.tail
+            elem.tail = None
+            elem.tail, siblings = self.handle_inline(tail)
+            parent.extend(siblings) #  TODO: maybe fix this?
+
+        # Recursively step through children
+        for cpos, child in enumerate(elem):
+            self.handle_elem(child, elem, cpos)
+    
+    def run(self, tree):
+        """
+        Apply inline patterns to a parsed Markdown tree.
+
+        Iterate over ElementTree, find elements with inline tag, apply inline
+        patterns and append newly created Elements to tree.  If you don't
+        want to process your data with inline paterns, instead of normal
+        string, use subclass AtomicString:
+
+            node.text = markdown.util.AtomicString("This will not be processed.")
+
+        Arguments:
+
+        * tree: ElementTree object, representing Markdown tree.
+
+        Returns: None.
+
+        """
+
+        for pos, child in enumerate(tree):
+            self.handle_elem(child, tree, pos)
+
+class _InlineProcessor(Treeprocessor):
     """
     A Treeprocessor that traverses a tree, applying inline patterns.
     """
@@ -268,7 +378,7 @@ class InlineProcessor(Treeprocessor):
         want to process your data with inline paterns, instead of normal
         string, use subclass AtomicString:
 
-            node.text = markdown.AtomicString("This will not be processed.")
+            node.text = markdown.util.AtomicString("This will not be processed.")
 
         Arguments:
 
