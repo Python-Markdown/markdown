@@ -83,7 +83,7 @@ smartypants.py license:
 
 from __future__ import unicode_literals
 from . import Extension
-from ..inlinepatterns import HtmlPattern
+from ..inlinepatterns import HtmlPattern, HTML_RE
 from ..odict import OrderedDict
 from ..treeprocessors import InlineProcessor
 
@@ -146,6 +146,8 @@ closingSingleQuotesRegex2 = r"(?<=%s)'(\s|s\b)" % closeClass
 # All remaining quotes should be opening ones
 remainingSingleQuotesRegex = "'"
 remainingDoubleQuotesRegex = '"'
+
+HTML_STRICT_RE = HTML_RE + r'(?!\>)'
 
 
 class SubstituteTextPattern(HtmlPattern):
@@ -211,10 +213,10 @@ class SmartyExtension(Extension):
         rightAngledQuotePattern = SubstituteTextPattern(
             r'\>\>', (self.substitutions['right-angle-quote'],), md
         )
-        self.angledQuotesPatterns.add(
+        self.inlinePatterns.add(
             'smarty-left-angle-quotes', leftAngledQuotePattern, '_begin'
         )
-        self.angledQuotesPatterns.add(
+        self.inlinePatterns.add(
             'smarty-right-angle-quotes',
             rightAngledQuotePattern,
             '>smarty-left-angle-quotes'
@@ -249,18 +251,17 @@ class SmartyExtension(Extension):
             self.educateEllipses(md)
         if configs['smart_quotes']:
             self.educateQuotes(md)
+        if configs['smart_angled_quotes']:
+            self.educateAngledQuotes(md)
+            # Override HTML_RE from inlinepatterns.py so that it does not
+            # process tags with duplicate closing quotes.
+            md.inlinePatterns["html"] = HtmlPattern(HTML_STRICT_RE, md)
         if configs['smart_dashes']:
             self.educateDashes(md)
         inlineProcessor = InlineProcessor(md)
         inlineProcessor.inlinePatterns = self.inlinePatterns
         md.treeprocessors.add('smarty', inlineProcessor, '_end')
         md.ESCAPED_CHARS.extend(['"', "'"])
-        if configs['smart_angled_quotes']:
-            self.angledQuotesPatterns = OrderedDict()
-            self.educateAngledQuotes(md)
-            angledQuotesProcessor = InlineProcessor(md)
-            angledQuotesProcessor.inlinePatterns = self.angledQuotesPatterns
-            md.treeprocessors.add('smarty-angledquotes', angledQuotesProcessor, '<inline')
 
 
 def makeExtension(*args, **kwargs):

@@ -31,7 +31,7 @@ Escaped ellipsis\...
 'Escaped \"quotes\" in real ones'  
 \'"Real" quotes in escaped ones\'
 
-Skip `"code" -- --- 'spans' ...`.
+Skip `<<all>> "code" -- --- 'spans' ...`.
 
     Also skip "code" 'blocks'
 	foo -- bar --- baz ...
