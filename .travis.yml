@@ -18,3 +18,7 @@ script:
   - tox
 after_success:
   - coveralls
+branches:
+  only:
+    - master
+    - md3
