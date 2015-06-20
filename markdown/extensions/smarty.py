@@ -83,7 +83,7 @@ smartypants.py license:
 
 from __future__ import unicode_literals
 from . import Extension
-from ..inlinepatterns import HtmlPattern
+from ..inlinepatterns import HtmlPattern, HTML_RE
 from ..odict import OrderedDict
 from ..treeprocessors import InlineProcessor
 
@@ -146,6 +146,8 @@ closingSingleQuotesRegex2 = r"(?<=%s)'(\s|s\b)" % closeClass
 # All remaining quotes should be opening ones
 remainingSingleQuotesRegex = "'"
 remainingDoubleQuotesRegex = '"'
+
+HTML_STRICT_RE = HTML_RE + r'(?!\>)'
 
 
 class SubstituteTextPattern(HtmlPattern):
@@ -251,6 +253,9 @@ class SmartyExtension(Extension):
             self.educateQuotes(md)
         if configs['smart_angled_quotes']:
             self.educateAngledQuotes(md)
+            # Override HTML_RE from inlinepatterns.py so that it does not
+            # process tags with duplicate closing quotes.
+            md.inlinePatterns["html"] = HtmlPattern(HTML_STRICT_RE, md)
         if configs['smart_dashes']:
             self.educateDashes(md)
         inlineProcessor = InlineProcessor(md)
