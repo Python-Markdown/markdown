@@ -68,3 +68,5 @@ Hr's:
 <hr class="foo" id="bar" >
 
 <some [weird](http://example.com) stuff>
+
+<some>> <<unbalanced>> <<brackets>
