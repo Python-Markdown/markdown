@@ -48,7 +48,7 @@ class InlineProcessor(Treeprocessor):
     
     def __init__(self, md):
         super(InlineProcessor, self).__init__(md)
-        self.TOKEN_RE = re.compile(r'|'.join('\\{0}'.format(x) for x in md.ESCAPED_CHARS))
+        self.TOKEN_RE = re.compile(r'|'.join('\\{0}'.format(x) for x in md.ESCAPED_CHARS + ['  \n']))
 
     def apply_patterns(self, text):
         """
@@ -61,10 +61,11 @@ class InlineProcessor(Treeprocessor):
             match = pattern.getCompiledRegExp().match(text)
             if match:
                 node = pattern.handleMatch(match)
-                text = text[match.end():]
+                if node is not None:
+                    text = text[match.end():]
                 break
         
-        if not match:
+        if not match or node is None:
             # Step forward one character
             return text[0], None, text[1:]
 

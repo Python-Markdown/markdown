@@ -15,8 +15,8 @@ from __future__ import unicode_literals
 from . import Extension
 from ..inlinepatterns import SimpleTagPattern
 
-EMPHASIS_RE = r'(\*|_)(.+?)\2'
-STRONG_RE = r'(\*{2}|_{2})(.+?)\2'
+EMPHASIS_RE = r'(\*|_)(.+?)\1'
+STRONG_RE = r'(\*{2}|_{2})(.+?)\1'
 
 
 class LegacyEmExtension(Extension):

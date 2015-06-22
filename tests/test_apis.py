@@ -521,9 +521,9 @@ class testAtomicString(unittest.TestCase):
         tree = markdown.util.etree.Element('div')
         p = markdown.util.etree.SubElement(tree, 'p')
         p.text = 'some *text*'
-        new = self.inlineprocessor.run(tree)
+        self.inlineprocessor.run(tree)
         self.assertEqual(
-            markdown.serializers.to_html_string(new),
+            markdown.serializers.to_html_string(tree),
             '<div><p>some <em>text</em></p></div>'
         )
 
@@ -532,9 +532,9 @@ class testAtomicString(unittest.TestCase):
         tree = markdown.util.etree.Element('div')
         p = markdown.util.etree.SubElement(tree, 'p')
         p.text = markdown.util.AtomicString('some *text*')
-        new = self.inlineprocessor.run(tree)
+        self.inlineprocessor.run(tree)
         self.assertEqual(
-            markdown.serializers.to_html_string(new),
+            markdown.serializers.to_html_string(tree),
             '<div><p>some *text*</p></div>'
         )
 
@@ -552,9 +552,9 @@ class testAtomicString(unittest.TestCase):
         span3.tail = markdown.util.AtomicString(' *to*')
         span2.tail = markdown.util.AtomicString(' *test*')
         span1.tail = markdown.util.AtomicString(' *with*')
-        new = self.inlineprocessor.run(tree)
+        self.inlineprocessor.run(tree)
         self.assertEqual(
-            markdown.serializers.to_html_string(new),
+            markdown.serializers.to_html_string(tree),
             '<div><p>*some* <span>*more* <span>*text* <span>*here*</span> '
             '*to*</span> *test*</span> *with*</p></div>'
         )

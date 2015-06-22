@@ -120,7 +120,7 @@ STRONG_EM_RE = r'(\*|_)\1{2}(.+?)\1{2}(.*?)\1'
 
 # [text](url) or [text](<url>) or [text](url "title")
 LINK_RE = NOIMG + BRK + \
-    r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\1\s*)?\)'''
+    r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\11\s*)?\)'''
 
 # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
 IMAGE_LINK_RE = r'\!' + BRK + r'\s*\((<.*?>|([^")]+"[^"]*"|[^\)]*))\)'
@@ -207,22 +207,15 @@ class Pattern(object):
         return self.__class__.__name__
 
     def unescape(self, text):
-        """ Return unescaped text given text with an inline placeholder. """
-        try:
-            stash = self.md.treeprocessors['inline'].stashed_nodes
-        except KeyError:  # pragma: no cover
+        """ Processed any backslash escaped chars in string. """
+        if not isinstance(text, util.text_type):
             return text
-
-        def get_stash(m):
-            id = m.group(0)
-            if id in stash:
-                value = stash.get(id)
-                if isinstance(value, util.string_type):
-                    return value
-                else:
-                    # An etree Element - return text content only
-                    return ''.join(value.itertext())
-        return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
+        def sub(m):
+            if m.group(1) in self.md.ESCAPED_CHARS:
+                return m.group(1)
+            else:
+                return m.group(0)
+        return re.sub(ESCAPE_RE, sub, text)
 
 
 class SimpleTextPattern(Pattern):
@@ -295,27 +288,9 @@ class DoubleTagPattern(SimpleTagPattern):
 class HtmlPattern(Pattern):
     """ Store raw inline html and return a placeholder. """
     def handleMatch(self, m):
-        rawhtml = self.unescape(m.group(1))
+        rawhtml = m.group(1)
         place_holder = self.md.htmlStash.store(rawhtml)
         return place_holder
-
-    def unescape(self, text):
-        """ Return unescaped text given text with an inline placeholder. """
-        try:
-            stash = self.md.treeprocessors['inline'].stashed_nodes
-        except KeyError:  # pragma: no cover
-            return text
-
-        def get_stash(m):
-            id = m.group(0)
-            value = stash.get(id)
-            if value is not None:
-                try:
-                    return self.md.serializer(value)
-                except:
-                    return '\%s' % value
-
-        return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
 class LinkPattern(Pattern):
@@ -334,7 +309,7 @@ class LinkPattern(Pattern):
             el.set("href", "")
 
         if title:
-            title = dequote(self.unescape(title))
+            title = self.unescape(dequote(title))
             el.set("title", title)
         return el
 
@@ -352,8 +327,8 @@ class ImagePattern(LinkPattern):
         else:
             el.set('src', "")
         if len(src_parts) > 1:
-            el.set('title', dequote(self.unescape(" ".join(src_parts[1:]))))
-        el.set('alt', self.unescape(m.group(2)))
+            el.set('title', self.unescape(dequote(" ".join(src_parts[1:]))))
+        el.set('alt', self.unescape(m.group(1)))
         return el
 
 
@@ -379,7 +354,7 @@ class ReferencePattern(LinkPattern):
         href, title = self.md.references[id]
 
         text = m.group(1)
-        return self.makeTag(href, title, text)
+        return self.makeTag(self.unescape(href), self.unescape(title), text)
 
     def makeTag(self, href, title, text):
         el = util.etree.Element('a')
@@ -399,7 +374,7 @@ class ImageReferencePattern(ReferencePattern):
         el.set("src", href)
         if title:
             el.set("title", title)
-        el.set("alt", self.unescape(text))
+        el.set("alt", text)
         return el
 
 
@@ -407,7 +382,7 @@ class AutolinkPattern(Pattern):
     """ Return a link Element given an autolink (`<http://example/com>`). """
     def handleMatch(self, m):
         el = util.etree.Element("a")
-        el.set('href', self.unescape(m.group(1)))
+        el.set('href', m.group(1))
         el.text = util.AtomicString(m.group(1))
         return el
 
@@ -418,7 +393,7 @@ class AutomailPattern(Pattern):
     """
     def handleMatch(self, m):
         el = util.etree.Element('a')
-        email = self.unescape(m.group(1))
+        email = m.group(1)
         if email.startswith("mailto:"):
             email = email[len("mailto:"):]
 

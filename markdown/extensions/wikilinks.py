@@ -57,9 +57,9 @@ class WikiLinks(Pattern):
         self.config = config
 
     def handleMatch(self, m):
-        if m.group(2).strip():
+        if m.group(1).strip():
             base_url, end_url, html_class = self._getMeta()
-            label = m.group(2).strip()
+            label = m.group(1).strip()
             url = self.config['build_url'](label, base_url, end_url)
             a = etree.Element('a')
             a.text = label

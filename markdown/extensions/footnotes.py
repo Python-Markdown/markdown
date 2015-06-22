@@ -264,7 +264,7 @@ class FootnotePattern(Pattern):
         self.footnotes = footnotes
 
     def handleMatch(self, m):
-        id = m.group(2)
+        id = m.group(1)
         if id in self.footnotes.footnotes.keys():
             sup = etree.Element("sup")
             a = etree.SubElement(sup, "a")
