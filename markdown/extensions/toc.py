@@ -134,8 +134,8 @@ class TocTreeprocessor(Treeprocessor):
         self.use_permalinks = parseBoolValue(config["permalink"], False)
         if self.use_permalinks is None:
             self.use_permalinks = config["permalink"]
-
         self.header_rgx = re.compile("[Hh][123456]")
+        self.toc_depth = config["toc_depth"]
 
     def iterparent(self, node):
         ''' Iterator wrapper to get allowed parent and child all at once. '''
@@ -234,6 +234,8 @@ class TocTreeprocessor(Treeprocessor):
         for el in doc.iter():
             if isinstance(el.tag, string_type) and self.header_rgx.match(el.tag):
                 self.set_level(el)
+                if int(el.tag[-1]) > int(self.toc_depth):
+                    continue
                 text = ''.join(el.itertext()).strip()
 
                 # Do not override pre-existing ids
@@ -285,7 +287,10 @@ class TocExtension(Extension):
             "slugify": [slugify,
                         "Function to generate anchors based on header text - "
                         "Defaults to the headerid ext's slugify function."],
-            'separator': ['-', 'Word separator. Defaults to "-".']
+            'separator': ['-', 'Word separator. Defaults to "-".'],
+            "toc_depth": [6,
+                          "Define up to which section level n (<h1>..<hn>) to "
+                          "include in the TOC"]
         }
 
         super(TocExtension, self).__init__(**kwargs)
