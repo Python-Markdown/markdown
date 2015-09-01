@@ -125,3 +125,11 @@ The following options are provided to configure the output:
 
 * **`separator`**:
     Word separator. Character which replaces white space in id. Defaults to "`-`".
+
+* **`toc_depth`**
+    Define up to which section level "n" (`<h1>` to `<hn>`, where `1 <= n <= 6`)
+    to include in the Table of Contents. Defaults to `6`.
+
+    When used with conjunction with `baselevel` this parameter will limit the
+    resulting (adjusted) heading. That is, if both `toc_depth` and `baselevel`
+    are 3, then only the highest level will be present in the table.
