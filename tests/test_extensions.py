@@ -894,6 +894,60 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '<h1 id="toc"><em>[TOC]</em></h1>'          # noqa
         )
 
+    def testMaxLevel(self):
+        """ Test toc_depth setting """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(toc_depth=2)]
+        )
+        text = '# Header 1\n\n## Header 2\n\n###Header 3 not in TOC'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="header-1">Header 1</h1>\n'
+            '<h2 id="header-2">Header 2</h2>\n'
+            '<h3>Header 3 not in TOC</h3>'
+        )
+        self.assertEqual(
+            md.toc,
+            '<div class="toc">\n'
+              '<ul>\n'                                             # noqa
+                '<li><a href="#header-1">Header 1</a>'             # noqa
+                  '<ul>\n'                                         # noqa
+                    '<li><a href="#header-2">Header 2</a></li>\n'  # noqa
+                  '</ul>\n'                                        # noqa
+                '</li>\n'                                          # noqa
+              '</ul>\n'                                            # noqa
+            '</div>\n'
+        )
+
+        self.assertNotIn("Header 3", md.toc)
+
+    def testMaxLevelwithBaseLevel(self):
+        """ Test toc_depth setting together with baselevel """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(toc_depth=3,
+                                                             baselevel=2)]
+        )
+        text = '# Some Header\n\n## Next Level\n\n### Too High'
+        self.assertEqual(
+            md.convert(text),
+            '<h2 id="some-header">Some Header</h2>\n'
+            '<h3 id="next-level">Next Level</h3>\n'
+            '<h4>Too High</h4>'
+        )
+        self.assertEqual(
+            md.toc,
+            '<div class="toc">\n'
+              '<ul>\n'                                                 # noqa
+                '<li><a href="#some-header">Some Header</a>'           # noqa
+                  '<ul>\n'                                             # noqa
+                    '<li><a href="#next-level">Next Level</a></li>\n'  # noqa
+                  '</ul>\n'                                            # noqa
+                '</li>\n'                                              # noqa
+              '</ul>\n'                                                # noqa
+            '</div>\n'
+        )
+        self.assertNotIn("Too High", md.toc)
+
 
 class TestSmarty(unittest.TestCase):
     def setUp(self):
