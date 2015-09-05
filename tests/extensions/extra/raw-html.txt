@@ -65,3 +65,9 @@ Markdown is *still* active here.
 </div>
 
 Markdown is *active again* here.
+
+<div markdown=1>
+foo bar
+
+<em>bar</em>
+</div>
