@@ -178,10 +178,11 @@ class HtmlBlockPreprocessor(Preprocessor):
                 else:  # raw html
                     if len(items) - right_listindex <= 1:  # last element
                         right_listindex -= 1
-                    offset = 1 if i == right_listindex else 0
+                    if right_listindex <= i:
+                        right_listindex = i + 1
                     placeholder = self.markdown.htmlStash.store('\n\n'.join(
-                        items[i:right_listindex + offset]))
-                    del items[i:right_listindex + offset]
+                        items[i:right_listindex]))
+                    del items[i:right_listindex]
                     items.insert(i, placeholder)
         return items
 
