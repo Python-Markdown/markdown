@@ -27,8 +27,6 @@ log = logging.getLogger('MARKDOWN')
 # Global Vars
 META_RE = re.compile(r'^[ ]{0,3}(?P<key>[A-Za-z0-9_-]+):\s*(?P<value>.*)')
 META_MORE_RE = re.compile(r'^[ ]{4,}(?P<value>.*)')
-BEGIN_RE = re.compile(r'^-{3}(\s.*)?')
-END_RE = re.compile(r'^(-{3}|\.{3})(\s.*)?')
 
 
 class MetaExtension (Extension):
@@ -48,13 +46,11 @@ class MetaPreprocessor(Preprocessor):
         """ Parse Meta-Data and store in Markdown.Meta. """
         meta = {}
         key = None
-        if lines and BEGIN_RE.match(lines[0]):
-            lines.pop(0)
         while lines:
             line = lines.pop(0)
             m1 = META_RE.match(line)
-            if line.strip() == '' or END_RE.match(line):
-                break  # blank line or end of YAML header - done
+            if line.strip() == '':
+                break  # blank line - done
             if m1:
                 key = m1.group('key').lower().strip()
                 value = m1.group('value').strip()
@@ -70,7 +66,10 @@ class MetaPreprocessor(Preprocessor):
                 else:
                     lines.insert(0, line)
                     break  # no meta data - done
-        self.markdown.Meta = meta
+        if hasattr(self.markdown, 'Meta'):
+            self.markdown.Meta.update(meta)
+        else:
+            self.markdown.Meta = meta
         return lines
 
 
