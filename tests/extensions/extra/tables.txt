@@ -53,3 +53,19 @@ Four spaces is a code block:
 
 | First Header | Second Header |
 | ------------ | ------------- |
+
+More inline code block tests
+
+Column 1 | Column 2 | Column 3
+---------|----------|---------
+word 1   | word 2   | word 3
+word 1   | `word 2` | word 3
+word 1   | \`word 2 | word 3
+word 1   | `word 2 | word 3
+word 1   | `word |2` | word 3
+words    |`` some | code `` | more words
+words    |``` some | code ``` | more words
+words    |```` some | code ```` | more words
+words    |`` some ` | ` code `` | more words
+words    |``` some ` | ` code ``` | more words
+words    |```` some ` | ` code ```` | more words
