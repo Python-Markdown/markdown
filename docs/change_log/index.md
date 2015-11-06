@@ -3,6 +3,8 @@ title:      Change Log
 Python-Markdown Change Log
 =========================
 
+Nov 6, 2015: Released version 2.6.4 (a bug-fix release).
+
 Oct 26, 2015: Released version 2.6.3 (a bug-fix release).
 
 Apr 20, 2015: Released version 2.6.2 (a bug-fix release).
