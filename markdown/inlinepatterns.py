@@ -198,7 +198,7 @@ class Pattern(object):
 
         """
         self.pattern = pattern
-        self.compiled_re = re.compile("^(.*?)%s(.*?)$" % pattern,
+        self.compiled_re = re.compile("^(.*?)%s(.*)$" % pattern,
                                       re.DOTALL | re.UNICODE)
 
         # Api for Markdown to pass safe_mode into instance
