@@ -35,3 +35,6 @@ Skip `<<all>> "code" -- --- 'spans' ...`.
 
     Also skip "code" 'blocks'
 	foo -- bar --- baz ...
+
+A line that 'wraps' with
+*emphasis* at the beginning of the next line.
