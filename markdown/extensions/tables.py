@@ -119,7 +119,7 @@ class TableProcessor(BlockProcessor):
                     groups = match.groups()
                     delim = groups[1]  # the code block delimeter (ie 1 or more backticks)
                     row_contents = groups[2]  # the text contained inside the code block
-                    i += match.start(4)  # jump pointer to the beginning of the rest of the text (group #4)
+                    i += match.start(4) - 1  # jump pointer to the beginning of the rest of the text (group #4)
                     element = delim + row_contents + delim  # reinstert backticks
                     current += element
             i += 1
