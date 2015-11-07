@@ -69,3 +69,9 @@ words    |```` some | code ```` | more words
 words    |`` some ` | ` code `` | more words
 words    |``` some ` | ` code ``` | more words
 words    |```` some ` | ` code ```` | more words
+
+A test for issue #440:
+
+foo | bar
+--- | ---
+foo | (`bar`) and `baz`.
