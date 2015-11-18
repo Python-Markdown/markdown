@@ -1,3 +1,4 @@
+sudo: false
 language: python
 env:
   - TOXENV=py27
@@ -7,10 +8,11 @@ env:
   - TOXENV=pypy
   - TOXENV=flake8
   - TOXENV=checkspelling
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install libtidy-0.99-0
-  - sudo apt-get install aspell
+addons:
+  apt:
+    packages:
+    - libtidy-0.99-0
+    - aspell
 install:
   - pip install tox
   - pip install coveralls
