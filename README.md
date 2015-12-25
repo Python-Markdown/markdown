@@ -6,6 +6,7 @@
 [![Downloads](http://img.shields.io/pypi/dm/Markdown.svg)](https://pypi.python.org/pypi/Markdown#downloads)
 [![Latest Version](http://img.shields.io/pypi/v/Markdown.svg)](http://pypi.python.org/pypi/Markdown)
 [![BSD License](http://img.shields.io/badge/license-BSD-yellow.svg)](http://opensource.org/licenses/BSD-3-Clause)
+[![Issue Stats](http://issuestats.com/github/waylan/Python-Markdown/badge/issue?style=flat)](http://issuestats.com/github/waylan/Python-Markdown)
 
 This is a Python implementation of John Gruber's [Markdown][]. 
 It is almost completely compliant with the reference implementation,
