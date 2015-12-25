@@ -6,6 +6,7 @@ Python-Markdown
 [![Downloads](http://img.shields.io/pypi/dm/Markdown.svg)](https://pypi.python.org/pypi/Markdown#downloads)
 [![Latest Version](http://img.shields.io/pypi/v/Markdown.svg)](http://pypi.python.org/pypi/Markdown)
 [![BSD License](http://img.shields.io/badge/license-BSD-yellow.svg)](http://opensource.org/licenses/BSD-3-Clause)
+[![Issue Stats](http://issuestats.com/github/waylan/Python-Markdown/badge/issue?style=flat)](http://issuestats.com/github/waylan/Python-Markdown)
 
 ***WARNING:*** This is **alpha** software. This is the development repo for the upcoming version 3.0. 
 For a stable version of Python-Markdown see the 2.x repo at [waylan/Python-Markdown].
