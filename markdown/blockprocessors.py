@@ -300,6 +300,8 @@ class OListProcessor(BlockProcessor):
     """ Process ordered list blocks. """
 
     TAG = 'ol'
+    # Lazy ol - ignore startswith
+    LAZY_OL = True
     # The integer (python string) with which the lists starts (default=1)
     # Eg: If list is intialized as)
     #   3. Item

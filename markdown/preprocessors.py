@@ -179,7 +179,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                         right_listindex -= 1
                     if right_listindex <= i:
                         right_listindex = i + 1
-                    placeholder = self.markdown.htmlStash.store('\n\n'.join(
+                    placeholder = self.md.htmlStash.store('\n\n'.join(
                         items[i:right_listindex]))
                     del items[i:right_listindex]
                     items.insert(i, placeholder)
