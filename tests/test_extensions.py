@@ -11,6 +11,7 @@ from __future__ import unicode_literals
 import unittest
 import markdown
 
+
 class TestCaseWithAssertStartsWith(unittest.TestCase):
 
     def assertStartsWith(self, expectedPrefix, text, msg=None):
@@ -20,6 +21,7 @@ class TestCaseWithAssertStartsWith(unittest.TestCase):
             standardMsg = '%s not found at the start of %s' % (repr(expectedPrefix),
                                                                repr(text))
             self.fail(self._formatMessage(msg, standardMsg))
+
 
 class TestExtensionClass(unittest.TestCase):
     """ Test markdown.extensions.Extension. """
@@ -93,6 +95,7 @@ class TestAbbr(unittest.TestCase):
             '<p><a href="/foo"><abbr title="Abreviation">ABBR</abbr></a> '
             'and <em><abbr title="Abreviation">ABBR</abbr></em></p>'
         )
+
 
 class TestCodeHilite(TestCaseWithAssertStartsWith):
     """ Test codehilite extension. """
