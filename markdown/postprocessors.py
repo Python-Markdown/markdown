@@ -10,6 +10,7 @@ processing.
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
+from collections import OrderedDict
 from . import util
 from . import odict
 import re
@@ -50,6 +51,7 @@ class RawHtmlPostprocessor(Postprocessor):
 
     def run(self, text):
         """ Iterate over html stash and restore "safe" html. """
+        replacements = OrderedDict()
         for i in range(self.markdown.htmlStash.html_counter):
             html, safe = self.markdown.htmlStash.rawHtmlBlocks[i]
             if self.markdown.safeMode and not safe:
@@ -61,14 +63,15 @@ class RawHtmlPostprocessor(Postprocessor):
                     html = self.markdown.html_replacement_text
             if (self.isblocklevel(html) and
                (safe or not self.markdown.safeMode)):
-                text = text.replace(
-                    "<p>%s</p>" %
-                    (self.markdown.htmlStash.get_placeholder(i)),
+                replacements["<p>%s</p>" %
+                             (self.markdown.htmlStash.get_placeholder(i))] = \
                     html + "\n"
-                )
-            text = text.replace(
-                self.markdown.htmlStash.get_placeholder(i), html
-            )
+            replacements[self.markdown.htmlStash.get_placeholder(i)] = html
+
+        if replacements:
+            pattern = re.compile("|".join(re.escape(k) for k in replacements))
+            text = pattern.sub(lambda m: replacements[m.group(0)], text)
+
         return text
 
     def escape(self, html):
