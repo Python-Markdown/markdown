@@ -11,6 +11,15 @@ from __future__ import unicode_literals
 import unittest
 import markdown
 
+class TestCaseWithAssertStartsWith(unittest.TestCase):
+
+    def assertStartsWith(self, expectedPrefix, text, msg=None):
+        if not text.startswith(expectedPrefix):
+            if len(expectedPrefix) + 5 < len(text):
+                text = text[:len(expectedPrefix) + 5] + '...'
+            standardMsg = '%s not found at the start of %s' % (repr(expectedPrefix),
+                                                               repr(text))
+            self.fail(self._formatMessage(msg, standardMsg))
 
 class TestExtensionClass(unittest.TestCase):
     """ Test markdown.extensions.Extension. """
@@ -85,8 +94,7 @@ class TestAbbr(unittest.TestCase):
             'and <em><abbr title="Abreviation">ABBR</abbr></em></p>'
         )
 
-
-class TestCodeHilite(unittest.TestCase):
+class TestCodeHilite(TestCaseWithAssertStartsWith):
     """ Test codehilite extension. """
 
     def setUp(self):
@@ -101,7 +109,7 @@ class TestCodeHilite(unittest.TestCase):
         md = markdown.Markdown(extensions=['markdown.extensions.codehilite'])
         if self.has_pygments:
             # Pygments can use random lexer here as we did not specify the language
-            self.assertTrue(md.convert(text).startswith('<div class="codehilite"><pre>'))
+            self.assertStartsWith('<div class="codehilite"><pre>', md.convert(text))
         else:
             self.assertEqual(
                 md.convert(text),
@@ -117,10 +125,9 @@ class TestCodeHilite(unittest.TestCase):
             # Different versions of pygments output slightly different markup.
             # So we use 'startwith' and test just enough to confirm that
             # pygments received and processed linenums.
-            self.assertTrue(
-                md.convert(text).startswith(
-                    '<table class="codehilitetable"><tr><td class="linenos">'
-                )
+            self.assertStartsWith(
+                '<table class="codehilitetable"><tr><td class="linenos">',
+                md.convert(text)
             )
         else:
             self.assertEqual(
@@ -134,7 +141,7 @@ class TestCodeHilite(unittest.TestCase):
         md = markdown.Markdown(
             extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=False)])
         if self.has_pygments:
-            self.assertTrue(md.convert(text).startswith('<div class="codehilite"><pre><span'))
+            self.assertStartsWith('<div class="codehilite"><pre><span', md.convert(text))
         else:
             self.assertEqual(
                 md.convert(text),
@@ -148,7 +155,7 @@ class TestCodeHilite(unittest.TestCase):
             extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=None)])
         if self.has_pygments:
             # Pygments can use random lexer here as we did not specify the language
-            self.assertTrue(md.convert(text).startswith('<div class="codehilite"><pre>'))
+            self.assertStartsWith('<div class="codehilite"><pre>', md.convert(text))
         else:
             self.assertEqual(
                 md.convert(text),
@@ -164,10 +171,9 @@ class TestCodeHilite(unittest.TestCase):
             # Differant versions of pygments output slightly different markup.
             # So we use 'startwith' and test just enough to confirm that
             # pygments received and processed linenums.
-            self.assertTrue(
-                md.convert(text).startswith(
-                    '<table class="codehilitetable"><tr><td class="linenos">'
-                )
+            self.assertStartsWith(
+                '<table class="codehilitetable"><tr><td class="linenos">',
+                md.convert(text)
             )
         else:
             self.assertEqual(
@@ -182,7 +188,7 @@ class TestCodeHilite(unittest.TestCase):
             extensions=[markdown.extensions.codehilite.CodeHiliteExtension(linenums=None)]
         )
         if self.has_pygments:
-            self.assertTrue(md.convert(text).startswith('<div class="codehilite"><pre><span'))
+            self.assertStartsWith('<div class="codehilite"><pre><span', md.convert(text))
         else:
             self.assertEqual(
                 md.convert(text),
@@ -198,10 +204,9 @@ class TestCodeHilite(unittest.TestCase):
         for text in (text0, text1):
             md = markdown.Markdown(extensions=['markdown.extensions.codehilite'])
             if self.has_pygments:
-                self.assertTrue(
-                    md.convert(text).startswith(
-                        '<div class="codehilite"><pre><span class="hll"'
-                    )
+                self.assertStartsWith(
+                    '<div class="codehilite"><pre><span class="hll"',
+                    md.convert(text)
                 )
             else:
                 self.assertEqual(
@@ -224,7 +229,7 @@ class TestCodeHilite(unittest.TestCase):
         )
 
 
-class TestFencedCode(unittest.TestCase):
+class TestFencedCode(TestCaseWithAssertStartsWith):
     """ Test fenced_code extension. """
 
     def setUp(self):
@@ -320,8 +325,9 @@ line 3
         )
 
         if self.has_pygments:
-            self.assertTrue(
-                md.convert(text).startswith('<div class="codehilite"><pre><span class="hll"')
+            self.assertStartsWith(
+                '<div class="codehilite"><pre><span class="hll"',
+                md.convert(text)
             )
         else:
             self.assertEqual(
@@ -354,8 +360,9 @@ line 3
                 ]
             )
             if self.has_pygments:
-                self.assertTrue(
-                    md.convert(text).startswith('<div class="codehilite"><pre><span class="hll"')
+                self.assertStartsWith(
+                    '<div class="codehilite"><pre><span class="hll"',
+                    md.convert(text)
                 )
             else:
                 self.assertEqual(
@@ -602,7 +609,7 @@ class TestAdmonition(unittest.TestCase):
             self.assertEqual(RE.match(test).groups(), expected)
 
 
-class TestTOC(unittest.TestCase):
+class TestTOC(TestCaseWithAssertStartsWith):
     """ Test TOC Extension. """
 
     def setUp(self):
@@ -680,13 +687,13 @@ class TestTOC(unittest.TestCase):
             '<h1 id="header-1">Header 1</h1>\n'
             '<h2 id="header-2">Header 2</h2>'
         )
-        self.assertTrue(md.toc.startswith('<div class="toc">'))
+        self.assertStartsWith('<div class="toc">', md.toc)
 
     def testReset(self):
         """ Test TOC Reset. """
         self.assertEqual(self.md.toc, '')
         self.md.convert('# Header 1\n\n## Header 2')
-        self.assertTrue(self.md.toc.startswith('<div class="toc">'))
+        self.assertStartsWith('<div class="toc">', self.md.toc)
         self.md.reset()
         self.assertEqual(self.md.toc, '')
 
@@ -771,7 +778,10 @@ class TestTOC(unittest.TestCase):
             extensions=[markdown.extensions.toc.TocExtension(title='Table of Contents')]
         )
         md.convert('# Header 1\n\n## Header 2')
-        self.assertTrue(md.toc.startswith('<div class="toc"><span class="toctitle">Table of Contents</span><ul>'))
+        self.assertStartsWith(
+            '<div class="toc"><span class="toctitle">Table of Contents</span><ul>',
+            md.toc
+        )
 
     def testWithAttrList(self):
         """ Test TOC with attr_list Extension. """
