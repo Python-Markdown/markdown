@@ -45,7 +45,7 @@ class WikiLinkExtension(Extension):
         self.md = md
 
         # append to end of inline patterns
-        WIKILINK_RE = r'\[\[([\w0-9_ -]+)\]\]'
+        WIKILINK_RE = r'\[\[(.*?)(\|(.*?))?\]\]'
         wikilinkPattern = WikiLinks(WIKILINK_RE, self.getConfigs())
         wikilinkPattern.md = md
         md.inlinePatterns.add('wikilink', wikilinkPattern, "<not_strong")
@@ -59,8 +59,13 @@ class WikiLinks(Pattern):
     def handleMatch(self, m):
         if m.group(2).strip():
             base_url, end_url, html_class = self._getMeta()
-            label = m.group(2).strip()
-            url = self.config['build_url'](label, base_url, end_url)
+            if m.group(4):
+                label = m.group(4).strip()
+                link = m.group(2).strip()
+                url = self.config['build_url'](link, base_url, end_url)
+            else:
+                label = m.group(2).strip()
+                url = self.config['build_url'](label, base_url, end_url)
             a = etree.Element('a')
             a.text = label
             a.set('href', url)
