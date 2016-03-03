@@ -209,7 +209,7 @@ class TestCodeHilite(TestCaseWithAssertStartsWith):
             if self.has_pygments:
                 self.assertStartsWith(
                     '<div class="codehilite"><pre><span class="hll"',
-                    md.convert(text)
+                    md.convert(text).replace('<span></span>', '')
                 )
             else:
                 self.assertEqual(
@@ -330,7 +330,7 @@ line 3
         if self.has_pygments:
             self.assertStartsWith(
                 '<div class="codehilite"><pre><span class="hll"',
-                md.convert(text)
+                md.convert(text).replace('<span></span>', '')
             )
         else:
             self.assertEqual(
@@ -365,7 +365,7 @@ line 3
             if self.has_pygments:
                 self.assertStartsWith(
                     '<div class="codehilite"><pre><span class="hll"',
-                    md.convert(text)
+                    md.convert(text).replace('<span></span>', '')
                 )
             else:
                 self.assertEqual(
