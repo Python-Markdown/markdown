@@ -97,6 +97,8 @@ class HtmlOutput(Plugin):
 
     def formatErr(self, err):
         exctype, value, tb = err
+        if not isinstance(value, exctype):
+            value = exctype(value)
         return ''.join(traceback.format_exception(exctype, value, tb))
 
     def startContext(self, ctx):
