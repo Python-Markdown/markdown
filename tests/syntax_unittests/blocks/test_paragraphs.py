@@ -1,6 +1,6 @@
-from .. import MdTestCase
+from markdown.test_tools import TestCase
 
-class TestParagraphBlocks(MdTestCase):
+class TestParagraphBlocks(TestCase):
 
     def test_simple_paragraph(self):
         self.assertMarkdownRenders(
