@@ -1,8 +1,9 @@
 from markdown.test_tools import TestCase
 
+
 class TestCodeBlocks(TestCase):
 
-    def test_simple_codeblock(self):
+    def test_spaced_codeblock(self):
         self.assertMarkdownRenders(
             '    # A code block.',
 
@@ -48,6 +49,18 @@ class TestCodeBlocks(TestCase):
                 <pre><code># Line 1
 
                 # Line 2
+                </code></pre>
+                """
+            )
+        )
+
+    def test_codeblock_escape(self):
+        self.assertMarkdownRenders(
+            '    <foo & bar>',
+            
+            self.dedent(
+                """
+                <pre><code>&lt;foo &amp; bar&gt;
                 </code></pre>
                 """
             )

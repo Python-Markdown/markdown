@@ -1,5 +1,6 @@
 from markdown.test_tools import TestCase
 
+
 class TestParagraphBlocks(TestCase):
 
     def test_simple_paragraph(self):
