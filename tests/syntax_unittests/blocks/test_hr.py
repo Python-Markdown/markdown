@@ -3,84 +3,84 @@ from markdown.test_tools import TestCase
 
 class TestHorizontalRules(TestCase):
 
-    def test_hr_asterisk(self):
+    def test_hr_asterisks(self):
         self.assertMarkdownRenders(
             '***',
 
             '<hr />'
         )
 
-    def test_hr_asterisk_spaces(self):
+    def test_hr_asterisks_spaces(self):
         self.assertMarkdownRenders(
             '* * *',
 
             '<hr />'
         )
 
-    def test_hr_asterisk_long(self):
+    def test_hr_asterisks_long(self):
         self.assertMarkdownRenders(
             '*******',
 
             '<hr />'
         )
 
-    def test_hr_asterisk_spaces_long(self):
+    def test_hr_asterisks_spaces_long(self):
         self.assertMarkdownRenders(
             '* * * * * * *',
 
             '<hr />'
         )
 
-    def test_hr_asterisk_1_indent(self):
+    def test_hr_asterisks_1_indent(self):
         self.assertMarkdownRenders(
             ' ***',
 
             '<hr />'
         )
 
-    def test_hr_asterisk_spaces_1_indent(self):
+    def test_hr_asterisks_spaces_1_indent(self):
         self.assertMarkdownRenders(
             ' * * *',
 
             '<hr />'
         )
-    
-    def test_hr_asterisk_2_indent(self):
+
+    def test_hr_asterisks_2_indent(self):
         self.assertMarkdownRenders(
             '  ***',
 
             '<hr />'
         )
 
-    def test_hr_asterisk_spaces_2_indent(self):
+    def test_hr_asterisks_spaces_2_indent(self):
         self.assertMarkdownRenders(
             '  * * *',
 
             '<hr />'
         )
-    
-    def test_hr_asterisk_3_indent(self):
+
+    def test_hr_asterisks_3_indent(self):
         self.assertMarkdownRenders(
             '   ***',
 
             '<hr />'
         )
 
-    def test_hr_asterisk_spaces_3_indent(self):
+    def test_hr_asterisks_spaces_3_indent(self):
         self.assertMarkdownRenders(
             '   * * *',
 
             '<hr />'
         )
-    
-    def test_hr_asterisk_trailing_space(self):
+
+    def test_hr_asterisks_trailing_space(self):
         self.assertMarkdownRenders(
             '*** ',
 
             '<hr />'
         )
 
-    def test_hr_asterisk_spaces_trailing_space(self):
+    def test_hr_asterisks_spaces_trailing_space(self):
         self.assertMarkdownRenders(
             '* * * ',
 
@@ -100,7 +100,7 @@ class TestHorizontalRules(TestCase):
 
             '<hr />'
         )
-    
+
     def test_hr_hyphens_long(self):
         self.assertMarkdownRenders(
             '-------',
@@ -114,7 +114,7 @@ class TestHorizontalRules(TestCase):
 
             '<hr />'
         )
-    
+
     def test_hr_hyphens_1_indent(self):
         self.assertMarkdownRenders(
             ' ---',
@@ -128,7 +128,7 @@ class TestHorizontalRules(TestCase):
 
             '<hr />'
         )
-    
+
     def test_hr_hyphens_2_indent(self):
         self.assertMarkdownRenders(
             '  ---',
@@ -142,7 +142,7 @@ class TestHorizontalRules(TestCase):
 
             '<hr />'
         )
-    
+
     def test_hr_hyphens_3_indent(self):
         self.assertMarkdownRenders(
             '   ---',
@@ -156,7 +156,7 @@ class TestHorizontalRules(TestCase):
 
             '<hr />'
         )
-    
+
     def test_hr_hyphens_trailing_space(self):
         self.assertMarkdownRenders(
             '--- ',
@@ -184,7 +184,7 @@ class TestHorizontalRules(TestCase):
 
             '<hr />'
         )
-    
+
     def test_hr_underscores_long(self):
         self.assertMarkdownRenders(
             '_______',
@@ -212,7 +212,7 @@ class TestHorizontalRules(TestCase):
 
             '<hr />'
         )
-    
+
     def test_hr_underscores_2_indent(self):
         self.assertMarkdownRenders(
             '  ___',
@@ -226,7 +226,7 @@ class TestHorizontalRules(TestCase):
 
             '<hr />'
         )
-    
+
     def test_hr_underscores_3_indent(self):
         self.assertMarkdownRenders(
             '   ___',
@@ -240,7 +240,7 @@ class TestHorizontalRules(TestCase):
 
             '<hr />'
         )
-    
+
     def test_hr_underscores_trailing_space(self):
         self.assertMarkdownRenders(
             '___ ',
@@ -255,14 +255,46 @@ class TestHorizontalRules(TestCase):
             '<hr />'
         )
 
-    def test_not_hr_2_asterisk(self):
+    def test_hr_before_paragraph(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ***
+                An HR followed by a paragraph with no blank line.
+                """
+            ),
+            self.dedent(
+                """
+                <hr />
+                <p>An HR followed by a paragraph with no blank line.</p>
+                """
+            )
+        )
+
+    def test_hr_after_paragraph(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                A paragraph followed by an HR with no blank line.
+                ***
+                """
+            ),
+            self.dedent(
+                """
+                <p>A paragraph followed by an HR with no blank line.</p>
+                <hr />
+                """
+            )
+        )
+
+    def test_not_hr_2_asterisks(self):
         self.assertMarkdownRenders(
             '**',
 
             '<p>**</p>'
         )
 
-    def test_not_hr_2_asterisk_spaces(self):
+    def test_not_hr_2_asterisks_spaces(self):
         self.assertMarkdownRenders(
             '* *',
 
