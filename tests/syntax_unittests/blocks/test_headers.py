@@ -468,3 +468,147 @@ class TestHashHeaders(TestCase):
                 """
             )
         )
+
+    
+    def test_hash_h1_leading_space(self):
+        self.assertMarkdownRenders(
+            ' # This is an H1',
+                
+            '<p># This is an H1</p>'
+        )
+    
+    def test_hash_h2_leading_space(self):
+        self.assertMarkdownRenders(
+            ' ## This is an H2',
+                
+            '<p>## This is an H2</p>'
+        )
+        
+    def test_hash_h3_leading_space(self):
+        self.assertMarkdownRenders(
+            ' ### This is an H3',
+                
+            '<p>### This is an H3</p>'
+        )
+        
+    def test_hash_h4_leading_space(self):
+        self.assertMarkdownRenders(
+            ' #### This is an H4',
+                
+            '<p>#### This is an H4</p>'
+        )
+        
+    def test_hash_h5_leading_space(self):
+        self.assertMarkdownRenders(
+            ' ##### This is an H5',
+                
+            '<p>##### This is an H5</p>'
+        )
+        
+    def test_hash_h6_leading_space(self):
+        self.assertMarkdownRenders(
+            ' ###### This is an H6',
+                
+            '<p>###### This is an H6</p>'
+        )
+
+    def test_hash_h1_open_trailing_space(self):
+        self.assertMarkdownRenders(
+            '# This is an H1 ',
+            
+            '<h1>This is an H1</h1>'
+        )
+
+    def test_hash_h2_open_trailing_space(self):
+        self.assertMarkdownRenders(
+            '## This is an H2 ',
+            
+            '<h2>This is an H2</h2>'
+        )
+    
+    def test_hash_h3_open_trailing_space(self):
+        self.assertMarkdownRenders(
+            '### This is an H3 ',
+            
+            '<h3>This is an H3</h3>'
+        )
+
+    def test_hash_h4_open_trailing_space(self):
+        self.assertMarkdownRenders(
+            '#### This is an H4 ',
+            
+            '<h4>This is an H4</h4>'
+        )
+
+    def test_hash_h5_open_trailing_space(self):
+        self.assertMarkdownRenders(
+            '##### This is an H5 ',
+            
+            '<h5>This is an H5</h5>'
+        )
+    
+    def test_hash_h6_open_trailing_space(self):
+        self.assertMarkdownRenders(
+            '###### This is an H6 ',
+            
+            '<h6>This is an H6</h6>'
+        )
+    
+    def test_hash_gt6_open_trailing_space(self):
+        self.assertMarkdownRenders(
+            '####### This is an H6 ',
+            
+            '<h6># This is an H6</h6>'
+        )
+
+    # TODO: Possably change the following behavior. While this follows the behavior
+    # of markdown.pl, it is rather uncommon and not nessecarily intuitive.
+    # See: http://johnmacfarlane.net/babelmark2/?normalize=1&text=%23+This+is+an+H1+%23+
+    def test_hash_h1_closed_trailing_space(self):
+        self.assertMarkdownRenders(
+            '# This is an H1 # ',
+            
+            '<h1>This is an H1 #</h1>'
+        )
+
+    def test_hash_h2_closed_trailing_space(self):
+        self.assertMarkdownRenders(
+            '## This is an H2 ## ',
+            
+            '<h2>This is an H2 ##</h2>'
+        )
+    
+    def test_hash_h3_closed_trailing_space(self):
+        self.assertMarkdownRenders(
+            '### This is an H3 ### ',
+            
+            '<h3>This is an H3 ###</h3>'
+        )
+
+    def test_hash_h4_closed_trailing_space(self):
+        self.assertMarkdownRenders(
+            '#### This is an H4 #### ',
+            
+            '<h4>This is an H4 ####</h4>'
+        )
+
+    def test_hash_h5_closed_trailing_space(self):
+        self.assertMarkdownRenders(
+            '##### This is an H5 ##### ',
+            
+            '<h5>This is an H5 #####</h5>'
+        )
+    
+    def test_hash_h6_closed_trailing_space(self):
+        self.assertMarkdownRenders(
+            '###### This is an H6 ###### ',
+            
+            '<h6>This is an H6 ######</h6>'
+        )
+    
+    def test_hash_gt6_closed_trailing_space(self):
+        self.assertMarkdownRenders(
+            '####### This is an H6 ####### ',
+            
+            '<h6># This is an H6 #######</h6>'
+        )
