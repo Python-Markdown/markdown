@@ -180,7 +180,8 @@ class TocTreeprocessor(Treeprocessor):
         c.text = ""
         for elem in c:
             anchor.append(elem)
-            c.remove(elem)
+        while c:
+            c.remove(c[0])
         c.append(anchor)
 
     def add_permalink(self, c, elem_id):
