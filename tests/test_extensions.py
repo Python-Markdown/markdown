@@ -775,8 +775,23 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '<h2 id="header-2"><a class="toclink" href="#header-2">Header <em>2</em></a></h2>'
         )
 
-    def testAnchorLinkWithInlineCode(self):
-        """ Test TOC Anchorlink with inline code. """
+    def testAnchorLinkWithSingleInlineCode(self):
+        """ Test TOC Anchorlink with single inline code. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(anchorlink=True)]
+        )
+        text = '# This is `code`.'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="this-is-code">'                        # noqa
+                '<a class="toclink" href="#this-is-code">'  # noqa
+                    'This is <code>code</code>.'            # noqa
+                '</a>'                                      # noqa
+            '</h1>'                                         # noqa
+        )
+
+    def testAnchorLinkWithDoubleInlineCode(self):
+        """ Test TOC Anchorlink with double inline code. """
         md = markdown.Markdown(
             extensions=[markdown.extensions.toc.TocExtension(anchorlink=True)]
         )
@@ -804,8 +819,22 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</h1>'                                                                       # noqa
         )
 
-    def testPermalinkWithInlineCode(self):
-        """ Test TOC Permalink with inline code. """
+    def testPermalinkWithSingleInlineCode(self):
+        """ Test TOC Permalink with single inline code. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(permalink=True)]
+        )
+        text = '# This is `code`.'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="this-is-code">'                                                            # noqa
+                'This is <code>code</code>.'                                                    # noqa
+                '<a class="headerlink" href="#this-is-code" title="Permanent link">&para;</a>'  # noqa
+            '</h1>'                                                                             # noqa
+        )
+
+    def testPermalinkWithDoubleInlineCode(self):
+        """ Test TOC Permalink with double inline code. """
         md = markdown.Markdown(
             extensions=[markdown.extensions.toc.TocExtension(permalink=True)]
         )
