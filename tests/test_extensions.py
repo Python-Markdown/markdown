@@ -790,6 +790,34 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</h1>'                                                         # noqa
         )
 
+    def testPermalink(self):
+        """ Test TOC Permalink. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(permalink=True)]
+        )
+        text = '# Header'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="header">'                                                            # noqa
+                'Header'                                                                  # noqa
+                '<a class="headerlink" href="#header" title="Permanent link">&para;</a>'  # noqa
+            '</h1>'                                                                       # noqa
+        )
+
+    def testPermalinkWithInlineCode(self):
+        """ Test TOC Permalink with inline code. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(permalink=True)]
+        )
+        text = '# This is `code` and `this` too.'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="this-is-code-and-this-too">'                                                            # noqa
+                'This is <code>code</code> and <code>this</code> too.'                                       # noqa
+                '<a class="headerlink" href="#this-is-code-and-this-too" title="Permanent link">&para;</a>'  # noqa
+            '</h1>'                                                                                          # noqa
+        )
+
     def testTitle(self):
         """ Test TOC Title. """
         md = markdown.Markdown(
