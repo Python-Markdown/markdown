@@ -775,6 +775,21 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '<h2 id="header-2"><a class="toclink" href="#header-2">Header <em>2</em></a></h2>'
         )
 
+    def testAnchorLinkWithInlineCode(self):
+        """ Test TOC Anchorlink with inline code. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(anchorlink=True)]
+        )
+        text = '# This is `code` and `this` too.'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="this-is-code-and-this-too">'                           # noqa
+                '<a class="toclink" href="#this-is-code-and-this-too">'     # noqa
+                    'This is <code>code</code> and <code>this</code> too.'  # noqa
+                '</a>'                                                      # noqa
+            '</h1>'                                                         # noqa
+        )
+
     def testTitle(self):
         """ Test TOC Title. """
         md = markdown.Markdown(
