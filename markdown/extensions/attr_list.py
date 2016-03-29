@@ -24,38 +24,62 @@ from ..treeprocessors import Treeprocessor
 from ..util import isBlockLevel
 import re
 
-try:
-    Scanner = re.Scanner
-except AttributeError:  # pragma: no cover
-    # must be on Python 2.4
-    from sre import Scanner
-
-
-def _handle_double_quote(s, t):
+def _handle_double_quote(t):
     k, v = t.split('=')
     return k, v.strip('"')
 
 
-def _handle_single_quote(s, t):
+def _handle_single_quote(t):
     k, v = t.split('=')
     return k, v.strip("'")
 
 
-def _handle_key_value(s, t):
+def _handle_key_value(t):
     return t.split('=')
 
 
-def _handle_word(s, t):
+def _handle_word(t):
     if t.startswith('.'):
         return '.', t[1:]
     if t.startswith('#'):
         return 'id', t[1:]
     return t, t
 
-_scanner = Scanner([
+# Simplified replacement class of re.Scanner that appears in Cython,
+# but not IronPython.
+class InternalScanner:
+    # * Create a regex string that matches each phrase as a seperate 
+    #   group. 
+    # * Create an array of action functions. 
+    # * The index of each phrase's match group, is equal to the index 
+    #   of the corresponding action in the action array.
+    def __init__(self, lexicon):
+        self.actions = []
+        regex_string = ""
+        for (phrase, action) in lexicon:
+            if(regex_string != ""): regex_string += "|"
+            regex_string += "(" + phrase + ")"
+            self.actions.append(action)
+        self.regex = re.compile(regex_string)
+    # Search each found match.
+    # Find the match group .
+    # Perform the corresponding action.
+    # and add to results list.
+    def scan(self, string):
+        result = []
+        for match in self.regex.finditer(string):
+            num = -1
+            for (group) in match.groups():
+                num += 1
+                if(group != None and self.actions[num] != None):
+                    result.append(self.actions[num](group))
+        return result            
+
+_scanner = InternalScanner([
     (r'[^ ]+=".*?"', _handle_double_quote),
     (r"[^ ]+='.*?'", _handle_single_quote),
     (r'[^ ]+=[^ =]+', _handle_key_value),
+    (r'\=[^ ]+', None), # Ignore the case '=foo'.
     (r'[^ =]+', _handle_word),
     (r' ', None)
 ])
@@ -63,7 +87,7 @@ _scanner = Scanner([
 
 def get_attrs(str):
     """ Parse attribute list and return a list of attribute tuples. """
-    return _scanner.scan(str)[0]
+    return _scanner.scan(str)
 
 
 def isheader(elem):
