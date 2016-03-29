@@ -117,7 +117,7 @@ class Markdown(object):
         for c, arg in enumerate(args):
             if pos[c] not in kwargs:
                 kwargs[pos[c]] = arg
-            if c+1 == len(pos):  # pragma: no cover
+            if c + 1 == len(pos):  # pragma: no cover
                 # ignore any additional args
                 break
         if len(args):
@@ -209,7 +209,7 @@ class Markdown(object):
         # Parse extensions config params (ignore the order)
         pos = ext_name.find("(")  # find the first "("
         if pos > 0:
-            ext_args = ext_name[pos+1:-1]
+            ext_args = ext_name[pos + 1:-1]
             ext_name = ext_name[:pos]
             pairs = [x.split("=") for x in ext_args.split(",")]
             configs.update([(x.strip(), y.strip()) for (x, y) in pairs])
@@ -235,7 +235,7 @@ class Markdown(object):
             # For backward compat (until deprecation)
             # check that this is an extension.
             if ('.' not in ext_name and not (hasattr(module, 'makeExtension') or
-               (class_name and hasattr(module, class_name)))):
+                                             (class_name and hasattr(module, class_name)))):
                 # We have a name conflict
                 # eg: extensions=['tables'] and PyTables is installed
                 raise ImportError

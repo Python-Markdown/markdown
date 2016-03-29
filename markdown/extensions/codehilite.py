@@ -248,7 +248,7 @@ class CodeHiliteExtension(Extension):
                              'Use Pygments to Highlight code blocks. '
                              'Disable if using a JavaScript library. '
                              'Default: True']
-            }
+        }
 
         super(CodeHiliteExtension, self).__init__(*args, **kwargs)
 

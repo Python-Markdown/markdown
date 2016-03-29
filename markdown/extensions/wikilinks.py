@@ -52,6 +52,7 @@ class WikiLinkExtension(Extension):
 
 
 class WikiLinks(Pattern):
+
     def __init__(self, pattern, config):
         super(WikiLinks, self).__init__(pattern)
         self.config = config

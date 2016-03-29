@@ -151,7 +151,7 @@ class FootnoteExtension(Extension):
             backlink.set(
                 "title",
                 "Jump back to footnote %d in the text" %
-                (self.footnotes.index(id)+1)
+                (self.footnotes.index(id) + 1)
             )
             backlink.text = FN_BACKLINK_TEXT
 
@@ -188,13 +188,13 @@ class FootnotePreprocessor(Preprocessor):
         while True:
             m = DEF_RE.match(lines[i])
             if m:
-                fn, _i = self.detectTabbed(lines[i+1:])
+                fn, _i = self.detectTabbed(lines[i + 1:])
                 fn.insert(0, m.group(2))
-                i += _i-1  # skip past footnote
+                i += _i - 1  # skip past footnote
                 self.footnotes.setFootnote(m.group(1), "\n".join(fn))
             else:
                 newlines.append(lines[i])
-            if len(lines) > i+1:
+            if len(lines) > i + 1:
                 i += 1
             else:
                 break
@@ -232,7 +232,7 @@ class FootnotePreprocessor(Preprocessor):
                     i += 1
                     continue
                 else:
-                    return items, i+1
+                    return items, i + 1
 
             else:  # Blank line: _maybe_ we are done.
                 blank_line = True
@@ -306,6 +306,7 @@ class FootnoteTreeprocessor(Treeprocessor):
 
 class FootnotePostprocessor(Postprocessor):
     """ Replace placeholders with html entities. """
+
     def __init__(self, footnotes):
         self.footnotes = footnotes
 

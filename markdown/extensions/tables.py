@@ -97,7 +97,8 @@ class TableProcessor(BlockProcessor):
         if self._row_has_unpaired_backticks(row):
             # fallback on old behaviour
             return row.split(marker)
-        # modify the backtick pattern to only match at the beginning of the search string
+        # modify the backtick pattern to only match at the beginning of the
+        # search string
         backtick_pattern = BacktickPattern('^' + BACKTICK_RE)
         elements = []
         current = ''
@@ -108,7 +109,8 @@ class TableProcessor(BlockProcessor):
                 if current != '' or len(elements) == 0:
                     # Don't append empty string unless it is the first element
                     # The border is already removed when we get the row, then the line is strip()'d
-                    # If the first element is a marker, then we have an empty first cell
+                    # If the first element is a marker, then we have an empty
+                    # first cell
                     elements.append(current)
                 current = ''
             else:
@@ -117,9 +119,13 @@ class TableProcessor(BlockProcessor):
                     current += letter
                 else:
                     groups = match.groups()
-                    delim = groups[1]  # the code block delimeter (ie 1 or more backticks)
-                    row_contents = groups[2]  # the text contained inside the code block
-                    i += match.start(4) - 1  # jump pointer to the beginning of the rest of the text (group #4)
+                    # the code block delimeter (ie 1 or more backticks)
+                    delim = groups[1]
+                    # the text contained inside the code block
+                    row_contents = groups[2]
+                    # jump pointer to the beginning of the rest of the text
+                    # (group #4)
+                    i += match.start(4) - 1
                     element = delim + row_contents + delim  # reinstert backticks
                     current += element
             i += 1

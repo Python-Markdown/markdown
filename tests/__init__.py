@@ -28,6 +28,7 @@ test_dir = os.path.abspath(os.path.dirname(__file__))
 
 
 class YamlConfig():
+
     def __init__(self, defaults, filename):
         """ Set defaults and load config file if it exists. """
         self.DEFAULT_SECTION = 'DEFAULT'
@@ -93,6 +94,7 @@ def normalize(text):
 
 
 class CheckSyntax(object):
+
     def __init__(self, description=None):
         if description:
             self.description = 'TestSyntax: "%s"' % description

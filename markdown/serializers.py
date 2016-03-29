@@ -76,7 +76,7 @@ _namespace_map = {
 def _raise_serialization_error(text):  # pragma: no cover
     raise TypeError(
         "cannot serialize %r (type %s)" % (text, type(text).__name__)
-        )
+    )
 
 
 def _encode(text, encoding):
@@ -242,7 +242,7 @@ def _namespaces(elem, default_namespace=None):
                     raise ValueError(
                         "cannot use non-qualified names with "
                         "default_namespace option"
-                        )
+                    )
                 qnames[qname] = qname
         except TypeError:  # pragma: no cover
             _raise_serialization_error(qname)

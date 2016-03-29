@@ -62,7 +62,7 @@ class RawHtmlPostprocessor(Postprocessor):
                 else:
                     html = self.markdown.html_replacement_text
             if (self.isblocklevel(html) and
-               (safe or not self.markdown.safeMode)):
+                    (safe or not self.markdown.safeMode)):
                 replacements["<p>%s</p>" %
                              (self.markdown.htmlStash.get_placeholder(i))] = \
                     html + "\n"

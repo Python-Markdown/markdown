@@ -151,6 +151,7 @@ HTML_STRICT_RE = HTML_RE + r'(?!\>)'
 
 
 class SubstituteTextPattern(HtmlPattern):
+
     def __init__(self, pattern, replace, markdown_instance):
         """ Replaces matches with some text. """
         HtmlPattern.__init__(self, pattern)
@@ -168,6 +169,7 @@ class SubstituteTextPattern(HtmlPattern):
 
 
 class SmartyExtension(Extension):
+
     def __init__(self, *args, **kwargs):
         self.config = {
             'smart_quotes': [True, 'Educate quotes'],

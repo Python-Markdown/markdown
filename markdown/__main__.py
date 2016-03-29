@@ -60,7 +60,7 @@ def parse_options(args=None, values=None):
                       "`--extension` option.",
                       metavar="CONFIG_FILE")
     parser.add_option("-q", "--quiet", default=CRITICAL,
-                      action="store_const", const=CRITICAL+10, dest="verbose",
+                      action="store_const", const=CRITICAL + 10, dest="verbose",
                       help="Suppress all warnings.")
     parser.add_option("-v", "--verbose",
                       action="store_const", const=WARNING, dest="verbose",
