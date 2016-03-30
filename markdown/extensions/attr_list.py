@@ -24,6 +24,7 @@ from ..treeprocessors import Treeprocessor
 from ..util import isBlockLevel
 import re
 
+
 def _handle_double_quote(t):
     k, v = t.split('=')
     return k, v.strip('"')
@@ -45,22 +46,25 @@ def _handle_word(t):
         return 'id', t[1:]
     return t, t
 
+
 # Simplified replacement class of re.Scanner that appears in Cython,
 # but not IronPython.
 class InternalScanner:
-    # * Create a regex string that matches each phrase as a seperate 
-    #   group. 
-    # * Create an array of action functions. 
-    # * The index of each phrase's match group, is equal to the index 
+    # * Create a regex string that matches each phrase as a seperate
+    #   group.
+    # * Create an array of action functions.
+    # * The index of each phrase's match group, is equal to the index
     #   of the corresponding action in the action array.
     def __init__(self, lexicon):
         self.actions = []
         regex_string = ""
         for (phrase, action) in lexicon:
-            if(regex_string != ""): regex_string += "|"
+            if(regex_string != ""):
+                regex_string += "|"
             regex_string += "(" + phrase + ")"
             self.actions.append(action)
         self.regex = re.compile(regex_string)
+
     # Search each found match.
     # Find the match group .
     # Perform the corresponding action.
@@ -71,15 +75,15 @@ class InternalScanner:
             num = -1
             for (group) in match.groups():
                 num += 1
-                if(group != None and self.actions[num] != None):
+                if(group is not None and self.actions[num] is not None):
                     result.append(self.actions[num](group))
-        return result            
+        return result
 
 _scanner = InternalScanner([
     (r'[^ ]+=".*?"', _handle_double_quote),
     (r"[^ ]+='.*?'", _handle_single_quote),
     (r'[^ ]+=[^ =]+', _handle_key_value),
-    (r'\=[^ ]+', None), # Ignore the case '=foo'.
+    (r'\=[^ ]+', None),  # Ignore the case '=foo'.
     (r'[^ =]+', _handle_word),
     (r' ', None)
 ])
