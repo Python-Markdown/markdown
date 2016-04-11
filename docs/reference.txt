@@ -247,8 +247,8 @@ The following options are available on the `markdown.markdown` function:
     If `lazy_ol` is set to `False`, then markdown will output the following
     HTML:
 
-        <ol>
-          <li start="4">Apples</li>
+        <ol start="4">
+          <li>Apples</li>
           <li>Oranges</li>
           <li>Pears</li>
         </ol>

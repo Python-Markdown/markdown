@@ -81,6 +81,7 @@ class FencedBlockPreprocessor(Preprocessor):
                         guess_lang=self.codehilite_conf['guess_lang'][0],
                         css_class=self.codehilite_conf['css_class'][0],
                         style=self.codehilite_conf['pygments_style'][0],
+                        use_pygments=self.codehilite_conf['use_pygments'][0],
                         lang=(m.group('lang') or None),
                         noclasses=self.codehilite_conf['noclasses'][0],
                         hl_lines=parse_hl_lines(m.group('hl_lines'))
