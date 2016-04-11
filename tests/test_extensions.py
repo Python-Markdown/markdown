@@ -375,6 +375,18 @@ line 3
                     '#line 3</code></pre>'
                 )
 
+    def testFencedLanguageAndPygmentsDisabled(self):
+        """ Test if fenced_code honors CodeHilite option use_pygments=False. """
+
+        text = '```python\nfrom __future__ import braces\n```'
+        md = markdown.Markdown(
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(use_pygments=False),
+                'markdown.extensions.fenced_code'
+            ]
+        )
+        self.assertTrue('<code class="language-python">' in md.convert(text))
+
 
 class TestHeaderId(unittest.TestCase):
     """ Test HeaderId Extension. """
