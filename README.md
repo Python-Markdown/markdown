@@ -27,6 +27,8 @@ Installation and usage documentation is available in the `docs/` directory
 of the distribution and on the project website at 
 <https://pythonhosted.org/Markdown/>.
 
+See the change log at <https://pythonhosted.org/Markdown/change_log.html>.
+
 Support
 -------
 
