@@ -49,7 +49,7 @@ raw HTML, then that can be accomplished through an extension which removes HTML 
 As the HTML would not be parsed with the above Extension, then the serializer will
 escape the raw HTML, which is exactly what happens now when `safe_mode="escape"`.
 
-[Bleach]: http://bleach.readthedocs.org/
+[Bleach]: https://bleach.readthedocs.io/
 
 ### Positional Arguments Deprecated
 
@@ -256,7 +256,7 @@ Test coverage has been improved including running [flake8]. While those changes
 will not directly effect end users, the code is being better tested which will 
 benefit everyone.
 
-[flake8]: http://flake8.readthedocs.org/en/latest/
+[flake8]: https://flake8.readthedocs.io/en/latest/
 
 Various bug fixes have been made.  See the
 [commit log](https://github.com/waylan/Python-Markdown/commits/master)

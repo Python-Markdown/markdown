@@ -59,7 +59,7 @@ Backwards-incompatible Changes
 	As the HTML would not be parsed with the above Extension, then the serializer will
 	escape the raw HTML, which is exactly what happens now when `safe_mode="escape"`.
 
-[Bleach]: http://bleach.readthedocs.org/
+[Bleach]: https://bleach.readthedocs.io/
 
 * Positional arguments on the `markdown.Markdown()` are pending deprecation as are
   all except the `text` argument on the `markdown.markdown()` wrapper function.

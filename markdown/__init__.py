@@ -137,7 +137,7 @@ class Markdown(object):
         if 'safe_mode' in kwargs:
             warnings.warn('"safe_mode" is deprecated in Python-Markdown. '
                           'Use an HTML sanitizer (like '
-                          'Bleach http://bleach.readthedocs.org/) '
+                          'Bleach https://bleach.readthedocs.io/) '
                           'if you are parsing untrusted markdown text. '
                           'See the 2.6 release notes for more info',
                           DeprecationWarning)
