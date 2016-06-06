@@ -20,20 +20,27 @@ This extension is included in the standard Markdown library.
 Setup
 -----
 
+### Step 1: download and install Pygments ###
+
 You will also need to [download][dl] and install the Pygments package on your
-`PYTHONPATH`. You will need to determine the appropriate CSS classes and create
-appropriate rules for them, which are either defined in or linked from the
-header of your HTML templates. See the excellent [documentation][] for more
+`PYTHONPATH`. The CodeHilite extension will produce HTML output without Pygments, 
+but it won't highlight anything.
+
+[dl]: http://pygments.org/download/
+
+### Step 2: add CSS classes ###
+
+You will need to determine the appropriate CSS classes and/or JavaScript with
+appropriate rules. The CSS classes either need to be defined in or linked from 
+the header of your HTML templates. Ready-made [CSS files for Python][rich] are available.
+
+See the excellent [documentation][] for more
 details. If no language is defined, Pygments will attempt to guess the
 language. When that fails, the code block will not be highlighted.
 
-[dl]: http://pygments.org/download/
+[rich]: https://github.com/richleland/pygments-css
 [documentation]: http://pygments.org/docs
 
-!!! Note
-    The CSS and/or JavaScript is not included as part of this extension
-    but must be provided by the end user. The Pygments project provides
-    default CSS styles which you may find to be a useful starting point.
 
 Syntax
 ------
