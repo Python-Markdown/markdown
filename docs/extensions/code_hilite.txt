@@ -20,26 +20,53 @@ This extension is included in the standard Markdown library.
 Setup
 -----
 
-### Step 1: download and install Pygments ###
+### Step 1: Download and Install Pygments ###
 
 You will also need to [download][dl] and install the Pygments package on your
-`PYTHONPATH`. The CodeHilite extension will produce HTML output without Pygments, 
-but it won't highlight anything.
+`PYTHONPATH`. The CodeHilite extension will produce HTML output without
+Pygments, but it won't highlight anything (same behavior as setting
+`use_pygments` to `False`).
 
 [dl]: http://pygments.org/download/
 
-### Step 2: add CSS classes ###
+### Step 2: Add CSS Classes ###
 
-You will need to determine the appropriate CSS classes and/or JavaScript with
-appropriate rules. The CSS classes either need to be defined in or linked from 
-the header of your HTML templates. Ready-made [CSS files for Python][rich] are available.
+You will need to define the appropriate CSS classes with appropriate rules.
+The CSS rules either need to be defined in or linked from the header of your
+HTML templates. Pygments can generate CSS rules for you. Just run the following
+command from the command line:
 
-See the excellent [documentation][] for more
-details. If no language is defined, Pygments will attempt to guess the
-language. When that fails, the code block will not be highlighted.
+    pygmentize -S default -f html -a codehilite > styles.css
 
+If you are using a different `css_class` (default: `codehilite`), then
+set the value of the `-a` option to that class name. The CSS rules will be
+written to the `styles.css` file which you can copy to your site and link from
+your HTML templates.
+
+If you would like to use a differant theme, swap out `default` for the desired
+theme. For a list of themes installed on your system (additional themes can be
+isntalled via Pygments plugins), run the following command:
+
+    pygmetize -L style
+
+!!! see also
+
+    GitHub user [richeland] has provided a number of different [CSS style
+    sheets][rich] which work with Pygments along with a [preview] of each theme.
+    The `css_class` used is the same as the default value for that option
+    (`codehilite`). However, the Python-Markdown project makes no guarantee that
+    richeland's CSS styles will work with the version of Pygments you are using.
+    To ensure complete compatibility, you should generate the CSS rules from
+    your own installation of Pygments.
+
+See Pygment's excellent [documentation] for more details. If no language is
+defined, Pygments will attempt to guess the language. When that fails, the code
+block will not be highlighted.
+
+[richeland]: https://github.com/richleland
 [rich]: https://github.com/richleland/pygments-css
-[documentation]: http://pygments.org/docs
+[previews]: http://richleland.github.io/pygments-css/
+[documentation]: http://pygments.org/docs/
 
 
 Syntax
@@ -98,8 +125,8 @@ Will result in:
 
     # Code goes here ...
 
-Certain lines can be selected for emphasis with the colon syntax. When 
-using Pygments' default CSS styles, emphasized lines have a yellow background. 
+Certain lines can be selected for emphasis with the colon syntax. When
+using Pygments' default CSS styles, emphasized lines have a yellow background.
 This is useful to direct the reader's attention to specific lines.
 
     :::python hl_lines="1 3"
@@ -114,7 +141,7 @@ This is useful to direct the reader's attention to specific lines.
 
 CodeHilite is completely backwards compatible so that if a code block is
 encountered that does not define a language, the block is simply wrapped in
-`<pre>` tags and output. 
+`<pre>` tags and output.
 
         # Code goes here ...
 
@@ -128,15 +155,15 @@ Lets see the source for that:
     </code></pre></div>
 
 !!! Note
-    When no language is defined, the Pygments highlighting engine will try to guess 
-    the language (unless `guess_lang` is set to `False`). Upon failure, the same 
+    When no language is defined, the Pygments highlighting engine will try to guess
+    the language (unless `guess_lang` is set to `False`). Upon failure, the same
     behavior will happen as described above.
 
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.codehilite`
-as the name of the extension.
+See [Extensions](index.html) for general extension usage, specify
+`markdown.extensions.codehilite` as the name of the extension.
 
 See the [Library Reference](../reference.html#extensions) for information about
 configuring extensions.
