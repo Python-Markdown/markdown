@@ -72,7 +72,7 @@ def isheader(elem):
 
 class AttrListTreeprocessor(Treeprocessor):
 
-    BASE_RE = r'\{\:?([^\}]*)\}'
+    BASE_RE = r'\{\:?([^\}\n]*)\}'
     HEADER_RE = re.compile(r'[ ]+%s[ ]*$' % BASE_RE)
     BLOCK_RE = re.compile(r'\n[ ]*%s[ ]*$' % BASE_RE)
     INLINE_RE = re.compile(r'^%s' % BASE_RE)

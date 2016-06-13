@@ -88,3 +88,5 @@ No *key or value*{ = }
 
 *More weirdness*{ === }
 
+Attr_lists do not contain *newlines*{ foo=bar
+key=value }
