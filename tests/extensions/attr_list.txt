@@ -88,5 +88,7 @@ No *key or value*{ = }
 
 *More weirdness*{ === }
 
+This should not cause a *crash*{ foo=a=b }
+
 Attr_lists do not contain *newlines*{ foo=bar
 key=value }
