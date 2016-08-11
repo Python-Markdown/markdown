@@ -19,7 +19,6 @@ from . import Extension
 from ..preprocessors import Preprocessor
 from ..inlinepatterns import Pattern
 from ..treeprocessors import Treeprocessor
-from ..postprocessors import Postprocessor
 from ..util import etree, text_type
 from ..odict import OrderedDict
 import re
