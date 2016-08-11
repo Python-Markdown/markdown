@@ -24,8 +24,6 @@ from ..util import etree, text_type
 from ..odict import OrderedDict
 import re
 
-FN_BACKLINK_TEXT = "zz1337820767766393qq"
-NBSP_PLACEHOLDER = "qq3936677670287331zz"
 DEF_RE = re.compile(r'[ ]{0,3}\[\^([^\]]*)\]:\s*(.*)')
 TABBED_RE = re.compile(r'((\t)|(    ))(.*)')
 
@@ -75,10 +73,6 @@ class FootnoteExtension(Extension):
         # codehilite) so they can run on the the contents of the div.
         md.treeprocessors.add(
             "footnote", FootnoteTreeprocessor(self), "_begin"
-        )
-        # Insert a postprocessor after amp_substitute oricessor
-        md.postprocessors.add(
-            "footnote", FootnotePostprocessor(self), ">amp_substitute"
         )
 
     def reset(self):
@@ -153,12 +147,12 @@ class FootnoteExtension(Extension):
                 "Jump back to footnote %d in the text" %
                 (self.footnotes.index(id)+1)
             )
-            backlink.text = FN_BACKLINK_TEXT
+            backlink.text = self.getConfig("BACKLINK_TEXT")
 
             if li.getchildren():
                 node = li[-1]
                 if node.tag == "p":
-                    node.text = node.text + NBSP_PLACEHOLDER
+                    node.text = node.text + "&#160;"
                     node.append(backlink)
                 else:
                     p = etree.SubElement(li, "p")
@@ -302,18 +296,6 @@ class FootnoteTreeprocessor(Treeprocessor):
                     child.tail = None
             else:
                 root.append(footnotesDiv)
-
-
-class FootnotePostprocessor(Postprocessor):
-    """ Replace placeholders with html entities. """
-    def __init__(self, footnotes):
-        self.footnotes = footnotes
-
-    def run(self, text):
-        text = text.replace(
-            FN_BACKLINK_TEXT, self.footnotes.getConfig("BACKLINK_TEXT")
-        )
-        return text.replace(NBSP_PLACEHOLDER, "&#160;")
 
 
 def makeExtension(*args, **kwargs):
