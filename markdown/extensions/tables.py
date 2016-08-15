@@ -45,6 +45,7 @@ class TableProcessor(BlockProcessor):
         # Get alignment of columns
         align = []
         for c in self._split_row(seperator, border):
+            c = c.strip()
             if c.startswith(':') and c.endswith(':'):
                 align.append('center')
             elif c.startswith(':'):
