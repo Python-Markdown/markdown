@@ -17,6 +17,7 @@ License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
+import inspect
 from . import Extension
 from ..treeprocessors import Treeprocessor
 
@@ -75,7 +76,8 @@ class CodeHilite(object):
 
     def __init__(self, src=None, linenums=None, guess_lang=True,
                  css_class="codehilite", lang=None, style='default',
-                 noclasses=False, tab_length=4, hl_lines=None, use_pygments=True):
+                 noclasses=False, tab_length=4, hl_lines=None, use_pygments=True,
+                 pygments_formatter='html'):
         self.src = src
         self.lang = lang
         self.linenums = linenums
@@ -86,6 +88,7 @@ class CodeHilite(object):
         self.tab_length = tab_length
         self.hl_lines = hl_lines or []
         self.use_pygments = use_pygments
+        self.pygments_formatter = pygments_formatter
 
     def hilite(self):
         """
@@ -114,12 +117,19 @@ class CodeHilite(object):
                         lexer = get_lexer_by_name('text')
                 except ValueError:
                     lexer = get_lexer_by_name('text')
-            formatter = get_formatter_by_name('html',
-                                              linenos=self.linenums,
-                                              cssclass=self.css_class,
-                                              style=self.style,
-                                              noclasses=self.noclasses,
-                                              hl_lines=self.hl_lines)
+            if inspect.isclass(self.pygments_formatter):
+                formatter = self.pygments_formatter(linenos=self.linenums,
+                                                    cssclass=self.css_class,
+                                                    style=self.style,
+                                                    noclasses=self.noclasses,
+                                                    hl_lines=self.hl_lines)
+            else:
+                formatter = get_formatter_by_name(self.pygments_formatter,
+                                                  linenos=self.linenums,
+                                                  cssclass=self.css_class,
+                                                  style=self.style,
+                                                  noclasses=self.noclasses,
+                                                  hl_lines=self.hl_lines)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
@@ -213,7 +223,8 @@ class HiliteTreeprocessor(Treeprocessor):
                     style=self.config['pygments_style'],
                     noclasses=self.config['noclasses'],
                     tab_length=self.markdown.tab_length,
-                    use_pygments=self.config['use_pygments']
+                    use_pygments=self.config['use_pygments'],
+                    pygments_formatter=self.config['pygments_formatter']
                 )
                 placeholder = self.markdown.htmlStash.store(code.hilite(),
                                                             safe=True)
@@ -247,7 +258,11 @@ class CodeHiliteExtension(Extension):
             'use_pygments': [True,
                              'Use Pygments to Highlight code blocks. '
                              'Disable if using a JavaScript library. '
-                             'Default: True']
+                             'Default: True'],
+            'pygments_formatter': ['html',
+                                   'Use a specific Formatter for '
+                                   'Pygments Highlighting.'
+                                   'Default: html']
             }
 
         super(CodeHiliteExtension, self).__init__(*args, **kwargs)
