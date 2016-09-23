@@ -90,3 +90,5 @@ No *key or value*{ = }
 
 Attr_lists do not contain *newlines*{ foo=bar
 key=value }
+
+Extra *equals signs*{ foo=bar=baz }
