@@ -32,17 +32,17 @@ except AttributeError:  # pragma: no cover
 
 
 def _handle_double_quote(s, t):
-    k, v = t.split('=')
+    k, v = t.split('=', 1)
     return k, v.strip('"')
 
 
 def _handle_single_quote(s, t):
-    k, v = t.split('=')
+    k, v = t.split('=', 1)
     return k, v.strip("'")
 
 
 def _handle_key_value(s, t):
-    return t.split('=')
+    return t.split('=', 1)
 
 
 def _handle_word(s, t):
