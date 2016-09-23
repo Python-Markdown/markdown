@@ -43,9 +43,9 @@ set the value of the `-a` option to that class name. The CSS rules will be
 written to the `styles.css` file which you can copy to your site and link from
 your HTML templates.
 
-If you would like to use a differant theme, swap out `default` for the desired
+If you would like to use a different theme, swap out `default` for the desired
 theme. For a list of themes installed on your system (additional themes can be
-isntalled via Pygments plugins), run the following command:
+installed via Pygments plugins), run the following command:
 
     pygmetize -L style
 
@@ -59,7 +59,7 @@ isntalled via Pygments plugins), run the following command:
     To ensure complete compatibility, you should generate the CSS rules from
     your own installation of Pygments.
 
-See Pygment's excellent [documentation] for more details. If no language is
+See Pygments' excellent [documentation] for more details. If no language is
 defined, Pygments will attempt to guess the language. When that fails, the code
 block will not be highlighted.
 
