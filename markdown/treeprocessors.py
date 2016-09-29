@@ -358,14 +358,14 @@ class PrettifyTreeprocessor(Treeprocessor):
         self._prettifyETree(root)
         # Do <br />'s seperately as they are often in the middle of
         # inline content and missed by _prettifyETree.
-        brs = filter(lambda e: e.tag == 'br', root.getiterator())
+        brs = root.iter('br')
         for br in brs:
             if not br.tail or not br.tail.strip():
                 br.tail = '\n'
             else:
                 br.tail = '\n%s' % br.tail
         # Clean up extra empty lines at end of code blocks.
-        pres = filter(lambda e: e.tag == 'pre', root.getiterator())
+        pres = root.iter('pre')
         for pre in pres:
             if len(pre) and pre[0].tag == 'code':
                 pre[0].text = util.AtomicString(pre[0].text.rstrip() + '\n')
