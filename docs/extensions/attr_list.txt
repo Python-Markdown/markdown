@@ -85,4 +85,7 @@ Usage
 See [Extensions](index.html) for general extension usage, specify `markdown.extensions.attr_list`
 as the name of the extension.
 
-This extension does not accept any special configuration options.
+The following options are provided to configure the output:
+
+* **`allowed_attributes`**:
+    List of attributes to allow setting. `['*']` means all. Defaults to `['*']`.
