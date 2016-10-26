@@ -30,7 +30,8 @@ class TableProcessor(BlockProcessor):
         rows = block.split('\n')
         return (len(rows) > 1 and '|' in rows[0] and
                 '|' in rows[1] and '-' in rows[1] and
-                rows[1].strip()[0] in ['|', ':', '-'])
+                rows[1].strip()[0] in ['|', ':', '-'] and
+                set(rows[1]) <= set('|:- '))
 
     def run(self, parent, blocks):
         """ Parse a table block and build table. """
