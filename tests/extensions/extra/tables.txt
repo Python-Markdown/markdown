@@ -45,7 +45,7 @@ Three spaces in front of a table:
    | Content Cell | Content Cell  |
 
 Four spaces is a code block:
-   
+
     First Header | Second Header
     ------------ | -------------
     Content Cell | Content Cell
@@ -75,3 +75,8 @@ A test for issue #440:
 foo | bar
 --- | ---
 foo | (`bar`) and `baz`.
+
+Lists are not tables
+
+ - this | should | not
+ - be | a | table
