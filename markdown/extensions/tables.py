@@ -50,7 +50,7 @@ class TableProcessor(BlockProcessor):
         """ Parse a table block and build table. """
         block = blocks.pop(0).split('\n')
 
-        if set(block[0]) <= set('|:- '):  # no header
+        if '-' in block[0] and set(block[0]) <= set('|:- '):  # no header
             header = None
             seperator = block[0].strip()
             rows = [] if len(block) < 2 else block[1:]
