@@ -76,6 +76,11 @@ foo | bar
 --- | ---
 foo | (`bar`) and `baz`.
 
+A table without a header:
+
+---|---
+foo|bar
+
 Lists are not tables
 
  - this | should | not
