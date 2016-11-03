@@ -63,26 +63,31 @@ class TableProcessor(BlockProcessor):
         border = False
         if (header and header.startswith('|')) or separator.startswith('|'):
             border = True
-        # Get alignment of columns
-        align = []
-        for c in self._split_row(separator, border):
-            c = c.strip()
-            if c.startswith(':') and c.endswith(':'):
-                align.append('center')
-            elif c.startswith(':'):
-                align.append('left')
-            elif c.endswith(':'):
-                align.append('right')
-            else:
-                align.append(None)
+
+        alignment = self._get_column_alignment(separator, border)
         # Build table
         table = etree.SubElement(parent, 'table')
         if header:
             thead = etree.SubElement(table, 'thead')
-            self._build_row(header, thead, align, border)
+            self._build_row(header, thead, alignment, border)
         tbody = etree.SubElement(table, 'tbody')
         for row in rows:
-            self._build_row(row.strip(), tbody, align, border)
+            self._build_row(row.strip(), tbody, alignment, border)
+
+    def _get_column_alignment(self, separator, border):
+        alignment = []
+        for c in self._split_row(separator, border):
+            c = c.strip()
+            if c.startswith(':') and c.endswith(':'):
+                alignment.append('center')
+            elif c.startswith(':'):
+                alignment.append('left')
+            elif c.endswith(':'):
+                alignment.append('right')
+            else:
+                alignment.append(None)
+
+        return alignment
 
     def _build_row(self, row, parent, align, border):
         """ Given a row of text, build table cells. """
