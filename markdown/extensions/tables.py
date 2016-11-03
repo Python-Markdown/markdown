@@ -28,20 +28,40 @@ class TableProcessor(BlockProcessor):
 
     def test(self, parent, block):
         rows = block.split('\n')
-        return (len(rows) > 1 and '|' in rows[0] and
-                '|' in rows[1] and '-' in rows[1] and
-                rows[1].strip()[0] in ['|', ':', '-'] and
-                set(rows[1]) <= set('|:- '))
+
+        if len(rows) <= 1:
+            return False
+
+        is_table_with_header = (
+            '|' in rows[0] and '|' in rows[1] and '-' in rows[1] and
+            rows[1].strip()[0] in ['|', ':', '-'] and
+            set(rows[1]) <= set('|:- ')
+        )
+
+        is_table_without_header = (
+            '|' in rows[0] and '-' in rows[0] and
+            rows[0].strip()[0] in ['|', ':', '-'] and
+            set(rows[0]) <= set('|:- ')
+        )
+
+        return is_table_with_header or is_table_without_header
 
     def run(self, parent, blocks):
         """ Parse a table block and build table. """
         block = blocks.pop(0).split('\n')
-        header = block[0].strip()
-        seperator = block[1].strip()
-        rows = [] if len(block) < 3 else block[2:]
+
+        if set(block[0]) <= set('|:- '):  # no header
+            header = None
+            seperator = block[0].strip()
+            rows = [] if len(block) < 2 else block[1:]
+        else:
+            header = block[0].strip()
+            seperator = block[1].strip()
+            rows = [] if len(block) < 3 else block[2:]
+
         # Get format type (bordered by pipes or not)
         border = False
-        if header.startswith('|'):
+        if (header and header.startswith('|')) or seperator.startswith('|'):
             border = True
         # Get alignment of columns
         align = []
@@ -57,8 +77,9 @@ class TableProcessor(BlockProcessor):
                 align.append(None)
         # Build table
         table = etree.SubElement(parent, 'table')
-        thead = etree.SubElement(table, 'thead')
-        self._build_row(header, thead, align, border)
+        if header:
+            thead = etree.SubElement(table, 'thead')
+            self._build_row(header, thead, align, border)
         tbody = etree.SubElement(table, 'tbody')
         for row in rows:
             self._build_row(row.strip(), tbody, align, border)
