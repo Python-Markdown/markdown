@@ -64,30 +64,31 @@ class TableProcessor(BlockProcessor):
         if (header and header.startswith('|')) or separator.startswith('|'):
             border = True
 
-        alignment = self._get_column_alignment(separator, border)
+        align = self._get_column_align(separator, border)
+
         # Build table
         table = etree.SubElement(parent, 'table')
         if header:
             thead = etree.SubElement(table, 'thead')
-            self._build_row(header, thead, alignment, border)
+            self._build_row(header, thead, align, border)
         tbody = etree.SubElement(table, 'tbody')
         for row in rows:
-            self._build_row(row.strip(), tbody, alignment, border)
+            self._build_row(row.strip(), tbody, align, border)
 
-    def _get_column_alignment(self, separator, border):
-        alignment = []
+    def _get_column_align(self, separator, border):
+        align = []
         for c in self._split_row(separator, border):
             c = c.strip()
             if c.startswith(':') and c.endswith(':'):
-                alignment.append('center')
+                align.append('center')
             elif c.startswith(':'):
-                alignment.append('left')
+                align.append('left')
             elif c.endswith(':'):
-                alignment.append('right')
+                align.append('right')
             else:
-                alignment.append(None)
+                align.append(None)
 
-        return alignment
+        return align
 
     def _build_row(self, row, parent, align, border):
         """ Given a row of text, build table cells. """
