@@ -52,20 +52,20 @@ class TableProcessor(BlockProcessor):
 
         if '-' in block[0] and set(block[0]) <= set('|:- '):  # no header
             header = None
-            seperator = block[0].strip()
+            separator = block[0].strip()
             rows = [] if len(block) < 2 else block[1:]
         else:
             header = block[0].strip()
-            seperator = block[1].strip()
+            separator = block[1].strip()
             rows = [] if len(block) < 3 else block[2:]
 
         # Get format type (bordered by pipes or not)
         border = False
-        if (header and header.startswith('|')) or seperator.startswith('|'):
+        if (header and header.startswith('|')) or separator.startswith('|'):
             border = True
         # Get alignment of columns
         align = []
-        for c in self._split_row(seperator, border):
+        for c in self._split_row(separator, border):
             c = c.strip()
             if c.startswith(':') and c.endswith(':'):
                 align.append('center')
