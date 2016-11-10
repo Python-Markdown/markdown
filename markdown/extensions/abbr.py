@@ -33,7 +33,7 @@ class AbbrExtension(Extension):
 
     def extendMarkdown(self, md):
         """ Insert AbbrPreprocessor before ReferencePreprocessor. """
-        md.preprocessors.add('abbr', AbbrPreprocessor(md), '<reference')
+        md.preprocessors.register(AbbrPreprocessor(md), 'abbr', 12)
 
 
 class AbbrPreprocessor(Preprocessor):
@@ -51,8 +51,9 @@ class AbbrPreprocessor(Preprocessor):
             if m:
                 abbr = m.group('abbr').strip()
                 title = m.group('title').strip()
-                self.md.inlinePatterns['abbr-%s' % abbr] = \
-                    AbbrPattern(self._generate_pattern(abbr), title)
+                self.md.inlinePatterns.register(
+                    AbbrPattern(self._generate_pattern(abbr), title), 'abbr-%s' % abbr, 2
+                )
             else:
                 new_text.append(line)
         return new_text

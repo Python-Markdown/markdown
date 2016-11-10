@@ -41,5 +41,4 @@ class LegacyAttrs(Treeprocessor):
 
 class LegacyAttrExtension(Extension):
     def extendMarkdown(self, md):
-        la = LegacyAttrs(md)
-        md.treeprocessors.add('legacyattrs', la, '>inline')
+        md.treeprocessors.register(LegacyAttrs(md), 'legacyattrs', 15)

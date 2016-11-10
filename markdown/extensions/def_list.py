@@ -103,9 +103,5 @@ class DefListExtension(Extension):
 
     def extendMarkdown(self, md):
         """ Add an instance of DefListProcessor to BlockParser. """
-        md.parser.blockprocessors.add('defindent',
-                                      DefListIndentProcessor(md.parser),
-                                      '>indent')
-        md.parser.blockprocessors.add('deflist',
-                                      DefListProcessor(md.parser),
-                                      '>ulist')
+        md.parser.blockprocessors.register(DefListIndentProcessor(md.parser), 'defindent', 85)
+        md.parser.blockprocessors.register(DefListProcessor(md.parser), 'deflist', 25)

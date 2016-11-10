@@ -84,8 +84,8 @@ smartypants.py license:
 from __future__ import unicode_literals
 from . import Extension
 from ..inlinepatterns import HtmlPattern, HTML_RE
-from ..odict import OrderedDict
 from ..treeprocessors import InlineProcessor
+from ..util import Registry
 
 
 # Constants for quote education.
@@ -180,13 +180,12 @@ class SmartyExtension(Extension):
         self.substitutions = dict(substitutions)
         self.substitutions.update(self.getConfig('substitutions', default={}))
 
-    def _addPatterns(self, md, patterns, serie):
+    def _addPatterns(self, md, patterns, serie, priority):
         for ind, pattern in enumerate(patterns):
             pattern += (md,)
             pattern = SubstituteTextPattern(*pattern)
-            after = ('>smarty-%s-%d' % (serie, ind - 1) if ind else '_begin')
             name = 'smarty-%s-%d' % (serie, ind)
-            self.inlinePatterns.add(name, pattern, after)
+            self.inlinePatterns.register(pattern, name, priority-ind)
 
     def educateDashes(self, md):
         emDashesPattern = SubstituteTextPattern(
@@ -195,16 +194,14 @@ class SmartyExtension(Extension):
         enDashesPattern = SubstituteTextPattern(
             r'(?<!-)--(?!-)', (self.substitutions['ndash'],), md
         )
-        self.inlinePatterns.add('smarty-em-dashes', emDashesPattern, '_begin')
-        self.inlinePatterns.add(
-            'smarty-en-dashes', enDashesPattern, '>smarty-em-dashes'
-        )
+        self.inlinePatterns.register(emDashesPattern, 'smarty-em-dashes', 50)
+        self.inlinePatterns.register(enDashesPattern, 'smarty-en-dashes', 45)
 
     def educateEllipses(self, md):
         ellipsesPattern = SubstituteTextPattern(
             r'(?<!\.)\.{3}(?!\.)', (self.substitutions['ellipsis'],), md
         )
-        self.inlinePatterns.add('smarty-ellipses', ellipsesPattern, '_begin')
+        self.inlinePatterns.register(ellipsesPattern, 'smarty-ellipses', 10)
 
     def educateAngledQuotes(self, md):
         leftAngledQuotePattern = SubstituteTextPattern(
@@ -213,14 +210,8 @@ class SmartyExtension(Extension):
         rightAngledQuotePattern = SubstituteTextPattern(
             r'\>\>', (self.substitutions['right-angle-quote'],), md
         )
-        self.inlinePatterns.add(
-            'smarty-left-angle-quotes', leftAngledQuotePattern, '_begin'
-        )
-        self.inlinePatterns.add(
-            'smarty-right-angle-quotes',
-            rightAngledQuotePattern,
-            '>smarty-left-angle-quotes'
-        )
+        self.inlinePatterns.register(leftAngledQuotePattern, 'smarty-left-angle-quotes', 40)
+        self.inlinePatterns.register(rightAngledQuotePattern, 'smarty-right-angle-quotes', 35)
 
     def educateQuotes(self, md):
         lsquo = self.substitutions['left-single-quote']
@@ -242,11 +233,11 @@ class SmartyExtension(Extension):
             (closingDoubleQuotesRegex2, (rdquo,)),
             (remainingDoubleQuotesRegex, (ldquo,))
         )
-        self._addPatterns(md, patterns, 'quotes')
+        self._addPatterns(md, patterns, 'quotes', 30)
 
     def extendMarkdown(self, md):
         configs = self.getConfigs()
-        self.inlinePatterns = OrderedDict()
+        self.inlinePatterns = Registry()
         if configs['smart_ellipses']:
             self.educateEllipses(md)
         if configs['smart_quotes']:
@@ -255,12 +246,12 @@ class SmartyExtension(Extension):
             self.educateAngledQuotes(md)
             # Override HTML_RE from inlinepatterns.py so that it does not
             # process tags with duplicate closing quotes.
-            md.inlinePatterns["html"] = HtmlPattern(HTML_STRICT_RE, md)
+            md.inlinePatterns.register(HtmlPattern(HTML_STRICT_RE, md), 'html', 90)
         if configs['smart_dashes']:
             self.educateDashes(md)
         inlineProcessor = InlineProcessor(md)
         inlineProcessor.inlinePatterns = self.inlinePatterns
-        md.treeprocessors.add('smarty', inlineProcessor, '_end')
+        md.treeprocessors.register(inlineProcessor, 'smarty', 2)
         md.ESCAPED_CHARS.extend(['"', "'"])
 
 

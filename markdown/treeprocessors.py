@@ -1,14 +1,13 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import
 from . import util
-from . import odict
 
 
 def build_treeprocessors(md, **kwargs):
     """ Build the default treeprocessors for Markdown. """
-    treeprocessors = odict.OrderedDict()
-    treeprocessors["inline"] = InlineProcessor(md)
-    treeprocessors["prettify"] = PrettifyTreeprocessor(md)
+    treeprocessors = util.Registry()
+    treeprocessors.register(InlineProcessor(md), 'inline', 20)
+    treeprocessors.register(PrettifyTreeprocessor(md), 'prettify', 10)
     return treeprocessors
 
 
@@ -101,8 +100,8 @@ class InlineProcessor(Treeprocessor):
             startIndex = 0
             while patternIndex < len(self.inlinePatterns):
                 data, matched, startIndex = self.__applyPattern(
-                    self.inlinePatterns.value_for_index(patternIndex),
-                    data, patternIndex, startIndex)
+                    self.inlinePatterns[patternIndex], data, patternIndex, startIndex
+                )
                 if not matched:
                     patternIndex += 1
         return data

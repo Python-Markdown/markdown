@@ -44,7 +44,6 @@ So, we apply the expressions in the following order:
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import util
-from . import odict
 import re
 try:  # pragma: no cover
     from html import entities
@@ -54,30 +53,30 @@ except ImportError:  # pragma: no cover
 
 def build_inlinepatterns(md, **kwargs):
     """ Build the default set of inline patterns for Markdown. """
-    inlinePatterns = odict.OrderedDict()
-    inlinePatterns["backtick"] = BacktickPattern(BACKTICK_RE)
-    inlinePatterns["escape"] = EscapePattern(ESCAPE_RE, md)
-    inlinePatterns["reference"] = ReferencePattern(REFERENCE_RE, md)
-    inlinePatterns["link"] = LinkPattern(LINK_RE, md)
-    inlinePatterns["image_link"] = ImagePattern(IMAGE_LINK_RE, md)
-    inlinePatterns["image_reference"] = ImageReferencePattern(
-        IMAGE_REFERENCE_RE, md
+    inlinePatterns = util.Registry()
+    inlinePatterns.register(BacktickPattern(BACKTICK_RE), 'backtick', 190)
+    inlinePatterns.register(EscapePattern(ESCAPE_RE, md), 'escape', 180)
+    inlinePatterns.register(ReferencePattern(REFERENCE_RE, md), 'reference', 170)
+    inlinePatterns.register(LinkPattern(LINK_RE, md), 'link', 160)
+    inlinePatterns.register(ImagePattern(IMAGE_LINK_RE, md), 'image_link', 150)
+    inlinePatterns.register(
+        ImageReferencePattern(IMAGE_REFERENCE_RE, md), 'image_reference', 140
     )
-    inlinePatterns["short_reference"] = ReferencePattern(
-        SHORT_REF_RE, md
+    inlinePatterns.register(
+        ReferencePattern(SHORT_REF_RE, md), 'short_reference', 130
     )
-    inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md)
-    inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md)
-    inlinePatterns["linebreak"] = SubstituteTagPattern(LINE_BREAK_RE, 'br')
-    inlinePatterns["html"] = HtmlPattern(HTML_RE, md)
-    inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md)
-    inlinePatterns["not_strong"] = SimpleTextPattern(NOT_STRONG_RE)
-    inlinePatterns["em_strong"] = DoubleTagPattern(EM_STRONG_RE, 'strong,em')
-    inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'em,strong')
-    inlinePatterns["strong"] = SimpleTagPattern(STRONG_RE, 'strong')
-    inlinePatterns["emphasis"] = SimpleTagPattern(EMPHASIS_RE, 'em')
-    inlinePatterns["strong2"] = SimpleTagPattern(SMART_STRONG_RE, 'strong')
-    inlinePatterns["emphasis2"] = SimpleTagPattern(SMART_EMPHASIS_RE, 'em')
+    inlinePatterns.register(AutolinkPattern(AUTOLINK_RE, md), 'autolink', 120)
+    inlinePatterns.register(AutomailPattern(AUTOMAIL_RE, md), 'automail', 110)
+    inlinePatterns.register(SubstituteTagPattern(LINE_BREAK_RE, 'br'), 'linebreak', 100)
+    inlinePatterns.register(HtmlPattern(HTML_RE, md), 'html', 90)
+    inlinePatterns.register(HtmlPattern(ENTITY_RE, md), 'entity', 80)
+    inlinePatterns.register(SimpleTextPattern(NOT_STRONG_RE), 'not_strong', 70)
+    inlinePatterns.register(DoubleTagPattern(EM_STRONG_RE, 'strong,em'), 'em_strong', 60)
+    inlinePatterns.register(DoubleTagPattern(STRONG_EM_RE, 'em,strong'), 'strong_em', 50)
+    inlinePatterns.register(SimpleTagPattern(STRONG_RE, 'strong'), 'strong', 40)
+    inlinePatterns.register(SimpleTagPattern(EMPHASIS_RE, 'em'), 'emphasis', 30)
+    inlinePatterns.register(SimpleTagPattern(SMART_STRONG_RE, 'strong'), 'strong2', 20)
+    inlinePatterns.register(SimpleTagPattern(SMART_EMPHASIS_RE, 'em'), 'emphasis2', 10)
     return inlinePatterns
 
 """
