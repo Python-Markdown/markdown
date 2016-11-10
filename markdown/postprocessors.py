@@ -12,16 +12,15 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from collections import OrderedDict
 from . import util
-from . import odict
 import re
 
 
 def build_postprocessors(md_instance, **kwargs):
     """ Build the default postprocessors for Markdown. """
-    postprocessors = odict.OrderedDict()
-    postprocessors["raw_html"] = RawHtmlPostprocessor(md_instance)
-    postprocessors["amp_substitute"] = AndSubstitutePostprocessor()
-    postprocessors["unescape"] = UnescapePostprocessor()
+    postprocessors = util.Registry()
+    postprocessors.register(RawHtmlPostprocessor(md_instance), 'raw_html', 30)
+    postprocessors.register(AndSubstitutePostprocessor(), 'amp_substitute', 20)
+    postprocessors.register(UnescapePostprocessor(), 'unescape', 10)
     return postprocessors
 
 

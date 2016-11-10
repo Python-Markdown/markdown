@@ -218,9 +218,10 @@ class TocTreeprocessor(Treeprocessor):
             return ul
 
         build_etree_ul(toc_list, div)
-        prettify = self.markdown.treeprocessors.get('prettify')
-        if prettify:
-            prettify.run(div)
+
+        if 'prettify' in self.markdown.treeprocessors:
+            self.markdown.treeprocessors['prettify'].run(div)
+
         return div
 
     def run(self, doc):
@@ -260,7 +261,7 @@ class TocTreeprocessor(Treeprocessor):
 
         # serialize and attach to markdown instance.
         toc = self.markdown.serializer(div)
-        for pp in self.markdown.postprocessors.values():
+        for pp in self.markdown.postprocessors:
             toc = pp.run(toc)
         self.markdown.toc = toc
 
@@ -305,7 +306,7 @@ class TocExtension(Extension):
         # by the header id extension) if both are used. Same goes for
         # attr_list extension. This must come last because we don't want
         # to redefine ids after toc is created. But we do want toc prettified.
-        md.treeprocessors.add("toc", tocext, "_end")
+        md.treeprocessors.register(tocext, 'toc', 5)
 
     def reset(self):
         self.md.toc = ''

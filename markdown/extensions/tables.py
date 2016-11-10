@@ -218,9 +218,7 @@ class TableExtension(Extension):
         """ Add an instance of TableProcessor to BlockParser. """
         if '|' not in md.ESCAPED_CHARS:
             md.ESCAPED_CHARS.append('|')
-        md.parser.blockprocessors.add('table',
-                                      TableProcessor(md.parser),
-                                      '<hashheader')
+        md.parser.blockprocessors.register(TableProcessor(md.parser), 'table', 75)
 
 
 def makeExtension(**kwargs):  # pragma: no cover

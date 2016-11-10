@@ -47,8 +47,8 @@ class SaneListExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
         """ Override existing Processors. """
-        md.parser.blockprocessors['olist'] = SaneOListProcessor(md.parser)
-        md.parser.blockprocessors['ulist'] = SaneUListProcessor(md.parser)
+        md.parser.blockprocessors.register(SaneOListProcessor(md.parser), 'olist', 40)
+        md.parser.blockprocessors.register(SaneUListProcessor(md.parser), 'ulist', 30)
 
 
 def makeExtension(**kwargs):  # pragma: no cover

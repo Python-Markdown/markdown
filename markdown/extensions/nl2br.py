@@ -28,7 +28,7 @@ class Nl2BrExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
         br_tag = SubstituteTagInlineProcessor(BR_RE, 'br')
-        md.inlinePatterns.add('nl', br_tag, '_end')
+        md.inlinePatterns.register(br_tag, 'nl', 5)
 
 
 def makeExtension(**kwargs):  # pragma: no cover

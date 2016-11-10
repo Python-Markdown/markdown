@@ -9,16 +9,15 @@ complicated.
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import util
-from . import odict
 import re
 
 
 def build_preprocessors(md_instance, **kwargs):
     """ Build the default set of preprocessors used by Markdown. """
-    preprocessors = odict.OrderedDict()
-    preprocessors['normalize_whitespace'] = NormalizeWhitespace(md_instance)
-    preprocessors["html_block"] = HtmlBlockPreprocessor(md_instance)
-    preprocessors["reference"] = ReferencePreprocessor(md_instance)
+    preprocessors = util.Registry()
+    preprocessors.register(NormalizeWhitespace(md_instance), 'normalize_whitespace', 30)
+    preprocessors.register(HtmlBlockPreprocessor(md_instance), 'html_block', 20)
+    preprocessors.register(ReferencePreprocessor(md_instance), 'reference', 10)
     return preprocessors
 
 

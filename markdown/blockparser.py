@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import
 from . import util
-from . import odict
 
 
 class State(list):
@@ -46,7 +45,7 @@ class BlockParser:
     """
 
     def __init__(self, markdown):
-        self.blockprocessors = odict.OrderedDict()
+        self.blockprocessors = util.Registry()
         self.state = State()
         self.markdown = markdown
 
@@ -93,7 +92,7 @@ class BlockParser:
 
         """
         while blocks:
-            for processor in self.blockprocessors.values():
+            for processor in self.blockprocessors:
                 if processor.test(parent, blocks[0]):
                     if processor.run(parent, blocks) is not False:
                         # run returns True or None

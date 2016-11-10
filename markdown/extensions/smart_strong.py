@@ -29,12 +29,8 @@ class SmartEmphasisExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
         """ Modify inline patterns. """
-        md.inlinePatterns['strong'] = SimpleTagInlineProcessor(STRONG_RE, 'strong')
-        md.inlinePatterns.add(
-            'strong2',
-            SimpleTagInlineProcessor(SMART_STRONG_RE, 'strong'),
-            '>emphasis2'
-        )
+        md.inlinePatterns.register(SimpleTagInlineProcessor(STRONG_RE, 'strong'), 'strong', 40)
+        md.inlinePatterns.register(SimpleTagInlineProcessor(SMART_STRONG_RE, 'strong'), 'strong2', 10)
 
 
 def makeExtension(**kwargs):  # pragma: no cover

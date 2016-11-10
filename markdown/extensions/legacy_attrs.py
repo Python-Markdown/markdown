@@ -41,8 +41,7 @@ class LegacyAttrs(Treeprocessor):
 
 class LegacyAttrExtension(Extension):
     def extendMarkdown(self, md, md_globals):
-        la = LegacyAttrs(md)
-        md.treeprocessors.add('legacyattrs', la, '>inline')
+        md.treeprocessors.register(LegacyAttrs(md), 'legacyattrs', 15)
 
 
 def makeExtension(**kwargs):  # pragma: no cover
