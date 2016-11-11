@@ -48,7 +48,7 @@ class WikiLinkExtension(Extension):
         WIKILINK_RE = r'\[\[([\w0-9_ -]+)\]\]'
         wikilinkPattern = WikiLinks(WIKILINK_RE, self.getConfigs())
         wikilinkPattern.md = md
-        md.inlinePatterns.add('wikilink', wikilinkPattern, "<not_strong")
+        md.inlinePatterns.register(wikilinkPattern, 'wikilink', 75)
 
 
 class WikiLinks(Pattern):

@@ -32,9 +32,7 @@ class AdmonitionExtension(Extension):
         """ Add Admonition to Markdown instance. """
         md.registerExtension(self)
 
-        md.parser.blockprocessors.add('admonition',
-                                      AdmonitionProcessor(md.parser),
-                                      '_begin')
+        md.parser.blockprocessors.register(AdmonitionProcessor(md.parser), 'admonition', 105)
 
 
 class AdmonitionProcessor(BlockProcessor):

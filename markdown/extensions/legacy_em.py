@@ -24,7 +24,7 @@ class LegacyEmExtension(Extension):
 
     def extendMarkdown(self, md):
         """ Modify inline patterns. """
-        md.inlinePatterns['strong'] = SimpleTagPattern(STRONG_RE, 'strong')
-        md.inlinePatterns['emphasis'] = SimpleTagPattern(EMPHASIS_RE, 'em')
-        del md.inlinePatterns['strong2']
-        del md.inlinePatterns['emphasis2']
+        md.inlinePatterns.register(SimpleTagPattern(STRONG_RE, 'strong'), 'strong', 40)
+        md.inlinePatterns.register(SimpleTagPattern(EMPHASIS_RE, 'em'), 'emphasis', 30)
+        md.inlinePatterns.deregister('strong2', strict=False)
+        md.inlinePatterns.deregister('emphasis2', strict=False)

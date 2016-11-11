@@ -96,8 +96,11 @@ class Markdown(object):
                 )
             elif ext is not None:
                 raise TypeError(
-                    'Extension "%s.%s" must be of type: "markdown.extensions.Extension"'
-                    % (ext.__class__.__module__, ext.__class__.__name__))
+                    'Extension "%s.%s" must be of type: "%s.%s"' % (
+                        ext.__class__.__module__, ext.__class__.__name__,
+                        Extension.__module__, Extension.__name__
+                    )
+                )
 
         return self
 
@@ -188,14 +191,14 @@ class Markdown(object):
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
-        for prep in self.preprocessors.values():
+        for prep in self.preprocessors:
             self.lines = prep.run(self.lines)
 
         # Parse the high-level elements.
         root = self.parser.parseDocument(self.lines).getroot()
 
         # Run the tree-processors
-        for treeprocessor in self.treeprocessors.values():
+        for treeprocessor in self.treeprocessors:
             newRoot = treeprocessor.run(root)
             if newRoot is not None:
                 root = newRoot
@@ -218,7 +221,7 @@ class Markdown(object):
                                      'tags. Document=%r' % output.strip())
 
         # Run the text post-processors
-        for pp in self.postprocessors.values():
+        for pp in self.postprocessors:
             output = pp.run(output)
 
         return output.strip()

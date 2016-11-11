@@ -21,7 +21,7 @@ from ..inlinepatterns import Pattern
 from ..treeprocessors import Treeprocessor
 from ..postprocessors import Postprocessor
 from ..util import etree, text_type
-from ..odict import OrderedDict
+from collections import OrderedDict
 import re
 
 FN_BACKLINK_TEXT = "zz1337820767766393qq"
@@ -62,24 +62,18 @@ class FootnoteExtension(Extension):
         self.parser = md.parser
         self.md = md
         # Insert a preprocessor before ReferencePreprocessor
-        md.preprocessors.add(
-            "footnote", FootnotePreprocessor(self), "<reference"
-        )
+        md.preprocessors.register(FootnotePreprocessor(self), 'footnote', 15)
+
         # Insert an inline pattern before ImageReferencePattern
         FOOTNOTE_RE = r'\[\^([^\]]*)\]'  # blah blah [^1] blah
-        md.inlinePatterns.add(
-            "footnote", FootnotePattern(FOOTNOTE_RE, self), "<reference"
-        )
+        md.inlinePatterns.register(FootnotePattern(FOOTNOTE_RE, self), 'footnote', 175)
         # Insert a tree-processor that would actually add the footnote div
         # This must be before all other treeprocessors (i.e., inline and
         # codehilite) so they can run on the the contents of the div.
-        md.treeprocessors.add(
-            "footnote", FootnoteTreeprocessor(self), "_begin"
-        )
-        # Insert a postprocessor after amp_substitute oricessor
-        md.postprocessors.add(
-            "footnote", FootnotePostprocessor(self), ">amp_substitute"
-        )
+        md.treeprocessors.register(FootnoteTreeprocessor(self), 'footnote', 50)
+
+        # Insert a postprocessor after amp_substitute processor
+        md.postprocessors.register(FootnotePostprocessor(self), 'footnote', 25)
 
     def reset(self):
         """ Clear footnotes on reset, and prepare for distinct document. """
@@ -139,7 +133,7 @@ class FootnoteExtension(Extension):
         etree.SubElement(div, "hr")
         ol = etree.SubElement(div, "ol")
 
-        for id in self.footnotes.keys():
+        for index, id in enumerate(self.footnotes.keys(), start=1):
             li = etree.SubElement(ol, "li")
             li.set("id", self.makeFootnoteId(id))
             self.parser.parseChunk(li, self.footnotes[id])
@@ -150,8 +144,7 @@ class FootnoteExtension(Extension):
             backlink.set("class", "footnote-backref")
             backlink.set(
                 "title",
-                "Jump back to footnote %d in the text" %
-                (self.footnotes.index(id)+1)
+                "Jump back to footnote %d in the text" % (index)
             )
             backlink.text = FN_BACKLINK_TEXT
 
@@ -275,7 +268,7 @@ class FootnotePattern(Pattern):
             if self.footnotes.md.output_format not in ['html5', 'xhtml5']:
                 a.set('rel', 'footnote')  # invalid in HTML5
             a.set('class', 'footnote-ref')
-            a.text = text_type(self.footnotes.footnotes.index(id) + 1)
+            a.text = text_type(list(self.footnotes.footnotes.keys()).index(id) + 1)
             return sup
         else:
             return None
