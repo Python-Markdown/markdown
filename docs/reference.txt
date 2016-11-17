@@ -128,16 +128,12 @@ The following options are available on the `markdown.markdown` function:
     
     The dictionary of configuration settings must be in the following format:
 
-        extension_configs = 
-        {
-            'extension_name_1':
-            {
+        extension_configs = {
+            'extension_name_1': {
                 'option_1': 'value_1',
                 'option_2': 'value_2'
             },
-        {
-            'extension_name_2':
-            {
+            'extension_name_2': {
                 'option_1': 'value_1'
             }
         }
