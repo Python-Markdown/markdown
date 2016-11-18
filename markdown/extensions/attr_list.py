@@ -52,6 +52,7 @@ def _handle_word(s, t):
         return 'id', t[1:]
     return t, t
 
+
 _scanner = Scanner([
     (r'[^ =]+=".*?"', _handle_double_quote),
     (r"[^ =]+='.*?'", _handle_single_quote),

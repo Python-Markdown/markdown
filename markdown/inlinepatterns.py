@@ -87,6 +87,7 @@ def build_inlinepatterns(md_instance, **kwargs):
         inlinePatterns["emphasis2"] = SimpleTagPattern(EMPHASIS_2_RE, 'em')
     return inlinePatterns
 
+
 """
 The actual regular expressions for patterns
 -----------------------------------------------------------------------------

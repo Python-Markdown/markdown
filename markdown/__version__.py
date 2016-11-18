@@ -26,4 +26,5 @@ def _get_version():
 
     return str(main + sub)
 
+
 version = _get_version()

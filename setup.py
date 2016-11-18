@@ -22,6 +22,7 @@ def get_version():
     finally:
         fp.close()
 
+
 version, version_info = get_version()
 
 # Get development Status for classifiers
@@ -209,6 +210,7 @@ class md_build(build):
         return not self.no_build_docs
 
     sub_commands = build.sub_commands + [('build_docs', has_docs)]
+
 
 long_description = '''
 This is a Python implementation of John Gruber's Markdown_.
