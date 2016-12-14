@@ -73,6 +73,30 @@ The above will output:
 
 [GitHub]: http://github.github.com/github-flavored-markdown/
 
+### Customize code wrapper ###
+If you want to change the tags wrapping the code, enter `code_wrap` and
+`lang_tag` options. You can also disable escaping special symbols with the
+option `escape`. The following text:
+
+    ```bash
+    some 'code'<br>
+    ```
+
+Processed code with the following parameters:
+
+    ext_conf = {'fenced_code': {
+                                'escape': False,
+                                'code_wrap': '<wrap %s>%s</wrap>',
+                                'lang_tag': 'language"%s"'
+                                }
+                }
+    print markdown.markdown(md, extensions=['fenced_code'],
+                                extension_configs=ext_conf)
+
+The above will output:
+
+    <wrap language"bash">some 'code'<br></wrap>
+
 ### Emphasized Lines ###
 
 If you would like to have your fenced code blocks highlighted with the 
