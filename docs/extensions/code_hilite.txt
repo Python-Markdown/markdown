@@ -47,7 +47,7 @@ If you would like to use a different theme, swap out `default` for the desired
 theme. For a list of themes installed on your system (additional themes can be
 installed via Pygments plugins), run the following command:
 
-    pygmetize -L style
+    pygmentize -L style
 
 !!! see also
 
