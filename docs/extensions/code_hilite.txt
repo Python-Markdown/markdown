@@ -36,7 +36,7 @@ The CSS rules either need to be defined in or linked from the header of your
 HTML templates. Pygments can generate CSS rules for you. Just run the following
 command from the command line:
 
-    pygmentize -S default -f html -a codehilite > styles.css
+    pygmentize -S default -f html -a .codehilite > styles.css
 
 If you are using a different `css_class` (default: `codehilite`), then
 set the value of the `-a` option to that class name. The CSS rules will be
