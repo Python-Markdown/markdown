@@ -41,13 +41,16 @@ raw HTML, then that can be accomplished through an extension which removes HTML 
 
     class EscapeHtml(Extension):
         def extendMarkdown(self, md, md_globals):
-        del md.preprocessors['html_block']
-        del md.inlinePatterns['html']
+            del md.preprocessors['html_block']
+            del md.inlinePatterns['html']
 
     html = markdown.markdown(text, extensions=[EscapeHtml()])
 
 As the HTML would not be parsed with the above Extension, then the serializer will
 escape the raw HTML, which is exactly what happens now when `safe_mode="escape"`.
+
+Please note that above ``EscapeHtml`` extension does not work with the ``extra``
+extension as it depends on the ``html_block`` preprocessor.
 
 [Bleach]: https://bleach.readthedocs.io/
 
