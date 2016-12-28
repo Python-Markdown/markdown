@@ -52,7 +52,8 @@ class TestMarkdownBasics(unittest.TestCase):
 
     def TestNamedExtensionWithClass(self):
         """ Test Extension loading with class name (`path.to.module:Class`). """
-        markdown.Markdown(extensions=['markdown.extensions.footnotes:FootnoteExtension'])
+        markdown.Markdown(
+            extensions=['markdown.extensions.footnotes:FootnoteExtension'])
 
 
 class TestBlockParser(unittest.TestCase):
@@ -161,18 +162,23 @@ class TestHtmlStash(unittest.TestCase):
 
     def testUnsafeHtmlInSafeMode(self):
         """ Test that unsafe HTML gets escaped in safe_mode. """
-        output = markdown.markdown('foo', extensions=[self.build_extension()], safe_mode='escape')
-        self.assertEqual(output, '<p>&lt;script&gt;print(&quot;evil&quot;)&lt;/script&gt;</p>')
+        output = markdown.markdown(
+            'foo', extensions=[self.build_extension()], safe_mode='escape')
+        self.assertEqual(
+            output, '<p>&lt;script&gt;print(&quot;evil&quot;)&lt;/script&gt;</p>')
 
     def build_extension(self):
         """ Build an extention that addes unsafe html to Stash in same_mode. """
         class Unsafe(markdown.treeprocessors.Treeprocessor):
+
             def run(self, root):
                 el = root.find('p')
-                el.text = self.markdown.htmlStash.store('<script>print("evil")</script>', safe=False)
+                el.text = self.markdown.htmlStash.store(
+                    '<script>print("evil")</script>', safe=False)
                 return root
 
         class StoreUnsafeHtml(markdown.extensions.Extension):
+
             def extendMarkdown(self, md, md_globals):
                 md.treeprocessors.add('unsafe', Unsafe(md), '_end')
 
@@ -191,7 +197,8 @@ class TestOrderedDict(unittest.TestCase):
 
     def testValues(self):
         """ Test output of OrderedDict.values(). """
-        self.assertEqual(list(self.odict.values()), ['This', 'a', 'self', 'test'])
+        self.assertEqual(list(self.odict.values()), [
+                         'This', 'a', 'self', 'test'])
 
     def testKeys(self):
         """ Test output of OrderedDict.keys(). """
@@ -357,7 +364,8 @@ class TestErrors(unittest.TestCase):
 
     def testLoadBadExtension(self):
         """ Test loading of an Extension with no makeExtension function. """
-        self.assertRaises(AttributeError, markdown.Markdown, extensions=['markdown.util'])
+        self.assertRaises(AttributeError, markdown.Markdown,
+                          extensions=['markdown.util'])
 
     def testNonExtension(self):
         """ Test loading a non Extension object as an extension. """
@@ -389,7 +397,8 @@ class TestErrors(unittest.TestCase):
         """ Test that passing configs to an Extension in the name raises a DeprecationWarning. """
         self.assertRaises(
             DeprecationWarning,
-            markdown.Markdown, extensions=['markdown.extension.footnotes(PLACE_MARKER=FOO)']
+            markdown.Markdown, extensions=[
+                'markdown.extension.footnotes(PLACE_MARKER=FOO)']
         )
 
 
@@ -464,6 +473,7 @@ class testETreeComments(unittest.TestCase):
 
 class testElementTailTests(unittest.TestCase):
     """ Element Tail Tests """
+
     def setUp(self):
         self.pretty = markdown.treeprocessors.PrettifyTreeprocessor()
 
@@ -520,6 +530,7 @@ class testSerializers(unittest.TestCase):
             return '<div><p>foo</p></div>'
 
         class registerFakeSerializer(markdown.extensions.Extension):
+
             def extendMarkdown(self, md, md_globals):
                 md.output_formats['fake'] = fakeSerializer
 
@@ -586,6 +597,7 @@ class testAtomicString(unittest.TestCase):
 
 
 class TestConfigParsing(unittest.TestCase):
+
     def assertParses(self, value, result):
         self.assertTrue(markdown.util.parseBoolValue(value, False) is result)
 
@@ -598,8 +610,10 @@ class TestConfigParsing(unittest.TestCase):
         self.assertParses('none', False)
 
     def testPreserveNone(self):
-        self.assertTrue(markdown.util.parseBoolValue('None', preserve_none=True) is None)
-        self.assertTrue(markdown.util.parseBoolValue(None, preserve_none=True) is None)
+        self.assertTrue(markdown.util.parseBoolValue(
+            'None', preserve_none=True) is None)
+        self.assertTrue(markdown.util.parseBoolValue(
+            None, preserve_none=True) is None)
 
     def testInvalidBooleansParsing(self):
         self.assertRaises(ValueError, markdown.util.parseBoolValue, 'novalue')
@@ -678,7 +692,8 @@ class TestCliOptionParsing(unittest.TestCase):
         self.assertEqual(options, self.default_options)
 
     def testExtensionOption(self):
-        options, logging_level = parse_options(['-x', 'markdown.extensions.footnotes'])
+        options, logging_level = parse_options(
+            ['-x', 'markdown.extensions.footnotes'])
         self.default_options['extensions'] = ['markdown.extensions.footnotes']
         self.assertEqual(options, self.default_options)
 

@@ -105,12 +105,12 @@ class AttrListTreeprocessor(Treeprocessor):
                         if m:
                             self.assign_attrs(elem, m.group(1))
                             elem[-1].tail = elem[-1].tail[:m.start()]
-                    elif pos is not None and pos > 0 and elem[pos-1].tail:
+                    elif pos is not None and pos > 0 and elem[pos - 1].tail:
                         # use tail of last child before ul or ol
-                        m = RE.search(elem[pos-1].tail)
+                        m = RE.search(elem[pos - 1].tail)
                         if m:
                             self.assign_attrs(elem, m.group(1))
-                            elem[pos-1].tail = elem[pos-1].tail[:m.start()]
+                            elem[pos - 1].tail = elem[pos - 1].tail[:m.start()]
                     elif elem.text:
                         # use text. ul is first child.
                         m = RE.search(elem.text)
@@ -168,6 +168,7 @@ class AttrListTreeprocessor(Treeprocessor):
 
 
 class AttrListExtension(Extension):
+
     def extendMarkdown(self, md, md_globals):
         md.treeprocessors.add(
             'attr_list', AttrListTreeprocessor(md), '>prettify'

@@ -37,7 +37,7 @@ def unique(id, ids):
     while id in ids or not id:
         m = IDCOUNT_RE.match(id)
         if m:
-            id = '%s_%d' % (m.group(1), int(m.group(2))+1)
+            id = '%s_%d' % (m.group(1), int(m.group(2)) + 1)
         else:
             id = '%s_%d' % (id, 1)
     ids.add(id)
@@ -124,6 +124,7 @@ def nest_toc_tokens(toc_list):
 
 
 class TocTreeprocessor(Treeprocessor):
+
     def __init__(self, md, config):
         super(TocTreeprocessor, self).__init__(md)
 
@@ -239,7 +240,8 @@ class TocTreeprocessor(Treeprocessor):
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
                     innertext = stashedHTML2text(text, self.markdown)
-                    el.attrib["id"] = unique(self.slugify(innertext, self.sep), used_ids)
+                    el.attrib["id"] = unique(
+                        self.slugify(innertext, self.sep), used_ids)
 
                 toc_tokens.append({
                     'level': int(el.tag[-1]),

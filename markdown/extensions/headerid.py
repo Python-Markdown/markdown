@@ -39,7 +39,8 @@ class HeaderIdTreeprocessor(Treeprocessor):
                     if "id" in elem.attrib:
                         id = elem.get('id')
                     else:
-                        id = stashedHTML2text(''.join(elem.itertext()), self.md)
+                        id = stashedHTML2text(
+                            ''.join(elem.itertext()), self.md)
                         id = slugify(id, sep)
                     elem.set('id', unique(id, self.IDs))
                 if start_level:
@@ -61,6 +62,7 @@ class HeaderIdTreeprocessor(Treeprocessor):
 
 
 class HeaderIdExtension(Extension):
+
     def __init__(self, *args, **kwargs):
         # set defaults
         self.config = {

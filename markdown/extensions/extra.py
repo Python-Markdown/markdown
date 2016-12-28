@@ -75,6 +75,7 @@ def makeExtension(*args, **kwargs):
 
 class MarkdownInHtmlProcessor(BlockProcessor):
     """Process Markdown Inside HTML Blocks."""
+
     def test(self, parent, block):
         return block == util.TAG_PLACEHOLDER % \
             str(self.parser.blockprocessors.tag_counter + 1)

@@ -31,6 +31,7 @@ class Treeprocessor(util.Processor):
     Treeprocessors must extend markdown.Treeprocessor.
 
     """
+
     def run(self, root):
         """
         Subclasses of Treeprocessor should implement a `run` method, which
@@ -239,7 +240,7 @@ class InlineProcessor(Treeprocessor):
         node = pattern.handleMatch(match)
 
         if node is None:
-            return data, True, len(leftData)+match.span(len(match.groups()))[0]
+            return data, True, len(leftData) + match.span(len(match.groups()))[0]
 
         if not isString(node):
             if not isinstance(node.text, util.AtomicString):

@@ -34,6 +34,7 @@ class Preprocessor(util.Processor):
     Preprocessors must extend markdown.Preprocessor.
 
     """
+
     def run(self, lines):
         """
         Each subclass of Preprocessor should override the `run` method, which
@@ -98,7 +99,7 @@ class HtmlBlockPreprocessor(Preprocessor):
             return tag, len(m.group(0)), attrs
         else:
             tag = block[1:].split(">", 1)[0].lower()
-            return tag, len(tag)+2, {}
+            return tag, len(tag) + 2, {}
 
     def _recursive_tagfind(self, ltag, rtag, start_index, block):
         while 1:
