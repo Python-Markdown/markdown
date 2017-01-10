@@ -94,7 +94,6 @@ class TableProcessor(BlockProcessor):
 
     def _split(self, row):
         """ split a row of text with some code into a list of cells. """
-
         elements = []
         pipes = []
         tics = []
