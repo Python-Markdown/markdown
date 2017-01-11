@@ -26,7 +26,7 @@ import re
 class TableProcessor(BlockProcessor):
     """ Process Tables. """
 
-    RE_CODE_PIPES = re.compile(r'(?:(\\\\)|(\\`+)|(`+)|(\\\|)|(\|))')
+    RE_CODE_PIPES = re.compile(r'(?:(\\\\)|(`+)|(\\\|)|(\|))')
 
     def test(self, parent, block):
         rows = block.split('\n')
@@ -102,24 +102,18 @@ class TableProcessor(BlockProcessor):
         good_pipes = []
 
         # Parse row
-        # Throw out \\, \`, and \|
+        # Throw out \\, and \|
         for m in self.RE_CODE_PIPES.finditer(row):
             # Store ` data (len, start_pos, end_pos)
             if m.group(2):
-                # \`+
-                # Store length of each tic group
-                tics.append(len(m.group(2)) - 1)
-                # Store start and end of tic group
-                tic_points.append((m.start(3), m.end(3) - 1))
-            elif m.group(3):
                 # `+
                 # Store length of each tic group
-                tics.append(len(m.group(3)))
+                tics.append(len(m.group(2)))
                 # Store start and end of tic group
-                tic_points.append((m.start(3), m.end(3) - 1))
+                tic_points.append((m.start(2), m.end(2) - 1))
             # Store pipe location
-            elif m.group(5):
-                pipes.append(m.start(5))
+            elif m.group(4):
+                pipes.append(m.start(4))
 
         # Pair up tics according to size if possible
         # Walk through tic list and see if tic has a close.
