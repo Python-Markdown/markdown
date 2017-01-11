@@ -81,8 +81,12 @@ Lists are not tables
  - this | should | not
  - be | a | table
 
-A test for issue #449
+Add tests for issue #449
 
 Odd backtics | Even backtics
 ------------ | -------------
 ``[!\"\#$%&'()*+,\-./:;<=>?@\[\\\]^_`{|}~]`` | ``[!\"\#$%&'()*+,\-./:;<=>?@\[\\\]^`_`{|}~]``
+
+Escapes | More Escapes
+------- | ------
+`` `\`` | `\`

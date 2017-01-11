@@ -26,7 +26,7 @@ import re
 class TableProcessor(BlockProcessor):
     """ Process Tables. """
 
-    RE_CODE_PIPES = re.compile(r'(?:(\\\\)|(\\`)|(`+)|(\\\|)|(\|))')
+    RE_CODE_PIPES = re.compile(r'(?:(\\\\)|(\\`+)|(`+)|(\\\|)|(\|))')
 
     def test(self, parent, block):
         rows = block.split('\n')
@@ -105,7 +105,13 @@ class TableProcessor(BlockProcessor):
         # Throw out \\, \`, and \|
         for m in self.RE_CODE_PIPES.finditer(row):
             # Store ` data (len, start_pos, end_pos)
-            if m.group(3):
+            if m.group(2):
+                # \`+
+                # Store length of each tic group
+                tics.append(len(m.group(2)) - 1)
+                # Store start and end of tic group
+                tic_points.append((m.start(3), m.end(3) - 1))
+            elif m.group(3):
                 # `+
                 # Store length of each tic group
                 tics.append(len(m.group(3)))
