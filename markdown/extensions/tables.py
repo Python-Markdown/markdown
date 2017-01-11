@@ -19,12 +19,14 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..blockprocessors import BlockProcessor
-from ..inlinepatterns import BacktickPattern, BACKTICK_RE
 from ..util import etree
+import re
 
 
 class TableProcessor(BlockProcessor):
     """ Process Tables. """
+
+    RE_CODE_PIPES = re.compile(r'(?:(\\\\)|(`+)|(\\\|)|(\|))')
 
     def test(self, parent, block):
         rows = block.split('\n')
@@ -88,49 +90,69 @@ class TableProcessor(BlockProcessor):
                 row = row[1:]
             if row.endswith('|'):
                 row = row[:-1]
-        return self._split(row, '|')
+        return self._split(row)
 
-    def _split(self, row, marker):
+    def _split(self, row):
         """ split a row of text with some code into a list of cells. """
-        if self._row_has_unpaired_backticks(row):
-            # fallback on old behaviour
-            return row.split(marker)
-        # modify the backtick pattern to only match at the beginning of the search string
-        backtick_pattern = BacktickPattern('^' + BACKTICK_RE)
         elements = []
-        current = ''
-        i = 0
-        while i < len(row):
-            letter = row[i]
-            if letter == marker:
-                if current != '' or len(elements) == 0:
-                    # Don't append empty string unless it is the first element
-                    # The border is already removed when we get the row, then the line is strip()'d
-                    # If the first element is a marker, then we have an empty first cell
-                    elements.append(current)
-                current = ''
-            else:
-                match = backtick_pattern.getCompiledRegExp().match(row[i:])
-                if not match:
-                    current += letter
-                else:
-                    groups = match.groups()
-                    delim = groups[1]  # the code block delimeter (ie 1 or more backticks)
-                    row_contents = groups[2]  # the text contained inside the code block
-                    i += match.start(4) - 1  # jump pointer to the beginning of the rest of the text (group #4)
-                    element = delim + row_contents + delim  # reinstert backticks
-                    current += element
-            i += 1
-        elements.append(current)
-        return elements
+        pipes = []
+        tics = []
+        tic_points = []
+        tic_region = []
+        good_pipes = []
 
-    def _row_has_unpaired_backticks(self, row):
-        count_total_backtick = row.count('`')
-        count_escaped_backtick = row.count('\`')
-        count_backtick = count_total_backtick - count_escaped_backtick
-        # odd number of backticks,
-        # we won't be able to build correct code blocks
-        return count_backtick & 1
+        # Parse row
+        # Throw out \\, and \|
+        for m in self.RE_CODE_PIPES.finditer(row):
+            # Store ` data (len, start_pos, end_pos)
+            if m.group(2):
+                # `+
+                # Store length of each tic group
+                tics.append(len(m.group(2)))
+                # Store start and end of tic group
+                tic_points.append((m.start(2), m.end(2) - 1))
+            # Store pipe location
+            elif m.group(4):
+                pipes.append(m.start(4))
+
+        # Pair up tics according to size if possible
+        # Walk through tic list and see if tic has a close.
+        # Store the tic region (start of region, end of region).
+        pos = 0
+        tic_len = len(tics)
+        while pos < tic_len:
+            try:
+                index = tics[pos + 1:].index(tics[pos]) + 1
+                tic_region.append((tic_points[pos][0], tic_points[pos + index][1]))
+                pos += index + 1
+            except ValueError:
+                pos += 1
+
+        # Resolve pipes.  Check if they are within a tic pair region.
+        # Walk through pipes comparing them to each region.
+        #     - If pipe position is less that a region, it isn't in a region
+        #     - If it is within a region, we don't want it, so throw it out
+        #     - If we didn't throw it out, it must be a table pipe
+        for pipe in pipes:
+            throw_out = False
+            for region in tic_region:
+                if pipe < region[0]:
+                    # Pipe is not in a region
+                    break
+                elif region[0] <= pipe <= region[1]:
+                    # Pipe is within a code region.  Throw it out.
+                    throw_out = True
+                    break
+            if not throw_out:
+                good_pipes.append(pipe)
+
+        # Split row according to table delimeters.
+        pos = 0
+        for pipe in good_pipes:
+            elements.append(row[pos:pipe])
+            pos = pipe + 1
+        elements.append(row[pos:])
+        return elements
 
 
 class TableExtension(Extension):
