@@ -256,3 +256,32 @@ Content Cell | Content Cell
 <li>this | should | not</li>
 <li>be | a | table</li>
 </ul>
+<p>Add tests for issue #449</p>
+<table>
+<thead>
+<tr>
+<th>Odd backticks</th>
+<th>Even backticks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[!\"\#$%&amp;'()*+,\-./:;&lt;=&gt;?@\[\\\]^_`{|}~]</code></td>
+<td><code>[!\"\#$%&amp;'()*+,\-./:;&lt;=&gt;?@\[\\\]^`_`{|}~]</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Escapes</th>
+<th>More Escapes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>`\</code></td>
+<td><code>\</code></td>
+</tr>
+</tbody>
+</table>
