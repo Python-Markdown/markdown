@@ -12,6 +12,7 @@ addons:
     packages:
     - libtidy-0.99-0
     - aspell
+    - aspell-en
 install:
   - pip install tox
   - pip install coveralls
