@@ -80,3 +80,13 @@ Lists are not tables
 
  - this | should | not
  - be | a | table
+
+Add tests for issue #449
+
+Odd backtics | Even backtics
+------------ | -------------
+``[!\"\#$%&'()*+,\-./:;<=>?@\[\\\]^_`{|}~]`` | ``[!\"\#$%&'()*+,\-./:;<=>?@\[\\\]^`_`{|}~]``
+
+Escapes | More Escapes
+------- | ------
+`` `\`` | `\`
