@@ -83,7 +83,7 @@ Lists are not tables
 
 Add tests for issue #449
 
-Odd backtics | Even backtics
+Odd backticks | Even backticks
 ------------ | -------------
 ``[!\"\#$%&'()*+,\-./:;<=>?@\[\\\]^_`{|}~]`` | ``[!\"\#$%&'()*+,\-./:;<=>?@\[\\\]^`_`{|}~]``
 
