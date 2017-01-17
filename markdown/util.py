@@ -32,7 +32,7 @@ BLOCK_LEVEL_ELEMENTS = re.compile(
     "|hr|hr/|style|li|dt|dd|thead|tbody"
     "|tr|th|td|section|footer|header|group|figure"
     "|figcaption|aside|article|canvas|output"
-    "|progress|video|nav)$",
+    "|progress|video|nav|main)$",
     re.IGNORECASE
 )
 # Placeholders
