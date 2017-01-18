@@ -160,6 +160,8 @@ class TableExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
         """ Add an instance of TableProcessor to BlockParser. """
+        if '|' not in md.ESCAPED_CHARS:
+            md.ESCAPED_CHARS.append('|')
         md.parser.blockprocessors.add('table',
                                       TableProcessor(md.parser),
                                       '<hashheader')
