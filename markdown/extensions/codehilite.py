@@ -166,7 +166,7 @@ class CodeHilite(object):
         c = re.compile(r'''
             (?:(?:^::+)|(?P<shebang>^[#]!)) # Shebang or 2 or more colons
             (?P<path>(?:/\w+)*[/ ])?        # Zero or 1 path
-            (?P<lang>[\w+-]*)               # The language
+            (?P<lang>[\w#.+-]*)             # The language
             \s*                             # Arbitrary whitespace
             # Optional highlight lines, single- or double-quote-delimited
             (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot))?
