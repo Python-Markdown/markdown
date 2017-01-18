@@ -30,24 +30,56 @@ class TableProcessor(BlockProcessor):
 
     def test(self, parent, block):
         rows = block.split('\n')
-        return (len(rows) > 1 and '|' in rows[0] and
-                '|' in rows[1] and '-' in rows[1] and
-                rows[1].strip()[0] in ['|', ':', '-'] and
-                set(rows[1]) <= set('|:- '))
+
+        if len(rows) <= 1:
+            return False
+
+        is_table_with_header = (
+            '|' in rows[0] and '|' in rows[1] and '-' in rows[1] and
+            rows[1].strip()[0] in ['|', ':', '-'] and
+            set(rows[1]) <= set('|:- ')
+        )
+
+        is_table_without_header = (
+            '|' in rows[0] and '-' in rows[0] and
+            rows[0].strip()[0] in ['|', ':', '-'] and
+            set(rows[0]) <= set('|:- ')
+        )
+
+        return is_table_with_header or is_table_without_header
 
     def run(self, parent, blocks):
         """ Parse a table block and build table. """
         block = blocks.pop(0).split('\n')
-        header = block[0].strip()
-        seperator = block[1].strip()
-        rows = [] if len(block) < 3 else block[2:]
+
+        if '-' in block[0] and set(block[0]) <= set('|:- '):  # no header
+            header = None
+            separator = block[0].strip()
+            rows = [] if len(block) < 2 else block[1:]
+        else:
+            header = block[0].strip()
+            separator = block[1].strip()
+            rows = [] if len(block) < 3 else block[2:]
+
         # Get format type (bordered by pipes or not)
         border = False
-        if header.startswith('|'):
+        if (header and header.startswith('|')) or separator.startswith('|'):
             border = True
-        # Get alignment of columns
+
+        align = self._get_column_align(separator, border)
+
+        # Build table
+        table = etree.SubElement(parent, 'table')
+        if header:
+            thead = etree.SubElement(table, 'thead')
+            self._build_row(header, thead, align, border)
+        tbody = etree.SubElement(table, 'tbody')
+        for row in rows:
+            self._build_row(row.strip(), tbody, align, border)
+
+    def _get_column_align(self, separator, border):
         align = []
-        for c in self._split_row(seperator, border):
+        for c in self._split_row(separator, border):
             c = c.strip()
             if c.startswith(':') and c.endswith(':'):
                 align.append('center')
@@ -57,13 +89,8 @@ class TableProcessor(BlockProcessor):
                 align.append('right')
             else:
                 align.append(None)
-        # Build table
-        table = etree.SubElement(parent, 'table')
-        thead = etree.SubElement(table, 'thead')
-        self._build_row(header, thead, align, border)
-        tbody = etree.SubElement(table, 'tbody')
-        for row in rows:
-            self._build_row(row.strip(), tbody, align, border)
+
+        return align
 
     def _build_row(self, row, parent, align, border):
         """ Given a row of text, build table cells. """
