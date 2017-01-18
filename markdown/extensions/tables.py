@@ -59,6 +59,7 @@ class TableProcessor(BlockProcessor):
                 align.append(None)
         # Build table
         table = etree.SubElement(parent, 'table')
+        table.set('class', self.config['css_class'])
         thead = etree.SubElement(table, 'thead')
         self._build_row(header, thead, align, border)
         tbody = etree.SubElement(table, 'tbody')
@@ -158,12 +159,18 @@ class TableProcessor(BlockProcessor):
 class TableExtension(Extension):
     """ Add tables to Markdown. """
 
+    def __init__(self, *args, **kwargs):
+        self.config = {
+            'css_class': ['mdtable', 'Set class name for table']
+        }
+        super(TableExtension, self).__init__(*args, **kwargs)
+
     def extendMarkdown(self, md, md_globals):
         """ Add an instance of TableProcessor to BlockParser. """
-        md.parser.blockprocessors.add('table',
-                                      TableProcessor(md.parser),
-                                      '<hashheader')
-
+        tabparser = TableProcessor(md.parser)
+        tabparser.config = self.getConfigs()
+        md.parser.blockprocessors.add('table', tabparser, '<hashheader')
 
 def makeExtension(*args, **kwargs):
     return TableExtension(*args, **kwargs)
+
