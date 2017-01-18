@@ -90,3 +90,9 @@ Odd backticks | Even backticks
 Escapes | More Escapes
 ------- | ------
 `` `\`` | `\`
+
+Test escaped pipes
+
+Column1 | Column 2
+------- | --------
+`|` \| | Pipes are okay in code and escaped. \|
