@@ -285,3 +285,75 @@ Content Cell | Content Cell
 </tr>
 </tbody>
 </table>
+<p>Only the first backtick can be escaped</p>
+<table>
+<thead>
+<tr>
+<th>Escaped</th>
+<th>Bacticks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`<code>\</code></td>
+<td>``</td>
+</tr>
+</tbody>
+</table>
+<p>Test escaped pipes</p>
+<table>
+<thead>
+<tr>
+<th>Column 1</th>
+<th>Column 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>|</code> |</td>
+<td>Pipes are okay in code and escaped. |</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Column 1</th>
+<th>Column 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>row1</td>
+<td>row1    |</td>
+</tr>
+<tr>
+<td>row2</td>
+<td>row2</td>
+</tr>
+</tbody>
+</table>
+<p>Test header escapes</p>
+<table>
+<thead>
+<tr>
+<th><code>`\</code> |</th>
+<th><code>\</code> |</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>row1</td>
+<td>row1</td>
+</tr>
+<tr>
+<td>row2</td>
+<td>row2</td>
+</tr>
+</tbody>
+</table>
+<p>Escaped pipes in format row should not be a table</p>
+<p>| Column1   | Column2 |
+| ------- || ------- |
+| row1      | row1    |
+| row2      | row2    |</p>

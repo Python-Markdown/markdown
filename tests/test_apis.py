@@ -758,3 +758,15 @@ PLACE_MARKER= ~~~footnotes~~~
 """
         self.create_config_file(config)
         self.assertRaises(yaml.YAMLError, parse_options, ['-c', self.tempfile])
+
+
+class TestEscapeAppend(unittest.TestCase):
+    """ Tests escape character append. """
+
+    def testAppend(self):
+        """ Test that appended escapes are only in the current instance. """
+        md = markdown.Markdown()
+        md.ESCAPED_CHARS.append('|')
+        self.assertEqual('|' in md.ESCAPED_CHARS, True)
+        md2 = markdown.Markdown()
+        self.assertEqual('|' not in md2.ESCAPED_CHARS, True)
