@@ -90,3 +90,34 @@ Odd backticks | Even backticks
 Escapes | More Escapes
 ------- | ------
 `` `\`` | `\`
+
+Only the first backtick can be escaped
+
+Escaped | Bacticks
+------- | ------
+\`` \`  | \`\`
+
+Test escaped pipes
+
+Column 1 | Column 2
+-------- | --------
+`|` \|   | Pipes are okay in code and escaped. \|
+
+| Column 1 | Column 2 |
+| -------- | -------- |
+| row1     | row1    \|
+| row2     | row2     |
+
+Test header escapes
+
+| `` `\`` \| | `\` \|
+| ---------- | ---- |
+| row1       | row1 |
+| row2       | row2 |
+
+Escaped pipes in format row should not be a table
+
+| Column1   | Column2 |
+| ------- \|| ------- |
+| row1      | row1    |
+| row2      | row2    |
