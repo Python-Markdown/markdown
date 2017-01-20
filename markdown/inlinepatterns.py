@@ -103,7 +103,7 @@ BRK = (
 NOIMG = r'(?<!\!)'
 
 # `e=f()` or ``e=f("`")``
-BACKTICK_RE = r'(?<!\\)(`+)(.+?)(?<!`)\2(?!`)'
+BACKTICK_RE = r'(?:(?<!\\)((?:\\{2})+)(?=`+)|(?<!\\)(`+)(.+?)(?<!`)\3(?!`))'
 
 # \<
 ESCAPE_RE = r'\\(.)'
@@ -302,12 +302,16 @@ class BacktickPattern(Pattern):
     """ Return a `<code>` element containing the matching text. """
     def __init__(self, pattern):
         Pattern.__init__(self, pattern)
-        self.tag = "code"
+        self.ESCAPED_BSLASH = '%s%s%s' % (util.STX, ord('\\'), util.ETX)
+        self.tag = 'code'
 
     def handleMatch(self, m):
-        el = util.etree.Element(self.tag)
-        el.text = util.AtomicString(m.group(3).strip())
-        return el
+        if m.group(4):
+            el = util.etree.Element(self.tag)
+            el.text = util.AtomicString(m.group(4).strip())
+            return el
+        else:
+            return m.group(2).replace('\\\\', self.ESCAPED_BSLASH)
 
 
 class DoubleTagPattern(SimpleTagPattern):

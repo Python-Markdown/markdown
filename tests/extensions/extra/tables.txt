@@ -121,3 +121,10 @@ Escaped pipes in format row should not be a table
 | ------- \|| ------- |
 | row1      | row1    |
 | row2      | row2    |
+
+Test escaped code in Table
+
+Should not be code | Should be code
+------------------ | --------------
+\`Not code\`       | \\`code`
+\\\`Not code\\\`   | \\\\`code`
