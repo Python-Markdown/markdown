@@ -357,3 +357,22 @@ Content Cell | Content Cell
 | ------- || ------- |
 | row1      | row1    |
 | row2      | row2    |</p>
+<p>Test escaped code in Table</p>
+<table>
+<thead>
+<tr>
+<th>Should not be code</th>
+<th>Should be code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`Not code`</td>
+<td>\<code>code</code></td>
+</tr>
+<tr>
+<td>\`Not code\`</td>
+<td>\\<code>code</code></td>
+</tr>
+</tbody>
+</table>
