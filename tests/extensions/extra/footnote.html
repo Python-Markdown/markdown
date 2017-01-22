@@ -1,5 +1,8 @@
 <p>This is the body with a footnote<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup> or two<sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup> or more<sup id="fnref:3"><a class="footnote-ref" href="#fn:3" rel="footnote">3</a></sup> <sup id="fnref:4"><a class="footnote-ref" href="#fn:4" rel="footnote">4</a></sup> <sup id="fnref:5"><a class="footnote-ref" href="#fn:5" rel="footnote">5</a></sup>.</p>
 <p>Also a reference that does not exist[^6].</p>
+<p>Duplicate<sup id="fnref:a"><a class="footnote-ref" href="#fn:a" rel="footnote">6</a></sup> footnotes<sup id="fnref2:a"><a class="footnote-ref" href="#fn:a" rel="footnote">6</a></sup> test<sup id="fnref3:a"><a class="footnote-ref" href="#fn:a" rel="footnote">6</a></sup>.</p>
+<p>Duplicate<sup id="fnref:b"><a class="footnote-ref" href="#fn:b" rel="footnote">7</a></sup> footnotes<sup id="fnref2:b"><a class="footnote-ref" href="#fn:b" rel="footnote">7</a></sup> test<sup id="fnref3:b"><a class="footnote-ref" href="#fn:b" rel="footnote">7</a></sup>.</p>
+<p>Single after duplicates<sup id="fnref:c"><a class="footnote-ref" href="#fn:c" rel="footnote">8</a></sup>.</p>
 <div class="footnote">
 <hr />
 <ol>
@@ -28,6 +31,15 @@
 <p>First line of first paragraph.
 Second line of first paragraph is not intended.
 Nor is third...&#160;<a class="footnote-backref" href="#fnref:5" rev="footnote" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:a">
+<p>1&#160;<a class="footnote-backref" href="#fnref:a" rev="footnote" title="Jump back to footnote 6 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:a" rev="footnote" title="Jump back to footnote 6 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:a" rev="footnote" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:b">
+<p>2&#160;<a class="footnote-backref" href="#fnref:b" rev="footnote" title="Jump back to footnote 7 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:b" rev="footnote" title="Jump back to footnote 7 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:b" rev="footnote" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+<li id="fn:c">
+<p>3&#160;<a class="footnote-backref" href="#fnref:c" rev="footnote" title="Jump back to footnote 8 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>

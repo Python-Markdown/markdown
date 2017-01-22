@@ -2,6 +2,12 @@ This is the body with a footnote[^1] or two[^2] or more[^3] [^4] [^5].
 
 Also a reference that does not exist[^6].
 
+Duplicate[^a] footnotes[^a] test[^a].
+
+Duplicate[^b] footnotes[^b] test[^b].
+
+Single after duplicates[^c].
+
 [^1]: Footnote that ends with a list:
 
     * item 1
@@ -18,3 +24,7 @@ Also a reference that does not exist[^6].
 [^5]: First line of first paragraph.
 Second line of first paragraph is not intended.
 Nor is third...
+
+[^a]: 1
+[^b]: 2
+[^c]: 3

@@ -23,11 +23,13 @@ from ..postprocessors import Postprocessor
 from ..util import etree, text_type
 from ..odict import OrderedDict
 import re
+import copy
 
 FN_BACKLINK_TEXT = "zz1337820767766393qq"
 NBSP_PLACEHOLDER = "qq3936677670287331zz"
 DEF_RE = re.compile(r'[ ]{0,3}\[\^([^\]]*)\]:\s*(.*)')
 TABBED_RE = re.compile(r'((\t)|(    ))(.*)')
+RE_REF_ID = re.compile(r'(fnref)(\d+)')
 
 
 class FootnoteExtension(Extension):
@@ -53,6 +55,8 @@ class FootnoteExtension(Extension):
 
         # In multiple invocations, emit links that don't get tangled.
         self.unique_prefix = 0
+        self.found_refs = {}
+        self.used_refs = set()
 
         self.reset()
 
@@ -76,6 +80,15 @@ class FootnoteExtension(Extension):
         md.treeprocessors.add(
             "footnote", FootnoteTreeprocessor(self), "_begin"
         )
+
+        # Insert a tree-processor that will run after inline is done.
+        # In this tree-processor we want to check our duplicate footnote tracker
+        # And add additional backrefs to the footnote pointing back to the
+        # duplicated references.
+        md.treeprocessors.add(
+            "footnote-duplicate", FootnotePostTreeprocessor(self), '>inline'
+        )
+
         # Insert a postprocessor after amp_substitute oricessor
         md.postprocessors.add(
             "footnote", FootnotePostprocessor(self), ">amp_substitute"
@@ -85,6 +98,29 @@ class FootnoteExtension(Extension):
         """ Clear footnotes on reset, and prepare for distinct document. """
         self.footnotes = OrderedDict()
         self.unique_prefix += 1
+        self.found_refs = {}
+        self.used_refs = set()
+
+    def unique_ref(self, reference, found=False):
+        """ Get a unique reference if there are duplicates. """
+        if not found:
+            return reference
+
+        original_ref = reference
+        while reference in self.used_refs:
+            ref, rest = reference.split(self.get_separator(), 1)
+            m = RE_REF_ID.match(ref)
+            if m:
+                reference = '%s%d%s%s' % (m.group(1), int(m.group(2))+1, self.get_separator(), rest)
+            else:
+                reference = '%s%d%s%s' % (ref, 2, self.get_separator(), rest)
+
+        self.used_refs.add(reference)
+        if original_ref in self.found_refs:
+            self.found_refs[original_ref] += 1
+        else:
+            self.found_refs[original_ref] = 1
+        return reference
 
     def findFootnotesPlaceholder(self, root):
         """ Return ElementTree Element that contains Footnote placeholder. """
@@ -120,13 +156,12 @@ class FootnoteExtension(Extension):
         else:
             return 'fn%s%s' % (self.get_separator(), id)
 
-    def makeFootnoteRefId(self, id):
+    def makeFootnoteRefId(self, id, found=False):
         """ Return footnote back-link id. """
         if self.getConfig("UNIQUE_IDS"):
-            return 'fnref%s%d-%s' % (self.get_separator(),
-                                     self.unique_prefix, id)
+            return self.unique_ref('fnref%s%d-%s' % (self.get_separator(), self.unique_prefix, id), found)
         else:
-            return 'fnref%s%s' % (self.get_separator(), id)
+            return self.unique_ref('fnref%s%s' % (self.get_separator(), id), found)
 
     def makeFootnotesDiv(self, root):
         """ Return div of footnotes as et Element. """
@@ -270,7 +305,7 @@ class FootnotePattern(Pattern):
         if id in self.footnotes.footnotes.keys():
             sup = etree.Element("sup")
             a = etree.SubElement(sup, "a")
-            sup.set('id', self.footnotes.makeFootnoteRefId(id))
+            sup.set('id', self.footnotes.makeFootnoteRefId(id, found=True))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
             if self.footnotes.md.output_format not in ['html5', 'xhtml5']:
                 a.set('rel', 'footnote')  # invalid in HTML5
@@ -279,6 +314,59 @@ class FootnotePattern(Pattern):
             return sup
         else:
             return None
+
+
+class FootnotePostTreeprocessor(Treeprocessor):
+    """ Ammend footnote div with duplicates. """
+
+    def __init__(self, footnotes):
+        self.footnotes = footnotes
+
+    def add_duplicates(self, li, duplicates):
+        """ Adjust current li and add the duplicates: fnref2, fnref3, etc. """
+        for link in li.iter('a'):
+            # Find the link that needs to be duplicated.
+            if link.attrib.get('class', '') == 'footnote-backref':
+                ref, rest = link.attrib['href'].split(self.footnotes.get_separator(), 1)
+                # Duplicate link the number of times we need to
+                # and point the to the appropriate references.
+                links = []
+                for index in range(2, duplicates + 1):
+                    sib_link = copy.deepcopy(link)
+                    sib_link.attrib['href'] = '%s%d%s%s' % (ref, index, self.footnotes.get_separator(), rest)
+                    links.append(sib_link)
+                    self.offset += 1
+                # Add all the new duplicate links.
+                el = list(li)[-1]
+                for l in links:
+                    el.append(l)
+                break
+
+    def get_num_duplicates(self, li):
+        """ Get the number of duplicate refs of the footnote. """
+        fn, rest = li.attrib.get('id', '').split(self.footnotes.get_separator(), 1)
+        link_id = '%sref%s%s' % (fn, self.footnotes.get_separator(), rest)
+        return self.footnotes.found_refs.get(link_id, 0)
+
+    def handle_duplicates(self, parent):
+        """ Find duplicate footnotes and format and add the duplicates. """
+        for li in list(parent):
+            # Check number of duplicates footnotes and insert
+            # additional links if needed.
+            count = self.get_num_duplicates(li)
+            if count > 1:
+                self.add_duplicates(li, count)
+
+    def run(self, root):
+        """ Crawl the footnote div and add missing duplicate footnotes. """
+        self.offset = 0
+        for div in root.iter('div'):
+            if div.attrib.get('class', '') == 'footnote':
+                # Footnotes shoul be under the first orderd list under
+                # the footnote div.  So once we find it, quit.
+                for ol in div.iter('ol'):
+                    self.handle_duplicates(ol)
+                    break
 
 
 class FootnoteTreeprocessor(Treeprocessor):
