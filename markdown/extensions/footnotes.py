@@ -190,14 +190,17 @@ class FootnoteExtension(Extension):
             )
             backlink.text = FN_BACKLINK_TEXT
 
-            if li.getchildren():
-                node = li[-1]
-                if node.tag == "p":
-                    node.text = node.text + NBSP_PLACEHOLDER
-                    node.append(backlink)
-                else:
-                    p = etree.SubElement(li, "p")
-                    p.append(backlink)
+            #appending backlink to the lowermost element 
+            #of last tag in footnote
+            elem = li
+            while True:
+                children = elem.getchildren();
+                if len(children) == 0:
+                    break;
+                elem = children[-1]
+        
+            elem.text += NBSP_PLACEHOLDER
+            elem.append(backlink)
         return div
 
 

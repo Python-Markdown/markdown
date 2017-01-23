@@ -22,7 +22,7 @@ Single after duplicates[^c].
     Paragraph two.
 
 [^5]: First line of first paragraph.
-Second line of first paragraph is not intended.
+Second line of first paragraph is not indented.
 Nor is third...
 
 [^a]: 1
