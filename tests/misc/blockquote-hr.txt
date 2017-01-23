@@ -19,3 +19,9 @@ Even a lazy line.
 > ---
 
 > The last line.
+
+foo
+> bar
+> ***
+---
+> baz

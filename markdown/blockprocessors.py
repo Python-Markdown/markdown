@@ -493,15 +493,16 @@ class HRProcessor(BlockProcessor):
 
     def run(self, parent, blocks):
         block = blocks.pop(0)
+        match = self.match
         # Check for lines in block before hr.
-        prelines = block[:self.match.start()].rstrip('\n')
+        prelines = block[:match.start()].rstrip('\n')
         if prelines:
             # Recursively parse lines before hr so they get parsed first.
             self.parser.parseBlocks(parent, [prelines])
         # create hr
         util.etree.SubElement(parent, 'hr')
         # check for lines in block after hr.
-        postlines = block[self.match.end():].lstrip('\n')
+        postlines = block[match.end():].lstrip('\n')
         if postlines:
             # Add lines after hr to master blocks for later parsing.
             blocks.insert(0, postlines)
