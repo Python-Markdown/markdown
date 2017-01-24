@@ -258,7 +258,13 @@ class HtmlBlockPreprocessor(Preprocessor):
             else:
                 items.append(block)
 
-                right_tag, data_index = self._get_right_tag(left_tag, 0, block)
+                # Need to evaluate all items so we can calculate relative to the left index.
+                right_tag, data_index = self._get_right_tag(left_tag, left_index, ''.join(items))
+                # Adjust data_index: relative to items -> relative to last block
+                prev_block_length = 0
+                for item in items[:-1]:
+                    prev_block_length += len(item)
+                data_index -= prev_block_length
 
                 if self._equal_tags(left_tag, right_tag):
                     # if find closing tag

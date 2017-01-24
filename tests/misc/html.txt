@@ -11,6 +11,17 @@ Now some <arbitrary>arbitrary tags</arbitrary>.
 Html with various attributes.
 </div>
 
+<div>
+    <div>
+        Div with a blank line
+
+        in the middle.
+    </div>
+    <div>
+        This gets treated as HTML.
+    </div>
+</div>
+
 And of course <script>blah</script>.
 
 [this <script>link](<script>stuff</script>)
