@@ -20,13 +20,13 @@ from ..preprocessors import Preprocessor
 from ..inlinepatterns import Pattern
 from ..treeprocessors import Treeprocessor
 from ..postprocessors import Postprocessor
-from ..util import etree, text_type
+from .. import util
 from ..odict import OrderedDict
 import re
 import copy
 
-FN_BACKLINK_TEXT = "zz1337820767766393qq"
-NBSP_PLACEHOLDER = "qq3936677670287331zz"
+FN_BACKLINK_TEXT = util.STX + "zz1337820767766393qq" + util.ETX
+NBSP_PLACEHOLDER = util.STX + "qq3936677670287331zz" + util.ETX
 DEF_RE = re.compile(r'[ ]{0,3}\[\^([^\]]*)\]:\s*(.*)')
 TABBED_RE = re.compile(r'((\t)|(    ))(.*)')
 RE_REF_ID = re.compile(r'(fnref)(\d+)')
@@ -169,16 +169,23 @@ class FootnoteExtension(Extension):
         if not list(self.footnotes.keys()):
             return None
 
-        div = etree.Element("div")
+        div = util.etree.Element("div")
         div.set('class', 'footnote')
-        etree.SubElement(div, "hr")
-        ol = etree.SubElement(div, "ol")
+        util.etree.SubElement(div, "hr")
+        ol = util.etree.SubElement(div, "ol")
+        surrogate_parent = util.etree.Element("div")
 
         for id in self.footnotes.keys():
-            li = etree.SubElement(ol, "li")
+            li = util.etree.SubElement(ol, "li")
             li.set("id", self.makeFootnoteId(id))
-            self.parser.parseChunk(li, self.footnotes[id])
-            backlink = etree.Element("a")
+            # Parse footnote with surrogate parent as li cannot be used.
+            # List block handlers have special logic to deal with li.
+            # When we are done parsing, we will copy everything over to li.
+            self.parser.parseChunk(surrogate_parent, self.footnotes[id])
+            for el in list(surrogate_parent):
+                li.append(el)
+                surrogate_parent.remove(el)
+            backlink = util.etree.Element("a")
             backlink.set("href", "#" + self.makeFootnoteRefId(id))
             if self.md.output_format not in ['html5', 'xhtml5']:
                 backlink.set("rev", "footnote")  # Invalid in HTML5
@@ -196,7 +203,7 @@ class FootnoteExtension(Extension):
                     node.text = node.text + NBSP_PLACEHOLDER
                     node.append(backlink)
                 else:
-                    p = etree.SubElement(li, "p")
+                    p = util.etree.SubElement(li, "p")
                     p.append(backlink)
         return div
 
@@ -303,14 +310,14 @@ class FootnotePattern(Pattern):
     def handleMatch(self, m):
         id = m.group(2)
         if id in self.footnotes.footnotes.keys():
-            sup = etree.Element("sup")
-            a = etree.SubElement(sup, "a")
+            sup = util.etree.Element("sup")
+            a = util.etree.SubElement(sup, "a")
             sup.set('id', self.footnotes.makeFootnoteRefId(id, found=True))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
             if self.footnotes.md.output_format not in ['html5', 'xhtml5']:
                 a.set('rel', 'footnote')  # invalid in HTML5
             a.set('class', 'footnote-ref')
-            a.text = text_type(self.footnotes.footnotes.index(id) + 1)
+            a.text = util.text_type(self.footnotes.footnotes.index(id) + 1)
             return sup
         else:
             return None
