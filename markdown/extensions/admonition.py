@@ -39,9 +39,12 @@ class AdmonitionExtension(Extension):
 
 class AdmonitionProcessor(BlockProcessor):
 
-    CLASSNAME = 'admonition'
-    CLASSNAME_TITLE = 'admonition-title'
     RE = re.compile(r'(?:^|\n)!!!\ ?([\w\-]+)(?:\ "(.*?)")?')
+
+    def __init__(self, parser, classname='admonition', classname_title='admonition-title'):
+        self.CLASSNAME = classname
+        self.CLASSNAME_TITLE = classname_title
+        BlockProcessor.__init__(self, parser)
 
     def test(self, parent, block):
         sibling = self.lastChild(parent)
