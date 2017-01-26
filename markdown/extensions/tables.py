@@ -21,6 +21,9 @@ from . import Extension
 from ..blockprocessors import BlockProcessor
 from ..util import etree
 import re
+PIPE_NONE = 0
+PIPE_LEFT = 1
+PIPE_RIGHT = 2
 
 
 class TableProcessor(BlockProcessor):
@@ -41,17 +44,33 @@ class TableProcessor(BlockProcessor):
         Keep border check and separator row do avoid repeating the work.
         """
         is_table = False
-        header = [row.strip() for row in block.split('\n')[0:2]]
-        if len(header) == 2:
-            self.border = header[0].startswith('|')
-            row = self._split_row(header[0])
-            is_table = len(row) > 1
+        rows = [row.strip() for row in block.split('\n')]
+        if len(rows) > 1:
+            header0 = rows[0]
+            self.border = PIPE_NONE
+            if header0.startswith('|'):
+                self.border |= PIPE_LEFT
+            if self.RE_END_BORDER.search(header0) is not None:
+                self.border |= PIPE_RIGHT
+            row = self._split_row(header0)
+            row0_len = len(row)
+            is_table = row0_len > 1
+
+            # Each row in a single column table needs at least one pipe.
+            if not is_table and row0_len == 1 and self.border:
+                for index in range(1, len(rows)):
+                    is_table = rows[index].startswith('|')
+                    if not is_table:
+                        is_table = self.RE_END_BORDER.search(rows[index]) is not None
+                    if not is_table:
+                        break
 
             if is_table:
-                row = self._split_row(header[1])
-                is_table = len(row) > 1 and set(''.join(row)) <= set('|:- ')
+                row = self._split_row(rows[1])
+                is_table = (len(row) == row0_len) and set(''.join(row)) <= set('|:- ')
                 if is_table:
                     self.separator = row
+
         return is_table
 
     def run(self, parent, blocks):
@@ -78,8 +97,20 @@ class TableProcessor(BlockProcessor):
         thead = etree.SubElement(table, 'thead')
         self._build_row(header, thead, align)
         tbody = etree.SubElement(table, 'tbody')
-        for row in rows:
-            self._build_row(row.strip(), tbody, align)
+        if len(rows) == 0:
+            # Handle empty table
+            self._build_empty_row(tbody, align)
+        else:
+            for row in rows:
+                self._build_row(row.strip(), tbody, align)
+
+    def _build_empty_row(self, parent, align):
+        """Build an empty row."""
+        tr = etree.SubElement(parent, 'tr')
+        count = len(align)
+        while count:
+            etree.SubElement(tr, 'td')
+            count -= 1
 
     def _build_row(self, row, parent, align):
         """ Given a row of text, build table cells. """

@@ -128,3 +128,42 @@ Should not be code | Should be code
 ------------------ | --------------
 \`Not code\`       | \\`code`
 \\\`Not code\\\`   | \\\\`code`
+
+Single column tables
+
+| Is a Table |
+| ---------- |
+
+| Is a Table
+| ----------
+
+Is a Table |
+---------- |
+
+| Is a Table |
+| ---------- |
+| row        |
+
+| Is a Table
+| ----------
+| row
+
+Is a Table |
+---------- |
+row        |
+
+| Is not a Table
+--------------
+| row
+
+Is not a Table |
+--------------
+row            |
+
+| Is not a Table
+| --------------
+row
+
+Is not a Table |
+-------------- |
+row
