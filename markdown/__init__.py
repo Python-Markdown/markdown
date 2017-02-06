@@ -328,16 +328,13 @@ class Markdown(object):
             e.args = (message,) + e.args[1:]
             raise
         return self
-
-    def convert(self, source):
+    def parse(self, source):
         """
-        Convert markdown to serialized XHTML or HTML.
-
-        Keyword arguments:
+        Keyword argument: 
 
         * source: Source text as a Unicode string.
 
-        Markdown processing takes place in five steps:
+        Markdown parses the document in three steps:
 
         1. A bunch of "preprocessors" munge the input text.
         2. BlockParser() parses the high-level structural elements of the
@@ -345,12 +342,9 @@ class Markdown(object):
         3. A bunch of "treeprocessors" are run against the ElementTree. One
            such treeprocessor runs InlinePatterns against the ElementTree,
            detecting inline markup.
-        4. Some post-processors are run against the text after the ElementTree
-           has been serialized into text.
-        5. The output is written to a string.
 
+        Returns the root of the resulting ElementTree
         """
-
         # Fixup the source text
         if not source.strip():
             return ''  # a blank unicode string
@@ -375,7 +369,20 @@ class Markdown(object):
             newRoot = treeprocessor.run(root)
             if newRoot is not None:
                 root = newRoot
+        return root
 
+    def serialize(self, root):
+        """
+        After parsing, the document is rendered in HTML.
+
+        Keyword argument:
+
+        * root: The root of the ElementTree as parsed by Markdown
+
+        1. Some post-processors are run against the text after the ElementTree
+           has been serialized into text.
+        2. The output is written to a string.
+        """
         # Serialize _properly_.  Strip top-level tags.
         output = self.serializer(root)
         if self.stripTopLevelTags:
@@ -398,6 +405,17 @@ class Markdown(object):
             output = pp.run(output)
 
         return output.strip()
+
+    def convert(self, source):
+        """
+        Convert markdown to serialized XHTML or HTML.
+
+        Keyword arguments:
+
+        * source: Source text as a Unicode string.
+        """
+        root = self.parse(source)
+        return self.serialize(root)
 
     def convertFile(self, input=None, output=None, encoding=None):
         """Converts a Markdown file and returns the HTML as a Unicode string.
