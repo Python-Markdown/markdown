@@ -41,7 +41,7 @@ class AdmonitionProcessor(BlockProcessor):
 
     CLASSNAME = 'admonition'
     CLASSNAME_TITLE = 'admonition-title'
-    RE = re.compile(r'(?:^|\n)!!!\ ?([\w\-]+)(?:\ "(.*?)")?')
+    RE = re.compile(r'(?:^|\n)!!! ?([\w\-]+)(?: +"(.*?)")? *(?:\n|$)')
 
     def test(self, parent, block):
         sibling = self.lastChild(parent)
@@ -55,7 +55,7 @@ class AdmonitionProcessor(BlockProcessor):
         m = self.RE.search(block)
 
         if m:
-            block = block[m.end() + 1:]  # removes the first line
+            block = block[m.end():]  # removes the first line
 
         block, theRest = self.detab(block)
 

@@ -27,3 +27,11 @@ Not part of an Admonition!
 
 !!! tip ""
     An explicitly empty string prevents the title from being rendered.
+
+No body:
+
+!!! note
+
+Extra whitespace after the title should not alter output:
+
+!!! note             
