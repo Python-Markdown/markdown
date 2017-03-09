@@ -463,7 +463,7 @@ The `add()` method accepts three arguments:
 
 * **`value`**: The object instance stored in this item.
 
-* **`location`**: Optional. The items location in relation to other items. 
+* **`location`**: The items location in relation to other items. 
 
     Note that the location can consist of a few different values:
 
