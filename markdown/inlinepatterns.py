@@ -415,9 +415,12 @@ class LinkPattern(Pattern):
 
         for part in url[2:]:
             if ":" in part:
-                # A colon in "path", "parameters", "query"
-                # or "fragment" is suspect.
-                return ''
+                # Check if this is just Twitter media link with 'size'
+                colon_regex = re.compile('[/\w]*?\.(jpe?g|png|gif)(:large)?')
+                if not colon_regex.match(part):
+                    # If not -- a colon in "path", "parameters", "query"
+                    # or "fragment" is suspect.
+                    return ''
 
         # Url passes all tests. Return url as-is.
         return urlunparse(url)
