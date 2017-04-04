@@ -65,6 +65,8 @@ class WikiLinks(Pattern):
             a.text = label
             a.set('href', url)
             if html_class:
+                if callable(html_class):
+                    html_class = html_class(label)
                 a.set('class', html_class)
         else:
             a = ''
