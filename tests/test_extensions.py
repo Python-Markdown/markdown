@@ -469,26 +469,21 @@ The body. This is paragraph one.'''
             }
         )
 
-    def testYamlMetaData(self):
-        """ Test metadata specified as simple YAML. """
+    def testDoNotAcceptYamlMetaData(self):
+        """ Do not parse metadata specified as YAML anymore. """
 
         text = '''---
-Title: A Test Doc.
-Author: [Waylan Limberg, John Doe]
+Foo: Bar
 Blank_Data:
 ---
 
 The body. This is paragraph one.'''
         self.assertEqual(
             self.md.convert(text),
-            '<p>The body. This is paragraph one.</p>'
+            '<hr />\n<p>Foo: Bar\nBlank_Data:</p>\n<hr />\n<p>The body. This is paragraph one.</p>'
         )
         self.assertEqual(
-            self.md.Meta, {
-                'author': ['[Waylan Limberg, John Doe]'],
-                'blank_data': [''],
-                'title': ['A Test Doc.']
-            }
+            self.md.Meta, {}
         )
 
     def testMissingMetaData(self):

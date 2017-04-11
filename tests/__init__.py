@@ -15,6 +15,8 @@ try:
     import tidylib
 except ImportError:
     tidylib = None
+except OSError:
+    tidylib = None
 try:
     import yaml
 except ImportError as e:
