@@ -111,13 +111,11 @@ class Markdown(object):
 
         # For backward compatibility, loop through old positional args
         pos = ['extensions', 'extension_configs', 'safe_mode', 'output_format']
-        for c, arg in enumerate(args):
-            if pos[c] not in kwargs:
-                kwargs[pos[c]] = arg
-            if c+1 == len(pos):  # pragma: no cover
-                # ignore any additional args
-                break
-        if len(args):
+        for arg, pos_arg in zip(args, pos):
+            if pos_arg not in kwargs:
+                kwargs[pos_arg] = arg
+
+        if args:
             warnings.warn('Positional arguments are deprecated in Markdown. '
                           'Use keyword arguments only.',
                           DeprecationWarning)
@@ -510,14 +508,11 @@ def markdownFromFile(*args, **kwargs):
     """
     # For backward compatibility loop through positional args
     pos = ['input', 'output', 'extensions', 'encoding']
-    c = 0
-    for arg in args:
-        if pos[c] not in kwargs:
-            kwargs[pos[c]] = arg
-        c += 1
-        if c == len(pos):
-            break
-    if len(args):
+    for arg, pos_arg in zip(args, pos):
+        if pos_arg not in kwargs:
+            kwargs[pos_arg] = arg
+
+    if args:
         warnings.warn('Positional arguments are depreacted in '
                       'Markdown and will raise an error in version 2.7. '
                       'Use keyword arguments only.',
