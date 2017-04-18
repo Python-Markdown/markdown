@@ -524,6 +524,6 @@ def markdownFromFile(*args, **kwargs):
                       DeprecationWarning)
 
     md = Markdown(**kwargs)
-    md.convertFile(kwargs.get('input', None),
-                   kwargs.get('output', None),
-                   kwargs.get('encoding', None))
+    return md.convertFile(kwargs.get('input', None),
+                          kwargs.get('output', None),
+                          kwargs.get('encoding', None))
