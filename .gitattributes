@@ -1,7 +1,7 @@
-tests/basic/* linguist-vendored
-tests/extensions/* linguist-vendored
-tests/misc/* linguist-vendored
-tests/options/* linguist-vendored
-tests/php/* linguist-vendored
-tests/pl/* linguist-vendored
-tests/safe_mode/* linguist-vendored
+tests/basic/** linguist-vendored
+tests/extensions/** linguist-vendored
+tests/misc/** linguist-vendored
+tests/options/** linguist-vendored
+tests/php/** linguist-vendored
+tests/pl/** linguist-vendored
+tests/safe_mode/** linguist-vendored
