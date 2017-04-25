@@ -120,6 +120,22 @@ class TestCodeHilite(TestCaseWithAssertStartsWith):
                 '</code></pre>'
             )
 
+    def testCustomFormatter(self):
+        text = '\t# A Code Comment'
+        # Use 'null' formatter (meaning no highlighting)
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.codehilite.CodeHiliteExtension(
+                pygments_formatter='null')])
+        if self.has_pygments:
+            # Pygments can use random lexer here as we did not specify the language
+            self.assertStartsWith('<p># A Code Comment', md.convert(text))
+        else:
+            self.assertEqual(
+                md.convert(text),
+                '<pre class="codehilite"><code># A Code Comment'
+                '</code></pre>'
+            )
+
     def testLinenumsTrue(self):
         text = '\t# A Code Comment'
         md = markdown.Markdown(
