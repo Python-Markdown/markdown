@@ -7,7 +7,7 @@
 [![Python Versions](http://img.shields.io/pypi/pyversions/Markdown.svg)](http://pypi.python.org/pypi/Markdown)
 [![BSD License](http://img.shields.io/badge/license-BSD-yellow.svg)](http://opensource.org/licenses/BSD-3-Clause)
 [![Issue Stats](http://issuestats.com/github/waylan/Python-Markdown/badge/issue?style=flat)](http://issuestats.com/github/waylan/Python-Markdown)
-[![Code of Conduct][https://img.shields.io/badge/code%20of%20conduct-contributor%20covenant-green.svg?style=flat-square]][Code of Conduct]
+[![Code of Conduct](https://img.shields.io/badge/code%20of%20conduct-contributor%20covenant-green.svg?style=flat-square)][Code of Conduct]
 
 This is a Python implementation of John Gruber's [Markdown][]. 
 It is almost completely compliant with the reference implementation,
