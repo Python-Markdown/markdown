@@ -23,7 +23,20 @@ from ..treeprocessors import Treeprocessor
 try:
     from pygments import highlight
     from pygments.lexers import get_lexer_by_name, guess_lexer
-    from pygments.formatters import get_formatter_by_name
+    from pygments.formatters import HtmlFormatter
+
+    class TitleHtmlFormatter(HtmlFormatter):
+        def __init__(self, **options):
+            HtmlFormatter.__init__(self, **options)
+            self.filename = options.get('filename', '')
+
+        def _wrap_pre(self, inner):
+            if self.filename:
+                yield 0, ('<span class="filename">' + self.filename + '</span>')
+
+            for tup in HtmlFormatter._wrap_pre(self, inner):
+                yield tup
+
     pygments = True
 except ImportError:
     pygments = False
@@ -75,7 +88,8 @@ class CodeHilite(object):
 
     def __init__(self, src=None, linenums=None, guess_lang=True,
                  css_class="codehilite", lang=None, style='default',
-                 noclasses=False, tab_length=4, hl_lines=None, use_pygments=True):
+                 noclasses=False, tab_length=4, hl_lines=None, use_pygments=True,
+                 filename=None):
         self.src = src
         self.lang = lang
         self.linenums = linenums
@@ -86,6 +100,7 @@ class CodeHilite(object):
         self.tab_length = tab_length
         self.hl_lines = hl_lines or []
         self.use_pygments = use_pygments
+        self.filename = filename
 
     def hilite(self):
         """
@@ -114,12 +129,12 @@ class CodeHilite(object):
                         lexer = get_lexer_by_name('text')
                 except ValueError:
                     lexer = get_lexer_by_name('text')
-            formatter = get_formatter_by_name('html',
-                                              linenos=self.linenums,
-                                              cssclass=self.css_class,
-                                              style=self.style,
-                                              noclasses=self.noclasses,
-                                              hl_lines=self.hl_lines)
+            formatter = TitleHtmlFormatter(linenos=self.linenums,
+                                           cssclass=self.css_class,
+                                           style=self.style,
+                                           noclasses=self.noclasses,
+                                           hl_lines=self.hl_lines,
+                                           filename=self.filename)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
@@ -128,6 +143,9 @@ class CodeHilite(object):
             txt = txt.replace('>', '&gt;')
             txt = txt.replace('"', '&quot;')
             classes = []
+            filename_html = ""
+            if self.filename:
+                filename_html = '<span class="filename">%s</span>' % self.filename
             if self.lang:
                 classes.append('language-%s' % self.lang)
             if self.linenums:
@@ -135,8 +153,8 @@ class CodeHilite(object):
             class_str = ''
             if classes:
                 class_str = ' class="%s"' % ' '.join(classes)
-            return '<pre class="%s"><code%s>%s</code></pre>\n' % \
-                   (self.css_class, class_str, txt)
+            return '<pre class="%s">%s<code%s>%s</code></pre>\n' % \
+                   (self.css_class, filename_html, class_str, txt)
 
     def _parseHeader(self):
         """
@@ -154,6 +172,14 @@ class CodeHilite(object):
         Also parses optional list of highlight lines, like:
 
             :::python hl_lines="1 3"
+
+        Also parses optional filename parameter, like:
+
+            :::python settings.py
+
+        The filename must follow hl_lines if both are used, like:
+
+            :::python hl_lines="1 3" settings.py
         """
 
         import re
@@ -170,6 +196,7 @@ class CodeHilite(object):
             \s*                             # Arbitrary whitespace
             # Optional highlight lines, single- or double-quote-delimited
             (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot))?
+            (?P<filename>.+)?               # Optional filename
             ''',  re.VERBOSE)
         # search first line for shebang
         m = c.search(fl)
@@ -187,6 +214,10 @@ class CodeHilite(object):
                 self.linenums = True
 
             self.hl_lines = parse_hl_lines(m.group('hl_lines'))
+            try:
+                self.filename = m.group('filename')
+            except IndexError:
+                self.filename = None
         else:
             # No match
             lines.insert(0, fl)
