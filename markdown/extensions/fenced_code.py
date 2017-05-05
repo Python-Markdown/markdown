@@ -40,11 +40,12 @@ class FencedBlockPreprocessor(Preprocessor):
 (\{?\.?(?P<lang>[\w#.+-]*))?[ ]*        # Optional {, and lang
 # Optional highlight lines, single- or double-quote-delimited
 (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot))?[ ]*
+# Optional CSS classes
+(?P<classes>[a-zA-Z0.9_\\.+ -]+)?[ ]*
 }?[ ]*\n                                # Optional closing }
 (?P<code>.*?)(?<=\n)
 (?P=fence)[ ]*$''', re.MULTILINE | re.DOTALL | re.VERBOSE)
     CODE_WRAP = '<pre><code%s>%s</code></pre>'
-    LANG_TAG = ' class="%s"'
 
     def __init__(self, md):
         super(FencedBlockPreprocessor, self).__init__(md)
@@ -68,18 +69,30 @@ class FencedBlockPreprocessor(Preprocessor):
         while 1:
             m = self.FENCED_BLOCK_RE.search(text)
             if m:
-                lang = ''
-                if m.group('lang'):
-                    lang = self.LANG_TAG % m.group('lang')
+
+                # inline CSS classes may be specified as .class .class2
+                # etc...
+                classes = []
+                def addclasses(s):
+                    if not s: return
+                    classes.extend(s\
+                                   .replace('.','')\
+                                   .strip()\
+                                   .split(' '))
+                addclasses(m.group('classes'))
+                addclasses(m.group('lang'))
 
                 # If config is not empty, then the codehighlite extension
                 # is enabled, so we call it to highlight the code
                 if self.codehilite_conf:
+                    addclasses(self.codehilite_conf['css_class'][0])
+
+                    classes = ' '.join(classes)
                     highliter = CodeHilite(
                         m.group('code'),
                         linenums=self.codehilite_conf['linenums'][0],
                         guess_lang=self.codehilite_conf['guess_lang'][0],
-                        css_class=self.codehilite_conf['css_class'][0],
+                        css_class=classes,
                         style=self.codehilite_conf['pygments_style'][0],
                         use_pygments=self.codehilite_conf['use_pygments'][0],
                         lang=(m.group('lang') or None),
@@ -89,7 +102,10 @@ class FencedBlockPreprocessor(Preprocessor):
 
                     code = highliter.hilite()
                 else:
-                    code = self.CODE_WRAP % (lang,
+                    attributes = ''
+                    if classes:
+                        attributes = ' class="'+' '.join(classes)+'"'
+                    code = self.CODE_WRAP % (attributes,
                                              self._escape(m.group('code')))
 
                 placeholder = self.markdown.htmlStash.store(code, safe=True)
