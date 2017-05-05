@@ -1,0 +1,3 @@
+This should remain in order:
+
+***I am ___italic_ and__ bold* I am `just` bold**
