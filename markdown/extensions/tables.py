@@ -94,6 +94,8 @@ class TableProcessor(BlockProcessor):
 
         # Build table
         table = etree.SubElement(parent, 'table')
+        if border:
+            table.set('border', '1')
         thead = etree.SubElement(table, 'thead')
         self._build_row(header, thead, align)
         tbody = etree.SubElement(table, 'tbody')
