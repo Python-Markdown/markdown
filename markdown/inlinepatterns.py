@@ -458,7 +458,7 @@ class ReferencePattern(LinkPattern):
         except IndexError:
             id = None
         if not id:
-            # if we got something like "[Google][]" or "[Goggle]"
+            # if we got something like "[Google][]" or "[Google]"
             # we'll use "google" as the id
             id = m.group(2).lower()
 
