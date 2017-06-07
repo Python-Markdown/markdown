@@ -157,7 +157,10 @@ class AttrListTreeprocessor(Treeprocessor):
                     elem.set('class', v)
             else:
                 # assign attr k with v
-                elem.set(self.sanitize_name(k), v)
+                k = self.sanitize_name(k)
+                allowed = self.config['allowed_attributes']
+                if '*' in allowed or k in allowed:
+                    elem.set(k, v)
 
     def sanitize_name(self, name):
         """
@@ -168,10 +171,20 @@ class AttrListTreeprocessor(Treeprocessor):
 
 
 class AttrListExtension(Extension):
+    def __init__(self, *args, **kwargs):
+        # define default configs
+        self.config = {
+            'allowed_attributes': [['*'],
+                                   "List of attributes allowed to be set. "
+                                   "['*']=All."]
+            }
+
+        super(AttrListExtension, self).__init__(*args, **kwargs)
+
     def extendMarkdown(self, md, md_globals):
-        md.treeprocessors.add(
-            'attr_list', AttrListTreeprocessor(md), '>prettify'
-        )
+        processor = AttrListTreeprocessor(md)
+        processor.config = self.getConfigs()
+        md.treeprocessors.add('attr_list', processor, '>prettify')
 
 
 def makeExtension(*args, **kwargs):

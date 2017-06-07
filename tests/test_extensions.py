@@ -97,6 +97,25 @@ class TestAbbr(unittest.TestCase):
         )
 
 
+class TestAtrrList(unittest.TestCase):
+    """ Test abbr extension. """
+
+    def testDisallowedAttr(self):
+        """ Test Disallowed Attributes. """
+        md = markdown.Markdown(extensions=['markdown.extensions.attr_list'])
+        text = '# Header 1 {: onclick="insecure" bar="baz" }'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 bar="baz" onclick="insecure">Header 1</h1>'
+        )
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.attr_list.AttrListExtension(allowed_attributes=['bar'])])
+        self.assertEqual(
+            md.convert(text),
+            '<h1 bar="baz">Header 1</h1>'
+        )
+
+
 class TestCodeHilite(TestCaseWithAssertStartsWith):
     """ Test codehilite extension. """
 
