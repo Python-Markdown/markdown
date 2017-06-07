@@ -64,6 +64,7 @@ class Markdown(object):
         'enable_attributes':     True,
         'smart_emphasis':        True,
         'lazy_ol':               True,
+        'start_level':           0
     }
 
     output_formats = {
@@ -106,6 +107,7 @@ class Markdown(object):
         * enable_attributes: Enable the conversion of attributes. Default: True
         * smart_emphasis: Treat `_connected_words_` intelligently Default: True
         * lazy_ol: Ignore number of first item of ordered lists. Default: True
+        * start_level: Start level for headings in the output. Default: 0
 
         """
 

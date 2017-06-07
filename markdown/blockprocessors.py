@@ -52,6 +52,7 @@ class BlockProcessor(object):
     def __init__(self, parser):
         self.parser = parser
         self.tab_length = parser.markdown.tab_length
+        self.start_level = parser.markdown.start_level
 
     def lastChild(self, parent):
         """ Return the last child of an etree element. """
@@ -440,7 +441,8 @@ class HashHeaderProcessor(BlockProcessor):
                 # recursively parse this lines as a block.
                 self.parser.parseBlocks(parent, [before])
             # Create header using named groups from RE
-            h = util.etree.SubElement(parent, 'h%d' % len(m.group('level')))
+            level = self.start_level + len(m.group('level'))
+            h = util.etree.SubElement(parent, 'h%d' % level)
             h.text = m.group('header').strip()
             if after:
                 # Insert remaining lines as first block for future parsing.
@@ -463,9 +465,9 @@ class SetextHeaderProcessor(BlockProcessor):
         lines = blocks.pop(0).split('\n')
         # Determine level. ``=`` is 1 and ``-`` is 2.
         if lines[1].startswith('='):
-            level = 1
+            level = self.start_level + 1
         else:
-            level = 2
+            level = self.start_level + 2
         h = util.etree.SubElement(parent, 'h%d' % level)
         h.text = lines[0].strip()
         if len(lines) > 2:

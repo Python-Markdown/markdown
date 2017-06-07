@@ -249,6 +249,20 @@ The following options are available on the `markdown.markdown` function:
           <li>Pears</li>
         </ol>
 
+* __`start_level`__{: #start_level }: Start level for headings in the output.
+  Default: 0
+
+    Given the following headers:
+
+        # Header 1
+
+        Header 2
+        --------
+
+    By default markdown will turn Header 1 and Header 2 into `h1` and `h2`
+    elements, respectively. The `start_level` option specifies an offset that
+    will be added to the levels. For example, with a `start_level` of 2,
+    Header 1 would result in a `h3` element and Header 2 in a `h4` element.
 
 ### `markdown.markdownFromFile (**kwargs)` {: #markdownFromFile }
 

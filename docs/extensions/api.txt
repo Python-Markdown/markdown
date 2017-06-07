@@ -416,6 +416,7 @@ accepts two arguments:
     * `md.tab_length`
     * `md.enable_attributes`
     * `md.smart_emphasis`
+    * `md.start_level`
 
 * **`md_globals`**:
 
