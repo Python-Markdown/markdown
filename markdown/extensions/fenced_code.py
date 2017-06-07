@@ -25,12 +25,19 @@ import re
 
 class FencedCodeExtension(Extension):
 
+    def __init__(self, *args, **kwargs):
+        self.config = {'escape': ['True', 'Escape HTML special chars'],
+                       'code_wrap': ['<pre><code%s>%s</code></pre>', 'The wrapper code'],
+                       'lang_tag': [' class="%s"', 'Tag wrapper language']}
+        super(FencedCodeExtension, self).__init__(*args, **kwargs)
+
     def extendMarkdown(self, md, md_globals):
         """ Add FencedBlockPreprocessor to the Markdown instance. """
         md.registerExtension(self)
-
+        processor = FencedBlockPreprocessor(md)
+        processor.config = self.getConfigs()
         md.preprocessors.add('fenced_code_block',
-                             FencedBlockPreprocessor(md),
+                             processor,
                              ">normalize_whitespace")
 
 
@@ -43,8 +50,6 @@ class FencedBlockPreprocessor(Preprocessor):
 }?[ ]*\n                                # Optional closing }
 (?P<code>.*?)(?<=\n)
 (?P=fence)[ ]*$''', re.MULTILINE | re.DOTALL | re.VERBOSE)
-    CODE_WRAP = '<pre><code%s>%s</code></pre>'
-    LANG_TAG = ' class="%s"'
 
     def __init__(self, md):
         super(FencedBlockPreprocessor, self).__init__(md)
@@ -68,10 +73,6 @@ class FencedBlockPreprocessor(Preprocessor):
         while 1:
             m = self.FENCED_BLOCK_RE.search(text)
             if m:
-                lang = ''
-                if m.group('lang'):
-                    lang = self.LANG_TAG % m.group('lang')
-
                 # If config is not empty, then the codehighlite extension
                 # is enabled, so we call it to highlight the code
                 if self.codehilite_conf:
@@ -89,8 +90,14 @@ class FencedBlockPreprocessor(Preprocessor):
 
                     code = highliter.hilite()
                 else:
-                    code = self.CODE_WRAP % (lang,
-                                             self._escape(m.group('code')))
+                    lang = ''
+                    if m.group('lang'):
+                        lang = self.config['lang_tag'] % m.group('lang')
+                    if self.config['escape']:
+                        code = self._escape(m.group('code'))
+                    else:
+                        code = m.group('code')
+                    code = self.config['code_wrap'] % (lang, code)
 
                 placeholder = self.markdown.htmlStash.store(code, safe=True)
                 text = '%s\n%s\n%s' % (text[:m.start()],
