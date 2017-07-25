@@ -391,7 +391,7 @@ class OListProcessor(BlockProcessor):
                 # Check first item for the start index
                 if not items and self.TAG == 'ol':
                     # Detect the integer value of first list item
-                    INTEGER_RE = re.compile('(\d+)')
+                    INTEGER_RE = re.compile(r'(\d+)')
                     self.STARTSWITH = INTEGER_RE.match(m.group(1)).group()
                 # Append to the list
                 items.append(m.group(3))
