@@ -84,4 +84,4 @@ is maintained on the wiki for your convenience. The Python-Markdown team
 offers no official support for these extensions. Please see the developer of
 each extension for support.
 
-[list]: https://github.com/waylan/Python-Markdown/wiki/Third-Party-Extensions
+[list]: https://github.com/Python-Markdown/markdown/wiki/Third-Party-Extensions

@@ -62,6 +62,6 @@ Python-Markdown is maintained in a Git repository on GitHub.com. To
 get a copy of Python-Markdown from the repository do the following from the
 command line:
 
-    git clone git://github.com/waylan/Python-Markdown.git python-markdown
+    git clone git://github.com/Python-Markdown/markdown.git python-markdown
     cd python-markdown
     python setup.py install

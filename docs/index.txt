@@ -112,4 +112,4 @@ You may ask for help and discuss various other issues on the [mailing list][]
 and report bugs on the [bug tracker][].
 
 [mailing list]: http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss
-[bug tracker]: http://github.com/waylan/Python-Markdown/issues 
+[bug tracker]: http://github.com/Python-Markdown/markdown/issues 

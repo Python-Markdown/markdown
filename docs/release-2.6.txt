@@ -206,7 +206,7 @@ explanation.</ins>
 [MultiMarkdown]: http://fletcherpenney.net/MultiMarkdown_Syntax_Guide#metadata
 [Meta-Data]: extensions/meta_data.html
 [YAML]: http://yaml.org/
-[#390]: https://github.com/waylan/Python-Markdown/issues/390
+[#390]: https://github.com/Python-Markdown/markdown/issues/390
 
 ### Table of Contents Extension Refactored
 
@@ -259,5 +259,5 @@ benefit everyone.
 [flake8]: https://flake8.readthedocs.io/en/latest/
 
 Various bug fixes have been made.  See the
-[commit log](https://github.com/waylan/Python-Markdown/commits/master)
+[commit log](https://github.com/Python-Markdown/markdown/commits/master)
 for a complete history of the changes.

@@ -21,7 +21,7 @@ Apr 20, 2015: Released version 2.6.2 (a bug-fix release).
 
 Mar 8, 2015: Released version 2.6.1 (a bug-fix release). The (new)
 `yaml` option has been removed from the Meta-Data Extension as it was buggy
-(see [#390](https://github.com/waylan/Python-Markdown/issues/390)).
+(see [#390](https://github.com/Python-Markdown/markdown/issues/390)).
 
 Feb 19, 2015: Released version 2.6 ([Notes](release-2.6.html)).
 

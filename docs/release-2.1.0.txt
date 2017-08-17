@@ -118,5 +118,5 @@ test the built-in extensions and other options available to change the parsing
 behavior. See the [Test Suite](test_suite.html) documentation for details.
 
 Various bug fixes have been made, which are too numerous to list here. See the 
-[commit log](https://github.com/waylan/Python-Markdown/commits/master) for a 
+[commit log](https://github.com/Python-Markdown/markdown/commits/master) for a 
 complete history of the changes.

@@ -1,12 +1,11 @@
 [Python-Markdown][]
 ===================
 
-[![Build Status](http://img.shields.io/travis/waylan/Python-Markdown.svg)](https://travis-ci.org/waylan/Python-Markdown)
-[![Coverage Status](https://img.shields.io/coveralls/waylan/Python-Markdown.svg)](https://coveralls.io/r/waylan/Python-Markdown?branch=master)
+[![Build Status](http://img.shields.io/travis/Python-Markdown/markdown.svg)](https://travis-ci.org/Python-Markdown/markdown)
+[![Coverage Status](https://img.shields.io/coveralls/Python-Markdown/markdown.svg)](https://coveralls.io/r/Python-Markdown/markdown?branch=master)
 [![Latest Version](http://img.shields.io/pypi/v/Markdown.svg)](http://pypi.python.org/pypi/Markdown)
 [![Python Versions](http://img.shields.io/pypi/pyversions/Markdown.svg)](http://pypi.python.org/pypi/Markdown)
 [![BSD License](http://img.shields.io/badge/license-BSD-yellow.svg)](http://opensource.org/licenses/BSD-3-Clause)
-[![Issue Stats](http://issuestats.com/github/waylan/Python-Markdown/badge/issue?style=flat)](http://issuestats.com/github/waylan/Python-Markdown)
 [![Code of Conduct](https://img.shields.io/badge/code%20of%20conduct-contributor%20covenant-green.svg?style=flat-square)][Code of Conduct]
 
 This is a Python implementation of John Gruber's [Markdown][]. 
@@ -36,11 +35,11 @@ Support
 You may ask for help and discuss various other issues on the [mailing list][] and report bugs on the [bug tracker][].
 
 [mailing list]: http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss
-[bug tracker]: http://github.com/waylan/Python-Markdown/issues 
+[bug tracker]: http://github.com/Python-Markdown/markdown/issues 
 
 Code of Conduct
 ---------------
 
 Everyone interacting in the Python-Markdown project's codebases, issue trackers, and mailing lists is expected to follow the [Code of Conduct].
 
-[Code of Conduct]: https://github.com/waylan/Python-Markdown/blob/master/CODE_OF_CONDUCT.md
+[Code of Conduct]: https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md

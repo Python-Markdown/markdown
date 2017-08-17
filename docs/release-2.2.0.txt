@@ -64,5 +64,5 @@ The BlockParser API was slightly altered to allow `blockprocessor.run` to return
 within any Blockprocessor instance.
 
 Various bug fixes have been made. See the 
-[commit log](https://github.com/waylan/Python-Markdown/commits/master) 
+[commit log](https://github.com/Python-Markdown/markdown/commits/master) 
 for a complete history of the changes.

@@ -134,5 +134,5 @@ writing new tests, those standards and naming conventions should be followed.
 [PHP]: http://michelf.com/projects/php-markdown/ 
 [PyTidyLib]: http://countergram.com/open-source/pytidylib/
 [tox]: http://testrun.org/tox/latest/
-[setting up a testing environment]: https://github.com/waylan/Python-Markdown/wiki/Test-Environment-Setup
+[setting up a testing environment]: https://github.com/Python-Markdown/markdown/wiki/Test-Environment-Setup
 [YAML]: http://yaml.org/

@@ -84,5 +84,5 @@ try it out and report bugs and/or improvements.
 [rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions
 
 * Various bug fixes have been made.  See the
-[commit log](https://github.com/waylan/Python-Markdown/commits/master)
+[commit log](https://github.com/Python-Markdown/markdown/commits/master)
 for a complete history of the changes.
