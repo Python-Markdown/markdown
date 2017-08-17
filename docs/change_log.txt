@@ -7,6 +7,10 @@ next_url:   release-2.6.html
 Python-Markdown Change Log
 =========================
 
+Aug 17, 2017: Released version 2.6.9 (a bug-fix release).
+
+Jan 25, 2017: Released version 2.6.8 (a bug-fix release).
+
 Sept 23, 2016: Released version 2.6.7 (a bug-fix release).
 
 Mar 20, 2016: Released version 2.6.6 (a bug-fix release).
