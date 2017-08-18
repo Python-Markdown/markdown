@@ -20,7 +20,6 @@ install:
 
 .PHONY : deploy
 deploy:
-	python setup.py register
 	python setup.py sdist --manifest-only
 	python setup.py sdist --formats zip,gztar upload
 
