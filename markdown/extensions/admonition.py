@@ -41,7 +41,7 @@ class AdmonitionProcessor(BlockProcessor):
 
     CLASSNAME = 'admonition'
     CLASSNAME_TITLE = 'admonition-title'
-    RE = re.compile(r'(?:^|\n)!!!\ ?([\w\-]+(?:\.[\w\-]+)*)(?:\ "(.*?)")?')
+    RE = re.compile(r'(?:^|\n)!!! ?([\w\-]+(?:\.[\w\-]+)*)(?: +"(.*?)")? *(?:\n|$)')
 
     def test(self, parent, block):
         sibling = self.lastChild(parent)
