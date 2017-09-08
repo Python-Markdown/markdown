@@ -41,7 +41,7 @@ class AdmonitionProcessor(BlockProcessor):
 
     CLASSNAME = 'admonition'
     CLASSNAME_TITLE = 'admonition-title'
-    RE = re.compile(r'(?:^|\n)!!! ?([\w\-]+(?:\.[\w\-]+)*)(?: +"(.*?)")? *(?:\n|$)')
+    RE = re.compile(r'(?:^|\n)!!! ?([\w\-]+(?: +[\w\-]+)*)(?: +"(.*?)")? *(?:\n|$)')
 
     def test(self, parent, block):
         sibling = self.lastChild(parent)
@@ -80,7 +80,6 @@ class AdmonitionProcessor(BlockProcessor):
 
     def get_class_and_title(self, match):
         klass, title = match.group(1).lower(), match.group(2)
-        klass = klass.replace('.', ' ')
         if title is None:
             # no title was provided, use the capitalized classname as title
             # e.g.: `!!! note` will render
