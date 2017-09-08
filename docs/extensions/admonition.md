@@ -72,8 +72,26 @@ results in:
 </div>
 ```
 
-rST suggests the following `types`, but you're free to use whatever you want:
-    attention, caution, danger, error, hint, important, note, tip, warning.
+You can also provide additional CSS class names separated by spaces. The first
+class should be the "type." For example:
+
+```md
+!!! danger highlight blink "Don't try this at home"
+    ...
+```
+
+will render:
+
+```html
+<div class="admonition danger highlight blink">
+<p class="admonition-title">Don't try this at home</p>
+<p>...</p>
+</div>
+```
+
+rST suggests the following "types": `attention`, `caution`, `danger`, `error`,
+`hint`, `important`, `note`, `tip`, and `warning`; however, you're free to use
+whatever you want.
 
 Styling
 -------
