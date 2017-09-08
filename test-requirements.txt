@@ -1,5 +1,6 @@
 nose
 coverage<4.0
+coveralls
 pyyaml
 pytidylib
 pygments
