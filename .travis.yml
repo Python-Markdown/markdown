@@ -1,5 +1,6 @@
 sudo: false
 language: python
+
 matrix:
   include:
     - python: '2.7'
@@ -12,19 +13,25 @@ matrix:
       env: TOXENV=pypy
     - env: TOXENV=flake8
     - env: TOXENV=checkspelling
+
 addons:
   apt:
     packages:
     - libtidy-0.99-0
     - aspell
     - aspell-en
+
 install:
   - pip install tox
-  - pip install coveralls
+  - pip install 'coverage<4.0'
+  - pip install codecov
+
 script:
   - tox
+
 after_success:
-  - coveralls
+  - codecov
+
 branches:
   only:
     - master

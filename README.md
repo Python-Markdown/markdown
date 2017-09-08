@@ -2,7 +2,7 @@
 ===================
 
 [![Build Status](http://img.shields.io/travis/Python-Markdown/markdown.svg)](https://travis-ci.org/Python-Markdown/markdown)
-[![Coverage Status](https://img.shields.io/coveralls/Python-Markdown/markdown.svg)](https://coveralls.io/r/Python-Markdown/markdown?branch=master)
+[![Coverage Status](https://codecov.io/gh/Python-Markdown/markdown/branch/master/graph/badge.svg)](https://codecov.io/gh/Python-Markdown/markdown)
 [![Latest Version](http://img.shields.io/pypi/v/Markdown.svg)](http://pypi.python.org/pypi/Markdown)
 [![Python Versions](http://img.shields.io/pypi/pyversions/Markdown.svg)](http://pypi.python.org/pypi/Markdown)
 [![BSD License](http://img.shields.io/badge/license-BSD-yellow.svg)](http://opensource.org/licenses/BSD-3-Clause)
