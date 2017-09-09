@@ -80,6 +80,7 @@ class AdmonitionProcessor(BlockProcessor):
 
     def get_class_and_title(self, match):
         klass, title = match.group(1).lower(), match.group(2)
+        klass = re.sub(' +', ' ', klass)
         if title is None:
             # no title was provided, use the capitalized classname as title
             # e.g.: `!!! note` will render

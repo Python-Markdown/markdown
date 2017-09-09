@@ -51,6 +51,18 @@ will render:
     <p>...</p>
     </div>
 
+You can also provide additional CSS class names by separating them using space characters. For instance:
+
+    !!! danger highlight blink "Don't try this at home"
+        ...
+
+will render:
+
+    <div class="admonition danger highlight blink">
+    <p class="admonition-title">Don't try this at home</p>
+    <p>...</p>
+    </div>
+
 If you don't want a title, use a blank string `""`:
 
     !!! important ""
