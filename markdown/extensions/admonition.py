@@ -96,4 +96,3 @@ class AdmonitionProcessor(BlockProcessor):
 
 def makeExtension(*args, **kwargs):
     return AdmonitionExtension(*args, **kwargs)
-
