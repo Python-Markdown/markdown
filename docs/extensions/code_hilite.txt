@@ -38,7 +38,7 @@ command from the command line:
 
     pygmentize -S default -f html -a .codehilite > styles.css
 
-If you are using a different `css_class` (default: `codehilite`), then
+If you are using a different `css_class` (default: `.codehilite`), then
 set the value of the `-a` option to that class name. The CSS rules will be
 written to the `styles.css` file which you can copy to your site and link from
 your HTML templates.
@@ -49,23 +49,23 @@ installed via Pygments plugins), run the following command:
 
     pygmentize -L style
 
-!!! see also
-
-    GitHub user [richeland] has provided a number of different [CSS style
-    sheets][rich] which work with Pygments along with a [preview] of each theme.
-    The `css_class` used is the same as the default value for that option
-    (`codehilite`). However, the Python-Markdown project makes no guarantee that
-    richeland's CSS styles will work with the version of Pygments you are using.
-    To ensure complete compatibility, you should generate the CSS rules from
-    your own installation of Pygments.
-
 See Pygments' excellent [documentation] for more details. If no language is
 defined, Pygments will attempt to guess the language. When that fails, the code
 block will not be highlighted.
 
+!!! note "See Also"
+
+    GitHub user [richeland] has provided a number of different [CSS style
+    sheets][rich] which work with Pygments along with a [preview] of each theme.
+    The `css_class` used is the same as the default value for that option
+    (`.codehilite`). However, the Python-Markdown project makes no guarantee that
+    richeland's CSS styles will work with the version of Pygments you are using.
+    To ensure complete compatibility, you should generate the CSS rules from
+    your own installation of Pygments.
+
 [richeland]: https://github.com/richleland
 [rich]: https://github.com/richleland/pygments-css
-[previews]: http://richleland.github.io/pygments-css/
+[preview]: http://richleland.github.io/pygments-css/
 [documentation]: http://pygments.org/docs/
 
 
