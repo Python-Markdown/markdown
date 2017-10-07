@@ -53,6 +53,9 @@ class AbbrPreprocessor(Preprocessor):
                 title = m.group('title').strip()
                 self.markdown.inlinePatterns['abbr-%s' % abbr] = \
                     AbbrPattern(self._generate_pattern(abbr), title)
+                # Preserve the line to prevent raw HTML indexing issue.
+                # https://github.com/Python-Markdown/markdown/issues/584
+                new_text.append('')
             else:
                 new_text.append(line)
         return new_text
