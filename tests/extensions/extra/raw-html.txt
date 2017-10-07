@@ -122,3 +122,63 @@ footnote[^1]
 </div>
 
 </div>
+
+<div markdown="1" name="issue584">
+
+[link]: http://example.com
+
+
+
+
+<div markdown="1">
+[link][link]
+</div>
+
+</div>
+
+<div markdown="1" name="issue584">
+
+*[abbr]: Abbreviation
+
+
+
+
+<div markdown="1">
+abbr
+</div>
+
+</div>
+
+<div markdown="1" name="issue584">
+
+[^2]: 
+    1.  The top couple half figure, contrary sides and hands across with bottom couple,
+
+        Half figure back on your own sides, and turn partner to places,
+
+        Swing partners with right hands into straight line long-ways, as in a reel, and
+
+        Set,
+
+        Hey and return to places,
+
+        The other three couples do the same.
+
+    2.  Top and bottom couples meet and set,
+
+        Then each gentleman leas the opposite lady to the couple on his left, and set,
+
+        Aach four right and left,
+
+        Swing side couples to places, and turn partners all eight,
+
+        The other two couple o the same.
+
+
+
+
+<div markdown="1">
+footnote[^2]
+</div>
+
+</div>
