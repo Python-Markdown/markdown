@@ -71,3 +71,13 @@ foo bar
 
 <em>bar</em>
 </div>
+
+<div markdown="1" name="issue584">
+
+[link]: http://example.com
+
+<div markdown="1">
+**bold**
+</div>
+
+</div>
