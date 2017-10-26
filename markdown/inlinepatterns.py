@@ -131,7 +131,7 @@ LINK_RE = NOIMG + BRK + \
     r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\12\s*)?\)'''
 
 # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
-IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(\s*(<.*?>|([^"\)\s]+\s*"[^"]*"|[^\)\s]*))\s*\)'
+IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(\s*(<.*?>|(?:([^"\)]+)\s*("[^"]*")|[^\)]*))\s*\)'
 
 # [Google][3]
 REFERENCE_RE = NOIMG + BRK + r'\s?\[([^\]]*)\]'
@@ -427,16 +427,21 @@ class ImagePattern(LinkPattern):
     """ Return a img element from the given match. """
     def handleMatch(self, m):
         el = util.etree.Element("img")
-        src_parts = m.group(9).split()
-        if src_parts:
-            src = src_parts[0]
-            if src[0] == "<" and src[-1] == ">":
-                src = src[1:-1]
-            el.set('src', self.sanitize_url(self.unescape(src)))
+        if m.group(11):
+            # Preserving legacy split title logic
+            # which reduced white space (newlines, multiple spaces, etc.)
+            # to a single space.
+            title = ' '.join(m.group(11).split())
+            src = m.group(10).strip()
         else:
-            el.set('src', "")
-        if len(src_parts) > 1:
-            el.set('title', dequote(self.unescape(" ".join(src_parts[1:]))))
+            title = None
+            src = m.group(9).strip()
+        if src and src[0] == "<" and src[-1] == ">":
+            src = src[1:-1]
+        el.set('src', self.sanitize_url(self.unescape(src)))
+
+        if title:
+            el.set('title', dequote(self.unescape(title)))
 
         if self.markdown.enable_attributes:
             truealt = handleAttributes(m.group(2), el)

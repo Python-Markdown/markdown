@@ -7,6 +7,6 @@
 
 ![Blank]()
 
-![Fail](http://humane man.jpg "The most humane man.")
+![Okay](http://humane man.jpg "The most humane man.")
 
-![Fail](http://humane man.jpg)
+![Okay](http://humane man.jpg)
