@@ -350,7 +350,7 @@ class HtmlPattern(Pattern):
             if value is not None:
                 try:
                     return self.markdown.serializer(value)
-                except:
+                except Exception:
                     return r'\%s' % value
 
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
