@@ -231,8 +231,6 @@ class InlineProcessor(Treeprocessor):
         Returns: String with placeholders instead of ElementTree elements.
 
         """
-        # print(self.ancestors)
-        # print(data[startIndex:])
         for exclude in pattern.getExcludes():
             if exclude.lower() in self.ancestors:
                 return data, False, 0
@@ -252,8 +250,8 @@ class InlineProcessor(Treeprocessor):
             if not isinstance(node.text, util.AtomicString):
                 # We need to process current node too
                 for child in [node] + list(node):
-                    self.ancestors.append(child.tag.lower())
                     if not isString(node):
+                        self.ancestors.append(child.tag.lower())
                         if child.text:
                             child.text = self.__handleInline(
                                 child.text, patternIndex + 1
@@ -263,8 +261,6 @@ class InlineProcessor(Treeprocessor):
                             child.tail = self.__handleInline(
                                 child.tail, patternIndex
                             )
-                    else:
-                        self.ancestors.pop()
 
         placeholder = self.__stashNode(node, pattern.type())
 
@@ -274,18 +270,15 @@ class InlineProcessor(Treeprocessor):
 
     def __build_ancestors(self, parent, parents):
         """Build the ancestor list."""
-
         ancestors = []
-        parent_map = dict((c, p) for p in parent.getiterator() for c in p)
-        ancestors.append(parent.tag.lower())
         while parent:
-            parent = parent_map.get(parent)
             if parent:
                 ancestors.append(parent.tag.lower())
+            parent = self.parent_map.get(parent)
         ancestors.reverse()
         parents.extend(ancestors)
 
-    def run(self, tree):
+    def run(self, tree, ancestors=None):
         """Apply inline patterns to a parsed Markdown tree.
 
         Iterate over ElementTree, find elements with inline tag, apply inline
@@ -298,13 +291,19 @@ class InlineProcessor(Treeprocessor):
         Arguments:
 
         * tree: ElementTree object, representing Markdown tree.
+        * ancestors: List of parent tag names that preceed the tree node (if needed).
 
         Returns: ElementTree object with applied inline patterns.
 
         """
         self.stashed_nodes = {}
 
-        stack = [(tree, [])]
+        # Ensure a valid parent list, but copy passed in lists
+        # to ensure we don't have the user accidentally change it on us.
+        tree_parents = [] if ancestors is None else ancestors[:]
+
+        self.parent_map = dict((c, p) for p in tree.getiterator() for c in p)
+        stack = [(tree, tree_parents)]
 
         while stack:
             currElement, parents = stack.pop()
@@ -323,6 +322,8 @@ class InlineProcessor(Treeprocessor):
                     lst = self.__processPlaceholders(
                         self.__handleInline(text), child
                     )
+                    for l in lst:
+                        self.parent_map[l[0]] = child
                     stack += lst
                     insertQueue.append((child, lst))
                 self.ancestors.pop()
@@ -336,8 +337,10 @@ class InlineProcessor(Treeprocessor):
                     pos = list(currElement).index(child) + 1
                     tailResult.reverse()
                     for newChild in tailResult:
+                        self.parent_map[newChild[0]] = currElement
                         currElement.insert(pos, newChild[0])
                 if len(child):
+                    self.parent_map[child] = currElement
                     stack.append((child, self.ancestors[:]))
 
             for element, lst in insertQueue:
