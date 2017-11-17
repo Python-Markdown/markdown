@@ -770,3 +770,57 @@ class TestEscapeAppend(unittest.TestCase):
         self.assertEqual('|' in md.ESCAPED_CHARS, True)
         md2 = markdown.Markdown()
         self.assertEqual('|' not in md2.ESCAPED_CHARS, True)
+
+
+class TestAncestorExclusion(unittest.TestCase):
+    """ Tests exclusion of tags in ancestor list. """
+
+    class AncestorExample(markdown.inlinepatterns.SimpleTagPattern):
+        """ Ancestor Test. """
+
+        def getExcludes(self):
+            """ Tags to exclude. """
+            return ['a']
+
+        def handleMatch(self, m):
+            """ Handle match. """
+            el = markdown.util.etree.Element(self.tag)
+            el.text = m.group(3)
+            return el
+
+    class AncestorExtension(markdown.Extension):
+
+        def __init__(self, *args, **kwargs):
+            """Initialize."""
+
+            self.config = {}
+
+        def extendMarkdown(self, md, md_globals):
+            """Modify inline patterns."""
+
+            pattern = r'(\+)([^\+]+)\2'
+            md.inlinePatterns["ancestor-test"] = TestAncestorExclusion.AncestorExample(pattern, 'strong')
+
+    def setUp(self):
+        """Setup markdown object."""
+        self.md = markdown.Markdown(extensions=[TestAncestorExclusion.AncestorExtension()])
+
+    def test_ancestors(self):
+        """ Test that an extension can exclude parent tags. """
+        test = """
+Some +test+ and a [+link+](http://test.com)
+"""
+        result = """<p>Some <strong>test</strong> and a <a href="http://test.com">+link+</a></p>"""
+
+        self.md.reset()
+        self.assertEqual(self.md.convert(test), result)
+
+    def test_ancestors_tail(self):
+        """ Test that an extension can exclude parent tags when dealing with a tail. """
+        test = """
+[***+em+*+strong+**](http://test.com)
+"""
+        result = """<p><a href="http://test.com"><strong><em>+em+</em>+strong+</strong></a></p>"""
+
+        self.md.reset()
+        self.assertEqual(self.md.convert(test), result)

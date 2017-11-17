@@ -207,6 +207,10 @@ class Pattern(object):
         if markdown_instance:
             self.markdown = markdown_instance
 
+    def getExcludes(self):
+        """Get tag to exclude."""
+        return []
+
     def getCompiledRegExp(self):
         """ Return a compiled regular expression. """
         return self.compiled_re
