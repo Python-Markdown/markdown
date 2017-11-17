@@ -54,6 +54,7 @@ class InlineProcessor(Treeprocessor):
         self.__placeholder_re = util.INLINE_PLACEHOLDER_RE
         self.markdown = md
         self.inlinePatterns = md.inlinePatterns
+        self.ancestors = []
 
     def __makePlaceholder(self, type):
         """ Generate a placeholder """
@@ -138,7 +139,7 @@ class InlineProcessor(Treeprocessor):
 
         childResult.reverse()
         for newChild in childResult:
-            node.insert(pos, newChild)
+            node.insert(pos, newChild[0])
 
     def __processPlaceholders(self, data, parent, isText=True):
         """
@@ -155,10 +156,10 @@ class InlineProcessor(Treeprocessor):
         def linkText(text):
             if text:
                 if result:
-                    if result[-1].tail:
-                        result[-1].tail += text
+                    if result[-1][0].tail:
+                        result[-1][0].tail += text
                     else:
-                        result[-1].tail = text
+                        result[-1][0].tail = text
                 elif not isText:
                     if parent.tail:
                         parent.tail += text
@@ -199,7 +200,7 @@ class InlineProcessor(Treeprocessor):
                         continue
 
                     strartIndex = phEndIndex
-                    result.append(node)
+                    result.append((node, self.ancestors[:]))
 
                 else:  # wrong placeholder
                     end = index + len(self.__placeholder_prefix)
@@ -230,6 +231,10 @@ class InlineProcessor(Treeprocessor):
         Returns: String with placeholders instead of ElementTree elements.
 
         """
+        for exclude in pattern.getExcludes():
+            if exclude.lower() in self.ancestors:
+                return data, False, 0
+
         match = pattern.getCompiledRegExp().match(data[startIndex:])
         leftData = data[:startIndex]
 
@@ -246,10 +251,12 @@ class InlineProcessor(Treeprocessor):
                 # We need to process current node too
                 for child in [node] + list(node):
                     if not isString(node):
+                        self.ancestors.append(child.tag.lower())
                         if child.text:
                             child.text = self.__handleInline(
                                 child.text, patternIndex + 1
                             )
+                        self.ancestors.pop()
                         if child.tail:
                             child.tail = self.__handleInline(
                                 child.tail, patternIndex
@@ -261,7 +268,17 @@ class InlineProcessor(Treeprocessor):
                              match.group(1),
                              placeholder, match.groups()[-1]), True, 0
 
-    def run(self, tree):
+    def __build_ancestors(self, parent, parents):
+        """Build the ancestor list."""
+        ancestors = []
+        while parent:
+            if parent:
+                ancestors.append(parent.tag.lower())
+            parent = self.parent_map.get(parent)
+        ancestors.reverse()
+        parents.extend(ancestors)
+
+    def run(self, tree, ancestors=None):
         """Apply inline patterns to a parsed Markdown tree.
 
         Iterate over ElementTree, find elements with inline tag, apply inline
@@ -274,18 +291,29 @@ class InlineProcessor(Treeprocessor):
         Arguments:
 
         * tree: ElementTree object, representing Markdown tree.
+        * ancestors: List of parent tag names that preceed the tree node (if needed).
 
         Returns: ElementTree object with applied inline patterns.
 
         """
         self.stashed_nodes = {}
 
-        stack = [tree]
+        # Ensure a valid parent list, but copy passed in lists
+        # to ensure we don't have the user accidentally change it on us.
+        tree_parents = [] if ancestors is None else ancestors[:]
+
+        self.parent_map = dict((c, p) for p in tree.getiterator() for c in p)
+        stack = [(tree, tree_parents)]
 
         while stack:
-            currElement = stack.pop()
+            currElement, parents = stack.pop()
+
+            self.ancestors = parents
+            self.__build_ancestors(currElement, self.ancestors)
+
             insertQueue = []
             for child in currElement:
+                self.ancestors.append(child.tag.lower())
                 if child.text and not isinstance(
                     child.text, util.AtomicString
                 ):
@@ -294,8 +322,11 @@ class InlineProcessor(Treeprocessor):
                     lst = self.__processPlaceholders(
                         self.__handleInline(text), child
                     )
+                    for l in lst:
+                        self.parent_map[l[0]] = child
                     stack += lst
                     insertQueue.append((child, lst))
+                self.ancestors.pop()
                 if child.tail:
                     tail = self.__handleInline(child.tail)
                     dumby = util.etree.Element('d')
@@ -306,9 +337,11 @@ class InlineProcessor(Treeprocessor):
                     pos = list(currElement).index(child) + 1
                     tailResult.reverse()
                     for newChild in tailResult:
-                        currElement.insert(pos, newChild)
+                        self.parent_map[newChild[0]] = currElement
+                        currElement.insert(pos, newChild[0])
                 if len(child):
-                    stack.append(child)
+                    self.parent_map[child] = currElement
+                    stack.append((child, self.ancestors[:]))
 
             for element, lst in insertQueue:
                 if self.markdown.enable_attributes:
@@ -317,7 +350,8 @@ class InlineProcessor(Treeprocessor):
                             element.text, element
                         )
                 i = 0
-                for newChild in lst:
+                for obj in lst:
+                    newChild = obj[0]
                     if self.markdown.enable_attributes:
                         # Processing attributes
                         if newChild.tail and isString(newChild.tail):
