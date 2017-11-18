@@ -251,12 +251,12 @@ class InlineProcessor(Treeprocessor):
                 # We need to process current node too
                 for child in [node] + list(node):
                     if not isString(node):
-                        self.ancestors.append(child.tag.lower())
                         if child.text:
+                            self.ancestors.append(child.tag.lower())
                             child.text = self.__handleInline(
                                 child.text, patternIndex + 1
                             )
-                        self.ancestors.pop()
+                            self.ancestors.pop()
                         if child.tail:
                             child.tail = self.__handleInline(
                                 child.tail, patternIndex
@@ -313,10 +313,10 @@ class InlineProcessor(Treeprocessor):
 
             insertQueue = []
             for child in currElement:
-                self.ancestors.append(child.tag.lower())
                 if child.text and not isinstance(
                     child.text, util.AtomicString
                 ):
+                    self.ancestors.append(child.tag.lower())
                     text = child.text
                     child.text = None
                     lst = self.__processPlaceholders(
@@ -326,7 +326,7 @@ class InlineProcessor(Treeprocessor):
                         self.parent_map[l[0]] = child
                     stack += lst
                     insertQueue.append((child, lst))
-                self.ancestors.pop()
+                    self.ancestors.pop()
                 if child.tail:
                     tail = self.__handleInline(child.tail)
                     dumby = util.etree.Element('d')
