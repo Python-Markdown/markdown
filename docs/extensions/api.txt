@@ -71,7 +71,7 @@ must have the following methods:
 * **`getExcludes()`**: 
 
     Returns an array of tag names that are undesirable ancestors. The pattern 
-    should not match if it would cause the content to be a decendent of one 
+    should not match if it would cause the content to be a descendant of one 
     of the tag names in the list.
 
 Note that any regular expression returned by `getCompiledRegExp` must capture
