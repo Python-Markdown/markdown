@@ -68,6 +68,12 @@ must have the following methods:
     Accepts a match object and returns an ElementTree element of a plain 
     Unicode string.
 
+* **`getExcludes()`**: 
+
+    Returns an array of tag names that are undesirable ancestors. The pattern 
+    should not match if it would cause the content to be a decendent of one 
+    of the tag names in the list.
+
 Note that any regular expression returned by `getCompiledRegExp` must capture
 the whole block. Therefore, they should all start with `r'^(.*?)'` and end
 with `r'(.*?)!'`. When using the default `getCompiledRegExp()` method 
