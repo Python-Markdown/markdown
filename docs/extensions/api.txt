@@ -53,7 +53,7 @@ A pseudo example:
 Inline Patterns {: #inlinepatterns }
 ------------------------------------
 
-Inline Patterns implement the inline HTML element syntax for Markdown such as
+Inline Patterns implement the inline HTML element syntax for Markdown such as 
 `*emphasis*` or `[links](http://example.com)`. Pattern objects should be 
 instances of classes that inherit from `markdown.inlinepatterns.Pattern` or 
 one of its children. Each pattern object uses a single regular expression and 
@@ -68,11 +68,9 @@ must have the following methods:
     Accepts a match object and returns an ElementTree element of a plain 
     Unicode string.
 
-* **`getExcludes()`**: 
-
-    Returns an array of tag names that are undesirable ancestors. The pattern 
-    should not match if it would cause the content to be a descendant of one 
-    of the tag names in the list.
+Also, Inline Patterns can define the property `ANCESTOR_EXCLUDES` with either 
+a list or tuple of undesirable ancestors. The pattern should not match if it 
+would cause the content to be a descendant of one of the defined tag names.
 
 Note that any regular expression returned by `getCompiledRegExp` must capture
 the whole block. Therefore, they should all start with `r'^(.*?)'` and end

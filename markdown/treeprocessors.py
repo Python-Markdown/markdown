@@ -231,7 +231,8 @@ class InlineProcessor(Treeprocessor):
         Returns: String with placeholders instead of ElementTree elements.
 
         """
-        for exclude in pattern.getExcludes():
+
+        for exclude in pattern.ANCESTOR_EXCLUDES:
             if exclude.lower() in self.ancestors:
                 return data, False, 0
 

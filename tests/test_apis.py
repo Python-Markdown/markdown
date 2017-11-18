@@ -778,9 +778,7 @@ class TestAncestorExclusion(unittest.TestCase):
     class AncestorExample(markdown.inlinepatterns.SimpleTagPattern):
         """ Ancestor Test. """
 
-        def getExcludes(self):
-            """ Tags to exclude. """
-            return ['a']
+        ANCESTOR_EXCLUDES = ('a',)
 
         def handleMatch(self, m):
             """ Handle match. """

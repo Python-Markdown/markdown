@@ -189,6 +189,8 @@ The pattern classes
 class Pattern(object):
     """Base class that inline patterns subclass. """
 
+    ANCESTOR_EXCLUDES = tuple()
+
     def __init__(self, pattern, markdown_instance=None):
         """
         Create an instant of an inline pattern.
@@ -206,10 +208,6 @@ class Pattern(object):
         self.safe_mode = False
         if markdown_instance:
             self.markdown = markdown_instance
-
-    def getExcludes(self):
-        """Get tag to exclude."""
-        return []
 
     def getCompiledRegExp(self):
         """ Return a compiled regular expression. """
