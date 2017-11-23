@@ -189,6 +189,8 @@ The pattern classes
 class Pattern(object):
     """Base class that inline patterns subclass. """
 
+    ANCESTOR_EXCLUDES = tuple()
+
     def __init__(self, pattern, markdown_instance=None):
         """
         Create an instant of an inline pattern.
