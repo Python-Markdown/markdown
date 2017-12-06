@@ -13,7 +13,7 @@ To use an extension, pass it to markdown with the `extensions` keyword.
 
 See the [Library Reference](../reference.md#extensions) for more details.
 
-From the command line, specify an extension with the `-x` option. 
+From the command line, specify an extension with the `-x` option.
 
     $ python -m markdown -x markdown.extensions.footnotes -x markdown.extensions.tables input.txt > output.html
 
@@ -26,47 +26,49 @@ See the [Command Line docs](../cli.md) or use the `--help` option for more detai
 Officially Supported Extensions
 -------------------------------
 
-The extensions listed below are maintained and officially supported by
-the Python-Markdown team. However, no extensions ship with Python-Markdown
-by default. If you would like to use any of the extensions listed below,
-you will need to install each of them individually.  See the documentation
-for each extension for specifics in instalation and usage. 
+The extensions listed below are included with (at least) the most recent release
+and are officially supported by Python-Markdown. Any documentation is
+maintained here and all bug reports should be made to the project. If you
+have a typical install of Python-Markdown, these extensions are already
+available to you using the "name" listed in the second column below.
 
 Extension                            | "Name"
 ------------------------------------ | ---------------
-[Extra]                              | `extra`
-&nbsp; &nbsp; [Abbreviations][]      | `abbr`
-&nbsp; &nbsp; [Attribute Lists][]    | `attr_list`
-&nbsp; &nbsp; [Definition Lists][]   | `def_list`
-&nbsp; &nbsp; [Fenced Code Blocks][] | `fenced_code`
-&nbsp; &nbsp; [Footnotes][]          | `footnotes`
-&nbsp; &nbsp; [Tables][]             | `tables`
-&nbsp; &nbsp; [Smart Strong][]       | `smart_strong`
-[Admonition][]                       | `admonition`
-[CodeHilite][]                       | `codehilite`
-[Meta-Data]                          | `meta`
-[New Line to Break]                  | `nl2br`
-[Sane Lists]                         | `sane_lists`
-[SmartyPants]                        | `smarty`
-[Table of Contents]                  | `toc`
-[WikiLinks]                          | `wikilinks`
+[Extra]                              | `markdown.extensions.extra`
+&nbsp; &nbsp; [Abbreviations][]      | `markdown.extensions.abbr`
+&nbsp; &nbsp; [Attribute Lists][]    | `markdown.extensions.attr_list`
+&nbsp; &nbsp; [Definition Lists][]   | `markdown.extensions.def_list`
+&nbsp; &nbsp; [Fenced Code Blocks][] | `markdown.extensions.fenced_code`
+&nbsp; &nbsp; [Footnotes][]          | `markdown.extensions.footnotes`
+&nbsp; &nbsp; [Tables][]             | `markdown.extensions.tables`
+&nbsp; &nbsp; [Smart Strong][]       | `markdown.extensions.smart_strong`
+[Admonition][]                       | `markdown.extensions.admonition`
+[CodeHilite][]                       | `markdown.extensions.codehilite`
+[HeaderId]                           | `markdown.extensions.headerid`
+[Meta-Data]                          | `markdown.extensions.meta`
+[New Line to Break]                  | `markdown.extensions.nl2br`
+[Sane Lists]                         | `markdown.extensions.sane_lists`
+[SmartyPants]                        | `markdown.extensions.smarty`
+[Table of Contents]                  | `markdown.extensions.toc`
+[WikiLinks]                          | `markdown.extensions.wikilinks`
 
-[Extra]: https://github.com/Python-Markdown/mdx_extra
-[Abbreviations]: https://github.com/Python-Markdown/mdx_abbreviations
-[Attribute Lists]: https://github.com/Python-Markdown/mdx_attr_list
-[Definition Lists]: https://github.com/Python-Markdown/mdx_definition_lists
-[Fenced Code Blocks]: https://github.com/Python-Markdown/mdx_fenced_code_blocks
-[Footnotes]: https://github.com/Python-Markdown/mdx_footnotes
-[Tables]: https://github.com/Python-Markdown/mdx_tables
-[Smart Strong]: https://github.com/Python-Markdown/mdx_smart_strong
-[Admonition]: https://github.com/Python-Markdown/mdx_admonition
-[CodeHilite]: https://github.com/Python-Markdown/mdx_code_hilite
-[Meta-Data]: https://github.com/Python-Markdown/mdx_meta_data
-[New Line to Break]: https://github.com/Python-Markdown/mdx_nl2br
-[Sane Lists]: https://github.com/Python-Markdown/mdx_sane_lists
-[SmartyPants]: https://github.com/Python-Markdown/mdx_smarty
-[Table of Contents]: https://github.com/Python-Markdown/mdx_toc
-[WikiLinks]: https://github.com/Python-Markdown/mdx_wikilinks
+[Extra]: extra.md
+[Abbreviations]: abbreviations.md
+[Attribute Lists]: attr_list.md
+[Definition Lists]: definition_lists.md
+[Fenced Code Blocks]: fenced_code_blocks.md
+[Footnotes]: footnotes.md
+[Tables]: tables.md
+[Smart Strong]: smart_strong.md
+[Admonition]: admonition.md
+[CodeHilite]: code_hilite.md
+[HeaderId]: header_id.md
+[Meta-Data]: meta_data.md
+[New Line to Break]: nl2br.md
+[Sane Lists]: sane_lists.md
+[SmartyPants]: smarty.md
+[Table of Contents]: toc.md
+[WikiLinks]: wikilinks.md
 
 Third Party Extensions
 ----------------------

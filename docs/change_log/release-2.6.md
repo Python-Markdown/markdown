@@ -13,11 +13,11 @@ Backwards-incompatible Changes
 
 ### `safe_mode` Deprecated
 
-Both `safe_mode` and the associated `html_replacement_text` keywords are deprecated 
+Both `safe_mode` and the associated `html_replacement_text` keywords are deprecated
 in version 2.6 and will raise a **`DeprecationWarning`**. The `safe_mode` and
 `html_replacement_text` keywords will be ignored in version 2.7. The so-called
-"safe mode" was never actually "safe" which has resulted in many people having a false 
-sense of security when using it. As an alternative, the developers of Python-Markdown 
+"safe mode" was never actually "safe" which has resulted in many people having a false
+sense of security when using it. As an alternative, the developers of Python-Markdown
 recommend that any untrusted content be passed through an HTML sanitizer (like [Bleach])
 after being converted to HTML by markdown.
 
@@ -62,9 +62,9 @@ Then it is recommended that you change it to read something like this:
     html = markdown.markdown(text, extensions=[SomeExtension()])
 
 !!! Note
-    This change is being made as a result of deprecating `"safe_mode"` as the 
-    `safe_mode` argument was one of the positional arguments. When that argument 
-    is removed, the two arguments following it will no longer be at the correct 
+    This change is being made as a result of deprecating `"safe_mode"` as the
+    `safe_mode` argument was one of the positional arguments. When that argument
+    is removed, the two arguments following it will no longer be at the correct
     position. It is recommended that you always use keywords when they are supported
     for this reason.
 
@@ -72,7 +72,7 @@ Then it is recommended that you change it to read something like this:
 
 In previous versions of Python-Markdown, the built-in extensions received
 special status and did not require the full path to be provided. Additionally,
-third party extensions whose name started with `"mdx_"` received the same 
+third party extensions whose name started with `"mdx_"` received the same
 special treatment. This behavior is deprecated and will raise a
 **`DeprecationWarning`** in version 2.6 and an error in 2.7. Ensure that you
 always use the full path to your extensions. For example, if you previously
@@ -105,25 +105,27 @@ of the current behavior.
 
 ### Extension Configuration as Part of Extension Name Deprecated
 
-The previously documented method of appending the extension configuration options as 
+The previously documented method of appending the extension configuration options as
 a string to the extension name is deprecated and will raise a
 **`DeprecationWarning`** in version 2.6 and an error in 2.7.
-The [`extension_configs`](../reference.md#extension_configs) keyword should 
-be used instead. See the [documentation](../reference.md#extension-configs) 
+The [`extension_configs`](../reference.md#extension_configs) keyword should
+be used instead. See the [documentation](../reference.md#extension-configs)
 for a full explanation of the current behavior.
 
 ### HeaderId Extension Pending Deprecation
 
-The HeaderId Extension is pending deprecation and will raise a
+The [HeaderId][hid] Extension is pending deprecation and will raise a
 **`PendingDeprecationWarning`** in version 2.6. The extension will be
 deprecated in version 2.7 and raise an error in version 2.8. Use the
-Table of Contents Extension instead, which offers most of the
+[Table of Contents][TOC] Extension instead, which offers most of the
 features of the HeaderId Extension and more (support for meta data is missing).
 
 Extension authors who have been using the `slugify` and `unique` functions
 defined in the HeaderId Extension should note that those functions are now
 defined in the Table of Contents extension and should adjust their import
 statements accordingly (`from markdown.extensions.toc import slugify, unique`).
+
+[hid]: ../extensions/header_id.md
 
 ### The `configs` Keyword is Deprecated
 
@@ -187,7 +189,7 @@ worked on PyPy for some time, it is now officially supported and tested on PyPy.
 
 ### YAML Style Meta-Data
 
-The Meta-Data Extension now includes optional support for [YAML] style
+The [Meta-Data] Extension now includes optional support for [YAML] style
 meta-data. By default, the YAML deliminators are recognized, however, the
 actual data is parsed as previously.  This follows the syntax of
 [MultiMarkdown], which inspired this extension.
@@ -198,12 +200,13 @@ party extension be used if you want true YAML support. See [Issue #390][#390] fo
 explanation.</ins>
 
 [MultiMarkdown]: http://fletcherpenney.net/MultiMarkdown_Syntax_Guide#metadata
+[Meta-Data]: ../extensions/meta_data.md
 [YAML]: http://yaml.org/
 [#390]: https://github.com/Python-Markdown/markdown/issues/390
 
 ### Table of Contents Extension Refactored
 
-The Table of Contents Extension has been refactored and some new features
+The [Table of Contents][TOC] Extension has been refactored and some new features
 have been added.  See the documentation for a full explanation of each feature
 listed below:
 
@@ -227,23 +230,26 @@ listed below:
     of headers in their documents (h1-h6). This allows the header levels to be
     automatically adjusted to fit within the hierarchy of an HTML template.
 
+[TOC]: ../extensions/toc.md
+
 ### Pygments can now be disabled
 
-The CodeHilite Extension has gained a new configuration option: `use_pygments`.
+The [CodeHilite][ch] Extension has gained a new configuration option: `use_pygments`.
 The option is `True` by default, however, it allows one to turn off Pygments code
 highlighting (set to `False`) while preserving the language detection features of
 the extension. Note that Pygments language guessing is not used as that would 'use
-Pygments'. If a language is defined for a code block, it will be assigned to the 
+Pygments'. If a language is defined for a code block, it will be assigned to the
 `<code>` tag as a class in the manner suggested by the [HTML5 spec][spec]
 (alternate output will not be entertained) and could potentially be used by a JavaScript
 library in the browser to highlight the code block.
 
+[ch]: ../extensions/code_hilite.md
 [spec]: http://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
 
 ### Miscellaneous
 
 Test coverage has been improved including running [flake8]. While those changes
-will not directly effect end users, the code is being better tested which will 
+will not directly effect end users, the code is being better tested which will
 benefit everyone.
 
 [flake8]: https://flake8.readthedocs.io/en/latest/
