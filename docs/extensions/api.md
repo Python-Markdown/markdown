@@ -1,8 +1,4 @@
 title:      Extensions API
-prev_title: WikiLinks Extension
-prev_url:   wikilinks.html
-next_title: Test Suite
-next_url:   ../test_suite.html
 
 Writing Extensions for Python-Markdown
 ======================================

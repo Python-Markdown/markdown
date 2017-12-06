@@ -1,8 +1,4 @@
-title:      Admonition Extension
-prev_title: Smart Strong Extension
-prev_url:   smart_strong.html
-next_title: CodeHilite Extension
-next_url:   code_hilite.html
+title: Admonition Extension
 
 Admonition
 ==========

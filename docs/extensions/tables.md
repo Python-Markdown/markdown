@@ -1,8 +1,4 @@
-title:      Tables Extension
-prev_title: Footnotes Extension
-prev_url:   footnotes.html
-next_title: Smart Strong Extension
-next_url:   smart_strong.html
+title: Tables Extension
 
 Tables
 ======
@@ -52,7 +48,7 @@ will be rendered as:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.tables`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage, specify
+`markdown.extensions.tables` as the name of the extension.
 
 This extension does not accept any special configuration options.

@@ -1,8 +1,4 @@
-title:      Meta-Data Extension
-prev_title: HeaderId Extension
-prev_url:   header_id.html
-next_title: New Line to Break Extension
-next_url:   nl2br.html
+title: Meta-Data Extension
 
 Meta-Data
 =========
@@ -59,8 +55,8 @@ by Markdown.
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.meta`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage, specify
+`markdown.extensions.meta` as the name of the extension.
 
 Accessing the Meta-Data
 -----------------------
@@ -101,10 +97,10 @@ Compatible Extensions
 The following extensions are currently known to work with the Meta-Data 
 extension. The keywords they are known to support are also listed.
 
-* [HeaderId](header_id.html)
+* [HeaderId](header_id.md)
     * `header_level`
     * `header_forceid`
-* [WikiLinks](wikilinks.html)
+* [WikiLinks](wikilinks.md)
     * `wiki_base_url`
     * `wiki_end_url`
     * `wiki_html_class`

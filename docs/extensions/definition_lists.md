@@ -1,8 +1,4 @@
-title:      Definition Lists Extension
-prev_title: Attribute Lists Extension
-prev_url:   attr_list.html
-next_title: Fenced Code Blocks Extension
-next_url:   fenced_code_blocks.html
+title: Definition Lists Extension
 
 Definition Lists
 ================
@@ -47,7 +43,7 @@ will be rendered as:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.def_list`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage, specify
+`markdown.extensions.def_list` as the name of the extension.
 
 This extension does not accept any special configuration options.

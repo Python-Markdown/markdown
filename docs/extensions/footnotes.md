@@ -1,8 +1,4 @@
-title:      Footnotes Extension
-prev_title: Fenced Code Blocks Extension
-prev_url:   fenced_code_blocks.html
-next_title: Tables Extension
-next_url:   tables.html
+title: Footnotes Extension
 
 Footnotes
 =========
@@ -64,10 +60,10 @@ is indented consistently and any errors are more easily discernible by the autho
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.footnotes`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage, specify
+`markdown.extensions.footnotes` as the name of the extension.
 
-See the [Library Reference](../reference.html#extensions) for information about
+See the [Library Reference](../reference.md#extensions) for information about
 configuring extensions.
 
 The following options are provided to configure the output:

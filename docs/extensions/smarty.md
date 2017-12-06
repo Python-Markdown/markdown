@@ -1,8 +1,4 @@
 title: SmartyPants Extension
-prev_title: Sane Lists Extension
-prev_url:   sane_lists.html
-next_title: Table of Contents Extension
-next_url:   toc.html
 
 SmartyPants
 ===========
@@ -55,10 +51,10 @@ the German language:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify 
+See [Extensions](index.md) for general extension usage, specify 
 `markdown.extensions.smarty` as the name of the extension.
 
-See the [Library Reference](../reference.html#extensions) for information about
+See the [Library Reference](../reference.md#extensions) for information about
 configuring extensions.
 
 The following options are provided to configure the output:

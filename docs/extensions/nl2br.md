@@ -1,8 +1,4 @@
-title:      New Line to Break Extension
-prev_title: Meta-Data Extension
-prev_url:   meta_data.html
-next_title: Sane Lists Extension
-next_url:   sane_lists.html
+title: New Line to Break Extension
 
 New-Line-to-Break Extension
 ===========================
@@ -31,7 +27,7 @@ Example
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.nl2br`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage, specify
+`markdown.extensions.nl2br` as the name of the extension.
 
 This extension does not accept any special configuration options.

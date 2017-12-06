@@ -1,8 +1,4 @@
-title:      Sane Lists Extension
-prev_title: New Line to Break Extension
-prev_url:   nl2br.html
-next_title: SmartyPants Extension
-next_url:   smarty.html
+title: Sane Lists Extension
 
 Sane Lists
 ==========
@@ -67,7 +63,7 @@ In all other ways, Sane Lists should behave as normal Markdown lists.
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.sane_lists`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage, specify
+`markdown.extensions.sane_lists` as the name of the extension.
 
 This extension does not accept any special configuration options.

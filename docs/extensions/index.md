@@ -1,9 +1,4 @@
-title:      Extensions
-prev_title: Command Line
-prev_url:   ../cli.html
-next_title: Extra Extension
-next_url:   extra.html
-
+title: Extensions
 
 Available Extensions
 ====================

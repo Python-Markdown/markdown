@@ -1,8 +1,4 @@
-title:      Abbreviations Extension
-prev_title: Extra Extension
-prev_url:   extra.html
-next_title: Attribute Lists Extension
-next_url:   attr_list.html
+title: Abbreviations Extension
 
 Abbreviations
 =============
@@ -39,7 +35,7 @@ will be rendered as:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.abbr`
+See [Extensions](index.md) for general extension usage, specify `markdown.extensions.abbr`
 as the name of the extension.
 
 This extension does not accept any special configuration options.

@@ -1,8 +1,4 @@
-title:      Table of Contents Extension
-prev_title: SmartyPants Extension
-prev_url:   smarty.html
-next_title: WikiLinks Extension
-next_url:   wikilinks.html
+title: Table of Contents Extension
 
 Table of Contents
 =================
@@ -66,10 +62,10 @@ one to insert the Table of Contents elsewhere in their page template. For exampl
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.toc`
+See [Extensions](index.md) for general extension usage, specify `markdown.extensions.toc`
 as the name of the extension.
 
-See the [Library Reference](../reference.html#extensions) for information about
+See the [Library Reference](../reference.md#extensions) for information about
 configuring extensions.
 
 The following options are provided to configure the output:

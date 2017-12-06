@@ -1,8 +1,4 @@
-title:      Attribute Lists Extension
-prev_title: Abbreviations Extension
-prev_url:   abbreviations.html
-next_title: Definition Lists Extension
-next_url:   definition_lists.html
+title: Attribute Lists Extension
 
 Attribute Lists
 ===============
@@ -82,7 +78,7 @@ The above results in the following output:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.attr_list`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage, specify
+`markdown.extensions.attr_list` as the name of the extension.
 
 This extension does not accept any special configuration options.

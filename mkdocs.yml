@@ -18,6 +18,24 @@ pages:
   - Library Reference: reference.md
   - Command Line: cli.md
   - Extensions: extensions/index.md
+  - Officially Supported Extensions:
+      - Abbreviations: extensions/abbreviations.md
+      - Admonition: extensions/admonition.md
+      - Attribute Lists: extensions/attr_list.md
+      - CodeHilite: extensions/code_hilite.md
+      - Definition Lists: extensions/definition_lists.md
+      - Extra: extensions/extra.md
+      - Fenced Code Blocks: extensions/fenced_code_blocks.md
+      - Footnotes: extensions/footnotes.md
+      - HeaderId: extensions/header_id.md
+      - Meta-Data: extensions/meta_data.md
+      - New Line to Break: extensions/nl2br.md
+      - Sane Lists: extensions/sane_lists.md
+      - SmartyPants: extensions/smarty.md
+      - Smart Strong: extensions/smart_strong.md
+      - Table of Contents: extensions/toc.md
+      - Tables: extensions/tables.md
+      - WikiLinks: extensions/wikilinks.md
   - Extension API: extensions/api.md
   - Test Suite: test_suite.md
   - Change Log: change_log/index.md

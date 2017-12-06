@@ -1,8 +1,4 @@
-title:      WikiLinks Extension
-prev_title: Table of Contents Extension
-prev_url:   toc.html
-next_title: Extension API
-next_url:   api.html
+title: WikiLinks Extension
 
 WikiLinks
 =========
@@ -46,10 +42,10 @@ becomes
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.wikilinks`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage, specify
+`markdown.extensions.wikilinks` as the name of the extension.
 
-See the [Library Reference](../reference.html#extensions) for information about
+See the [Library Reference](../reference.md#extensions) for information about
 configuring extensions.
 
 The default behavior is to point each link to the document root of the current
@@ -111,7 +107,7 @@ Would cause all WikiLinks to be assigned to the class `myclass`.
 Using with Meta-Data extension
 ------------------------------
 
-The WikiLink extension also supports the [Meta-Data](meta_data.html) extension.
+The WikiLink extension also supports the [Meta-Data](meta_data.md) extension.
 Please see the documentation for that extension for specifics. The supported
 meta-data keywords are:
 

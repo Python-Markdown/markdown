@@ -1,8 +1,4 @@
-title:      Fenced Code Blocks Extension
-prev_title: Definition Lists Extension
-prev_url:   definition_lists.html
-next_title: Footnotes Extension
-next_url:   footnotes.html
+title: Fenced Code Blocks Extension
 
 Fenced Code Blocks
 ==================
@@ -106,7 +102,7 @@ The lines can be specified with PHP Extra's syntax:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.fenced_code`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage, specify
+`markdown.extensions.fenced_code` as the name of the extension.
 
 This extension does not accept any special configuration options.

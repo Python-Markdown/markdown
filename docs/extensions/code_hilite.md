@@ -1,8 +1,4 @@
-title:      CodeHilite Extension
-prev_title: Admonition Extension
-prev_url:   admonition.html
-next_title: HeaderId Extension
-next_url:   header_id.html
+title: CodeHilite Extension
 
 CodeHilite
 ==========
@@ -162,10 +158,10 @@ Lets see the source for that:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify
+See [Extensions](index.md) for general extension usage, specify
 `markdown.extensions.codehilite` as the name of the extension.
 
-See the [Library Reference](../reference.html#extensions) for information about
+See the [Library Reference](../reference.md#extensions) for information about
 configuring extensions.
 
 The following options are provided to configure the output:

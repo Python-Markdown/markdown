@@ -1,8 +1,4 @@
-title:      HeaderId Extension
-prev_title: CodeHilite Extension
-prev_url:   code_hilite.html
-next_title: Meta-Data Extension
-next_url:   meta_data.html
+title: HeaderId Extension
 
 HeaderId
 ========
@@ -20,7 +16,7 @@ This extension is included in the standard Markdown library.
     Extension should be used instead, which offers most the features of this
     extension and more.
     
-[toc]: toc.html
+[toc]: toc.md
 
 Syntax
 ------
@@ -42,10 +38,10 @@ Results in:
 Usage
 -----
 
-See [Extensions](index.html) for general extension usage, specify `markdown.extensions.headerid`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage, specify
+`markdown.extensions.headerid` as the name of the extension.
 
-See the [Library Reference](../reference.html#extensions) for information about
+See the [Library Reference](../reference.md#extensions) for information about
 configuring extensions.
 
 The following options are provided to configure the output:
@@ -74,7 +70,7 @@ The following options are provided to configure the output:
 
     The `forceid` setting turns on or off the automatically generated ids for 
     headers that do not have one explicitly defined (using the
-    [Attribute List](attr_list.html) extension).
+    [Attribute List](attr_list.md) extension).
 
         >>> text = '''
         ... # Some Header
@@ -103,7 +99,7 @@ The following options are provided to configure the output:
 Using with Meta-Data
 --------------------
 
-The HeaderId extension also supports the [Meta-Data](meta_data.html) extension.
+The HeaderId extension also supports the [Meta-Data](meta_data.md) extension.
 Please see the documentation for that extension for specifics. The supported 
 meta-data keywords are:
 
