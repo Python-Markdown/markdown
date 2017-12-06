@@ -4,7 +4,7 @@ Meta Data Extension for Python-Markdown
 
 This extension adds Meta Data handling to markdown.
 
-See <https://pythonhosted.org/Markdown/extensions/meta_data.html>
+See <https://Python-Markdown.github.io/extensions/meta_data>
 for documentation.
 
 Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com).

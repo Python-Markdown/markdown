@@ -4,7 +4,7 @@ Abbreviation Extension for Python-Markdown
 
 This extension adds abbreviation handling to Python-Markdown.
 
-See <https://pythonhosted.org/Markdown/extensions/abbreviations.html>
+See <https://Python-Markdown.github.io/extensions/abbreviations>
 for documentation.
 
 Oringinal code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/) and

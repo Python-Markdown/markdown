@@ -4,7 +4,7 @@ Footnotes Extension for Python-Markdown
 
 Adds footnote handling to Python-Markdown.
 
-See <https://pythonhosted.org/Markdown/extensions/footnotes.html>
+See <https://Python-Markdown.github.io/extensions/footnotes>
 for documentation.
 
 Copyright The Python Markdown Project

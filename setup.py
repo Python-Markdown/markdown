@@ -72,8 +72,8 @@ on what exactly is supported and what is not. Additional features are
 supported by the `Available Extensions`_.
 
 .. _Markdown: http://daringfireball.net/projects/markdown/
-.. _Features: https://pythonhosted.org/Markdown/#Features
-.. _`Available Extensions`: https://pythonhosted.org/Markdown/extensions/
+.. _Features: https://Python-Markdown.github.io#Features
+.. _`Available Extensions`: https://Python-Markdown.github.io/extensions/
 
 Support
 =======
@@ -88,7 +88,7 @@ You may ask for help and discuss various other issues on the
 setup(
     name='Markdown',
     version=version,
-    url='https://pythonhosted.org/Markdown/',
+    url='https://Python-Markdown.github.io/',
     download_url='http://pypi.python.org/packages/source/M/Markdown/Markdown-%s.tar.gz' % version,
     description='Python implementation of Markdown.',
     long_description=long_description,

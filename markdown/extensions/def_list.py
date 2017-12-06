@@ -4,7 +4,7 @@ Definition List Extension for Python-Markdown
 
 Adds parsing of Definition Lists to Python-Markdown.
 
-See <https://pythonhosted.org/Markdown/extensions/definition_lists.html>
+See <https://Python-Markdown.github.io/extensions/definition_lists>
 for documentation.
 
 Original code Copyright 2008 [Waylan Limberg](http://achinghead.com)
