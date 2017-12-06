@@ -22,6 +22,7 @@ install:
 deploy:
 	python setup.py sdist --manifest-only
 	python setup.py sdist --formats zip,gztar upload
+	mkdocs gh-deploy -r pages -b master
 
 .PHONY : build
 build:
@@ -36,7 +37,6 @@ build-win:
 .PHONY : docs
 docs:
 	mkdocs build --clean
-	cd site && zip -r ../docs.zip .
 
 .PHONY : test
 test:
@@ -62,4 +62,5 @@ clean:
 	rm -rf build
 	rm -rf dist
 	rm -rf tmp
+	rm -rf site
 	# git clean -dfx'
