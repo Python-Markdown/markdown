@@ -1,7 +1,6 @@
 title:      Extensions API
 
-Writing Extensions for Python-Markdown
-======================================
+# Writing Extensions for Python-Markdown
 
 Python-Markdown includes an API for extension writers to plug their own
 custom functionality and/or syntax into the parser. There are Preprocessors
@@ -18,8 +17,7 @@ Additionally, reading the source of some [Available Extensions][] may be
 helpful. For example, the [Footnotes][] extension uses most of the features
 documented here.
 
-Preprocessors {: #preprocessors }
----------------------------------
+## Preprocessors {: #preprocessors }
 
 Preprocessors munge the source text before it is passed into the Markdown
 core. This is an excellent place to clean up bad syntax, extract things the
@@ -48,8 +46,7 @@ class MyPreprocessor(Preprocessor):
         return new_lines
 ```
 
-Inline Patterns {: #inlinepatterns }
-------------------------------------
+## Inline Patterns {: #inlinepatterns }
 
 Inline Patterns implement the inline HTML element syntax for Markdown such as
 `*emphasis*` or `[links](http://example.com)`. Pattern objects should be
@@ -113,7 +110,7 @@ implemented with separate instances of the `SimpleTagPattern` listed below.
 Feel free to use or extend any of the Pattern classes found at
 `markdown.inlinepatterns`.
 
-**Generic Pattern Classes**
+### Generic Pattern Classes
 
 * **`SimpleTextPattern(pattern)`**:
 
@@ -133,8 +130,7 @@ or use as well. Read through the source and see if there is anything you can
 use. You might even get a few ideas for different approaches to your specific
 situation.
 
-Treeprocessors {: #treeprocessors }
------------------------------------
+## Treeprocessors {: #treeprocessors }
 
 Treeprocessors manipulate an ElementTree object after it has passed through the
 core BlockParser. This is where additional manipulation of the tree takes
@@ -170,8 +166,7 @@ the `run` method would only return `None` or a new ElementTree object.
 For specifics on manipulating the ElementTree, see
 [Working with the ElementTree][workingwithetree] below.
 
-Postprocessors {: #postprocessors }
------------------------------------
+## Postprocessors {: #postprocessors }
 
 Postprocessors manipulate the document after the ElementTree has been
 serialized into a string. Postprocessors should be used to work with the
@@ -193,8 +188,7 @@ class TocPostprocessor(Postprocessor):
         return MYMARKERRE.sub(MyToc, text)
 ```
 
-BlockParser {: #blockparser }
------------------------------
+## BlockParser {: #blockparser }
 
 Sometimes, Preprocessors, Treeprocessors, Postprocessors, and Inline Patterns
 are not going to do what you need. Perhaps you want a new type of block type
@@ -321,8 +315,7 @@ the `BlockParser`. The new class would have to provide the same public API.
 However, be aware that other extensions may expect the core parser provided
 and will not work with such a drastically different parser.
 
-Working with the ElementTree {: #working_with_et }
---------------------------------------------------
+## Working with the ElementTree {: #working_with_et }
 
 As mentioned, the Markdown parser converts a source document to an
 [ElementTree][ElementTree] object before serializing that back to Unicode text.
@@ -374,8 +367,8 @@ adds a `class` attribute to `<a>` elements:
 
 ```python
 def set_link_class(self, element):
-	for child in element:
-	    if child.tag == "a":
+    for child in element:
+        if child.tag == "a":
               child.set("class", "myclass") #set the class attribute
           set_link_class(child) # run recursively on children
 ```
@@ -384,8 +377,7 @@ For more information about working with ElementTree see the ElementTree
 [Documentation](http://effbot.org/zone/element-index.htm)
 ([Python Docs](http://docs.python.org/lib/module-xml.etree.ElementTree.html)).
 
-Integrating Your Code Into Markdown {: #integrating_into_markdown }
--------------------------------------------------------------------
+## Integrating Your Code Into Markdown {: #integrating_into_markdown }
 
 Once you have the various pieces of your extension built, you need to tell
 Markdown about them and ensure that they are run in the proper sequence.
@@ -558,6 +550,7 @@ To change the location of an existing item:
 ```python
 t.link('somekey', '<otherkey')
 ```
+
 ### registerExtension {: #registerextension }
 
 Some extensions may need to have their state reset between multiple runs of the
@@ -601,8 +594,8 @@ those parameters should be stored in `self.config` of your
 
 ```python
 class MyExtension(markdown.extensions.Extension):
-	def __init__(self, **kwargs):
-		self.config = {'option1' : ['value1', 'description1'],
+    def __init__(self, **kwargs):
+        self.config = {'option1' : ['value1', 'description1'],
                        'option2' : ['value2', 'description2'] }
         super(MyExtension, self).__init__(**kwargs)
 ```
@@ -622,29 +615,29 @@ following methods available to assist in working with configuration settings:
 
 * **`getConfig(key [, default])`**:
 
-	Returns the stored value for the given `key` or `default` if the `key`
-	does not exist. If not set, `default` returns an empty string.
+    Returns the stored value for the given `key` or `default` if the `key`
+    does not exist. If not set, `default` returns an empty string.
 
 * **`getConfigs()`**:
 
-	Returns a dict of all key/value pairs.
+    Returns a dict of all key/value pairs.
 
 * **`getConfigInfo()`**:
 
-	Returns all configuration descriptions as a list of tuples.
+    Returns all configuration descriptions as a list of tuples.
 
 * **`setConfig(key, value)`**:
 
-	Sets a configuration setting for `key` with the given `value`. If `key` is
-	unknown, a `KeyError` is raised. If the previous value of `key` was
-	a Boolean value, then `value` is converted to a Boolean value. If
-	the previous value of `key` is `None`, then `value` is converted to
-	a Boolean value except when it is `None`. No conversion takes place
-	when the previous value of `key` is a string.
+    Sets a configuration setting for `key` with the given `value`. If `key` is
+    unknown, a `KeyError` is raised. If the previous value of `key` was
+    a Boolean value, then `value` is converted to a Boolean value. If
+    the previous value of `key` is `None`, then `value` is converted to
+    a Boolean value except when it is `None`. No conversion takes place
+    when the previous value of `key` is a string.
 
 * **`setConfigs(items)`**:
 
-	Sets multiple configuration settings given a dict of key/value pairs.
+    Sets multiple configuration settings given a dict of key/value pairs.
 
 ### `makeExtension` {: #makeextension }
 
@@ -661,8 +654,8 @@ myext = myextension.MyExtension(option='value')
 md = markdown.Markdown(extensions=[myext])
 ```
 
-Markdown also accepts "named" third party extensions for those occasions
-when it is impractical to import an extension directly (from the command line or from
+Markdown also accepts "named" third party extensions for those occasions when it
+is impractical to import an extension directly (from the command line or from
 within templates).
 
 The "name" of your extension must be a string consisting of the importable path to
@@ -687,11 +680,12 @@ Then the named extension would comprise this string:
 You do not need to do anything special to support this feature. As long as your
 extension class is able to be imported, a user can include it with the above syntax.
 
-The above two methods are especially useful if you need to implement a large number of
-extensions with more than one residing in a module. However, if you do not want to require
-that your users include the class name in their string, you must define only one extension
-per module and that module must contain a module-level function called `makeExtension`
-that accepts `**kwargs` and returns an extension instance.  
+The above two methods are especially useful if you need to implement a large
+number of extensions with more than one residing in a module. However, if you do
+not want to require that your users include the class name in their string, you
+must define only one extension per module and that module must contain a
+module-level function called `makeExtension` that accepts `**kwargs` and returns
+an extension instance.
 
 For example:
 
@@ -703,8 +697,9 @@ def makeExtension(**kwargs):
     return MyExtension(**kwargs)
 ```
 
-When Markdown is passed the "name" of your extension as a dot notation string, it will import
-the module and call the `makeExtension` function to initiate your extension.
+When Markdown is passed the "name" of your extension as a dot notation string,
+it will import the module and call the `makeExtension` function to initiate your
+extension.
 
 [Preprocessors]: #preprocessors
 [Inline Patterns]: #inlinepatterns

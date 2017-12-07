@@ -40,6 +40,7 @@ will render:
 <p>You should note that the title will be automatically capitalized.</p>
 </div>
 ```
+
 Optionally, you can use custom titles. For instance:
 
 ```md

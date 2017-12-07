@@ -6,8 +6,8 @@ New-Line-to-Break Extension
 Summary
 -------
 
-The New-Line-to-Break (`nl2b`) Extension will cause newlines to be treated as hard breaks; like
-StackOverflow and [GitHub][] flavored Markdown do.
+The New-Line-to-Break (`nl2b`) Extension will cause newlines to be treated as
+hard breaks; like StackOverflow and [GitHub][] flavored Markdown do.
 
 [Github]: http://github.github.com/github-flavored-markdown/
 

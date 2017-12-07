@@ -1,10 +1,8 @@
 title: WikiLinks Extension
 
-WikiLinks
-=========
+# WikiLinks
 
-Summary
--------
+## Summary
 
 The WikiLinks extension adds support for [WikiLinks][]. Specifically, any
 ``[[bracketed]]`` word is converted to a link.
@@ -13,8 +11,7 @@ This extension is included in the standard Markdown library.
 
 [WikiLinks]: http://en.wikipedia.org/wiki/Wikilink
 
-Syntax
-------
+## Syntax
 
 A ``[[bracketed]]`` word is any combination of  upper or lower case letters,
 number, dashes, underscores and spaces surrounded by double brackets. Therefore
@@ -47,8 +44,7 @@ becomes
 <a href="/Wiki_Link/" class="wikilink">Wiki Link</a>
 ```
 
-Usage
------
+## Usage
 
 See [Extensions](index.md) for general extension usage, specify
 `markdown.extensions.wikilinks` as the name of the extension.
@@ -76,7 +72,7 @@ The following options are provided to change the default behavior:
 
 * **`build_url`**: Callable which formats the URL from its parts.
 
-### Examples ###
+### Examples
 
 For an example, let us suppose links should always point to the sub-directory
 `/wiki/` and end with `.html`
@@ -122,8 +118,7 @@ Would cause all WikiLinks to be assigned to the class `myclass`.
 <a href="/WikiLink/" class="myclass">WikiLink</a>
 ```
 
-Using with Meta-Data extension
-------------------------------
+## Using with Meta-Data extension
 
 The WikiLink extension also supports the [Meta-Data](meta_data.md) extension.
 Please see the documentation for that extension for specifics. The supported

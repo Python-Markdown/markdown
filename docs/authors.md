@@ -1,34 +1,34 @@
-title:      Authors
+title: Authors
 
 Primary Authors
 ===============
 
-*   __[Waylan Limberg](http://achinghead.com/)__
+* __[Waylan Limberg](http://achinghead.com/)__
 
-    Waylan is the current maintainer of the code and has written much of the current 
-    code base, included a complete refactor of the core.  He started out by 
-    authoring many of the available extensions and later was asked to join Yuri, 
-    where he began fixing numerous bugs, adding documentation and making general 
-    improvements to the existing code base.
+    Waylan is the current maintainer of the code and has written much of the
+    current code base, included a complete refactor of the core. He started out
+    by authoring many of the available extensions and later was asked to join
+    Yuri, where he began fixing numerous bugs, adding documentation and making
+    general improvements to the existing code base.
 
+* __[Yuri Takteyev](http://freewisdom.org/)__
 
-*   __[Yuri Takteyev](http://freewisdom.org/)__
+    Yuri wrote most of the code found in version 1.x while procrastinating his
+    Ph.D. Various pieces of his code still exist, most notably the basic
+    structure.
 
-    Yuri wrote most of the code found in version 1.x while procrastinating his Ph.D.
-    Various pieces of his code still exist, most notably the basic structure.
+* __[Manfed Stienstra](http://www.dwerg.net/)__
 
-*   __[Manfed Stienstra](http://www.dwerg.net/)__
-
-    Manfed wrote the original version of the script and is responsible for 
+    Manfed wrote the original version of the script and is responsible for
     various parts of the existing code base.
 
-*   __Artem Yunusov__
+* __Artem Yunusov__
 
-    Artem, who as part of a 2008 GSoC project, refactored inline patterns, 
-    replaced the NanoDOM with ElementTree support and made various other 
+    Artem, who as part of a 2008 GSoC project, refactored inline patterns,
+    replaced the NanoDOM with ElementTree support and made various other
     improvements.
 
-*   __David Wolever__
+* __David Wolever__
 
     David refactored the extension API and made other improvements
     as he helped to integrate Markdown into Dr.Project.
@@ -36,8 +36,8 @@ Primary Authors
 Other Contributors
 ==================
 
-The incomplete list of individuals below have provided patches or otherwise 
-contributed to the project in various ways. We would like to thank everyone 
+The incomplete list of individuals below have provided patches or otherwise
+contributed to the project in various ways. We would like to thank everyone
 who has contributed to the project in any way.
 
 * Eric Abrahamsen

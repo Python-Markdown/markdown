@@ -112,7 +112,7 @@ meta-data keywords are:
 * `header_level`
 * `header_forceid`
 
-When used, the meta-data will override the settings provided through the  
+When used, the meta-data will override the settings provided through the
 `extension_configs` interface.
 
 This document:

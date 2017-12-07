@@ -7,10 +7,10 @@ next_url:   change_log.html
 # Test Suite
 
 Python-Markdown comes with a test suite which uses the [Nose] testing
-framework and [YAML]. The test suite primarily serves to ensure that new bugs 
-are not introduced as existing bugs are patched or new features are added. It 
-also allows Python-Markdown to be tested with the tests from other 
-implementations such as John Gruber's [Perl] implementation or Michel 
+framework and [YAML]. The test suite primarily serves to ensure that new bugs
+are not introduced as existing bugs are patched or new features are added. It
+also allows Python-Markdown to be tested with the tests from other
+implementations such as John Gruber's [Perl] implementation or Michel
 Fortin's [PHP] implementation.
 
 The test suite can be run by calling the `run_tests.py` command at the root of
@@ -24,8 +24,8 @@ temporary file in `test-output.html`. Open the file in a browser to view
 the report.
 
 A `tox.ini` file is also provided, so [tox] can be used to automatically create
-virtual environments, install all testing dependencies and run the tests on 
-each supported Python version. See the wiki for instructions on 
+virtual environments, install all testing dependencies and run the tests on
+each supported Python version. See the wiki for instructions on
 [setting up a testing environment] to use tox.
 
 The test suite contains two kinds of tests: Markdown Syntax Tests and Unit
@@ -61,18 +61,18 @@ insignificant white space differences:
     MarkdownSyntaxError: Output from "/home/waylan/code/python-markdown/te
     sts/misc/lists3.txt" failed to match expected output.
 
-    --- /home/waylan/code/python-markdown/tests/misc/lists3.html 
-    +++ actual_output.html 
-    @@ -1,5 +1,5 @@ 
-     <ul> 
-     <li>blah blah blah 
-    -sdf asdf asdf asdf asdf 
-    -asda asdf asdfasd</li> 
-    +    sdf asdf asdf asdf asdf 
-    +    asda asdf asdfasd</li> 
+    --- /home/waylan/code/python-markdown/tests/misc/lists3.html
+    +++ actual_output.html
+    @@ -1,5 +1,5 @@
+     <ul>
+     <li>blah blah blah
+    -sdf asdf asdf asdf asdf
+    -asda asdf asdfasd</li>
+    +    sdf asdf asdf asdf asdf
+    +    asda asdf asdfasd</li>
      </ul>
 
-    ---------------------------------------------------------------------- 
+    ----------------------------------------------------------------------
     Ran 219 tests in 7.698s
 
     FAILED (MarkdownSyntaxError=1, SKIP=53)
@@ -109,29 +109,29 @@ settings under a specific file section will override anything in the
 Below are the configuration options available and the defaults used when they
 are not explicitly set.
 
-* `normalize`: Switches white space normalization of the test output on or off. 
-  Defaults to `False` (off). Note: This requires that [PyTidyLib] be installed on 
-  the system. Otherwise the test will be skipped, regardless of any other 
-  settings.  
-* `skip`: Switches skipping of the test on and off. Defaults to `False` (off).  
-* `input_ext`: Extension of input file. Defaults to `.txt`. Useful for tests 
+* `normalize`: Switches white space normalization of the test output on or off.
+  Defaults to `False` (off). Note: This requires that [PyTidyLib] be installed
+  on the system. Otherwise the test will be skipped, regardless of any other
+  settings.
+* `skip`: Switches skipping of the test on and off. Defaults to `False` (off).
+* `input_ext`: Extension of input file. Defaults to `.txt`. Useful for tests
   from other implementations.
 * `output_ext`: Extension of output file. Defaults to `.html`. Useful for tests
   from other implementations.
-* Any keyword argument accepted by the Markdown class. If not set, Markdown's 
-  defaults are used. 
+* Any keyword argument accepted by the Markdown class. If not set, Markdown's
+  defaults are used.
 
 ## Unit Tests
 
 Unit Tests are used as regression tests for Python-Markdown's API.
 All Unit Tests shipped with Python-Markdown are standard Python Unit Tests and
-are all contained in `tests/test_apis.py` and `tests/test_extensions.py`. 
-Standard discovery methods are used to find and run the tests. Therefore, when 
+are all contained in `tests/test_apis.py` and `tests/test_extensions.py`.
+Standard discovery methods are used to find and run the tests. Therefore, when
 writing new tests, those standards and naming conventions should be followed.
 
-[Nose]: http://somethingaboutorange.com/mrl/projects/nose/ 
-[Perl]: http://daringfireball.net/projects/markdown/ 
-[PHP]: http://michelf.com/projects/php-markdown/ 
+[Nose]: http://somethingaboutorange.com/mrl/projects/nose/
+[Perl]: http://daringfireball.net/projects/markdown/
+[PHP]: http://michelf.com/projects/php-markdown/
 [PyTidyLib]: http://countergram.com/open-source/pytidylib/
 [tox]: http://testrun.org/tox/latest/
 [setting up a testing environment]: https://github.com/Python-Markdown/markdown/wiki/Test-Environment-Setup

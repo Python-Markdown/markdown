@@ -82,13 +82,14 @@ path.
     more convenient to have `markdown_py` on your path.
 
 !!!Note
-    Python-Markdown uses `"markdown_py"` as a script name because
-    the Perl implementation has already taken the more obvious name "markdown".
+    Python-Markdown uses `"markdown_py"` as a script name because the Perl
+    implementation has already taken the more obvious name "markdown".
     Additionally, the default Python configuration on some systems would cause a
-    script named `"markdown.py"` to fail by importing itself rather than the markdown
-    library. Therefore, the script has been named `"markdown_py"` as a compromise. If
-    you prefer a different name for the script on your system, it is suggested that
-    you create a symbolic link to `markdown_py` with your preferred name.
+    script named `"markdown.py"` to fail by importing itself rather than the
+    markdown library. Therefore, the script has been named `"markdown_py"` as a
+    compromise. If you prefer a different name for the script on your system, it
+    is suggested that you create a symbolic link to `markdown_py` with your
+    preferred name.
 
 Usage
 -----
@@ -137,29 +138,31 @@ can pass them in as well:
 python -m markdown -x markdown.extensions.footnotes -c config.yml input.txt
 ```
 
-The `-c` (or `--extension_configs`) option accepts a file name. The file must be in
-either the [YAML] or [JSON] format and contain YAML or JSON data that would map to
-a Python Dictionary in the format required by the [`extension_configs`][ec] keyword
-of the `markdown.Markdown` class. Therefore, the file `config.yaml` referenced in the
-above example might look like this:
+The `-c` (or `--extension_configs`) option accepts a file name. The file must be
+in either the [YAML] or [JSON] format and contain YAML or JSON data that would
+map to a Python Dictionary in the format required by the
+[`extension_configs`][ec] keyword of the `markdown.Markdown` class. Therefore,
+the file `config.yaml` referenced in the above example might look like this:
 
 ```yaml
 markdown.extensions.footnotes:
     PLACE_MARKER: ~~~~~~~~
     UNIQUE_IDS: True
 ```
-Note that while the `--extension_configs` option does specify the "markdown.extensions.footnotes"
-extension, you still need to load the extension with the `-x` option, or the configuration for that
-extension will be ignored.
 
-The `--extension_configs` option will only support YAML configuration files if [PyYAML] is
-installed on your system. JSON should work with no additional dependencies. The format
-of your configuration file is automatically detected.
+Note that while the `--extension_configs` option does specify the
+"markdown.extensions.footnotes" extension, you still need to load the extension
+with the `-x` option, or the configuration for that extension will be ignored.
+
+The `--extension_configs` option will only support YAML configuration files if
+[PyYAML] is installed on your system. JSON should work with no additional
+dependencies. The format of your configuration file is automatically detected.
 
 !!!warning
-	The previously documented method of appending the extension configuration options as a string to the
-	extension name will be deprecated in Python-Markdown version 2.6. The `--extension_configs`
-	option should be used instead. See the [2.5 release notes] for more information.
+    The previously documented method of appending the extension configuration
+    options as a string to the extension name will be deprecated in
+    Python-Markdown version 2.6. The `--extension_configs` option should be used
+    instead. See the [2.5 release notes] for more information.
 
 [ec]: reference.html#extension_configs
 [YAML]: http://yaml.org/

@@ -1,4 +1,4 @@
-title:      Release Notes for v2.2
+title: Release Notes for v2.2
 
 Python-Markdown 2.2 Release Notes
 =================================
@@ -17,24 +17,24 @@ While Python-Markdown has received only minor internal changes since the last
 release, there are a few backward-incompatible changes to note:
 
 * Support had been dropped for Python 2.4. No guarantees are made that the
-library will work in any version of Python lower than 2.5. Additionally, while
-the library had been tested with Python 2.5, consider Python 2.5 support to be
-depreciated. It is not likely that any future versions will continue to support
-any version of Python less than 2.6.
+  library will work in any version of Python lower than 2.5. Additionally, while
+  the library had been tested with Python 2.5, consider Python 2.5 support to be
+  depreciated. It is not likely that any future versions will continue to
+  support any version of Python less than 2.6.
 
-* For many years Python-Markdown has identified `<ins>` and `<del>` tags in
-raw HTML input as block level tags. As they are actually inline level tags,
-this behavior has been changed. This may result in slightly different output.
-While in most cases, the new output is more correct, there may be a few edge
-cases where a document author has relied on the previous incorrect behavior.
-It is likely that a few adjustments may need to be made to those documents.
+* For many years Python-Markdown has identified `<ins>` and `<del>` tags in raw
+  HTML input as block level tags. As they are actually inline level tags, this
+  behavior has been changed. This may result in slightly different output. While
+  in most cases, the new output is more correct, there may be a few edge cases
+  where a document author has relied on the previous incorrect behavior. It is
+  likely that a few adjustments may need to be made to those documents.
 
-* The behavior of the `enable_attributes` keyword has been slightly altered.
-If authors have been using attributes in documents with `safe_mode` on, those
-attributes will no longer be parsed unless `enable_attributes` is explicitly
-set to `True`. This change was made to prevent untrusted authors from injecting
-potentially harmful JavaScript in documents. This change had no effect when
-not in `safe_mode`.
+* The behavior of the `enable_attributes` keyword has been slightly altered. If
+  authors have been using attributes in documents with `safe_mode` on, those
+  attributes will no longer be parsed unless `enable_attributes` is explicitly
+  set to `True`. This change was made to prevent untrusted authors from
+  injecting potentially harmful JavaScript in documents. This change had no
+  effect when not in `safe_mode`.
 
 What's New in Python-Markdown 2.2
 ---------------------------------

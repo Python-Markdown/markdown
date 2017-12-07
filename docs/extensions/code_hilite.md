@@ -1,10 +1,8 @@
 title: CodeHilite Extension
 
-CodeHilite
-==========
+# CodeHilite
 
-Summary
--------
+## Summary
 
 The CodeHilite extension adds code/syntax highlighting to standard
 Python-Markdown code blocks using [Pygments][].
@@ -13,10 +11,9 @@ Python-Markdown code blocks using [Pygments][].
 
 This extension is included in the standard Markdown library.
 
-Setup
------
+## Setup
 
-### Step 1: Download and Install Pygments ###
+### Step 1: Download and Install Pygments
 
 You will also need to [download][dl] and install the Pygments package on your
 `PYTHONPATH`. The CodeHilite extension will produce HTML output without
@@ -25,7 +22,7 @@ Pygments, but it won't highlight anything (same behavior as setting
 
 [dl]: http://pygments.org/download/
 
-### Step 2: Add CSS Classes ###
+### Step 2: Add CSS Classes
 
 You will need to define the appropriate CSS classes with appropriate rules.
 The CSS rules either need to be defined in or linked from the header of your
@@ -68,9 +65,7 @@ block will not be highlighted.
 [preview]: http://richleland.github.io/pygments-css/
 [documentation]: http://pygments.org/docs/
 
-
-Syntax
-------
+## Syntax
 
 The CodeHilite extension follows the same [syntax][] as regular Markdown code
 blocks, with one exception. The highlighter needs to know what language to use for
@@ -86,7 +81,7 @@ code block contains and each one has a different result.
 
 [syntax]: http://daringfireball.net/projects/markdown/syntax#precode
 
-### Shebang (with path) ###
+### Shebang (with path)
 
 If the first line of the code block contains a shebang, the language is derived
 from that and line numbers are used.
@@ -101,7 +96,7 @@ Will result in:
     #!/usr/bin/python
     # Code goes here ...
 
-### Shebang (no path) ###
+### Shebang (no path)
 
 If the first line contains a shebang, but the shebang line does not contain a
 path (a single `/` or even a space), then that line is removed from the code
@@ -117,7 +112,7 @@ Will result in:
     #!python
     # Code goes here ...
 
-### Colons ###
+### Colons
 
 If the first line begins with three or more colons, the text following the
 colons identifies the language. The first line is removed from the code block
@@ -145,7 +140,7 @@ This is useful to direct the reader's attention to specific lines.
 !!! Note
     `hl_lines` is named for Pygments' option meaning "highlighted lines".
 
-### When No Language is Defined ###
+### When No Language is Defined
 
 CodeHilite is completely backwards compatible so that if a code block is
 encountered that does not define a language, the block is simply wrapped in
@@ -171,8 +166,7 @@ Lets see the source for that:
     the language (unless `guess_lang` is set to `False`). Upon failure, the same
     behavior will happen as described above.
 
-Usage
------
+## Usage
 
 See [Extensions](index.md) for general extension usage, specify
 `markdown.extensions.codehilite` as the name of the extension.

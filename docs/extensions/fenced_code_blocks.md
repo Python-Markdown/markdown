@@ -1,18 +1,15 @@
 title: Fenced Code Blocks Extension
 
-Fenced Code Blocks
-==================
+# Fenced Code Blocks
 
-Summary
--------
+## Summary
 
 The Fenced Code Blocks extension adds a secondary way to define code blocks,
 which overcomes a few limitations of the indented code blocks.
 
 This extension is included in the standard Markdown library.
 
-Syntax
-------
+## Syntax
 
 Fenced Code Blocks are defined using the syntax established in
 [PHP Markdown Extra][php].
@@ -38,7 +35,7 @@ part of the list.
     Fenced Code Blocks are only supported at the document root level.
     Therefore, they cannot be nested inside lists or blockquotes.
 
-### Language ###
+### Language
 
 In addition to PHP Extra's syntax, you can define the language of the code
 block for use by syntax highlighters etc. The language will be assigned as a
@@ -77,7 +74,7 @@ The above will output:
 
 [GitHub]: http://github.github.com/github-flavored-markdown/
 
-### Emphasized Lines ###
+### Emphasized Lines
 
 If you would like to have your fenced code blocks highlighted with the
 [CodeHilite][] extension, simply enable that extension (remember that
@@ -111,8 +108,7 @@ The lines can be specified with PHP Extra's syntax:
 [Pygments]: http://pygments.org/
 [colon]: code_hilite.html#colons
 
-Usage
------
+## Usage
 
 See [Extensions](index.md) for general extension usage, specify
 `markdown.extensions.fenced_code` as the name of the extension.

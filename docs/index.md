@@ -21,8 +21,8 @@ The Python-Markdown project is developed with the following goals in mind:
   suited to use in web server environments (never raise an exception, never
   write to stdout, etc.) as an implementation of the markdown parser that
   follows the [syntax rules](http://daringfireball.net/projects/markdown/syntax)
-  and the behavior of the original (markdown.pl) implementation as reasonably
-  as possible (see [differences](#differences) for a few exceptions).
+  and the behavior of the original (markdown.pl) implementation as reasonably as
+  possible (see [differences](#differences) for a few exceptions).
 
 * Provide an [Extension API](extensions/api.md) which makes it possible
   to change and/or extend the behavior of the parser.
@@ -48,8 +48,8 @@ features:
 
 * __Output Formats__
 
-    Python-Markdown can output documents with either HTML or XHTML styel tags. See the
-    [Library Reference](reference.md#output_format) for details.
+    Python-Markdown can output documents with either HTML or XHTML styel tags.
+    See the [Library Reference](reference.md#output_format) for details.
 
 * __Command Line Interface__
 
@@ -100,7 +100,6 @@ are summarized below:
     Python-Markdown maintains the same behavior with no plans to change in the
     foreseeable future. That said, the [Sane List Extension](extensions/sane_lists.md)
     is available to provide a less surprising behavior.
-
 
 Support
 -------

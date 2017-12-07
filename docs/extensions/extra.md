@@ -1,10 +1,8 @@
 title: Extra Extension
 
-Python-Markdown Extra
-=====================
+# Python-Markdown Extra
 
-Summary
--------
+## Summary
 
 A compilation of various Python-Markdown extensions that (mostly) imitates
 [PHP Markdown Extra](http://michelf.com/projects/php-markdown/extra/).
@@ -22,8 +20,7 @@ The supported extensions include:
 See each individual extension for syntax documentation. Extra and all its
 supported extensions are included in the standard Markdown library.
 
-Usage
------
+## Usage
 
 From the Python interpreter:
 
@@ -38,10 +35,9 @@ of those extensions are not part of PHP Markdown Extra, and
 therefore, not part of Python-Markdown Extra. If you really would
 like Extra to include additional extensions, we suggest creating
 your own clone of Extra under a different name
-(see the [Extension API](api.md)).  
+(see the [Extension API](api.md)).
 
-Markdown Inside HTML Blocks
----------------------------
+### Markdown Inside HTML Blocks
 
 Unlike the other Extra features, this feature is built into the markdown core and
 is turned on when `markdown.extensions.extra` is enabled.
@@ -77,6 +73,7 @@ This is *true* markdown text.
 ```
 
 ### Nested Markdown Inside HTML Blocks
+
 Nested elements are more sensitive and must be used cautiously. To avoid
 unexpected results:
 
@@ -123,7 +120,7 @@ Raw HTML blocks may also be nested.
 This text is after the markdown in HTML.
 ```
 
-#### Result:
+#### Complex Result:
 
 ```html
 <div name="Example">

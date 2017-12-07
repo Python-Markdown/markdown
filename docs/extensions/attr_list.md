@@ -1,24 +1,21 @@
 title: Attribute Lists Extension
 
-Attribute Lists
-===============
+# Attribute Lists
 
-Summary
--------
+## Summary
 
 The Attribute Lists extension adds a syntax to define attributes on the various
 HTML elements in markdown's output.
 
 This extension is included in the standard Markdown library.
 
-Syntax
-------
+## Syntax
 
 The basic syntax was inspired by [Maruku][]'s Attribute Lists feature.
 
 [Maruku]: http://maruku.rubyforge.org/proposal.html#attribute_lists
 
-### The List ###
+### The List
 
 An example attribute list might look like this:
 
@@ -46,7 +43,7 @@ The above example would result in the following attributes being defined:
 id="id2" class="class2 class3 class4"
 ```
 
-### Block Level ###
+### Block Level
 
 To define attributes for a block level element, the attribute list should
 be defined on the last line of the block by itself.
@@ -78,7 +75,7 @@ The above results in the following output:
 <h3 id="hash">A hash style header</h3>
 ```
 
-### Inline ###
+### Inline
 
 To define attributes on inline elements, the attribute list should be defined
 immediately after the inline element with no white space.
@@ -93,8 +90,7 @@ The above results in the following output:
 <p><a href="http://example.com" class="foo bar" title="Some title!">link</a></p>
 ```
 
-Usage
------
+## Usage
 
 See [Extensions](index.md) for general extension usage, specify
 `markdown.extensions.attr_list` as the name of the extension.

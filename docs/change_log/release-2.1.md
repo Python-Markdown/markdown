@@ -1,4 +1,4 @@
-title:      Release Notes for v2.1
+title: Release Notes for v2.1
 
 Python-Markdown 2.1 Release Notes
 =================================
@@ -20,45 +20,46 @@ While Python-Markdown has received only minor internal changes since the last
 release, there are a few backward-incompatible changes to note:
 
 * Support had been dropped for Python 2.3. No guarantees are made that the
-library will work in any version of Python lower than 2.4. Additionally, while
-the library had been tested with Python 2.4, consider Python 2.4 support to be
-depreciated. It is not likely that any future versions will continue to support
-any version of Python less than 2.5. Note that Python 3.0 is not supported due
-to a bug in its 2to3 tool. If you must use Python-Markdown with Python 3.0, it
-is suggested you manually use Python 3.1's 2to3 tool to do a conversion.
+  library will work in any version of Python lower than 2.4. Additionally, while
+  the library had been tested with Python 2.4, consider Python 2.4 support to be
+  depreciated. It is not likely that any future versions will continue to
+  support any version of Python less than 2.5. Note that Python 3.0 is not
+  supported due to a bug in its 2to3 tool. If you must use Python-Markdown with
+  Python 3.0, it is suggested you manually use Python 3.1's 2to3 tool to do a
+  conversion.
 
 * Python-Markdown previously accepted positional arguments on its class and
-wrapper methods. It now expects keyword arguments. Currently, the positional
-arguments should continue to work, but the solution feels hacky and may be
-removed in a future version. All users are encouraged to use keyword arguments
-as documented in the [Library Reference](../reference.md).
+  wrapper methods. It now expects keyword arguments. Currently, the positional
+  arguments should continue to work, but the solution feels hacky and may be
+  removed in a future version. All users are encouraged to use keyword arguments
+  as documented in the [Library Reference](../reference.md).
 
 * Past versions of Python-Markdown provided module level Global variables which
-controlled the behavior of a few different aspects of the parser. Those global
-variables have been replaced with attributes on the Markdown class.
-Additionally, those attributes are settable as keyword arguments when
-initializing a class instance. Therefore, if you were editing the global
-variables (either by editing the source or by overriding them in your code),
-you should now set them on the class. See the
-[Library Reference](../reference.md) for the options available.
+  controlled the behavior of a few different aspects of the parser. Those global
+  variables have been replaced with attributes on the Markdown class.
+  Additionally, those attributes are settable as keyword arguments when
+  initializing a class instance. Therefore, if you were editing the global
+  variables (either by editing the source or by overriding them in your code),
+  you should now set them on the class. See the [Library
+  Reference](../reference.md) for the options available.
 
-* If you have been using the [HeaderId](../extensions/header_id.md) extension
-to define custom ids on headers, you will want to switch to using the new
-[Attribute List](../extensions/attr_list.md) extension. The HeaderId extension
-now only auto-generates ids on headers which have not already had ids defined.
-Note that the [Extra](../extensions/extra.md) extension has been switched to use
-Attribute Lists instead of HeaderId as it did previously.
+* If you have been using the [HeaderId](../extensions/header_id.md) extension to
+  define custom ids on headers, you will want to switch to using the new
+  [Attribute List](../extensions/attr_list.md) extension. The HeaderId extension
+  now only auto-generates ids on headers which have not already had ids defined.
+  Note that the [Extra](../extensions/extra.md) extension has been switched to
+  use Attribute Lists instead of HeaderId as it did previously.
 
-* Some code was moved into the `markdown.util` namespace which was previously
-in the `markdown` namespace. Extension authors may need to adjust a few
-import statements in their extensions to work with the changes.
+* Some code was moved into the `markdown.util` namespace which was previously in
+  the `markdown` namespace. Extension authors may need to adjust a few import
+  statements in their extensions to work with the changes.
 
 * The command line script name was changed to `markdown_py`. The previous name
-(`markdown`) was conflicting with people (and Linux package systems) who also
-had markdown.pl installed on there system as markdown.pl's command line script
-was also named `markdown`. Be aware that installing Python-Markdown 2.1
-will not remove the old versions of the script with different names. You
-may want to remove them yourself as they are unlikely to work properly.
+  (`markdown`) was conflicting with people (and Linux package systems) who also
+  had markdown.pl installed on there system as markdown.pl's command line script
+  was also named `markdown`. Be aware that installing Python-Markdown 2.1 will
+  not remove the old versions of the script with different names. You may want
+  to remove them yourself as they are unlikely to work properly.
 
 What's New in Python-Markdown 2.1
 ---------------------------------

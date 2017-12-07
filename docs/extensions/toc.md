@@ -59,9 +59,10 @@ would generate the following output:
 <h1 id="header-2">Header 2</h1>
 ```
 
-Regardless of whether a `marker` is found in the document (or disabled), the Table of
-Contents is available as an attribute (`toc`) on the Markdown class. This allows
-one to insert the Table of Contents elsewhere in their page template. For example:
+Regardless of whether a `marker` is found in the document (or disabled), the
+Table of Contents is available as an attribute (`toc`) on the Markdown class.
+This allows one to insert the Table of Contents elsewhere in their page
+template. For example:
 
 ```pycon
 >>> md = markdown.Markdown(extensions=['markdown.extensions.toc'])
@@ -83,8 +84,8 @@ The following options are provided to configure the output:
 * **`marker`**:
     Text to find and replace with the Table of Contents. Defaults to `[TOC]`.
 
-    Set to an empty string to disable searching for a marker, which may save some time,
-    especially on long documents.
+    Set to an empty string to disable searching for a marker, which may save
+    some time, especially on long documents.
 
 * **`title`**:
     Title to insert in the Table of Contents' `<div>`. Defaults to `None`.
@@ -96,16 +97,17 @@ The following options are provided to configure the output:
     Set to `True` or a string to generate permanent links at the end of each header.
     Useful with Sphinx style sheets.
 
-    When set to `True` the paragraph symbol (&para; or "`&para;`") is used as the link
-    text. When set to a string, the provided string is used as the link text.
+    When set to `True` the paragraph symbol (&para; or "`&para;`") is used as
+    the link text. When set to a string, the provided string is used as the link
+    text.
 
 * **`baselevel`**:
     Base level for headers. Defaults to `1`.
 
-    The `baselevel` setting allows the header levels to be automatically adjusted to
-    fit within the hierarchy of your HTML templates. For example, suppose the
-    Markdown text for a page should not contain any headers higher than level 3
-    (`<h3>`). The following will accomplish that:
+    The `baselevel` setting allows the header levels to be automatically
+    adjusted to fit within the hierarchy of your HTML templates. For example,
+    suppose the Markdown text for a page should not contain any headers higher
+    than level 3 (`<h3>`). The following will accomplish that:
 
         :::pycon
         >>>  text = '''

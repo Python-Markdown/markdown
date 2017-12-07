@@ -1,26 +1,20 @@
-title:      Library Reference
-prev_title: Installation
-prev_url:   install.html
-next_title: Command Line
-next_url:   cli.html
+title: Library Reference
 
-
-Using Markdown as a Python Library
-==================================
+# Using Markdown as a Python Library
 
 First and foremost, Python-Markdown is intended to be a python library module
 used by various projects to convert Markdown syntax into HTML.
 
-The Basics
-----------
+## The Basics
 
 To use markdown as a module:
 
-    import markdown
-    html = markdown.markdown(your_text_string)
+```python
+import markdown
+html = markdown.markdown(your_text_string)
+```
 
-The Details
------------
+## The Details
 
 Python-Markdown provides two public functions ([`markdown.markdown`](#markdown)
 and [`markdown.markdownFromFile`](#markdownFromFile)) both of which wrap the
@@ -45,12 +39,14 @@ __text__{: #text }
         Do not pass encoded strings to it! If your input is encoded, (e.g. as
         UTF-8), it is your responsibility to decode it.  For example:
 
+            :::python
             input_file = codecs.open("some_file.txt", mode="r", encoding="utf-8")
             text = input_file.read()
             html = markdown.markdown(text)
 
         If you want to write the output to disk, you *must* encode it yourself:
 
+            :::python
             output_file = codecs.open("some_file.html", "w",
                                       encoding="utf-8",
                                       errors="xmlcharrefreplace"
@@ -70,18 +66,20 @@ __extensions__{: #extensions }
     The list of extensions may contain instances of extensions and/or strings
     of extension names.
 
+        :::python
         extensions=[MyExtension(), 'path.to.my.ext']
 
     !!! note
         The preferred method is to pass in an instance of an extension. Strings
-		should only be used when it is impossible to import the Extension Class
-		directly (from the command line or in a template).
+        should only be used when it is impossible to import the Extension Class
+        directly (from the command line or in a template).
 
     When passing in extension instances, each class instance must be a subclass
     of `markdown.extensions.Extension` and any configuration options should be
     defined when initiating the class instance rather than using the
     [`extension_configs`](#extension_configs) keyword. For example:
 
+        :::python
         from markdown.extensions import Extension
         class MyExtension(Extension):
             # define your extension here...
@@ -91,24 +89,26 @@ __extensions__{: #extensions }
     If an extension name is provided as a string, the extension must be
     importable as a python module on your PYTHONPATH. Python's dot notation is
     supported. Therefore, to import the 'extra' extension, one could do
-    `extensions=['markdown.extensions.extra']`  
+    `extensions=['markdown.extensions.extra']`
 
-	Additionally, a Class may be specified in the name. The class must be at the end of
-	the name and be separated by a colon from the module.
+    Additionally, a Class may be specified in the name. The class must be at the
+    end of the name and be separated by a colon from the module.
 
-	Therefore, if you were to import the class like this:
+    Therefore, if you were to import the class like this:
 
-		from path.to.module import SomeExtensionClass
+        :::python
+        from path.to.module import SomeExtensionClass
 
-	Then the named extension would comprise this string:
+    Then the named extension would comprise this string:
 
-		"path.to.module:SomeExtensionClass"
+        :::python
+        "path.to.module:SomeExtensionClass"
 
-	!!! note
-		You should only need to specify the class name if more than one extension
-		is defined	within the same module. The extensions that come with
-		Python-Markdown do *not* need to have the class name specified. However,
-		doing so will not effect the behavior of the parser.
+    !!! note
+        You should only need to specify the class name if more than one extension
+        is defined  within the same module. The extensions that come with
+        Python-Markdown do *not* need to have the class name specified. However,
+        doing so will not effect the behavior of the parser.
 
     When loading an extension by name (as a string), you may pass in
     configuration settings to the extension using the
@@ -133,6 +133,7 @@ __extension_configs__{: #extension_configs }
 
     The dictionary of configuration settings must be in the following format:
 
+        :::python
         extension_configs = {
             'extension_name_1': {
                 'option_1': 'value_1',
@@ -152,8 +153,12 @@ __output_format__{: #output_format }:
 
     Supported formats are:
 
-    * `"xhtml"`: Outputs XHTML style tags. **Default**.
-    * `"html"`: Outputs HTML style tags.
+    * `"xhtml1"`: Outputs XHTML 1.x. **Default**.
+    * `"xhtml5"`: Outputs XHTML style tags of HTML 5
+    * `"xhtml"`: Outputs latest supported version of XHTML (currently XHTML 1.1).
+    * `"html4"`: Outputs HTML 4
+    * `"html5"`: Outputs HTML style tags of HTML 5
+    * `"html"`: Outputs latest supported version of HTML (currently HTML 4).
 
     The values can be in either lowercase or uppercase.
 
@@ -162,7 +167,9 @@ __output_format__{: #output_format }:
         `"html4"`) be used as the more general formats (`"xhtml"` or `"html"`) may
         change in the future if it makes sense at that time.
 
-* __`safe_mode`__{: #safe_mode }: Disallow raw HTML.
+__safe_mode__{: #safe_mode }:
+
+:    Disallow raw HTML.
 
     !!! warning
         "`safe_mode`" is deprecated and should not be used.
@@ -170,58 +177,75 @@ __output_format__{: #output_format }:
         HTML sanitizers (like [Bleach]) provide a better solution for
         dealing with markdown text submitted by untrusted users.
 
+            :::python
             import markdown
             import bleach
             html = bleach.clean(markdown.markdown(untrusted_text))
 
         See the [release notes] for more info.
 
-[Bleach]: https://github.com/jsocol/bleach
-[release notes]: release-2.6.html
-
     The following values are accepted:
 
-    * `False` (Default): Raw HTML is passed through unaltered.
+    `False` (Default):
 
-    * `replace`: Replace all HTML blocks with the text assigned to
-      `html_replacement_text` To maintain backward compatibility, setting
-      `safe_mode=True` will have the same effect as `safe_mode='replace'`.   
+    : Raw HTML is passed through unaltered.
+
+    `replace`:
+
+    : Replace all HTML blocks with the text assigned to
+      `html_replacement_text`. To maintain backward compatibility, setting
+      `safe_mode=True` will have the same effect as `safe_mode='replace'`.
 
         To replace raw HTML with something other than the default, do:
 
-            md = markdown.Markdown(safe_mode='replace',
-                               html_replacement_text='--RAW HTML NOT ALLOWED--')
+            :::python
+            md = markdown.Markdown(
+                safe_mode='replace',
+                html_replacement_text='--RAW HTML NOT ALLOWED--'
+            )
 
-    * `remove`: All raw HTML will be completely stripped from the text with
+    `remove`:
+
+    : All raw HTML will be completely stripped from the text with
       no warning to the author.
 
-    * `escape`: All raw HTML will be escaped and included in the document.
+    `escape`:
+
+    : All raw HTML will be escaped and included in the document.
 
         For example, the following source:
 
+            :::md
             Foo <b>bar</b>.
 
         Will result in the following HTML:
 
+            :::html
             <p>Foo &lt;b&gt;bar&lt;/b&gt;.</p>
 
     !!! Note
         "safe_mode" also alters the default value for the
         [`enable_attributes`](#enable_attributes) option.
 
+[Bleach]: https://github.com/jsocol/bleach
+[release notes]: change_log/release-2.6.md
 
-* __`html_replacement_text`__{: #html_replacement_text }: Text used when
-  safe_mode is set to `replace`. Defaults to `[HTML_REMOVED]`.
+__html_replacement_text__{: #html_replacement_text }:
+
+: Text used when safe_mode is set to `replace`. Defaults to `[HTML_REMOVED]`.
 
     !!! warning
         "`html_replacement_text`" is deprecated and should not be used.
         See the [release notes] for more info.
 
-* __`tab_length`__{: #tab_length }: Length of tabs in the source. Default: 4
+__tab_length__{: #tab_length }:
 
-* __`enable_attributes`__{: #enable_attributes}: Enable the conversion of
-  attributes. Defaults to `True`, unless [`safe_mode`](#safe_mode) is enabled,
-  in which case the default is `False`.
+: Length of tabs in the source. Default: 4
+
+__enable_attributes__{: #enable_attributes}:
+
+: Enable the conversion of attributes. Defaults to `True`, unless
+  [`safe_mode`](#safe_mode) is enabled, in which case the default is `False`.
 
     !!! Note
         `safe_mode` only overrides the default. If `enable_attributes`
@@ -229,14 +253,17 @@ __output_format__{: #output_format }:
         However, this could potentially allow an untrusted user to inject
         JavaScript into your documents.
 
-* __`smart_emphasis`__{: #smart_emphasis }: Treat `_connected_words_`
-  intelligently Default: True
+__smart_emphasis__{: #smart_emphasis }:
 
-* __`lazy_ol`__{: #lazy_ol }: Ignore number of first item of ordered lists.
-  Default: True
+: Treat `_connected_words_` intelligently Default: True
+
+__lazy_ol__{: #lazy_ol }:
+
+: Ignore number of first item of ordered lists. Default: True
 
     Given the following list:
 
+        :::md
         4. Apples
         5. Oranges
         6. Pears
@@ -246,13 +273,12 @@ __output_format__{: #output_format }:
     If `lazy_ol` is set to `False`, then markdown will output the following
     HTML:
 
+        :::html
         <ol start="4">
           <li>Apples</li>
           <li>Oranges</li>
           <li>Pears</li>
         </ol>
-
-:   Length of tabs in the source. Default: 4
 
 ### `markdown.markdownFromFile (**kwargs)` {: #markdownFromFile }
 
@@ -308,22 +334,27 @@ argument of the [`markdown.markdown`](#markdown) function.
 You should also use this method if you want to process multiple strings
 without creating a new instance of the class for each string.
 
-    md = markdown.Markdown()
-    html1 = md.convert(text1)
-    html2 = md.convert(text2)
+```python
+md = markdown.Markdown()
+html1 = md.convert(text1)
+html2 = md.convert(text2)
+```
 
 Depending on which options and/or extensions are being used, the parser may
 need its state reset between each call to `convert`, otherwise performance
 can degrade drastically:
 
-    html1 = md.convert(text1)
-    md.reset()
-    html2 = md.convert(text2)
+```python
+html1 = md.convert(text1)
+md.reset()
+html2 = md.convert(text2)
+```
 
 To make this easier, you can also chain calls to `reset` together:
 
-    html3 = md.reset().convert(text3)
-
+```python
+html3 = md.reset().convert(text3)
+```
 
 #### Markdown.convertFile(**kwargs) {: #convertFile }
 
