@@ -1,7 +1,9 @@
-title:      Change Log
+title: Change Log
 
 Python-Markdown Change Log
 =========================
+
+Dec 7, 2017: Released version 2.6.10 (a documentation update).
 
 Aug 17, 2017: Released version 2.6.9 (a bug-fix release).
 
