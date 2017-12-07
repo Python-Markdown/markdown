@@ -12,21 +12,23 @@ underscores.
 
 The Smart_Strong extension is included in the standard Markdown library.
 
-[smart_emphasis]: ../reference.html#smart_emphasis
+[smart_emphasis]: ../reference.md#smart_emphasis
 
 Example
 -------
 
-    >>> import markdown
-    >>> markdown.markdown('Text with double__underscore__words.', \
-                          extensions=['markdown.extensions.smart_strong'])
-    u'<p>Text with double__underscore__words.</p>'
-    >>> markdown.markdown('__Strong__ still works.', \
-                          extensions=['markdown.extensions.smart_strong'])
-    u'<p><strong>Strong</strong> still works.</p>'
-    >>> markdown.markdown('__this__works__too__.', \
-                          extensions=['markdown.extensions.smart_strong'])
-    u'<p><strong>this__works__too</strong>.</p>'
+```pycon
+>>> import markdown
+>>> markdown.markdown('Text with double__underscore__words.', \
+                      extensions=['markdown.extensions.smart_strong'])
+u'<p>Text with double__underscore__words.</p>'
+>>> markdown.markdown('__Strong__ still works.', \
+                      extensions=['markdown.extensions.smart_strong'])
+u'<p><strong>Strong</strong> still works.</p>'
+>>> markdown.markdown('__this__works__too__.', \
+                      extensions=['markdown.extensions.smart_strong'])
+u'<p><strong>this__works__too</strong>.</p>'
+```
 
 Usage
 -----

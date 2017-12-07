@@ -14,20 +14,22 @@ This extension is included in the standard Markdown library.
 Syntax
 ------
 
-Fenced Code Blocks are defined using the syntax established in 
+Fenced Code Blocks are defined using the syntax established in
 [PHP Markdown Extra][php].
 
 [php]: http://www.michelf.com/projects/php-markdown/extra/#fenced-code-blocks
 
 Thus, the following text (taken from the above referenced PHP documentation):
 
-    This is a paragraph introducing:
+```md
+This is a paragraph introducing:
 
+~~~~~~~~~~~~~~~~~~~~
+a one-line code block
     ~~~~~~~~~~~~~~~~~~~~
-    a one-line code block
-    ~~~~~~~~~~~~~~~~~~~~
+```
 
-Fenced code blocks can have a blank line as the first  and/or last line of a 
+Fenced code blocks can have a blank line as the first  and/or last line of a
 code block and they can also come immediately after a list item without becoming
 part of the list.
 
@@ -38,40 +40,46 @@ part of the list.
 
 ### Language ###
 
-In addition to PHP Extra's syntax, you can define the language of the code 
-block for use by syntax highlighters etc. The language will be assigned as a 
-class attribute of the ``<code>`` element in the output. Therefore, you should 
-define the language as you would a CSS class - ``.language``. For consistency 
-with other markdown syntax, the language can *optionally* be wrapped in curly 
+In addition to PHP Extra's syntax, you can define the language of the code
+block for use by syntax highlighters etc. The language will be assigned as a
+class attribute of the ``<code>`` element in the output. Therefore, you should
+define the language as you would a CSS class - ``.language``. For consistency
+with other markdown syntax, the language can *optionally* be wrapped in curly
 brackets:
 
-    ~~~~{.python}
-    # python code
-    ~~~~
+```md
+~~~~{.python}
+# python code
+~~~~
 
-    ~~~~.html
-    <p>HTML Document</p>
-    ~~~~
+~~~~.html
+<p>HTML Document</p>
+~~~~
+```
 
 The above will output:
 
-    <pre><code class="python"># python code
-    </code></pre>
-    
-    <pre><code class="html">&lt;p&gt;HTML Document&lt;/p&gt;
-    </code></pre>
+```html
+<pre><code class="python"># python code
+</code></pre>
+
+<pre><code class="html">&lt;p&gt;HTML Document&lt;/p&gt;
+</code></pre>
+```
 
 [GitHub][]'s backtick (`\``) syntax is also supported:
 
-    ```python
-    # more python code
-    ```
+````md
+```python
+# more python code
+```
+````
 
 [GitHub]: http://github.github.com/github-flavored-markdown/
 
 ### Emphasized Lines ###
 
-If you would like to have your fenced code blocks highlighted with the 
+If you would like to have your fenced code blocks highlighted with the
 [CodeHilite][] extension, simply enable that extension (remember that
 [Pygments][] is its dependency) and the language of your fenced code blocks
 will be passed in and highlighted appropriately.
@@ -81,19 +89,23 @@ can also have emphasized certain lines of code.
 
 The lines can be specified with PHP Extra's syntax:
 
-    ~~~~{.python hl_lines="1 3"}
-    # This line is emphasized
-    # This line isn't
-    # This line is emphasized
-    ~~~~
+```md
+~~~~{.python hl_lines="1 3"}
+# This line is emphasized
+# This line isn't
+# This line is emphasized
+~~~~
+```
 
 ... or with GitHub's:
 
-    ```python hl_lines="1 3"
-    # This line is emphasized
-    # This line isn't
-    # This line is emphasized
-    ```
+````md
+```python hl_lines="1 3"
+# This line is emphasized
+# This line isn't
+# This line is emphasized
+```
+````
 
 [CodeHilite]: code_hilite.html
 [Pygments]: http://pygments.org/

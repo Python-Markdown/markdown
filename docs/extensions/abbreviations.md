@@ -6,7 +6,7 @@ Abbreviations
 Summary
 -------
 
-The Abbreviations extension adds the ability to define abbreviations. 
+The Abbreviations extension adds the ability to define abbreviations.
 Specifically, any defined abbreviation is wrapped in  an `<abbr>` tag.
 
 The Abbreviations extension is included in the standard Markdown library.
@@ -14,23 +14,27 @@ The Abbreviations extension is included in the standard Markdown library.
 Syntax
 ------
 
-Abbreviations are defined using the syntax established in 
+Abbreviations are defined using the syntax established in
 [PHP Markdown Extra][php].
 
 [php]: http://www.michelf.com/projects/php-markdown/extra/#abbr
 
 Thus, the following text (taken from the above referenced PHP documentation):
 
-    The HTML specification 
-    is maintained by the W3C.
-        
-    *[HTML]: Hyper Text Markup Language
-    *[W3C]:  World Wide Web Consortium
+```md
+The HTML specification
+is maintained by the W3C.
+
+*[HTML]: Hyper Text Markup Language
+*[W3C]:  World Wide Web Consortium
+```
 
 will be rendered as:
 
-    <p>The <abbr title="Hyper Text Markup Language">HTML</abbr> specification 
-    is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
+```html
+<p>The <abbr title="Hyper Text Markup Language">HTML</abbr> specification
+is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
+```
 
 Usage
 -----

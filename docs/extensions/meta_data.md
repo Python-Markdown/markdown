@@ -19,26 +19,28 @@ This extension is included in the standard Markdown library.
 Syntax
 ------
 
-Meta-data consists of a series of keywords and values defined at the beginning 
+Meta-data consists of a series of keywords and values defined at the beginning
 of a markdown document like this:
 
-    Title:   My Document
-    Summary: A brief description of my document.
-    Authors: Waylan Limberg
-             John Doe
-    Date:    October 2, 2007
-    blank-value: 
-    base_url: http://example.com
+```md
+Title:   My Document
+Summary: A brief description of my document.
+Authors: Waylan Limberg
+         John Doe
+Date:    October 2, 2007
+blank-value:
+base_url: http://example.com
 
-    This is the first paragraph of the document.
+This is the first paragraph of the document.
+```
 
-The keywords are case-insensitive and may consist of letters, numbers, 
-underscores and dashes and must end with a colon. The values consist of 
+The keywords are case-insensitive and may consist of letters, numbers,
+underscores and dashes and must end with a colon. The values consist of
 anything following the colon on the line and may even be blank.
 
 If a line is indented by 4 or more spaces, that line is assumed to be an
 additional line of the value for the previous keyword. A keyword may have as
-many lines as desired. 
+many lines as desired.
 
 The first blank line ends all meta-data for the document. Therefore, the first
 line of a document must not be blank.
@@ -61,30 +63,32 @@ See [Extensions](index.md) for general extension usage, specify
 Accessing the Meta-Data
 -----------------------
 
-The meta-data is made available as a python Dict in the `Meta` attribute of an 
+The meta-data is made available as a python Dict in the `Meta` attribute of an
 instance of the Markdown class. For example, using the above document:
 
-    >>> md = markdown.Markdown(extensions = ['markdown.extensions.meta'])
-    >>> html = md.convert(text)
-    >>> # Meta-data has been stripped from output
-    >>> print html
-    <p>This is the first paragraph of the document.</p>
+```pycon
+>>> md = markdown.Markdown(extensions = ['markdown.extensions.meta'])
+>>> html = md.convert(text)
+>>> # Meta-data has been stripped from output
+>>> print html
+<p>This is the first paragraph of the document.</p>
 
-    >>> # View meta-data
-    >>> print md.Meta
-    {
-    'title' : ['My Document'],
-    'summary' : ['A brief description of my document.'],
-    'authors' : ['Waylan Limberg', 'John Doe'],
-    'date' : ['October 2, 2007'],
-    'blank-value' : [''],
-    'base_url' : ['http://example.com']
-    }
+>>> # View meta-data
+>>> print md.Meta
+{
+'title' : ['My Document'],
+'summary' : ['A brief description of my document.'],
+'authors' : ['Waylan Limberg', 'John Doe'],
+'date' : ['October 2, 2007'],
+'blank-value' : [''],
+'base_url' : ['http://example.com']
+}
+```
 
-Note that the keys are all lowercase and the values consist of a list of 
-strings where each item is one line for that key. This way, one could preserve 
-line breaks if desired. Or the items could be joined where appropriate. No 
-assumptions are made regarding the data. It is simply passed as found to the 
+Note that the keys are all lowercase and the values consist of a list of
+strings where each item is one line for that key. This way, one could preserve
+line breaks if desired. Or the items could be joined where appropriate. No
+assumptions are made regarding the data. It is simply passed as found to the
 `Meta` attribute.
 
 Perhaps the meta-data could be passed into a template system, or used by
@@ -94,7 +98,7 @@ the developer.
 Compatible Extensions
 ---------------------
 
-The following extensions are currently known to work with the Meta-Data 
+The following extensions are currently known to work with the Meta-Data
 extension. The keywords they are known to support are also listed.
 
 * [HeaderId](header_id.md)
@@ -104,4 +108,3 @@ extension. The keywords they are known to support are also listed.
     * `wiki_base_url`
     * `wiki_end_url`
     * `wiki_html_class`
-

@@ -72,7 +72,7 @@ are summarized below:
     Python-Markdown defaults to ignoring middle-word emphasis. In other words,
     `some_long_filename.txt` will not become `some<em>long</em>filename.txt`.
     This can be switched off if desired. See the
-    [Library Reference](reference.html#smart_emphasis) for details.
+    [Library Reference](reference.md#smart_emphasis) for details.
 
 * __Indentation/Tab Length__
 
@@ -94,7 +94,7 @@ are summarized below:
 
 * __Consecutive Lists__
 
-    While the syntax rules are not clear on this, many implementations (including 
+    While the syntax rules are not clear on this, many implementations (including
     the original) do not end one list and start a second list when the list marker
     (asterisks, pluses, hyphens, and numbers) changes. For consistency,
     Python-Markdown maintains the same behavior with no plans to change in the

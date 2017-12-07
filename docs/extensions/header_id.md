@@ -15,25 +15,29 @@ This extension is included in the standard Markdown library.
     This extension is **Pending Deprecation**. The [Table of Contents][toc]
     Extension should be used instead, which offers most the features of this
     extension and more.
-    
+
 [toc]: toc.md
 
 Syntax
 ------
 
-By default, all headers will automatically have unique `id` attributes 
-generated based upon the text of the header (see below to turn this off). 
+By default, all headers will automatically have unique `id` attributes
+generated based upon the text of the header (see below to turn this off).
 Note this example, in which all three headers would have the same `id`:
 
-    #Header
-    #Header
-    #Header
+```md
+#Header
+#Header
+#Header
+```
 
 Results in:
 
-    <h1 id="header">Header</h1>
-    <h1 id="header_1">Header</h1>
-    <h1 id="header_2">Header</h1>
+```html
+<h1 id="header">Header</h1>
+<h1 id="header_1">Header</h1>
+<h1 id="header_2">Header</h1>
+```
 
 Usage
 -----
@@ -51,10 +55,11 @@ The following options are provided to configure the output:
     Default: `1`
 
     The `level` setting allows you to automatically adjust the header levels to
-    fit within the hierarchy of your HTML templates. For example, suppose the 
+    fit within the hierarchy of your HTML templates. For example, suppose the
     markdown text for a page should not contain any headers higher than level 3
     (`<h3>`). The following will accomplish that:
 
+        :::pycon
         >>>  text = '''
         ... #Some Header
         ... ## Next Level'''
@@ -68,10 +73,11 @@ The following options are provided to configure the output:
 
     Default: `True`
 
-    The `forceid` setting turns on or off the automatically generated ids for 
+    The `forceid` setting turns on or off the automatically generated ids for
     headers that do not have one explicitly defined (using the
     [Attribute List](attr_list.md) extension).
 
+        :::pycon
         >>> text = '''
         ... # Some Header
         ... # Header with ID # { #foo }'''
@@ -100,23 +106,26 @@ Using with Meta-Data
 --------------------
 
 The HeaderId extension also supports the [Meta-Data](meta_data.md) extension.
-Please see the documentation for that extension for specifics. The supported 
+Please see the documentation for that extension for specifics. The supported
 meta-data keywords are:
 
 * `header_level`
 * `header_forceid`
 
 When used, the meta-data will override the settings provided through the  
-`extension_configs` interface. 
+`extension_configs` interface.
 
 This document:
 
-    header_level: 2
-    header_forceid: Off
+```md
+header_level: 2
+header_forceid: Off
 
-    # A Header
-
+# A Header
+```
 
 Will result in the following output:
 
-    <h2>A Header</h2>
+```html
+<h2>A Header</h2>
+```

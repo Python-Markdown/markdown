@@ -19,7 +19,7 @@ documentation for the [CodeHilite Extension] for an explanation of the new
 is set, but `force_linenos` will raise a `DeprecationWarning` and will likely
 be removed in a future version of Python-Markdown.
 
-[CodeHilite Extension]: ../extensions/codehilite.md
+[CodeHilite Extension]: ../extensions/code_hilite.md
 
 * URLs are no longer percent-encoded. This improves compatibility with the
 original (written in Perl) Markdown implementation. Please percent-encode

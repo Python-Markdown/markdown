@@ -17,47 +17,59 @@ Syntax
 
 Admonitions are created using the following syntax:
 
-    !!! type "optional explicit title within double quotes"
-        Any number of other indented markdown elements.
+```md
+!!! type "optional explicit title within double quotes"
+    Any number of other indented markdown elements.
 
-        This is the second paragraph.
+    This is the second paragraph.
+```
 
 `type` will be used as the CSS class name and as default title. It must be a
 single word. So, for instance:
 
-    !!! note
-        You should note that the title will be automatically capitalized.
+```md
+!!! note
+    You should note that the title will be automatically capitalized.
+```
 
 will render:
 
-    <div class="admonition note">
-    <p class="admonition-title">Note</p>
-    <p>You should note that the title will be automatically capitalized.</p>
-    </div>
-
+```html
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You should note that the title will be automatically capitalized.</p>
+</div>
+```
 Optionally, you can use custom titles. For instance:
 
-    !!! danger "Don't try this at home"
-        ...
+```md
+!!! danger "Don't try this at home"
+    ...
+```
 
 will render:
 
-    <div class="admonition danger">
-    <p class="admonition-title">Don't try this at home</p>
-    <p>...</p>
-    </div>
+```html
+<div class="admonition danger">
+<p class="admonition-title">Don't try this at home</p>
+<p>...</p>
+</div>
+```
 
 If you don't want a title, use a blank string `""`:
 
-    !!! important ""
-        This is a admonition box without a title.
+```md
+!!! important ""
+    This is a admonition box without a title.
+```
 
 results in:
 
-    <div class="admonition important">
-    <p>This is a admonition box without a title.</p>
-    </div>
-
+```html
+<div class="admonition important">
+<p>This is a admonition box without a title.</p>
+</div>
+```
 
 rST suggests the following `types`, but you're free to use whatever you want:
     attention, caution, danger, error, hint, important, note, tip, warning.

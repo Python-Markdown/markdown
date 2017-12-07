@@ -32,7 +32,9 @@ The CSS rules either need to be defined in or linked from the header of your
 HTML templates. Pygments can generate CSS rules for you. Just run the following
 command from the command line:
 
-    pygmentize -S default -f html -a .codehilite > styles.css
+```bash
+pygmentize -S default -f html -a .codehilite > styles.css
+```
 
 If you are using a different `css_class` (default: `.codehilite`), then
 set the value of the `-a` option to that class name. The CSS rules will be
@@ -43,7 +45,9 @@ If you would like to use a different theme, swap out `default` for the desired
 theme. For a list of themes installed on your system (additional themes can be
 installed via Pygments plugins), run the following command:
 
-    pygmentize -L style
+```bash
+pygmentize -L style
+```
 
 See Pygments' excellent [documentation] for more details. If no language is
 defined, Pygments will attempt to guess the language. When that fails, the code
@@ -87,8 +91,10 @@ code block contains and each one has a different result.
 If the first line of the code block contains a shebang, the language is derived
 from that and line numbers are used.
 
-        #!/usr/bin/python
-        # Code goes here ...
+```md
+    #!/usr/bin/python
+    # Code goes here ...
+```
 
 Will result in:
 
@@ -101,11 +107,14 @@ If the first line contains a shebang, but the shebang line does not contain a
 path (a single `/` or even a space), then that line is removed from the code
 block before processing. Line numbers are used.
 
-        #!python
-        # Code goes here ...
+```md
+    #!python
+    # Code goes here ...
+```
 
 Will result in:
 
+    #!python
     # Code goes here ...
 
 ### Colons ###
@@ -114,11 +123,14 @@ If the first line begins with three or more colons, the text following the
 colons identifies the language. The first line is removed from the code block
 before processing and line numbers are not used.
 
-        :::python
-        # Code goes here ...
+```md
+    :::python
+    # Code goes here ...
+```
 
 Will result in:
 
+    :::python
     # Code goes here ...
 
 Certain lines can be selected for emphasis with the colon syntax. When
@@ -139,7 +151,9 @@ CodeHilite is completely backwards compatible so that if a code block is
 encountered that does not define a language, the block is simply wrapped in
 `<pre>` tags and output.
 
-        # Code goes here ...
+```md
+    # Code goes here ...
+```
 
 Will result in:
 
@@ -147,8 +161,10 @@ Will result in:
 
 Lets see the source for that:
 
-    <div class="codehilite"><pre><code># Code goes here ...
-    </code></pre></div>
+```html
+<div class="codehilite"><pre><code># Code goes here ...
+</code></pre></div>
+```
 
 !!! Note
     When no language is defined, the Pygments highlighting engine will try to guess

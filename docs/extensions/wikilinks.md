@@ -19,11 +19,15 @@ Syntax
 A ``[[bracketed]]`` word is any combination of  upper or lower case letters,
 number, dashes, underscores and spaces surrounded by double brackets. Therefore
 
-    [[Bracketed]]
+```md
+[[Bracketed]]
+```
 
 would produce the following HTML:
 
-    <a href="/Bracketed/" class="wikilink">Bracketed</a>
+```html
+<a href="/Bracketed/" class="wikilink">Bracketed</a>
+```
 
 Note that WikiLinks are automatically assigned `class="wikilink"` making it
 easy to style WikiLinks differently from other links on a page if one so
@@ -33,11 +37,15 @@ Also note that when a space is used, the space is converted to an underscore in
 the link but left as-is in the label. Perhaps an example would illustrate this
 best:
 
-    [[Wiki Link]]
+```md
+[[Wiki Link]]
+```
 
 becomes
 
-    <a href="/Wiki_Link/" class="wikilink">Wiki Link</a>
+```html
+<a href="/Wiki_Link/" class="wikilink">Wiki Link</a>
+```
 
 Usage
 -----
@@ -73,36 +81,46 @@ The following options are provided to change the default behavior:
 For an example, let us suppose links should always point to the sub-directory
 `/wiki/` and end with `.html`
 
-    >>> from markdown.extensions.wikilinks import WikiLinkExtension
-	>>> html = markdown.markdown(text,
-    ...     extensions=[WikiLinkExtension(base_url='/wiki/', end_url='.html')]
-    ... )
+```pycon
+>>> from markdown.extensions.wikilinks import WikiLinkExtension
+>>> html = markdown.markdown(text,
+...     extensions=[WikiLinkExtension(base_url='/wiki/', end_url='.html')]
+... )
+```
 
 The above would result in the following link for `[[WikiLink]]`.
 
-    <a href="/wiki/WikiLink.html" class="wikilink">WikiLink</a>
+```html
+<a href="/wiki/WikiLink.html" class="wikilink">WikiLink</a>
+```
 
 If you want to do more that just alter the base and/or end of the URL, you
 could also pass in a callable which must accept three arguments (``label``,
 ``base``, and ``end``). The callable must return the URL in it's entirety.
 
-    >>> def my_url_builder(label, base, end):
-    ...    # do stuff
-    ...    return url
-	...
-    >>> html = markdown.markdown(text,
-    ...     extensions=[WikiLinkExtension(build_url=my_url_builder)],
-    ... )
+```pycon
+>>> def my_url_builder(label, base, end):
+...    # do stuff
+...    return url
+...
+>>> html = markdown.markdown(text,
+...     extensions=[WikiLinkExtension(build_url=my_url_builder)],
+... )
+```
 
 The option is also provided to change or remove the class attribute.
 
-    >>> html = markdown.markdown(text,
-    ...     extensions=[WikiLinkExtension(html_class='myclass')]
-    ... )
+```pycon
+>>> html = markdown.markdown(text,
+...     extensions=[WikiLinkExtension(html_class='myclass')]
+... )
+```
 
 Would cause all WikiLinks to be assigned to the class `myclass`.
 
-    <a href="/WikiLink/" class="myclass">WikiLink</a>
+```html
+<a href="/WikiLink/" class="myclass">WikiLink</a>
+```
 
 Using with Meta-Data extension
 ------------------------------
@@ -120,12 +138,16 @@ When used, the meta-data will override the settings provided through the
 
 This document:
 
-    wiki_base_url: http://example.com/
-    wiki_end_url:  .html
-    wiki_html_class:
+```md
+wiki_base_url: http://example.com/
+wiki_end_url:  .html
+wiki_html_class:
 
-    A [[WikiLink]] in the first paragraph.
+A [[WikiLink]] in the first paragraph.
+```
 
 would result in the following output (notice the blank `wiki_html_class`):
 
-    <p>A <a href="http://example.com/WikiLink.html">WikiLink</a> in the first paragraph.</p>
+```html
+<p>A <a href="http://example.com/WikiLink.html">WikiLink</a> in the first paragraph.</p>
+```

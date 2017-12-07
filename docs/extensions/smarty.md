@@ -19,39 +19,41 @@ ASCII symbol | Replacements    | HTML Entities       | Substitution Keys
 `---`        | &mdash;         | `&mdash;`           | `'mdash'`
 
 Using the configuration option 'substitutions' you can overwrite the
-default substitutions. Just pass a dict mapping (a subset of) the 
+default substitutions. Just pass a dict mapping (a subset of) the
 keys to the substitution strings.
-    
-For example, one might use the following configuration to get correct quotes for 
+
+For example, one might use the following configuration to get correct quotes for
 the German language:
 
-    extension_configs = {
-        'markdown.extensions.smarty': {
-            'substitutions': {
-                'left-single-quote': '&sbquo;', # sb is not a typo!
-                'right-single-quote': '&lsquo;',
-                'left-double-quote': '&bdquo;',
-                'right-double-quote': '&ldquo;'
-            }
+```python
+extension_configs = {
+    'markdown.extensions.smarty': {
+        'substitutions': {
+            'left-single-quote': '&sbquo;', # sb is not a typo!
+            'right-single-quote': '&lsquo;',
+            'left-double-quote': '&bdquo;',
+            'right-double-quote': '&ldquo;'
         }
     }
+}
+```
 
 !!! note
-    This extension re-implements the Python [SmartyPants] 
+    This extension re-implements the Python [SmartyPants]
     library by integrating it into the markdown parser.
     While this does not provide any additional features,
-    it does offer a few advantages. Notably, it will not 
-    try to work on highlighted code blocks (using the 
-    [CodeHilite] Extension) like the third party library 
+    it does offer a few advantages. Notably, it will not
+    try to work on highlighted code blocks (using the
+    [CodeHilite] Extension) like the third party library
     has been known to do.
-    
+
 [SmartyPants]: http://pythonhosted.org/smartypants/
 [CodeHilite]: code_hilite.html
 
 Usage
 -----
 
-See [Extensions](index.md) for general extension usage, specify 
+See [Extensions](index.md) for general extension usage, specify
 `markdown.extensions.smarty` as the name of the extension.
 
 See the [Library Reference](../reference.md#extensions) for information about

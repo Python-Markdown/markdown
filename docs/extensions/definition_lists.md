@@ -14,31 +14,34 @@ This extension is included in the standard Markdown library.
 Syntax
 ------
 
-Definition lists are defined using the syntax established in 
+Definition lists are defined using the syntax established in
 [PHP Markdown Extra][php].
 
 [php]: http://www.michelf.com/projects/php-markdown/extra/#def-list
 
 Thus, the following text (taken from the above referenced PHP documentation):
 
-    Apple
-    :   Pomaceous fruit of plants of the genus Malus in 
-        the family Rosaceae.
+```md
+Apple
+:   Pomaceous fruit of plants of the genus Malus in
+    the family Rosaceae.
 
-    Orange
-    :   The fruit of an evergreen tree of the genus Citrus.
+Orange
+:   The fruit of an evergreen tree of the genus Citrus.
+```
 
 will be rendered as:
 
-    <dl>
-    <dt>Apple</dt>
-    <dd>Pomaceous fruit of plants of the genus Malus in 
-    the family Rosaceae.</dd>
+```html
+<dl>
+<dt>Apple</dt>
+<dd>Pomaceous fruit of plants of the genus Malus in
+the family Rosaceae.</dd>
 
-    <dt>Orange</dt>
-    <dd>The fruit of an evergreen tree of the genus Citrus.</dd>
-    </dl>
-
+<dt>Orange</dt>
+<dd>The fruit of an evergreen tree of the genus Citrus.</dd>
+</dl>
+```
 
 Usage
 -----

@@ -19,7 +19,7 @@ The supported extensions include:
 * [Tables](tables.md)
 * [Smart Strong](smart_strong.md)
 
-See each individual extension for syntax documentation. Extra and all its 
+See each individual extension for syntax documentation. Extra and all its
 supported extensions are included in the standard Markdown library.
 
 Usage
@@ -27,15 +27,17 @@ Usage
 
 From the Python interpreter:
 
-    >>> import markdown
-    >>> html = markdown.markdown(text, ['markdown.extensions.extra'])
+```pycon
+>>> import markdown
+>>> html = markdown.markdown(text, ['markdown.extensions.extra'])
+```
 
 There may be [additional extensions](index.md) that are distributed with
-Python-Markdown that are not included here in Extra. The features 
-of those extensions are not part of PHP Markdown Extra, and 
-therefore, not part of Python-Markdown Extra. If you really would 
-like Extra to include additional extensions, we suggest creating 
-your own clone of Extra under a different name 
+Python-Markdown that are not included here in Extra. The features
+of those extensions are not part of PHP Markdown Extra, and
+therefore, not part of Python-Markdown Extra. If you really would
+like Extra to include additional extensions, we suggest creating
+your own clone of Extra under a different name
 (see the [Extension API](api.md)).  
 
 Markdown Inside HTML Blocks
@@ -56,15 +58,18 @@ regardless of tag. If the default is overridden by a value of `block`,
 *block parsing will occur* regardless of tag.
 
 #### Simple Example:
-```
+
+```md
 This is *true* markdown text.
 
 <div markdown="1">
 This is *true* markdown text.
 </div>
 ```
+
 #### Result:
-```
+
+```html
 <p>This is <em>true</em> markdown text.</p>
 <div>
 <p>This is <em>true</em> markdown text.</p>
@@ -80,7 +85,8 @@ unexpected results:
 * Only have one level of nesting.
 
 #### Complex Example:
-```
+
+```md
 <div markdown="1" name="Example">
 
 The text of the `Example` element.
@@ -116,8 +122,10 @@ Raw HTML blocks may also be nested.
 
 This text is after the markdown in HTML.
 ```
+
 #### Result:
-```
+
+```html
 <div name="Example">
 <p>The text of the <code>Example</code> element.</p>
 <div name="DefaultBlockMode">

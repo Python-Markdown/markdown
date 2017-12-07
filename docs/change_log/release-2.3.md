@@ -41,7 +41,7 @@ of the new `linenums` setting. The new setting will honor the old
 `force_linenos` if it is set, but it will raise a `PendingDeprecationWarning`
 and will likely be removed in a future version of Python-Markdown.
 
-[CodeHilite Extension]: ../extensions/codehilite.md
+[CodeHilite Extension]: ../extensions/code_hilite.md
 
 * The "RSS" extension has been removed and no longer ships with Python-Markdown.
 If you would like to continue using the extension (not recommended), it is

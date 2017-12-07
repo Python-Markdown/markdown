@@ -31,8 +31,8 @@ pages:
       - Meta-Data: extensions/meta_data.md
       - New Line to Break: extensions/nl2br.md
       - Sane Lists: extensions/sane_lists.md
-      - SmartyPants: extensions/smarty.md
       - Smart Strong: extensions/smart_strong.md
+      - SmartyPants: extensions/smarty.md
       - Table of Contents: extensions/toc.md
       - Tables: extensions/tables.md
       - WikiLinks: extensions/wikilinks.md

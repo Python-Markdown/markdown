@@ -9,13 +9,17 @@ actual source files.
 
 To use an extension, pass it to markdown with the `extensions` keyword.
 
-    markdown.markdown(some_text, extensions=[MyExtension(), 'path.to.my.ext', 'markdown.extensions.footnotes'])
+```python
+markdown.markdown(some_text, extensions=[MyExtension(), 'path.to.my.ext', 'markdown.extensions.footnotes'])
+```
 
 See the [Library Reference](../reference.md#extensions) for more details.
 
 From the command line, specify an extension with the `-x` option.
 
-    $ python -m markdown -x markdown.extensions.footnotes -x markdown.extensions.tables input.txt > output.html
+```bash
+python -m markdown -x markdown.extensions.footnotes -x markdown.extensions.tables input.txt > output.html
+```
 
 See the [Command Line docs](../cli.md) or use the `--help` option for more details.
 
