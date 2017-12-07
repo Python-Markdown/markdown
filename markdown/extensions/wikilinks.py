@@ -4,7 +4,7 @@ WikiLinks Extension for Python-Markdown
 
 Converts [[WikiLinks]] to relative links.
 
-See <https://pythonhosted.org/Markdown/extensions/wikilinks.html>
+See <https://Python-Markdown.github.io/extensions/wikilinks>
 for documentation.
 
 Original code Copyright [Waylan Limberg](http://achinghead.com/).

@@ -2,7 +2,7 @@
 Table of Contents Extension for Python-Markdown
 ===============================================
 
-See <https://pythonhosted.org/Markdown/extensions/toc.html>
+See <https://Python-Markdown.github.io/extensions/toc>
 for documentation.
 
 Oringinal code Copyright 2008 [Jack Miller](http://codezen.org)

@@ -6,6 +6,7 @@ test-output.html
 build/*
 dist/*
 tmp/*
+site/*
 MANIFEST
 .venv
 *~

@@ -6,7 +6,7 @@ Adds rST-style admonitions. Inspired by [rST][] feature with the same name.
 
 [rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions  # noqa
 
-See <https://pythonhosted.org/Markdown/extensions/admonition.html>
+See <https://Python-Markdown.github.io/extensions/admonition>
 for documentation.
 
 Original code Copyright [Tiago Serafim](http://www.tiagoserafim.com/).

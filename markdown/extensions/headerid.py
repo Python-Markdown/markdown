@@ -4,7 +4,7 @@ HeaderID Extension for Python-Markdown
 
 Auto-generate id attributes for HTML headers.
 
-See <https://pythonhosted.org/Markdown/extensions/header_id.html>
+See <https://Python-Markdown.github.io/extensions/header_id>
 for documentation.
 
 Original code Copyright 2007-2011 [Waylan Limberg](http://achinghead.com/).

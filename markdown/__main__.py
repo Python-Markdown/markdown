@@ -27,7 +27,7 @@ def parse_options(args=None, values=None):
     usage = """%prog [options] [INPUTFILE]
        (STDIN is assumed if no INPUTFILE is given)"""
     desc = "A Python implementation of John Gruber's Markdown. " \
-           "https://pythonhosted.org/Markdown/"
+           "https://Python-Markdown.github.io/"
     ver = "%%prog %s" % markdown.version
 
     parser = optparse.OptionParser(usage=usage, description=desc, version=ver)
