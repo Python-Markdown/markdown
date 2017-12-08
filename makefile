@@ -20,18 +20,14 @@ install:
 
 .PHONY : deploy
 deploy:
-	python setup.py sdist --manifest-only
-	python setup.py sdist --formats zip,gztar upload
-	mkdocs gh-deploy -r pages -b master
+	python setup.py sdist --formats gztar upload
 
 .PHONY : build
 build:
-	python setup.py sdist --manifest-only
-	python setup.py sdist --formats zip,gztar
+	python setup.py sdist --formats gztar
 
 .PHONY : build-win
 build-win:
-	python setup.py sdist --manifest-only
 	python setup.py bdist_wininst
 
 .PHONY : docs
