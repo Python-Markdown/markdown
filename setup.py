@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 
-from __future__ import with_statement
-import sys
+from setuptools import setup
 import os
-from distutils.core import setup
-from distutils.command.install_scripts import install_scripts
 import imp
 
 
@@ -14,54 +11,23 @@ def get_version():
     fp, pathname, desc = imp.find_module('__version__', [path])
     try:
         v = imp.load_module('__version__', fp, pathname, desc)
-        return v.version, v.version_info
     finally:
         fp.close()
 
-
-version, version_info = get_version()
-
-# Get development Status for classifiers
-dev_status_map = {
-    'alpha': '3 - Alpha',
-    'beta':  '4 - Beta',
-    'rc':    '4 - Beta',
-    'final': '5 - Production/Stable'
-}
-if version_info[3] == 'alpha' and version_info[4] == 0:
-    DEVSTATUS = '2 - Pre-Alpha'
-else:
-    DEVSTATUS = dev_status_map[version_info[3]]
-
-# The command line script name.  Currently set to "markdown_py" so as not to
-# conflict with the perl implimentation (which uses "markdown").  We can't use
-# "markdown.py" as the default config on some systems will cause the script to
-# try to import itself rather than the library which will raise an error.
-SCRIPT_NAME = 'markdown_py'
+    dev_status_map = {
+        'alpha': '3 - Alpha',
+        'beta':  '4 - Beta',
+        'rc':    '4 - Beta',
+        'final': '5 - Production/Stable'
+    }
+    if v.version_info[3] == 'alpha' and v.version_info[4] == 0:
+        status = '2 - Pre-Alpha'
+    else:
+        status = dev_status_map[v.version_info[3]]
+    return v.version, v.version_info, status
 
 
-class md_install_scripts(install_scripts):
-
-    """ Customized install_scripts. Create markdown_py.bat for win32. """
-
-    def run(self):
-        install_scripts.run(self)
-
-        if sys.platform == 'win32':
-            try:
-                script_dir = os.path.join(sys.prefix, 'Scripts')
-                script_path = os.path.join(script_dir, SCRIPT_NAME)
-                bat_str = '@"%s" "%s" %%*' % (sys.executable, script_path)
-                bat_path = os.path.join(
-                    self.install_dir, '%s.bat' % SCRIPT_NAME
-                )
-                f = open(bat_path, 'w')
-                f.write(bat_str)
-                f.close()
-                print('Created: %s' % bat_path)
-            except Exception:
-                _, err, _ = sys.exc_info()  # for both 2.x & 3.x compatability
-                print('ERROR: Unable to create %s: %s' % (bat_path, err))
+version, version_info, DEVSTATUS = get_version()
 
 
 long_description = '''
@@ -72,7 +38,7 @@ on what exactly is supported and what is not. Additional features are
 supported by the `Available Extensions`_.
 
 .. _Markdown: http://daringfireball.net/projects/markdown/
-.. _Features: https://Python-Markdown.github.io#Features
+.. _Features: https://Python-Markdown.github.io#features
 .. _`Available Extensions`: https://Python-Markdown.github.io/extensions/
 
 Support
@@ -84,6 +50,7 @@ You may ask for help and discuss various other issues on the
 .. _`mailing list`: http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss
 .. _`bug tracker`: http://github.com/Python-Markdown/markdown/issues
 '''
+
 
 setup(
     name='Markdown',
@@ -98,9 +65,10 @@ setup(
     maintainer_email='waylan.limberg@icloud.com',
     license='BSD License',
     packages=['markdown', 'markdown.extensions'],
-    scripts=['bin/%s' % SCRIPT_NAME],
-    cmdclass={
-        'install_scripts': md_install_scripts
+    entry_points={
+        'console_scripts': [
+            'markdown = markdown.__main__:run',
+        ]
     },
     classifiers=[
         'Development Status :: %s' % DEVSTATUS,
