@@ -1,9 +1,15 @@
 #!/bin/bash
 
 echo "Building docs..."
-mkdocs build --clean
+mkdocs build
+if [ $? -ne 0 ]; then
+    exit 1
+fi
 echo "Compiling Dictionary..."
 aspell --lang=en create master ./tmp <.spell-dict
+if [ $? -ne 0 ]; then
+    exit 1
+fi
 echo "Checking spelling..."
 
 let "fails=0"
