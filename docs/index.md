@@ -48,7 +48,7 @@ features:
 
 * __Output Formats__
 
-    Python-Markdown can output documents with either HTML or XHTML styel tags.
+    Python-Markdown can output documents with either HTML or XHTML style tags.
     See the [Library Reference](reference.md#output_format) for details.
 
 * __Command Line Interface__

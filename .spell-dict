@@ -16,8 +16,11 @@ Chodarev
 CLI
 CodeHilite
 Cogumbreiro
+convertFile
 CSS
+deliminators
 Dmitry
+docdata
 ElementTree
 extendMarkdown
 Fauske
@@ -29,6 +32,7 @@ GSoC
 hacky
 HeaderId
 HTTPS
+html
 implementers
 InlineProcessor
 Jiryu
@@ -43,6 +47,7 @@ makeExtension
 Manfed
 markdownFromFile
 Maruku
+MkDocs
 multi
 MultiMarkdown
 munge
@@ -53,12 +58,13 @@ nosetests
 OrderedDict
 OrderedDicts
 OSX
+ol
 Ph
 PHP
-Postprocessor
-Postprocessors
-Preprocessor
-Preprocessors
+postprocessor
+postprocessors
+preprocessor
+preprocessors
 Pygments
 PyPI
 PyPy
@@ -82,6 +88,7 @@ Sergej
 serializer
 serializers
 Shachnev
+sitemap
 slugify
 SmartyPants
 Sourceforge
@@ -111,6 +118,7 @@ UTF
 uTidylib
 versa
 Waylan
+whitelist
 WikiLink
 WikiLinks
 Wolever
