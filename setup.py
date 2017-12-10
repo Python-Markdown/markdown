@@ -30,6 +30,11 @@ def get_version():
 version, version_info, DEVSTATUS = get_version()
 
 
+# The command line script name.  Currently set to "markdown_py" so as not to
+# conflict with the perl implimentation (which uses "markdown").
+SCRIPT_NAME = 'markdown_py'
+
+
 long_description = '''
 This is a Python implementation of John Gruber's Markdown_.
 It is almost completely compliant with the reference implementation,
@@ -67,7 +72,7 @@ setup(
     packages=['markdown', 'markdown.extensions'],
     entry_points={
         'console_scripts': [
-            'markdown = markdown.__main__:run',
+            '%s = markdown.__main__:run' % SCRIPT_NAME,
         ]
     },
     classifiers=[
