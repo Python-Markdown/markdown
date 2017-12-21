@@ -85,3 +85,9 @@ The following options are provided to configure the output:
 * **`BACKLINK_TEXT`**:
     The text string that links from the footnote definition back to the position
     in the document. Defaults to `&#8617;`.
+
+* **`BACKLINK_TITLE`**:
+    The text string for the `title` HTML attribute of the footnote definition link.
+    `%d` will be replaced by the footnote number. Defaults to `Jump back to
+    footnote %d in the text`
+   

@@ -49,7 +49,12 @@ class FootnoteExtension(Extension):
             "BACKLINK_TEXT":
                 ["&#8617;",
                  "The text string that links from the footnote "
-                 "to the reader's place."]
+                 "to the reader's place."],
+            "BACKLINK_TITLE":
+                ["Jump back to footnote %d in the text",
+                 "The text string used for the title HTML attribute "
+                 "of the backlink. %d will be replaced by the "
+                 "footnote number."]
         }
         super(FootnoteExtension, self).__init__(*args, **kwargs)
 
@@ -192,7 +197,7 @@ class FootnoteExtension(Extension):
             backlink.set("class", "footnote-backref")
             backlink.set(
                 "title",
-                "Jump back to footnote %d in the text" %
+                self.getConfig("BACKLINK_TITLE") %
                 (self.footnotes.index(id)+1)
             )
             backlink.text = FN_BACKLINK_TEXT
