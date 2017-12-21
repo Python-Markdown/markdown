@@ -91,16 +91,16 @@ from ..treeprocessors import InlineProcessor
 # Constants for quote education.
 punctClass = r"""[!"#\$\%'()*+,-.\/:;<=>?\@\[\\\]\^_`{|}~]"""
 endOfWordClass = r"[\s.,;:!?)]"
-closeClass = "[^\ \t\r\n\[\{\(\-\u0002\u0003]"
+closeClass = r"[^\ \t\r\n\[\{\(\-\u0002\u0003]"
 
 openingQuotesBase = (
-    '(\s'               # a  whitespace char
-    '|&nbsp;'           # or a non-breaking space entity
-    '|--'               # or dashes
-    '|–|—'              # or unicode
-    '|&[mn]dash;'       # or named dash entities
-    '|&#8211;|&#8212;'  # or decimal entities
-    ')'
+    r'(\s'               # a  whitespace char
+    r'|&nbsp;'           # or a non-breaking space entity
+    r'|--'               # or dashes
+    r'|–|—'              # or unicode
+    r'|&[mn]dash;'       # or named dash entities
+    r'|&#8211;|&#8212;'  # or decimal entities
+    r')'
 )
 
 substitutions = {
@@ -144,8 +144,8 @@ closingSingleQuotesRegex = r"(?<=%s)'(?!\s|s\b|\d)" % closeClass
 closingSingleQuotesRegex2 = r"(?<=%s)'(\s|s\b)" % closeClass
 
 # All remaining quotes should be opening ones
-remainingSingleQuotesRegex = "'"
-remainingDoubleQuotesRegex = '"'
+remainingSingleQuotesRegex = r"'"
+remainingDoubleQuotesRegex = r'"'
 
 HTML_STRICT_RE = HTML_RE + r'(?!\>)'
 

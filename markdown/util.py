@@ -27,12 +27,12 @@ Constants you might want to modify
 
 
 BLOCK_LEVEL_ELEMENTS = re.compile(
-    "^(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
-    "|script|noscript|form|fieldset|iframe|math"
-    "|hr|hr/|style|li|dt|dd|thead|tbody"
-    "|tr|th|td|section|footer|header|group|figure"
-    "|figcaption|aside|article|canvas|output"
-    "|progress|video|nav|main)$",
+    r"^(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
+    r"|script|noscript|form|fieldset|iframe|math"
+    r"|hr|hr/|style|li|dt|dd|thead|tbody"
+    r"|tr|th|td|section|footer|header|group|figure"
+    r"|figcaption|aside|article|canvas|output"
+    r"|progress|video|nav|main)$",
     re.IGNORECASE
 )
 # Placeholders
