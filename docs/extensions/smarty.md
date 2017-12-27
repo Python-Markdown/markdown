@@ -73,6 +73,6 @@ Further reading
 ---------------
 
 SmartyPants extension is based on the original SmartyPants implementation
-by John Gruber. Please read it's [documentation][1] for details.
+by John Gruber. Please read its [documentation][1] for details.
 
 [1]: http://daringfireball.net/projects/smartypants/
