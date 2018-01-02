@@ -25,8 +25,8 @@ import unicodedata
 def slugify(value, separator):
     """ Slugify a string, to make it URL friendly. """
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = re.sub('[^\w\s-]', '', value.decode('ascii')).strip().lower()
-    return re.sub('[%s\s]+' % separator, separator, value)
+    value = re.sub(r'[^\w\s-]', '', value.decode('ascii')).strip().lower()
+    return re.sub(r'[%s\s]+' % separator, separator, value)
 
 
 IDCOUNT_RE = re.compile(r'^(.*)_([0-9]+)$')
