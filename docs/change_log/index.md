@@ -3,6 +3,10 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+Jan 4, 2018: Released version 2.6.11 (a bug-fix release). Added a new
+`BACKLINK-TITLE` option to the footnote extenion so that non-English
+users can provide a custom title to back links (see #610).
+
 Dec 7, 2017: Released version 2.6.10 (a documentation update).
 
 Aug 17, 2017: Released version 2.6.9 (a bug-fix release).
