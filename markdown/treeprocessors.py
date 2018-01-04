@@ -272,8 +272,8 @@ class InlineProcessor(Treeprocessor):
     def __build_ancestors(self, parent, parents):
         """Build the ancestor list."""
         ancestors = []
-        while parent:
-            if parent:
+        while parent is not None:
+            if parent is not None:
                 ancestors.append(parent.tag.lower())
             parent = self.parent_map.get(parent)
         ancestors.reverse()
@@ -303,7 +303,7 @@ class InlineProcessor(Treeprocessor):
         # to ensure we don't have the user accidentally change it on us.
         tree_parents = [] if ancestors is None else ancestors[:]
 
-        self.parent_map = dict((c, p) for p in tree.getiterator() for c in p)
+        self.parent_map = dict((c, p) for p in tree.iter() for c in p)
         stack = [(tree, tree_parents)]
 
         while stack:
