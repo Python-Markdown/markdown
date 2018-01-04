@@ -2,6 +2,7 @@ import os
 import markdown
 import codecs
 import difflib
+import warnings
 try:
     import nose
 except ImportError as e:
@@ -179,4 +180,10 @@ def generate_all():
 
 
 def run():
+    # Warnings should cause tests to fail...
+    warnings.simplefilter('error')
+    # Except for the warnings that shouldn't
+    warnings.filterwarnings('default', category=PendingDeprecationWarning)
+    warnings.filterwarnings('default', category=DeprecationWarning, module='markdown')
+
     nose.main(addplugins=[HtmlOutput(), Markdown()])
