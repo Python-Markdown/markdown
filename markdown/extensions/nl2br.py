@@ -19,7 +19,7 @@ License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
-from ..inlinepatterns import SubstituteTagPattern2
+from ..inlinepatterns import SubstituteTagInlineProcessor
 
 BR_RE = r'\n'
 
@@ -27,7 +27,7 @@ BR_RE = r'\n'
 class Nl2BrExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
-        br_tag = SubstituteTagPattern2(BR_RE, 'br')
+        br_tag = SubstituteTagInlineProcessor(BR_RE, 'br')
         md.inlinePatterns.add('nl', br_tag, '_end')
 
 

@@ -17,7 +17,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..preprocessors import Preprocessor
-from ..inlinepatterns import Pattern2
+from ..inlinepatterns import InlineProcessor
 from ..treeprocessors import Treeprocessor
 from ..postprocessors import Postprocessor
 from .. import util
@@ -305,7 +305,7 @@ class FootnotePreprocessor(Preprocessor):
         return items, i
 
 
-class FootnotePattern(Pattern2):
+class FootnotePattern(InlineProcessor):
     """ InlinePattern for footnote markers in a document's body text. """
 
     def __init__(self, pattern, footnotes):

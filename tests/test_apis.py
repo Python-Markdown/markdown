@@ -775,7 +775,7 @@ class TestEscapeAppend(unittest.TestCase):
 class TestAncestorExclusion(unittest.TestCase):
     """ Tests exclusion of tags in ancestor list. """
 
-    class AncestorExample(markdown.inlinepatterns.SimpleTagPattern2):
+    class AncestorExample(markdown.inlinepatterns.SimpleTagInlineProcessor):
         """ Ancestor Test. """
 
         ANCESTOR_EXCLUDES = ('a',)

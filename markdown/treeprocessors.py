@@ -231,7 +231,7 @@ class InlineProcessor(Treeprocessor):
         Returns: String with placeholders instead of ElementTree elements.
 
         """
-        new_style = isinstance(pattern, inlinepatterns.Pattern2)
+        new_style = isinstance(pattern, inlinepatterns.InlineProcessor)
 
         for exclude in pattern.ANCESTOR_EXCLUDES:
             if exclude.lower() in self.ancestors:

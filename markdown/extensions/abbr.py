@@ -20,7 +20,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..preprocessors import Preprocessor
-from ..inlinepatterns import Pattern2
+from ..inlinepatterns import InlineProcessor
 from ..util import etree, AtomicString
 import re
 
@@ -73,7 +73,7 @@ class AbbrPreprocessor(Preprocessor):
         return r'(?P<abbr>\b%s\b)' % (r''.join(chars))
 
 
-class AbbrPattern(Pattern2):
+class AbbrPattern(InlineProcessor):
     """ Abbreviation inline pattern. """
 
     def __init__(self, pattern, title):

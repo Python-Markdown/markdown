@@ -72,19 +72,19 @@ def build_inlinepatterns(md_instance, **kwargs):
     )
     inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md_instance)
     inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md_instance)
-    inlinePatterns["linebreak"] = SubstituteTagPattern2(LINE_BREAK_RE, 'br')
+    inlinePatterns["linebreak"] = SubstituteTagInlineProcessor(LINE_BREAK_RE, 'br')
     if md_instance.safeMode != 'escape':
         inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
     inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md_instance)
-    inlinePatterns["not_strong"] = SimpleTextPattern2(NOT_STRONG_RE)
-    inlinePatterns["em_strong"] = DoubleTagPattern2(EM_STRONG_RE, 'strong,em')
-    inlinePatterns["strong_em"] = DoubleTagPattern2(STRONG_EM_RE, 'em,strong')
-    inlinePatterns["strong"] = SimpleTagPattern2(STRONG_RE, 'strong')
-    inlinePatterns["emphasis"] = SimpleTagPattern2(EMPHASIS_RE, 'em')
+    inlinePatterns["not_strong"] = SimpleTextInlineProcessor(NOT_STRONG_RE)
+    inlinePatterns["em_strong"] = DoubleTagInlineProcessor(EM_STRONG_RE, 'strong,em')
+    inlinePatterns["strong_em"] = DoubleTagInlineProcessor(STRONG_EM_RE, 'em,strong')
+    inlinePatterns["strong"] = SimpleTagInlineProcessor(STRONG_RE, 'strong')
+    inlinePatterns["emphasis"] = SimpleTagInlineProcessor(EMPHASIS_RE, 'em')
     if md_instance.smart_emphasis:
-        inlinePatterns["emphasis2"] = SimpleTagPattern2(SMART_EMPHASIS_RE, 'em')
+        inlinePatterns["emphasis2"] = SimpleTagInlineProcessor(SMART_EMPHASIS_RE, 'em')
     else:
-        inlinePatterns["emphasis2"] = SimpleTagPattern2(EMPHASIS_2_RE, 'em')
+        inlinePatterns["emphasis2"] = SimpleTagInlineProcessor(EMPHASIS_2_RE, 'em')
     return inlinePatterns
 
 
@@ -262,7 +262,7 @@ class Pattern(object):
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
-class Pattern2(Pattern):
+class InlineProcessor(Pattern):
     """
     Base class that inline patterns subclass.
 
@@ -293,13 +293,13 @@ class SimpleTextPattern(Pattern):
         return m.group(2)
 
 
-class SimpleTextPattern2(Pattern2):
+class SimpleTextInlineProcessor(InlineProcessor):
     """ Return a simple text of group(1) of a Pattern. """
     def handleMatch(self, m):
         return m.group(1)
 
 
-class EscapePattern(Pattern2):
+class EscapePattern(InlineProcessor):
     """ Return an escaped character. """
 
     def handleMatch(self, m):
@@ -326,14 +326,14 @@ class SimpleTagPattern(Pattern):
         return el
 
 
-class SimpleTagPattern2(Pattern2):
+class SimpleTagInlineProcessor(InlineProcessor):
     """
     Return element of type `tag` with a text attribute of group(2)
     of a Pattern.
 
     """
     def __init__(self, pattern, tag):
-        Pattern2.__init__(self, pattern)
+        InlineProcessor.__init__(self, pattern)
         self.tag = tag
 
     def handleMatch(self, m):
@@ -348,16 +348,16 @@ class SubstituteTagPattern(SimpleTagPattern):
         return util.etree.Element(self.tag)
 
 
-class SubstituteTagPattern2(SimpleTagPattern2):
+class SubstituteTagInlineProcessor(SimpleTagInlineProcessor):
     """ Return an element of type `tag` with no children. """
     def handleMatch(self, m):
         return util.etree.Element(self.tag)
 
 
-class BacktickPattern(Pattern2):
+class BacktickPattern(InlineProcessor):
     """ Return a `<code>` element containing the matching text. """
     def __init__(self, pattern):
-        Pattern2.__init__(self, pattern)
+        InlineProcessor.__init__(self, pattern)
         self.ESCAPED_BSLASH = '%s%s%s' % (util.STX, ord('\\'), util.ETX)
         self.tag = 'code'
 
@@ -386,7 +386,7 @@ class DoubleTagPattern(SimpleTagPattern):
         return el1
 
 
-class DoubleTagPattern2(SimpleTagPattern2):
+class DoubleTagInlineProcessor(SimpleTagInlineProcessor):
     """Return a ElementTree element nested in tag2 nested in tag1.
 
     Useful for strong emphasis etc.
@@ -402,7 +402,7 @@ class DoubleTagPattern2(SimpleTagPattern2):
         return el1
 
 
-class HtmlPattern(Pattern2):
+class HtmlPattern(InlineProcessor):
     """ Store raw inline html and return a placeholder. """
     def handleMatch(self, m):
         rawhtml = self.unescape(m.group(1))
@@ -428,7 +428,7 @@ class HtmlPattern(Pattern2):
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
-class LinkPattern(Pattern2):
+class LinkPattern(InlineProcessor):
     """ Return a link element from the given match. """
     def handleMatch(self, m):
         el = util.etree.Element("a")
@@ -569,7 +569,7 @@ class ImageReferencePattern(ReferencePattern):
         return el
 
 
-class AutolinkPattern(Pattern2):
+class AutolinkPattern(InlineProcessor):
     """ Return a link Element given an autolink (`<http://example/com>`). """
     def handleMatch(self, m):
         el = util.etree.Element("a")
@@ -578,7 +578,7 @@ class AutolinkPattern(Pattern2):
         return el
 
 
-class AutomailPattern(Pattern2):
+class AutomailPattern(InlineProcessor):
     """
     Return a mailto link Element given an automail link (`<foo@example.com>`).
     """

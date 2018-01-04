@@ -18,7 +18,7 @@ License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
-from ..inlinepatterns import Pattern2
+from ..inlinepatterns import InlineProcessor
 from ..util import etree
 import re
 
@@ -51,7 +51,7 @@ class WikiLinkExtension(Extension):
         md.inlinePatterns.add('wikilink', wikilinkPattern, "<not_strong")
 
 
-class WikiLinks(Pattern2):
+class WikiLinks(InlineProcessor):
     def __init__(self, pattern, config):
         super(WikiLinks, self).__init__(pattern)
         self.config = config
