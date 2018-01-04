@@ -312,7 +312,7 @@ class FootnotePattern(InlineProcessor):
         super(FootnotePattern, self).__init__(pattern)
         self.footnotes = footnotes
 
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         id = m.group(1)
         if id in self.footnotes.footnotes.keys():
             sup = util.etree.Element("sup")
@@ -323,9 +323,9 @@ class FootnotePattern(InlineProcessor):
                 a.set('rel', 'footnote')  # invalid in HTML5
             a.set('class', 'footnote-ref')
             a.text = util.text_type(self.footnotes.footnotes.index(id) + 1)
-            return sup
+            return sup, m.start(0), m.end(0)
         else:
-            return None
+            return None, None, None
 
 
 class FootnotePostTreeprocessor(Treeprocessor):

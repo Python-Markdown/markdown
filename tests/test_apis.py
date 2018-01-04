@@ -780,11 +780,11 @@ class TestAncestorExclusion(unittest.TestCase):
 
         ANCESTOR_EXCLUDES = ('a',)
 
-        def handleMatch(self, m):
+        def handleMatch(self, m, data):
             """ Handle match. """
             el = markdown.util.etree.Element(self.tag)
             el.text = m.group(2)
-            return el
+            return el, m.start(0), m.end(0)
 
     class AncestorExtension(markdown.Extension):
 

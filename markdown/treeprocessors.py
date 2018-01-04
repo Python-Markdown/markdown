@@ -238,7 +238,17 @@ class InlineProcessor(Treeprocessor):
                 return data, False, 0
 
         if new_style:
-            match = pattern.getCompiledRegExp().search(data, pos=startIndex)
+            match = None
+            # Since handleMatch may reject our first match,
+            # we iterate over the buffer looking for matches
+            # until we can't find any more.
+            for match in pattern.getCompiledRegExp().finditer(data, pos=startIndex):
+                node, start, end = pattern.handleMatch(match, data)
+                if start is None or end is None:
+                    startIndex += match.end(0)
+                    match = None
+                    continue
+                break
         else:
             match = pattern.getCompiledRegExp().match(data[startIndex:])
             leftData = data[:startIndex]
@@ -246,13 +256,13 @@ class InlineProcessor(Treeprocessor):
         if not match:
             return data, False, 0
 
-        node = pattern.handleMatch(match)
+        if not new_style:
+            node = pattern.handleMatch(match)
+            start = match.start(0)
+            end = match.end(0)
 
         if node is None:
-            if new_style:
-                return data, True, match.end(0)
-            else:
-                return data, True, len(leftData)+match.span(len(match.groups()))[0]
+           return data, True, end
 
         if not isString(node):
             if not isinstance(node.text, util.AtomicString):
@@ -273,8 +283,8 @@ class InlineProcessor(Treeprocessor):
         placeholder = self.__stashNode(node, pattern.type())
 
         if new_style:
-            return "%s%s%s" % (data[:match.start(0)],
-                               placeholder, data[match.end(0):]), True, 0
+            return "%s%s%s" % (data[:start],
+                               placeholder, data[end:]), True, 0
         else:
             return "%s%s%s%s" % (leftData,
                                  match.group(1),

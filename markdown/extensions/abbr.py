@@ -80,11 +80,11 @@ class AbbrPattern(InlineProcessor):
         super(AbbrPattern, self).__init__(pattern)
         self.title = title
 
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         abbr = etree.Element('abbr')
         abbr.text = AtomicString(m.group('abbr'))
         abbr.set('title', self.title)
-        return abbr
+        return abbr, m.start(0), m.end(0)
 
 
 def makeExtension(*args, **kwargs):

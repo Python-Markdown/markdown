@@ -56,7 +56,7 @@ class WikiLinks(InlineProcessor):
         super(WikiLinks, self).__init__(pattern)
         self.config = config
 
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         if m.group(1).strip():
             base_url, end_url, html_class = self._getMeta()
             label = m.group(1).strip()
@@ -68,7 +68,7 @@ class WikiLinks(InlineProcessor):
                 a.set('class', html_class)
         else:
             a = ''
-        return a
+        return a, m.start(0), m.end(0)
 
     def _getMeta(self):
         """ Return meta data or config data. """

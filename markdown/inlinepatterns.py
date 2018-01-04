@@ -67,8 +67,8 @@ def build_inlinepatterns(md_instance, **kwargs):
     inlinePatterns["image_reference"] = ImageReferencePattern(
         IMAGE_REFERENCE_RE, md_instance
     )
-    inlinePatterns["short_reference"] = ReferencePattern(
-        SHORT_REF_RE, md_instance
+    inlinePatterns["short_reference"] = ShortReferencePattern(
+        REFERENCE_RE, md_instance
     )
     inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md_instance)
     inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md_instance)
@@ -127,20 +127,21 @@ SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\1(?!\w)'
 EMPHASIS_2_RE = r'(_)(.+?)\1'
 
 # [text](url) or [text](<url>) or [text](url "title")
-LINK_RE = NOIMG + BRK + \
-    r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\11\s*)?\)'''
+LINK_RE = NOIMG + r'\['
+# LINK_RE = NOIMG + BRK + \
+#     r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\11\s*)?\)'''
 
 # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
-IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(\s*(<.*?>|([^"\)\s]+\s*"[^"]*"|[^\)\s]*))\s*\)'
+IMAGE_LINK_RE = r'\!\['
+# IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(\s*(<.*?>|([^"\)\s]+\s*"[^"]*"|[^\)\s]*))\s*\)'
 
 # [Google][3]
-REFERENCE_RE = NOIMG + BRK + r'\s?\[([^\]]*)\]'
-
-# [Google]
-SHORT_REF_RE = NOIMG + r'\[([^\]]+)\]'
+REFERENCE_RE = LINK_RE
+# REFERENCE_RE = NOIMG + BRK + r'\s?\[([^\]]*)\]'
 
 # ![alt text][2]
-IMAGE_REFERENCE_RE = r'\!' + BRK + r'\s?\[([^\]]*)\]'
+IMAGE_REFERENCE_RE = IMAGE_LINK_RE
+# IMAGE_REFERENCE_RE = r'\!' + BRK + r'\s?\[([^\]]*)\]'
 
 # stand-alone * or _
 NOT_STRONG_RE = r'((^| )(\*|_)( |$))'
@@ -286,6 +287,18 @@ class InlineProcessor(Pattern):
         if markdown_instance:
             self.markdown = markdown_instance
 
+    def handleMatch(self, m, data):
+        """Return a ElementTree element from the given match.
+
+        Subclasses should override this method.
+
+        Keyword arguments:
+
+        * m: A re match object containing a match of the pattern.
+
+        """
+        pass  # pragma: no cover
+
 
 class SimpleTextPattern(Pattern):
     """ Return a simple text of group(2) of a Pattern. """
@@ -295,19 +308,19 @@ class SimpleTextPattern(Pattern):
 
 class SimpleTextInlineProcessor(InlineProcessor):
     """ Return a simple text of group(1) of a Pattern. """
-    def handleMatch(self, m):
-        return m.group(1)
+    def handleMatch(self, m, data):
+        return m.group(1), m.start(0), m.end(0)
 
 
 class EscapePattern(InlineProcessor):
     """ Return an escaped character. """
 
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         char = m.group(1)
         if char in self.markdown.ESCAPED_CHARS:
-            return '%s%s%s' % (util.STX, ord(char), util.ETX)
+            return '%s%s%s' % (util.STX, ord(char), util.ETX), m.start(0), m.end(0)
         else:
-            return None
+            return None, m.start(0), m.end(0)
 
 
 class SimpleTagPattern(Pattern):
@@ -336,10 +349,10 @@ class SimpleTagInlineProcessor(InlineProcessor):
         InlineProcessor.__init__(self, pattern)
         self.tag = tag
 
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         el = util.etree.Element(self.tag)
         el.text = m.group(2)
-        return el
+        return el, m.start(0), m.end(0)
 
 
 class SubstituteTagPattern(SimpleTagPattern):
@@ -350,8 +363,8 @@ class SubstituteTagPattern(SimpleTagPattern):
 
 class SubstituteTagInlineProcessor(SimpleTagInlineProcessor):
     """ Return an element of type `tag` with no children. """
-    def handleMatch(self, m):
-        return util.etree.Element(self.tag)
+    def handleMatch(self, m, data):
+        return util.etree.Element(self.tag), m.start(0), m.end(0)
 
 
 class BacktickPattern(InlineProcessor):
@@ -361,13 +374,13 @@ class BacktickPattern(InlineProcessor):
         self.ESCAPED_BSLASH = '%s%s%s' % (util.STX, ord('\\'), util.ETX)
         self.tag = 'code'
 
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         if m.group(3):
             el = util.etree.Element(self.tag)
             el.text = util.AtomicString(m.group(3).strip())
-            return el
+            return el, m.start(0), m.end(0)
         else:
-            return m.group(1).replace('\\\\', self.ESCAPED_BSLASH)
+            return m.group(1).replace('\\\\', self.ESCAPED_BSLASH), m.start(0), m.end(0)
 
 
 class DoubleTagPattern(SimpleTagPattern):
@@ -392,22 +405,22 @@ class DoubleTagInlineProcessor(SimpleTagInlineProcessor):
     Useful for strong emphasis etc.
 
     """
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         tag1, tag2 = self.tag.split(",")
         el1 = util.etree.Element(tag1)
         el2 = util.etree.SubElement(el1, tag2)
         el2.text = m.group(2)
         if len(m.groups()) == 3:
             el2.tail = m.group(3)
-        return el1
+        return el1, m.start(0), m.end(0)
 
 
 class HtmlPattern(InlineProcessor):
     """ Store raw inline html and return a placeholder. """
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         rawhtml = self.unescape(m.group(1))
         place_holder = self.markdown.htmlStash.store(rawhtml)
-        return place_holder
+        return place_holder, m.start(0), m.end(0)
 
     def unescape(self, text):
         """ Return unescaped text given text with an inline placeholder. """
@@ -429,12 +442,23 @@ class HtmlPattern(InlineProcessor):
 
 
 class LinkPattern(InlineProcessor):
+
+    RE_LINK = re.compile(r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\4\s*)?\)''', re.DOTALL | re.UNICODE)
     """ Return a link element from the given match. """
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
+        text, index, handled = self.getText(data, m.end(0))
+
+        if not handled:
+            return None, None, None
+
+        m2 = self.RE_LINK.match(data, pos=index)
+        if m2 is None:
+            return None, None, None
+
         el = util.etree.Element("a")
-        el.text = m.group(1)
-        title = m.group(12)
-        href = m.group(8)
+        el.text = ''.join(text)
+        title = m2.group(5)
+        href = m2.group(1)
 
         if href:
             if href[0] == "<":
@@ -446,7 +470,22 @@ class LinkPattern(InlineProcessor):
         if title:
             title = dequote(self.unescape(title))
             el.set("title", title)
-        return el
+        return el, m.start(0), m2.end(0)
+
+    def getText(self, data, index):
+        """Parse the content between `[]` resolving nested square brackets. """
+        bracket_count = 1
+        text = []
+        for c in data[index:]:
+            if c == ']':
+                bracket_count -= 1
+            elif c == '[':
+                bracket_count += 1
+            index += 1
+            if bracket_count == 0:
+                break
+            text.append(c)
+        return text, index, bracket_count == 0
 
     def sanitize_url(self, url):
         """
@@ -497,9 +536,19 @@ class LinkPattern(InlineProcessor):
 
 class ImagePattern(LinkPattern):
     """ Return a img element from the given match. """
-    def handleMatch(self, m):
+    RE_LINK =  re.compile(r'\s*\(\s*(<.*?>|([^"\)\s]+\s*"[^"]*"|[^\)\s]*))\s*\)', re.DOTALL | re.UNICODE)
+
+    def handleMatch(self, m, data):
+        text, index, handled = self.getText(data, m.end(0))
+        if not handled:
+            return None, None, None
+
+        m2 = self.RE_LINK.match(data, pos=index)
+        if m2 is None:
+            return None, None, None
+
         el = util.etree.Element("img")
-        src_parts = m.group(8).split()
+        src_parts = m2.group(1).split()
         if src_parts:
             src = src_parts[0]
             if src[0] == "<" and src[-1] == ">":
@@ -511,37 +560,55 @@ class ImagePattern(LinkPattern):
             el.set('title', dequote(self.unescape(" ".join(src_parts[1:]))))
 
         if self.markdown.enable_attributes:
-            truealt = handleAttributes(m.group(1), el)
+            truealt = handleAttributes(''.join(text), el)
         else:
-            truealt = m.group(1)
+            truealt = ''.join(text)
 
         el.set('alt', self.unescape(truealt))
-        return el
+        return el, m.start(0), m2.end(0)
 
 
 class ReferencePattern(LinkPattern):
     """ Match to a stored reference and return link element. """
-
     NEWLINE_CLEANUP_RE = re.compile(r'[ ]?\n', re.MULTILINE)
 
-    def handleMatch(self, m):
-        try:
-            id = m.group(8).lower()
-        except IndexError:
-            id = None
-        if not id:
-            # if we got something like "[Google][]" or "[Google]"
-            # we'll use "google" as the id
-            id = m.group(1).lower()
+    RE_LINK =  re.compile(r'\s?\[([^\]]*)\]', re.DOTALL | re.UNICODE)
+
+    def handleMatch(self, m, data):
+        text, index, handled = self.getText(data, m.end(0))
+        if not handled:
+            return None, None, None
+
+        id, end, handled = self.evalId(data, index, text)
+        if not handled:
+            return None, None, None
 
         # Clean up linebreaks in id
         id = self.NEWLINE_CLEANUP_RE.sub(' ', id)
         if id not in self.markdown.references:  # ignore undefined refs
-            return None
+            return None, m.start(0), end
+
         href, title = self.markdown.references[id]
 
-        text = m.group(1)
-        return self.makeTag(href, title, text)
+        text = ''.join(text)
+        return self.makeTag(href, title, text), m.start(0), end
+
+    def evalId(self, data, index, text):
+        """
+        Evaluate the id portion of [ref][id].
+
+        If [ref][] use [ref].
+        """
+        m2 = self.RE_LINK.match(data, pos=index)
+
+        if not m2:
+            return None, index, False
+        else:
+            id = m2.group(1).lower()
+            end = m2.end(0)
+            if not id:
+                id = ''.join(text).lower()
+        return id, end, True
 
     def makeTag(self, href, title, text):
         el = util.etree.Element('a')
@@ -552,6 +619,14 @@ class ReferencePattern(LinkPattern):
 
         el.text = text
         return el
+
+
+class ShortReferencePattern(ReferencePattern):
+    """Shorte form of reference: [google]. """
+    def evalId(self, data, index, text):
+        """Evaluate the id from of [ref]  """
+
+        return ''.join(text).lower(), index, True
 
 
 class ImageReferencePattern(ReferencePattern):
@@ -571,18 +646,18 @@ class ImageReferencePattern(ReferencePattern):
 
 class AutolinkPattern(InlineProcessor):
     """ Return a link Element given an autolink (`<http://example/com>`). """
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         el = util.etree.Element("a")
         el.set('href', self.unescape(m.group(1)))
         el.text = util.AtomicString(m.group(1))
-        return el
+        return el, m.start(0), m.end(0)
 
 
 class AutomailPattern(InlineProcessor):
     """
     Return a mailto link Element given an automail link (`<foo@example.com>`).
     """
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         el = util.etree.Element('a')
         email = self.unescape(m.group(1))
         if email.startswith("mailto:"):
@@ -603,4 +678,4 @@ class AutomailPattern(InlineProcessor):
         mailto = "".join([util.AMP_SUBSTITUTE + '#%d;' %
                           ord(letter) for letter in mailto])
         el.set('href', mailto)
-        return el
+        return el, m.start(0), m.end(0)
