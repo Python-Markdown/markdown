@@ -346,6 +346,9 @@ class ReferencePreprocessor(Preprocessor):
                         lines.pop(0)
                         t = tm.group(2) or tm.group(3) or tm.group(4)
                 self.markdown.references[id] = (link, t)
+                # Preserve the line to prevent raw HTML indexing issue.
+                # https://github.com/Python-Markdown/markdown/issues/584
+                new_text.append('')
             else:
                 new_text.append(line)
 
