@@ -14,10 +14,12 @@ if PY3:  # pragma: no cover
     string_type = str
     text_type = str
     int2str = chr
+    iterrange = range
 else:  # pragma: no cover
     string_type = basestring   # noqa
     text_type = unicode        # noqa
     int2str = unichr           # noqa
+    iterrange = xrange         # noqa
 
 
 """

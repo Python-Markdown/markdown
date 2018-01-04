@@ -128,20 +128,15 @@ EMPHASIS_2_RE = r'(_)(.+?)\1'
 
 # [text](url) or [text](<url>) or [text](url "title")
 LINK_RE = NOIMG + r'\['
-# LINK_RE = NOIMG + BRK + \
-#     r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\11\s*)?\)'''
 
 # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
 IMAGE_LINK_RE = r'\!\['
-# IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(\s*(<.*?>|([^"\)\s]+\s*"[^"]*"|[^\)\s]*))\s*\)'
 
 # [Google][3]
 REFERENCE_RE = LINK_RE
-# REFERENCE_RE = NOIMG + BRK + r'\s?\[([^\]]*)\]'
 
 # ![alt text][2]
 IMAGE_REFERENCE_RE = IMAGE_LINK_RE
-# IMAGE_REFERENCE_RE = r'\!' + BRK + r'\s?\[([^\]]*)\]'
 
 # stand-alone * or _
 NOT_STRONG_RE = r'((^| )(\*|_)( |$))'
@@ -476,7 +471,8 @@ class LinkPattern(InlineProcessor):
         """Parse the content between `[]` resolving nested square brackets. """
         bracket_count = 1
         text = []
-        for c in data[index:]:
+        for pos in util.iterrange(index, len(data)):
+            c = data[pos]
             if c == ']':
                 bracket_count -= 1
             elif c == '[':
