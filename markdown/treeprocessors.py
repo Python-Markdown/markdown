@@ -262,7 +262,7 @@ class InlineProcessor(Treeprocessor):
             end = match.end(0)
 
         if node is None:
-           return data, True, end
+            return data, True, end
 
         if not isString(node):
             if not isinstance(node.text, util.AtomicString):
