@@ -72,19 +72,19 @@ def build_inlinepatterns(md_instance, **kwargs):
     )
     inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md_instance)
     inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md_instance)
-    inlinePatterns["linebreak"] = SubstituteTagPattern(LINE_BREAK_RE, 'br')
+    inlinePatterns["linebreak"] = SubstituteTagPattern2(LINE_BREAK_RE, 'br')
     if md_instance.safeMode != 'escape':
         inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
     inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md_instance)
-    inlinePatterns["not_strong"] = SimpleTextPattern(NOT_STRONG_RE)
-    inlinePatterns["em_strong"] = DoubleTagPattern(EM_STRONG_RE, 'strong,em')
-    inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'em,strong')
-    inlinePatterns["strong"] = SimpleTagPattern(STRONG_RE, 'strong')
-    inlinePatterns["emphasis"] = SimpleTagPattern(EMPHASIS_RE, 'em')
+    inlinePatterns["not_strong"] = SimpleTextPattern2(NOT_STRONG_RE)
+    inlinePatterns["em_strong"] = DoubleTagPattern2(EM_STRONG_RE, 'strong,em')
+    inlinePatterns["strong_em"] = DoubleTagPattern2(STRONG_EM_RE, 'em,strong')
+    inlinePatterns["strong"] = SimpleTagPattern2(STRONG_RE, 'strong')
+    inlinePatterns["emphasis"] = SimpleTagPattern2(EMPHASIS_RE, 'em')
     if md_instance.smart_emphasis:
-        inlinePatterns["emphasis2"] = SimpleTagPattern(SMART_EMPHASIS_RE, 'em')
+        inlinePatterns["emphasis2"] = SimpleTagPattern2(SMART_EMPHASIS_RE, 'em')
     else:
-        inlinePatterns["emphasis2"] = SimpleTagPattern(EMPHASIS_2_RE, 'em')
+        inlinePatterns["emphasis2"] = SimpleTagPattern2(EMPHASIS_2_RE, 'em')
     return inlinePatterns
 
 
@@ -103,32 +103,32 @@ BRK = (
 NOIMG = r'(?<!\!)'
 
 # `e=f()` or ``e=f("`")``
-BACKTICK_RE = r'(?:(?<!\\)((?:\\{2})+)(?=`+)|(?<!\\)(`+)(.+?)(?<!`)\3(?!`))'
+BACKTICK_RE = r'(?:(?<!\\)((?:\\{2})+)(?=`+)|(?<!\\)(`+)(.+?)(?<!`)\2(?!`))'
 
 # \<
 ESCAPE_RE = r'\\(.)'
 
 # *emphasis*
-EMPHASIS_RE = r'(\*)([^\*]+)\2'
+EMPHASIS_RE = r'(\*)([^\*]+)\1'
 
 # **strong**
-STRONG_RE = r'(\*{2}|_{2})(.+?)\2'
+STRONG_RE = r'(\*{2}|_{2})(.+?)\1'
 
 # ***strongem*** or ***em*strong**
-EM_STRONG_RE = r'(\*|_)\2{2}(.+?)\2(.*?)\2{2}'
+EM_STRONG_RE = r'(\*|_)\1{2}(.+?)\1(.*?)\1{2}'
 
 # ***strong**em*
-STRONG_EM_RE = r'(\*|_)\2{2}(.+?)\2{2}(.*?)\2'
+STRONG_EM_RE = r'(\*|_)\1{2}(.+?)\1{2}(.*?)\1'
 
 # _smart_emphasis_
-SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\2(?!\w)'
+SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\1(?!\w)'
 
 # _emphasis_
-EMPHASIS_2_RE = r'(_)(.+?)\2'
+EMPHASIS_2_RE = r'(_)(.+?)\1'
 
 # [text](url) or [text](<url>) or [text](url "title")
 LINK_RE = NOIMG + BRK + \
-    r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\12\s*)?\)'''
+    r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\11\s*)?\)'''
 
 # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
 IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(\s*(<.*?>|([^"\)\s]+\s*"[^"]*"|[^\)\s]*))\s*\)'
@@ -177,6 +177,7 @@ def handleAttributes(text, parent):
     """Set values of an element based on attribute definitions ({@id=123})."""
     def attributeCallback(match):
         parent.set(match.group(1), match.group(2).replace('\n', ' '))
+        return ''
     return ATTR_RE.sub(attributeCallback, text)
 
 
@@ -261,17 +262,48 @@ class Pattern(object):
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
+class Pattern2(Pattern):
+    """
+    Base class that inline patterns subclass.
+
+    This is the newer style inline pattern that uses a more efficient pattern.
+    """
+
+    def __init__(self, pattern, markdown_instance=None):
+        """
+        Create an instant of an inline pattern.
+
+        Keyword arguments:
+
+        * pattern: A regular expression that matches a pattern
+
+        """
+        self.pattern = pattern
+        self.compiled_re = re.compile(pattern, re.DOTALL | re.UNICODE)
+
+        # Api for Markdown to pass safe_mode into instance
+        self.safe_mode = False
+        if markdown_instance:
+            self.markdown = markdown_instance
+
+
 class SimpleTextPattern(Pattern):
     """ Return a simple text of group(2) of a Pattern. """
     def handleMatch(self, m):
         return m.group(2)
 
 
-class EscapePattern(Pattern):
+class SimpleTextPattern2(Pattern2):
+    """ Return a simple text of group(1) of a Pattern. """
+    def handleMatch(self, m):
+        return m.group(1)
+
+
+class EscapePattern(Pattern2):
     """ Return an escaped character. """
 
     def handleMatch(self, m):
-        char = m.group(2)
+        char = m.group(1)
         if char in self.markdown.ESCAPED_CHARS:
             return '%s%s%s' % (util.STX, ord(char), util.ETX)
         else:
@@ -294,26 +326,48 @@ class SimpleTagPattern(Pattern):
         return el
 
 
+class SimpleTagPattern2(Pattern2):
+    """
+    Return element of type `tag` with a text attribute of group(2)
+    of a Pattern.
+
+    """
+    def __init__(self, pattern, tag):
+        Pattern2.__init__(self, pattern)
+        self.tag = tag
+
+    def handleMatch(self, m):
+        el = util.etree.Element(self.tag)
+        el.text = m.group(2)
+        return el
+
+
 class SubstituteTagPattern(SimpleTagPattern):
     """ Return an element of type `tag` with no children. """
     def handleMatch(self, m):
         return util.etree.Element(self.tag)
 
 
-class BacktickPattern(Pattern):
+class SubstituteTagPattern2(SimpleTagPattern2):
+    """ Return an element of type `tag` with no children. """
+    def handleMatch(self, m):
+        return util.etree.Element(self.tag)
+
+
+class BacktickPattern(Pattern2):
     """ Return a `<code>` element containing the matching text. """
     def __init__(self, pattern):
-        Pattern.__init__(self, pattern)
+        Pattern2.__init__(self, pattern)
         self.ESCAPED_BSLASH = '%s%s%s' % (util.STX, ord('\\'), util.ETX)
         self.tag = 'code'
 
     def handleMatch(self, m):
-        if m.group(4):
+        if m.group(3):
             el = util.etree.Element(self.tag)
-            el.text = util.AtomicString(m.group(4).strip())
+            el.text = util.AtomicString(m.group(3).strip())
             return el
         else:
-            return m.group(2).replace('\\\\', self.ESCAPED_BSLASH)
+            return m.group(1).replace('\\\\', self.ESCAPED_BSLASH)
 
 
 class DoubleTagPattern(SimpleTagPattern):
@@ -332,10 +386,26 @@ class DoubleTagPattern(SimpleTagPattern):
         return el1
 
 
-class HtmlPattern(Pattern):
+class DoubleTagPattern2(SimpleTagPattern2):
+    """Return a ElementTree element nested in tag2 nested in tag1.
+
+    Useful for strong emphasis etc.
+
+    """
+    def handleMatch(self, m):
+        tag1, tag2 = self.tag.split(",")
+        el1 = util.etree.Element(tag1)
+        el2 = util.etree.SubElement(el1, tag2)
+        el2.text = m.group(2)
+        if len(m.groups()) == 3:
+            el2.tail = m.group(3)
+        return el1
+
+
+class HtmlPattern(Pattern2):
     """ Store raw inline html and return a placeholder. """
     def handleMatch(self, m):
-        rawhtml = self.unescape(m.group(2))
+        rawhtml = self.unescape(m.group(1))
         place_holder = self.markdown.htmlStash.store(rawhtml)
         return place_holder
 
@@ -358,13 +428,13 @@ class HtmlPattern(Pattern):
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
-class LinkPattern(Pattern):
+class LinkPattern(Pattern2):
     """ Return a link element from the given match. """
     def handleMatch(self, m):
         el = util.etree.Element("a")
-        el.text = m.group(2)
-        title = m.group(13)
-        href = m.group(9)
+        el.text = m.group(1)
+        title = m.group(12)
+        href = m.group(8)
 
         if href:
             if href[0] == "<":
@@ -429,7 +499,7 @@ class ImagePattern(LinkPattern):
     """ Return a img element from the given match. """
     def handleMatch(self, m):
         el = util.etree.Element("img")
-        src_parts = m.group(9).split()
+        src_parts = m.group(8).split()
         if src_parts:
             src = src_parts[0]
             if src[0] == "<" and src[-1] == ">":
@@ -441,9 +511,9 @@ class ImagePattern(LinkPattern):
             el.set('title', dequote(self.unescape(" ".join(src_parts[1:]))))
 
         if self.markdown.enable_attributes:
-            truealt = handleAttributes(m.group(2), el)
+            truealt = handleAttributes(m.group(1), el)
         else:
-            truealt = m.group(2)
+            truealt = m.group(1)
 
         el.set('alt', self.unescape(truealt))
         return el
@@ -456,13 +526,13 @@ class ReferencePattern(LinkPattern):
 
     def handleMatch(self, m):
         try:
-            id = m.group(9).lower()
+            id = m.group(8).lower()
         except IndexError:
             id = None
         if not id:
             # if we got something like "[Google][]" or "[Google]"
             # we'll use "google" as the id
-            id = m.group(2).lower()
+            id = m.group(1).lower()
 
         # Clean up linebreaks in id
         id = self.NEWLINE_CLEANUP_RE.sub(' ', id)
@@ -470,7 +540,7 @@ class ReferencePattern(LinkPattern):
             return None
         href, title = self.markdown.references[id]
 
-        text = m.group(2)
+        text = m.group(1)
         return self.makeTag(href, title, text)
 
     def makeTag(self, href, title, text):
@@ -499,22 +569,22 @@ class ImageReferencePattern(ReferencePattern):
         return el
 
 
-class AutolinkPattern(Pattern):
+class AutolinkPattern(Pattern2):
     """ Return a link Element given an autolink (`<http://example/com>`). """
     def handleMatch(self, m):
         el = util.etree.Element("a")
-        el.set('href', self.unescape(m.group(2)))
-        el.text = util.AtomicString(m.group(2))
+        el.set('href', self.unescape(m.group(1)))
+        el.text = util.AtomicString(m.group(1))
         return el
 
 
-class AutomailPattern(Pattern):
+class AutomailPattern(Pattern2):
     """
     Return a mailto link Element given an automail link (`<foo@example.com>`).
     """
     def handleMatch(self, m):
         el = util.etree.Element('a')
-        email = self.unescape(m.group(2))
+        email = self.unescape(m.group(1))
         if email.startswith("mailto:"):
             email = email[len("mailto:"):]
 

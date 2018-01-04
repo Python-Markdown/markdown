@@ -18,7 +18,7 @@ License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
-from ..inlinepatterns import Pattern
+from ..inlinepatterns import Pattern2
 from ..util import etree
 import re
 
@@ -51,15 +51,15 @@ class WikiLinkExtension(Extension):
         md.inlinePatterns.add('wikilink', wikilinkPattern, "<not_strong")
 
 
-class WikiLinks(Pattern):
+class WikiLinks(Pattern2):
     def __init__(self, pattern, config):
         super(WikiLinks, self).__init__(pattern)
         self.config = config
 
     def handleMatch(self, m):
-        if m.group(2).strip():
+        if m.group(1).strip():
             base_url, end_url, html_class = self._getMeta()
-            label = m.group(2).strip()
+            label = m.group(1).strip()
             url = self.config['build_url'](label, base_url, end_url)
             a = etree.Element('a')
             a.text = label

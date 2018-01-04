@@ -231,13 +231,17 @@ class InlineProcessor(Treeprocessor):
         Returns: String with placeholders instead of ElementTree elements.
 
         """
+        new_style = isinstance(pattern, inlinepatterns.Pattern2)
 
         for exclude in pattern.ANCESTOR_EXCLUDES:
             if exclude.lower() in self.ancestors:
                 return data, False, 0
 
-        match = pattern.getCompiledRegExp().match(data[startIndex:])
-        leftData = data[:startIndex]
+        if new_style:
+            match = pattern.getCompiledRegExp().search(data, pos=startIndex)
+        else:
+            match = pattern.getCompiledRegExp().match(data[startIndex:])
+            leftData = data[:startIndex]
 
         if not match:
             return data, False, 0
@@ -245,7 +249,10 @@ class InlineProcessor(Treeprocessor):
         node = pattern.handleMatch(match)
 
         if node is None:
-            return data, True, len(leftData)+match.span(len(match.groups()))[0]
+            if new_style:
+                return data, True, match.end(0)
+            else:
+                return data, True, len(leftData)+match.span(len(match.groups()))[0]
 
         if not isString(node):
             if not isinstance(node.text, util.AtomicString):
@@ -265,9 +272,13 @@ class InlineProcessor(Treeprocessor):
 
         placeholder = self.__stashNode(node, pattern.type())
 
-        return "%s%s%s%s" % (leftData,
-                             match.group(1),
-                             placeholder, match.groups()[-1]), True, 0
+        if new_style:
+            return "%s%s%s" % (data[:match.start(0)],
+                               placeholder, data[match.end(0):]), True, 0
+        else:
+            return "%s%s%s%s" % (leftData,
+                                 match.group(1),
+                                 placeholder, match.groups()[-1]), True, 0
 
     def __build_ancestors(self, parent, parents):
         """Build the ancestor list."""

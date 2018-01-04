@@ -18,10 +18,10 @@ License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
-from ..inlinepatterns import SimpleTagPattern
+from ..inlinepatterns import SimpleTagPattern2
 
-SMART_STRONG_RE = r'(?<!\w)(_{2})(?!_)(.+?)(?<!_)\2(?!\w)'
-STRONG_RE = r'(\*{2})(.+?)\2'
+SMART_STRONG_RE = r'(?<!\w)(_{2})(?!_)(.+?)(?<!_)\1(?!\w)'
+STRONG_RE = r'(\*{2})(.+?)\1'
 
 
 class SmartEmphasisExtension(Extension):
@@ -29,10 +29,10 @@ class SmartEmphasisExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
         """ Modify inline patterns. """
-        md.inlinePatterns['strong'] = SimpleTagPattern(STRONG_RE, 'strong')
+        md.inlinePatterns['strong'] = SimpleTagPattern2(STRONG_RE, 'strong')
         md.inlinePatterns.add(
             'strong2',
-            SimpleTagPattern(SMART_STRONG_RE, 'strong'),
+            SimpleTagPattern2(SMART_STRONG_RE, 'strong'),
             '>emphasis2'
         )
 

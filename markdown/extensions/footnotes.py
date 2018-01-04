@@ -17,7 +17,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..preprocessors import Preprocessor
-from ..inlinepatterns import Pattern
+from ..inlinepatterns import Pattern2
 from ..treeprocessors import Treeprocessor
 from ..postprocessors import Postprocessor
 from .. import util
@@ -305,7 +305,7 @@ class FootnotePreprocessor(Preprocessor):
         return items, i
 
 
-class FootnotePattern(Pattern):
+class FootnotePattern(Pattern2):
     """ InlinePattern for footnote markers in a document's body text. """
 
     def __init__(self, pattern, footnotes):
@@ -313,7 +313,7 @@ class FootnotePattern(Pattern):
         self.footnotes = footnotes
 
     def handleMatch(self, m):
-        id = m.group(2)
+        id = m.group(1)
         if id in self.footnotes.footnotes.keys():
             sup = util.etree.Element("sup")
             a = util.etree.SubElement(sup, "a")
