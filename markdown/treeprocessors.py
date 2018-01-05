@@ -242,7 +242,7 @@ class InlineProcessor(Treeprocessor):
             # Since handleMatch may reject our first match,
             # we iterate over the buffer looking for matches
             # until we can't find any more.
-            for match in pattern.getCompiledRegExp().finditer(data, pos=startIndex):
+            for match in pattern.getCompiledRegExp().finditer(data, startIndex):
                 node, start, end = pattern.handleMatch(match, data)
                 if start is None or end is None:
                     startIndex += match.end(0)
