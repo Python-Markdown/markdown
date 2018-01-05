@@ -447,7 +447,7 @@ class LinkPattern(InlineProcessor):
         if not handled:
             return None, None, None
 
-        href, title, index, handled = self.getLink(data, index, True)
+        href, title, index, handled = self.getLink(data, index)
         if not handled:
             return None, None, None
 
@@ -461,7 +461,7 @@ class LinkPattern(InlineProcessor):
 
         return el, m.start(0), index
 
-    def getLink(self, data, index, spaces_in_href=False):
+    def getLink(self, data, index):
         """Parse data between () allowing recursive (). """
 
         href = []
@@ -548,20 +548,6 @@ class LinkPattern(InlineProcessor):
                     elif alt_quote and c == alt_quote:
                         exit_alt_quote = len(href) + 1
 
-                # When we want to avoid spaces in href
-                if not spaces_in_href and space and c != ' ':
-                    if not quote:
-                        # If we see a space that isn't directly followed by quotes or more spaces,
-                        # the link is invalid.
-                        break
-                    elif not ignore_matches:
-                        # We see a space, but since we are in a quote already,
-                        # it is okay. Since we are sure we are in a title now,
-                        # mark that we need to ignore matches.
-                        # [text](link'"title with space")
-                        ignore_matches = True
-                        bracket_count = 1
-
                 index += 1
 
                 # Link is closed, so let's break out of the loop
@@ -585,7 +571,9 @@ class LinkPattern(InlineProcessor):
         if title is not None:
             title = self.RE_TITLE_CLEAN.sub(' ', dequote(self.unescape(title.strip())))
 
-        return self.unescape(''.join(href).strip()), title, index, handled
+        href = self.sanitize_url(self.unescape(''.join(href).strip()))
+
+        return href, title, index, handled
 
     def getText(self, data, index):
         """Parse the content between `[]` resolving nested square brackets. """
@@ -601,7 +589,7 @@ class LinkPattern(InlineProcessor):
             if bracket_count == 0:
                 break
             text.append(c)
-        return text, index, bracket_count == 0
+        return ''.join(text), index, bracket_count == 0
 
     def sanitize_url(self, url):
         """
@@ -658,7 +646,7 @@ class ImagePattern(LinkPattern):
         if not handled:
             return None, None, None
 
-        src, title, index, handled = self.getLink(data, index, False)
+        src, title, index, handled = self.getLink(data, index)
         if not handled:
             return None, None, None
 
@@ -670,9 +658,9 @@ class ImagePattern(LinkPattern):
             el.set("title", title)
 
         if self.markdown.enable_attributes:
-            truealt = handleAttributes(''.join(text), el)
+            truealt = handleAttributes(text, el)
         else:
-            truealt = ''.join(text)
+            truealt = text
 
         el.set('alt', self.unescape(truealt))
         return el, m.start(0), index
@@ -700,7 +688,6 @@ class ReferencePattern(LinkPattern):
 
         href, title = self.markdown.references[id]
 
-        text = ''.join(text)
         return self.makeTag(href, title, text), m.start(0), end
 
     def evalId(self, data, index, text):
@@ -709,15 +696,14 @@ class ReferencePattern(LinkPattern):
 
         If [ref][] use [ref].
         """
-        m2 = self.RE_LINK.match(data, pos=index)
-
-        if not m2:
+        m = self.RE_LINK.match(data, pos=index)
+        if not m:
             return None, index, False
         else:
-            id = m2.group(1).lower()
-            end = m2.end(0)
+            id = m.group(1).lower()
+            end = m.end(0)
             if not id:
-                id = ''.join(text).lower()
+                id = text.lower()
         return id, end, True
 
     def makeTag(self, href, title, text):
@@ -736,7 +722,7 @@ class ShortReferencePattern(ReferencePattern):
     def evalId(self, data, index, text):
         """Evaluate the id from of [ref]  """
 
-        return ''.join(text).lower(), index, True
+        return text.lower(), index, True
 
 
 class ImageReferencePattern(ReferencePattern):

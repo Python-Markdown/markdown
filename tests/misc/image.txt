@@ -7,9 +7,9 @@
 
 ![Blank]()
 
-![Fail](http://humane man.jpg "The most humane man.")
+![Image](http://humane man.jpg "The most humane man.")
 
-![Fail](http://humane man.jpg)
+![Image](http://humane man.jpg)
 
 issue #613
 
