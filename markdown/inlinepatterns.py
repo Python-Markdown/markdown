@@ -486,7 +486,7 @@ class LinkPattern(InlineProcessor):
             start_quote = -1
             exit_quote = -1
             spaced_title = False
-            ingore_matches = False
+            ignore_matches = False
 
             # Secondary (second found) quote tracking,
             # assuming no quote is preceeded by a space.
@@ -503,13 +503,13 @@ class LinkPattern(InlineProcessor):
                 if c == '(':
                     # Count nested (
                     # Don't increment the bracket count if we are sure we're in a title.
-                    if not ingore_matches:
+                    if not ignore_matches:
                         bracket_count += 1
                 elif c == ')':
                     # Match nested ) to (
                     # Don't decrement if we are sure we are in a title that is unclosed.
-                    if (not ingore_matches or
-                        (ingnore_matches and (exit_quote != -1 and quote == last) or
+                    if (not ignore_matches or
+                        (ignore_matches and (exit_quote != -1 and quote == last) or
                          exit_alt_quote != -1 and alt_quote == last)):
                         bracket_count -= 1
 
@@ -520,16 +520,16 @@ class LinkPattern(InlineProcessor):
                             # Quote preceeded by a space [text](link "title").
                             # We'll assume we are now in a title.
                             # Brackets are quoted, so no need to match them (except for the final one).
-                            ingore_matches = True
+                            ignore_matches = True
                             bracket_count = 1
                         start_quote = len(href)
                         quote = c
                     # Secondary quote (in case the first doesn't resolve): [text](link'"title")
                     # If we are in this situation: [text](link' "title"), we will assume the double quotes
                     # are the the ones we want as they are preceeded by a space.
-                    elif not ingore_matches and c != quote and not alt_quote:
+                    elif not ignore_matches and c != quote and not alt_quote:
                         if space:
-                            ingore_matches = True
+                            ignore_matches = True
                             bracket_count = 1
                             start_quote = len(href)
                             quote = c
@@ -554,12 +554,12 @@ class LinkPattern(InlineProcessor):
                         # If we see a space that isn't directly followed by quotes or more spaces,
                         # the link is invalid.
                         break
-                    elif not ingore_matches:
+                    elif not ignore_matches:
                         # We see a space, but since we are in a quote already,
                         # it is okay. Since we are sure we are in a title now,
                         # mark that we need to ignore matches.
                         # [text](link'"title with space")
-                        ingore_matches = True
+                        ignore_matches = True
                         bracket_count = 1
 
                 index += 1
