@@ -437,35 +437,155 @@ class HtmlPattern(InlineProcessor):
 
 
 class LinkPattern(InlineProcessor):
-
-    RE_LINK = re.compile(r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\4\s*)?\)''', re.DOTALL | re.UNICODE)
     """ Return a link element from the given match. """
+    RE_LINK = re.compile(r'''\(\s*(?:(<.*?>)\s*(?:(['"])(.*?)\2\s*)?\))?''', re.DOTALL | re.UNICODE)
+    RE_TITLE_CLEAN = re.compile(r'\s')
+
     def handleMatch(self, m, data):
         text, index, handled = self.getText(data, m.end(0))
 
         if not handled:
             return None, None, None
 
-        m2 = self.RE_LINK.match(data, pos=index)
-        if m2 is None:
+        href, title, index, handled = self.getLink(data, index, True)
+        if not handled:
             return None, None, None
 
         el = util.etree.Element("a")
         el.text = ''.join(text)
-        title = m2.group(5)
-        href = m2.group(1)
 
-        if href:
-            if href[0] == "<":
-                href = href[1:-1]
-            el.set("href", self.sanitize_url(self.unescape(href.strip())))
-        else:
-            el.set("href", "")
+        el.set("href", self.sanitize_url(href))
 
-        if title:
-            title = dequote(self.unescape(title))
+        if title is not None:
             el.set("title", title)
-        return el, m.start(0), m2.end(0)
+
+        return el, m.start(0), index
+
+    def getLink(self, data, index, spaces_in_href=False):
+        """Parse data between () allowing recursive (). """
+
+        href = []
+        title = None
+        handled = False
+
+        m = self.RE_LINK.match(data, pos=index)
+        if m and m.group(1):
+            href = m.group(1)[1:-1].strip()
+            if m.group(3):
+                title = m.group(3)
+            index = m.end(0)
+            handled = True
+        elif m:
+            # Track bracket nesting and index in string
+            bracket_count = 1
+            index = m.end(0)
+
+            # Primary (first found) quote tracking
+            # or spaced title (first quote preceeded by a space).
+            quote = None
+            start_quote = -1
+            exit_quote = -1
+            spaced_title = False
+            ingore_matches = False
+
+            # Secondary (second found) quote tracking,
+            # assuming no quote is preceeded by a space.
+            alt_quote = None
+            start_alt_quote = -1
+            exit_alt_quote = -1
+
+            # Track if previous char was a space and the last non-space value
+            space = False
+            last = ''
+
+            for pos in util.iterrange(index, len(data)):
+                c = data[pos]
+                if c == '(':
+                    # Count nested (
+                    # Don't increment the bracket count if we are sure we're in a title.
+                    if not ingore_matches:
+                        bracket_count += 1
+                elif c == ')':
+                    # Match nested ) to (
+                    # Don't decrement if we are sure we are in a title that is unclosed.
+                    if (not ingore_matches or
+                        (ingnore_matches and (exit_quote != -1 and quote == last) or
+                         exit_alt_quote != -1 and alt_quote == last)):
+                        bracket_count -= 1
+
+                elif c in ("'", '"'):
+                    # Quote has started
+                    if not quote:
+                        if space:
+                            # Quote preceeded by a space [text](link "title").
+                            # We'll assume we are now in a title.
+                            # Brackets are quoted, so no need to match them (except for the final one).
+                            ingore_matches = True
+                            bracket_count = 1
+                        start_quote = len(href)
+                        quote = c
+                    # Secondary quote (in case the first doesn't resolve): [text](link'"title")
+                    # If we are in this situation: [text](link' "title"), we will assume the double quotes
+                    # are the the ones we want as they are preceeded by a space.
+                    elif not ingore_matches and c != quote and not alt_quote:
+                        if space:
+                            ingore_matches = True
+                            bracket_count = 1
+                            start_quote = len(href)
+                            quote = c
+
+                            # Abandon secondary quote
+                            alt_quote = None
+                            start_alt_quote = -1
+                            exit_alt_quote = -1
+                        else:
+                            start_alt_quote = len(href)
+                            alt_quote = c
+                    # Update primary quote match
+                    elif c == quote:
+                        exit_quote = len(href) + 1
+                    # Update secondary quote match
+                    elif alt_quote and c == alt_quote:
+                        exit_alt_quote = len(href) + 1
+
+                # When we want to avoid spaces in href
+                if not spaces_in_href and space and c != ' ':
+                    if not quote:
+                        # If we see a space that isn't directly followed by quotes or more spaces,
+                        # the link is invalid.
+                        break
+                    elif not ingore_matches:
+                        # We see a space, but since we are in a quote already,
+                        # it is okay. Since we are sure we are in a title now,
+                        # mark that we need to ignore matches.
+                        # [text](link'"title with space")
+                        ingore_matches = True
+                        bracket_count = 1
+
+                index += 1
+
+                # Link is closed, so let's break out of the loop
+                if bracket_count == 0:
+                    # Get the title if we closed a title string right before link closed
+                    if exit_quote >= 0 and quote == last:
+                        title = ''.join(href[start_quote + 1:exit_quote - 1])
+                        href = href[:start_quote]
+                    elif exit_alt_quote >= 0 and alt_quote == last:
+                        title = ''.join(href[start_alt_quote + 1:exit_alt_quote - 1])
+                        href = href[:start_alt_quote]
+                    break
+
+                href.append(c)
+                space = c == ' '
+                if c != ' ':
+                    last = c
+
+            handled = bracket_count == 0
+
+        if title is not None:
+            title = self.RE_TITLE_CLEAN.sub(' ', dequote(self.unescape(title.strip())))
+
+        return self.unescape(''.join(href).strip()), title, index, handled
 
     def getText(self, data, index):
         """Parse the content between `[]` resolving nested square brackets. """
@@ -532,28 +652,22 @@ class LinkPattern(InlineProcessor):
 
 class ImagePattern(LinkPattern):
     """ Return a img element from the given match. """
-    RE_LINK =  re.compile(r'\s*\(\s*(<.*?>|([^"\)\s]+\s*"[^"]*"|[^\)\s]*))\s*\)', re.DOTALL | re.UNICODE)
 
     def handleMatch(self, m, data):
         text, index, handled = self.getText(data, m.end(0))
         if not handled:
             return None, None, None
 
-        m2 = self.RE_LINK.match(data, pos=index)
-        if m2 is None:
+        src, title, index, handled = self.getLink(data, index, False)
+        if not handled:
             return None, None, None
 
         el = util.etree.Element("img")
-        src_parts = m2.group(1).split()
-        if src_parts:
-            src = src_parts[0]
-            if src[0] == "<" and src[-1] == ">":
-                src = src[1:-1]
-            el.set('src', self.sanitize_url(self.unescape(src)))
-        else:
-            el.set('src', "")
-        if len(src_parts) > 1:
-            el.set('title', dequote(self.unescape(" ".join(src_parts[1:]))))
+
+        el.set("src", self.sanitize_url(src))
+
+        if title is not None:
+            el.set("title", title)
 
         if self.markdown.enable_attributes:
             truealt = handleAttributes(''.join(text), el)
@@ -561,14 +675,14 @@ class ImagePattern(LinkPattern):
             truealt = ''.join(text)
 
         el.set('alt', self.unescape(truealt))
-        return el, m.start(0), m2.end(0)
+        return el, m.start(0), index
 
 
 class ReferencePattern(LinkPattern):
     """ Match to a stored reference and return link element. """
     NEWLINE_CLEANUP_RE = re.compile(r'[ ]?\n', re.MULTILINE)
 
-    RE_LINK =  re.compile(r'\s?\[([^\]]*)\]', re.DOTALL | re.UNICODE)
+    RE_LINK = re.compile(r'\s?\[([^\]]*)\]', re.DOTALL | re.UNICODE)
 
     def handleMatch(self, m, data):
         text, index, handled = self.getText(data, m.end(0))
