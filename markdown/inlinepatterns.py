@@ -262,7 +262,8 @@ class InlineProcessor(Pattern):
     """
     Base class that inline patterns subclass.
 
-    This is the newer style inline pattern that uses a more efficient pattern.
+    This is the newer style inline processor that uses a more
+    efficient and flexible search approach.
     """
 
     def __init__(self, pattern, markdown_instance=None):
@@ -283,13 +284,24 @@ class InlineProcessor(Pattern):
             self.markdown = markdown_instance
 
     def handleMatch(self, m, data):
-        """Return a ElementTree element from the given match.
+        """Return a ElementTree element from the given match and the
+        start and end index of the matched text.
+
+        If `start` and/or `end` are returned as `None`, it will be
+        assumed that the processor did not find a valid region of text.
 
         Subclasses should override this method.
 
         Keyword arguments:
 
         * m: A re match object containing a match of the pattern.
+        * data: The buffer current under analysis
+
+        Returns:
+
+        * el: The ElementTree element, text or None.
+        * start: The start of the region that has been matched or None.
+        * end: The end of the region that has been matched or None.
 
         """
         pass  # pragma: no cover
@@ -462,7 +474,7 @@ class LinkInlineProcessor(InlineProcessor):
         return el, m.start(0), index
 
     def getLink(self, data, index):
-        """Parse data between () allowing recursive (). """
+        """Parse data between `()` of `[Text]()` allowing recursive `()`. """
 
         href = ''
         title = None
@@ -470,6 +482,7 @@ class LinkInlineProcessor(InlineProcessor):
 
         m = self.RE_LINK.match(data, pos=index)
         if m and m.group(1):
+            # Matches [Text](<link> "title")
             href = m.group(1)[1:-1].strip()
             if m.group(3):
                 title = m.group(3)
@@ -561,7 +574,6 @@ class LinkInlineProcessor(InlineProcessor):
                         href = data[start_index:index - 1]
                     break
 
-                space = c == ' '
                 if c != ' ':
                     last = c
 
@@ -584,7 +596,10 @@ class LinkInlineProcessor(InlineProcessor):
         return href, title, index, handled
 
     def getText(self, data, index):
-        """Parse the content between `[]` resolving nested square brackets. """
+        """Parse the content between `[]` of the start of an image or link
+        resolving nested square brackets.
+
+        """
         bracket_count = 1
         text = []
         for pos in util.iterrange(index, len(data)):
