@@ -59,23 +59,23 @@ except ImportError:  # pragma: no cover
 def build_inlinepatterns(md_instance, **kwargs):
     """ Build the default set of inline patterns for Markdown. """
     inlinePatterns = odict.OrderedDict()
-    inlinePatterns["backtick"] = BacktickPattern(BACKTICK_RE)
-    inlinePatterns["escape"] = EscapePattern(ESCAPE_RE, md_instance)
-    inlinePatterns["reference"] = ReferencePattern(REFERENCE_RE, md_instance)
-    inlinePatterns["link"] = LinkPattern(LINK_RE, md_instance)
-    inlinePatterns["image_link"] = ImagePattern(IMAGE_LINK_RE, md_instance)
-    inlinePatterns["image_reference"] = ImageReferencePattern(
+    inlinePatterns["backtick"] = BacktickInlineProcessor(BACKTICK_RE)
+    inlinePatterns["escape"] = EscapeInlineProcessor(ESCAPE_RE, md_instance)
+    inlinePatterns["reference"] = ReferenceInlineProcessor(REFERENCE_RE, md_instance)
+    inlinePatterns["link"] = LinkInlineProcessor(LINK_RE, md_instance)
+    inlinePatterns["image_link"] = ImageInlineProcessor(IMAGE_LINK_RE, md_instance)
+    inlinePatterns["image_reference"] = ImageReferenceInlineProcessor(
         IMAGE_REFERENCE_RE, md_instance
     )
-    inlinePatterns["short_reference"] = ShortReferencePattern(
+    inlinePatterns["short_reference"] = ShortReferenceInlineProcessor(
         REFERENCE_RE, md_instance
     )
-    inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md_instance)
-    inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md_instance)
+    inlinePatterns["autolink"] = AutolinkInlineProcessor(AUTOLINK_RE, md_instance)
+    inlinePatterns["automail"] = AutomailInlineProcessor(AUTOMAIL_RE, md_instance)
     inlinePatterns["linebreak"] = SubstituteTagInlineProcessor(LINE_BREAK_RE, 'br')
     if md_instance.safeMode != 'escape':
-        inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
-    inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md_instance)
+        inlinePatterns["html"] = HtmlInlineProcessor(HTML_RE, md_instance)
+    inlinePatterns["entity"] = HtmlInlineProcessor(ENTITY_RE, md_instance)
     inlinePatterns["not_strong"] = SimpleTextInlineProcessor(NOT_STRONG_RE)
     inlinePatterns["em_strong"] = DoubleTagInlineProcessor(EM_STRONG_RE, 'strong,em')
     inlinePatterns["strong_em"] = DoubleTagInlineProcessor(STRONG_EM_RE, 'em,strong')
@@ -307,7 +307,7 @@ class SimpleTextInlineProcessor(InlineProcessor):
         return m.group(1), m.start(0), m.end(0)
 
 
-class EscapePattern(InlineProcessor):
+class EscapeInlineProcessor(InlineProcessor):
     """ Return an escaped character. """
 
     def handleMatch(self, m, data):
@@ -362,7 +362,7 @@ class SubstituteTagInlineProcessor(SimpleTagInlineProcessor):
         return util.etree.Element(self.tag), m.start(0), m.end(0)
 
 
-class BacktickPattern(InlineProcessor):
+class BacktickInlineProcessor(InlineProcessor):
     """ Return a `<code>` element containing the matching text. """
     def __init__(self, pattern):
         InlineProcessor.__init__(self, pattern)
@@ -410,7 +410,7 @@ class DoubleTagInlineProcessor(SimpleTagInlineProcessor):
         return el1, m.start(0), m.end(0)
 
 
-class HtmlPattern(InlineProcessor):
+class HtmlInlineProcessor(InlineProcessor):
     """ Store raw inline html and return a placeholder. """
     def handleMatch(self, m, data):
         rawhtml = self.unescape(m.group(1))
@@ -436,7 +436,7 @@ class HtmlPattern(InlineProcessor):
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
-class LinkPattern(InlineProcessor):
+class LinkInlineProcessor(InlineProcessor):
     """ Return a link element from the given match. """
     RE_LINK = re.compile(r'''\(\s*(?:(<.*?>)\s*(?:(['"])(.*?)\2\s*)?\))?''', re.DOTALL | re.UNICODE)
     RE_TITLE_CLEAN = re.compile(r'\s')
@@ -638,7 +638,7 @@ class LinkPattern(InlineProcessor):
         return urlunparse(url)
 
 
-class ImagePattern(LinkPattern):
+class ImageInlineProcessor(LinkInlineProcessor):
     """ Return a img element from the given match. """
 
     def handleMatch(self, m, data):
@@ -666,7 +666,7 @@ class ImagePattern(LinkPattern):
         return el, m.start(0), index
 
 
-class ReferencePattern(LinkPattern):
+class ReferenceInlineProcessor(LinkInlineProcessor):
     """ Match to a stored reference and return link element. """
     NEWLINE_CLEANUP_RE = re.compile(r'[ ]?\n', re.MULTILINE)
 
@@ -717,7 +717,7 @@ class ReferencePattern(LinkPattern):
         return el
 
 
-class ShortReferencePattern(ReferencePattern):
+class ShortReferenceInlineProcessor(ReferenceInlineProcessor):
     """Shorte form of reference: [google]. """
     def evalId(self, data, index, text):
         """Evaluate the id from of [ref]  """
@@ -725,7 +725,7 @@ class ShortReferencePattern(ReferencePattern):
         return text.lower(), index, True
 
 
-class ImageReferencePattern(ReferencePattern):
+class ImageReferenceInlineProcessor(ReferenceInlineProcessor):
     """ Match to a stored reference and return img element. """
     def makeTag(self, href, title, text):
         el = util.etree.Element("img")
@@ -740,7 +740,7 @@ class ImageReferencePattern(ReferencePattern):
         return el
 
 
-class AutolinkPattern(InlineProcessor):
+class AutolinkInlineProcessor(InlineProcessor):
     """ Return a link Element given an autolink (`<http://example/com>`). """
     def handleMatch(self, m, data):
         el = util.etree.Element("a")
@@ -749,7 +749,7 @@ class AutolinkPattern(InlineProcessor):
         return el, m.start(0), m.end(0)
 
 
-class AutomailPattern(InlineProcessor):
+class AutomailInlineProcessor(InlineProcessor):
     """
     Return a mailto link Element given an automail link (`<foo@example.com>`).
     """

@@ -46,14 +46,14 @@ class WikiLinkExtension(Extension):
 
         # append to end of inline patterns
         WIKILINK_RE = r'\[\[([\w0-9_ -]+)\]\]'
-        wikilinkPattern = WikiLinks(WIKILINK_RE, self.getConfigs())
+        wikilinkPattern = WikiLinksInlineProcessor(WIKILINK_RE, self.getConfigs())
         wikilinkPattern.md = md
         md.inlinePatterns.add('wikilink', wikilinkPattern, "<not_strong")
 
 
-class WikiLinks(InlineProcessor):
+class WikiLinksInlineProcessor(InlineProcessor):
     def __init__(self, pattern, config):
-        super(WikiLinks, self).__init__(pattern)
+        super(WikiLinksInlineProcessor, self).__init__(pattern)
         self.config = config
 
     def handleMatch(self, m, data):

@@ -52,7 +52,7 @@ class AbbrPreprocessor(Preprocessor):
                 abbr = m.group('abbr').strip()
                 title = m.group('title').strip()
                 self.markdown.inlinePatterns['abbr-%s' % abbr] = \
-                    AbbrPattern(self._generate_pattern(abbr), title)
+                    AbbrInlineProcessor(self._generate_pattern(abbr), title)
             else:
                 new_text.append(line)
         return new_text
@@ -73,11 +73,11 @@ class AbbrPreprocessor(Preprocessor):
         return r'(?P<abbr>\b%s\b)' % (r''.join(chars))
 
 
-class AbbrPattern(InlineProcessor):
+class AbbrInlineProcessor(InlineProcessor):
     """ Abbreviation inline pattern. """
 
     def __init__(self, pattern, title):
-        super(AbbrPattern, self).__init__(pattern)
+        super(AbbrInlineProcessor, self).__init__(pattern)
         self.title = title
 
     def handleMatch(self, m, data):
