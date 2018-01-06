@@ -1,9 +1,8 @@
 recursive-include markdown *.py
 recursive-include docs *
-recursive-include tests *.txt *.html *.cfg *.py
+recursive-include tests *.txt *.html *.py
 include setup.py
 include setup.cfg
-include run-tests.py
 include tox.ini
 include makefile
 include LICENSE.md
