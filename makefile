@@ -11,7 +11,6 @@ help:
 	@echo '    build-win     Build a Windows exe distribution'
 	@echo '    docs          Build documentation'
 	@echo '    test          Run all tests'
-	@echo '    update-tests  Generate html files for updated text files in tests'
 	@echo '    clean         Clean up the source directories'
 
 .PHONY : install
@@ -38,11 +37,8 @@ docs:
 
 .PHONY : test
 test:
-	tox
-
-.PHONY : update-tests
-update-tests:
-	python run-tests.py update
+	coverage run --source=markdown -m unittest discover tests
+	coverage report --show-missing
 
 .PHONY : clean
 clean:
