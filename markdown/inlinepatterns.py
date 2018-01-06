@@ -452,7 +452,7 @@ class LinkInlineProcessor(InlineProcessor):
             return None, None, None
 
         el = util.etree.Element("a")
-        el.text = ''.join(text)
+        el.text = text
 
         el.set("href", self.sanitize_url(href))
 
@@ -464,7 +464,7 @@ class LinkInlineProcessor(InlineProcessor):
     def getLink(self, data, index):
         """Parse data between () allowing recursive (). """
 
-        href = []
+        href = ''
         title = None
         handled = False
 
@@ -478,14 +478,16 @@ class LinkInlineProcessor(InlineProcessor):
         elif m:
             # Track bracket nesting and index in string
             bracket_count = 1
-            index = m.end(0)
+            backtrack_count = 1
+            start_index = m.end()
+            index = start_index
+            last_bracket = -1
 
             # Primary (first found) quote tracking
             # or spaced title (first quote preceeded by a space).
             quote = None
             start_quote = -1
             exit_quote = -1
-            spaced_title = False
             ignore_matches = False
 
             # Secondary (second found) quote tracking,
@@ -505,48 +507,44 @@ class LinkInlineProcessor(InlineProcessor):
                     # Don't increment the bracket count if we are sure we're in a title.
                     if not ignore_matches:
                         bracket_count += 1
+                    elif backtrack_count > 0:
+                        backtrack_count -= 1
                 elif c == ')':
                     # Match nested ) to (
                     # Don't decrement if we are sure we are in a title that is unclosed.
-                    if (not ignore_matches or
-                        (ignore_matches and (exit_quote != -1 and quote == last) or
-                         exit_alt_quote != -1 and alt_quote == last)):
+                    if ((exit_quote != -1 and quote == last) or (exit_alt_quote != -1 and alt_quote == last)):
+                        bracket_count = 0
+                    elif not ignore_matches:
                         bracket_count -= 1
+                    elif backtrack_count > 0:
+                        backtrack_count -= 1
+                        # We've found our backup end location if the title doesn't reslove.
+                        if backtrack_count == 0:
+                            last_bracket = index + 1
 
                 elif c in ("'", '"'):
                     # Quote has started
                     if not quote:
-                        if space:
-                            # Quote preceeded by a space [text](link "title").
-                            # We'll assume we are now in a title.
-                            # Brackets are quoted, so no need to match them (except for the final one).
-                            ignore_matches = True
-                            bracket_count = 1
-                        start_quote = len(href)
+                        # Quote preceeded by a space [text](link "title").
+                        # We'll assume we are now in a title.
+                        # Brackets are quoted, so no need to match them (except for the final one).
+                        ignore_matches = True
+                        backtrack_count = bracket_count
+                        bracket_count = 1
+                        start_quote = index + 1
                         quote = c
                     # Secondary quote (in case the first doesn't resolve): [text](link'"title")
                     # If we are in this situation: [text](link' "title"), we will assume the double quotes
                     # are the the ones we want as they are preceeded by a space.
-                    elif not ignore_matches and c != quote and not alt_quote:
-                        if space:
-                            ignore_matches = True
-                            bracket_count = 1
-                            start_quote = len(href)
-                            quote = c
-
-                            # Abandon secondary quote
-                            alt_quote = None
-                            start_alt_quote = -1
-                            exit_alt_quote = -1
-                        else:
-                            start_alt_quote = len(href)
-                            alt_quote = c
+                    elif c != quote and not alt_quote:
+                        start_alt_quote = index + 1
+                        alt_quote = c
                     # Update primary quote match
                     elif c == quote:
-                        exit_quote = len(href) + 1
+                        exit_quote = index + 1
                     # Update secondary quote match
                     elif alt_quote and c == alt_quote:
-                        exit_alt_quote = len(href) + 1
+                        exit_alt_quote = index + 1
 
                 index += 1
 
@@ -554,24 +552,34 @@ class LinkInlineProcessor(InlineProcessor):
                 if bracket_count == 0:
                     # Get the title if we closed a title string right before link closed
                     if exit_quote >= 0 and quote == last:
-                        title = ''.join(href[start_quote + 1:exit_quote - 1])
-                        href = href[:start_quote]
+                        href = data[start_index:start_quote - 1]
+                        title = ''.join(data[start_quote:exit_quote - 1])
                     elif exit_alt_quote >= 0 and alt_quote == last:
-                        title = ''.join(href[start_alt_quote + 1:exit_alt_quote - 1])
-                        href = href[:start_alt_quote]
+                        href = data[start_index:start_alt_quote - 1]
+                        title = ''.join(data[start_alt_quote:exit_alt_quote - 1])
+                    else:
+                        href = data[start_index:index - 1]
                     break
 
-                href.append(c)
                 space = c == ' '
                 if c != ' ':
                     last = c
+
+            # We have a scenario: [test](link"notitle)
+            # When we enter a string, we stop tracking bracket resolution in the main counter,
+            # but we do keep a backup counter up until we discover where we might resolve all brackets
+            # if the title string fails to resolve.
+            if bracket_count != 0 and backtrack_count == 0:
+                href = data[start_index:last_bracket - 1]
+                index = last_bracket
+                bracket_count = 0
 
             handled = bracket_count == 0
 
         if title is not None:
             title = self.RE_TITLE_CLEAN.sub(' ', dequote(self.unescape(title.strip())))
 
-        href = self.sanitize_url(self.unescape(''.join(href).strip()))
+        href = self.sanitize_url(self.unescape(href).strip())
 
         return href, title, index, handled
 
