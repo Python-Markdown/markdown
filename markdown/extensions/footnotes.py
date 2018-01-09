@@ -202,7 +202,7 @@ class FootnoteExtension(Extension):
             )
             backlink.text = FN_BACKLINK_TEXT
 
-            if li.getchildren():
+            if len(li):
                 node = li[-1]
                 if node.tag == "p":
                     node.text = node.text + NBSP_PLACEHOLDER
@@ -238,7 +238,12 @@ class FootnotePreprocessor(Preprocessor):
                 fn, _i = self.detectTabbed(lines[i+1:])
                 fn.insert(0, m.group(2))
                 i += _i-1  # skip past footnote
-                self.footnotes.setFootnote(m.group(1), "\n".join(fn))
+                footnote = "\n".join(fn)
+                self.footnotes.setFootnote(m.group(1), footnote.rstrip())
+                # Preserve a line for each block to prevent raw HTML indexing issue.
+                # https://github.com/Python-Markdown/markdown/issues/584
+                num_blocks = (len(footnote.split('\n\n')) * 2)
+                newlines.extend([''] * (num_blocks))
             else:
                 newlines.append(lines[i])
             if len(lines) > i+1:
@@ -290,6 +295,11 @@ class FootnotePreprocessor(Preprocessor):
                     if lines[j].strip():
                         next_line = lines[j]
                         break
+                    else:
+                        # Include extreaneous padding to prevent raw HTML
+                        # parsing issue: https://github.com/Python-Markdown/markdown/issues/584
+                        items.append("")
+                        i += 1
                 else:
                     break  # There is no more text; we are done.
 
@@ -393,7 +403,7 @@ class FootnoteTreeprocessor(Treeprocessor):
             result = self.footnotes.findFootnotesPlaceholder(root)
             if result:
                 child, parent, isText = result
-                ind = parent.getchildren().index(child)
+                ind = list(parent).index(child)
                 if isText:
                     parent.remove(child)
                     parent.insert(ind, footnotesDiv)

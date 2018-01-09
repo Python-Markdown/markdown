@@ -9,7 +9,7 @@ use_directory_urls: true
 theme:
   name: nature
   icon: py.png
-  release: 2.6.10
+  release: 3.0.dev
   issue_tracker: https://github.com/Python-Markdown/markdown/issues
 
 pages:
@@ -37,7 +37,7 @@ pages:
       - Tables: extensions/tables.md
       - WikiLinks: extensions/wikilinks.md
   - Extension API: extensions/api.md
-  - Test Suite: test_suite.md
+  - Test Tools: test_tools.md
   - Change Log: change_log/index.md
   - Release Notes for v.2.6: change_log/release-2.6.md
   - Release Notes for v.2.5: change_log/release-2.5.md

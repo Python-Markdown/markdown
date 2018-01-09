@@ -112,7 +112,7 @@ script to accept input on `stdin`.
 The testing framework has been completely rebuilt using the Nose testing
 framework. This provides a number of benefits including the ability to better
 test the built-in extensions and other options available to change the parsing
-behavior. See the [Test Suite](../test_suite.md) documentation for details.
+behavior. See the Test Suite documentation for details.
 
 Various bug fixes have been made, which are too numerous to list here. See the
 [commit log](https://github.com/Python-Markdown/markdown/commits/master) for a
