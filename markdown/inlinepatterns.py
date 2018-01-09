@@ -496,21 +496,18 @@ class LinkInlineProcessor(InlineProcessor):
             index = start_index
             last_bracket = -1
 
-            # Primary (first found) quote tracking
-            # or spaced title (first quote preceeded by a space).
+            # Primary (first found) quote tracking.
             quote = None
             start_quote = -1
             exit_quote = -1
             ignore_matches = False
 
-            # Secondary (second found) quote tracking,
-            # assuming no quote is preceeded by a space.
+            # Secondary (second found) quote tracking.
             alt_quote = None
             start_alt_quote = -1
             exit_alt_quote = -1
 
-            # Track if previous char was a space and the last non-space value
-            space = False
+            # Track last character
             last = ''
 
             for pos in util.iterrange(index, len(data)):
@@ -538,7 +535,6 @@ class LinkInlineProcessor(InlineProcessor):
                 elif c in ("'", '"'):
                     # Quote has started
                     if not quote:
-                        # Quote preceeded by a space [text](link "title").
                         # We'll assume we are now in a title.
                         # Brackets are quoted, so no need to match them (except for the final one).
                         ignore_matches = True
@@ -547,8 +543,6 @@ class LinkInlineProcessor(InlineProcessor):
                         start_quote = index + 1
                         quote = c
                     # Secondary quote (in case the first doesn't resolve): [text](link'"title")
-                    # If we are in this situation: [text](link' "title"), we will assume the double quotes
-                    # are the the ones we want as they are preceeded by a space.
                     elif c != quote and not alt_quote:
                         start_alt_quote = index + 1
                         alt_quote = c
