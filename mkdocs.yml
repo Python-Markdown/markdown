@@ -27,7 +27,6 @@ pages:
       - Extra: extensions/extra.md
       - Fenced Code Blocks: extensions/fenced_code_blocks.md
       - Footnotes: extensions/footnotes.md
-      - HeaderId: extensions/header_id.md
       - Meta-Data: extensions/meta_data.md
       - New Line to Break: extensions/nl2br.md
       - Sane Lists: extensions/sane_lists.md

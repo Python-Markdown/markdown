@@ -388,60 +388,6 @@ line 3
         self.assertTrue('<code class="language-python">' in md.convert(text))
 
 
-class TestHeaderId(unittest.TestCase):
-    """ Test HeaderId Extension. """
-
-    def setUp(self):
-        self.md = markdown.Markdown(extensions=['markdown.extensions.headerid'])
-
-    def testBasicHeaderId(self):
-        """ Test Basic HeaderID """
-
-        text = "# Some Header #"
-        self.assertEqual(
-            self.md.convert(text),
-            '<h1 id="some-header">Some Header</h1>'
-        )
-
-    def testNoAutoIds(self):
-        """ Test HeaderIDs with no auto generated IDs. """
-
-        text = '# Some Header\n# Another Header'
-        self.assertEqual(
-            markdown.markdown(text, extensions=[markdown.extensions.headerid.HeaderIdExtension(forceid=False)]),
-            '<h1>Some Header</h1>\n'
-            '<h1>Another Header</h1>'
-        )
-
-    def testHeaderIdWithMetaData(self):
-        """ Test Header IDs with MetaData extension. """
-
-        text = '''header_level: 2
-header_forceid: Off
-
-# A Header'''
-        self.assertEqual(
-            markdown.markdown(text, extensions=['markdown.extensions.headerid', 'markdown.extensions.meta']),
-            '<h2>A Header</h2>'
-        )
-
-    def testHeaderIdWithAttr_List(self):
-        """ Test HeaderIDs with Attr_List extension. """
-
-        text = '# Header1 {: #foo }\n# Header2 {: .bar }'
-        self.assertEqual(
-            markdown.markdown(text, extensions=['markdown.extensions.headerid', 'markdown.extensions.attr_list']),
-            '<h1 id="foo">Header1</h1>\n'
-            '<h1 class="bar" id="header2">Header2</h1>'
-        )
-        # Switch order extensions are loaded - should be no change in behavior.
-        self.assertEqual(
-            markdown.markdown(text, extensions=['markdown.extensions.attr_list', 'markdown.extensions.headerid']),
-            '<h1 id="foo">Header1</h1>\n'
-            '<h1 class="bar" id="header2">Header2</h1>'
-        )
-
-
 class TestMetaData(unittest.TestCase):
     """ Test MetaData extension. """
 
