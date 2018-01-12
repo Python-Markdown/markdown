@@ -47,10 +47,6 @@ from . import util
 from . import odict
 import re
 try:  # pragma: no cover
-    from urllib.parse import urlparse, urlunparse
-except ImportError:  # pragma: no cover
-    from urlparse import urlparse, urlunparse
-try:  # pragma: no cover
     from html import entities
 except ImportError:  # pragma: no cover
     import htmlentitydefs as entities
@@ -73,8 +69,7 @@ def build_inlinepatterns(md_instance, **kwargs):
     inlinePatterns["autolink"] = AutolinkInlineProcessor(AUTOLINK_RE, md_instance)
     inlinePatterns["automail"] = AutomailInlineProcessor(AUTOMAIL_RE, md_instance)
     inlinePatterns["linebreak"] = SubstituteTagInlineProcessor(LINE_BREAK_RE, 'br')
-    if md_instance.safeMode != 'escape':
-        inlinePatterns["html"] = HtmlInlineProcessor(HTML_RE, md_instance)
+    inlinePatterns["html"] = HtmlInlineProcessor(HTML_RE, md_instance)
     inlinePatterns["entity"] = HtmlInlineProcessor(ENTITY_RE, md_instance)
     inlinePatterns["not_strong"] = SimpleTextInlineProcessor(NOT_STRONG_RE)
     inlinePatterns["em_strong"] = DoubleTagInlineProcessor(EM_STRONG_RE, 'strong,em')
@@ -201,8 +196,6 @@ class Pattern(object):
         self.compiled_re = re.compile(r"^(.*?)%s(.*)$" % pattern,
                                       re.DOTALL | re.UNICODE)
 
-        # Api for Markdown to pass safe_mode into instance
-        self.safe_mode = False
         if markdown_instance:
             self.markdown = markdown_instance
 
@@ -233,19 +226,6 @@ class Pattern(object):
         except KeyError:  # pragma: no cover
             return text
 
-        def itertext(el):  # pragma: no cover
-            ' Reimplement Element.itertext for older python versions '
-            tag = el.tag
-            if not isinstance(tag, util.string_type) and tag is not None:
-                return
-            if el.text:
-                yield el.text
-            for e in el:
-                for s in itertext(e):
-                    yield s
-                if e.tail:
-                    yield e.tail
-
         def get_stash(m):
             id = m.group(1)
             if id in stash:
@@ -254,7 +234,7 @@ class Pattern(object):
                     return value
                 else:
                     # An etree Element - return text content only
-                    return ''.join(itertext(value))
+                    return ''.join(value.itertext())
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
@@ -466,7 +446,7 @@ class LinkInlineProcessor(InlineProcessor):
         el = util.etree.Element("a")
         el.text = text
 
-        el.set("href", self.sanitize_url(href))
+        el.set("href", href)
 
         if title is not None:
             el.set("title", title)
@@ -608,52 +588,6 @@ class LinkInlineProcessor(InlineProcessor):
             text.append(c)
         return ''.join(text), index, bracket_count == 0
 
-    def sanitize_url(self, url):
-        """
-        Sanitize a url against xss attacks in "safe_mode".
-
-        Rather than specifically blacklisting `javascript:alert("XSS")` and all
-        its aliases (see <http://ha.ckers.org/xss.html>), we whitelist known
-        safe url formats. Most urls contain a network location, however some
-        are known not to (i.e.: mailto links). Script urls do not contain a
-        location. Additionally, for `javascript:...`, the scheme would be
-        "javascript" but some aliases will appear to `urlparse()` to have no
-        scheme. On top of that relative links (i.e.: "foo/bar.html") have no
-        scheme. Therefore we must check "path", "parameters", "query" and
-        "fragment" for any literal colons. We don't check "scheme" for colons
-        because it *should* never have any and "netloc" must allow the form:
-        `username:password@host:port`.
-
-        """
-        if not self.markdown.safeMode:
-            # Return immediately bipassing parsing.
-            return url
-
-        try:
-            scheme, netloc, path, params, query, fragment = url = urlparse(url)
-        except ValueError:  # pragma: no cover
-            # Bad url - so bad it couldn't be parsed.
-            return ''
-
-        locless_schemes = ['', 'mailto', 'news']
-        allowed_schemes = locless_schemes + ['http', 'https', 'ftp', 'ftps']
-        if scheme not in allowed_schemes:
-            # Not a known (allowed) scheme. Not safe.
-            return ''
-
-        if netloc == '' and scheme not in locless_schemes:  # pragma: no cover
-            # This should not happen. Treat as suspect.
-            return ''
-
-        for part in url[2:]:
-            if ":" in part:
-                # A colon in "path", "parameters", "query"
-                # or "fragment" is suspect.
-                return ''
-
-        # Url passes all tests. Return url as-is.
-        return urlunparse(url)
-
 
 class ImageInlineProcessor(LinkInlineProcessor):
     """ Return a img element from the given match. """
@@ -669,7 +603,7 @@ class ImageInlineProcessor(LinkInlineProcessor):
 
         el = util.etree.Element("img")
 
-        el.set("src", self.sanitize_url(src))
+        el.set("src", src)
 
         if title is not None:
             el.set("title", title)
@@ -726,7 +660,7 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
     def makeTag(self, href, title, text):
         el = util.etree.Element('a')
 
-        el.set('href', self.sanitize_url(href))
+        el.set('href', href)
         if title:
             el.set('title', title)
 
@@ -746,7 +680,7 @@ class ImageReferenceInlineProcessor(ReferenceInlineProcessor):
     """ Match to a stored reference and return img element. """
     def makeTag(self, href, title, text):
         el = util.etree.Element("img")
-        el.set("src", self.sanitize_url(href))
+        el.set("src", href)
         if title:
             el.set("title", title)
 

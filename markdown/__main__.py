@@ -28,7 +28,7 @@ def parse_options(args=None, values=None):
        (STDIN is assumed if no INPUTFILE is given)"""
     desc = "A Python implementation of John Gruber's Markdown. " \
            "https://Python-Markdown.github.io/"
-    ver = "%%prog %s" % markdown.version
+    ver = "%%prog %s" % markdown.__version__
 
     parser = optparse.OptionParser(usage=usage, description=desc, version=ver)
     parser.add_option("-f", "--file", dest="filename", default=None,
@@ -36,10 +36,6 @@ def parse_options(args=None, values=None):
                       metavar="OUTPUT_FILE")
     parser.add_option("-e", "--encoding", dest="encoding",
                       help="Encoding for input and output files.",)
-    parser.add_option("-s", "--safe", dest="safe", default=False,
-                      metavar="SAFE_MODE",
-                      help="Deprecated! 'replace', 'remove' or 'escape' HTML "
-                      "tags in input")
     parser.add_option("-o", "--output_format", dest="output_format",
                       default='xhtml1', metavar="OUTPUT_FORMAT",
                       help="'xhtml1' (default), 'html4' or 'html5'.")
@@ -101,10 +97,6 @@ def parse_options(args=None, values=None):
         'output_format': options.output_format,
         'lazy_ol': options.lazy_ol
     }
-
-    if options.safe:
-        # Avoid deprecation warning if user didn't set option
-        opts['safe_mode'] = options.safe
 
     return opts, options.verbose
 

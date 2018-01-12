@@ -1,34 +1,20 @@
 #!/usr/bin/env python
 
 from setuptools import setup
-import os
-import imp
+from markdown import __version__, __version_info__
 
 
-def get_version():
-    " Get version & version_info without importing markdown.__init__ "
-    path = os.path.join(os.path.dirname(__file__), 'markdown')
-    fp, pathname, desc = imp.find_module('__version__', [path])
-    try:
-        v = imp.load_module('__version__', fp, pathname, desc)
-    finally:
-        fp.close()
-
-    dev_status_map = {
-        'alpha': '3 - Alpha',
-        'beta':  '4 - Beta',
-        'rc':    '4 - Beta',
-        'final': '5 - Production/Stable'
-    }
-    if v.version_info[3] == 'alpha' and v.version_info[4] == 0:
-        status = '2 - Pre-Alpha'
-    else:
-        status = dev_status_map[v.version_info[3]]
-    return v.version, v.version_info, status
-
-
-version, version_info, DEVSTATUS = get_version()
-
+# Get development Status for classifiers
+dev_status_map = {
+    'alpha': '3 - Alpha',
+    'beta':  '4 - Beta',
+    'rc':    '4 - Beta',
+    'final': '5 - Production/Stable'
+}
+if __version_info__[3] == 'alpha' and __version_info__[4] == 0:
+    DEVSTATUS = '2 - Pre-Alpha'
+else:
+    DEVSTATUS = dev_status_map[__version_info__[3]]
 
 # The command line script name.  Currently set to "markdown_py" so as not to
 # conflict with the perl implimentation (which uses "markdown").
@@ -59,9 +45,9 @@ You may ask for help and discuss various other issues on the
 
 setup(
     name='Markdown',
-    version=version,
+    version=__version__,
     url='https://Python-Markdown.github.io/',
-    download_url='http://pypi.python.org/packages/source/M/Markdown/Markdown-%s-py2.py3-none-any.whl' % version,
+    download_url='http://pypi.python.org/packages/source/M/Markdown/Markdown-%s-py2.py3-none-any.whl' % __version__,
     description='Python implementation of Markdown.',
     long_description=long_description,
     author='Manfred Stienstra, Yuri takhteyev and Waylan limberg',
