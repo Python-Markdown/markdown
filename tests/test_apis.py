@@ -45,11 +45,15 @@ class TestMarkdownBasics(unittest.TestCase):
         from markdown.extensions.footnotes import FootnoteExtension
         markdown.Markdown(extensions=[FootnoteExtension()])
 
-    def testNamedExtension(self):
+    def testEntryPointExtension(self):
+        """ Test Extension loading with an entry point. """
+        markdown.Markdown(extensions=['footnotes'])
+
+    def testDotNotationExtension(self):
         """ Test Extension loading with Name (`path.to.module`). """
         markdown.Markdown(extensions=['markdown.extensions.footnotes'])
 
-    def TestNamedExtensionWithClass(self):
+    def TestDotNotationExtensionWithClass(self):
         """ Test Extension loading with class name (`path.to.module:Class`). """
         markdown.Markdown(extensions=['markdown.extensions.footnotes:FootnoteExtension'])
 

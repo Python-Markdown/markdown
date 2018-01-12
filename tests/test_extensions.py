@@ -72,7 +72,7 @@ class TestAbbr(unittest.TestCase):
     """ Test abbr extension. """
 
     def setUp(self):
-        self.md = markdown.Markdown(extensions=['markdown.extensions.abbr'])
+        self.md = markdown.Markdown(extensions=['abbr'])
 
     def testSimpleAbbr(self):
         """ Test Abbreviations. """
@@ -109,7 +109,7 @@ class TestCodeHilite(TestCaseWithAssertStartsWith):
 
     def testBasicCodeHilite(self):
         text = '\t# A Code Comment'
-        md = markdown.Markdown(extensions=['markdown.extensions.codehilite'])
+        md = markdown.Markdown(extensions=['codehilite'])
         if self.has_pygments:
             # Pygments can use random lexer here as we did not specify the language
             self.assertStartsWith('<div class="codehilite"><pre>', md.convert(text))
@@ -205,7 +205,7 @@ class TestCodeHilite(TestCaseWithAssertStartsWith):
         text1 = "\t:::Python hl_lines='1'\n\t#line 1\n\t#line 2\n\t#line 3"
 
         for text in (text0, text1):
-            md = markdown.Markdown(extensions=['markdown.extensions.codehilite'])
+            md = markdown.Markdown(extensions=['codehilite'])
             if self.has_pygments:
                 self.assertStartsWith(
                     '<div class="codehilite"><pre><span class="hll"',
@@ -236,7 +236,7 @@ class TestFencedCode(TestCaseWithAssertStartsWith):
     """ Test fenced_code extension. """
 
     def setUp(self):
-        self.md = markdown.Markdown(extensions=['markdown.extensions.fenced_code'])
+        self.md = markdown.Markdown(extensions=['fenced_code'])
         self.has_pygments = True
         try:
             import pygments  # noqa
@@ -323,7 +323,7 @@ line 3
         md = markdown.Markdown(
             extensions=[
                 markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
-                'markdown.extensions.fenced_code'
+                'fenced_code'
             ]
         )
 
@@ -359,7 +359,7 @@ line 3
             md = markdown.Markdown(
                 extensions=[
                     markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
-                    'markdown.extensions.fenced_code'
+                    'fenced_code'
                 ]
             )
             if self.has_pygments:
@@ -382,7 +382,7 @@ line 3
         md = markdown.Markdown(
             extensions=[
                 markdown.extensions.codehilite.CodeHiliteExtension(use_pygments=False),
-                'markdown.extensions.fenced_code'
+                'fenced_code'
             ]
         )
         self.assertTrue('<code class="language-python">' in md.convert(text))
@@ -392,7 +392,7 @@ class TestMetaData(unittest.TestCase):
     """ Test MetaData extension. """
 
     def setUp(self):
-        self.md = markdown.Markdown(extensions=['markdown.extensions.meta'])
+        self.md = markdown.Markdown(extensions=['meta'])
 
     def testBasicMetaData(self):
         """ Test basic metadata. """
@@ -459,7 +459,7 @@ class TestWikiLinks(unittest.TestCase):
     """ Test Wikilinks Extension. """
 
     def setUp(self):
-        self.md = markdown.Markdown(extensions=['markdown.extensions.wikilinks'])
+        self.md = markdown.Markdown(extensions=['wikilinks'])
         self.text = "Some text with a [[WikiLink]]."
 
     def testBasicWikilinks(self):
@@ -500,9 +500,9 @@ class TestWikiLinks(unittest.TestCase):
         """ Test Complex Settings. """
 
         md = markdown.Markdown(
-            extensions=['markdown.extensions.wikilinks'],
+            extensions=['wikilinks'],
             extension_configs={
-                'markdown.extensions.wikilinks': [
+                'wikilinks': [
                     ('base_url', 'http://example.com/'),
                     ('end_url', '.html'),
                     ('html_class', '')
@@ -524,7 +524,7 @@ wiki_end_url:   .html
 wiki_html_class:
 
 Some text with a [[WikiLink]]."""
-        md = markdown.Markdown(extensions=['markdown.extensions.meta', 'markdown.extensions.wikilinks'])
+        md = markdown.Markdown(extensions=['meta', 'wikilinks'])
         self.assertEqual(
             md.convert(text),
             '<p>Some text with a '
@@ -557,7 +557,7 @@ class TestAdmonition(unittest.TestCase):
     """ Test Admonition Extension. """
 
     def setUp(self):
-        self.md = markdown.Markdown(extensions=['markdown.extensions.admonition'])
+        self.md = markdown.Markdown(extensions=['admonition'])
 
     def testRE(self):
         RE = self.md.parser.blockprocessors['admonition'].RE
@@ -574,7 +574,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
     """ Test TOC Extension. """
 
     def setUp(self):
-        self.md = markdown.Markdown(extensions=['markdown.extensions.toc'])
+        self.md = markdown.Markdown(extensions=['toc'])
 
     def testMarker(self):
         """ Test TOC with a Marker. """
@@ -818,7 +818,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
 
     def testWithAttrList(self):
         """ Test TOC with attr_list Extension. """
-        md = markdown.Markdown(extensions=['markdown.extensions.toc', 'markdown.extensions.attr_list'])
+        md = markdown.Markdown(extensions=['toc', 'attr_list'])
         text = '# Header 1\n\n## Header 2 { #foo }'
         self.assertEqual(
             md.convert(text),
@@ -849,7 +849,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
 class TestSmarty(unittest.TestCase):
     def setUp(self):
         config = {
-            'markdown.extensions.smarty': [
+            'smarty': [
                 ('smart_angled_quotes', True),
                 ('substitutions', {
                     'ndash': '\u2013',
@@ -865,7 +865,7 @@ class TestSmarty(unittest.TestCase):
             ]
         }
         self.md = markdown.Markdown(
-            extensions=['markdown.extensions.smarty'],
+            extensions=['smarty'],
             extension_configs=config
         )
 
@@ -885,8 +885,8 @@ class TestFootnotes(unittest.TestCase):
 
     def testBacklinkText(self):
         md = markdown.Markdown(
-            extensions=['markdown.extensions.footnotes'],
-            extension_configs={'markdown.extensions.footnotes': {'BACKLINK_TEXT': 'back'}}
+            extensions=['footnotes'],
+            extension_configs={'footnotes': {'BACKLINK_TEXT': 'back'}}
         )
         text = 'paragraph[^1]\n\n[^1]: A Footnote'
         self.assertEqual(
