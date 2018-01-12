@@ -64,7 +64,6 @@ Extension                            | Entry Point    | Dot Notation
 [Smart Strong]: smart_strong.md
 [Admonition]: admonition.md
 [CodeHilite]: code_hilite.md
-[HeaderId]: header_id.md
 [Meta-Data]: meta_data.md
 [New Line to Break]: nl2br.md
 [Sane Lists]: sane_lists.md

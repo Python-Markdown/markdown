@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Building docs..."
-mkdocs build
+mkdocs build --strict
 if [ $? -ne 0 ]; then
     exit 1
 fi
