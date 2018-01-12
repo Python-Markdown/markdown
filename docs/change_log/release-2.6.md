@@ -142,7 +142,7 @@ explanation of the current behavior.
 
 ### HeaderId Extension Pending Deprecation
 
-The [HeaderId][hid] Extension is pending deprecation and will raise a
+The HeaderId Extension is pending deprecation and will raise a
 **`PendingDeprecationWarning`** in version 2.6. The extension will be deprecated
 in the next release and raise an error in the release after that. Use the [Table
 of Contents][TOC] Extension instead, which offers most of the features of the
@@ -152,8 +152,6 @@ Extension authors who have been using the `slugify` and `unique` functions
 defined in the HeaderId Extension should note that those functions are now
 defined in the Table of Contents extension and should adjust their import
 statements accordingly (`from markdown.extensions.toc import slugify, unique`).
-
-[hid]: ../extensions/header_id.md
 
 ### The `configs` Keyword is Deprecated
 

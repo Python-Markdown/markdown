@@ -43,7 +43,7 @@ release, there are a few backward-incompatible changes to note:
   you should now set them on the class. See the [Library
   Reference](../reference.md) for the options available.
 
-* If you have been using the [HeaderId](../extensions/header_id.md) extension to
+* If you have been using the HeaderId extension to
   define custom ids on headers, you will want to switch to using the new
   [Attribute List](../extensions/attr_list.md) extension. The HeaderId extension
   now only auto-generates ids on headers which have not already had ids defined.

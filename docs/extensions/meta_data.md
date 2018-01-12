@@ -101,9 +101,6 @@ Compatible Extensions
 The following extensions are currently known to work with the Meta-Data
 extension. The keywords they are known to support are also listed.
 
-* [HeaderId](header_id.md)
-    * `header_level`
-    * `header_forceid`
 * [WikiLinks](wikilinks.md)
     * `wiki_base_url`
     * `wiki_end_url`
