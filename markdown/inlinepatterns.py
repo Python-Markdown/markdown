@@ -565,7 +565,7 @@ class LinkInlineProcessor(InlineProcessor):
         if title is not None:
             title = self.RE_TITLE_CLEAN.sub(' ', dequote(self.unescape(title.strip())))
 
-        href = self.sanitize_url(self.unescape(href).strip())
+        href = self.unescape(href).strip()
 
         return href, title, index, handled
 
