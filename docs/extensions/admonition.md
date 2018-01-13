@@ -78,7 +78,14 @@ rST suggests the following `types`, but you're free to use whatever you want:
 Styling
 -------
 
-There is no CSS included as part of this extension. Look up the default
-[Sphinx][sphinx] theme if you need inspiration.
+There is no CSS included as part of this extension. Check out the default
+[Sphinx][sphinx] theme for inspiration.
 
 [sphinx]: http://sphinx.pocoo.org/
+
+## Usage
+
+See [Extensions](index.md) for general extension usage. Use `admonition` as the
+name of the extension.
+
+This extension does not accept any special configuration options.

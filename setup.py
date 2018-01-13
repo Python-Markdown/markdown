@@ -59,6 +59,25 @@ setup(
     entry_points={
         'console_scripts': [
             '%s = markdown.__main__:run' % SCRIPT_NAME,
+        ],
+        # Register the built in extensions
+        'markdown.extensions': [
+            'abbr = markdown.extensions.abbr:AbbrExtension',
+            'admonition = markdown.extensions.admonition:AdmonitionExtension',
+            'attr_list = markdown.extensions.attr_list:AttrListExtension',
+            'codehilite = markdown.extensions.codehilite:CodeHiliteExtension',
+            'def_list = markdown.extensions.def_list:DefListExtension',
+            'extra = markdown.extensions.extra:ExtraExtension',
+            'fenced_code = markdown.extensions.fenced_code:FencedCodeExtension',
+            'footnotes = markdown.extensions.footnotes:FootnoteExtension',
+            'meta = markdown.extensions.meta:MetaExtension',
+            'nl2br = markdown.extensions.nl2br:Nl2BrExtension',
+            'sane_lists = markdown.extensions.sane_lists:SaneListExtension',
+            'smart_strong = markdown.extensions.smart_strong:SmartEmphasisExtension',
+            'smarty = markdown.extensions.smarty:SmartyExtension',
+            'tables = markdown.extensions.tables:TableExtension',
+            'toc = markdown.extensions.toc:TocExtension',
+            'wikilinks = markdown.extensions.wikilinks:WikiLinkExtension',
         ]
     },
     classifiers=[

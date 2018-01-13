@@ -27,7 +27,7 @@ the German language:
 
 ```python
 extension_configs = {
-    'markdown.extensions.smarty': {
+    'smarty': {
         'substitutions': {
             'left-single-quote': '&sbquo;', # sb is not a typo!
             'right-single-quote': '&lsquo;',
@@ -53,8 +53,8 @@ extension_configs = {
 Usage
 -----
 
-See [Extensions](index.md) for general extension usage, specify
-`markdown.extensions.smarty` as the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `smarty` as the
+name of the extension.
 
 See the [Library Reference](../reference.md#extensions) for information about
 configuring extensions.

@@ -39,7 +39,7 @@ is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
 Usage
 -----
 
-See [Extensions](index.md) for general extension usage, specify `markdown.extensions.abbr`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `abbr` as the name
+of the extension.
 
 This extension does not accept any special configuration options.

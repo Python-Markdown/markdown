@@ -168,8 +168,8 @@ Lets see the source for that:
 
 ## Usage
 
-See [Extensions](index.md) for general extension usage, specify
-`markdown.extensions.codehilite` as the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `codehilite` as the
+name of the extension.
 
 See the [Library Reference](../reference.md#extensions) for information about
 configuring extensions.

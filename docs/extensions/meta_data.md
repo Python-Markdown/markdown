@@ -57,8 +57,8 @@ by Markdown.
 Usage
 -----
 
-See [Extensions](index.md) for general extension usage, specify
-`markdown.extensions.meta` as the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `meta` as the name
+of the extension.
 
 Accessing the Meta-Data
 -----------------------
@@ -67,7 +67,7 @@ The meta-data is made available as a python Dict in the `Meta` attribute of an
 instance of the Markdown class. For example, using the above document:
 
 ```pycon
->>> md = markdown.Markdown(extensions = ['markdown.extensions.meta'])
+>>> md = markdown.Markdown(extensions = ['meta'])
 >>> html = md.convert(text)
 >>> # Meta-data has been stripped from output
 >>> print html

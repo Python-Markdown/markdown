@@ -67,7 +67,7 @@ __extensions__{: #extensions }
     of extension names.
 
         :::python
-        extensions=[MyExtension(), 'path.to.my.ext']
+        extensions=[MyExtClass(), 'myext', 'path.to.my.ext:MyExtClass']
 
     !!! note
         The preferred method is to pass in an instance of an extension. Strings
@@ -81,37 +81,48 @@ __extensions__{: #extensions }
 
         :::python
         from markdown.extensions import Extension
-        class MyExtension(Extension):
+        class MyExtClass(Extension):
             # define your extension here...
 
-        markdown.markdown(text, extensions=[MyExtension(option='value')])
+        markdown.markdown(text, extensions=[MyExtClass(option='value')])
 
-    If an extension name is provided as a string, the extension must be
-    importable as a python module on your PYTHONPATH. Python's dot notation is
-    required. Therefore, to import the 'extra' extension, one would do
-    `extensions=['markdown.extensions.extra']`
+    If an extension name is provided as a string, the string must either be the
+    registered entry point of any installed extension or the importable path
+    using Python's dot notation.
 
-    Additionally, a Class may be specified in the name. The class must be at the
-    end of the name and be separated by a colon from the module.
+    See the documentation specific to an extension for the string name assigned
+    to an extension as an entry point.  Simply include the defined name as
+    a string in the list of extensions. For example, if an extension has the
+    name `myext` assigned to it and the extension is properly installed, then
+    do the following:
+
+        :::python
+        markdown.markdown(text, extensions=['myext'])
+
+    If an extension does not have a registered entry point, Python's dot
+    notation may be used instead. The extension must be installed as a
+    Python module on your PYTHONPATH. Generally, a class should be specified in
+    the name. The class must be at the end of the name and be separated by a
+    colon from the module.
 
     Therefore, if you were to import the class like this:
 
         :::python
-        from path.to.module import SomeExtensionClass
+        from path.to.module import MyExtClass
 
-    Then the named extension would comprise this string:
+    Then load the extension as follows:
 
         :::python
-        "path.to.module:SomeExtensionClass"
+        markdown.markdown(text, extensions=['path.to.module:MyExtClass'])
 
-    !!! note
-        You should only need to specify the class name if more than one extension
-        is defined within the same module. The extensions that come with
-        Python-Markdown do *not* need to have the class name specified. However,
-        doing so will not effect the behavior of the parser.
+    If only one extension is defined within a module and the module includes a
+    `makeExtension` function which returns an instance of the extension, then
+    the class name is not necessary. For example, in that case one could do
+    `extensions=['path.to.module']`. Check the documentation for a specific
+    extension to determine if it supports this feature.
 
-    When loading an extension by name (as a string), you may pass in
-    configuration settings to the extension using the
+    When loading an extension by name (as a string), you can only pass in
+    configuration settings to the extension by using the
     [`extension_configs`](#extension_configs) keyword.
 
     !!! seealso "See Also"
@@ -143,6 +154,14 @@ __extension_configs__{: #extension_configs }
                 'option_1': 'value_1'
             }
         }
+
+    When specifying the extension name, be sure to use the exact same
+    string as is used in the [extensions](#extensions) keyword to load the
+    extension. Otherwise, the configuration settings will not be applied to
+    the extension. In other words, you cannot use the entry point in on
+    place and Python dot notation in the other. While both may be valid for
+    a given extension, they will not be recognized as being the same
+    extension by Markdown.
 
     See the documentation specific to the extension you are using for help in
     specifying configuration settings for that extension.
