@@ -639,7 +639,7 @@ following methods available to assist in working with configuration settings:
 
     Sets multiple configuration settings given a dict of key/value pairs.
 
-### `makeExtension` {: #makeextension }
+### Naming an Extension { #naming_an_extension }
 
 As noted in the [library reference] an instance of an extension can be passed
 directly to Markdown. In fact, this is the preferred way to use third-party
@@ -649,36 +649,70 @@ For example:
 
 ```python
 import markdown
-import myextension
-myext = myextension.MyExtension(option='value')
-md = markdown.Markdown(extensions=[myext])
+from path.to.module import MyExtention
+md = markdown.Markdown(extensions=[MyExtension(option='value')])
 ```
 
-Markdown also accepts "named" third party extensions for those occasions when it
-is impractical to import an extension directly (from the command line or from
-within templates).
+However, Markdown also accepts "named" third party extensions for those
+occasions when it is impractical to import an extension directly (from the
+command line or from within templates). A "name" can either be a registered
+[entry point](#entry_point) or a string using Python's [dot
+notation](#dot_notation).
 
-The "name" of your extension must be a string consisting of the importable path to
-your module using Python's dot notation. Therefore, if you are providing a library
-to your users and would like to include a custom markdown extension within your
-library, that extension would be named `"mylib.mdext.myext"` where `mylib/mdext/myext.py`
-contains the extension and the `mylib` directory is on the PYTHONPATH.
+#### Entry Point { #entry_point }
 
-The string can also include the name of the class separated by a colon.
+[Entry points] are defined in a Python package's `setup.py` script. The script
+must use [setuptools] to support entry points. Python-Markdown extensions must
+be assigned to the `markdown.extensions` group. An entry point definition might
+look like this:
+
+```python
+from setuptools import setup
+
+setup(
+    # ...
+    entry_points={
+        'markdown.extensions': ['myextension = path.to.module:MyExtension']
+    }
+)
+```
+
+After a user installs your extension using the above script, they could then
+call the extension using the `myextension` string name like this:
+
+```python
+markdown.markdown(text, extensions=['myextention'])
+```
+
+Note that if two or more entry points within the same group are assigned the
+same name, Python-Markdown will only ever use the first one found and ignore all
+others. Therefore, be sure to give your extension a unique name.
+
+For more information on writing `setup.py` scripts, see the Python documentation
+on [Packaging and Distributing Projects].
+
+#### Dot Notation { #dot_notation }
+
+If an extension does not have a registered entry point, Python's dot notation
+may be used instead. The extension must be installed as a Python module on your
+PYTHONPATH. Generally, a class should be specified in the name. The class must
+be at the end of the name and be separated by a colon from the module.
+
 Therefore, if you were to import the class like this:
 
 ```python
-from path.to.module import SomeExtensionClass
+from path.to.module import MyExtention
 ```
 
-Then the named extension would comprise this string:
+Then the extension can be loaded as follows:
 
 ```python
-"path.to.module:SomeExtensionClass"
+markdown.markdown(text, extensions=['path.to.module:MyExtention'])
 ```
 
 You do not need to do anything special to support this feature. As long as your
-extension class is able to be imported, a user can include it with the above syntax.
+extension class is able to be imported, a user can include it with the above
+syntax.
 
 The above two methods are especially useful if you need to implement a large
 number of extensions with more than one residing in a module. However, if you do
@@ -697,9 +731,9 @@ def makeExtension(**kwargs):
     return MyExtension(**kwargs)
 ```
 
-When Markdown is passed the "name" of your extension as a dot notation string,
-it will import the module and call the `makeExtension` function to initiate your
-extension.
+When Markdown is passed the "name" of your extension as a dot notation string
+that does not include a class (for example `path.to.module`), it will import the
+module and call the `makeExtension` function to initiate your extension.
 
 [Preprocessors]: #preprocessors
 [Inline Patterns]: #inlinepatterns
@@ -718,3 +752,6 @@ extension.
 [Footnotes]: https://github.com/Python-Markdown/mdx_footnotes
 [Definition Lists]: https://github.com/Python-Markdown/mdx_definition_lists
 [library reference]: ../reference.md
+[setuptools]: https://packaging.python.org/key_projects/#setuptools
+[Entry points]: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins
+[Packaging and Distributing Projects]: https://packaging.python.org/tutorials/distributing-packages/

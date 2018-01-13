@@ -65,7 +65,7 @@ This allows one to insert the Table of Contents elsewhere in their page
 template. For example:
 
 ```pycon
->>> md = markdown.Markdown(extensions=['markdown.extensions.toc'])
+>>> md = markdown.Markdown(extensions=['toc'])
 >>> html = md.convert(text)
 >>> page = render_some_template(context={'body': html, 'toc': md.toc})
 ```
@@ -73,8 +73,8 @@ template. For example:
 Usage
 -----
 
-See [Extensions](index.md) for general extension usage, specify `markdown.extensions.toc`
-as the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `toc` as the name
+of the extension.
 
 See the [Library Reference](../reference.md#extensions) for information about
 configuring extensions.

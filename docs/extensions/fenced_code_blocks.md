@@ -110,7 +110,7 @@ The lines can be specified with PHP Extra's syntax:
 
 ## Usage
 
-See [Extensions](index.md) for general extension usage, specify
-`markdown.extensions.fenced_code` as the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `fenced_code` as
+the name of the extension.
 
 This extension does not accept any special configuration options.
