@@ -10,7 +10,3 @@
 ![Image](http://humane man.jpg "The most humane man.")
 
 ![Image](http://humane man.jpg)
-
-issue #613
-
-[link](sometext(sometext)sometext.png)
