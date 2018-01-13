@@ -101,7 +101,7 @@ class TestAdvancedImages(TestCase):
     def test_misc(self):
         self.assertMarkdownRenders(
             """![Poster](http://humane_man.jpg "The most humane man.")""",
-           """<p><img alt="Poster" src="http://humane_man.jpg" title="The most humane man." /></p>"""
+            """<p><img alt="Poster" src="http://humane_man.jpg" title="The most humane man." /></p>"""
         )
 
     def test_misc_ref(self):

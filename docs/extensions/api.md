@@ -158,7 +158,7 @@ emphasis = EmphasisPattern(MYPATTERN)
 
 But, the new processor allows you handle much more complex patterns that are
 too much for Python's Re to handle.  For instance, to handle nested brackets in
-link patterns, the builtin link inline processor uses the following pattern to
+link patterns, the built-in link inline processor uses the following pattern to
 find where a link *might* start:
 
 ```python
@@ -168,7 +168,7 @@ link = LinkInlineProcessor(LINK_RE, md_instance)
 
 It then uses programmed logic to actually walk the string (`data`), starting at
 where the match started (`m.start(0)`). If for whatever reason, the text
-doesn't appear to be a link, it returns `None` for the start and end boundary
+does not appear to be a link, it returns `None` for the start and end boundary
 in order to communicate to the parser that no match was found.
 
 ```python
