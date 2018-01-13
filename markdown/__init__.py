@@ -34,7 +34,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from .core import Markdown, markdown, markdownFromFile
 
-# For backward compatability as some extensions expect it...
+# For backward compatibility as some extensions expect it...
 from .extensions import Extension  # noqa
 
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']

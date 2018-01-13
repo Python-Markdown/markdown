@@ -28,7 +28,7 @@ Now test overrides
     # This should be ignored.
     {: #someid .someclass }
 
-### No colon for compatability with Headerid ext { #hash3 }
+### No colon for compatibility with Headerid ext { #hash3 }
 
 Also a codespan: `{: .someclass}`{: .foo}.
 {: #the_end}

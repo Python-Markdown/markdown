@@ -561,7 +561,7 @@ class TestHashHeaders(TestCase):
             '<h6># This is an H6</h6>'
         )
 
-    # TODO: Possably change the following behavior. While this follows the behavior
+    # TODO: Possibly change the following behavior. While this follows the behavior
     # of markdown.pl, it is rather uncommon and not nessecarily intuitive.
     # See: http://johnmacfarlane.net/babelmark2/?normalize=1&text=%23+This+is+an+H1+%23+
     def test_hash_h1_closed_trailing_space(self):

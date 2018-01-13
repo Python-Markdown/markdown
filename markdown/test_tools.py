@@ -128,7 +128,7 @@ class LegacyTestMeta(type):
         return type.__new__(cls, name, bases, dct)
 
 
-# Define LegacyTestCase class with metaclass in Py2 & Py3 compatable way.
+# Define LegacyTestCase class with metaclass in Py2 & Py3 compatible way.
 # See https://stackoverflow.com/a/38668373/866026
 # TODO: If/when py2 support is dropped change to:
 # class LegacyTestCase(unittest.Testcase, metaclass=LegacyTestMeta)
@@ -142,7 +142,7 @@ class LegacyTestCase(LegacyTestMeta('LegacyTestCase', (unittest.TestCase,), {'__
     text-based test files and define various behaviors/defaults for those tests.
     The following properties are supported:
 
-    location: A path to the directory fo test files. An absolute path is prefered.
+    location: A path to the directory fo test files. An absolute path is preferred.
     exclude: A list of tests to exclude. Each test name should comprise the filename
              without an extension.
     normalize: A boolean value indicating if the HTML should be normalized.
@@ -161,7 +161,7 @@ class LegacyTestCase(LegacyTestMeta('LegacyTestCase', (unittest.TestCase,), {'__
     test file. The keyword arguments will "update" the `default_kwargs`.
 
     When the class instance is created, it will walk the given directory and create
-    a seperate unitttest for each set of test files using the naming scheme:
+    a separate unitttest for each set of test files using the naming scheme:
     `test_filename`. One unittest will be run for each set of input and output files.
     """
     pass

@@ -51,7 +51,7 @@ class DefListProcessor(BlockProcessor):
         sibling = self.lastChild(parent)
         if not terms and sibling is None:
             # This is not a definition item. Most likely a paragraph that
-            # starts with a colon at the begining of a document or list.
+            # starts with a colon at the beginning of a document or list.
             blocks.insert(0, raw_block)
             return False
         if not terms and sibling.tag == 'p':
@@ -59,7 +59,7 @@ class DefListProcessor(BlockProcessor):
             state = 'looselist'
             terms = sibling.text.split('\n')
             parent.remove(sibling)
-            # Aquire new sibling
+            # Acquire new sibling
             sibling = self.lastChild(parent)
         else:
             state = 'list'
