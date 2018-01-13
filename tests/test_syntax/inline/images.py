@@ -97,3 +97,43 @@ class TestAdvancedImages(TestCase):
             """<p><img alt="Text" src="http://link.com/with spaces '&quot;and quotes&quot;.png" title="and title" />"""
             """ more text</p>"""
         )
+
+    def test_misc(self):
+        self.assertMarkdownRenders(
+            """![Poster](http://humane_man.jpg "The most humane man.")""",
+           """<p><img alt="Poster" src="http://humane_man.jpg" title="The most humane man." /></p>"""
+        )
+
+    def test_misc_ref(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ![Poster][]
+
+                [Poster]:http://humane_man.jpg "The most humane man."
+                """
+            ),
+            self.dedent(
+                """
+                <p><img alt="Poster" src="http://humane_man.jpg" title="The most humane man." /></p>
+                """
+            )
+        )
+
+    def test_misc_blank(self):
+        self.assertMarkdownRenders(
+            """![Blank]()""",
+            """<p><img alt="Blank" src="" /></p>"""
+        )
+
+    def test_misc_img_title(self):
+        self.assertMarkdownRenders(
+            """![Image](http://humane man.jpg "The most humane man.")""",
+            """<p><img alt="Image" src="http://humane man.jpg" title="The most humane man." /></p>"""
+        )
+
+    def test_misc_img(self):
+        self.assertMarkdownRenders(
+            """![Image](http://humane man.jpg)""",
+            """<p><img alt="Image" src="http://humane man.jpg" /></p>"""
+        )
