@@ -84,6 +84,12 @@ class TestAdvancedLinks(TestCase):
             """Text</a> more text</p>"""
         )
 
+    def test_single_quote(self):
+        self.assertMarkdownRenders(
+            """[test](link"notitle)""",
+            """<p><a href="link&quot;notitle">test</a></p>"""
+        )
+
     def test_angle_with_mixed_title_quotes(self):
         self.assertMarkdownRenders(
             """[Text](<http://link.com/with spaces '"and quotes"> 'and title') more text""",

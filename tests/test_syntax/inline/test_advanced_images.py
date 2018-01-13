@@ -85,6 +85,12 @@ class TestAdvancedImages(TestCase):
             """ more text</p>"""
         )
 
+    def test_single_quote(self):
+        self.assertMarkdownRenders(
+            """![test](link"notitle.png)""",
+            """<p><img alt="test" src="link&quot;notitle.png" /></p>"""
+        )
+
     def test_angle_with_mixed_title_quotes(self):
         self.assertMarkdownRenders(
             """![Text](<http://link.com/with spaces '"and quotes".png> 'and title') more text""",
