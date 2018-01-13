@@ -63,8 +63,8 @@ is indented consistently and any errors are more easily discernible by the autho
 Usage
 -----
 
-See [Extensions](index.md) for general extension usage, specify
-`markdown.extensions.footnotes` as the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `footnotes` as the
+name of the extension.
 
 See the [Library Reference](../reference.md#extensions) for information about
 configuring extensions.
@@ -90,4 +90,3 @@ The following options are provided to configure the output:
     The text string for the `title` HTML attribute of the footnote definition link.
     `%d` will be replaced by the footnote number. Defaults to `Jump back to
     footnote %d in the text`
-   

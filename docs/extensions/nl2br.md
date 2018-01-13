@@ -20,7 +20,7 @@ Example
 ... Line 1
 ... Line 2
 ... """
->>> html = markdown.markdown(text, extensions=['markdown.extensions.nl2br'])
+>>> html = markdown.markdown(text, extensions=['nl2br'])
 >>> print html
 <p>Line 1<br />
 Line 2</p>
@@ -29,7 +29,7 @@ Line 2</p>
 Usage
 -----
 
-See [Extensions](index.md) for general extension usage, specify
-`markdown.extensions.nl2br` as the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `nl2br` as the name
+of the extension.
 
 This extension does not accept any special configuration options.

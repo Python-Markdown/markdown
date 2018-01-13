@@ -26,7 +26,7 @@ From the Python interpreter:
 
 ```pycon
 >>> import markdown
->>> html = markdown.markdown(text, ['markdown.extensions.extra'])
+>>> html = markdown.markdown(text, ['extra'])
 ```
 
 There may be [additional extensions](index.md) that are distributed with

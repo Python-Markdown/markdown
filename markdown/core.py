@@ -2,9 +2,9 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 import codecs
 import sys
-import warnings
 import logging
 import importlib
+import pkg_resources
 from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
@@ -49,10 +49,11 @@ class Markdown(object):
         Keyword arguments:
 
         * extensions: A list of extensions.
-           If they are of type string, the module mdx_name.py will be loaded.
-           If they are a subclass of markdown.Extension, they will be used
-           as-is.
-        * extension_configs: Configuration settingis for extensions.
+            If an item is an instance of a subclass of `markdown.extension.Extension`, the  instance will be used
+            as-is. If an item is of type string, first an entry point will be loaded. If that fails, the string is
+            assumed to use Python dot notation (`path.to.module:ClassName`) to load a markdown.Extension subclass. If
+            no class is specified, then a `makeExtension` function is called within the specified module.
+        * extension_configs: Configuration settings for extensions.
         * output_format: Format of output. Supported formats are:
             * "xhtml1": Outputs XHTML 1.x. Default.
             * "xhtml5": Outputs XHTML style tags of HTML 5
@@ -108,8 +109,8 @@ class Markdown(object):
         Keyword arguments:
 
         * extensions: A list of extensions, which can either
-           be strings or objects.  See the docstring on Markdown.
-        * configs: A dictionary mapping module names to config options.
+           be strings or objects.
+        * configs: A dictionary mapping extension names to config options.
 
         """
         for ext in extensions:
@@ -130,72 +131,37 @@ class Markdown(object):
 
     def build_extension(self, ext_name, configs):
         """
-        Build extension by name, then return the module.
+        Build extension from a string name, then return an instance.
 
+        First attempt to load an entry point. The string name must be registered as an entry point in the
+        `markdown.extensions` group which points to a subclass of the `markdown.extensions.Extension` class. If
+        multiple distributions have registered the same name, the first one found by `pkg_resources.iter_entry_points`
+        is returned.
+
+        If no entry point is found, assume dot notation (`path.to.module:ClassName`). Load the specified class and
+        return an instance. If no class is specified, import the module and call a `makeExtension` function and return
+        the Extension instance returned by that function.
         """
-
         configs = dict(configs)
+
+        entry_points = [ep for ep in pkg_resources.iter_entry_points('markdown.extensions', ext_name)]
+        if entry_points:
+            ext = entry_points[0].load()
+            return ext(**configs)
 
         # Get class name (if provided): `path.to.module:ClassName`
         ext_name, class_name = ext_name.split(':', 1) \
             if ':' in ext_name else (ext_name, '')
 
-        # Try loading the extension first from one place, then another
         try:
-            # Assume string uses dot syntax (`path.to.some.module`)
             module = importlib.import_module(ext_name)
             logger.debug(
                 'Successfuly imported extension module "%s".' % ext_name
             )
-            # For backward compat (until deprecation)
-            # check that this is an extension.
-            if ('.' not in ext_name and not (hasattr(module, 'makeExtension') or
-               (class_name and hasattr(module, class_name)))):
-                # We have a name conflict
-                # eg: extensions=['tables'] and PyTables is installed
-                raise ImportError
-        except ImportError:
-            # Preppend `markdown.extensions.` to name
-            module_name = '.'.join(['markdown.extensions', ext_name])
-            try:
-                module = importlib.import_module(module_name)
-                logger.debug(
-                    'Successfuly imported extension module "%s".' %
-                    module_name
-                )
-                warnings.warn('Using short names for Markdown\'s builtin '
-                              'extensions is deprecated. Use the '
-                              'full path to the extension with Python\'s dot '
-                              'notation (eg: "%s" instead of "%s"). The '
-                              'current behavior will raise an error in version '
-                              '2.7. See the Release Notes for '
-                              'Python-Markdown version 2.6 for more info.' %
-                              (module_name, ext_name),
-                              DeprecationWarning)
-            except ImportError:
-                # Preppend `mdx_` to name
-                module_name_old_style = '_'.join(['mdx', ext_name])
-                try:
-                    module = importlib.import_module(module_name_old_style)
-                    logger.debug(
-                        'Successfuly imported extension module "%s".' %
-                        module_name_old_style)
-                    warnings.warn('Markdown\'s behavior of prepending "mdx_" '
-                                  'to an extension name is deprecated. '
-                                  'Use the full path to the '
-                                  'extension with Python\'s dot notation '
-                                  '(eg: "%s" instead of "%s"). The current '
-                                  'behavior will raise an error in version 2.7. '
-                                  'See the Release Notes for Python-Markdown '
-                                  'version 2.6 for more info.' %
-                                  (module_name_old_style, ext_name),
-                                  DeprecationWarning)
-                except ImportError as e:
-                    message = "Failed loading extension '%s' from '%s', '%s' " \
-                        "or '%s'" % (ext_name, ext_name, module_name,
-                                     module_name_old_style)
-                    e.args = (message,) + e.args[1:]
-                    raise
+        except ImportError as e:
+            message = 'Failed loading extension "%s".' % ext_name
+            e.args = (message,) + e.args[1:]
+            raise
 
         if class_name:
             # Load given class name from module.

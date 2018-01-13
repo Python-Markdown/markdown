@@ -123,80 +123,67 @@ class TestExtensions(LegacyTestCase):
     location = os.path.join(parent_test_dir, 'extensions')
     exclude = ['codehilite']
 
-    attr_list = Kwargs(
-        extensions=[
-            'markdown.extensions.attr_list',
-            'markdown.extensions.def_list',
-            'markdown.extensions.smarty'
-        ]
-    )
+    attr_list = Kwargs(extensions=['attr_list', 'def_list', 'smarty'])
 
-    codehilite = Kwargs(extensions=['markdown.extensions.codehilite'])
+    codehilite = Kwargs(extensions=['codehilite'])
 
-    toc = Kwargs(extensions=['markdown.extensions.toc'])
+    toc = Kwargs(extensions=['toc'])
 
-    toc_invalid = Kwargs(extensions=['markdown.extensions.toc'])
+    toc_invalid = Kwargs(extensions=['toc'])
 
-    toc_out_of_order = Kwargs(extensions=['markdown.extensions.toc'])
+    toc_out_of_order = Kwargs(extensions=['toc'])
 
     toc_nested = Kwargs(
-        extensions=['markdown.extensions.toc'],
-        extension_configs={'markdown.extensions.toc': {'permalink': True}}
+        extensions=['toc'],
+        extension_configs={'toc': {'permalink': True}}
     )
 
     toc_nested2 = Kwargs(
-        extensions=['markdown.extensions.toc'],
-        extension_configs={'markdown.extensions.toc': {'permalink': "[link]"}}
+        extensions=['toc'],
+        extension_configs={'toc': {'permalink': "[link]"}}
     )
 
-    toc_nested_list = Kwargs(extensions=['markdown.extensions.toc'])
+    toc_nested_list = Kwargs(extensions=['toc'])
 
-    wikilinks = Kwargs(extensions=['markdown.extensions.wikilinks'])
+    wikilinks = Kwargs(extensions=['wikilinks'])
 
-    fenced_code = Kwargs(extensions=['markdown.extensions.fenced_code'])
+    fenced_code = Kwargs(extensions=['fenced_code'])
 
-    github_flavored = Kwargs(extensions=['markdown.extensions.fenced_code'])
+    github_flavored = Kwargs(extensions=['fenced_code'])
 
-    sane_lists = Kwargs(extensions=['markdown.extensions.sane_lists'])
+    sane_lists = Kwargs(extensions=['sane_lists'])
 
-    nl2br_w_attr_list = Kwargs(
-        extensions=[
-            'markdown.extensions.nl2br',
-            'markdown.extensions.attr_list'
-        ]
-    )
+    nl2br_w_attr_list = Kwargs(extensions=['nl2br', 'attr_list'])
 
-    admonition = Kwargs(extensions=['markdown.extensions.admonition'])
+    admonition = Kwargs(extensions=['admonition'])
 
     smarty = Kwargs(
-        extensions=['markdown.extensions.smarty'],
-        extension_configs={'markdown.extensions.smarty': {'smart_angled_quotes': True}}
+        extensions=['smarty'],
+        extension_configs={'smarty': {'smart_angled_quotes': True}}
     )
 
 
 class TestExtensionsExtra(LegacyTestCase):
     location = os.path.join(parent_test_dir, 'extensions/extra')
-    default_kwargs = Kwargs(extensions=['markdown.extensions.extra'])
+    default_kwargs = Kwargs(extensions=['extra'])
 
-    loose_def_list = Kwargs(extensions=['markdown.extensions.def_list'])
+    loose_def_list = Kwargs(extensions=['def_list'])
 
-    simple_def_lists = Kwargs(extensions=['markdown.extensions.def_list'])
+    simple_def_lists = Kwargs(extensions=['def_list'])
 
-    abbr = Kwargs(extensions=['markdown.extensions.abbr'])
+    abbr = Kwargs(extensions=['abbr'])
 
-    footnotes = Kwargs(extensions=['markdown.extensions.footnotes'])
+    footnotes = Kwargs(extensions=['footnotes'])
 
-    tables = Kwargs(extensions=['markdown.extensions.tables'])
+    tables = Kwargs(extensions=['tables'])
 
-    tables_and_attr_list = Kwargs(
-        extensions=['markdown.extensions.tables', 'markdown.extensions.attr_list']
-    )
+    tables_and_attr_list = Kwargs(extensions=['tables', 'attr_list'])
 
     extra_config = Kwargs(
-        extensions=['markdown.extensions.extra'],
+        extensions=['extra'],
         extension_configs={
-            'markdown.extensions.extra': {
-                'markdown.extensions.footnotes': {
+            'extra': {
+                'footnotes': {
                     'PLACE_MARKER': '~~~placemarker~~~'
                 }
             }

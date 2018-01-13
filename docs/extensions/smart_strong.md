@@ -19,21 +19,18 @@ Example
 
 ```pycon
 >>> import markdown
->>> markdown.markdown('Text with double__underscore__words.', \
-                      extensions=['markdown.extensions.smart_strong'])
+>>> markdown.markdown('Text with double__underscore__words.', extensions=['smart_strong'])
 u'<p>Text with double__underscore__words.</p>'
->>> markdown.markdown('__Strong__ still works.', \
-                      extensions=['markdown.extensions.smart_strong'])
+>>> markdown.markdown('__Strong__ still works.', extensions=['smart_strong'])
 u'<p><strong>Strong</strong> still works.</p>'
->>> markdown.markdown('__this__works__too__.', \
-                      extensions=['markdown.extensions.smart_strong'])
+>>> markdown.markdown('__this__works__too__.', extensions=['smart_strong'])
 u'<p><strong>this__works__too</strong>.</p>'
 ```
 
 Usage
 -----
 
-See [Extensions](index.md) for general extension usage, specify
-`markdown.extensions.smart_strong` as the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `smart_strong` as
+the name of the extension.
 
 This extension does not accept any special configuration options.

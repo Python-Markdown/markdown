@@ -46,8 +46,8 @@ becomes
 
 ## Usage
 
-See [Extensions](index.md) for general extension usage, specify
-`markdown.extensions.wikilinks` as the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `wikilinks` as the
+name of the extension.
 
 See the [Library Reference](../reference.md#extensions) for information about
 configuring extensions.

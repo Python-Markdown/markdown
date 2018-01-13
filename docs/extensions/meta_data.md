@@ -57,8 +57,8 @@ by Markdown.
 Usage
 -----
 
-See [Extensions](index.md) for general extension usage, specify
-`markdown.extensions.meta` as the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `meta` as the name
+of the extension.
 
 Accessing the Meta-Data
 -----------------------
@@ -67,7 +67,7 @@ The meta-data is made available as a python Dict in the `Meta` attribute of an
 instance of the Markdown class. For example, using the above document:
 
 ```pycon
->>> md = markdown.Markdown(extensions = ['markdown.extensions.meta'])
+>>> md = markdown.Markdown(extensions = ['meta'])
 >>> html = md.convert(text)
 >>> # Meta-data has been stripped from output
 >>> print html
@@ -101,9 +101,6 @@ Compatible Extensions
 The following extensions are currently known to work with the Meta-Data
 extension. The keywords they are known to support are also listed.
 
-* [HeaderId](header_id.md)
-    * `header_level`
-    * `header_forceid`
 * [WikiLinks](wikilinks.md)
     * `wiki_base_url`
     * `wiki_end_url`
