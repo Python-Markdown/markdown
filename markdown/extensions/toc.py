@@ -178,7 +178,7 @@ class TocTreeprocessor(Treeprocessor):
         c.text = ""
         for elem in c:
             anchor.append(elem)
-        while c:
+        while len(c):
             c.remove(c[0])
         c.append(anchor)
 
