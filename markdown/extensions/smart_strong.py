@@ -37,5 +37,5 @@ class SmartEmphasisExtension(Extension):
         )
 
 
-def makeExtension(*args, **kwargs):  # pragma: no cover
-    return SmartEmphasisExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return SmartEmphasisExtension(**kwargs)

@@ -90,5 +90,5 @@ class AbbrPattern(Pattern):
         return abbr
 
 
-def makeExtension(*args, **kwargs):  # pragma: no cover
-    return AbbrExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return AbbrExtension(**kwargs)

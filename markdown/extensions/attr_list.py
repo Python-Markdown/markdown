@@ -168,5 +168,5 @@ class AttrListExtension(Extension):
         )
 
 
-def makeExtension(*args, **kwargs):  # pragma: no cover
-    return AttrListExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return AttrListExtension(**kwargs)

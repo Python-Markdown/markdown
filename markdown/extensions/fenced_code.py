@@ -109,5 +109,5 @@ class FencedBlockPreprocessor(Preprocessor):
         return txt
 
 
-def makeExtension(*args, **kwargs):  # pragma: no cover
-    return FencedCodeExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return FencedCodeExtension(**kwargs)

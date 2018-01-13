@@ -111,5 +111,5 @@ class DefListExtension(Extension):
                                       '>ulist')
 
 
-def makeExtension(*args, **kwargs):  # pragma: no cover
-    return DefListExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return DefListExtension(**kwargs)

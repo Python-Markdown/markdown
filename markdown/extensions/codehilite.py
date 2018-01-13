@@ -227,7 +227,7 @@ class HiliteTreeprocessor(Treeprocessor):
 class CodeHiliteExtension(Extension):
     """ Add source code hilighting to markdown codeblocks. """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         # define default configs
         self.config = {
             'linenums': [None,
@@ -249,7 +249,7 @@ class CodeHiliteExtension(Extension):
                              'Default: True']
             }
 
-        super(CodeHiliteExtension, self).__init__(*args, **kwargs)
+        super(CodeHiliteExtension, self).__init__(**kwargs)
 
     def extendMarkdown(self, md, md_globals):
         """ Add HilitePostprocessor to Markdown instance. """
@@ -260,5 +260,5 @@ class CodeHiliteExtension(Extension):
         md.registerExtension(self)
 
 
-def makeExtension(*args, **kwargs):  # pragma: no cover
-    return CodeHiliteExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return CodeHiliteExtension(**kwargs)
