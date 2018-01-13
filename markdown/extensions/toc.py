@@ -265,7 +265,7 @@ class TocExtension(Extension):
 
     TreeProcessorClass = TocTreeprocessor
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         self.config = {
             "marker": ['[TOC]',
                        'Text to find and replace with Table of Contents - '
@@ -286,7 +286,7 @@ class TocExtension(Extension):
             'separator': ['-', 'Word separator. Defaults to "-".']
         }
 
-        super(TocExtension, self).__init__(*args, **kwargs)
+        super(TocExtension, self).__init__(**kwargs)
 
     def extendMarkdown(self, md, md_globals):
         md.registerExtension(self)
@@ -304,5 +304,5 @@ class TocExtension(Extension):
         self.md.toc = ''
 
 
-def makeExtension(*args, **kwargs):  # pragma: no cover
-    return TocExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return TocExtension(**kwargs)

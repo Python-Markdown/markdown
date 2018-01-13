@@ -168,7 +168,7 @@ class SubstituteTextPattern(HtmlPattern):
 
 
 class SmartyExtension(Extension):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         self.config = {
             'smart_quotes': [True, 'Educate quotes'],
             'smart_angled_quotes': [False, 'Educate angled quotes'],
@@ -176,7 +176,7 @@ class SmartyExtension(Extension):
             'smart_ellipses': [True, 'Educate ellipses'],
             'substitutions': [{}, 'Overwrite default substitutions'],
         }
-        super(SmartyExtension, self).__init__(*args, **kwargs)
+        super(SmartyExtension, self).__init__(**kwargs)
         self.substitutions = dict(substitutions)
         self.substitutions.update(self.getConfig('substitutions', default={}))
 
@@ -264,5 +264,5 @@ class SmartyExtension(Extension):
         md.ESCAPED_CHARS.extend(['"', "'"])
 
 
-def makeExtension(*args, **kwargs):  # pragma: no cover
-    return SmartyExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return SmartyExtension(**kwargs)

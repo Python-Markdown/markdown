@@ -74,5 +74,5 @@ class MetaPreprocessor(Preprocessor):
         return lines
 
 
-def makeExtension(*args, **kwargs):  # pragma: no cover
-    return MetaExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return MetaExtension(**kwargs)
