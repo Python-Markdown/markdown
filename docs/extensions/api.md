@@ -125,7 +125,7 @@ The new processor is very similar to legacy with two major distinctions.
     start with `r'^(.*?)'` and end with `r'(.*?)!'`. This was a huge
     performance sink and this requirement has been removed. The returned match
     object will only contain what is explicitly matched in the pattern, and
-    extension pattern groups now starts with `m.group(1)`.
+    extension pattern groups now start with `m.group(1)`.
 
 2. The `handleMatch` method now takes an additional input called `data`,
     which is the entire block under analysis, not just what is matched with
@@ -201,19 +201,19 @@ Some example processors that are available.
 
 * **`SimpleTextInlineProcessor(pattern)`**:
 
-    Returns simple text of `group(2)` of a `pattern` and the boundaries of
-    where the data to replace resides.
+    Returns simple text of `group(2)` of a `pattern` and the start and end
+    position of the match.
 
 * **`SimpleTagInlineProcessor(pattern, tag)`**:
 
     Returns an element of type "`tag`" with a text attribute of `group(3)`
     of a `pattern`. `tag` should be a string of a HTML element (i.e.: 'em').
-    Also returns the boundaries of where the data to replace resides.
+    It also returns the start and end position of the match.
 
 * **`SubstituteTagInlineProcessor(pattern, tag)`**:
 
     Returns an element of type "`tag`" with no children or text (i.e.: `br`)
-     and the boundaries of where the data to replace resides.
+    and the start and end position of the match.
 
 A very small number of the basic legacy processors are still available to
 prevent breakage of 3rd party extensions during the transition period to the
