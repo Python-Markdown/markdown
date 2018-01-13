@@ -2,7 +2,7 @@
 Smart_Strong Extension for Python-Markdown
 ==========================================
 
-This extention adds smarter handling of double underscores within words.
+This extension adds smarter handling of double underscores within words.
 
 See <https://Python-Markdown.github.io/extensions/smart_strong>
 for documentation.

@@ -292,7 +292,7 @@ class InlineProcessor(Treeprocessor):
         Arguments:
 
         * tree: ElementTree object, representing Markdown tree.
-        * ancestors: List of parent tag names that preceed the tree node (if needed).
+        * ancestors: List of parent tag names that precede the tree node (if needed).
 
         Returns: ElementTree object with applied inline patterns.
 
@@ -391,7 +391,7 @@ class PrettifyTreeprocessor(Treeprocessor):
         """ Add linebreaks to ElementTree root object. """
 
         self._prettifyETree(root)
-        # Do <br />'s seperately as they are often in the middle of
+        # Do <br />'s separately as they are often in the middle of
         # inline content and missed by _prettifyETree.
         brs = root.iter('br')
         for br in brs:

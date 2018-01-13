@@ -44,7 +44,7 @@ class Preprocessor(util.Processor):
 
 
 class NormalizeWhitespace(Preprocessor):
-    """ Normalize whitespace for consistant parsing. """
+    """ Normalize whitespace for consistent parsing. """
 
     def run(self, lines):
         source = '\n'.join(lines)

@@ -339,7 +339,7 @@ class FootnotePattern(Pattern):
 
 
 class FootnotePostTreeprocessor(Treeprocessor):
-    """ Ammend footnote div with duplicates. """
+    """ Amend footnote div with duplicates. """
 
     def __init__(self, footnotes):
         self.footnotes = footnotes
