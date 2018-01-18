@@ -31,5 +31,5 @@ class Nl2BrExtension(Extension):
         md.inlinePatterns.add('nl', br_tag, '_end')
 
 
-def makeExtension(*args, **kwargs):
-    return Nl2BrExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return Nl2BrExtension(**kwargs)

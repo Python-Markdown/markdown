@@ -34,7 +34,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from .core import Markdown, markdown, markdownFromFile
 
-# For backward compatability as some extensions expect it...
+# For backward compatibility as some extensions expect it...
 from .extensions import Extension  # noqa
 
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
@@ -46,7 +46,7 @@ __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 __version_info__ = (3, 0, 0, 'alpha', 0)
 
 
-def _get_version():
+def _get_version():  # pragma: no cover
     " Returns a PEP 386-compliant version number from version_info. "
     assert len(__version_info__) == 5
     assert __version_info__[3] in ('alpha', 'beta', 'rc', 'final')

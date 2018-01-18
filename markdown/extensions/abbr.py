@@ -90,5 +90,5 @@ class AbbrInlineProcessor(InlineProcessor):
         return abbr, m.start(0), m.end(0)
 
 
-def makeExtension(*args, **kwargs):
-    return AbbrExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return AbbrExtension(**kwargs)

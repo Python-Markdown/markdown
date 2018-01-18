@@ -92,5 +92,5 @@ class AdmonitionProcessor(BlockProcessor):
         return klass, title
 
 
-def makeExtension(*args, **kwargs):
-    return AdmonitionExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return AdmonitionExtension(**kwargs)

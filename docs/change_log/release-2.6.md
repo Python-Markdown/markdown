@@ -46,8 +46,8 @@ from markdown.extensions import Extension
 
 class EscapeHtml(Extension):
     def extendMarkdown(self, md, md_globals):
-    del md.preprocessors['html_block']
-    del md.inlinePatterns['html']
+        del md.preprocessors['html_block']
+        del md.inlinePatterns['html']
 
 html = markdown.markdown(text, extensions=[EscapeHtml()])
 ```

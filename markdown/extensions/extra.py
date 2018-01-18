@@ -50,10 +50,9 @@ extensions = [
 class ExtraExtension(Extension):
     """ Add various extensions to Markdown class."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         """ config is a dumb holder which gets passed to actual ext later. """
-        self.config = kwargs.pop('configs', {})
-        self.config.update(kwargs)
+        self.config = kwargs
 
     def extendMarkdown(self, md, md_globals):
         """ Register extension instances. """
@@ -68,8 +67,8 @@ class ExtraExtension(Extension):
             r'^(p|h[1-6]|li|dd|dt|td|th|legend|address)$', re.IGNORECASE)
 
 
-def makeExtension(*args, **kwargs):
-    return ExtraExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return ExtraExtension(**kwargs)
 
 
 class MarkdownInHtmlProcessor(BlockProcessor):
