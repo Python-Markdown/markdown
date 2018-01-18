@@ -249,14 +249,14 @@ class InlineProcessor(Treeprocessor):
                     match = None
                     continue
                 break
-        else:
+        else:  # pragma: no cover
             match = pattern.getCompiledRegExp().match(data[startIndex:])
             leftData = data[:startIndex]
 
         if not match:
             return data, False, 0
 
-        if not new_style:
+        if not new_style:  # pragma: no cover
             node = pattern.handleMatch(match)
             start = match.start(0)
             end = match.end(0)
@@ -285,7 +285,7 @@ class InlineProcessor(Treeprocessor):
         if new_style:
             return "%s%s%s" % (data[:start],
                                placeholder, data[end:]), True, 0
-        else:
+        else:  # pragma: no cover
             return "%s%s%s%s" % (leftData,
                                  match.group(1),
                                  placeholder, match.groups()[-1]), True, 0

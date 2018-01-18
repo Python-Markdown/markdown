@@ -171,7 +171,7 @@ The pattern classes
 """
 
 
-class Pattern(object):
+class Pattern(object):  # pragma: no cover
     """Base class that inline patterns subclass. """
 
     ANCESTOR_EXCLUDES = tuple()
@@ -280,7 +280,7 @@ class InlineProcessor(Pattern):
         pass  # pragma: no cover
 
 
-class SimpleTextPattern(Pattern):
+class SimpleTextPattern(Pattern):  # pragma: no cover
     """ Return a simple text of group(2) of a Pattern. """
     def handleMatch(self, m):
         return m.group(2)
@@ -303,7 +303,7 @@ class EscapeInlineProcessor(InlineProcessor):
             return None, m.start(0), m.end(0)
 
 
-class SimpleTagPattern(Pattern):
+class SimpleTagPattern(Pattern):  # pragma: no cover
     """
     Return element of type `tag` with a text attribute of group(3)
     of a Pattern.
@@ -335,7 +335,7 @@ class SimpleTagInlineProcessor(InlineProcessor):
         return el, m.start(0), m.end(0)
 
 
-class SubstituteTagPattern(SimpleTagPattern):
+class SubstituteTagPattern(SimpleTagPattern):  # pragma: no cover
     """ Return an element of type `tag` with no children. """
     def handleMatch(self, m):
         return util.etree.Element(self.tag)
@@ -363,7 +363,7 @@ class BacktickInlineProcessor(InlineProcessor):
             return m.group(1).replace('\\\\', self.ESCAPED_BSLASH), m.start(0), m.end(0)
 
 
-class DoubleTagPattern(SimpleTagPattern):
+class DoubleTagPattern(SimpleTagPattern):  # pragma: no cover
     """Return a ElementTree element nested in tag2 nested in tag1.
 
     Useful for strong emphasis etc.
