@@ -753,16 +753,16 @@ class TestEscapeAppend(unittest.TestCase):
 class TestAncestorExclusion(unittest.TestCase):
     """ Tests exclusion of tags in ancestor list. """
 
-    class AncestorExample(markdown.inlinepatterns.SimpleTagPattern):
+    class AncestorExample(markdown.inlinepatterns.SimpleTagInlineProcessor):
         """ Ancestor Test. """
 
         ANCESTOR_EXCLUDES = ('a',)
 
-        def handleMatch(self, m):
+        def handleMatch(self, m, data):
             """ Handle match. """
             el = markdown.util.etree.Element(self.tag)
-            el.text = m.group(3)
-            return el
+            el.text = m.group(2)
+            return el, m.start(0), m.end(0)
 
     class AncestorExtension(markdown.Extension):
 
@@ -774,7 +774,7 @@ class TestAncestorExclusion(unittest.TestCase):
         def extendMarkdown(self, md, md_globals):
             """Modify inline patterns."""
 
-            pattern = r'(\+)([^\+]+)\2'
+            pattern = r'(\+)([^\+]+)\1'
             md.inlinePatterns["ancestor-test"] = TestAncestorExclusion.AncestorExample(pattern, 'strong')
 
     def setUp(self):

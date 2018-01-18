@@ -83,7 +83,7 @@ smartypants.py license:
 
 from __future__ import unicode_literals
 from . import Extension
-from ..inlinepatterns import HtmlPattern, HTML_RE
+from ..inlinepatterns import HtmlInlineProcessor, HTML_RE
 from ..odict import OrderedDict
 from ..treeprocessors import InlineProcessor
 
@@ -150,21 +150,21 @@ remainingDoubleQuotesRegex = r'"'
 HTML_STRICT_RE = HTML_RE + r'(?!\>)'
 
 
-class SubstituteTextPattern(HtmlPattern):
+class SubstituteTextPattern(HtmlInlineProcessor):
     def __init__(self, pattern, replace, markdown_instance):
         """ Replaces matches with some text. """
-        HtmlPattern.__init__(self, pattern)
+        HtmlInlineProcessor.__init__(self, pattern)
         self.replace = replace
         self.markdown = markdown_instance
 
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         result = ''
         for part in self.replace:
             if isinstance(part, int):
                 result += m.group(part)
             else:
                 result += self.markdown.htmlStash.store(part)
-        return result
+        return result, m.start(0), m.end(0)
 
 
 class SmartyExtension(Extension):
@@ -233,11 +233,11 @@ class SmartyExtension(Extension):
             (doubleQuoteSetsRe, (ldquo + lsquo,)),
             (singleQuoteSetsRe, (lsquo + ldquo,)),
             (decadeAbbrRe, (rsquo,)),
-            (openingSingleQuotesRegex, (2, lsquo)),
+            (openingSingleQuotesRegex, (1, lsquo)),
             (closingSingleQuotesRegex, (rsquo,)),
-            (closingSingleQuotesRegex2, (rsquo, 2)),
+            (closingSingleQuotesRegex2, (rsquo, 1)),
             (remainingSingleQuotesRegex, (lsquo,)),
-            (openingDoubleQuotesRegex, (2, ldquo)),
+            (openingDoubleQuotesRegex, (1, ldquo)),
             (closingDoubleQuotesRegex, (rdquo,)),
             (closingDoubleQuotesRegex2, (rdquo,)),
             (remainingDoubleQuotesRegex, (ldquo,))
@@ -255,7 +255,7 @@ class SmartyExtension(Extension):
             self.educateAngledQuotes(md)
             # Override HTML_RE from inlinepatterns.py so that it does not
             # process tags with duplicate closing quotes.
-            md.inlinePatterns["html"] = HtmlPattern(HTML_STRICT_RE, md)
+            md.inlinePatterns["html"] = HtmlInlineProcessor(HTML_STRICT_RE, md)
         if configs['smart_dashes']:
             self.educateDashes(md)
         inlineProcessor = InlineProcessor(md)

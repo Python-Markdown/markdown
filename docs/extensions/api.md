@@ -48,6 +48,8 @@ class MyPreprocessor(Preprocessor):
 
 ## Inline Patterns {: #inlinepatterns }
 
+### Legacy
+
 Inline Patterns implement the inline HTML element syntax for Markdown such as
 `*emphasis*` or `[links](http://example.com)`. Pattern objects should be
 instances of classes that inherit from `markdown.inlinepatterns.Pattern` or
@@ -85,7 +87,7 @@ from markdown.util import etree
 class EmphasisPattern(Pattern):
     def handleMatch(self, m):
         el = etree.Element('em')
-        el.text = m.group(3)
+        el.text = m.group(2)
         return el
 ```
 
@@ -110,7 +112,112 @@ implemented with separate instances of the `SimpleTagPattern` listed below.
 Feel free to use or extend any of the Pattern classes found at
 `markdown.inlinepatterns`.
 
+### Future
+
+While users can still create plugins with the existing
+`markdown.inlinepatterns.Pattern`, a new, more flexible inline processor has
+been added which users are encouraged to migrate to. The new inline processor
+is found at `markdown.inlinepatterns.InlineProcessor`.
+
+The new processor is very similar to legacy with two major distinctions.
+
+1. Patterns no longer need to match the entire block, so patterns no longer
+    start with `r'^(.*?)'` and end with `r'(.*?)!'`. This was a huge
+    performance sink and this requirement has been removed. The returned match
+    object will only contain what is explicitly matched in the pattern, and
+    extension pattern groups now start with `m.group(1)`.
+
+2. The `handleMatch` method now takes an additional input called `data`,
+    which is the entire block under analysis, not just what is matched with
+    the specified pattern. The method also returns the element *and* the index
+    boundaries relative to `data` that the return element is replacing
+    (usually `m.start(0)` and `m.end(0)`).  If the boundaries are returned as
+    `None`, it is assumed that the match did not take place, and nothing will
+    be altered in `data`.
+
+If all you need is the same functionality as the legacy processor, you can do
+as shown below. Most of the time, simple regular expression processing is all
+you'll need.
+
+```python
+from markdown.inlinepatterns import InlineProcessor
+from markdown.util import etree
+
+# an oversimplified regex
+MYPATTERN = r'\*([^*]+)\*'
+
+class EmphasisPattern(InlineProcessor):
+    def handleMatch(self, m, data):
+        el = etree.Element('em')
+        el.text = m.group(1)
+        return el, m.start(0), m.end(0)
+
+# pass in pattern and create instance
+emphasis = EmphasisPattern(MYPATTERN)
+```
+
+But, the new processor allows you handle much more complex patterns that are
+too much for Python's Re to handle.  For instance, to handle nested brackets in
+link patterns, the built-in link inline processor uses the following pattern to
+find where a link *might* start:
+
+```python
+LINK_RE = NOIMG + r'\['
+link = LinkInlineProcessor(LINK_RE, md_instance)
+```
+
+It then uses programmed logic to actually walk the string (`data`), starting at
+where the match started (`m.start(0)`). If for whatever reason, the text
+does not appear to be a link, it returns `None` for the start and end boundary
+in order to communicate to the parser that no match was found.
+
+```python
+    # Just a snippet of of the link's handleMatch
+    # method to illustrate new logic
+    def handleMatch(self, m, data):
+        text, index, handled = self.getText(data, m.end(0))
+
+        if not handled:
+            return None, None, None
+
+        href, title, index, handled = self.getLink(data, index)
+        if not handled:
+            return None, None, None
+
+        el = util.etree.Element("a")
+        el.text = text
+
+        el.set("href", href)
+
+        if title is not None:
+            el.set("title", title)
+
+        return el, m.start(0), index
+```
+
 ### Generic Pattern Classes
+
+Some example processors that are available.
+
+* **`SimpleTextInlineProcessor(pattern)`**:
+
+    Returns simple text of `group(2)` of a `pattern` and the start and end
+    position of the match.
+
+* **`SimpleTagInlineProcessor(pattern, tag)`**:
+
+    Returns an element of type "`tag`" with a text attribute of `group(3)`
+    of a `pattern`. `tag` should be a string of a HTML element (i.e.: 'em').
+    It also returns the start and end position of the match.
+
+* **`SubstituteTagInlineProcessor(pattern, tag)`**:
+
+    Returns an element of type "`tag`" with no children or text (i.e.: `br`)
+    and the start and end position of the match.
+
+A very small number of the basic legacy processors are still available to
+prevent breakage of 3rd party extensions during the transition period to the
+new processors. Three of the available processors are listed below.
 
 * **`SimpleTextPattern(pattern)`**:
 

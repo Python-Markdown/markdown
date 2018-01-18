@@ -55,31 +55,31 @@ except ImportError:  # pragma: no cover
 def build_inlinepatterns(md_instance, **kwargs):
     """ Build the default set of inline patterns for Markdown. """
     inlinePatterns = odict.OrderedDict()
-    inlinePatterns["backtick"] = BacktickPattern(BACKTICK_RE)
-    inlinePatterns["escape"] = EscapePattern(ESCAPE_RE, md_instance)
-    inlinePatterns["reference"] = ReferencePattern(REFERENCE_RE, md_instance)
-    inlinePatterns["link"] = LinkPattern(LINK_RE, md_instance)
-    inlinePatterns["image_link"] = ImagePattern(IMAGE_LINK_RE, md_instance)
-    inlinePatterns["image_reference"] = ImageReferencePattern(
+    inlinePatterns["backtick"] = BacktickInlineProcessor(BACKTICK_RE)
+    inlinePatterns["escape"] = EscapeInlineProcessor(ESCAPE_RE, md_instance)
+    inlinePatterns["reference"] = ReferenceInlineProcessor(REFERENCE_RE, md_instance)
+    inlinePatterns["link"] = LinkInlineProcessor(LINK_RE, md_instance)
+    inlinePatterns["image_link"] = ImageInlineProcessor(IMAGE_LINK_RE, md_instance)
+    inlinePatterns["image_reference"] = ImageReferenceInlineProcessor(
         IMAGE_REFERENCE_RE, md_instance
     )
-    inlinePatterns["short_reference"] = ReferencePattern(
-        SHORT_REF_RE, md_instance
+    inlinePatterns["short_reference"] = ShortReferenceInlineProcessor(
+        REFERENCE_RE, md_instance
     )
-    inlinePatterns["autolink"] = AutolinkPattern(AUTOLINK_RE, md_instance)
-    inlinePatterns["automail"] = AutomailPattern(AUTOMAIL_RE, md_instance)
-    inlinePatterns["linebreak"] = SubstituteTagPattern(LINE_BREAK_RE, 'br')
-    inlinePatterns["html"] = HtmlPattern(HTML_RE, md_instance)
-    inlinePatterns["entity"] = HtmlPattern(ENTITY_RE, md_instance)
-    inlinePatterns["not_strong"] = SimpleTextPattern(NOT_STRONG_RE)
-    inlinePatterns["em_strong"] = DoubleTagPattern(EM_STRONG_RE, 'strong,em')
-    inlinePatterns["strong_em"] = DoubleTagPattern(STRONG_EM_RE, 'em,strong')
-    inlinePatterns["strong"] = SimpleTagPattern(STRONG_RE, 'strong')
-    inlinePatterns["emphasis"] = SimpleTagPattern(EMPHASIS_RE, 'em')
+    inlinePatterns["autolink"] = AutolinkInlineProcessor(AUTOLINK_RE, md_instance)
+    inlinePatterns["automail"] = AutomailInlineProcessor(AUTOMAIL_RE, md_instance)
+    inlinePatterns["linebreak"] = SubstituteTagInlineProcessor(LINE_BREAK_RE, 'br')
+    inlinePatterns["html"] = HtmlInlineProcessor(HTML_RE, md_instance)
+    inlinePatterns["entity"] = HtmlInlineProcessor(ENTITY_RE, md_instance)
+    inlinePatterns["not_strong"] = SimpleTextInlineProcessor(NOT_STRONG_RE)
+    inlinePatterns["em_strong"] = DoubleTagInlineProcessor(EM_STRONG_RE, 'strong,em')
+    inlinePatterns["strong_em"] = DoubleTagInlineProcessor(STRONG_EM_RE, 'em,strong')
+    inlinePatterns["strong"] = SimpleTagInlineProcessor(STRONG_RE, 'strong')
+    inlinePatterns["emphasis"] = SimpleTagInlineProcessor(EMPHASIS_RE, 'em')
     if md_instance.smart_emphasis:
-        inlinePatterns["emphasis2"] = SimpleTagPattern(SMART_EMPHASIS_RE, 'em')
+        inlinePatterns["emphasis2"] = SimpleTagInlineProcessor(SMART_EMPHASIS_RE, 'em')
     else:
-        inlinePatterns["emphasis2"] = SimpleTagPattern(EMPHASIS_2_RE, 'em')
+        inlinePatterns["emphasis2"] = SimpleTagInlineProcessor(EMPHASIS_2_RE, 'em')
     return inlinePatterns
 
 
@@ -88,54 +88,43 @@ The actual regular expressions for patterns
 -----------------------------------------------------------------------------
 """
 
-NOBRACKET = r'[^\]\[]*'
-BRK = (
-    r'\[(' +
-    (NOBRACKET + r'(\[')*6 +
-    (NOBRACKET + r'\])*')*6 +
-    NOBRACKET + r')\]'
-)
 NOIMG = r'(?<!\!)'
 
 # `e=f()` or ``e=f("`")``
-BACKTICK_RE = r'(?:(?<!\\)((?:\\{2})+)(?=`+)|(?<!\\)(`+)(.+?)(?<!`)\3(?!`))'
+BACKTICK_RE = r'(?:(?<!\\)((?:\\{2})+)(?=`+)|(?<!\\)(`+)(.+?)(?<!`)\2(?!`))'
 
 # \<
 ESCAPE_RE = r'\\(.)'
 
 # *emphasis*
-EMPHASIS_RE = r'(\*)([^\*]+)\2'
+EMPHASIS_RE = r'(\*)([^\*]+)\1'
 
 # **strong**
-STRONG_RE = r'(\*{2}|_{2})(.+?)\2'
+STRONG_RE = r'(\*{2}|_{2})(.+?)\1'
 
 # ***strongem*** or ***em*strong**
-EM_STRONG_RE = r'(\*|_)\2{2}(.+?)\2(.*?)\2{2}'
+EM_STRONG_RE = r'(\*|_)\1{2}(.+?)\1(.*?)\1{2}'
 
 # ***strong**em*
-STRONG_EM_RE = r'(\*|_)\2{2}(.+?)\2{2}(.*?)\2'
+STRONG_EM_RE = r'(\*|_)\1{2}(.+?)\1{2}(.*?)\1'
 
 # _smart_emphasis_
-SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\2(?!\w)'
+SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\1(?!\w)'
 
 # _emphasis_
-EMPHASIS_2_RE = r'(_)(.+?)\2'
+EMPHASIS_2_RE = r'(_)(.+?)\1'
 
 # [text](url) or [text](<url>) or [text](url "title")
-LINK_RE = NOIMG + BRK + \
-    r'''\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\12\s*)?\)'''
+LINK_RE = NOIMG + r'\['
 
 # ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
-IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(\s*(<.*?>|([^"\)\s]+\s*"[^"]*"|[^\)\s]*))\s*\)'
+IMAGE_LINK_RE = r'\!\['
 
 # [Google][3]
-REFERENCE_RE = NOIMG + BRK + r'\s?\[([^\]]*)\]'
-
-# [Google]
-SHORT_REF_RE = NOIMG + r'\[([^\]]+)\]'
+REFERENCE_RE = LINK_RE
 
 # ![alt text][2]
-IMAGE_REFERENCE_RE = r'\!' + BRK + r'\s?\[([^\]]*)\]'
+IMAGE_REFERENCE_RE = IMAGE_LINK_RE
 
 # stand-alone * or _
 NOT_STRONG_RE = r'((^| )(\*|_)( |$))'
@@ -172,6 +161,7 @@ def handleAttributes(text, parent):
     """Set values of an element based on attribute definitions ({@id=123})."""
     def attributeCallback(match):
         parent.set(match.group(1), match.group(2).replace('\n', ' '))
+        return ''
     return ATTR_RE.sub(attributeCallback, text)
 
 
@@ -181,7 +171,7 @@ The pattern classes
 """
 
 
-class Pattern(object):
+class Pattern(object):  # pragma: no cover
     """Base class that inline patterns subclass. """
 
     ANCESTOR_EXCLUDES = tuple()
@@ -241,24 +231,79 @@ class Pattern(object):
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
-class SimpleTextPattern(Pattern):
+class InlineProcessor(Pattern):
+    """
+    Base class that inline patterns subclass.
+
+    This is the newer style inline processor that uses a more
+    efficient and flexible search approach.
+    """
+
+    def __init__(self, pattern, markdown_instance=None):
+        """
+        Create an instant of an inline pattern.
+
+        Keyword arguments:
+
+        * pattern: A regular expression that matches a pattern
+
+        """
+        self.pattern = pattern
+        self.compiled_re = re.compile(pattern, re.DOTALL | re.UNICODE)
+
+        # Api for Markdown to pass safe_mode into instance
+        self.safe_mode = False
+        if markdown_instance:
+            self.markdown = markdown_instance
+
+    def handleMatch(self, m, data):
+        """Return a ElementTree element from the given match and the
+        start and end index of the matched text.
+
+        If `start` and/or `end` are returned as `None`, it will be
+        assumed that the processor did not find a valid region of text.
+
+        Subclasses should override this method.
+
+        Keyword arguments:
+
+        * m: A re match object containing a match of the pattern.
+        * data: The buffer current under analysis
+
+        Returns:
+
+        * el: The ElementTree element, text or None.
+        * start: The start of the region that has been matched or None.
+        * end: The end of the region that has been matched or None.
+
+        """
+        pass  # pragma: no cover
+
+
+class SimpleTextPattern(Pattern):  # pragma: no cover
     """ Return a simple text of group(2) of a Pattern. """
     def handleMatch(self, m):
         return m.group(2)
 
 
-class EscapePattern(Pattern):
+class SimpleTextInlineProcessor(InlineProcessor):
+    """ Return a simple text of group(1) of a Pattern. """
+    def handleMatch(self, m, data):
+        return m.group(1), m.start(0), m.end(0)
+
+
+class EscapeInlineProcessor(InlineProcessor):
     """ Return an escaped character. """
 
-    def handleMatch(self, m):
-        char = m.group(2)
+    def handleMatch(self, m, data):
+        char = m.group(1)
         if char in self.markdown.ESCAPED_CHARS:
-            return '%s%s%s' % (util.STX, ord(char), util.ETX)
+            return '%s%s%s' % (util.STX, ord(char), util.ETX), m.start(0), m.end(0)
         else:
-            return None
+            return None, m.start(0), m.end(0)
 
 
-class SimpleTagPattern(Pattern):
+class SimpleTagPattern(Pattern):  # pragma: no cover
     """
     Return element of type `tag` with a text attribute of group(3)
     of a Pattern.
@@ -274,29 +319,51 @@ class SimpleTagPattern(Pattern):
         return el
 
 
-class SubstituteTagPattern(SimpleTagPattern):
+class SimpleTagInlineProcessor(InlineProcessor):
+    """
+    Return element of type `tag` with a text attribute of group(2)
+    of a Pattern.
+
+    """
+    def __init__(self, pattern, tag):
+        InlineProcessor.__init__(self, pattern)
+        self.tag = tag
+
+    def handleMatch(self, m, data):
+        el = util.etree.Element(self.tag)
+        el.text = m.group(2)
+        return el, m.start(0), m.end(0)
+
+
+class SubstituteTagPattern(SimpleTagPattern):  # pragma: no cover
     """ Return an element of type `tag` with no children. """
     def handleMatch(self, m):
         return util.etree.Element(self.tag)
 
 
-class BacktickPattern(Pattern):
+class SubstituteTagInlineProcessor(SimpleTagInlineProcessor):
+    """ Return an element of type `tag` with no children. """
+    def handleMatch(self, m, data):
+        return util.etree.Element(self.tag), m.start(0), m.end(0)
+
+
+class BacktickInlineProcessor(InlineProcessor):
     """ Return a `<code>` element containing the matching text. """
     def __init__(self, pattern):
-        Pattern.__init__(self, pattern)
+        InlineProcessor.__init__(self, pattern)
         self.ESCAPED_BSLASH = '%s%s%s' % (util.STX, ord('\\'), util.ETX)
         self.tag = 'code'
 
-    def handleMatch(self, m):
-        if m.group(4):
+    def handleMatch(self, m, data):
+        if m.group(3):
             el = util.etree.Element(self.tag)
-            el.text = util.AtomicString(m.group(4).strip())
-            return el
+            el.text = util.AtomicString(m.group(3).strip())
+            return el, m.start(0), m.end(0)
         else:
-            return m.group(2).replace('\\\\', self.ESCAPED_BSLASH)
+            return m.group(1).replace('\\\\', self.ESCAPED_BSLASH), m.start(0), m.end(0)
 
 
-class DoubleTagPattern(SimpleTagPattern):
+class DoubleTagPattern(SimpleTagPattern):  # pragma: no cover
     """Return a ElementTree element nested in tag2 nested in tag1.
 
     Useful for strong emphasis etc.
@@ -312,12 +379,28 @@ class DoubleTagPattern(SimpleTagPattern):
         return el1
 
 
-class HtmlPattern(Pattern):
+class DoubleTagInlineProcessor(SimpleTagInlineProcessor):
+    """Return a ElementTree element nested in tag2 nested in tag1.
+
+    Useful for strong emphasis etc.
+
+    """
+    def handleMatch(self, m, data):
+        tag1, tag2 = self.tag.split(",")
+        el1 = util.etree.Element(tag1)
+        el2 = util.etree.SubElement(el1, tag2)
+        el2.text = m.group(2)
+        if len(m.groups()) == 3:
+            el2.tail = m.group(3)
+        return el1, m.start(0), m.end(0)
+
+
+class HtmlInlineProcessor(InlineProcessor):
     """ Store raw inline html and return a placeholder. """
-    def handleMatch(self, m):
-        rawhtml = self.unescape(m.group(2))
+    def handleMatch(self, m, data):
+        rawhtml = self.unescape(m.group(1))
         place_holder = self.markdown.htmlStash.store(rawhtml)
-        return place_holder
+        return place_holder, m.start(0), m.end(0)
 
     def unescape(self, text):
         """ Return unescaped text given text with an inline placeholder. """
@@ -338,74 +421,234 @@ class HtmlPattern(Pattern):
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
-class LinkPattern(Pattern):
+class LinkInlineProcessor(InlineProcessor):
     """ Return a link element from the given match. """
-    def handleMatch(self, m):
+    RE_LINK = re.compile(r'''\(\s*(?:(<.*?>)\s*(?:(['"])(.*?)\2\s*)?\))?''', re.DOTALL | re.UNICODE)
+    RE_TITLE_CLEAN = re.compile(r'\s')
+
+    def handleMatch(self, m, data):
+        text, index, handled = self.getText(data, m.end(0))
+
+        if not handled:
+            return None, None, None
+
+        href, title, index, handled = self.getLink(data, index)
+        if not handled:
+            return None, None, None
+
         el = util.etree.Element("a")
-        el.text = m.group(2)
-        title = m.group(13)
-        href = m.group(9)
+        el.text = text
 
-        if href:
-            if href[0] == "<":
-                href = href[1:-1]
-            el.set("href", self.unescape(href.strip()))
-        else:
-            el.set("href", "")
+        el.set("href", href)
 
-        if title:
-            title = dequote(self.unescape(title))
+        if title is not None:
             el.set("title", title)
-        return el
+
+        return el, m.start(0), index
+
+    def getLink(self, data, index):
+        """Parse data between `()` of `[Text]()` allowing recursive `()`. """
+
+        href = ''
+        title = None
+        handled = False
+
+        m = self.RE_LINK.match(data, pos=index)
+        if m and m.group(1):
+            # Matches [Text](<link> "title")
+            href = m.group(1)[1:-1].strip()
+            if m.group(3):
+                title = m.group(3)
+            index = m.end(0)
+            handled = True
+        elif m:
+            # Track bracket nesting and index in string
+            bracket_count = 1
+            backtrack_count = 1
+            start_index = m.end()
+            index = start_index
+            last_bracket = -1
+
+            # Primary (first found) quote tracking.
+            quote = None
+            start_quote = -1
+            exit_quote = -1
+            ignore_matches = False
+
+            # Secondary (second found) quote tracking.
+            alt_quote = None
+            start_alt_quote = -1
+            exit_alt_quote = -1
+
+            # Track last character
+            last = ''
+
+            for pos in util.iterrange(index, len(data)):
+                c = data[pos]
+                if c == '(':
+                    # Count nested (
+                    # Don't increment the bracket count if we are sure we're in a title.
+                    if not ignore_matches:
+                        bracket_count += 1
+                    elif backtrack_count > 0:
+                        backtrack_count -= 1
+                elif c == ')':
+                    # Match nested ) to (
+                    # Don't decrement if we are sure we are in a title that is unclosed.
+                    if ((exit_quote != -1 and quote == last) or (exit_alt_quote != -1 and alt_quote == last)):
+                        bracket_count = 0
+                    elif not ignore_matches:
+                        bracket_count -= 1
+                    elif backtrack_count > 0:
+                        backtrack_count -= 1
+                        # We've found our backup end location if the title doesn't reslove.
+                        if backtrack_count == 0:
+                            last_bracket = index + 1
+
+                elif c in ("'", '"'):
+                    # Quote has started
+                    if not quote:
+                        # We'll assume we are now in a title.
+                        # Brackets are quoted, so no need to match them (except for the final one).
+                        ignore_matches = True
+                        backtrack_count = bracket_count
+                        bracket_count = 1
+                        start_quote = index + 1
+                        quote = c
+                    # Secondary quote (in case the first doesn't resolve): [text](link'"title")
+                    elif c != quote and not alt_quote:
+                        start_alt_quote = index + 1
+                        alt_quote = c
+                    # Update primary quote match
+                    elif c == quote:
+                        exit_quote = index + 1
+                    # Update secondary quote match
+                    elif alt_quote and c == alt_quote:
+                        exit_alt_quote = index + 1
+
+                index += 1
+
+                # Link is closed, so let's break out of the loop
+                if bracket_count == 0:
+                    # Get the title if we closed a title string right before link closed
+                    if exit_quote >= 0 and quote == last:
+                        href = data[start_index:start_quote - 1]
+                        title = ''.join(data[start_quote:exit_quote - 1])
+                    elif exit_alt_quote >= 0 and alt_quote == last:
+                        href = data[start_index:start_alt_quote - 1]
+                        title = ''.join(data[start_alt_quote:exit_alt_quote - 1])
+                    else:
+                        href = data[start_index:index - 1]
+                    break
+
+                if c != ' ':
+                    last = c
+
+            # We have a scenario: [test](link"notitle)
+            # When we enter a string, we stop tracking bracket resolution in the main counter,
+            # but we do keep a backup counter up until we discover where we might resolve all brackets
+            # if the title string fails to resolve.
+            if bracket_count != 0 and backtrack_count == 0:
+                href = data[start_index:last_bracket - 1]
+                index = last_bracket
+                bracket_count = 0
+
+            handled = bracket_count == 0
+
+        if title is not None:
+            title = self.RE_TITLE_CLEAN.sub(' ', dequote(self.unescape(title.strip())))
+
+        href = self.unescape(href).strip()
+
+        return href, title, index, handled
+
+    def getText(self, data, index):
+        """Parse the content between `[]` of the start of an image or link
+        resolving nested square brackets.
+
+        """
+        bracket_count = 1
+        text = []
+        for pos in util.iterrange(index, len(data)):
+            c = data[pos]
+            if c == ']':
+                bracket_count -= 1
+            elif c == '[':
+                bracket_count += 1
+            index += 1
+            if bracket_count == 0:
+                break
+            text.append(c)
+        return ''.join(text), index, bracket_count == 0
 
 
-class ImagePattern(LinkPattern):
+class ImageInlineProcessor(LinkInlineProcessor):
     """ Return a img element from the given match. """
-    def handleMatch(self, m):
+
+    def handleMatch(self, m, data):
+        text, index, handled = self.getText(data, m.end(0))
+        if not handled:
+            return None, None, None
+
+        src, title, index, handled = self.getLink(data, index)
+        if not handled:
+            return None, None, None
+
         el = util.etree.Element("img")
-        src_parts = m.group(9).split()
-        if src_parts:
-            src = src_parts[0]
-            if src[0] == "<" and src[-1] == ">":
-                src = src[1:-1]
-            el.set('src', self.unescape(src))
-        else:
-            el.set('src', "")
-        if len(src_parts) > 1:
-            el.set('title', dequote(self.unescape(" ".join(src_parts[1:]))))
+
+        el.set("src", src)
+
+        if title is not None:
+            el.set("title", title)
 
         if self.markdown.enable_attributes:
-            truealt = handleAttributes(m.group(2), el)
+            truealt = handleAttributes(text, el)
         else:
-            truealt = m.group(2)
+            truealt = text
 
         el.set('alt', self.unescape(truealt))
-        return el
+        return el, m.start(0), index
 
 
-class ReferencePattern(LinkPattern):
+class ReferenceInlineProcessor(LinkInlineProcessor):
     """ Match to a stored reference and return link element. """
-
     NEWLINE_CLEANUP_RE = re.compile(r'[ ]?\n', re.MULTILINE)
 
-    def handleMatch(self, m):
-        try:
-            id = m.group(9).lower()
-        except IndexError:
-            id = None
-        if not id:
-            # if we got something like "[Google][]" or "[Google]"
-            # we'll use "google" as the id
-            id = m.group(2).lower()
+    RE_LINK = re.compile(r'\s?\[([^\]]*)\]', re.DOTALL | re.UNICODE)
+
+    def handleMatch(self, m, data):
+        text, index, handled = self.getText(data, m.end(0))
+        if not handled:
+            return None, None, None
+
+        id, end, handled = self.evalId(data, index, text)
+        if not handled:
+            return None, None, None
 
         # Clean up linebreaks in id
         id = self.NEWLINE_CLEANUP_RE.sub(' ', id)
         if id not in self.markdown.references:  # ignore undefined refs
-            return None
+            return None, m.start(0), end
+
         href, title = self.markdown.references[id]
 
-        text = m.group(2)
-        return self.makeTag(href, title, text)
+        return self.makeTag(href, title, text), m.start(0), end
+
+    def evalId(self, data, index, text):
+        """
+        Evaluate the id portion of [ref][id].
+
+        If [ref][] use [ref].
+        """
+        m = self.RE_LINK.match(data, pos=index)
+        if not m:
+            return None, index, False
+        else:
+            id = m.group(1).lower()
+            end = m.end(0)
+            if not id:
+                id = text.lower()
+        return id, end, True
 
     def makeTag(self, href, title, text):
         el = util.etree.Element('a')
@@ -418,7 +661,15 @@ class ReferencePattern(LinkPattern):
         return el
 
 
-class ImageReferencePattern(ReferencePattern):
+class ShortReferenceInlineProcessor(ReferenceInlineProcessor):
+    """Shorte form of reference: [google]. """
+    def evalId(self, data, index, text):
+        """Evaluate the id from of [ref]  """
+
+        return text.lower(), index, True
+
+
+class ImageReferenceInlineProcessor(ReferenceInlineProcessor):
     """ Match to a stored reference and return img element. """
     def makeTag(self, href, title, text):
         el = util.etree.Element("img")
@@ -433,22 +684,22 @@ class ImageReferencePattern(ReferencePattern):
         return el
 
 
-class AutolinkPattern(Pattern):
+class AutolinkInlineProcessor(InlineProcessor):
     """ Return a link Element given an autolink (`<http://example/com>`). """
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         el = util.etree.Element("a")
-        el.set('href', self.unescape(m.group(2)))
-        el.text = util.AtomicString(m.group(2))
-        return el
+        el.set('href', self.unescape(m.group(1)))
+        el.text = util.AtomicString(m.group(1))
+        return el, m.start(0), m.end(0)
 
 
-class AutomailPattern(Pattern):
+class AutomailInlineProcessor(InlineProcessor):
     """
     Return a mailto link Element given an automail link (`<foo@example.com>`).
     """
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         el = util.etree.Element('a')
-        email = self.unescape(m.group(2))
+        email = self.unescape(m.group(1))
         if email.startswith("mailto:"):
             email = email[len("mailto:"):]
 
@@ -467,4 +718,4 @@ class AutomailPattern(Pattern):
         mailto = "".join([util.AMP_SUBSTITUTE + '#%d;' %
                           ord(letter) for letter in mailto])
         el.set('href', mailto)
-        return el
+        return el, m.start(0), m.end(0)

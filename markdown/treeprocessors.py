@@ -231,21 +231,38 @@ class InlineProcessor(Treeprocessor):
         Returns: String with placeholders instead of ElementTree elements.
 
         """
+        new_style = isinstance(pattern, inlinepatterns.InlineProcessor)
 
         for exclude in pattern.ANCESTOR_EXCLUDES:
             if exclude.lower() in self.ancestors:
                 return data, False, 0
 
-        match = pattern.getCompiledRegExp().match(data[startIndex:])
-        leftData = data[:startIndex]
+        if new_style:
+            match = None
+            # Since handleMatch may reject our first match,
+            # we iterate over the buffer looking for matches
+            # until we can't find any more.
+            for match in pattern.getCompiledRegExp().finditer(data, startIndex):
+                node, start, end = pattern.handleMatch(match, data)
+                if start is None or end is None:
+                    startIndex += match.end(0)
+                    match = None
+                    continue
+                break
+        else:  # pragma: no cover
+            match = pattern.getCompiledRegExp().match(data[startIndex:])
+            leftData = data[:startIndex]
 
         if not match:
             return data, False, 0
 
-        node = pattern.handleMatch(match)
+        if not new_style:  # pragma: no cover
+            node = pattern.handleMatch(match)
+            start = match.start(0)
+            end = match.end(0)
 
         if node is None:
-            return data, True, len(leftData)+match.span(len(match.groups()))[0]
+            return data, True, end
 
         if not isString(node):
             if not isinstance(node.text, util.AtomicString):
@@ -265,9 +282,13 @@ class InlineProcessor(Treeprocessor):
 
         placeholder = self.__stashNode(node, pattern.type())
 
-        return "%s%s%s%s" % (leftData,
-                             match.group(1),
-                             placeholder, match.groups()[-1]), True, 0
+        if new_style:
+            return "%s%s%s" % (data[:start],
+                               placeholder, data[end:]), True, 0
+        else:  # pragma: no cover
+            return "%s%s%s%s" % (leftData,
+                                 match.group(1),
+                                 placeholder, match.groups()[-1]), True, 0
 
     def __build_ancestors(self, parent, parents):
         """Build the ancestor list."""

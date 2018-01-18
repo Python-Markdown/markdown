@@ -17,7 +17,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..preprocessors import Preprocessor
-from ..inlinepatterns import Pattern
+from ..inlinepatterns import InlineProcessor
 from ..treeprocessors import Treeprocessor
 from ..postprocessors import Postprocessor
 from .. import util
@@ -77,7 +77,7 @@ class FootnoteExtension(Extension):
         # Insert an inline pattern before ImageReferencePattern
         FOOTNOTE_RE = r'\[\^([^\]]*)\]'  # blah blah [^1] blah
         md.inlinePatterns.add(
-            "footnote", FootnotePattern(FOOTNOTE_RE, self), "<reference"
+            "footnote", FootnoteInlineProcessor(FOOTNOTE_RE, self), "<reference"
         )
         # Insert a tree-processor that would actually add the footnote div
         # This must be before all other treeprocessors (i.e., inline and
@@ -315,15 +315,15 @@ class FootnotePreprocessor(Preprocessor):
         return items, i
 
 
-class FootnotePattern(Pattern):
+class FootnoteInlineProcessor(InlineProcessor):
     """ InlinePattern for footnote markers in a document's body text. """
 
     def __init__(self, pattern, footnotes):
-        super(FootnotePattern, self).__init__(pattern)
+        super(FootnoteInlineProcessor, self).__init__(pattern)
         self.footnotes = footnotes
 
-    def handleMatch(self, m):
-        id = m.group(2)
+    def handleMatch(self, m, data):
+        id = m.group(1)
         if id in self.footnotes.footnotes.keys():
             sup = util.etree.Element("sup")
             a = util.etree.SubElement(sup, "a")
@@ -333,9 +333,9 @@ class FootnotePattern(Pattern):
                 a.set('rel', 'footnote')  # invalid in HTML5
             a.set('class', 'footnote-ref')
             a.text = util.text_type(self.footnotes.footnotes.index(id) + 1)
-            return sup
+            return sup, m.start(0), m.end(0)
         else:
-            return None
+            return None, None, None
 
 
 class FootnotePostTreeprocessor(Treeprocessor):

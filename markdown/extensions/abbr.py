@@ -20,7 +20,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..preprocessors import Preprocessor
-from ..inlinepatterns import Pattern
+from ..inlinepatterns import InlineProcessor
 from ..util import etree, AtomicString
 import re
 
@@ -52,7 +52,7 @@ class AbbrPreprocessor(Preprocessor):
                 abbr = m.group('abbr').strip()
                 title = m.group('title').strip()
                 self.markdown.inlinePatterns['abbr-%s' % abbr] = \
-                    AbbrPattern(self._generate_pattern(abbr), title)
+                    AbbrInlineProcessor(self._generate_pattern(abbr), title)
                 # Preserve the line to prevent raw HTML indexing issue.
                 # https://github.com/Python-Markdown/markdown/issues/584
                 new_text.append('')
@@ -76,18 +76,18 @@ class AbbrPreprocessor(Preprocessor):
         return r'(?P<abbr>\b%s\b)' % (r''.join(chars))
 
 
-class AbbrPattern(Pattern):
+class AbbrInlineProcessor(InlineProcessor):
     """ Abbreviation inline pattern. """
 
     def __init__(self, pattern, title):
-        super(AbbrPattern, self).__init__(pattern)
+        super(AbbrInlineProcessor, self).__init__(pattern)
         self.title = title
 
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         abbr = etree.Element('abbr')
         abbr.text = AtomicString(m.group('abbr'))
         abbr.set('title', self.title)
-        return abbr
+        return abbr, m.start(0), m.end(0)
 
 
 def makeExtension(**kwargs):  # pragma: no cover
