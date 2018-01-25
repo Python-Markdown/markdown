@@ -28,15 +28,18 @@ Constants you might want to modify
 """
 
 
-BLOCK_LEVEL_ELEMENTS = re.compile(
-    r"^(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
-    r"|script|noscript|form|fieldset|iframe|math"
-    r"|hr|hr/|style|li|dt|dd|thead|tbody"
-    r"|tr|th|td|section|footer|header|group|figure"
-    r"|figcaption|aside|article|canvas|output"
-    r"|progress|video|nav|main)$",
-    re.IGNORECASE
-)
+BLOCK_LEVEL_ELEMENTS = [
+    # Elements which are invalid to wrap in a `<p>` tag.
+    # See http://w3c.github.io/html/grouping-content.html#the-p-element
+    'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
+    'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3',
+    'h4', 'h5', 'h6', 'header', 'hr', 'main', 'menu', 'nav', 'ol', 'p', 'pre',
+    'section', 'table', 'ul',
+    # Other elements which Markdown should not be mucking up the contents of.
+    'canvas', 'dd', 'dt', 'group', 'iframe', 'li', 'math', 'noscript', 'output',
+    'progress', 'script', 'tbody', 'td', 'th', 'thead', 'tr', 'video'
+]
+
 # Placeholders
 STX = '\u0002'  # Use STX ("Start of text") for start-of-placeholder
 ETX = '\u0003'  # Use ETX ("End of text") for end-of-placeholder
@@ -89,7 +92,7 @@ AUXILIARY GLOBAL FUNCTIONS
 def isBlockLevel(tag):
     """Check if the tag is a block level HTML tag."""
     if isinstance(tag, string_type):
-        return BLOCK_LEVEL_ELEMENTS.match(tag)
+        return tag.lower().rstrip('/') in BLOCK_LEVEL_ELEMENTS
     # Some ElementTree tags are not strings, so return False.
     return False
 
