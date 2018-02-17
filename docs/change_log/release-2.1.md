@@ -90,7 +90,7 @@ do a conversion.
 Methods on instances of the Markdown class that do not return results can now
 be changed allowing one to do `md.reset().convert(moretext)`.
 
-The Markdown class was refactored so that a subclass could define it's own
+The Markdown class was refactored so that a subclass could define its own
 `build_parser` method which would build a completely different parser. In
 other words, one could use the basic machinery in the markdown library to
 build a parser of a different markup language without the overhead of building

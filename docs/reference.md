@@ -200,7 +200,7 @@ __lazy_ol__{: #lazy_ol }:
         5. Oranges
         6. Pears
 
-    By default markdown will ignore the fact the the first line started
+    By default markdown will ignore the fact that the first line started
     with item number "4" and the HTML list will start with a number "1".
     If `lazy_ol` is set to `False`, then markdown will output the following
     HTML:
