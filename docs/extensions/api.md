@@ -172,7 +172,7 @@ does not appear to be a link, it returns `None` for the start and end boundary
 in order to communicate to the parser that no match was found.
 
 ```python
-    # Just a snippet of of the link's handleMatch
+    # Just a snippet of the link's handleMatch
     # method to illustrate new logic
     def handleMatch(self, m, data):
         text, index, handled = self.getText(data, m.end(0))
@@ -417,7 +417,7 @@ An instance of the **`BlockParser`** is found at `Markdown.parser`.
     method will generally only be used internally to recursively parse nested
     blocks of text.
 
-While is is not recommended, an extension could subclass or completely replace
+While it is not recommended, an extension could subclass or completely replace
 the `BlockParser`. The new class would have to provide the same public API.
 However, be aware that other extensions may expect the core parser provided
 and will not work with such a drastically different parser.
@@ -756,7 +756,7 @@ For example:
 
 ```python
 import markdown
-from path.to.module import MyExtention
+from path.to.module import MyExtension
 md = markdown.Markdown(extensions=[MyExtension(option='value')])
 ```
 
@@ -788,7 +788,7 @@ After a user installs your extension using the above script, they could then
 call the extension using the `myextension` string name like this:
 
 ```python
-markdown.markdown(text, extensions=['myextention'])
+markdown.markdown(text, extensions=['myextension'])
 ```
 
 Note that if two or more entry points within the same group are assigned the
@@ -808,13 +808,13 @@ be at the end of the name and be separated by a colon from the module.
 Therefore, if you were to import the class like this:
 
 ```python
-from path.to.module import MyExtention
+from path.to.module import MyExtension
 ```
 
 Then the extension can be loaded as follows:
 
 ```python
-markdown.markdown(text, extensions=['path.to.module:MyExtention'])
+markdown.markdown(text, extensions=['path.to.module:MyExtension'])
 ```
 
 You do not need to do anything special to support this feature. As long as your

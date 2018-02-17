@@ -61,14 +61,14 @@ If you don't want a title, use a blank string `""`:
 
 ```md
 !!! important ""
-    This is a admonition box without a title.
+    This is an admonition box without a title.
 ```
 
 results in:
 
 ```html
 <div class="admonition important">
-<p>This is a admonition box without a title.</p>
+<p>This is an admonition box without a title.</p>
 </div>
 ```
 
