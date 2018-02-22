@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from markdown.test_tools import TestCase
 
 
