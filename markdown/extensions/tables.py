@@ -44,7 +44,7 @@ class TableProcessor(BlockProcessor):
         Keep border check and separator row do avoid repeating the work.
         """
         is_table = False
-        rows = [row.strip() for row in block.split('\n')]
+        rows = [row.strip(' ') for row in block.split('\n')]
         if len(rows) > 1:
             header0 = rows[0]
             self.border = PIPE_NONE
@@ -76,13 +76,13 @@ class TableProcessor(BlockProcessor):
     def run(self, parent, blocks):
         """ Parse a table block and build table. """
         block = blocks.pop(0).split('\n')
-        header = block[0].strip()
+        header = block[0].strip(' ')
         rows = [] if len(block) < 3 else block[2:]
 
         # Get alignment of columns
         align = []
         for c in self.separator:
-            c = c.strip()
+            c = c.strip(' ')
             if c.startswith(':') and c.endswith(':'):
                 align.append('center')
             elif c.startswith(':'):
@@ -102,7 +102,7 @@ class TableProcessor(BlockProcessor):
             self._build_empty_row(tbody, align)
         else:
             for row in rows:
-                self._build_row(row.strip(), tbody, align)
+                self._build_row(row.strip(' '), tbody, align)
 
     def _build_empty_row(self, parent, align):
         """Build an empty row."""
@@ -124,7 +124,7 @@ class TableProcessor(BlockProcessor):
         for i, a in enumerate(align):
             c = etree.SubElement(tr, tag)
             try:
-                c.text = cells[i].strip()
+                c.text = cells[i].strip(' ')
             except IndexError:  # pragma: no cover
                 c.text = ""
             if a:
