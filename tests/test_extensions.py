@@ -845,6 +845,41 @@ class TestTOC(TestCaseWithAssertStartsWith):
         self.assertEqual(unique('foo', ids), 'foo_1')
         self.assertEqual(ids, set(['foo', 'foo_1']))
 
+    def testTocInHeaders(self):
+
+        text = '[TOC]\n#[TOC]'
+        self.assertEqual(
+            self.md.convert(text),
+            '<div class="toc">\n'                       # noqa
+              '<ul>\n'                                  # noqa
+                '<li><a href="#toc">[TOC]</a></li>\n'   # noqa
+              '</ul>\n'                                 # noqa
+            '</div>\n'                                  # noqa
+            '<h1 id="toc">[TOC]</h1>'                   # noqa
+        )
+
+        text = '#[TOC]\n[TOC]'
+        self.assertEqual(
+            self.md.convert(text),
+            '<h1 id="toc">[TOC]</h1>\n'                 # noqa
+            '<div class="toc">\n'                       # noqa
+              '<ul>\n'                                  # noqa
+                '<li><a href="#toc">[TOC]</a></li>\n'   # noqa
+              '</ul>\n'                                 # noqa
+            '</div>'                                    # noqa
+        )
+
+        text = '[TOC]\n# *[TOC]*'
+        self.assertEqual(
+            self.md.convert(text),
+            '<div class="toc">\n'                       # noqa
+              '<ul>\n'                                  # noqa
+                '<li><a href="#toc">[TOC]</a></li>\n'   # noqa
+              '</ul>\n'                                 # noqa
+            '</div>\n'                                  # noqa
+            '<h1 id="toc"><em>[TOC]</em></h1>'          # noqa
+        )
+
 
 class TestSmarty(unittest.TestCase):
     def setUp(self):

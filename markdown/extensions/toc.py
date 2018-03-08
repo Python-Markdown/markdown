@@ -137,11 +137,17 @@ class TocTreeprocessor(Treeprocessor):
 
         self.header_rgx = re.compile("[Hh][123456]")
 
-    def iterparent(self, root):
-        ''' Iterator wrapper to get parent and child all at once. '''
-        for parent in root.iter():
-            for child in parent:
-                yield parent, child
+    def iterparent(self, node):
+        ''' Iterator wrapper to get allowed parent and child all at once. '''
+
+        # We do not allow the marker inside a header as that
+        # would causes an enless loop of placing a new TOC
+        # inside previously generated TOC.
+        for child in node:
+            if not self.header_rgx.match(child.tag) and child.tag not in ['pre', 'code']:
+                yield node, child
+                for p, c in self.iterparent(child):
+                    yield p, c
 
     def replace_marker(self, root, elem):
         ''' Replace marker with elem. '''
@@ -153,11 +159,7 @@ class TocTreeprocessor(Treeprocessor):
             # To keep the output from screwing up the
             # validation by putting a <div> inside of a <p>
             # we actually replace the <p> in its entirety.
-            # We do not allow the marker inside a header as that
-            # would causes an enless loop of placing a new TOC
-            # inside previously generated TOC.
-            if c.text and c.text.strip() == self.marker and \
-               not self.header_rgx.match(c.tag) and c.tag not in ['pre', 'code']:
+            if c.text and c.text.strip() == self.marker:
                 for i in range(len(p)):
                     if p[i] == c:
                         p[i] = elem
