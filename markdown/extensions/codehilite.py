@@ -249,6 +249,8 @@ class CodeHiliteExtension(Extension):
                              'Default: True']
             }
 
+        if kwargs.get('linenums') == 'inline':
+            self.config['linenums'][0] = kwargs['linenums']
         super(CodeHiliteExtension, self).__init__(**kwargs)
 
     def extendMarkdown(self, md, md_globals):
