@@ -106,7 +106,7 @@ The following options are provided to configure the output:
 
     The `baselevel` setting allows the header levels to be automatically
     adjusted to fit within the hierarchy of your HTML templates. For example,
-    suppose the Markdown text for a page should not contain any headers higher
+    suppose the Markdown text for a page should not contain any headers lower
     than level 3 (`<h3>`). The following will accomplish that:
 
         :::pycon
