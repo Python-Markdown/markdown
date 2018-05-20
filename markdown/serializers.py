@@ -51,7 +51,7 @@ else:  # pragma: no cover
 __all__ = ['to_html_string', 'to_xhtml_string']
 
 HTML_EMPTY = ("area", "base", "basefont", "br", "col", "frame", "hr",
-              "img", "input", "isindex", "link", "meta" "param")
+              "img", "input", "isindex", "link", "meta", "param")
 
 try:
     HTML_EMPTY = set(HTML_EMPTY)
