@@ -573,8 +573,6 @@ class TestAdmonition(unittest.TestCase):
 class TestTOC(TestCaseWithAssertStartsWith):
     """ Test TOC Extension. """
 
-    unittest.TestCase.maxDiff = None
-    
     def setUp(self):
         self.md = markdown.Markdown(extensions=['toc'])
 
