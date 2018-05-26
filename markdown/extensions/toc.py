@@ -207,6 +207,7 @@ class TocTreeprocessor(Treeprocessor):
 
         def build_etree_ul(toc_list, parent):
             ul = etree.SubElement(parent, "ul")
+            ul.attrib["class"] = "tocstyle-%d" % toc_list[0]['level']
             for item in toc_list:
                 # List item link, to be inserted into the toc div
                 li = etree.SubElement(ul, "li")
