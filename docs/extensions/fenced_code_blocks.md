@@ -21,9 +21,9 @@ Thus, the following text (taken from the above referenced PHP documentation):
 ```md
 This is a paragraph introducing:
 
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 a one-line code block
-    ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 ```
 
 Fenced code blocks can have a blank line as the first  and/or last line of a
