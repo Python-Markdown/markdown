@@ -139,7 +139,7 @@ AUTOMAIL_RE = r'<([^> \!]*@[^> ]*)>'
 HTML_RE = r'(\<([a-zA-Z/][^\>]*?|\!--.*?--)\>)'
 
 # &amp;
-ENTITY_RE = r'(&[\#a-zA-Z0-9]*;)'
+ENTITY_RE = r'(&(?:\#[0-9]+|[a-zA-Z0-9]+);)'
 
 # two spaces at end of line
 LINE_BREAK_RE = r'  \n'
