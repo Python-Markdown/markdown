@@ -40,6 +40,7 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import util
+import re
 ElementTree = util.etree.ElementTree
 QName = util.etree.QName
 if hasattr(util.etree, 'test_comment'):  # pragma: no cover
@@ -53,6 +54,7 @@ __all__ = ['to_html_string', 'to_xhtml_string']
 
 HTML_EMPTY = ("area", "base", "basefont", "br", "col", "frame", "hr",
               "img", "input", "isindex", "link", "meta" "param")
+RE_AMP = re.compile('&(?!amp;)')
 
 try:
     HTML_EMPTY = set(HTML_EMPTY)
@@ -107,7 +109,8 @@ def _escape_attrib(text):
     # escape attribute value
     try:
         if "&" in text:
-            text = text.replace("&", "&amp;")
+            # Only replace & when not part of &amp;
+            text = RE_AMP.sub('&amp;', text)
         if "<" in text:
             text = text.replace("<", "&lt;")
         if ">" in text:
@@ -125,7 +128,8 @@ def _escape_attrib_html(text):
     # escape attribute value
     try:
         if "&" in text:
-            text = text.replace("&", "&amp;")
+            # Only replace & when not part of &amp;
+            text = RE_AMP.sub('&amp;', text)
         if "<" in text:
             text = text.replace("<", "&lt;")
         if ">" in text:

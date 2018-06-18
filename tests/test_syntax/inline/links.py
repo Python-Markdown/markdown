@@ -96,3 +96,15 @@ class TestAdvancedLinks(TestCase):
             """<p><a href="http://link.com/with spaces '&quot;and quotes&quot;" title="and title">"""
             """Text</a> more text</p>"""
         )
+
+    def test_amp_in_url(self):
+        """Test amp in URLs."""
+
+        self.assertMarkdownRenders(
+            '[link](http://www.freewisdom.org/this&that)',
+            '<p><a href="http://www.freewisdom.org/this&amp;that">link</a></p>'
+        )
+        self.assertMarkdownRenders(
+            '[title](http://example.com/?a=1&amp;b=2)',
+            '<p><a href="http://example.com/?a=1&amp;b=2">title</a></p>'
+        )
