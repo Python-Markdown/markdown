@@ -54,7 +54,7 @@ __all__ = ['to_html_string', 'to_xhtml_string']
 
 HTML_EMPTY = ("area", "base", "basefont", "br", "col", "frame", "hr",
               "img", "input", "isindex", "link", "meta" "param")
-RE_AMP = re.compile(r'&(?!(?:\#\d+|\w+);)')
+RE_AMP = re.compile(r'&(?!(?:\#[0-9]+|[0-9a-z]+);)', re.I)
 
 try:
     HTML_EMPTY = set(HTML_EMPTY)
