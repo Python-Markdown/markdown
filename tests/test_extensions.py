@@ -454,6 +454,21 @@ The body. This is paragraph one.'''
         self.assertEqual(self.md.convert(text), '')
         self.assertEqual(self.md.Meta, {'title': ['No newline']})
 
+    def testMetaDataReset(self):
+        """ Test that reset call remove Meta entirely """
+
+        text = '''Title: A Test Doc.
+Author: Waylan Limberg
+        John Doe
+Blank_Data:
+
+The body. This is paragraph one.'''
+        self.md.convert(text)
+
+        self.md.reset()
+        with self.assertRaises(AttributeError):
+            self.md.Meta
+
 
 class TestWikiLinks(unittest.TestCase):
     """ Test Wikilinks Extension. """
