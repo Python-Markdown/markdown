@@ -43,11 +43,7 @@ class MetaExtension (Extension):
                              ">normalize_whitespace")
 
     def reset(self):
-        try:
-            del self.md.Meta
-        except AttributeError:
-            # Maybe it has already been deleted
-            pass
+        self.md.Meta = {}
 
 
 class MetaPreprocessor(Preprocessor):
