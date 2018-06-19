@@ -466,8 +466,7 @@ The body. This is paragraph one.'''
         self.md.convert(text)
 
         self.md.reset()
-        with self.assertRaises(AttributeError):
-            self.md.Meta
+        self.assertEqual(self.md.Meta, {})
 
 
 class TestWikiLinks(unittest.TestCase):
