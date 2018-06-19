@@ -49,6 +49,7 @@ class MetaExtension (Extension):
             # Maybe it has already been deleted
             pass
 
+
 class MetaPreprocessor(Preprocessor):
     """ Get Meta-Data. """
 
