@@ -36,10 +36,18 @@ class MetaExtension (Extension):
 
     def extendMarkdown(self, md, md_globals):
         """ Add MetaPreprocessor to Markdown instance. """
+        md.registerExtension(self)
+        self.md = md
         md.preprocessors.add("meta",
                              MetaPreprocessor(md),
                              ">normalize_whitespace")
 
+    def reset(self):
+        try:
+            del self.md.Meta
+        except AttributeError:
+            # Maybe it has already been deleted
+            pass
 
 class MetaPreprocessor(Preprocessor):
     """ Get Meta-Data. """
