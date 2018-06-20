@@ -36,9 +36,14 @@ class MetaExtension (Extension):
 
     def extendMarkdown(self, md, md_globals):
         """ Add MetaPreprocessor to Markdown instance. """
+        md.registerExtension(self)
+        self.md = md
         md.preprocessors.add("meta",
                              MetaPreprocessor(md),
                              ">normalize_whitespace")
+
+    def reset(self):
+        self.md.Meta = {}
 
 
 class MetaPreprocessor(Preprocessor):
