@@ -18,6 +18,7 @@ from logging import DEBUG, WARNING, CRITICAL
 import yaml
 import tempfile
 from io import BytesIO
+from xml.etree.ElementTree import ProcessingInstruction
 
 
 PY3 = sys.version_info[0] == 3
@@ -465,23 +466,47 @@ class testSerializers(unittest.TestCase):
     def testHtml(self):
         """ Test HTML serialization. """
         el = markdown.util.etree.Element('div')
+        el.set('id', 'foo<&">')
         p = markdown.util.etree.SubElement(el, 'p')
-        p.text = 'foo'
+        p.text = 'foo <&escaped>'
+        p.set('hidden', 'hidden')
         markdown.util.etree.SubElement(el, 'hr')
+        non_element = markdown.util.etree.SubElement(el, None)
+        non_element.text = 'non-element text'
+        script = markdown.util.etree.SubElement(non_element, 'script')
+        script.text = '<&"test\nescaping">'
+        el.tail = "tail text"
         self.assertEqual(
             markdown.serializers.to_html_string(el),
-            '<div><p>foo</p><hr></div>'
+            '<div id="foo&lt;&amp;&quot;&gt;">'
+            '<p hidden>foo &lt;&amp;escaped&gt;</p>'
+            '<hr>'
+            'non-element text'
+            '<script><&"test\nescaping"></script>'
+            '</div>tail text'
         )
 
     def testXhtml(self):
         """" Test XHTML serialization. """
         el = markdown.util.etree.Element('div')
+        el.set('id', 'foo<&">')
         p = markdown.util.etree.SubElement(el, 'p')
-        p.text = 'foo'
+        p.text = 'foo<&escaped>'
+        p.set('hidden', 'hidden')
         markdown.util.etree.SubElement(el, 'hr')
+        non_element = markdown.util.etree.SubElement(el, None)
+        non_element.text = 'non-element text'
+        script = markdown.util.etree.SubElement(non_element, 'script')
+        script.text = '<&"test\nescaping">'
+        el.tail = "tail text"
         self.assertEqual(
             markdown.serializers.to_xhtml_string(el),
-            '<div><p>foo</p><hr /></div>'
+            '<div id="foo&lt;&amp;&quot;&gt;">'
+            '<p hidden="hidden">foo&lt;&amp;escaped&gt;</p>'
+            '<hr />'
+            'non-element text'
+            '<script><&"test\nescaping"></script>'
+            '</div>tail text'
         )
 
     def testMixedCaseTags(self):
@@ -496,8 +521,17 @@ class testSerializers(unittest.TestCase):
             '<MixedCase>not valid <EMPHASIS>html</EMPHASIS><HR /></MixedCase>'
         )
 
-    def testQName(self):
-        """ Test serialization of QName. """
+    def testProsessingInstruction(self):
+        """ Test serialization of ProcessignInstruction. """
+        pi = ProcessingInstruction('foo', text='<&"test\nescaping">')
+        self.assertIs(pi.tag, ProcessingInstruction)
+        self.assertEqual(
+            markdown.serializers.to_xhtml_string(pi),
+            '<?foo &lt;&amp;"test\nescaping"&gt;?>'
+        )
+
+    def testQNameTag(self):
+        """ Test serialization of QName tag. """
         div = markdown.util.etree.Element('div')
         qname = markdown.util.etree.QName('http://www.w3.org/1998/Math/MathML', 'math')
         math = markdown.util.etree.SubElement(div, qname)
@@ -523,6 +557,30 @@ class testSerializers(unittest.TestCase):
             '</semantics>'
             '</math>'
             '</div>'
+        )
+
+    def testQNameAttribute(self):
+        """ Test serialization of QName attribute. """
+        div = markdown.util.etree.Element('div')
+        div.set(markdown.util.etree.QName('foo'), markdown.util.etree.QName('bar'))
+        self.assertEqual(
+            markdown.serializers.to_xhtml_string(div),
+            '<div foo="bar"></div>'
+        )
+
+    def testBadQNameTag(self):
+        """ Test serialization of QName with no tag. """
+        qname = markdown.util.etree.QName('http://www.w3.org/1998/Math/MathML')
+        el = markdown.util.etree.Element(qname)
+        self.assertRaises(ValueError, markdown.serializers.to_xhtml_string, el)
+
+    def testQNameEscaping(self):
+        """ Test QName escaping. """
+        qname = markdown.util.etree.QName('<&"test\nescaping">', 'div')
+        el = markdown.util.etree.Element(qname)
+        self.assertEqual(
+            markdown.serializers.to_xhtml_string(el),
+            '<div xmlns="&lt;&amp;&quot;test&#10;escaping&quot;&gt;"></div>'
         )
 
     def buildExtension(self):
