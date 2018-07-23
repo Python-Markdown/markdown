@@ -39,6 +39,7 @@
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
+from xml.etree.ElementTree import ProcessingInstruction
 from . import util
 ElementTree = util.etree.ElementTree
 QName = util.etree.QName
@@ -46,8 +47,6 @@ if hasattr(util.etree, 'test_comment'):  # pragma: no cover
     Comment = util.etree.test_comment
 else:  # pragma: no cover
     Comment = util.etree.Comment
-PI = util.etree.PI
-ProcessingInstruction = util.etree.ProcessingInstruction
 
 __all__ = ['to_html_string', 'to_xhtml_string']
 
@@ -64,13 +63,6 @@ def _raise_serialization_error(text):  # pragma: no cover
     raise TypeError(
         "cannot serialize %r (type %s)" % (text, type(text).__name__)
         )
-
-
-def _encode(text, encoding):
-    try:
-        return text.encode(encoding, "xmlcharrefreplace")
-    except (TypeError, AttributeError):  # pragma: no cover
-        _raise_serialization_error(text)
 
 
 def _escape_cdata(text):
@@ -181,15 +173,12 @@ def _serialize_html(write, elem, format):
         write(_escape_cdata(elem.tail))
 
 
-def _write_html(root, encoding=None, format="html"):
+def _write_html(root, format="html"):
     assert root is not None
     data = []
     write = data.append
     _serialize_html(write, root, format)
-    if encoding is None:
-        return "".join(data)
-    else:
-        return _encode("".join(data), encoding)
+    return "".join(data)
 
 
 # --------------------------------------------------------------------
