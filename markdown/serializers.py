@@ -59,19 +59,6 @@ try:
 except NameError:  # pragma: no cover
     pass
 
-_namespace_map = {
-    # "well-known" namespace prefixes
-    "http://www.w3.org/XML/1998/namespace": "xml",
-    "http://www.w3.org/1999/xhtml": "html",
-    "http://www.w3.org/1999/02/22-rdf-syntax-ns#": "rdf",
-    "http://schemas.xmlsoap.org/wsdl/": "wsdl",
-    # xml schema
-    "http://www.w3.org/2001/XMLSchema": "xs",
-    "http://www.w3.org/2001/XMLSchema-instance": "xsi",
-    # dublic core
-    "http://purl.org/dc/elements/1.1/": "dc",
-}
-
 
 def _raise_serialization_error(text):  # pragma: no cover
     raise TypeError(
@@ -137,142 +124,76 @@ def _escape_attrib_html(text):
         _raise_serialization_error(text)
 
 
-def _serialize_html(write, elem, qnames, namespaces, format):
+def _serialize_html(write, elem, format):
     tag = elem.tag
     text = elem.text
     if tag is Comment:
         write("<!--%s-->" % _escape_cdata(text))
     elif tag is ProcessingInstruction:
         write("<?%s?>" % _escape_cdata(text))
+    elif tag is None:
+        if text:
+            write(_escape_cdata(text))
+        for e in elem:
+            _serialize_html(write, e, format)
     else:
-        tag = qnames[tag]
-        if tag is None:
-            if text:
-                write(_escape_cdata(text))
-            for e in elem:
-                _serialize_html(write, e, qnames, None, format)
-        else:
-            write("<" + tag)
-            items = elem.items()
-            if items or namespaces:
-                items = sorted(items)  # lexical order
-                for k, v in items:
-                    if isinstance(k, QName):
-                        k = k.text
-                    if isinstance(v, QName):
-                        v = qnames[v.text]
-                    else:
-                        v = _escape_attrib_html(v)
-                    if qnames[k] == v and format == 'html':
-                        # handle boolean attributes
-                        write(" %s" % v)
-                    else:
-                        write(" %s=\"%s\"" % (qnames[k], v))
-                if namespaces:
-                    items = namespaces.items()
-                    items.sort(key=lambda x: x[1])  # sort on prefix
-                    for v, k in items:
-                        if k:
-                            k = ":" + k
-                        write(" xmlns%s=\"%s\"" % (k, _escape_attrib(v)))
-            if format == "xhtml" and tag.lower() in HTML_EMPTY:
-                write(" />")
+        namespace_uri = None
+        if isinstance(tag, QName):
+            # QNAME objects store their data as a string: `{uri}tag`
+            if tag.text[:1] == "{":
+                namespace_uri, tag = tag.text[1:].split("}", 1)
             else:
-                write(">")
-                if text:
-                    if tag.lower() in ["script", "style"]:
-                        write(text)
-                    else:
-                        write(_escape_cdata(text))
-                for e in elem:
-                    _serialize_html(write, e, qnames, None, format)
-                if tag.lower() not in HTML_EMPTY:
-                    write("</" + tag + ">")
+                raise ValueError('QName objects must define a tag.')
+        write("<" + tag)
+        items = elem.items()
+        if items:
+            items = sorted(items)  # lexical order
+            for k, v in items:
+                if isinstance(k, QName):
+                    # Assume a text only QName
+                    k = k.text
+                if isinstance(v, QName):
+                    # Assume a text only QName
+                    v = v.text
+                else:
+                    v = _escape_attrib_html(v)
+                if k == v and format == 'html':
+                    # handle boolean attributes
+                    write(" %s" % v)
+                else:
+                    write(' %s="%s"' % (k, v))
+        if namespace_uri:
+            write(' xmlns="%s"' % (_escape_attrib(namespace_uri)))
+        if format == "xhtml" and tag.lower() in HTML_EMPTY:
+            write(" />")
+        else:
+            write(">")
+            if text:
+                if tag.lower() in ["script", "style"]:
+                    write(text)
+                else:
+                    write(_escape_cdata(text))
+            for e in elem:
+                _serialize_html(write, e, format)
+            if tag.lower() not in HTML_EMPTY:
+                write("</" + tag + ">")
     if elem.tail:
         write(_escape_cdata(elem.tail))
 
 
-def _write_html(root,
-                encoding=None,
-                default_namespace=None,
-                format="html"):
+def _write_html(root, encoding=None, format="html"):
     assert root is not None
     data = []
     write = data.append
-    qnames, namespaces = _namespaces(root, default_namespace)
-    _serialize_html(write, root, qnames, namespaces, format)
+    _serialize_html(write, root, format)
     if encoding is None:
         return "".join(data)
     else:
-        return _encode("".join(data))
+        return _encode("".join(data), encoding)
 
 
 # --------------------------------------------------------------------
-# serialization support
-
-def _namespaces(elem, default_namespace=None):
-    # identify namespaces used in this tree
-
-    # maps qnames to *encoded* prefix:local names
-    qnames = {None: None}
-
-    # maps uri:s to prefixes
-    namespaces = {}
-    if default_namespace:
-        namespaces[default_namespace] = ""
-
-    def add_qname(qname):
-        # calculate serialized qname representation
-        try:
-            if qname[:1] == "{":
-                uri, tag = qname[1:].split("}", 1)
-                prefix = namespaces.get(uri)
-                if prefix is None:
-                    prefix = _namespace_map.get(uri)
-                    if prefix is None:
-                        prefix = "ns%d" % len(namespaces)
-                    if prefix != "xml":
-                        namespaces[uri] = prefix
-                if prefix:
-                    qnames[qname] = "%s:%s" % (prefix, tag)
-                else:
-                    qnames[qname] = tag  # default element
-            else:
-                if default_namespace:
-                    raise ValueError(
-                        "cannot use non-qualified names with "
-                        "default_namespace option"
-                        )
-                qnames[qname] = qname
-        except TypeError:  # pragma: no cover
-            _raise_serialization_error(qname)
-
-    # populate qname and namespaces table
-    try:
-        iterate = elem.iter
-    except AttributeError:
-        iterate = elem.getiterator  # cET compatibility
-    for elem in iterate():
-        tag = elem.tag
-        if isinstance(tag, QName) and tag.text not in qnames:
-            add_qname(tag.text)
-        elif isinstance(tag, util.string_type):
-            if tag not in qnames:
-                add_qname(tag)
-        elif tag is not None and tag is not Comment and tag is not PI:
-            _raise_serialization_error(tag)
-        for key, value in elem.items():
-            if isinstance(key, QName):
-                key = key.text
-            if key not in qnames:
-                add_qname(key)
-            if isinstance(value, QName) and value.text not in qnames:
-                add_qname(value.text)
-        text = elem.text
-        if isinstance(text, QName) and text.text not in qnames:
-            add_qname(text.text)
-    return qnames, namespaces
-
+# public functions
 
 def to_html_string(element):
     return _write_html(ElementTree(element).getroot(), format="html")
