@@ -496,6 +496,35 @@ class testSerializers(unittest.TestCase):
             '<MixedCase>not valid <EMPHASIS>html</EMPHASIS><HR /></MixedCase>'
         )
 
+    def testQName(self):
+        """ Test serialization of QName. """
+        div = markdown.util.etree.Element('div')
+        qname = markdown.util.etree.QName('http://www.w3.org/1998/Math/MathML', 'math')
+        math = markdown.util.etree.SubElement(div, qname)
+        math.set('display', 'block')
+        sem = markdown.util.etree.SubElement(math, 'semantics')
+        msup = markdown.util.etree.SubElement(sem, 'msup')
+        mi = markdown.util.etree.SubElement(msup, 'mi')
+        mi.text = 'x'
+        mn = markdown.util.etree.SubElement(msup, 'mn')
+        mn.text = '2'
+        ann = markdown.util.etree.SubElement(sem, 'annotations')
+        ann.text = 'x^2'
+        self.assertEqual(
+            markdown.serializers.to_xhtml_string(div),
+            '<div>'
+            '<math display="block" xmlns="http://www.w3.org/1998/Math/MathML">'
+            '<semantics>'
+            '<msup>'
+            '<mi>x</mi>'
+            '<mn>2</mn>'
+            '</msup>'
+            '<annotations>x^2</annotations>'
+            '</semantics>'
+            '</math>'
+            '</div>'
+        )
+
     def buildExtension(self):
         """ Build an extension which registers fakeSerializer. """
         def fakeSerializer(elem):
