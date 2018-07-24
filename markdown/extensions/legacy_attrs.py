@@ -17,7 +17,7 @@ from markdown.treeprocessors import Treeprocessor, isString
 from markdown.extensions import Extension
 
 
-ATTR_RE = re.compile("\{@([^\}]*)=([^\}]*)}")  # {@id=123}
+ATTR_RE = re.compile(r'\{@([^\}]*)=([^\}]*)}')  # {@id=123}
 
 
 class LegacyAttrs(Treeprocessor):
