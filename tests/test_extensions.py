@@ -596,9 +596,9 @@ class TestTOC(TestCaseWithAssertStartsWith):
         self.assertEqual(
             self.md.convert(text),
             '<div class="toc">\n'
-              '<ul>\n'                                             # noqa
+              '<ul class="toclist-1">\n'                           # noqa
                 '<li><a href="#header-1">Header 1</a>'             # noqa
-                  '<ul>\n'                                         # noqa
+                  '<ul class="toclist-2">\n'                       # noqa
                     '<li><a href="#header-2">Header 2</a></li>\n'  # noqa
                   '</ul>\n'                                        # noqa
                 '</li>\n'                                          # noqa
@@ -619,9 +619,9 @@ class TestTOC(TestCaseWithAssertStartsWith):
         self.assertEqual(
             self.md.toc,
             '<div class="toc">\n'
-              '<ul>\n'                                             # noqa
+              '<ul class="toclist-1">\n'                           # noqa
                 '<li><a href="#header-1">Header 1</a>'             # noqa
-                  '<ul>\n'                                         # noqa
+                  '<ul class="toclist-2">\n'                       # noqa
                     '<li><a href="#header-2">Header 2</a></li>\n'  # noqa
                   '</ul>\n'                                        # noqa
                 '</li>\n'                                          # noqa
@@ -638,9 +638,9 @@ class TestTOC(TestCaseWithAssertStartsWith):
         self.assertEqual(
             md.convert(text),
             '<div class="toc">\n'
-              '<ul>\n'                                             # noqa
+              '<ul class="toclist-1">\n'                           # noqa
                 '<li><a href="#header-1">Header 1</a>'             # noqa
-                  '<ul>\n'                                         # noqa
+                  '<ul class="toclist-2">\n'                       # noqa
                     '<li><a href="#header-2">Header 2</a></li>\n'  # noqa
                   '</ul>\n'                                        # noqa
                 '</li>\n'                                          # noqa
@@ -714,9 +714,9 @@ class TestTOC(TestCaseWithAssertStartsWith):
         self.assertEqual(
             md.toc,
             '<div class="toc">\n'
-              '<ul>\n'                                                 # noqa
+              '<ul class="toclist-5">\n'                               # noqa
                 '<li><a href="#some-header">Some Header</a>'           # noqa
-                  '<ul>\n'                                             # noqa
+                  '<ul class="toclist-6">\n'                           # noqa
                     '<li><a href="#next-level">Next Level</a></li>\n'  # noqa
                     '<li><a href="#too-high">Too High</a></li>\n'      # noqa
                   '</ul>\n'                                            # noqa
@@ -826,7 +826,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
         )
         md.convert('# Header 1\n\n## Header 2')
         self.assertStartsWith(
-            '<div class="toc"><span class="toctitle">Table of Contents</span><ul>',
+            '<div class="toc"><span class="toctitle">Table of Contents</span><ul class="toclist-1">',
             md.toc
         )
 
@@ -842,9 +842,9 @@ class TestTOC(TestCaseWithAssertStartsWith):
         self.assertEqual(
             md.toc,
             '<div class="toc">\n'
-              '<ul>\n'                                        # noqa
+              '<ul class="toclist-1">\n'                      # noqa
                 '<li><a href="#header-1">Header 1</a>'        # noqa
-                  '<ul>\n'                                    # noqa
+                  '<ul class="toclist-2">\n'                  # noqa
                     '<li><a href="#foo">Header 2</a></li>\n'  # noqa
                   '</ul>\n'                                   # noqa
                 '</li>\n'                                     # noqa
@@ -865,7 +865,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
         self.assertEqual(
             self.md.convert(text),
             '<div class="toc">\n'                       # noqa
-              '<ul>\n'                                  # noqa
+              '<ul class="toclist-1">\n'                # noqa
                 '<li><a href="#toc">[TOC]</a></li>\n'   # noqa
               '</ul>\n'                                 # noqa
             '</div>\n'                                  # noqa
@@ -877,7 +877,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
             self.md.convert(text),
             '<h1 id="toc">[TOC]</h1>\n'                 # noqa
             '<div class="toc">\n'                       # noqa
-              '<ul>\n'                                  # noqa
+              '<ul class="toclist-1">\n'                # noqa
                 '<li><a href="#toc">[TOC]</a></li>\n'   # noqa
               '</ul>\n'                                 # noqa
             '</div>'                                    # noqa
@@ -887,7 +887,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
         self.assertEqual(
             self.md.convert(text),
             '<div class="toc">\n'                       # noqa
-              '<ul>\n'                                  # noqa
+              '<ul class="toclist-1">\n'                # noqa
                 '<li><a href="#toc">[TOC]</a></li>\n'   # noqa
               '</ul>\n'                                 # noqa
             '</div>\n'                                  # noqa
