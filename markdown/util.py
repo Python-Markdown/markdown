@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import re
 import sys
 from collections import namedtuple
+import warnings
 
 
 """
@@ -331,7 +332,10 @@ class Registry(object):
             else:
                 priority = self._priority[-1].priority - 5
             self.register(value, key, priority)
-            # TODO: Add deprecation warning
+            warnings.warn(
+                'Using setitem to register a processor or pattern is deprecated. '
+                'Use the `register` method instead.', DeprecationWarning
+            )
         else:
             raise TypeError
 
@@ -339,7 +343,10 @@ class Registry(object):
         """ Deregister an item by name. """
         if key in self:
             self.deregister(key)
-            # TODO: Add a deprecation warning
+            warnings.warn(
+                'Using del to remove a processor or pattern is deprecated. '
+                'Use the `deregister` method instead.', DeprecationWarning
+            )
         else:
             raise TypeError
 
@@ -378,4 +385,7 @@ class Registry(object):
             raise ValueError('Not a valid location: "%s". Location key '
                              'must start with a ">" or "<".' % location)
         self.register(value, key, priority)
-        # TODO: Add deprecation warning
+        warnings.warn(
+            'Using the add method to register a processor or pattern is deprecated. '
+            'Use the `register` method instead.', DeprecationWarning
+        )
