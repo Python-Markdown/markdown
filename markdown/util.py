@@ -318,3 +318,64 @@ class Registry(object):
         if not self._is_sorted:
             self._priority.sort(key=lambda item: item.priority, reverse=True)
             self._is_sorted = True
+
+    # Deprecated Methods which provide a smooth transition from OrderedDict
+
+    def __setitem__(self, key, value):
+        """ Register item with priorty 5 less than lowest existing priority. """
+        if isinstance(key, string_type):
+            self._sort()
+            if len(self) == 0:
+                # This is the first item. Set priority to 50.
+                priority = 50
+            else:
+                priority = self._priority[-1].priority - 5
+            self.register(value, key, priority)
+            # TODO: Add deprecation warning
+        else:
+            raise TypeError
+
+    def __delitem__(self, key):
+        """ Deregister an item by name. """
+        if key in self:
+            self.deregister(key)
+            # TODO: Add a deprecation warning
+        else:
+            raise TypeError
+
+    def add(self, key, value, location):
+        """ Register a key by location. """
+        self._sort()
+        if len(self) == 0:
+            # This is the first item. Set priority to 50.
+            priority = 50
+        elif location == '_begin':
+            # Set priority 5 greater than highest existing priority
+            priority = self._priority[0].priority + 5
+        elif location == '_end':
+            # Set priority 5 less than lowest existing priority
+            priority = self._priority[-1].priority - 5
+        elif location.startswith('<') or location.startswith('>'):
+            # Set priority halfway between existing priorities.
+            i = self.get_index_for_name(location[1:])
+            if location.startswith('<'):
+                after = self._priority[i].priority
+                if i > 0:
+                    before = self._priority[i-1].priority
+                else:
+                    # Location is first item`
+                    before = after + 10
+            else:
+                # location.startswith('>')
+                before = self._priority[i].priority
+                if i < len(self) - 1:
+                    after = self._priority[i+1].priority
+                else:
+                    # location is last item
+                    after = before - 10
+            priority = before - ((before - after) / 2)
+        else:
+            raise ValueError('Not a valid location: "%s". Location key '
+                             'must start with a ">" or "<".' % location)
+        self.register(value, key, priority)
+        # TODO: Add deprecation warning

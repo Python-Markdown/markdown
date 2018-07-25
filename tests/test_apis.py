@@ -307,16 +307,34 @@ class RegistryTests(unittest.TestCase):
         r = markdown.util.Registry()
         with self.assertRaises(TypeError):
             r[0] = 'a'
-        with self.assertRaises(TypeError):
-            r['a'] = 'a'
+        # TODO: restore this when deprecated __setitem__ is removed.
+        # with self.assertRaises(TypeError):
+        #     r['a'] = 'a'
+        # TODO: remove this when deprecated __setitem__ is removed.
+        r['a'] = Item('a')
+        self.assertEqual(list(r), ['a'])
+        r['b'] = Item('b')
+        self.assertEqual(list(r), ['a', 'b'])
 
     def testRegistryDelItem(self):
         r = markdown.util.Registry()
         r.register(Item('a'), 'a', 20)
         with self.assertRaises(TypeError):
             del r[0]
+        # TODO: restore this when deprecated __del__ is removed.
+        # with self.assertRaises(TypeError):
+        #     del r['a']
+        # TODO: remove this when deprecated __del__ is removed.
+        r.register(Item('b'), 'b', 15)
+        r.register(Item('c'), 'c', 10)
+        del r['b']
+        self.assertEqual(list(r), ['a', 'c'])
+        del r['a']
+        self.assertEqual(list(r), ['c'])
         with self.assertRaises(TypeError):
-            del r['a']
+            del r['badname']
+        del r['c']
+        self.assertEqual(list(r), [])
 
     def testRegistrySlice(self):
         r = markdown.util.Registry()
@@ -346,6 +364,30 @@ class RegistryTests(unittest.TestCase):
         r.register(Item('b2'), 'b', 30)
         self.assertEqual(len(r), 2)
         self.assertEqual(list(r), ['b2', 'a'])
+
+    def testRegistryDeprecatedAdd(self):
+        r = markdown.util.Registry()
+        # Add first item
+        r.add('c', Item('c'), '_begin')
+        self.assertEqual(list(r), ['c'])
+        # Added to beginning
+        r.add('b', Item('b'), '_begin')
+        self.assertEqual(list(r), ['b', 'c'])
+        # Add before first item
+        r.add('a', Item('a'), '<b')
+        self.assertEqual(list(r), ['a', 'b', 'c'])
+        # Add before non-first item
+        r.add('a1', Item('a1'), '<b')
+        self.assertEqual(list(r), ['a', 'a1', 'b', 'c'])
+        # Add after non-last item
+        r.add('b1', Item('b1'), '>b')
+        self.assertEqual(list(r), ['a', 'a1', 'b', 'b1', 'c'])
+        # Add after last item
+        r.add('d', Item('d'), '>c')
+        self.assertEqual(list(r), ['a', 'a1', 'b', 'b1', 'c', 'd'])
+        # Add to end
+        r.add('e', Item('e'), '_end')
+        self.assertEqual(list(r), ['a', 'a1', 'b', 'b1', 'c', 'd', 'e'])
 
 
 class TestErrors(unittest.TestCase):
