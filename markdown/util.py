@@ -266,8 +266,8 @@ class Registry(object):
         """
         Return the index of the given name.
         """
-        self._sort()
         if name in self:
+            self._sort()
             return self._priority.index(
                 [x for x in self._priority if x.name == name][0]
             )
@@ -356,14 +356,15 @@ class Registry(object):
 
     def add(self, key, value, location):
         """ Register a key by location. """
-        self._sort()
         if len(self) == 0:
             # This is the first item. Set priority to 50.
             priority = 50
         elif location == '_begin':
+            self._sort()
             # Set priority 5 greater than highest existing priority
             priority = self._priority[0].priority + 5
         elif location == '_end':
+            self._sort()
             # Set priority 5 less than lowest existing priority
             priority = self._priority[-1].priority - 5
         elif location.startswith('<') or location.startswith('>'):
