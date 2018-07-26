@@ -325,17 +325,21 @@ class Registry(object):
     def __setitem__(self, key, value):
         """ Register item with priorty 5 less than lowest existing priority. """
         if isinstance(key, string_type):
-            self._sort()
-            if len(self) == 0:
-                # This is the first item. Set priority to 50.
-                priority = 50
-            else:
-                priority = self._priority[-1].priority - 5
-            self.register(value, key, priority)
             warnings.warn(
                 'Using setitem to register a processor or pattern is deprecated. '
                 'Use the `register` method instead.', DeprecationWarning
             )
+            if key in self:
+                # Key already exists, replace without altering priority
+                self._data[key] = value
+                return
+            if len(self) == 0:
+                # This is the first item. Set priority to 50.
+                priority = 50
+            else:
+                self._sort()
+                priority = self._priority[-1].priority - 5
+            self.register(value, key, priority)
         else:
             raise TypeError
 

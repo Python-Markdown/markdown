@@ -318,9 +318,11 @@ class RegistryTests(unittest.TestCase):
             self.assertEqual(list(r), ['a'])
             r['b'] = Item('b')
             self.assertEqual(list(r), ['a', 'b'])
+            r['a'] = Item('a1')
+            self.assertEqual(list(r), ['a1', 'b'])
 
             # Check the warnings
-            self.assertEqual(len(w), 2)
+            self.assertEqual(len(w), 3)
             self.assertTrue(all(issubclass(x.category, DeprecationWarning) for x in w))
 
     def testRegistryDelItem(self):
