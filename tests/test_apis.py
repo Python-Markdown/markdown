@@ -407,6 +407,8 @@ class RegistryTests(unittest.TestCase):
             # Add to end
             r.add('e', Item('e'), '_end')
             self.assertEqual(list(r), ['a', 'a1', 'b', 'b1', 'c', 'd', 'e'])
+            with self.assertRaises(ValueError):
+                r.add('f', Item('f'), 'badlocation')
 
             # Check the warnings
             self.assertEqual(len(w), 7)
