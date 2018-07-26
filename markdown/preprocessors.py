@@ -49,7 +49,7 @@ class NormalizeWhitespace(Preprocessor):
         source = '\n'.join(lines)
         source = source.replace(util.STX, "").replace(util.ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
-        source = source.expandtabs(self.markdown.tab_length)
+        source = source.expandtabs(self.md.tab_length)
         source = re.sub(r'(?<=\n) +\n', '\n', source)
         return source.split('\n')
 
@@ -166,7 +166,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                     self._stringindex_to_listindex(data_index, items[i:]) + i
                 if 'markdown' in attrs.keys():
                     items[i] = items[i][left_index:]  # remove opening tag
-                    placeholder = self.markdown.htmlStash.store_tag(
+                    placeholder = self.md.htmlStash.store_tag(
                         left_tag, attrs, i + 1, right_listindex + 1)
                     items.insert(i, placeholder)
                     if len(items) - right_listindex <= 1:  # last nest, no tail
@@ -178,7 +178,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                         right_listindex -= 1
                     if right_listindex <= i:
                         right_listindex = i + 1
-                    placeholder = self.markdown.htmlStash.store('\n\n'.join(
+                    placeholder = self.md.htmlStash.store('\n\n'.join(
                         items[i:right_listindex]))
                     del items[i:right_listindex]
                     items.insert(i, placeholder)
@@ -231,12 +231,12 @@ class HtmlBlockPreprocessor(Preprocessor):
                             and self._equal_tags(left_tag, right_tag):
                         if self.markdown_in_raw and 'markdown' in attrs.keys():
                             block = block[left_index:-len(right_tag) - 2]
-                            new_blocks.append(self.markdown.htmlStash.
+                            new_blocks.append(self.md.htmlStash.
                                               store_tag(left_tag, attrs, 0, 2))
                             new_blocks.extend([block])
                         else:
                             new_blocks.append(
-                                self.markdown.htmlStash.store(block.strip()))
+                                self.md.htmlStash.store(block.strip()))
                         continue
                     else:
                         # if is block level tag and is not complete
@@ -246,7 +246,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                             in_tag = True
                         else:
                             new_blocks.append(
-                                self.markdown.htmlStash.store(block.strip())
+                                self.md.htmlStash.store(block.strip())
                             )
                         continue
 
@@ -280,18 +280,18 @@ class HtmlBlockPreprocessor(Preprocessor):
                             right_index = len(items) + 3
                         else:
                             right_index = len(items) + 2
-                        new_blocks.append(self.markdown.htmlStash.store_tag(
+                        new_blocks.append(self.md.htmlStash.store_tag(
                             left_tag, attrs, 0, right_index))
-                        placeholderslen = len(self.markdown.htmlStash.tag_data)
+                        placeholderslen = len(self.md.htmlStash.tag_data)
                         new_blocks.extend(
                             self._nested_markdown_in_html(items))
-                        nests = len(self.markdown.htmlStash.tag_data) - \
+                        nests = len(self.md.htmlStash.tag_data) - \
                             placeholderslen
-                        self.markdown.htmlStash.tag_data[-1 - nests][
+                        self.md.htmlStash.tag_data[-1 - nests][
                             'right_index'] += nests - 2
                     else:
                         new_blocks.append(
-                            self.markdown.htmlStash.store('\n\n'.join(items)))
+                            self.md.htmlStash.store('\n\n'.join(items)))
                     items = []
 
         if items:
@@ -303,16 +303,16 @@ class HtmlBlockPreprocessor(Preprocessor):
                 else:
                     right_index = len(items) + 2
                 new_blocks.append(
-                    self.markdown.htmlStash.store_tag(
+                    self.md.htmlStash.store_tag(
                         left_tag, attrs, 0, right_index))
-                placeholderslen = len(self.markdown.htmlStash.tag_data)
+                placeholderslen = len(self.md.htmlStash.tag_data)
                 new_blocks.extend(self._nested_markdown_in_html(items))
-                nests = len(self.markdown.htmlStash.tag_data) - placeholderslen
-                self.markdown.htmlStash.tag_data[-1 - nests][
+                nests = len(self.md.htmlStash.tag_data) - placeholderslen
+                self.md.htmlStash.tag_data[-1 - nests][
                     'right_index'] += nests - 2
             else:
                 new_blocks.append(
-                    self.markdown.htmlStash.store('\n\n'.join(items)))
+                    self.md.htmlStash.store('\n\n'.join(items)))
             new_blocks.append('\n')
 
         new_text = "\n\n".join(new_blocks)
@@ -343,7 +343,7 @@ class ReferencePreprocessor(Preprocessor):
                     if tm:
                         lines.pop(0)
                         t = tm.group(2) or tm.group(3) or tm.group(4)
-                self.markdown.references[id] = (link, t)
+                self.md.references[id] = (link, t)
                 # Preserve the line to prevent raw HTML indexing issue.
                 # https://github.com/Python-Markdown/markdown/issues/584
                 new_text.append('')

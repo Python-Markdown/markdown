@@ -208,7 +208,7 @@ class Pattern(object):  # pragma: no cover
     def unescape(self, text):
         """ Return unescaped text given text with an inline placeholder. """
         try:
-            stash = self.markdown.treeprocessors['inline'].stashed_nodes
+            stash = self.md.treeprocessors['inline'].stashed_nodes
         except KeyError:  # pragma: no cover
             return text
 
@@ -289,7 +289,7 @@ class EscapeInlineProcessor(InlineProcessor):
 
     def handleMatch(self, m, data):
         char = m.group(1)
-        if char in self.markdown.ESCAPED_CHARS:
+        if char in self.md.ESCAPED_CHARS:
             return '%s%s%s' % (util.STX, ord(char), util.ETX), m.start(0), m.end(0)
         else:
             return None, m.start(0), m.end(0)
@@ -391,13 +391,13 @@ class HtmlInlineProcessor(InlineProcessor):
     """ Store raw inline html and return a placeholder. """
     def handleMatch(self, m, data):
         rawhtml = self.unescape(m.group(1))
-        place_holder = self.markdown.htmlStash.store(rawhtml)
+        place_holder = self.md.htmlStash.store(rawhtml)
         return place_holder, m.start(0), m.end(0)
 
     def unescape(self, text):
         """ Return unescaped text given text with an inline placeholder. """
         try:
-            stash = self.markdown.treeprocessors['inline'].stashed_nodes
+            stash = self.md.treeprocessors['inline'].stashed_nodes
         except KeyError:  # pragma: no cover
             return text
 
@@ -406,7 +406,7 @@ class HtmlInlineProcessor(InlineProcessor):
             value = stash.get(id)
             if value is not None:
                 try:
-                    return self.markdown.serializer(value)
+                    return self.md.serializer(value)
                 except Exception:
                     return r'\%s' % value
 
@@ -614,10 +614,10 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
 
         # Clean up linebreaks in id
         id = self.NEWLINE_CLEANUP_RE.sub(' ', id)
-        if id not in self.markdown.references:  # ignore undefined refs
+        if id not in self.md.references:  # ignore undefined refs
             return None, m.start(0), end
 
-        href, title = self.markdown.references[id]
+        href, title = self.md.references[id]
 
         return self.makeTag(href, title, text), m.start(0), end
 

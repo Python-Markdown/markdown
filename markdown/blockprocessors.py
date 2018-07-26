@@ -51,7 +51,7 @@ class BlockProcessor(object):
 
     def __init__(self, parser):
         self.parser = parser
-        self.tab_length = parser.markdown.tab_length
+        self.tab_length = parser.md.tab_length
 
     def lastChild(self, parent):
         """ Return the last child of an etree element. """
@@ -365,7 +365,7 @@ class OListProcessor(BlockProcessor):
             # This is a new list so create parent with appropriate tag.
             lst = util.etree.SubElement(parent, self.TAG)
             # Check if a custom start integer is set
-            if not self.parser.markdown.lazy_ol and self.STARTSWITH != '1':
+            if not self.parser.md.lazy_ol and self.STARTSWITH != '1':
                 lst.attrib['start'] = self.STARTSWITH
 
         self.parser.state.set('list')

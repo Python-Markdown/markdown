@@ -96,7 +96,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
                  block[nest_index[-1][1]:], True)                      # nest
 
     def run(self, parent, blocks, tail=None, nest=False):
-        self._tag_data = self.parser.markdown.htmlStash.tag_data
+        self._tag_data = self.parser.md.htmlStash.tag_data
 
         self.parser.blockprocessors.tag_counter += 1
         tag = self._tag_data[self.parser.blockprocessors.tag_counter]
