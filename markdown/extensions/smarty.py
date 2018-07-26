@@ -85,7 +85,7 @@ from __future__ import unicode_literals
 from . import Extension
 from ..inlinepatterns import HtmlInlineProcessor, HTML_RE
 from ..treeprocessors import InlineProcessor
-from ..util import Registry
+from ..util import Registry, deprecated
 
 
 # Constants for quote education.
@@ -151,11 +151,17 @@ HTML_STRICT_RE = HTML_RE + r'(?!\>)'
 
 
 class SubstituteTextPattern(HtmlInlineProcessor):
-    def __init__(self, pattern, replace, markdown_instance):
+    def __init__(self, pattern, replace, md):
         """ Replaces matches with some text. """
         HtmlInlineProcessor.__init__(self, pattern)
         self.replace = replace
-        self.markdown = markdown_instance
+        self.md = md
+
+    @property
+    @deprecated("Use 'md' instead.")
+    def markdown(self):
+        # TODO: remove this later
+        return self.md
 
     def handleMatch(self, m, data):
         result = ''

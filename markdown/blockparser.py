@@ -44,10 +44,16 @@ class BlockParser:
     looping through them and creating an ElementTree object.
     """
 
-    def __init__(self, markdown):
+    def __init__(self, md):
         self.blockprocessors = util.Registry()
         self.state = State()
-        self.markdown = markdown
+        self.md = md
+
+    @property
+    @util.deprecated("Use 'md' instead.")
+    def markdown(self):
+        # TODO: remove this later
+        return self.md
 
     def parseDocument(self, lines):
         """ Parse a markdown document into an ElementTree.

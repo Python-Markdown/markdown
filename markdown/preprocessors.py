@@ -12,12 +12,12 @@ from . import util
 import re
 
 
-def build_preprocessors(md_instance, **kwargs):
+def build_preprocessors(md, **kwargs):
     """ Build the default set of preprocessors used by Markdown. """
     preprocessors = util.Registry()
-    preprocessors.register(NormalizeWhitespace(md_instance), 'normalize_whitespace', 30)
-    preprocessors.register(HtmlBlockPreprocessor(md_instance), 'html_block', 20)
-    preprocessors.register(ReferencePreprocessor(md_instance), 'reference', 10)
+    preprocessors.register(NormalizeWhitespace(md), 'normalize_whitespace', 30)
+    preprocessors.register(HtmlBlockPreprocessor(md), 'html_block', 20)
+    preprocessors.register(ReferencePreprocessor(md), 'reference', 10)
     return preprocessors
 
 

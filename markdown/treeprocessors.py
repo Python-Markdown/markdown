@@ -4,11 +4,11 @@ from . import util
 from . import inlinepatterns
 
 
-def build_treeprocessors(md_instance, **kwargs):
+def build_treeprocessors(md, **kwargs):
     """ Build the default treeprocessors for Markdown. """
     treeprocessors = util.Registry()
-    treeprocessors.register(InlineProcessor(md_instance), 'inline', 20)
-    treeprocessors.register(PrettifyTreeprocessor(md_instance), 'prettify', 10)
+    treeprocessors.register(InlineProcessor(md), 'inline', 20)
+    treeprocessors.register(PrettifyTreeprocessor(md), 'prettify', 10)
     return treeprocessors
 
 
@@ -51,9 +51,15 @@ class InlineProcessor(Treeprocessor):
         self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
                                       + len(self.__placeholder_suffix)
         self.__placeholder_re = util.INLINE_PLACEHOLDER_RE
-        self.markdown = md
+        self.md = md
         self.inlinePatterns = md.inlinePatterns
         self.ancestors = []
+
+    @property
+    @util.deprecated("Use 'md' instead.")
+    def markdown(self):
+        # TODO: remove this later
+        return self.md
 
     def __makePlaceholder(self, type):
         """ Generate a placeholder """

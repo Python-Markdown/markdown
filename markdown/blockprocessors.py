@@ -22,9 +22,9 @@ from .blockparser import BlockParser
 logger = logging.getLogger('MARKDOWN')
 
 
-def build_block_parser(md_instance, **kwargs):
+def build_block_parser(md, **kwargs):
     """ Build the default block parser used by Markdown. """
-    parser = BlockParser(md_instance)
+    parser = BlockParser(md)
     parser.blockprocessors.register(EmptyBlockProcessor(parser), 'empty', 100)
     parser.blockprocessors.register(ListIndentProcessor(parser), 'indent', 90)
     parser.blockprocessors.register(CodeBlockProcessor(parser), 'code', 80)

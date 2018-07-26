@@ -15,10 +15,10 @@ from . import util
 import re
 
 
-def build_postprocessors(md_instance, **kwargs):
+def build_postprocessors(md, **kwargs):
     """ Build the default postprocessors for Markdown. """
     postprocessors = util.Registry()
-    postprocessors.register(RawHtmlPostprocessor(md_instance), 'raw_html', 30)
+    postprocessors.register(RawHtmlPostprocessor(md), 'raw_html', 30)
     postprocessors.register(AndSubstitutePostprocessor(), 'amp_substitute', 20)
     postprocessors.register(UnescapePostprocessor(), 'unescape', 10)
     return postprocessors

@@ -51,31 +51,31 @@ except ImportError:  # pragma: no cover
     import htmlentitydefs as entities
 
 
-def build_inlinepatterns(md_instance, **kwargs):
+def build_inlinepatterns(md, **kwargs):
     """ Build the default set of inline patterns for Markdown. """
     inlinePatterns = util.Registry()
     inlinePatterns.register(BacktickInlineProcessor(BACKTICK_RE), 'backtick', 190)
-    inlinePatterns.register(EscapeInlineProcessor(ESCAPE_RE, md_instance), 'escape', 180)
-    inlinePatterns.register(ReferenceInlineProcessor(REFERENCE_RE, md_instance), 'reference', 170)
-    inlinePatterns.register(LinkInlineProcessor(LINK_RE, md_instance), 'link', 160)
-    inlinePatterns.register(ImageInlineProcessor(IMAGE_LINK_RE, md_instance), 'image_link', 150)
+    inlinePatterns.register(EscapeInlineProcessor(ESCAPE_RE, md), 'escape', 180)
+    inlinePatterns.register(ReferenceInlineProcessor(REFERENCE_RE, md), 'reference', 170)
+    inlinePatterns.register(LinkInlineProcessor(LINK_RE, md), 'link', 160)
+    inlinePatterns.register(ImageInlineProcessor(IMAGE_LINK_RE, md), 'image_link', 150)
     inlinePatterns.register(
-        ImageReferenceInlineProcessor(IMAGE_REFERENCE_RE, md_instance), 'image_reference', 140
+        ImageReferenceInlineProcessor(IMAGE_REFERENCE_RE, md), 'image_reference', 140
     )
     inlinePatterns.register(
-        ShortReferenceInlineProcessor(REFERENCE_RE, md_instance), 'short_reference', 130
+        ShortReferenceInlineProcessor(REFERENCE_RE, md), 'short_reference', 130
     )
-    inlinePatterns.register(AutolinkInlineProcessor(AUTOLINK_RE, md_instance), 'autolink', 120)
-    inlinePatterns.register(AutomailInlineProcessor(AUTOMAIL_RE, md_instance), 'automail', 110)
+    inlinePatterns.register(AutolinkInlineProcessor(AUTOLINK_RE, md), 'autolink', 120)
+    inlinePatterns.register(AutomailInlineProcessor(AUTOMAIL_RE, md), 'automail', 110)
     inlinePatterns.register(SubstituteTagInlineProcessor(LINE_BREAK_RE, 'br'), 'linebreak', 100)
-    inlinePatterns.register(HtmlInlineProcessor(HTML_RE, md_instance), 'html', 90)
-    inlinePatterns.register(HtmlInlineProcessor(ENTITY_RE, md_instance), 'entity', 80)
+    inlinePatterns.register(HtmlInlineProcessor(HTML_RE, md), 'html', 90)
+    inlinePatterns.register(HtmlInlineProcessor(ENTITY_RE, md), 'entity', 80)
     inlinePatterns.register(SimpleTextInlineProcessor(NOT_STRONG_RE), 'not_strong', 70)
     inlinePatterns.register(DoubleTagInlineProcessor(EM_STRONG_RE, 'strong,em'), 'em_strong', 60)
     inlinePatterns.register(DoubleTagInlineProcessor(STRONG_EM_RE, 'em,strong'), 'strong_em', 50)
     inlinePatterns.register(SimpleTagInlineProcessor(STRONG_RE, 'strong'), 'strong', 40)
     inlinePatterns.register(SimpleTagInlineProcessor(EMPHASIS_RE, 'em'), 'emphasis', 30)
-    if md_instance.smart_emphasis:
+    if md.smart_emphasis:
         inlinePatterns.register(SimpleTagInlineProcessor(SMART_EMPHASIS_RE, 'em'), 'emphasis2', 20)
     else:
         inlinePatterns.register(SimpleTagInlineProcessor(EMPHASIS_2_RE, 'em'), 'emphasis2', 20)
@@ -164,7 +164,7 @@ class Pattern(object):  # pragma: no cover
 
     ANCESTOR_EXCLUDES = tuple()
 
-    def __init__(self, pattern, markdown_instance=None):
+    def __init__(self, pattern, md=None):
         """
         Create an instant of an inline pattern.
 
@@ -177,8 +177,13 @@ class Pattern(object):  # pragma: no cover
         self.compiled_re = re.compile(r"^(.*?)%s(.*)$" % pattern,
                                       re.DOTALL | re.UNICODE)
 
-        if markdown_instance:
-            self.markdown = markdown_instance
+        self.md = md
+
+    @property
+    @util.deprecated("Use 'md' instead.")
+    def markdown(self):
+        # TODO: remove this later
+        return self.md
 
     def getCompiledRegExp(self):
         """ Return a compiled regular expression. """
@@ -227,7 +232,7 @@ class InlineProcessor(Pattern):
     efficient and flexible search approach.
     """
 
-    def __init__(self, pattern, markdown_instance=None):
+    def __init__(self, pattern, md=None):
         """
         Create an instant of an inline pattern.
 
@@ -241,8 +246,7 @@ class InlineProcessor(Pattern):
 
         # Api for Markdown to pass safe_mode into instance
         self.safe_mode = False
-        if markdown_instance:
-            self.markdown = markdown_instance
+        self.md = md
 
     def handleMatch(self, m, data):
         """Return a ElementTree element from the given match and the
