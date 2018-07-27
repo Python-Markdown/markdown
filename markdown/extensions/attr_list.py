@@ -21,7 +21,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import isBlockLevel
 import re
 
 
@@ -79,7 +78,7 @@ class AttrListTreeprocessor(Treeprocessor):
 
     def run(self, doc):
         for elem in doc.iter():
-            if isBlockLevel(elem.tag):
+            if self.md.is_block_level(elem.tag):
                 # Block level: check for attrs on last line of text
                 RE = self.BLOCK_RE
                 if isheader(elem) or elem.tag == 'dt':

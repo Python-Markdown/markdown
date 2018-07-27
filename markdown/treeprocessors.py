@@ -406,12 +406,12 @@ class PrettifyTreeprocessor(Treeprocessor):
         """ Recursively add linebreaks to ElementTree children. """
 
         i = "\n"
-        if util.isBlockLevel(elem.tag) and elem.tag not in ['code', 'pre']:
+        if self.md.is_block_level(elem.tag) and elem.tag not in ['code', 'pre']:
             if (not elem.text or not elem.text.strip()) \
-                    and len(elem) and util.isBlockLevel(elem[0].tag):
+                    and len(elem) and self.md.is_block_level(elem[0].tag):
                 elem.text = i
             for e in elem:
-                if util.isBlockLevel(e.tag):
+                if self.md.is_block_level(e.tag):
                     self._prettifyETree(e)
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
