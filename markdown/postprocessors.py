@@ -15,10 +15,10 @@ from . import util
 import re
 
 
-def build_postprocessors(md_instance, **kwargs):
+def build_postprocessors(md, **kwargs):
     """ Build the default postprocessors for Markdown. """
     postprocessors = util.Registry()
-    postprocessors.register(RawHtmlPostprocessor(md_instance), 'raw_html', 30)
+    postprocessors.register(RawHtmlPostprocessor(md), 'raw_html', 30)
     postprocessors.register(AndSubstitutePostprocessor(), 'amp_substitute', 20)
     postprocessors.register(UnescapePostprocessor(), 'unescape', 10)
     return postprocessors
@@ -51,13 +51,13 @@ class RawHtmlPostprocessor(Postprocessor):
     def run(self, text):
         """ Iterate over html stash and restore html. """
         replacements = OrderedDict()
-        for i in range(self.markdown.htmlStash.html_counter):
-            html = self.markdown.htmlStash.rawHtmlBlocks[i]
+        for i in range(self.md.htmlStash.html_counter):
+            html = self.md.htmlStash.rawHtmlBlocks[i]
             if self.isblocklevel(html):
                 replacements["<p>%s</p>" %
-                             (self.markdown.htmlStash.get_placeholder(i))] = \
+                             (self.md.htmlStash.get_placeholder(i))] = \
                     html + "\n"
-            replacements[self.markdown.htmlStash.get_placeholder(i)] = html
+            replacements[self.md.htmlStash.get_placeholder(i)] = html
 
         if replacements:
             pattern = re.compile("|".join(re.escape(k) for k in replacements))

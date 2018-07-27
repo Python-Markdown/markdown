@@ -219,8 +219,8 @@ class TocTreeprocessor(Treeprocessor):
 
         build_etree_ul(toc_list, div)
 
-        if 'prettify' in self.markdown.treeprocessors:
-            self.markdown.treeprocessors['prettify'].run(div)
+        if 'prettify' in self.md.treeprocessors:
+            self.md.treeprocessors['prettify'].run(div)
 
         return div
 
@@ -241,7 +241,7 @@ class TocTreeprocessor(Treeprocessor):
 
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
-                    innertext = stashedHTML2text(text, self.markdown)
+                    innertext = stashedHTML2text(text, self.md)
                     el.attrib["id"] = unique(self.slugify(innertext, self.sep), used_ids)
 
                 toc_tokens.append({
@@ -260,10 +260,10 @@ class TocTreeprocessor(Treeprocessor):
             self.replace_marker(doc, div)
 
         # serialize and attach to markdown instance.
-        toc = self.markdown.serializer(div)
-        for pp in self.markdown.postprocessors:
+        toc = self.md.serializer(div)
+        for pp in self.md.postprocessors:
             toc = pp.run(toc)
-        self.markdown.toc = toc
+        self.md.toc = toc
 
 
 class TocExtension(Extension):

@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import re
 import sys
 from collections import namedtuple
+from functools import wraps
 import warnings
 
 
@@ -118,6 +119,25 @@ def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
         raise ValueError('Cannot parse bool value: %r' % value)
 
 
+def deprecated(message):
+    """
+    Raise a DeprecationWarning when wrapped function/method is called.
+
+    Borrowed from https://stackoverflow.com/a/48632082/866026
+    """
+    def deprecated_decorator(func):
+        @wraps(func)
+        def deprecated_func(*args, **kwargs):
+            warnings.warn(
+                "'{}' is deprecated. {}".format(func.__name__, message),
+                category=DeprecationWarning,
+                stacklevel=2
+            )
+            return func(*args, **kwargs)
+        return deprecated_func
+    return deprecated_decorator
+
+
 """
 MISC AUXILIARY CLASSES
 =============================================================================
@@ -130,9 +150,14 @@ class AtomicString(text_type):
 
 
 class Processor(object):
-    def __init__(self, markdown_instance=None):
-        if markdown_instance:
-            self.markdown = markdown_instance
+    def __init__(self, md=None):
+        self.md = md
+
+    @property
+    @deprecated("Use 'md' instead.")
+    def markdown(self):
+        # TODO: remove this later
+        return self.md
 
 
 class HtmlStash(object):

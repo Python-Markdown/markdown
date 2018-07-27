@@ -51,7 +51,7 @@ class AbbrPreprocessor(Preprocessor):
             if m:
                 abbr = m.group('abbr').strip()
                 title = m.group('title').strip()
-                self.markdown.inlinePatterns.register(
+                self.md.inlinePatterns.register(
                     AbbrInlineProcessor(self._generate_pattern(abbr), title), 'abbr-%s' % abbr, 2
                 )
                 # Preserve the line to prevent raw HTML indexing issue.

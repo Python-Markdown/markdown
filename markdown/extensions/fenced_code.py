@@ -55,7 +55,7 @@ class FencedBlockPreprocessor(Preprocessor):
 
         # Check for code hilite extension
         if not self.checked_for_codehilite:
-            for ext in self.markdown.registeredExtensions:
+            for ext in self.md.registeredExtensions:
                 if isinstance(ext, CodeHiliteExtension):
                     self.codehilite_conf = ext.config
                     break
@@ -90,7 +90,7 @@ class FencedBlockPreprocessor(Preprocessor):
                     code = self.CODE_WRAP % (lang,
                                              self._escape(m.group('code')))
 
-                placeholder = self.markdown.htmlStash.store(code)
+                placeholder = self.md.htmlStash.store(code)
                 text = '%s\n%s\n%s' % (text[:m.start()],
                                        placeholder,
                                        text[m.end():])
