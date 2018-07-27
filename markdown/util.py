@@ -39,7 +39,7 @@ BLOCK_LEVEL_ELEMENTS = [
     'section', 'table', 'ul',
     # Other elements which Markdown should not be mucking up the contents of.
     'canvas', 'dd', 'dt', 'group', 'iframe', 'li', 'math', 'noscript', 'output',
-    'progress', 'script', 'tbody', 'td', 'th', 'thead', 'tr', 'video'
+    'progress', 'script', 'style', 'tbody', 'td', 'th', 'thead', 'tr', 'video'
 ]
 
 # Placeholders
