@@ -202,152 +202,217 @@ class TestHtmlStash(unittest.TestCase):
         self.assertEqual(self.stash.rawHtmlBlocks, [])
 
 
-class TestOrderedDict(unittest.TestCase):
-    """ Test OrderedDict storage class. """
+class Item(object):
+    """ A dummy Registry item object for testing. """
+    def __init__(self, data):
+        self.data = data
 
-    def setUp(self):
-        self.odict = markdown.odict.OrderedDict()
-        self.odict['first'] = 'This'
-        self.odict['third'] = 'a'
-        self.odict['fourth'] = 'self'
-        self.odict['fifth'] = 'test'
+    def __repr__(self):
+        return repr(self.data)
 
-    def testValues(self):
-        """ Test output of OrderedDict.values(). """
-        self.assertEqual(list(self.odict.values()), ['This', 'a', 'self', 'test'])
+    def __eq__(self, other):
+        return self.data == other
 
-    def testKeys(self):
-        """ Test output of OrderedDict.keys(). """
-        self.assertEqual(
-            list(self.odict.keys()),
-            ['first', 'third', 'fourth', 'fifth']
-        )
 
-    def testItems(self):
-        """ Test output of OrderedDict.items(). """
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test')
-            ]
-        )
+class RegistryTests(unittest.TestCase):
+    """ Test the processor registry. """
 
-    def testAddBefore(self):
-        """ Test adding an OrderedDict item before a given key. """
-        self.odict.add('second', 'is', '<third')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('second', 'is'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test')
-            ]
-        )
+    def testCreateRegistry(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        self.assertEqual(len(r), 1)
+        self.assertTrue(isinstance(r, markdown.util.Registry))
 
-    def testAddAfter(self):
-        """ Test adding an OrderDict item after a given key. """
-        self.odict.add('second', 'is', '>first')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('second', 'is'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test')
-            ]
-        )
+    def testRegisterWithoutPriority(self):
+        r = markdown.util.Registry()
+        with self.assertRaises(TypeError):
+            r.register(Item('a'))
 
-    def testAddAfterEnd(self):
-        """ Test adding an OrderedDict item after the last key. """
-        self.odict.add('sixth', '.', '>fifth')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test'),
-                ('sixth', '.')
-            ]
-        )
+    def testSortRegistry(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 21)
+        r.register(Item('c'), 'c', 20.5)
+        self.assertEqual(len(r), 3)
+        self.assertEqual(list(r), ['b', 'c', 'a'])
 
-    def testAdd_begin(self):
-        """ Test adding an OrderedDict item using "_begin". """
-        self.odict.add('zero', 'CRAZY', '_begin')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('zero', 'CRAZY'),
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test')
-            ]
-        )
+    def testIsSorted(self):
+        r = markdown.util.Registry()
+        self.assertFalse(r._is_sorted)
+        r.register(Item('a'), 'a', 20)
+        list(r)
+        self.assertTrue(r._is_sorted)
+        r.register(Item('b'), 'b', 21)
+        self.assertFalse(r._is_sorted)
+        r['a']
+        self.assertTrue(r._is_sorted)
+        r._is_sorted = False
+        r.get_index_for_name('a')
+        self.assertTrue(r._is_sorted)
+        r._is_sorted = False
+        repr(r)
+        self.assertTrue(r._is_sorted)
 
-    def testAdd_end(self):
-        """ Test adding an OrderedDict item using "_end". """
-        self.odict.add('sixth', '.', '_end')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test'),
-                ('sixth', '.')
-            ]
-        )
+    def testDeregister(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a',  20)
+        r.register(Item('b'), 'b', 30)
+        r.register(Item('c'), 'c', 40)
+        self.assertEqual(len(r), 3)
+        r.deregister('b')
+        self.assertEqual(len(r), 2)
+        r.deregister('c', strict=False)
+        self.assertEqual(len(r), 1)
+        # deregister non-existant item with strict=False
+        r.deregister('d', strict=False)
+        self.assertEqual(len(r), 1)
+        with self.assertRaises(ValueError):
+            # deregister non-existant item with strict=True
+            r.deregister('e')
+        self.assertEqual(list(r), ['a'])
 
-    def testAddBadLocation(self):
-        """ Test Error on bad location in OrderedDict.add(). """
-        self.assertRaises(ValueError, self.odict.add, 'sixth', '.', '<seventh')
-        self.assertRaises(ValueError, self.odict.add, 'second', 'is', 'third')
+    def testRegistryContains(self):
+        r = markdown.util.Registry()
+        item = Item('a')
+        r.register(item, 'a', 20)
+        self.assertTrue('a' in r)
+        self.assertTrue(item in r)
+        self.assertFalse('b' in r)
 
-    def testDeleteItem(self):
-        """ Test deletion of an OrderedDict item. """
-        del self.odict['fourth']
-        self.assertEqual(
-            list(self.odict.items()),
-            [('first', 'This'), ('third', 'a'), ('fifth', 'test')]
-        )
+    def testRegistryIter(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 30)
+        self.assertEqual(list(r), ['b', 'a'])
 
-    def testChangeValue(self):
-        """ Test OrderedDict change value. """
-        self.odict['fourth'] = 'CRAZY'
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'CRAZY'),
-                ('fifth', 'test')
-            ]
-        )
+    def testRegistryGetItemByIndex(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 30)
+        self.assertEqual(r[0], 'b')
+        self.assertEqual(r[1], 'a')
+        with self.assertRaises(IndexError):
+            r[3]
 
-    def testChangeOrder(self):
-        """ Test OrderedDict change order. """
-        self.odict.link('fourth', '<third')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('fourth', 'self'),
-                ('third', 'a'),
-                ('fifth', 'test')
-            ]
-        )
+    def testRegistryGetItemByItem(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 30)
+        self.assertEqual(r['a'], 'a')
+        self.assertEqual(r['b'], 'b')
+        with self.assertRaises(KeyError):
+            r['c']
 
-    def textBadLink(self):
-        """ Test OrderedDict change order with bad location. """
-        self.assertRaises(ValueError, self.odict.link('fourth', '<bad'))
-        # Check for data integrity ("fourth" wasn't deleted).'
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test')
-            ]
-        )
+    def testRegistrySetItem(self):
+        r = markdown.util.Registry()
+        with self.assertRaises(TypeError):
+            r[0] = 'a'
+        # TODO: restore this when deprecated __setitem__ is removed.
+        # with self.assertRaises(TypeError):
+        #     r['a'] = 'a'
+        # TODO: remove this when deprecated __setitem__ is removed.
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            r['a'] = Item('a')
+            self.assertEqual(list(r), ['a'])
+            r['b'] = Item('b')
+            self.assertEqual(list(r), ['a', 'b'])
+            r['a'] = Item('a1')
+            self.assertEqual(list(r), ['a1', 'b'])
+
+            # Check the warnings
+            self.assertEqual(len(w), 3)
+            self.assertTrue(all(issubclass(x.category, DeprecationWarning) for x in w))
+
+    def testRegistryDelItem(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        with self.assertRaises(TypeError):
+            del r[0]
+        # TODO: restore this when deprecated __del__ is removed.
+        # with self.assertRaises(TypeError):
+        #     del r['a']
+        # TODO: remove this when deprecated __del__ is removed.
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            r.register(Item('b'), 'b', 15)
+            r.register(Item('c'), 'c', 10)
+            del r['b']
+            self.assertEqual(list(r), ['a', 'c'])
+            del r['a']
+            self.assertEqual(list(r), ['c'])
+            with self.assertRaises(TypeError):
+                del r['badname']
+            del r['c']
+            self.assertEqual(list(r), [])
+
+            # Check the warnings
+            self.assertEqual(len(w), 3)
+            self.assertTrue(all(issubclass(x.category, DeprecationWarning) for x in w))
+
+    def testRegistrySlice(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 30)
+        r.register(Item('c'), 'c', 40)
+        slc = r[1:]
+        self.assertEqual(len(slc), 2)
+        self.assertTrue(isinstance(slc, markdown.util.Registry))
+        self.assertEqual(list(slc), ['b', 'a'])
+
+    def testGetIndexForName(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 30)
+        self.assertEqual(r.get_index_for_name('a'), 1)
+        self.assertEqual(r.get_index_for_name('b'), 0)
+        with self.assertRaises(ValueError):
+            r.get_index_for_name('c')
+
+    def testRegisterDupplicate(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b1'), 'b', 10)
+        self.assertEqual(list(r), ['a', 'b1'])
+        self.assertEqual(len(r), 2)
+        r.register(Item('b2'), 'b', 30)
+        self.assertEqual(len(r), 2)
+        self.assertEqual(list(r), ['b2', 'a'])
+
+    def testRegistryDeprecatedAdd(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            r = markdown.util.Registry()
+            # Add first item
+            r.add('c', Item('c'), '_begin')
+            self.assertEqual(list(r), ['c'])
+            # Added to beginning
+            r.add('b', Item('b'), '_begin')
+            self.assertEqual(list(r), ['b', 'c'])
+            # Add before first item
+            r.add('a', Item('a'), '<b')
+            self.assertEqual(list(r), ['a', 'b', 'c'])
+            # Add before non-first item
+            r.add('a1', Item('a1'), '<b')
+            self.assertEqual(list(r), ['a', 'a1', 'b', 'c'])
+            # Add after non-last item
+            r.add('b1', Item('b1'), '>b')
+            self.assertEqual(list(r), ['a', 'a1', 'b', 'b1', 'c'])
+            # Add after last item
+            r.add('d', Item('d'), '>c')
+            self.assertEqual(list(r), ['a', 'a1', 'b', 'b1', 'c', 'd'])
+            # Add to end
+            r.add('e', Item('e'), '_end')
+            self.assertEqual(list(r), ['a', 'a1', 'b', 'b1', 'c', 'd', 'e'])
+            with self.assertRaises(ValueError):
+                r.add('f', Item('f'), 'badlocation')
+
+            # Check the warnings
+            self.assertEqual(len(w), 7)
+            self.assertTrue(all(issubclass(x.category, DeprecationWarning) for x in w))
 
 
 class TestErrors(unittest.TestCase):
@@ -862,7 +927,7 @@ class TestAncestorExclusion(unittest.TestCase):
             """Modify inline patterns."""
 
             pattern = r'(\+)([^\+]+)\1'
-            md.inlinePatterns["ancestor-test"] = TestAncestorExclusion.AncestorExample(pattern, 'strong')
+            md.inlinePatterns.register(TestAncestorExclusion.AncestorExample(pattern, 'strong'), 'ancestor-test', 0)
 
     def setUp(self):
         """Setup markdown object."""

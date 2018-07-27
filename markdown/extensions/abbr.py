@@ -33,7 +33,7 @@ class AbbrExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
         """ Insert AbbrPreprocessor before ReferencePreprocessor. """
-        md.preprocessors.add('abbr', AbbrPreprocessor(md), '<reference')
+        md.preprocessors.register(AbbrPreprocessor(md), 'abbr', 12)
 
 
 class AbbrPreprocessor(Preprocessor):
@@ -51,8 +51,9 @@ class AbbrPreprocessor(Preprocessor):
             if m:
                 abbr = m.group('abbr').strip()
                 title = m.group('title').strip()
-                self.markdown.inlinePatterns['abbr-%s' % abbr] = \
-                    AbbrInlineProcessor(self._generate_pattern(abbr), title)
+                self.markdown.inlinePatterns.register(
+                    AbbrInlineProcessor(self._generate_pattern(abbr), title), 'abbr-%s' % abbr, 2
+                )
                 # Preserve the line to prevent raw HTML indexing issue.
                 # https://github.com/Python-Markdown/markdown/issues/584
                 new_text.append('')

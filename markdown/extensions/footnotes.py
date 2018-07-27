@@ -21,7 +21,7 @@ from ..inlinepatterns import InlineProcessor
 from ..treeprocessors import Treeprocessor
 from ..postprocessors import Postprocessor
 from .. import util
-from ..odict import OrderedDict
+from collections import OrderedDict
 import re
 import copy
 
@@ -71,33 +71,24 @@ class FootnoteExtension(Extension):
         self.parser = md.parser
         self.md = md
         # Insert a preprocessor before ReferencePreprocessor
-        md.preprocessors.add(
-            "footnote", FootnotePreprocessor(self), "<reference"
-        )
+        md.preprocessors.register(FootnotePreprocessor(self), 'footnote', 15)
+
         # Insert an inline pattern before ImageReferencePattern
         FOOTNOTE_RE = r'\[\^([^\]]*)\]'  # blah blah [^1] blah
-        md.inlinePatterns.add(
-            "footnote", FootnoteInlineProcessor(FOOTNOTE_RE, self), "<reference"
-        )
+        md.inlinePatterns.register(FootnoteInlineProcessor(FOOTNOTE_RE, self), 'footnote', 175)
         # Insert a tree-processor that would actually add the footnote div
         # This must be before all other treeprocessors (i.e., inline and
         # codehilite) so they can run on the the contents of the div.
-        md.treeprocessors.add(
-            "footnote", FootnoteTreeprocessor(self), "_begin"
-        )
+        md.treeprocessors.register(FootnoteTreeprocessor(self), 'footnote', 50)
 
         # Insert a tree-processor that will run after inline is done.
         # In this tree-processor we want to check our duplicate footnote tracker
         # And add additional backrefs to the footnote pointing back to the
         # duplicated references.
-        md.treeprocessors.add(
-            "footnote-duplicate", FootnotePostTreeprocessor(self), '>inline'
-        )
+        md.treeprocessors.register(FootnotePostTreeprocessor(self), 'footnote-duplicate', 15)
 
-        # Insert a postprocessor after amp_substitute oricessor
-        md.postprocessors.add(
-            "footnote", FootnotePostprocessor(self), ">amp_substitute"
-        )
+        # Insert a postprocessor after amp_substitute processor
+        md.postprocessors.register(FootnotePostprocessor(self), 'footnote', 25)
 
     def reset(self):
         """ Clear footnotes on reset, and prepare for distinct document. """
@@ -180,7 +171,7 @@ class FootnoteExtension(Extension):
         ol = util.etree.SubElement(div, "ol")
         surrogate_parent = util.etree.Element("div")
 
-        for id in self.footnotes.keys():
+        for index, id in enumerate(self.footnotes.keys(), start=1):
             li = util.etree.SubElement(ol, "li")
             li.set("id", self.makeFootnoteId(id))
             # Parse footnote with surrogate parent as li cannot be used.
@@ -197,8 +188,7 @@ class FootnoteExtension(Extension):
             backlink.set("class", "footnote-backref")
             backlink.set(
                 "title",
-                self.getConfig("BACKLINK_TITLE") %
-                (self.footnotes.index(id)+1)
+                self.getConfig("BACKLINK_TITLE") % (index)
             )
             backlink.text = FN_BACKLINK_TEXT
 
@@ -332,7 +322,7 @@ class FootnoteInlineProcessor(InlineProcessor):
             if self.footnotes.md.output_format not in ['html5', 'xhtml5']:
                 a.set('rel', 'footnote')  # invalid in HTML5
             a.set('class', 'footnote-ref')
-            a.text = util.text_type(self.footnotes.footnotes.index(id) + 1)
+            a.text = util.text_type(list(self.footnotes.footnotes.keys()).index(id) + 1)
             return sup, m.start(0), m.end(0)
         else:
             return None, None, None
