@@ -1,4 +1,26 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Python Markdown
+
+A Python implementation of John Gruber's Markdown.
+
+Documentation: https://python-markdown.github.io/
+GitHub: https://github.com/Python-Markdown/markdown/
+PyPI: https://pypi.org/project/Markdown/
+
+Started by Manfred Stienstra (http://www.dwerg.net/).
+Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
+Currently maintained by Waylan Limberg (https://github.com/waylan),
+Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
+
+Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
+Copyright 2004 Manfred Stienstra (the original version)
+
+License: BSD (see LICENSE.md for details).
+"""
+
 
 from setuptools import setup
 from markdown import __version__, __version_info__
@@ -56,6 +78,7 @@ setup(
     maintainer_email='waylan.limberg@icloud.com',
     license='BSD License',
     packages=['markdown', 'markdown.extensions'],
+    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
     entry_points={
         'console_scripts': [
             '%s = markdown.__main__:run' % SCRIPT_NAME,
@@ -78,6 +101,7 @@ setup(
             'tables = markdown.extensions.tables:TableExtension',
             'toc = markdown.extensions.toc:TocExtension',
             'wikilinks = markdown.extensions.wikilinks:WikiLinkExtension',
+            'legacy_attrs = markdown.extensions.legacy_attrs:LegacyAttrExtension',
         ]
     },
     classifiers=[
@@ -88,11 +112,10 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Communications :: Email :: Filters',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: CGI Tools/Libraries',
         'Topic :: Internet :: WWW/HTTP :: Site Management',

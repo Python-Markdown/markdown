@@ -1,10 +1,29 @@
+# -*- coding: utf-8 -*-
 """
+Python Markdown
+
+A Python implementation of John Gruber's Markdown.
+
+Documentation: https://python-markdown.github.io/
+GitHub: https://github.com/Python-Markdown/markdown/
+PyPI: https://pypi.org/project/Markdown/
+
+Started by Manfred Stienstra (http://www.dwerg.net/).
+Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
+Currently maintained by Waylan Limberg (https://github.com/waylan),
+Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
+
+Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
+Copyright 2004 Manfred Stienstra (the original version)
+
+License: BSD (see LICENSE.md for details).
+
 Python-Markdown Extension Regression Tests
 ==========================================
 
 A collection of regression tests to confirm that the included extensions
 continue to work as advertised. This used to be accomplished by doctests.
-
 """
 
 from __future__ import unicode_literals
@@ -454,6 +473,20 @@ The body. This is paragraph one.'''
         self.assertEqual(self.md.convert(text), '')
         self.assertEqual(self.md.Meta, {'title': ['No newline']})
 
+    def testMetaDataReset(self):
+        """ Test that reset call remove Meta entirely """
+
+        text = '''Title: A Test Doc.
+Author: Waylan Limberg
+        John Doe
+Blank_Data:
+
+The body. This is paragraph one.'''
+        self.md.convert(text)
+
+        self.md.reset()
+        self.assertEqual(self.md.Meta, {})
+
 
 class TestWikiLinks(unittest.TestCase):
     """ Test Wikilinks Extension. """
@@ -879,6 +912,60 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</div>\n'                                  # noqa
             '<h1 id="toc"><em>[TOC]</em></h1>'          # noqa
         )
+
+    def testMaxLevel(self):
+        """ Test toc_depth setting """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(toc_depth=2)]
+        )
+        text = '# Header 1\n\n## Header 2\n\n###Header 3 not in TOC'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="header-1">Header 1</h1>\n'
+            '<h2 id="header-2">Header 2</h2>\n'
+            '<h3>Header 3 not in TOC</h3>'
+        )
+        self.assertEqual(
+            md.toc,
+            '<div class="toc">\n'
+              '<ul>\n'                                             # noqa
+                '<li><a href="#header-1">Header 1</a>'             # noqa
+                  '<ul>\n'                                         # noqa
+                    '<li><a href="#header-2">Header 2</a></li>\n'  # noqa
+                  '</ul>\n'                                        # noqa
+                '</li>\n'                                          # noqa
+              '</ul>\n'                                            # noqa
+            '</div>\n'
+        )
+
+        self.assertNotIn("Header 3", md.toc)
+
+    def testMaxLevelwithBaseLevel(self):
+        """ Test toc_depth setting together with baselevel """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(toc_depth=3,
+                                                             baselevel=2)]
+        )
+        text = '# Some Header\n\n## Next Level\n\n### Too High'
+        self.assertEqual(
+            md.convert(text),
+            '<h2 id="some-header">Some Header</h2>\n'
+            '<h3 id="next-level">Next Level</h3>\n'
+            '<h4>Too High</h4>'
+        )
+        self.assertEqual(
+            md.toc,
+            '<div class="toc">\n'
+              '<ul>\n'                                                 # noqa
+                '<li><a href="#some-header">Some Header</a>'           # noqa
+                  '<ul>\n'                                             # noqa
+                    '<li><a href="#next-level">Next Level</a></li>\n'  # noqa
+                  '</ul>\n'                                            # noqa
+                '</li>\n'                                              # noqa
+              '</ul>\n'                                                # noqa
+            '</div>\n'
+        )
+        self.assertNotIn("Too High", md.toc)
 
 
 class TestSmarty(unittest.TestCase):

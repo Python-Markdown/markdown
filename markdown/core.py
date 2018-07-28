@@ -1,3 +1,25 @@
+# -*- coding: utf-8 -*-
+"""
+Python Markdown
+
+A Python implementation of John Gruber's Markdown.
+
+Documentation: https://python-markdown.github.io/
+GitHub: https://github.com/Python-Markdown/markdown/
+PyPI: https://pypi.org/project/Markdown/
+
+Started by Manfred Stienstra (http://www.dwerg.net/).
+Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
+Currently maintained by Waylan Limberg (https://github.com/waylan),
+Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
+
+Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
+Copyright 2004 Manfred Stienstra (the original version)
+
+License: BSD (see LICENSE.md for details).
+"""
+
 from __future__ import absolute_import
 from __future__ import unicode_literals
 import codecs
@@ -27,7 +49,6 @@ class Markdown(object):
 
     option_defaults = {
         'tab_length':            4,
-        'enable_attributes':     True,
         'smart_emphasis':        True,
         'lazy_ol':               True,
     }
@@ -53,7 +74,6 @@ class Markdown(object):
             * "xhtml": Outputs XHTML style tags. Default.
             * "html": Outputs HTML style tags.
         * tab_length: Length of tabs in the source. Default: 4
-        * enable_attributes: Enable the conversion of attributes. Default: True
         * smart_emphasis: Treat `_connected_words_` intelligently Default: True
         * lazy_ol: Ignore number of first item of ordered lists. Default: True
 
@@ -110,9 +130,11 @@ class Markdown(object):
                 )
             elif ext is not None:
                 raise TypeError(
-                    'Extension "%s.%s" must be of type: "markdown.Extension"'
-                    % (ext.__class__.__module__, ext.__class__.__name__))
-
+                    'Extension "%s.%s" must be of type: "%s.%s"' % (
+                        ext.__class__.__module__, ext.__class__.__name__,
+                        Extension.__module__, Extension.__name__
+                    )
+                )
         return self
 
     def build_extension(self, ext_name, configs):
@@ -230,14 +252,14 @@ class Markdown(object):
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
-        for prep in self.preprocessors.values():
+        for prep in self.preprocessors:
             self.lines = prep.run(self.lines)
 
         # Parse the high-level elements.
         root = self.parser.parseDocument(self.lines).getroot()
 
         # Run the tree-processors
-        for treeprocessor in self.treeprocessors.values():
+        for treeprocessor in self.treeprocessors:
             newRoot = treeprocessor.run(root)
             if newRoot is not None:
                 root = newRoot
@@ -260,7 +282,7 @@ class Markdown(object):
                                      'tags. Document=%r' % output.strip())
 
         # Run the text post-processors
-        for pp in self.postprocessors.values():
+        for pp in self.postprocessors:
             output = pp.run(output)
 
         return output.strip()

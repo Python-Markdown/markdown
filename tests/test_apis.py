@@ -1,10 +1,28 @@
-#!/usr/bin/python
+# -*- coding: utf-8 -*-
 """
+Python Markdown
+
+A Python implementation of John Gruber's Markdown.
+
+Documentation: https://python-markdown.github.io/
+GitHub: https://github.com/Python-Markdown/markdown/
+PyPI: https://pypi.org/project/Markdown/
+
+Started by Manfred Stienstra (http://www.dwerg.net/).
+Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
+Currently maintained by Waylan Limberg (https://github.com/waylan),
+Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
+
+Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
+Copyright 2004 Manfred Stienstra (the original version)
+
+License: BSD (see LICENSE.md for details).
+
 Python-Markdown Regression Tests
 ================================
 
 Tests of the various APIs with the python markdown lib.
-
 """
 
 from __future__ import unicode_literals
@@ -18,6 +36,7 @@ from logging import DEBUG, WARNING, CRITICAL
 import yaml
 import tempfile
 from io import BytesIO
+from xml.etree.ElementTree import ProcessingInstruction
 
 
 PY3 = sys.version_info[0] == 3
@@ -201,152 +220,217 @@ class TestHtmlStash(unittest.TestCase):
         self.assertEqual(self.stash.rawHtmlBlocks, [])
 
 
-class TestOrderedDict(unittest.TestCase):
-    """ Test OrderedDict storage class. """
+class Item(object):
+    """ A dummy Registry item object for testing. """
+    def __init__(self, data):
+        self.data = data
 
-    def setUp(self):
-        self.odict = markdown.odict.OrderedDict()
-        self.odict['first'] = 'This'
-        self.odict['third'] = 'a'
-        self.odict['fourth'] = 'self'
-        self.odict['fifth'] = 'test'
+    def __repr__(self):
+        return repr(self.data)
 
-    def testValues(self):
-        """ Test output of OrderedDict.values(). """
-        self.assertEqual(list(self.odict.values()), ['This', 'a', 'self', 'test'])
+    def __eq__(self, other):
+        return self.data == other
 
-    def testKeys(self):
-        """ Test output of OrderedDict.keys(). """
-        self.assertEqual(
-            list(self.odict.keys()),
-            ['first', 'third', 'fourth', 'fifth']
-        )
 
-    def testItems(self):
-        """ Test output of OrderedDict.items(). """
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test')
-            ]
-        )
+class RegistryTests(unittest.TestCase):
+    """ Test the processor registry. """
 
-    def testAddBefore(self):
-        """ Test adding an OrderedDict item before a given key. """
-        self.odict.add('second', 'is', '<third')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('second', 'is'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test')
-            ]
-        )
+    def testCreateRegistry(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        self.assertEqual(len(r), 1)
+        self.assertTrue(isinstance(r, markdown.util.Registry))
 
-    def testAddAfter(self):
-        """ Test adding an OrderDict item after a given key. """
-        self.odict.add('second', 'is', '>first')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('second', 'is'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test')
-            ]
-        )
+    def testRegisterWithoutPriority(self):
+        r = markdown.util.Registry()
+        with self.assertRaises(TypeError):
+            r.register(Item('a'))
 
-    def testAddAfterEnd(self):
-        """ Test adding an OrderedDict item after the last key. """
-        self.odict.add('sixth', '.', '>fifth')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test'),
-                ('sixth', '.')
-            ]
-        )
+    def testSortRegistry(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 21)
+        r.register(Item('c'), 'c', 20.5)
+        self.assertEqual(len(r), 3)
+        self.assertEqual(list(r), ['b', 'c', 'a'])
 
-    def testAdd_begin(self):
-        """ Test adding an OrderedDict item using "_begin". """
-        self.odict.add('zero', 'CRAZY', '_begin')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('zero', 'CRAZY'),
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test')
-            ]
-        )
+    def testIsSorted(self):
+        r = markdown.util.Registry()
+        self.assertFalse(r._is_sorted)
+        r.register(Item('a'), 'a', 20)
+        list(r)
+        self.assertTrue(r._is_sorted)
+        r.register(Item('b'), 'b', 21)
+        self.assertFalse(r._is_sorted)
+        r['a']
+        self.assertTrue(r._is_sorted)
+        r._is_sorted = False
+        r.get_index_for_name('a')
+        self.assertTrue(r._is_sorted)
+        r._is_sorted = False
+        repr(r)
+        self.assertTrue(r._is_sorted)
 
-    def testAdd_end(self):
-        """ Test adding an OrderedDict item using "_end". """
-        self.odict.add('sixth', '.', '_end')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test'),
-                ('sixth', '.')
-            ]
-        )
+    def testDeregister(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a',  20)
+        r.register(Item('b'), 'b', 30)
+        r.register(Item('c'), 'c', 40)
+        self.assertEqual(len(r), 3)
+        r.deregister('b')
+        self.assertEqual(len(r), 2)
+        r.deregister('c', strict=False)
+        self.assertEqual(len(r), 1)
+        # deregister non-existant item with strict=False
+        r.deregister('d', strict=False)
+        self.assertEqual(len(r), 1)
+        with self.assertRaises(ValueError):
+            # deregister non-existant item with strict=True
+            r.deregister('e')
+        self.assertEqual(list(r), ['a'])
 
-    def testAddBadLocation(self):
-        """ Test Error on bad location in OrderedDict.add(). """
-        self.assertRaises(ValueError, self.odict.add, 'sixth', '.', '<seventh')
-        self.assertRaises(ValueError, self.odict.add, 'second', 'is', 'third')
+    def testRegistryContains(self):
+        r = markdown.util.Registry()
+        item = Item('a')
+        r.register(item, 'a', 20)
+        self.assertTrue('a' in r)
+        self.assertTrue(item in r)
+        self.assertFalse('b' in r)
 
-    def testDeleteItem(self):
-        """ Test deletion of an OrderedDict item. """
-        del self.odict['fourth']
-        self.assertEqual(
-            list(self.odict.items()),
-            [('first', 'This'), ('third', 'a'), ('fifth', 'test')]
-        )
+    def testRegistryIter(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 30)
+        self.assertEqual(list(r), ['b', 'a'])
 
-    def testChangeValue(self):
-        """ Test OrderedDict change value. """
-        self.odict['fourth'] = 'CRAZY'
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'CRAZY'),
-                ('fifth', 'test')
-            ]
-        )
+    def testRegistryGetItemByIndex(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 30)
+        self.assertEqual(r[0], 'b')
+        self.assertEqual(r[1], 'a')
+        with self.assertRaises(IndexError):
+            r[3]
 
-    def testChangeOrder(self):
-        """ Test OrderedDict change order. """
-        self.odict.link('fourth', '<third')
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('fourth', 'self'),
-                ('third', 'a'),
-                ('fifth', 'test')
-            ]
-        )
+    def testRegistryGetItemByItem(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 30)
+        self.assertEqual(r['a'], 'a')
+        self.assertEqual(r['b'], 'b')
+        with self.assertRaises(KeyError):
+            r['c']
 
-    def textBadLink(self):
-        """ Test OrderedDict change order with bad location. """
-        self.assertRaises(ValueError, self.odict.link('fourth', '<bad'))
-        # Check for data integrity ("fourth" wasn't deleted).'
-        self.assertEqual(
-            list(self.odict.items()), [
-                ('first', 'This'),
-                ('third', 'a'),
-                ('fourth', 'self'),
-                ('fifth', 'test')
-            ]
-        )
+    def testRegistrySetItem(self):
+        r = markdown.util.Registry()
+        with self.assertRaises(TypeError):
+            r[0] = 'a'
+        # TODO: restore this when deprecated __setitem__ is removed.
+        # with self.assertRaises(TypeError):
+        #     r['a'] = 'a'
+        # TODO: remove this when deprecated __setitem__ is removed.
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            r['a'] = Item('a')
+            self.assertEqual(list(r), ['a'])
+            r['b'] = Item('b')
+            self.assertEqual(list(r), ['a', 'b'])
+            r['a'] = Item('a1')
+            self.assertEqual(list(r), ['a1', 'b'])
+
+            # Check the warnings
+            self.assertEqual(len(w), 3)
+            self.assertTrue(all(issubclass(x.category, DeprecationWarning) for x in w))
+
+    def testRegistryDelItem(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        with self.assertRaises(TypeError):
+            del r[0]
+        # TODO: restore this when deprecated __del__ is removed.
+        # with self.assertRaises(TypeError):
+        #     del r['a']
+        # TODO: remove this when deprecated __del__ is removed.
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            r.register(Item('b'), 'b', 15)
+            r.register(Item('c'), 'c', 10)
+            del r['b']
+            self.assertEqual(list(r), ['a', 'c'])
+            del r['a']
+            self.assertEqual(list(r), ['c'])
+            with self.assertRaises(TypeError):
+                del r['badname']
+            del r['c']
+            self.assertEqual(list(r), [])
+
+            # Check the warnings
+            self.assertEqual(len(w), 3)
+            self.assertTrue(all(issubclass(x.category, DeprecationWarning) for x in w))
+
+    def testRegistrySlice(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 30)
+        r.register(Item('c'), 'c', 40)
+        slc = r[1:]
+        self.assertEqual(len(slc), 2)
+        self.assertTrue(isinstance(slc, markdown.util.Registry))
+        self.assertEqual(list(slc), ['b', 'a'])
+
+    def testGetIndexForName(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b'), 'b', 30)
+        self.assertEqual(r.get_index_for_name('a'), 1)
+        self.assertEqual(r.get_index_for_name('b'), 0)
+        with self.assertRaises(ValueError):
+            r.get_index_for_name('c')
+
+    def testRegisterDupplicate(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('b1'), 'b', 10)
+        self.assertEqual(list(r), ['a', 'b1'])
+        self.assertEqual(len(r), 2)
+        r.register(Item('b2'), 'b', 30)
+        self.assertEqual(len(r), 2)
+        self.assertEqual(list(r), ['b2', 'a'])
+
+    def testRegistryDeprecatedAdd(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            r = markdown.util.Registry()
+            # Add first item
+            r.add('c', Item('c'), '_begin')
+            self.assertEqual(list(r), ['c'])
+            # Added to beginning
+            r.add('b', Item('b'), '_begin')
+            self.assertEqual(list(r), ['b', 'c'])
+            # Add before first item
+            r.add('a', Item('a'), '<b')
+            self.assertEqual(list(r), ['a', 'b', 'c'])
+            # Add before non-first item
+            r.add('a1', Item('a1'), '<b')
+            self.assertEqual(list(r), ['a', 'a1', 'b', 'c'])
+            # Add after non-last item
+            r.add('b1', Item('b1'), '>b')
+            self.assertEqual(list(r), ['a', 'a1', 'b', 'b1', 'c'])
+            # Add after last item
+            r.add('d', Item('d'), '>c')
+            self.assertEqual(list(r), ['a', 'a1', 'b', 'b1', 'c', 'd'])
+            # Add to end
+            r.add('e', Item('e'), '_end')
+            self.assertEqual(list(r), ['a', 'a1', 'b', 'b1', 'c', 'd', 'e'])
+            with self.assertRaises(ValueError):
+                r.add('f', Item('f'), 'badlocation')
+
+            # Check the warnings
+            self.assertEqual(len(w), 7)
+            self.assertTrue(all(issubclass(x.category, DeprecationWarning) for x in w))
 
 
 class TestErrors(unittest.TestCase):
@@ -465,23 +549,47 @@ class testSerializers(unittest.TestCase):
     def testHtml(self):
         """ Test HTML serialization. """
         el = markdown.util.etree.Element('div')
+        el.set('id', 'foo<&">')
         p = markdown.util.etree.SubElement(el, 'p')
-        p.text = 'foo'
+        p.text = 'foo <&escaped>'
+        p.set('hidden', 'hidden')
         markdown.util.etree.SubElement(el, 'hr')
+        non_element = markdown.util.etree.SubElement(el, None)
+        non_element.text = 'non-element text'
+        script = markdown.util.etree.SubElement(non_element, 'script')
+        script.text = '<&"test\nescaping">'
+        el.tail = "tail text"
         self.assertEqual(
             markdown.serializers.to_html_string(el),
-            '<div><p>foo</p><hr></div>'
+            '<div id="foo&lt;&amp;&quot;&gt;">'
+            '<p hidden>foo &lt;&amp;escaped&gt;</p>'
+            '<hr>'
+            'non-element text'
+            '<script><&"test\nescaping"></script>'
+            '</div>tail text'
         )
 
     def testXhtml(self):
         """" Test XHTML serialization. """
         el = markdown.util.etree.Element('div')
+        el.set('id', 'foo<&">')
         p = markdown.util.etree.SubElement(el, 'p')
-        p.text = 'foo'
+        p.text = 'foo<&escaped>'
+        p.set('hidden', 'hidden')
         markdown.util.etree.SubElement(el, 'hr')
+        non_element = markdown.util.etree.SubElement(el, None)
+        non_element.text = 'non-element text'
+        script = markdown.util.etree.SubElement(non_element, 'script')
+        script.text = '<&"test\nescaping">'
+        el.tail = "tail text"
         self.assertEqual(
             markdown.serializers.to_xhtml_string(el),
-            '<div><p>foo</p><hr /></div>'
+            '<div id="foo&lt;&amp;&quot;&gt;">'
+            '<p hidden="hidden">foo&lt;&amp;escaped&gt;</p>'
+            '<hr />'
+            'non-element text'
+            '<script><&"test\nescaping"></script>'
+            '</div>tail text'
         )
 
     def testMixedCaseTags(self):
@@ -494,6 +602,68 @@ class testSerializers(unittest.TestCase):
         self.assertEqual(
             markdown.serializers.to_xhtml_string(el),
             '<MixedCase>not valid <EMPHASIS>html</EMPHASIS><HR /></MixedCase>'
+        )
+
+    def testProsessingInstruction(self):
+        """ Test serialization of ProcessignInstruction. """
+        pi = ProcessingInstruction('foo', text='<&"test\nescaping">')
+        self.assertIs(pi.tag, ProcessingInstruction)
+        self.assertEqual(
+            markdown.serializers.to_xhtml_string(pi),
+            '<?foo &lt;&amp;"test\nescaping"&gt;?>'
+        )
+
+    def testQNameTag(self):
+        """ Test serialization of QName tag. """
+        div = markdown.util.etree.Element('div')
+        qname = markdown.util.etree.QName('http://www.w3.org/1998/Math/MathML', 'math')
+        math = markdown.util.etree.SubElement(div, qname)
+        math.set('display', 'block')
+        sem = markdown.util.etree.SubElement(math, 'semantics')
+        msup = markdown.util.etree.SubElement(sem, 'msup')
+        mi = markdown.util.etree.SubElement(msup, 'mi')
+        mi.text = 'x'
+        mn = markdown.util.etree.SubElement(msup, 'mn')
+        mn.text = '2'
+        ann = markdown.util.etree.SubElement(sem, 'annotations')
+        ann.text = 'x^2'
+        self.assertEqual(
+            markdown.serializers.to_xhtml_string(div),
+            '<div>'
+            '<math display="block" xmlns="http://www.w3.org/1998/Math/MathML">'
+            '<semantics>'
+            '<msup>'
+            '<mi>x</mi>'
+            '<mn>2</mn>'
+            '</msup>'
+            '<annotations>x^2</annotations>'
+            '</semantics>'
+            '</math>'
+            '</div>'
+        )
+
+    def testQNameAttribute(self):
+        """ Test serialization of QName attribute. """
+        div = markdown.util.etree.Element('div')
+        div.set(markdown.util.etree.QName('foo'), markdown.util.etree.QName('bar'))
+        self.assertEqual(
+            markdown.serializers.to_xhtml_string(div),
+            '<div foo="bar"></div>'
+        )
+
+    def testBadQNameTag(self):
+        """ Test serialization of QName with no tag. """
+        qname = markdown.util.etree.QName('http://www.w3.org/1998/Math/MathML')
+        el = markdown.util.etree.Element(qname)
+        self.assertRaises(ValueError, markdown.serializers.to_xhtml_string, el)
+
+    def testQNameEscaping(self):
+        """ Test QName escaping. """
+        qname = markdown.util.etree.QName('<&"test\nescaping">', 'div')
+        el = markdown.util.etree.Element(qname)
+        self.assertEqual(
+            markdown.serializers.to_xhtml_string(el),
+            '<div xmlns="&lt;&amp;&quot;test&#10;escaping&quot;&gt;"></div>'
         )
 
     def buildExtension(self):
@@ -775,7 +945,7 @@ class TestAncestorExclusion(unittest.TestCase):
             """Modify inline patterns."""
 
             pattern = r'(\+)([^\+]+)\1'
-            md.inlinePatterns["ancestor-test"] = TestAncestorExclusion.AncestorExample(pattern, 'strong')
+            md.inlinePatterns.register(TestAncestorExclusion.AncestorExample(pattern, 'strong'), 'ancestor-test', 0)
 
     def setUp(self):
         """Setup markdown object."""

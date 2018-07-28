@@ -59,9 +59,9 @@ class ExtraExtension(Extension):
         md.registerExtensions(extensions, self.config)
         # Turn on processing of markdown text within raw html
         md.preprocessors['html_block'].markdown_in_raw = True
-        md.parser.blockprocessors.add('markdown_block',
-                                      MarkdownInHtmlProcessor(md.parser),
-                                      '_begin')
+        md.parser.blockprocessors.register(
+            MarkdownInHtmlProcessor(md.parser), 'markdown_block', 105
+        )
         md.parser.blockprocessors.tag_counter = -1
         md.parser.blockprocessors.contain_span_tags = re.compile(
             r'^(p|h[1-6]|li|dd|dt|td|th|legend|address)$', re.IGNORECASE)
@@ -96,7 +96,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
                  block[nest_index[-1][1]:], True)                      # nest
 
     def run(self, parent, blocks, tail=None, nest=False):
-        self._tag_data = self.parser.markdown.htmlStash.tag_data
+        self._tag_data = self.parser.md.htmlStash.tag_data
 
         self.parser.blockprocessors.tag_counter += 1
         tag = self._tag_data[self.parser.blockprocessors.tag_counter]

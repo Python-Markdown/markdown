@@ -1,4 +1,0 @@
-![img{@id=foo}][img]
-
-  [img]: http://example.com/i.jpg
-

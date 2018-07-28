@@ -134,8 +134,8 @@ class TocTreeprocessor(Treeprocessor):
         self.use_permalinks = parseBoolValue(config["permalink"], False)
         if self.use_permalinks is None:
             self.use_permalinks = config["permalink"]
-
         self.header_rgx = re.compile("[Hh][123456]")
+        self.toc_depth = config["toc_depth"]
 
     def iterparent(self, node):
         ''' Iterator wrapper to get allowed parent and child all at once. '''
@@ -218,9 +218,10 @@ class TocTreeprocessor(Treeprocessor):
             return ul
 
         build_etree_ul(toc_list, div)
-        prettify = self.markdown.treeprocessors.get('prettify')
-        if prettify:
-            prettify.run(div)
+
+        if 'prettify' in self.md.treeprocessors:
+            self.md.treeprocessors['prettify'].run(div)
+
         return div
 
     def run(self, doc):
@@ -234,11 +235,13 @@ class TocTreeprocessor(Treeprocessor):
         for el in doc.iter():
             if isinstance(el.tag, string_type) and self.header_rgx.match(el.tag):
                 self.set_level(el)
+                if int(el.tag[-1]) > int(self.toc_depth):
+                    continue
                 text = ''.join(el.itertext()).strip()
 
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
-                    innertext = stashedHTML2text(text, self.markdown)
+                    innertext = stashedHTML2text(text, self.md)
                     el.attrib["id"] = unique(self.slugify(innertext, self.sep), used_ids)
 
                 toc_tokens.append({
@@ -257,10 +260,10 @@ class TocTreeprocessor(Treeprocessor):
             self.replace_marker(doc, div)
 
         # serialize and attach to markdown instance.
-        toc = self.markdown.serializer(div)
-        for pp in self.markdown.postprocessors.values():
+        toc = self.md.serializer(div)
+        for pp in self.md.postprocessors:
             toc = pp.run(toc)
-        self.markdown.toc = toc
+        self.md.toc = toc
 
 
 class TocExtension(Extension):
@@ -285,7 +288,10 @@ class TocExtension(Extension):
             "slugify": [slugify,
                         "Function to generate anchors based on header text - "
                         "Defaults to the headerid ext's slugify function."],
-            'separator': ['-', 'Word separator. Defaults to "-".']
+            'separator': ['-', 'Word separator. Defaults to "-".'],
+            "toc_depth": [6,
+                          "Define up to which section level n (<h1>..<hn>) to "
+                          "include in the TOC"]
         }
 
         super(TocExtension, self).__init__(**kwargs)
@@ -300,7 +306,7 @@ class TocExtension(Extension):
         # by the header id extension) if both are used. Same goes for
         # attr_list extension. This must come last because we don't want
         # to redefine ids after toc is created. But we do want toc prettified.
-        md.treeprocessors.add("toc", tocext, "_end")
+        md.treeprocessors.register(tocext, 'toc', 5)
 
     def reset(self):
         self.md.toc = ''

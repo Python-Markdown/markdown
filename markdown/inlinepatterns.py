@@ -1,4 +1,24 @@
+# -*- coding: utf-8 -*-
 """
+Python Markdown
+
+A Python implementation of John Gruber's Markdown.
+
+Documentation: https://python-markdown.github.io/
+GitHub: https://github.com/Python-Markdown/markdown/
+PyPI: https://pypi.org/project/Markdown/
+
+Started by Manfred Stienstra (http://www.dwerg.net/).
+Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
+Currently maintained by Waylan Limberg (https://github.com/waylan),
+Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
+
+Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
+Copyright 2004 Manfred Stienstra (the original version)
+
+License: BSD (see LICENSE.md for details).
+
 INLINE PATTERNS
 =============================================================================
 
@@ -44,7 +64,6 @@ So, we apply the expressions in the following order:
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import util
-from . import odict
 import re
 try:  # pragma: no cover
     from html import entities
@@ -52,34 +71,34 @@ except ImportError:  # pragma: no cover
     import htmlentitydefs as entities
 
 
-def build_inlinepatterns(md_instance, **kwargs):
+def build_inlinepatterns(md, **kwargs):
     """ Build the default set of inline patterns for Markdown. """
-    inlinePatterns = odict.OrderedDict()
-    inlinePatterns["backtick"] = BacktickInlineProcessor(BACKTICK_RE)
-    inlinePatterns["escape"] = EscapeInlineProcessor(ESCAPE_RE, md_instance)
-    inlinePatterns["reference"] = ReferenceInlineProcessor(REFERENCE_RE, md_instance)
-    inlinePatterns["link"] = LinkInlineProcessor(LINK_RE, md_instance)
-    inlinePatterns["image_link"] = ImageInlineProcessor(IMAGE_LINK_RE, md_instance)
-    inlinePatterns["image_reference"] = ImageReferenceInlineProcessor(
-        IMAGE_REFERENCE_RE, md_instance
+    inlinePatterns = util.Registry()
+    inlinePatterns.register(BacktickInlineProcessor(BACKTICK_RE), 'backtick', 190)
+    inlinePatterns.register(EscapeInlineProcessor(ESCAPE_RE, md), 'escape', 180)
+    inlinePatterns.register(ReferenceInlineProcessor(REFERENCE_RE, md), 'reference', 170)
+    inlinePatterns.register(LinkInlineProcessor(LINK_RE, md), 'link', 160)
+    inlinePatterns.register(ImageInlineProcessor(IMAGE_LINK_RE, md), 'image_link', 150)
+    inlinePatterns.register(
+        ImageReferenceInlineProcessor(IMAGE_REFERENCE_RE, md), 'image_reference', 140
     )
-    inlinePatterns["short_reference"] = ShortReferenceInlineProcessor(
-        REFERENCE_RE, md_instance
+    inlinePatterns.register(
+        ShortReferenceInlineProcessor(REFERENCE_RE, md), 'short_reference', 130
     )
-    inlinePatterns["autolink"] = AutolinkInlineProcessor(AUTOLINK_RE, md_instance)
-    inlinePatterns["automail"] = AutomailInlineProcessor(AUTOMAIL_RE, md_instance)
-    inlinePatterns["linebreak"] = SubstituteTagInlineProcessor(LINE_BREAK_RE, 'br')
-    inlinePatterns["html"] = HtmlInlineProcessor(HTML_RE, md_instance)
-    inlinePatterns["entity"] = HtmlInlineProcessor(ENTITY_RE, md_instance)
-    inlinePatterns["not_strong"] = SimpleTextInlineProcessor(NOT_STRONG_RE)
-    inlinePatterns["em_strong"] = DoubleTagInlineProcessor(EM_STRONG_RE, 'strong,em')
-    inlinePatterns["strong_em"] = DoubleTagInlineProcessor(STRONG_EM_RE, 'em,strong')
-    inlinePatterns["strong"] = SimpleTagInlineProcessor(STRONG_RE, 'strong')
-    inlinePatterns["emphasis"] = SimpleTagInlineProcessor(EMPHASIS_RE, 'em')
-    if md_instance.smart_emphasis:
-        inlinePatterns["emphasis2"] = SimpleTagInlineProcessor(SMART_EMPHASIS_RE, 'em')
+    inlinePatterns.register(AutolinkInlineProcessor(AUTOLINK_RE, md), 'autolink', 120)
+    inlinePatterns.register(AutomailInlineProcessor(AUTOMAIL_RE, md), 'automail', 110)
+    inlinePatterns.register(SubstituteTagInlineProcessor(LINE_BREAK_RE, 'br'), 'linebreak', 100)
+    inlinePatterns.register(HtmlInlineProcessor(HTML_RE, md), 'html', 90)
+    inlinePatterns.register(HtmlInlineProcessor(ENTITY_RE, md), 'entity', 80)
+    inlinePatterns.register(SimpleTextInlineProcessor(NOT_STRONG_RE), 'not_strong', 70)
+    inlinePatterns.register(DoubleTagInlineProcessor(EM_STRONG_RE, 'strong,em'), 'em_strong', 60)
+    inlinePatterns.register(DoubleTagInlineProcessor(STRONG_EM_RE, 'em,strong'), 'strong_em', 50)
+    inlinePatterns.register(SimpleTagInlineProcessor(STRONG_RE, 'strong'), 'strong', 40)
+    inlinePatterns.register(SimpleTagInlineProcessor(EMPHASIS_RE, 'em'), 'emphasis', 30)
+    if md.smart_emphasis:
+        inlinePatterns.register(SimpleTagInlineProcessor(SMART_EMPHASIS_RE, 'em'), 'emphasis2', 20)
     else:
-        inlinePatterns["emphasis2"] = SimpleTagInlineProcessor(EMPHASIS_2_RE, 'em')
+        inlinePatterns.register(SimpleTagInlineProcessor(EMPHASIS_2_RE, 'em'), 'emphasis2', 20)
     return inlinePatterns
 
 
@@ -154,17 +173,6 @@ def dequote(string):
         return string
 
 
-ATTR_RE = re.compile(r"\{@([^\}]*)=([^\}]*)}")  # {@id=123}
-
-
-def handleAttributes(text, parent):
-    """Set values of an element based on attribute definitions ({@id=123})."""
-    def attributeCallback(match):
-        parent.set(match.group(1), match.group(2).replace('\n', ' '))
-        return ''
-    return ATTR_RE.sub(attributeCallback, text)
-
-
 """
 The pattern classes
 -----------------------------------------------------------------------------
@@ -176,7 +184,7 @@ class Pattern(object):  # pragma: no cover
 
     ANCESTOR_EXCLUDES = tuple()
 
-    def __init__(self, pattern, markdown_instance=None):
+    def __init__(self, pattern, md=None):
         """
         Create an instant of an inline pattern.
 
@@ -189,8 +197,13 @@ class Pattern(object):  # pragma: no cover
         self.compiled_re = re.compile(r"^(.*?)%s(.*)$" % pattern,
                                       re.DOTALL | re.UNICODE)
 
-        if markdown_instance:
-            self.markdown = markdown_instance
+        self.md = md
+
+    @property
+    @util.deprecated("Use 'md' instead.")
+    def markdown(self):
+        # TODO: remove this later
+        return self.md
 
     def getCompiledRegExp(self):
         """ Return a compiled regular expression. """
@@ -215,7 +228,7 @@ class Pattern(object):  # pragma: no cover
     def unescape(self, text):
         """ Return unescaped text given text with an inline placeholder. """
         try:
-            stash = self.markdown.treeprocessors['inline'].stashed_nodes
+            stash = self.md.treeprocessors['inline'].stashed_nodes
         except KeyError:  # pragma: no cover
             return text
 
@@ -239,7 +252,7 @@ class InlineProcessor(Pattern):
     efficient and flexible search approach.
     """
 
-    def __init__(self, pattern, markdown_instance=None):
+    def __init__(self, pattern, md=None):
         """
         Create an instant of an inline pattern.
 
@@ -253,8 +266,7 @@ class InlineProcessor(Pattern):
 
         # Api for Markdown to pass safe_mode into instance
         self.safe_mode = False
-        if markdown_instance:
-            self.markdown = markdown_instance
+        self.md = md
 
     def handleMatch(self, m, data):
         """Return a ElementTree element from the given match and the
@@ -297,7 +309,7 @@ class EscapeInlineProcessor(InlineProcessor):
 
     def handleMatch(self, m, data):
         char = m.group(1)
-        if char in self.markdown.ESCAPED_CHARS:
+        if char in self.md.ESCAPED_CHARS:
             return '%s%s%s' % (util.STX, ord(char), util.ETX), m.start(0), m.end(0)
         else:
             return None, m.start(0), m.end(0)
@@ -399,13 +411,13 @@ class HtmlInlineProcessor(InlineProcessor):
     """ Store raw inline html and return a placeholder. """
     def handleMatch(self, m, data):
         rawhtml = self.unescape(m.group(1))
-        place_holder = self.markdown.htmlStash.store(rawhtml)
+        place_holder = self.md.htmlStash.store(rawhtml)
         return place_holder, m.start(0), m.end(0)
 
     def unescape(self, text):
         """ Return unescaped text given text with an inline placeholder. """
         try:
-            stash = self.markdown.treeprocessors['inline'].stashed_nodes
+            stash = self.md.treeprocessors['inline'].stashed_nodes
         except KeyError:  # pragma: no cover
             return text
 
@@ -414,7 +426,7 @@ class HtmlInlineProcessor(InlineProcessor):
             value = stash.get(id)
             if value is not None:
                 try:
-                    return self.markdown.serializer(value)
+                    return self.md.serializer(value)
                 except Exception:
                     return r'\%s' % value
 
@@ -601,12 +613,7 @@ class ImageInlineProcessor(LinkInlineProcessor):
         if title is not None:
             el.set("title", title)
 
-        if self.markdown.enable_attributes:
-            truealt = handleAttributes(text, el)
-        else:
-            truealt = text
-
-        el.set('alt', self.unescape(truealt))
+        el.set('alt', self.unescape(text))
         return el, m.start(0), index
 
 
@@ -627,10 +634,10 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
 
         # Clean up linebreaks in id
         id = self.NEWLINE_CLEANUP_RE.sub(' ', id)
-        if id not in self.markdown.references:  # ignore undefined refs
+        if id not in self.md.references:  # ignore undefined refs
             return None, m.start(0), end
 
-        href, title = self.markdown.references[id]
+        href, title = self.md.references[id]
 
         return self.makeTag(href, title, text), m.start(0), end
 
@@ -676,10 +683,6 @@ class ImageReferenceInlineProcessor(ReferenceInlineProcessor):
         el.set("src", href)
         if title:
             el.set("title", title)
-
-        if self.markdown.enable_attributes:
-            text = handleAttributes(text, el)
-
         el.set("alt", self.unescape(text))
         return el
 

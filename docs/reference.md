@@ -181,10 +181,6 @@ __tab_length__{: #tab_length }:
 
 : Length of tabs in the source. Default: 4
 
-__enable_attributes__{: #enable_attributes}:
-
-: Enable the conversion of attributes. Defaults to `True`.
-
 __smart_emphasis__{: #smart_emphasis }:
 
 : Treat `_connected_words_` intelligently Default: True

@@ -1,33 +1,23 @@
+# -*- coding: utf-8 -*-
 """
 Python Markdown
-===============
 
-Python Markdown converts Markdown to HTML and can be used as a library or
-called from the command line.
+A Python implementation of John Gruber's Markdown.
 
-## Basic usage as a module:
+Documentation: https://python-markdown.github.io/
+GitHub: https://github.com/Python-Markdown/markdown/
+PyPI: https://pypi.org/project/Markdown/
 
-    import markdown
-    html = markdown.markdown(your_text_string)
+Started by Manfred Stienstra (http://www.dwerg.net/).
+Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
+Currently maintained by Waylan Limberg (https://github.com/waylan),
+Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
 
-See <https://Python-Markdown.github.io/> for more
-information and instructions on how to extend the functionality of
-Python Markdown.  Read that before you try modifying this file.
-
-## Authors and License
-
-Started by [Manfred Stienstra](http://www.dwerg.net/).  Continued and
-maintained  by [Yuri Takhteyev](http://www.freewisdom.org), [Waylan
-Limberg](http://achinghead.com/) and [Artem Yunusov](http://blog.splyer.com).
-
-Contact: markdown@freewisdom.org
-
-Copyright 2007-2013 The Python Markdown Project (v. 1.7 and later)
-Copyright 200? Django Software Foundation (OrderedDict implementation)
+Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
 Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 Copyright 2004 Manfred Stienstra (the original version)
 
-License: BSD (see LICENSE for details).
+License: BSD (see LICENSE.md for details).
 """
 
 from __future__ import absolute_import

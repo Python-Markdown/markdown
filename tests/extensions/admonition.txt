@@ -25,6 +25,14 @@ Not part of an Admonition!
 
     You can also use a custom CSS class name.
 
+!!! class1 class2    class3 "And now..."
+    For something completely different.
+
+    Several class names can be separated by space chars.
+
+!!! note anotherclass
+    The default title is the capitalized first class name.
+
 !!! tip ""
     An explicitly empty string prevents the title from being rendered.
 

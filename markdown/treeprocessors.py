@@ -1,15 +1,36 @@
+# -*- coding: utf-8 -*-
+"""
+Python Markdown
+
+A Python implementation of John Gruber's Markdown.
+
+Documentation: https://python-markdown.github.io/
+GitHub: https://github.com/Python-Markdown/markdown/
+PyPI: https://pypi.org/project/Markdown/
+
+Started by Manfred Stienstra (http://www.dwerg.net/).
+Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
+Currently maintained by Waylan Limberg (https://github.com/waylan),
+Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
+
+Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
+Copyright 2004 Manfred Stienstra (the original version)
+
+License: BSD (see LICENSE.md for details).
+"""
+
 from __future__ import unicode_literals
 from __future__ import absolute_import
 from . import util
-from . import odict
 from . import inlinepatterns
 
 
-def build_treeprocessors(md_instance, **kwargs):
+def build_treeprocessors(md, **kwargs):
     """ Build the default treeprocessors for Markdown. """
-    treeprocessors = odict.OrderedDict()
-    treeprocessors["inline"] = InlineProcessor(md_instance)
-    treeprocessors["prettify"] = PrettifyTreeprocessor(md_instance)
+    treeprocessors = util.Registry()
+    treeprocessors.register(InlineProcessor(md), 'inline', 20)
+    treeprocessors.register(PrettifyTreeprocessor(md), 'prettify', 10)
     return treeprocessors
 
 
@@ -52,9 +73,15 @@ class InlineProcessor(Treeprocessor):
         self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
                                       + len(self.__placeholder_suffix)
         self.__placeholder_re = util.INLINE_PLACEHOLDER_RE
-        self.markdown = md
+        self.md = md
         self.inlinePatterns = md.inlinePatterns
         self.ancestors = []
+
+    @property
+    @util.deprecated("Use 'md' instead.")
+    def markdown(self):
+        # TODO: remove this later
+        return self.md
 
     def __makePlaceholder(self, type):
         """ Generate a placeholder """
@@ -103,8 +130,8 @@ class InlineProcessor(Treeprocessor):
             startIndex = 0
             while patternIndex < len(self.inlinePatterns):
                 data, matched, startIndex = self.__applyPattern(
-                    self.inlinePatterns.value_for_index(patternIndex),
-                    data, patternIndex, startIndex)
+                    self.inlinePatterns[patternIndex], data, patternIndex, startIndex
+                )
                 if not matched:
                     patternIndex += 1
         return data
@@ -366,26 +393,9 @@ class InlineProcessor(Treeprocessor):
                     stack.append((child, self.ancestors[:]))
 
             for element, lst in insertQueue:
-                if self.markdown.enable_attributes:
-                    if element.text and isString(element.text):
-                        element.text = inlinepatterns.handleAttributes(
-                            element.text, element
-                        )
-                i = 0
-                for obj in lst:
+                for i, obj in enumerate(lst):
                     newChild = obj[0]
-                    if self.markdown.enable_attributes:
-                        # Processing attributes
-                        if newChild.tail and isString(newChild.tail):
-                            newChild.tail = inlinepatterns.handleAttributes(
-                                newChild.tail, element
-                            )
-                        if newChild.text and isString(newChild.text):
-                            newChild.text = inlinepatterns.handleAttributes(
-                                newChild.text, newChild
-                            )
                     element.insert(i, newChild)
-                    i += 1
         return tree
 
 
