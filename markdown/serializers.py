@@ -74,7 +74,8 @@ def _escape_cdata(text):
         # shorter than 500 character, or so.  assume that's, by far,
         # the most common case in most applications.
         if "&" in text:
-            text = text.replace("&", "&amp;")
+            # Only replace & when not part of an entity
+            text = RE_AMP.sub('&amp;', text)
         if "<" in text:
             text = text.replace("<", "&lt;")
         if ">" in text:

@@ -369,7 +369,7 @@ class BacktickInlineProcessor(InlineProcessor):
     def handleMatch(self, m, data):
         if m.group(3):
             el = util.etree.Element(self.tag)
-            el.text = util.AtomicString(m.group(3).strip())
+            el.text = util.AtomicString(util.code_escape(m.group(3).strip()))
             return el, m.start(0), m.end(0)
         else:
             return m.group(1).replace('\\\\', self.ESCAPED_BSLASH), m.start(0), m.end(0)
