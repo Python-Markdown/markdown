@@ -666,6 +666,15 @@ class testSerializers(unittest.TestCase):
             '<div xmlns="&lt;&amp;&quot;test&#10;escaping&quot;&gt;"></div>'
         )
 
+    def testQNamePreEscaping(self):
+        """ Test QName that is already partially escaped. """
+        qname = markdown.util.etree.QName('&lt;&amp;"test&#10;escaping"&gt;', 'div')
+        el = markdown.util.etree.Element(qname)
+        self.assertEqual(
+            markdown.serializers.to_xhtml_string(el),
+            '<div xmlns="&lt;&amp;&quot;test&#10;escaping&quot;&gt;"></div>'
+        )
+
     def buildExtension(self):
         """ Build an extension which registers fakeSerializer. """
         def fakeSerializer(elem):
