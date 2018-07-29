@@ -259,14 +259,14 @@ class CodeBlockProcessor(BlockProcessor):
             code = sibling[0]
             block, theRest = self.detab(block)
             code.text = util.AtomicString(
-                '%s\n%s\n' % (code.text, block.rstrip())
+                '%s\n%s\n' % (code.text, util.code_escape(block.rstrip()))
             )
         else:
             # This is a new codeblock. Create the elements and insert text.
             pre = util.etree.SubElement(parent, 'pre')
             code = util.etree.SubElement(pre, 'code')
             block, theRest = self.detab(block)
-            code.text = util.AtomicString('%s\n' % block.rstrip())
+            code.text = util.AtomicString('%s\n' % util.code_escape(block.rstrip()))
         if theRest:
             # This block contained unindented line(s) after the first indented
             # line. Insert these lines as the first block of the master blocks

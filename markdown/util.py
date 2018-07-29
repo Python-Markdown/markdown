@@ -140,6 +140,17 @@ def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
         raise ValueError('Cannot parse bool value: %r' % value)
 
 
+def code_escape(text):
+    """Escape code."""
+    if "&" in text:
+        text = text.replace("&", "&amp;")
+    if "<" in text:
+        text = text.replace("<", "&lt;")
+    if ">" in text:
+        text = text.replace(">", "&gt;")
+    return text
+
+
 def deprecated(message):
     """
     Raise a DeprecationWarning when wrapped function/method is called.
