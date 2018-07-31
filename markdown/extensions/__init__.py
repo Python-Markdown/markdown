@@ -21,6 +21,7 @@ License: BSD (see LICENSE.md for details).
 """
 
 from __future__ import unicode_literals
+import warnings
 from ..util import parseBoolValue
 
 
@@ -71,7 +72,22 @@ class Extension(object):
         for key, value in items:
             self.setConfig(key, value)
 
-    def extendMarkdown(self, md, md_globals):
+    def _extendMarkdown(self, *args):
+        """ Private wrapper around extendMarkdown. """
+        md = args[0]
+        try:
+            self.extendMarkdown(md)
+        except TypeError:
+            # Must be a 2.x extension. Pass in a dumby md_globals.
+            self.extendMarkdown(md, {})
+            warnings.warn(
+                "The 'md_globals' parameter of '{0}.{1}.extendMarkdown' is "
+                "deprecated.".format(self.__class__.__module__, self.__class__.__name__),
+                category=DeprecationWarning,
+                stacklevel=2
+            )
+
+    def extendMarkdown(self, md):
         """
         Add the various proccesors and patterns to the Markdown Instance.
 
