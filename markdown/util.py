@@ -113,6 +113,26 @@ AUXILIARY GLOBAL FUNCTIONS
 """
 
 
+def deprecated(message):
+    """
+    Raise a DeprecationWarning when wrapped function/method is called.
+
+    Borrowed from https://stackoverflow.com/a/48632082/866026
+    """
+    def deprecated_decorator(func):
+        @wraps(func)
+        def deprecated_func(*args, **kwargs):
+            warnings.warn(
+                "'{}' is deprecated. {}".format(func.__name__, message),
+                category=DeprecationWarning,
+                stacklevel=2
+            )
+            return func(*args, **kwargs)
+        return deprecated_func
+    return deprecated_decorator
+
+
+@deprecated("Use 'Markdown.is_block_level' instead.")
 def isBlockLevel(tag):
     """Check if the tag is a block level HTML tag."""
     if isinstance(tag, string_type):
@@ -149,25 +169,6 @@ def code_escape(text):
     if ">" in text:
         text = text.replace(">", "&gt;")
     return text
-
-
-def deprecated(message):
-    """
-    Raise a DeprecationWarning when wrapped function/method is called.
-
-    Borrowed from https://stackoverflow.com/a/48632082/866026
-    """
-    def deprecated_decorator(func):
-        @wraps(func)
-        def deprecated_func(*args, **kwargs):
-            warnings.warn(
-                "'{}' is deprecated. {}".format(func.__name__, message),
-                category=DeprecationWarning,
-                stacklevel=2
-            )
-            return func(*args, **kwargs)
-        return deprecated_func
-    return deprecated_decorator
 
 
 """

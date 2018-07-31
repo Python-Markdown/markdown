@@ -52,6 +52,18 @@ class Markdown(object):
         'xhtml':  to_xhtml_string,
     }
 
+    block_level_elements = [
+        # Elements which are invalid to wrap in a `<p>` tag.
+        # See http://w3c.github.io/html/grouping-content.html#the-p-element
+        'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
+        'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3',
+        'h4', 'h5', 'h6', 'header', 'hr', 'main', 'menu', 'nav', 'ol', 'p', 'pre',
+        'section', 'table', 'ul',
+        # Other elements which Markdown should not be mucking up the contents of.
+        'canvas', 'dd', 'dt', 'group', 'iframe', 'li', 'math', 'noscript', 'output',
+        'progress', 'script', 'style', 'tbody', 'td', 'th', 'thead', 'tr', 'video'
+    ]
+
     def __init__(self, **kwargs):
         """
         Creates a new Markdown instance.
@@ -206,6 +218,13 @@ class Markdown(object):
             e.args = (message,) + e.args[1:]
             raise
         return self
+
+    def is_block_level(self, tag):
+        """Check if the tag is a block level HTML tag."""
+        if isinstance(tag, util.string_type):
+            return tag.lower().rstrip('/') in self.block_level_elements
+        # Some ElementTree tags are not strings, so return False.
+        return False
 
     def convert(self, source):
         """

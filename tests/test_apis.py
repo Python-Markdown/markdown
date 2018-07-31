@@ -510,7 +510,8 @@ class testETreeComments(unittest.TestCase):
 
     def testCommentIsBlockLevel(self):
         """ Test that an ElementTree Comment is recognized as BlockLevel. """
-        self.assertFalse(markdown.util.isBlockLevel(self.comment.tag))
+        md = markdown.Markdown()
+        self.assertFalse(md.is_block_level(self.comment.tag))
 
     def testCommentSerialization(self):
         """ Test that an ElementTree Comment serializes properly. """
@@ -521,7 +522,7 @@ class testETreeComments(unittest.TestCase):
 
     def testCommentPrettify(self):
         """ Test that an ElementTree Comment is prettified properly. """
-        pretty = markdown.treeprocessors.PrettifyTreeprocessor()
+        pretty = markdown.treeprocessors.PrettifyTreeprocessor(markdown.Markdown())
         pretty.run(self.comment)
         self.assertEqual(
             markdown.serializers.to_html_string(self.comment),
@@ -532,7 +533,7 @@ class testETreeComments(unittest.TestCase):
 class testElementTailTests(unittest.TestCase):
     """ Element Tail Tests """
     def setUp(self):
-        self.pretty = markdown.treeprocessors.PrettifyTreeprocessor()
+        self.pretty = markdown.treeprocessors.PrettifyTreeprocessor(markdown.Markdown())
 
     def testBrTailNoNewline(self):
         """ Test that last <br> in tree has a new line tail """

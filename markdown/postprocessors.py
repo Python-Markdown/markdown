@@ -91,7 +91,7 @@ class RawHtmlPostprocessor(Postprocessor):
             if m.group(1)[0] in ('!', '?', '@', '%'):
                 # Comment, php etc...
                 return True
-            return util.isBlockLevel(m.group(1))
+            return self.md.is_block_level(m.group(1))
         return False
 
 

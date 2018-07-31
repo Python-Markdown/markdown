@@ -235,11 +235,11 @@ class HtmlBlockPreprocessor(Preprocessor):
                                                                 block)
                     # keep checking conditions below and maybe just append
 
-                    if data_index < len(block) and (util.isBlockLevel(left_tag) or left_tag == '--'):
+                    if data_index < len(block) and (self.md.is_block_level(left_tag) or left_tag == '--'):
                         text.insert(0, block[data_index:])
                         block = block[:data_index]
 
-                    if not (util.isBlockLevel(left_tag) or block[1] in ["!", "?", "@", "%"]):
+                    if not (self.md.is_block_level(left_tag) or block[1] in ["!", "?", "@", "%"]):
                         new_blocks.append(block)
                         continue
 
@@ -261,7 +261,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                     else:
                         # if is block level tag and is not complete
                         if (not self._equal_tags(left_tag, right_tag)) and \
-                           (util.isBlockLevel(left_tag) or left_tag == "--"):
+                           (self.md.is_block_level(left_tag) or left_tag == "--"):
                             items.append(block.strip())
                             in_tag = True
                         else:
