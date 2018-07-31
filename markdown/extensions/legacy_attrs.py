@@ -60,7 +60,7 @@ class LegacyAttrs(Treeprocessor):
 
 
 class LegacyAttrExtension(Extension):
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         md.treeprocessors.register(LegacyAttrs(md), 'legacyattrs', 15)
 
 

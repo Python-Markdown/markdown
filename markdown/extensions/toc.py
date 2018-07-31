@@ -296,7 +296,7 @@ class TocExtension(Extension):
 
         super(TocExtension, self).__init__(**kwargs)
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         md.registerExtension(self)
         self.md = md
         self.reset()

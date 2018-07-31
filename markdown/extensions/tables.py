@@ -214,7 +214,7 @@ class TableProcessor(BlockProcessor):
 class TableExtension(Extension):
     """ Add tables to Markdown. """
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Add an instance of TableProcessor to BlockParser. """
         if '|' not in md.ESCAPED_CHARS:
             md.ESCAPED_CHARS.append('|')

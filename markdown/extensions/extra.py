@@ -53,7 +53,7 @@ class ExtraExtension(Extension):
         """ config is a dumb holder which gets passed to actual ext later. """
         self.config = kwargs
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Register extension instances. """
         md.registerExtensions(extensions, self.config)
         # Turn on processing of markdown text within raw html

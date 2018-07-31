@@ -25,7 +25,7 @@ import re
 
 class FencedCodeExtension(Extension):
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Add FencedBlockPreprocessor to the Markdown instance. """
         md.registerExtension(self)
 
