@@ -22,7 +22,7 @@ STRONG_RE = r'(\*{2}|_{2})(.+?)\1'
 class LegacyEmExtension(Extension):
     """ Add legacy_em extension to Markdown class."""
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Modify inline patterns. """
         md.inlinePatterns.register(SimpleTagInlineProcessor(STRONG_RE, 'strong'), 'strong', 40)
         md.inlinePatterns.register(SimpleTagInlineProcessor(EMPHASIS_RE, 'em'), 'emphasis', 30)

@@ -46,7 +46,7 @@ class SaneUListProcessor(UListProcessor):
 class SaneListExtension(Extension):
     """ Add sane lists to Markdown. """
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Override existing Processors. """
         md.parser.blockprocessors.register(SaneOListProcessor(md.parser), 'olist', 40)
         md.parser.blockprocessors.register(SaneUListProcessor(md.parser), 'ulist', 30)

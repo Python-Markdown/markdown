@@ -41,7 +41,7 @@ class WikiLinkExtension(Extension):
 
         super(WikiLinkExtension, self).__init__(**kwargs)
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         self.md = md
 
         # append to end of inline patterns

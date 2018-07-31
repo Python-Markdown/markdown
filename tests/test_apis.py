@@ -682,7 +682,7 @@ class testSerializers(unittest.TestCase):
             return '<div><p>foo</p></div>'
 
         class registerFakeSerializer(markdown.extensions.Extension):
-            def extendMarkdown(self, md, md_globals):
+            def extendMarkdown(self, md):
                 md.output_formats['fake'] = fakeSerializer
 
         return registerFakeSerializer()
@@ -962,7 +962,7 @@ class TestAncestorExclusion(unittest.TestCase):
 
             self.config = {}
 
-        def extendMarkdown(self, md, md_globals):
+        def extendMarkdown(self, md):
             """Modify inline patterns."""
 
             pattern = r'(\+)([^\+]+)\1'

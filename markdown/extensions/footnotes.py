@@ -65,7 +65,7 @@ class FootnoteExtension(Extension):
 
         self.reset()
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Add pieces to Markdown. """
         md.registerExtension(self)
         self.parser = md.parser
