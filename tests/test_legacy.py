@@ -48,8 +48,6 @@ class TestOptions(LegacyTestCase):
 
     html4 = Kwargs(output_format='html4')
 
-    no_attributes = Kwargs(enable_attributes=False)
-
     no_smart_emphasis = Kwargs(smart_emphasis=False)
 
 

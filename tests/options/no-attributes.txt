@@ -1,3 +1,0 @@
-Regression *test* for issue 87
-
-It's run with enable_attributes=False so this {@id=explanation} should not become an attribute
