@@ -27,10 +27,11 @@ pages:
       - Extra: extensions/extra.md
       - Fenced Code Blocks: extensions/fenced_code_blocks.md
       - Footnotes: extensions/footnotes.md
+      - Legacy Attributes: extensions/legacy_attr.md
+      - Legacy Emphasis: extensions/legacy_em.md
       - Meta-Data: extensions/meta_data.md
       - New Line to Break: extensions/nl2br.md
       - Sane Lists: extensions/sane_lists.md
-      - Smart Strong: extensions/smart_strong.md
       - SmartyPants: extensions/smarty.md
       - Table of Contents: extensions/toc.md
       - Tables: extensions/tables.md
@@ -38,6 +39,7 @@ pages:
   - Extension API: extensions/api.md
   - Test Tools: test_tools.md
   - Change Log: change_log/index.md
+  - Release Notes for v.3.0: change_log/release-3.0.md
   - Release Notes for v.2.6: change_log/release-2.6.md
   - Release Notes for v.2.5: change_log/release-2.5.md
   - Release Notes for v.2.4: change_log/release-2.4.md

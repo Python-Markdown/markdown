@@ -1,3 +1,6 @@
+facelessuser
+mitya
+waylan
 Abrahamsen
 Altmayer
 API
@@ -21,6 +24,7 @@ convertFile
 CSS
 dedent
 deliminators
+deregister
 Dmitry
 docdata
 ElementTree
@@ -29,6 +33,7 @@ Fauske
 Formatter
 Fortin
 GitHub
+globals
 Gruber
 GSoC
 hacky
@@ -49,6 +54,7 @@ makeExtension
 Manfed
 markdownFromFile
 Maruku
+md
 MkDocs
 multi
 MultiMarkdown
@@ -127,6 +133,7 @@ WikiLinks
 Wolever
 Xanthakis
 XHTML
+xhtml
 YAML
 Yunusov
 inline

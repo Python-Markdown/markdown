@@ -168,7 +168,7 @@ The `--extension_configs` option will only support YAML configuration files if
 [PyYAML] is installed on your system. JSON should work with no additional
 dependencies. The format of your configuration file is automatically detected.
 
-[ec]: reference.html#extension_configs
+[ec]: reference.md#extension_configs
 [YAML]: http://yaml.org/
 [JSON]: http://json.org/
 [PyYAML]: http://pyyaml.org/

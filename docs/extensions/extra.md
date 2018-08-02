@@ -15,7 +15,6 @@ The supported extensions include:
 * [Fenced Code Blocks](fenced_code_blocks.md)
 * [Footnotes](footnotes.md)
 * [Tables](tables.md)
-* [Smart Strong](smart_strong.md)
 
 See each individual extension for syntax documentation. Extra and all its
 supported extensions are included in the standard Markdown library.

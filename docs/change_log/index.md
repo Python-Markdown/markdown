@@ -3,6 +3,8 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+???, 2018: Released version 3.0 ([Notes](release-3.0.md)).
+
 Jan 4, 2018: Released version 2.6.11 (a bug-fix release). Added a new
 `BACKLINK-TITLE` option to the footnote extension so that non-English
 users can provide a custom title to back links (see #610).
@@ -229,4 +231,3 @@ Nov. 2004: Added links, blockquotes, HTML blocks to Manfred
 Stienstra's code
 
 Apr. 2004: Manfred's version at <http://www.dwerg.net/projects/markdown/>
-

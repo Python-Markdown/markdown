@@ -44,9 +44,10 @@ Extension                            | Entry Point    | Dot Notation
 &nbsp; &nbsp; [Fenced Code Blocks][] | `fenced_code`  | `markdown.extensions.fenced_code`
 &nbsp; &nbsp; [Footnotes][]          | `footnotes`    | `markdown.extensions.footnotes`
 &nbsp; &nbsp; [Tables][]             | `tables`       | `markdown.extensions.tables`
-&nbsp; &nbsp; [Smart Strong][]       | `smart_strong` | `markdown.extensions.smart_strong`
 [Admonition][]                       | `admonition`   | `markdown.extensions.admonition`
 [CodeHilite][]                       | `codehilite`   | `markdown.extensions.codehilite`
+[Legacy Attributes][]                | `legacy_attr`  | `markdown.extensions.legacy_attr`
+[Legacy Emphasis][]                  | `legacy_em`    | `markdown.extensions.legacy_em`
 [Meta-Data]                          | `meta`         | `markdown.extensions.meta`
 [New Line to Break]                  | `nl2br`        | `markdown.extensions.nl2br`
 [Sane Lists]                         | `sane_lists`   | `markdown.extensions.sane_lists`
@@ -61,9 +62,10 @@ Extension                            | Entry Point    | Dot Notation
 [Fenced Code Blocks]: fenced_code_blocks.md
 [Footnotes]: footnotes.md
 [Tables]: tables.md
-[Smart Strong]: smart_strong.md
 [Admonition]: admonition.md
 [CodeHilite]: code_hilite.md
+[Legacy Attributes]: legacy_attr.md
+[Legacy Emphasis]: legacy_em.md
 [Meta-Data]: meta_data.md
 [New Line to Break]: nl2br.md
 [Sane Lists]: sane_lists.md

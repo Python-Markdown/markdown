@@ -3,13 +3,24 @@ title: Authors
 Primary Authors
 ===============
 
-* __[Waylan Limberg](http://achinghead.com/)__
+* __[Waylan Limberg](https://github.com/waylan)__
 
-    Waylan is the current maintainer of the code and has written much of the
-    current code base, included a complete refactor of the core. He started out
-    by authoring many of the available extensions and later was asked to join
-    Yuri, where he began fixing numerous bugs, adding documentation and making
-    general improvements to the existing code base.
+    @waylan is the current maintainer of the code and has written much of the
+    current code base, included a complete refactor of the core for version 2.0.
+    He started out by authoring many of the available extensions and later was
+    asked to join Yuri, where he began fixing numerous bugs, adding
+    documentation and making general improvements to the existing code base.
+
+* __[Dmitry Shachnev](https://github.com/mitya57)__
+
+    @mitya57 joined the team after providing a number of helpful patches and has
+    been assisting with maintenance, reviewing pull requests and ticket triage.
+
+* __[Isaac Muse](https://github.com/facelessuser)__
+
+    @facelessuser joined the team after providing a number of helpful patches
+    and has been assisting with maintenance, reviewing pull requests and ticket
+    triage.
 
 * __[Yuri Takteyev](http://freewisdom.org/)__
 
@@ -37,8 +48,9 @@ Other Contributors
 ==================
 
 The incomplete list of individuals below have provided patches or otherwise
-contributed to the project in various ways. We would like to thank everyone
-who has contributed to the project in any way.
+contributed to the project prior to the project being hosted on GitHub. See the
+GitHub commit log for a list of recent contributors. We would like to thank
+everyone who has contributed to the project in any way.
 
 * Eric Abrahamsen
 * Jeff Balogh

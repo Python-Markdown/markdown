@@ -10,7 +10,8 @@ though there are a few very minor [differences](#differences). See John's
 [Syntax Documentation](http://daringfireball.net/projects/markdown/syntax)
 for the syntax rules.
 
-See the [installation instructions](install.md) to get started.
+To get started, see the [installation instructions](install.md), the [library
+reference](reference.md), and the [command line interface](cli.md).
 
 Goals
 -----
@@ -69,10 +70,10 @@ are summarized below:
 
 * __Middle-Word Emphasis__
 
-    Python-Markdown defaults to ignoring middle-word emphasis. In other words,
-    `some_long_filename.txt` will not become `some<em>long</em>filename.txt`.
-    This can be switched off if desired. See the
-    [Library Reference](reference.md#smart_emphasis) for details.
+    Python-Markdown defaults to ignoring middle-word emphasis (and strong
+    emphasis). In other words, `some_long_filename.txt` will not become
+    `some<em>long</em>filename.txt`. This can be switched off if desired. See
+    the [Legacy EM Extension](extensions/legacy_em.md) for details.
 
 * __Indentation/Tab Length__
 
