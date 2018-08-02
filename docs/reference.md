@@ -181,33 +181,6 @@ __tab_length__{: #tab_length }:
 
 : Length of tabs in the source. Default: 4
 
-__smart_emphasis__{: #smart_emphasis }:
-
-: Treat `_connected_words_` intelligently Default: True
-
-__lazy_ol__{: #lazy_ol }:
-
-: Ignore number of first item of ordered lists. Default: True
-
-    Given the following list:
-
-        :::md
-        4. Apples
-        5. Oranges
-        6. Pears
-
-    By default markdown will ignore the fact that the first line started
-    with item number "4" and the HTML list will start with a number "1".
-    If `lazy_ol` is set to `False`, then markdown will output the following
-    HTML:
-
-        :::html
-        <ol start="4">
-          <li>Apples</li>
-          <li>Oranges</li>
-          <li>Pears</li>
-        </ol>
-
 ### `markdown.markdownFromFile (**kwargs)` {: #markdownFromFile }
 
 With a few exceptions, `markdown.markdownFromFile` accepts the same options as

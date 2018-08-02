@@ -65,10 +65,9 @@ What's New in Python-Markdown 2.1
 ---------------------------------
 
 Three new extensions were added. [Attribute Lists](../extensions/attr_list.md),
-which was inspired by Maruku's feature of the same name,
-[Newline to Break](../extensions/nl2br.md), which was inspired by GitHub
-Flavored Markdown, and [Smart Strong](../extensions/smart_strong.md), which
-fills a hole in the Extra extension.
+which was inspired by Maruku's feature of the same name, [Newline to
+Break](../extensions/nl2br.md), which was inspired by GitHub Flavored Markdown,
+and Smart Strong, which fills a hole in the Extra extension.
 
 HTML5 is now supported. All this really means is that new block level elements
 introduced in the HTML5 spec are now properly recognized as raw HTML. As

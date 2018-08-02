@@ -132,6 +132,15 @@ Certain lines can be selected for emphasis with the colon syntax. When
 using Pygments' default CSS styles, emphasized lines have a yellow background.
 This is useful to direct the reader's attention to specific lines.
 
+```md
+    :::python hl_lines="1 3"
+    # This line is emphasized
+    # This line isn't
+    # This line is emphasized
+```
+
+Will result in:
+
     :::python hl_lines="1 3"
     # This line is emphasized
     # This line isn't

@@ -48,7 +48,7 @@ extension_configs = {
     has been known to do.
 
 [SmartyPants]: http://pythonhosted.org/smartypants/
-[CodeHilite]: code_hilite.html
+[CodeHilite]: code_hilite.md
 
 Usage
 -----

@@ -104,9 +104,9 @@ The lines can be specified with PHP Extra's syntax:
 ```
 ````
 
-[CodeHilite]: code_hilite.html
+[CodeHilite]: code_hilite.md
 [Pygments]: http://pygments.org/
-[colon]: code_hilite.html#colons
+[colon]: code_hilite.md#colons
 
 ## Usage
 

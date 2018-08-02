@@ -495,25 +495,24 @@ configuration options for your extension and attach the various processors and
 patterns to the Markdown instance.
 
 It is important to note that the order of the various processors and patterns
-matters. For example, if we replace `http://...` links with `<a>` elements,
-and *then* try to deal with  inline HTML, we will end up with a mess.
-Therefore, the various types of processors and patterns are stored within an
-instance of the Markdown class in [OrderedDict][]s. Your `Extension` class
-will need to manipulate those OrderedDicts appropriately. You may insert
-instances of your processors and patterns into the appropriate location in an
-OrderedDict, remove a built-in instance, or replace a built-in instance with
-your own.
+matters. For example, if we replace `http://...` links with `<a>` elements, and
+*then* try to deal with  inline HTML, we will end up with a mess. Therefore, the
+various types of processors and patterns are stored within an instance of the
+Markdown class in a [Registry][]. Your `Extension` class will need to manipulate
+those registries appropriately. You may `register` instances of your processors
+and patterns with an appropriate priority, `deregister` built-in instances, or
+replace a built-in instance with your own.
 
 ### `extendMarkdown` {: #extendmarkdown }
 
 The `extendMarkdown` method of a `markdown.extensions.Extension` class
-accepts two arguments:
+accepts one argument:
 
 * **`md`**:
 
     A pointer to the instance of the Markdown class. You should use this to
-    access the [OrderedDict][]s of processors and patterns. They are found
-    under the following attributes:
+    access the [Registries][Registry] of processors and patterns. They are
+    found under the following attributes:
 
     * `md.preprocessors`
     * `md.inlinePatterns`
@@ -529,14 +528,9 @@ accepts two arguments:
     * `md.output_format`
     * `md.serializer`
     * `md.registerExtension()`
-    * `md.html_replacement_text`
     * `md.tab_length`
-    * `md.enable_attributes`
-    * `md.smart_emphasis`
-
-* **`md_globals`**:
-
-    Contains all the various global variables within the markdown module.
+    * `md.block_level_elements`
+    * `md.isBlockLevel()`
 
 !!! Warning
     With access to the above items, theoretically you have the option to
@@ -554,109 +548,75 @@ A simple example:
 from markdown.extensions import Extension
 
 class MyExtension(Extension):
-    def extendMarkdown(self, md, md_globals):
-        # Insert instance of 'mypattern' before 'references' pattern
-        md.inlinePatterns.add('mypattern', MyPattern(md), '<references')
+    def extendMarkdown(self, md):
+        # Register instance of 'mypattern' with a priority of 175
+        md.inlinePatterns.register(MyPattern(md), 'mypattern', 175)
 ```
 
-### OrderedDict {: #ordereddict }
+### Registry
 
-An OrderedDict is a dictionary like object that retains the order of it's
-items. The items are ordered in the order in which they were appended to
-the OrderedDict. However, an item can also be inserted into the OrderedDict
-in a specific location in relation to the existing items.
+The `markdown.util.Registry` class is a priority sorted registry which Markdown
+uses internally to determine the processing order of its various processors and
+patterns.
 
-Think of OrderedDict as a combination of a list and a dictionary as it has
-methods common to both. For example, you can get and set items using the
-`od[key] = value` syntax and the methods `keys()`, `values()`, and
-`items()` work as expected with the keys, values and items returned in the
-proper order. At the same time, you can use `insert()`, `append()`, and
-`index()` as you would with a list.
+A `Registry` instance provides two public methods to alter the data of the
+registry: `register` and `deregister`. Use `register` to add items and
+`deregister` to remove items. See each method for specifics.
 
-Generally speaking, within Markdown extensions you will be using the special
-helper method `add()` to add additional items to an existing OrderedDict.
+When registering an item, a "name" and a "priority" must be provided. All
+items are automatically sorted by "priority" from highest to lowest. The
+"name" is used to remove (`deregister`) and get items.
 
-The `add()` method accepts three arguments:
+A `Registry` instance is like a list (which maintains order) when reading
+data. You may iterate over the items, get an item and get a count (length)
+of all items. You may also check that the registry contains an item.
 
-* **`key`**: A string. The key is used for later reference to the item.
+When getting an item you may use either the index of the item or the
+string-based "name". For example:
 
-* **`value`**: The object instance stored in this item.
+    registry = Registry()
+    registry.register(SomeItem(), 'itemname', 20)
+    # Get the item by index
+    item = registry[0]
+    # Get the item by name
+    item = registry['itemname']
 
-* **`location`**: The items location in relation to other items.
+When checking that the registry contains an item, you may use either the
+string-based "name", or a reference to the actual item. For example:
 
-    Note that the location can consist of a few different values:
+    someitem = SomeItem()
+    registry.register(someitem, 'itemname', 20)
+    # Contains the name
+    assert 'itemname' in registry
+    # Contains the item instance
+    assert someitem in registry
 
-    * The special strings `"_begin"` and `"_end"` insert that item at the
-      beginning or end of the OrderedDict respectively.
+`markdown.util.Registry` has the following methods:
 
-    * A less-than sign (`<`) followed by an existing key (i.e.:
-      `"<somekey"`) inserts that item before the existing key.
+#### `Registry.register(self, item, name, priority)` {: #registry.register }
 
-    * A greater-than sign (`>`) followed by an existing key (i.e.:
-      `">somekey"`) inserts that item after the existing key.
+:   Add an item to the registry with the given name and priority.
 
-Consider the following example:
+    Parameters:
 
-```pycon
->>> from markdown.odict import OrderedDict
->>> od = OrderedDict()
->>> od['one'] =  1           # The same as: od.add('one', 1, '_begin')
->>> od['three'] = 3          # The same as: od.add('three', 3, '>one')
->>> od['four'] = 4           # The same as: od.add('four', 4, '_end')
->>> od.items()
-[("one", 1), ("three", 3), ("four", 4)]
-```
+    * `item`: The item being registered.
+    * `name`: A string used to reference the item.
+    * `priority`: An integer or float used to sort against all items.
 
-Note that when building an OrderedDict in order, the extra features of the
-`add` method offer no real value and are not necessary. However, when
-manipulating an existing OrderedDict, `add` can be very helpful. So let's
-insert another item into the OrderedDict.
+    If an item is registered with a "name" which already exists, the existing
+    item is replaced with the new item. Tread carefully as the old item is lost
+    with no way to recover it. The new item will be sorted according to its
+    priority and will **not** retain the position of the old item.
 
-```pycon
->>> od.add('two', 2, '>one')         # Insert after 'one'
->>> od.values()
-[1, 2, 3, 4]
-```
+#### `Registry.deregister(self, name, strict=True)`  {: #registry.deregister }
 
-Now let's insert another item.
+:   Remove an item from the registry.
 
-```pycon
->>> od.add('two-point-five', 2.5, '<three') # Insert before 'three'
->>> od.keys()
-["one", "two", "two-point-five", "three", "four"]
-```
+    Set `strict=False` to fail silently.
 
-Note that we also could have set the location of "two-point-five" to be 'after two'
-(i.e.: `'>two'`). However, it's unlikely that you will have control over the
-order in which extensions will be loaded, and this could affect the final
-sorted order of an OrderedDict. For example, suppose an extension adding
-"two-point-five" in the above examples was loaded before a separate extension
-which adds 'two'. You may need to take this into consideration when adding your
-extension components to the various markdown OrderedDicts.
+#### `Registry.get_index_for_name(self, name)` {: #registry.get_index_for_name }
 
-Once an OrderedDict is created, the items are available via key:
-
-```python
-MyNode = od['somekey']
-```
-
-Therefore, to delete an existing item:
-
-```python
-del od['somekey']
-```
-
-To change the value of an existing item (leaving location unchanged):
-
-```python
-od['somekey'] = MyNewObject()
-```
-
-To change the location of an existing item:
-
-```python
-t.link('somekey', '<otherkey')
-```
+:   Return the index of the given `name`.
 
 ### registerExtension {: #registerextension }
 
@@ -682,7 +642,7 @@ To register an extension, call `md.registerExtension` from within your
 `extendMarkdown` method:
 
 ```python
-def extendMarkdown(self, md, md_globals):
+def extendMarkdown(self, md):
     md.registerExtension(self)
     # insert processors and patterns here
 ```
@@ -850,7 +810,7 @@ module and call the `makeExtension` function to initiate your extension.
 [workingwithetree]: #working_with_et
 [Integrating your code into Markdown]: #integrating_into_markdown
 [extendMarkdown]: #extendmarkdown
-[OrderedDict]: #ordereddict
+[Registry]: #registry
 [registerExtension]: #registerextension
 [Config Settings]: #configsettings
 [makeExtension]: #makeextension
