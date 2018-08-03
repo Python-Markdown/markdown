@@ -1,2 +1,2 @@
-mkdocs
+mkdocs>=1.0
 mkdocs-nature
