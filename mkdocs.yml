@@ -12,7 +12,7 @@ theme:
   release: 3.0.dev
   issue_tracker: https://github.com/Python-Markdown/markdown/issues
 
-pages:
+nav:
   - Python-Markdown: index.md
   - Installation: install.md
   - Library Reference: reference.md
