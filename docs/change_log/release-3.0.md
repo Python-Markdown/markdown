@@ -202,5 +202,11 @@ The following new features have been included in the release:
 * A new `toc_depth` parameter has been added to the
   [Table of Contents Extension](../extensions/toc.md).
 
+* When the [Table of Contents Extension](../extensions/toc.md) is used in
+  conjunction with the [Attribute Lists Extension](../extensions/attr_list.md)
+  and a `data-toc-label` attribute is defined on a header, the content of the
+  `data-toc-label` attribute is now used as the content of the Table of Contents
+  item for that header.
+
 * Additional CSS class names can be appended to
   [Admonitions](../extensions/admonition.md).

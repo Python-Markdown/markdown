@@ -852,22 +852,24 @@ class TestTOC(TestCaseWithAssertStartsWith):
     def testWithAttrList(self):
         """ Test TOC with attr_list Extension. """
         md = markdown.Markdown(extensions=['toc', 'attr_list'])
-        text = '# Header 1\n\n## Header 2 { #foo }'
+        text = '# Header 1\n\n## Header 2 { #foo }\n\n## Header 3 { data-toc-label="Foo Bar"}'
         self.assertEqual(
             md.convert(text),
             '<h1 id="header-1">Header 1</h1>\n'
-            '<h2 id="foo">Header 2</h2>'
+            '<h2 id="foo">Header 2</h2>\n'
+            '<h2 data-toc-label="Foo Bar" id="header-3">Header 3</h2>'
         )
         self.assertEqual(
             md.toc,
             '<div class="toc">\n'
-              '<ul>\n'                                        # noqa
-                '<li><a href="#header-1">Header 1</a>'        # noqa
-                  '<ul>\n'                                    # noqa
-                    '<li><a href="#foo">Header 2</a></li>\n'  # noqa
-                  '</ul>\n'                                   # noqa
-                '</li>\n'                                     # noqa
-              '</ul>\n'                                       # noqa
+              '<ul>\n'                                           # noqa
+                '<li><a href="#header-1">Header 1</a>'           # noqa
+                  '<ul>\n'                                       # noqa
+                    '<li><a href="#foo">Header 2</a></li>\n'     # noqa
+                    '<li><a href="#header-3">Foo Bar</a></li>\n' # noqa
+                  '</ul>\n'                                      # noqa
+                '</li>\n'                                        # noqa
+              '</ul>\n'                                          # noqa
             '</div>\n'
         )
 

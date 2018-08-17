@@ -247,7 +247,7 @@ class TocTreeprocessor(Treeprocessor):
                 toc_tokens.append({
                     'level': int(el.tag[-1]),
                     'id': el.attrib["id"],
-                    'name': text
+                    'name': el.attrib.get('data-toc-label', text)
                 })
 
                 if self.use_anchors:
