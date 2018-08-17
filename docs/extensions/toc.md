@@ -100,14 +100,15 @@ would generate the following output:
   </ul>
 </div>
 <h1 id="functions">Functions</h1>
-<h2 data-toc-label="markdown.markdown" id="markdown"><code>markdown.markdown(text [, **kwargs])</code></h2>
+<h2 id="markdown"><code>markdown.markdown(text [, **kwargs])</code></h2>
 ```
 
 Notice that the text in the Table of Contents is much cleaner and easier to read
-in the context of a Table of Contents. Also note that the ID was manually
-defined in the attribute list to provide a cleaner URL when linking to the
-header. If the ID is not manually defined, it is always derived from the text of
-the header, never from the `data-toc-label` attribute.
+in the context of a Table of Contents. The `data-toc-label` is not included in
+the HTML header element. Also note that the ID was manually defined in the
+attribute list to provide a cleaner URL when linking to the header. If the ID is
+not manually defined, it is always derived from the text of the header, never
+from the `data-toc-label` attribute.
 
 Usage
 -----

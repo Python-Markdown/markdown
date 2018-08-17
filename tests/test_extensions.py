@@ -857,7 +857,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
             md.convert(text),
             '<h1 id="header-1">Header 1</h1>\n'
             '<h2 id="foo">Header 2</h2>\n'
-            '<h2 data-toc-label="Foo Bar" id="header-3">Header 3</h2>'
+            '<h2 id="header-3">Header 3</h2>'
         )
         self.assertEqual(
             md.toc,

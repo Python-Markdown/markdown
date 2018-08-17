@@ -250,6 +250,10 @@ class TocTreeprocessor(Treeprocessor):
                     'name': el.attrib.get('data-toc-label', text)
                 })
 
+                # Remove the data-toc-label attribute as it is no longer needed
+                if 'data-toc-label' in el.attrib:
+                    del el.attrib['data-toc-label']
+
                 if self.use_anchors:
                     self.add_anchor(el, el.attrib["id"])
                 if self.use_permalinks:
