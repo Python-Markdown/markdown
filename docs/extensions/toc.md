@@ -70,6 +70,27 @@ template. For example:
 >>> page = render_some_template(context={'body': html, 'toc': md.toc})
 ```
 
+The `toc_tokens` attribute is also available on the Markdown class and contains
+a nested list of dict objects. For example, the above document would result in
+the following object at `md.toc_tokens`:
+
+```python
+[
+    {
+        'level': 1,
+        'id': 'header-1',
+        'name': 'Header 1',
+        'children': [
+            {'level': 2, 'id': 'header-2', 'name': 'Header 2', 'children':[]}
+        ]
+    }
+]
+```
+
+Note that the `level` refers to the `hn` level. In other words, `<h1>` is level
+`1` and `<h2>` is level `2`, etc. Be aware that improperly nested levels in the
+input may result in odd nesting of the output.
+
 ### Custom Labels
 
 In most cases, the text label in the Table of Contents should match the text of

@@ -259,7 +259,8 @@ class TocTreeprocessor(Treeprocessor):
                 if self.use_permalinks:
                     self.add_permalink(el, el.attrib["id"])
 
-        div = self.build_toc_div(nest_toc_tokens(toc_tokens))
+        toc_tokens = nest_toc_tokens(toc_tokens)
+        div = self.build_toc_div(toc_tokens)
         if self.marker:
             self.replace_marker(doc, div)
 
@@ -267,6 +268,7 @@ class TocTreeprocessor(Treeprocessor):
         toc = self.md.serializer(div)
         for pp in self.md.postprocessors:
             toc = pp.run(toc)
+        self.md.toc_tokens = toc_tokens
         self.md.toc = toc
 
 
@@ -314,6 +316,7 @@ class TocExtension(Extension):
 
     def reset(self):
         self.md.toc = ''
+        self.md.toc_tokens = []
 
 
 def makeExtension(**kwargs):  # pragma: no cover

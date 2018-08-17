@@ -872,6 +872,20 @@ class TestTOC(TestCaseWithAssertStartsWith):
               '</ul>\n'                                          # noqa
             '</div>\n'
         )
+        self.assertEqual(
+            md.toc_tokens,
+            [
+                {
+                    'level': 1,
+                    'id': 'header-1',
+                    'name': 'Header 1',
+                    'children': [
+                        {'level': 2, 'id': 'foo', 'name': 'Header 2', 'children': []},
+                        {'level': 2, 'id': 'header-3', 'name': 'Foo Bar', 'children': []}
+                    ]
+                }
+            ]
+        )
 
     def testUniqueFunc(self):
         """ Test 'unique' function. """
