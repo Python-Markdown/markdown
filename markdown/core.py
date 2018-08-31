@@ -247,31 +247,7 @@ class Markdown(object):
         5. The output is written to a string.
 
         """
-
-        # Fixup the source text
-        if not source.strip():
-            return ''  # a blank unicode string
-
-        try:
-            source = util.text_type(source)
-        except UnicodeDecodeError as e:  # pragma: no cover
-            # Customise error message while maintaining original trackback
-            e.reason += '. -- Note: Markdown only accepts unicode input!'
-            raise
-
-        # Split into lines and run the line preprocessors.
-        self.lines = source.split("\n")
-        for prep in self.preprocessors:
-            self.lines = prep.run(self.lines)
-
-        # Parse the high-level elements.
-        root = self.parser.parseDocument(self.lines).getroot()
-
-        # Run the tree-processors
-        for treeprocessor in self.treeprocessors:
-            newRoot = treeprocessor.run(root)
-            if newRoot is not None:
-                root = newRoot
+        root = self.createXMLTree(source)
 
         # Serialize _properly_.  Strip top-level tags.
         output = self.serializer(root)
@@ -361,6 +337,40 @@ class Markdown(object):
                 sys.stdout.write(html)
 
         return self
+
+    def createXMLTree(self, source):
+        """
+        Convert a markdown to xml.etree.ElementTree
+
+        Keyword arguments:
+
+        * source: Source text as Unicode string.
+        """
+        # Fixup the source text
+        if not source.strip():
+            return ''  # a blank unicode string
+
+        try:
+            source = util.text_type(source)
+        except UnicodeDecodeError as e:  # pragma: no cover
+            # Customise error message while maintaining original trackback
+            e.reason += '. -- Note: Markdown only accepts unicode input!'
+            raise
+
+        # Split into lines and run the line preprocessors.
+        self.lines = source.split("\n")
+        for prep in self.preprocessors:
+            self.lines = prep.run(self.lines)
+
+        # Parse the high-level elements.
+        root = self.parser.parseDocument(self.lines).getroot()
+
+        # Run the tree-processors
+        for treeprocessor in self.treeprocessors:
+            newRoot = treeprocessor.run(root)
+            if newRoot is not None:
+                root = newRoot
+        return root
 
 
 """
