@@ -56,7 +56,7 @@ would generate the following output:
   </ul>
 </div>
 <h1 id="header-1">Header 1</h1>
-<h1 id="header-2">Header 2</h1>
+<h2 id="header-2">Header 2</h2>
 ```
 
 Regardless of whether a `marker` is found in the document (or disabled), the
@@ -69,6 +69,67 @@ template. For example:
 >>> html = md.convert(text)
 >>> page = render_some_template(context={'body': html, 'toc': md.toc})
 ```
+
+The `toc_tokens` attribute is also available on the Markdown class and contains
+a nested list of dict objects. For example, the above document would result in
+the following object at `md.toc_tokens`:
+
+```python
+[
+    {
+        'level': 1,
+        'id': 'header-1',
+        'name': 'Header 1',
+        'children': [
+            {'level': 2, 'id': 'header-2', 'name': 'Header 2', 'children':[]}
+        ]
+    }
+]
+```
+
+Note that the `level` refers to the `hn` level. In other words, `<h1>` is level
+`1` and `<h2>` is level `2`, etc. Be aware that improperly nested levels in the
+input may result in odd nesting of the output.
+
+### Custom Labels
+
+In most cases, the text label in the Table of Contents should match the text of
+the header. However, occasionally that is not desirable. In that case, if this
+extension is used in conjunction with the [Attribute Lists Extension] and a
+`data-toc-label` attribute is defined on the header, then the contents of that
+attribute will be used as the text label for the item in the Table of Contents.
+For example, the following Markdown:
+
+[Attribute Lists Extension]: attr_list.md
+
+```md
+[TOC]
+
+# Functions
+
+## `markdown.markdown(text [, **kwargs])` { #markdown data-toc-label='markdown.markdown' }
+```
+would generate the following output:
+
+```html
+<div class="toc">
+  <ul>
+    <li><a href="#functions">Functions</a></li>
+      <ul>
+        <li><a href="#markdown">markdown.markdown</a></li>
+      </ul>
+  </ul>
+</div>
+<h1 id="functions">Functions</h1>
+<h2 id="markdown"><code>markdown.markdown(text [, **kwargs])</code></h2>
+```
+
+Notice that the text in the Table of Contents is much cleaner and easier to read
+in the context of a Table of Contents. The `data-toc-label` is not included in
+the HTML header element. Also note that the ID was manually defined in the
+attribute list to provide a cleaner URL when linking to the header. If the ID is
+not manually defined, it is always derived from the text of the header, never
+from the `data-toc-label` attribute.
 
 Usage
 -----

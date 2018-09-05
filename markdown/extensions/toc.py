@@ -247,15 +247,20 @@ class TocTreeprocessor(Treeprocessor):
                 toc_tokens.append({
                     'level': int(el.tag[-1]),
                     'id': el.attrib["id"],
-                    'name': text
+                    'name': el.attrib.get('data-toc-label', text)
                 })
+
+                # Remove the data-toc-label attribute as it is no longer needed
+                if 'data-toc-label' in el.attrib:
+                    del el.attrib['data-toc-label']
 
                 if self.use_anchors:
                     self.add_anchor(el, el.attrib["id"])
                 if self.use_permalinks:
                     self.add_permalink(el, el.attrib["id"])
 
-        div = self.build_toc_div(nest_toc_tokens(toc_tokens))
+        toc_tokens = nest_toc_tokens(toc_tokens)
+        div = self.build_toc_div(toc_tokens)
         if self.marker:
             self.replace_marker(doc, div)
 
@@ -263,6 +268,7 @@ class TocTreeprocessor(Treeprocessor):
         toc = self.md.serializer(div)
         for pp in self.md.postprocessors:
             toc = pp.run(toc)
+        self.md.toc_tokens = toc_tokens
         self.md.toc = toc
 
 
@@ -310,6 +316,7 @@ class TocExtension(Extension):
 
     def reset(self):
         self.md.toc = ''
+        self.md.toc_tokens = []
 
 
 def makeExtension(**kwargs):  # pragma: no cover
