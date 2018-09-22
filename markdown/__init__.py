@@ -56,3 +56,4 @@ def _get_version():  # pragma: no cover
 
 
 __version__ = _get_version()
+version = __version__
