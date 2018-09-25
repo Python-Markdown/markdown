@@ -130,3 +130,7 @@ class TestAdvancedLinks(TestCase):
             '[title](http://example.com/?a=1&amp;b=2)',
             '<p><a href="http://example.com/?a=1&amp;b=2">title</a></p>'
         )
+        self.assertMarkdownRenders(
+            '[title](http://example.com/?a=1&#x26;b=2)',
+            '<p><a href="http://example.com/?a=1&#x26;b=2">title</a></p>'
+        )
