@@ -3,6 +3,11 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+Sept 28, 2018: Released version 3.0.1 (a bug-fix release).
+
+* Brought back the `version` and `version_info` variables (#709).
+* Added support for hexadecimal HTML entities (#712).
+
 Sept 21, 2018: Released version 3.0 ([Notes](release-3.0.md)).
 
 Jan 4, 2018: Released version 2.6.11 (a bug-fix release). Added a new
