@@ -58,4 +58,5 @@ def _get_version():  # pragma: no cover
 __version__ = _get_version()
 
 # Also support `version` for backward-compatabillity with <3.0 versions
+version_info = __version_info__
 version = __version__
