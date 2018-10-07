@@ -275,6 +275,24 @@ class TestCodeHilite(TestCaseWithAssertStartsWith):
                 '</code></pre>'
             )
 
+    def testHighlightAmps(self):
+        """ Test amp conversion logic. """
+
+        text = '\t:::text\n\t&\n\t&amp;\n\t&amp;amp;'
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.codehilite.CodeHiliteExtension()]
+        )
+        if self.has_pygments:
+            self.assertEqual(
+                md.convert(text),
+                '<div class="codehilite"><pre><span></span>&amp;\n&amp;amp;\n&amp;amp;amp;\n</pre></div>'
+            )
+        else:
+            self.assertEqual(
+                md.convert(text),
+                '<pre class="codehilite"><code class="language-text">&amp;\n&amp;amp;\n&amp;amp;amp;</code></pre>'
+            )
+
 
 class TestFencedCode(TestCaseWithAssertStartsWith):
     """ Test fenced_code extension. """
@@ -457,6 +475,27 @@ line 3
                 '<pre class="codehilite"><code class="language-html">'
                 '&lt;span&gt;This&amp;amp;That&lt;/span&gt;'
                 '</code></pre>'
+            )
+
+    def testFencedAmps(self):
+        """ Test amp conversion. """
+
+        text = '```text\n&\n&amp;\n&amp;amp;\n```'
+        md = markdown.Markdown(
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(),
+                'fenced_code'
+            ]
+        )
+        if self.has_pygments:
+            self.assertEqual(
+                md.convert(text),
+                '<div class="codehilite"><pre><span></span>&amp;\n&amp;amp;\n&amp;amp;amp;\n</pre></div>'
+            )
+        else:
+            self.assertEqual(
+                md.convert(text),
+                '<pre class="codehilite"><code class="language-text">&amp;\n&amp;amp;\n&amp;amp;amp;</code></pre>'
             )
 
 
