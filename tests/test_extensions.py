@@ -251,6 +251,8 @@ class TestCodeHilite(TestCaseWithAssertStartsWith):
         )
 
     def testDoubleEscape(self):
+        """ Test entity escape logic in indented code blocks. """
+
         text = '\t:::html\n\t<span>This&amp;That</span>'
         md = markdown.Markdown(
             extensions=[markdown.extensions.codehilite.CodeHiliteExtension()]
@@ -430,7 +432,7 @@ line 3
         self.assertTrue('<code class="language-python">' in md.convert(text))
 
     def testFencedLanguageDoubleEscape(self):
-        """ Test if fenced_code honors CodeHilite option use_pygments=False. """
+        """ Test entity escape logic in fences. """
 
         text = '```html\n<span>This&amp;That</span>\n```'
         md = markdown.Markdown(
