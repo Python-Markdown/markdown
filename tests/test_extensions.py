@@ -250,6 +250,29 @@ class TestCodeHilite(TestCaseWithAssertStartsWith):
             '</code></pre>'
         )
 
+    def testDoubleEscape(self):
+        text = '\t:::html\n\t<span>This&amp;That</span>'
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.codehilite.CodeHiliteExtension()]
+        )
+        if self.has_pygments:
+            self.assertEqual(
+                md.convert(text),
+                '<div class="codehilite"><pre>'
+                '<span></span>'
+                '<span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>'
+                'This<span class="ni">&amp;amp;</span>That'
+                '<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>'
+                '\n</pre></div>'
+            )
+        else:
+            self.assertEqual(
+                md.convert(text),
+                '<pre class="codehilite"><code class="language-html">'
+                '&lt;span&gt;This&amp;amp;That&lt;/span&gt;'
+                '</code></pre>'
+            )
+
 
 class TestFencedCode(TestCaseWithAssertStartsWith):
     """ Test fenced_code extension. """
@@ -405,6 +428,34 @@ line 3
             ]
         )
         self.assertTrue('<code class="language-python">' in md.convert(text))
+
+    def testFencedLanguageDoubleEscape(self):
+        """ Test if fenced_code honors CodeHilite option use_pygments=False. """
+
+        text = '```html\n<span>This&amp;That</span>\n```'
+        md = markdown.Markdown(
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(),
+                'fenced_code'
+            ]
+        )
+        if self.has_pygments:
+            self.assertEqual(
+                md.convert(text),
+                '<div class="codehilite"><pre>'
+                '<span></span>'
+                '<span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>'
+                'This<span class="ni">&amp;amp;</span>That'
+                '<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>'
+                '\n</pre></div>'
+            )
+        else:
+            self.assertEqual(
+                md.convert(text),
+                '<pre class="codehilite"><code class="language-html">'
+                '&lt;span&gt;This&amp;amp;That&lt;/span&gt;'
+                '</code></pre>'
+            )
 
 
 class TestMetaData(unittest.TestCase):

@@ -200,13 +200,20 @@ class CodeHilite(object):
 class HiliteTreeprocessor(Treeprocessor):
     """ Hilight source code in code blocks. """
 
+    def code_unescape(self, text):
+        """Unescape code."""
+        text = text.replace("&amp;", "&")
+        text = text.replace("&lt;", "<")
+        text = text.replace("&gt;", ">")
+        return text
+
     def run(self, root):
         """ Find code blocks and store in htmlStash. """
         blocks = root.iter('pre')
         for block in blocks:
             if len(block) == 1 and block[0].tag == 'code':
                 code = CodeHilite(
-                    block[0].text,
+                    self.code_unescape(block[0].text),
                     linenums=self.config['linenums'],
                     guess_lang=self.config['guess_lang'],
                     css_class=self.config['css_class'],
