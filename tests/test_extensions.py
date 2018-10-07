@@ -250,6 +250,19 @@ class TestCodeHilite(TestCaseWithAssertStartsWith):
             '</code></pre>'
         )
 
+    def testDoubleEscape(self):
+        text = '\t#!Python\n\t>>> test()'
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.codehilite.CodeHiliteExtension(use_pygments=False)]
+        )
+        x = md.convert(text)
+
+        self.assertEqual(
+            md.convert(text),
+            '<pre class="codehilite"><code class="language-python linenums">'
+            '&gt;&gt;&gt; test()</code></pre>'
+        )
+
 
 class TestFencedCode(TestCaseWithAssertStartsWith):
     """ Test fenced_code extension. """

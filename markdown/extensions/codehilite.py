@@ -76,6 +76,10 @@ class CodeHilite(object):
     def __init__(self, src=None, linenums=None, guess_lang=True,
                  css_class="codehilite", lang=None, style='default',
                  noclasses=False, tab_length=4, hl_lines=None, use_pygments=True):
+
+        # Kind of dirty, but un-escape HTML since we re-escape it anyway.
+        src = src.replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>').replace('&quot;', '"')
+
         self.src = src
         self.lang = lang
         self.linenums = linenums
