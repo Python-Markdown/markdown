@@ -942,6 +942,18 @@ class TestEscapeAppend(unittest.TestCase):
         self.assertEqual('|' not in md2.ESCAPED_CHARS, True)
 
 
+class TestBlockAppend(unittest.TestCase):
+    """ Tests block kHTML append. """
+
+    def testBlockAppend(self):
+        """ Test that appended escapes are only in the current instance. """
+        md = markdown.Markdown()
+        md.block_level_elements.append('test')
+        self.assertEqual('test' in md.block_level_elements, True)
+        md2 = markdown.Markdown()
+        self.assertEqual('test' not in md2.block_level_elements, True)
+
+
 class TestAncestorExclusion(unittest.TestCase):
     """ Tests exclusion of tags in ancestor list. """
 

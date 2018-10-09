@@ -52,18 +52,6 @@ class Markdown(object):
         'xhtml':  to_xhtml_string,
     }
 
-    block_level_elements = [
-        # Elements which are invalid to wrap in a `<p>` tag.
-        # See http://w3c.github.io/html/grouping-content.html#the-p-element
-        'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
-        'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3',
-        'h4', 'h5', 'h6', 'header', 'hr', 'main', 'menu', 'nav', 'ol', 'p', 'pre',
-        'section', 'table', 'ul',
-        # Other elements which Markdown should not be mucking up the contents of.
-        'canvas', 'dd', 'dt', 'group', 'iframe', 'li', 'math', 'noscript', 'output',
-        'progress', 'script', 'style', 'tbody', 'td', 'th', 'thead', 'tr', 'video'
-    ]
-
     def __init__(self, **kwargs):
         """
         Creates a new Markdown instance.
@@ -87,6 +75,18 @@ class Markdown(object):
 
         self.ESCAPED_CHARS = ['\\', '`', '*', '_', '{', '}', '[', ']',
                               '(', ')', '>', '#', '+', '-', '.', '!']
+
+        self.block_level_elements = [
+            # Elements which are invalid to wrap in a `<p>` tag.
+            # See http://w3c.github.io/html/grouping-content.html#the-p-element
+            'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
+            'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3',
+            'h4', 'h5', 'h6', 'header', 'hr', 'main', 'menu', 'nav', 'ol', 'p', 'pre',
+            'section', 'table', 'ul',
+            # Other elements which Markdown should not be mucking up the contents of.
+            'canvas', 'dd', 'dt', 'group', 'iframe', 'li', 'math', 'noscript', 'output',
+            'progress', 'script', 'style', 'tbody', 'td', 'th', 'thead', 'tr', 'video'
+        ]
 
         self.registeredExtensions = []
         self.docType = ""
