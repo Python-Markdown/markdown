@@ -90,3 +90,6 @@ The following options are provided to configure the output:
     The text string for the `title` HTML attribute of the footnote definition link.
     `%d` will be replaced by the footnote number. Defaults to `Jump back to
     footnote %d in the text`
+
+* **`SEPARATOR`**:
+    The text string used to set the footnote separator. Defaults to `:`.
