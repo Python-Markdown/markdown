@@ -54,7 +54,10 @@ class FootnoteExtension(Extension):
                 ["Jump back to footnote %d in the text",
                  "The text string used for the title HTML attribute "
                  "of the backlink. %d will be replaced by the "
-                 "footnote number."]
+                 "footnote number."],
+            "SEPARATOR":
+                [":",
+                 "Footnote separator."]
         }
         super(FootnoteExtension, self).__init__(**kwargs)
 
@@ -141,9 +144,8 @@ class FootnoteExtension(Extension):
         self.footnotes[id] = text
 
     def get_separator(self):
-        if self.md.output_format in ['html5', 'xhtml5']:
-            return '-'
-        return ':'
+        """ Get the footnote separator. """
+        return self.getConfig("SEPARATOR")
 
     def makeFootnoteId(self, id):
         """ Return footnote link id. """
@@ -183,8 +185,6 @@ class FootnoteExtension(Extension):
                 surrogate_parent.remove(el)
             backlink = util.etree.Element("a")
             backlink.set("href", "#" + self.makeFootnoteRefId(id))
-            if self.md.output_format not in ['html5', 'xhtml5']:
-                backlink.set("rev", "footnote")  # Invalid in HTML5
             backlink.set("class", "footnote-backref")
             backlink.set(
                 "title",
@@ -319,8 +319,6 @@ class FootnoteInlineProcessor(InlineProcessor):
             a = util.etree.SubElement(sup, "a")
             sup.set('id', self.footnotes.makeFootnoteRefId(id, found=True))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
-            if self.footnotes.md.output_format not in ['html5', 'xhtml5']:
-                a.set('rel', 'footnote')  # invalid in HTML5
             a.set('class', 'footnote-ref')
             a.text = util.text_type(list(self.footnotes.footnotes.keys()).index(id) + 1)
             return sup, m.start(0), m.end(0)

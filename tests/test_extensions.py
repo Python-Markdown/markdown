@@ -1121,14 +1121,35 @@ class TestFootnotes(unittest.TestCase):
         text = 'paragraph[^1]\n\n[^1]: A Footnote'
         self.assertEqual(
             md.convert(text),
-            '<p>paragraph<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup></p>\n'
+            '<p>paragraph<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>\n'
             '<div class="footnote">\n'
             '<hr />\n'
             '<ol>\n'
             '<li id="fn:1">\n'
-            '<p>A Footnote&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote"'
+            '<p>A Footnote&#160;<a class="footnote-backref" href="#fnref:1"'
             ' title="Jump back to footnote 1 in the text">back</a></p>\n'
             '</li>\n'
             '</ol>\n'
             '</div>'
         )
+
+    def testFootnoteSeparator(self):
+        md = markdown.Markdown(
+            extensions=['footnotes'],
+            extension_configs={'footnotes': {'SEPARATOR': '-'}}
+        )
+        text = 'paragraph[^1]\n\n[^1]: A Footnote'
+        self.assertEqual(
+            md.convert(text),
+            '<p>paragraph<sup id="fnref-1"><a class="footnote-ref" href="#fn-1">1</a></sup></p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn-1">\n'
+            '<p>A Footnote&#160;<a class="footnote-backref" href="#fnref-1"'
+            ' title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
