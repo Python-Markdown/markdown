@@ -42,11 +42,11 @@ Some tips on good issue reporting:
 * Search the issue list first for related items. Be sure to check closed issues
   and pull requests. GitHub's search only checks open issues by default.
 * You may want to check the [syntax rules] and/or [Babelmark] to confirm that
-  you expectations align with the rules and/or other implementations of
+  your expectations align with the rules and/or other implementations of
   Markdown.
 * If reporting a syntax bug, you must provide the minimal input which exhibits
   the behavior, the actual output and the output you expected. All three items
-  must be provided as textual code blocks (screenshots are not helpful). It may
+  must be provided as textual code blocks (screen-shots are not helpful). It may
   also be helpful to point to the [syntax rules] which specifically address the
   area of concern.
 * Feature requests will often be closed with a recommendation that they be
@@ -54,13 +54,13 @@ Some tips on good issue reporting:
   library. Keeping new feature requests implemented as third party extensions
   allows us to keep the maintenance overhead of Python-Markdown to a minimum, so
   that the focus can be on continued stability, bug fixes, and documentation.
-* Closing an issue doesn't necessarily mean the end of a discussion. If you
+* Closing an issue does not necessarily mean the end of a discussion. If you
   believe your issue has been closed incorrectly, explain why and we'll consider
   if it needs to be reopened.
 
 ## Pull Requests
 
-A pull request often represents the start of a discussion, and doesn't
+A pull request often represents the start of a discussion, and does not
 necessarily need to be the final, finished submission. In fact, if you discover
 an issue and intend to provide a fix for it, there is no need to open an issue
 first. You can report the issue and provide the fix together in a pull request.
@@ -70,15 +70,15 @@ in your personal GitHub account. Do not create branches on the
 [Python-Markdown/markdown] project for pull requests. All pull requests should
 be implemented in a new branch with a unique name. Remember that if you have an
 outstanding pull request, pushing new commits to the related branch of your
-GitHub repo will also automatically update the pull request. If may help to
-review GitHub's documentation on [Using Pull Requests].
+GitHub repository will also automatically update the pull request. If may help
+to review GitHub's documentation on [Using Pull Requests].
 
 If you are providing a fix for a previously reported issue, you must reference
 the issue in your commit message. Be sure to prefix the reference with one of
 GitHub's [action words] which will automatically close the issue when the pull
 request is merged. For example, `fixes #42` and `closes #42` would be
 acceptable, whereas `ref #42` would not. Of course, if merging a pull request
-should not cause an an issue to be closed, then the action word should not be
+should not cause an issue to be closed, then the action word should not be
 included when referencing that issue.
 
 Before being accepted, each pull request must include the applicable code, new
@@ -97,20 +97,29 @@ compatible with all supported versions of Python. After making a pull request,
 check the Travis build status in the GitHub interface to ensure that all tests
 are running as expected.
 
+## Style Guides
+
+### Code Style Guide
+
+### Documentation Style Guide
+
+### Commit Message Style Guide
+
 ## Versions
 
 Python-Markdown follows [Semantic Versioning] and uses the
 `MAJOR.MINOR.POINT(PRERELEASE/DEV)` format for specifying releases. The status
 of the `master` branch should always be identified in the `__version_info__`
-variable defined in [markdown/__init__.py] and should conform to [PEP 440].
+variable defined in [`markdown/__init__.py`][markdown/__init__.py] and should
+conform to [PEP 440].
 
 ### Version Status
 
-A MAJOR version is in dev status when the MINOR version is `0`, the POINT
-version is `0`, and the version includes a DEV segment.
+A MAJOR version is in development status when the MINOR version is `0`, the
+POINT version is `0`, and the version includes a `DEV` segment.
 
-A MINOR version is in dev status when the MINOR version is not `0`, the POINT
-version is `0`, and the version includes a DEV segment.
+A MINOR version is in development status when the MINOR version is not `0`, the
+POINT version is `0`, and the version includes a `DEV` segment.
 
 At all other times, the code is considered stable and release-ready.
 
@@ -122,20 +131,20 @@ candidate, etc.) at the discretion of the project maintainers.
 Bug fixes may be committed to the `master` branch at any time.
 
 New features and backward incompatible changes may only be committed to the
-`master` branch when the MAJOR and/or MINOR version is in `dev` status.
+`master` branch when the MAJOR and/or MINOR version is in development status.
 
 A separate commit to the `master` branch should be made to bump up the MAJOR
-and/or MINOR version and set the `dev` status. Only then will any PRs
-implementing new features or backward incompatible changes be accepted.
+and/or MINOR version and set the development status. Only then will any pull
+requests implementing new features or backward incompatible changes be accepted.
 
-If a bug fix is deemed to be important and the `master` branch is in `dev`
-status, a backport of the fix should be committed to a version branch. If the
-appropriate version branch does not exist, then it should be created and a PR
-back-porting the fix made against that branch.The version branch should be named
-with the most recently released MINOR version. For example, if the `master`
-branch is at `3.1.0dev` and the most recent MINOR release was `3.0.4`, then the
-version branch would be named `3.0` and any releases from that branch would
-increment the POINT version only (`3.0.5`, `3.0.6`...).
+If a bug fix is deemed to be important and the `master` branch is in development
+status, a back-port of the fix should be committed to a version branch. If the
+appropriate version branch does not exist, then it should be created and a pull
+request back-porting the fix made against that branch. The version branch should
+be named with the most recently released MINOR version. For example, if the
+`master` branch is at `3.1.0dev` and the most recent MINOR release was `3.0.4`,
+then the version branch would be named `3.0` and any releases from that branch
+would increment the POINT version only (`3.0.5`, `3.0.6`...).
 
 
 [Python-Markdown Organization]: https://github.com/Python-Markdown
@@ -145,7 +154,7 @@ increment the POINT version only (`3.0.5`, `3.0.6`...).
 [syntax rules]: http://daringfireball.net/projects/markdown/syntax
 [Babelmark]: http://johnmacfarlane.net/babelmark2/
 [Using Pull Requests]: https://help.github.com/articles/using-pull-requests
-[action words]:
+[action words]: https://help.github.com/articles/closing-issues-using-keywords/
 [Semantic Versioning]: https://semver.org/
 [markdown/__init__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__init__.py#L36
 [PEP 440]:https://www.python.org/dev/peps/pep-0440/
