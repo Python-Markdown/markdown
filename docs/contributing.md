@@ -278,6 +278,42 @@ be named with the most recently released MINOR version. For example, if the
 then the version branch would be named `3.0` and any releases from that branch
 would increment the POINT version only (`3.0.5`, `3.0.6`...).
 
+## Release Process
+
+When a new release is being prepared, the release manager should follow the
+following steps:
+
+1. Verify that all outstanding issues and pull requests related to the release
+   have been resolved.
+
+2. Confirm that the release notes and change log have been updated and indicate
+   the date of the new release.
+
+3. Update the version defined in [`markdown/__init__.py`][markdown/__init__.py]
+   as well as in the `theme.release` option of the [`mkdocs.yml`][mkdocs.yml]
+   configuration file.
+
+4. Build a local copy of the documentation, browse through the pages and
+   confirm that no obvious issues exist with the documentation.
+
+4. Create a pull request with a commit message in the following format:
+
+        Bump version to X.X.X
+
+5. After all checks (Travis, etc.) have passed, merge the pull request.
+
+6. Create a git tag with the new version as the tag name and push to the
+   [Python-Markdown/markdown] repository.
+
+7. Deploy the release to PyPI with the command `make deploy`.
+
+8. Deploy an update to the documentation using [MkDocs]. The following example
+   assumes that local clones of the [Python-Markdown/markdown] and
+   [Python-Markdown/Python-Markdown.github.io] repositories are in sibling
+   directories named `markdown` and `Python-Markdown.github.io` respectively.
+
+        cd Python-Markdown.github.io
+        mkdocs gh-deploy --config-file ../markdown/mkdocs.yml --remote-branch master
 
 [Python-Markdown Organization]: https://github.com/Python-Markdown
 [Python-Markdown Code of Conduct]: https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md
@@ -301,3 +337,4 @@ would increment the POINT version only (`3.0.5`, `3.0.6`...).
 [Semantic Versioning]: https://semver.org/
 [markdown/__init__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__init__.py#L36
 [PEP 440]:https://www.python.org/dev/peps/pep-0440/
+[Python-Markdown/Python-Markdown.github.io]: Python-Markdown.github.io
