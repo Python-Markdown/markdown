@@ -38,6 +38,7 @@ nav:
       - WikiLinks: extensions/wikilinks.md
   - Extension API: extensions/api.md
   - Test Tools: test_tools.md
+  - Contributing to Python-Markdown: contributing.md
   - Change Log: change_log/index.md
   - Release Notes for v.3.0: change_log/release-3.0.md
   - Release Notes for v.2.6: change_log/release-2.6.md
