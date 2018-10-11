@@ -98,11 +98,13 @@ Therefore, it is recommended that you run the tests before submitting your pull
 request, ideally using `tox` in order to check that your modifications are
 compatible with all supported versions of Python. After making a pull request,
 check the Travis build status in the GitHub interface to ensure that all tests
-are running as expected.
+are running as expected. If any checks fail, you may push additional commits to
+your branch. GitHub will add those commits to the pull request and rerun the
+checks.
 
 ## Style Guides
 
-In an effort to maintain consistency, Python-Markdown follows the following
+In an effort to maintain consistency, Python-Markdown adheres to the following
 style guides in its code and documentation. A pull request may be rejected if it
 fails to match the relevant style guides.
 
@@ -156,6 +158,9 @@ should be simple, plain, objective and well-balanced where possible.
 
 Keep paragraphs reasonably short.
 
+With the exception of code blocks, limit line length to 79 characters. You may
+want to use your editor's tools to automatically hard wrap lines of text.
+
 Don't use abbreviations such as 'e.g.' but instead use the long form, such as
 'For example'.
 
@@ -164,7 +169,7 @@ directory] by the [MkDocs] static site generator. In addition to the basic
 Markdown syntax, the following extensions are supported: [extra], [admonition],
 [smarty], [codehilite], and [toc].
 
-There are a few of conventions you should follow when working on the
+There are a few conventions you should follow when working on the
 documentation.
 
 #### Headers
@@ -207,11 +212,11 @@ section of the page. For example:
 ```
 
 Linking in this style ensures that the links work when browsing the
-documentation on GitHub. If your Markdown editors makes links clickable, the
+documentation on GitHub. If your Markdown editor makes links clickable, they
 will work there as well. When the documentation is built, these links will be
 converted into regular links which point to the built HTML pages.
 
-# Notes and Warnings
+#### Notes and Warnings
 
 If you want to draw attention to a note or warning, use the syntax defined in
 Python-Markdown's [Admonition Extension]:
@@ -232,7 +237,7 @@ Limit the first line to 72 characters or less.
 
 Reference issues and pull requests liberally after the first line. Include a
 summary of the changes/additions made without replicating the content of the
-documentation or release notes. This is were an explanation of the choices made
+documentation or release notes. This is where an explanation of the choices made
 should be found. References to issues and pull requests should only provide the
 context in which a choice was made. However, the commit should be able to stand
 on its own.
@@ -296,18 +301,18 @@ following steps:
 4. Build a local copy of the documentation, browse through the pages and
    confirm that no obvious issues exist with the documentation.
 
-4. Create a pull request with a commit message in the following format:
+5. Create a pull request with a commit message in the following format:
 
         Bump version to X.X.X
 
-5. After all checks (Travis, etc.) have passed, merge the pull request.
+6. After all checks (Travis, etc.) have passed, merge the pull request.
 
-6. Create a git tag with the new version as the tag name and push to the
+7. Create a git tag with the new version as the tag name and push to the
    [Python-Markdown/markdown] repository.
 
-7. Deploy the release to PyPI with the command `make deploy`.
+8. Deploy the release to [PyPI] with the command `make deploy`.
 
-8. Deploy an update to the documentation using [MkDocs]. The following example
+9. Deploy an update to the documentation using [MkDocs]. The following example
    assumes that local clones of the [Python-Markdown/markdown] and
    [Python-Markdown/Python-Markdown.github.io] repositories are in sibling
    directories named `markdown` and `Python-Markdown.github.io` respectively.
@@ -337,4 +342,6 @@ following steps:
 [Semantic Versioning]: https://semver.org/
 [markdown/__init__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__init__.py#L36
 [PEP 440]:https://www.python.org/dev/peps/pep-0440/
-[Python-Markdown/Python-Markdown.github.io]: Python-Markdown.github.io
+[mkdocs.yml]: https://github.com/Python-Markdown/markdown/blob/master/mkdocs.yml
+[PyPI]: https://pypi.org/project/Markdown/
+[Python-Markdown/Python-Markdown.github.io]: https://github.com/Python-Markdown/Python-Markdown.github.io
