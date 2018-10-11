@@ -33,30 +33,33 @@ Please address issues on the correct channel. Usage questions should be directed
 to the discussion group. Feature requests, bug reports and other issues should
 be raised on the GitHub [issue tracker].
 
-Some tips on good issue reporting:
+When describing issues try to phrase your ticket in terms of the behavior you
+think needs to change rather than the code you think needs to change.
 
-* When describing issues try to phrase your ticket in terms of the behavior you
-  think needs to change rather than the code you think needs to change.
-* Make sure you're running the latest version of Python-Markdown before
-  reporting an issue.
-* Search the issue list first for related items. Be sure to check closed issues
-  and pull requests. GitHub's search only checks open issues by default.
-* You may want to check the [syntax rules] and/or [Babelmark] to confirm that
-  your expectations align with the rules and/or other implementations of
-  Markdown.
-* If reporting a syntax bug, you must provide the minimal input which exhibits
-  the behavior, the actual output and the output you expected. All three items
-  must be provided as textual code blocks (screen-shots are not helpful). It may
-  also be helpful to point to the [syntax rules] which specifically address the
-  area of concern.
-* Feature requests will often be closed with a recommendation that they be
-  implemented as third party extensions outside of the core Python-Markdown
-  library. Keeping new feature requests implemented as third party extensions
-  allows us to keep the maintenance overhead of Python-Markdown to a minimum, so
-  that the focus can be on continued stability, bug fixes, and documentation.
-* Closing an issue does not necessarily mean the end of a discussion. If you
-  believe your issue has been closed incorrectly, explain why and we'll consider
-  if it needs to be reopened.
+Make sure you're running the latest version of Python-Markdown before reporting
+an issue.
+
+Search the issue list first for related items. Be sure to check closed issues
+and pull requests. GitHub's search only checks open issues by default.
+
+You may want to check the [syntax rules] and/or [Babelmark] to confirm that your
+expectations align with the rules and/or other implementations of Markdown.
+
+If reporting a syntax bug, you must provide the minimal input which exhibits the
+behavior, the actual output and the output you expected. All three items must be
+provided as textual code blocks (screen-shots are not helpful). It may also be
+helpful to point to the [syntax rules] which specifically address the area of
+concern.
+
+Feature requests will often be closed with a recommendation that they be
+implemented as third party extensions outside of the core Python-Markdown
+library. Keeping new feature requests implemented as third party extensions
+allows us to keep the maintenance overhead of Python-Markdown to a minimum, so
+that the focus can be on continued stability, bug fixes, and documentation.
+
+Closing an issue does not necessarily mean the end of a discussion. If you
+believe your issue has been closed incorrectly, explain why and we'll consider
+if it needs to be reopened.
 
 ## Pull Requests
 
@@ -99,11 +102,140 @@ are running as expected.
 
 ## Style Guides
 
+In an effort to maintain consistency, Python-Markdown follows the following
+style guides in its code and documentation. A pull request may be rejected if it
+fails to match the relevant style guides.
+
 ### Code Style Guide
+
+Except as noted below, all pull requests should follow Python's standard [PEP8
+Style Guide] and are run through [Flake8] to ensure that the style guide is
+followed.
+
+Legacy code which does not follow the guidelines should only be updated if and
+when other changes (bug fix, feature addition, etc.) are being made to that
+section of code. While new features should be given names that follow modern
+Python naming conventions, existing names should be preserved to avoid backward
+incompatible changes.
+
+Line length is limited to a maximum of 119 characters.
+
+When a line of code does not fit within the line length limit, continuation
+lines should align elements wrapped inside parentheses, brackets and braces
+using a *hanging indent*. When using a hanging indent there should be no
+arguments on the first line and further indentation should be used to clearly
+distinguish itself as a continuation line. The closing parenthesis, bracket or
+brace should be on a line by itself and should line up under the first character
+of the line that starts the multi-line construct.
+
+```python
+my_list = [
+    1, 2, 3,
+    4, 5, 6,
+]
+result = some_function_that_takes_arguments(
+    'a', 'b', 'c',
+    'd', 'e', 'f',
+)
+```
+
+When the conditional part of an `if`-statement is long enough to require that it
+be written across multiple lines, extra indentation should be included on the
+conditional continuation line.
+
+```python
+if (this_is_one_thing
+        and that_is_another_thing):
+    do_something()
+```
 
 ### Documentation Style Guide
 
+Documentation should be in American English. The tone of the documentation
+should be simple, plain, objective and well-balanced where possible.
+
+Keep paragraphs reasonably short.
+
+Don't use abbreviations such as 'e.g.' but instead use the long form, such as
+'For example'.
+
+The documentation is built from the [Markdown] source files in the [docs
+directory] by the [MkDocs] static site generator. In addition to the basic
+Markdown syntax, the following extensions are supported: [extra], [admonition],
+[smarty], [codehilite], and [toc].
+
+There are a few of conventions you should follow when working on the
+documentation.
+
+#### Headers
+
+Headers should use the hash style. For example:
+
+```md
+## Some important topic
+```
+
+The underline style should not be used. Don't do this:
+
+```md
+Some important topic
+====================
+```
+
+#### Links
+
+Links should always use the reference style, with the referenced hyperlinks kept
+at the end of the document.
+
+```md
+Here is a link to [some other thing][other-thing].
+
+More text...
+
+[other-thing]: http://example.com/other/thing
+```
+
+This style helps keep the documentation source consistent and readable.
+
+If you are linking to another document within Python-Markdown's documentation,
+you should use a relative link, and link to the `.md` suffix. If applicable, it
+is preferred that the link includes a hash fragment pointing to the specific
+section of the page. For example:
+
+```md
+[authentication]: reference.md#Markdown
+```
+
+Linking in this style ensures that the links work when browsing the
+documentation on GitHub. If your Markdown editors makes links clickable, the
+will work there as well. When the documentation is built, these links will be
+converted into regular links which point to the built HTML pages.
+
+# Notes and Warnings
+
+If you want to draw attention to a note or warning, use the syntax defined in
+Python-Markdown's [Admonition Extension]:
+
+```md
+!!! note
+
+    This is the content of the note.
+```
+
 ### Commit Message Style Guide
+
+Use the present tense ("Add feature" not "Added feature").
+
+Use the imperative mood ("Move item to..." not "Moves item to...").
+
+Limit the first line to 72 characters or less.
+
+Reference issues and pull requests liberally after the first line. Include a
+summary of the changes/additions made without replicating the content of the
+documentation or release notes. This is were an explanation of the choices made
+should be found. References to issues and pull requests should only provide the
+context in which a choice was made. However, the commit should be able to stand
+on its own.
 
 ## Versions
 
@@ -155,6 +287,17 @@ would increment the POINT version only (`3.0.5`, `3.0.6`...).
 [Babelmark]: http://johnmacfarlane.net/babelmark2/
 [Using Pull Requests]: https://help.github.com/articles/using-pull-requests
 [action words]: https://help.github.com/articles/closing-issues-using-keywords/
+[PEP8 Style Guide]: https://www.python.org/dev/peps/pep-0008/
+[Flake8]: http://flake8.pycqa.org/en/latest/index.html
+[Markdown]: https://daringfireball.net/projects/markdown/basics
+[docs directory]: https://github.com/Python-Markdown/markdown/tree/master/docs
+[MkDocs]: https://www.mkdocs.org/
+[extra]: extensions/extra.md
+[admonition]: extensions/admonition.md
+[smarty]: extensions/smarty.md
+[codehilite]: extensions/code_hilite.md
+[toc]: extensions/toc.md
+[Admonition Extension]: extensions/admonition.md#syntax
 [Semantic Versioning]: https://semver.org/
 [markdown/__init__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__init__.py#L36
 [PEP 440]:https://www.python.org/dev/peps/pep-0440/
