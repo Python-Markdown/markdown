@@ -68,13 +68,13 @@ necessarily need to be the final, finished submission. In fact, if you discover
 an issue and intend to provide a fix for it, there is no need to open an issue
 first. You can report the issue and provide the fix together in a pull request.
 
-All pull requests should be made from your personal clone of the library hosted
+All pull requests should be made from your personal fork of the library hosted
 in your personal GitHub account. Do not create branches on the
 [Python-Markdown/markdown] project for pull requests. All pull requests should
 be implemented in a new branch with a unique name. Remember that if you have an
 outstanding pull request, pushing new commits to the related branch of your
-GitHub repository will also automatically update the pull request. If may help
-to review GitHub's documentation on [Using Pull Requests].
+GitHub repository will also automatically update the pull request. It may help
+to review GitHub's documentation on [Creating a pull request from a fork].
 
 If you are providing a fix for a previously reported issue, you must reference
 the issue in your commit message. Be sure to prefix the reference with one of
@@ -242,6 +242,102 @@ should be found. References to issues and pull requests should only provide the
 context in which a choice was made. However, the commit should be able to stand
 on its own.
 
+## Development Environment
+
+To start developing on Python-Markdown is it best to create a [fork] of the
+project on GitHub. After [cloning your fork] to your local system, you will want
+to [configure a remote] that points to the upstream repository so that you can
+[sync changes] made in the original repository with your fork.
+
+It is recommended that all development be done from within a Python [virtual
+environment], which isolates any experimental code from the general system. To
+create a virtual environment, use the following command from the root of the
+local working copy of your GitHub fork:
+
+```sh
+virtualenv venv
+```
+
+That creates a virtual environment which is contained in the `venv` directory
+within your local working copy. Note that the repository is configured so that
+git will ignore any files within a directory named `venv` or `ENV` for this
+very reason.
+
+On Posix systems (Linux, BSD, MacOS, etc.), use the following command to
+activate the environment:
+
+```sh
+source venv/bin/activate
+```
+
+On Windows, use this command instead:
+
+```sh
+venv/Scripts/activate
+```
+
+See the [User Guide] for more information on using virtual environments.
+
+To be able to run the Markdown library directly while working on it, install the
+working copy into the environment in [Development Mode] after activating the
+virtual environment for the first time:
+
+```sh
+python setup.py develop
+```
+
+Now any saved changes will immediately be available within the virtual
+environment.
+
+You can run the command line script with the following command:
+
+```sh
+python -m markdown
+```
+
+And you can directly run the tests with:
+
+```sh
+python -m unittest discover tests
+```
+
+!!! note
+
+    Some tests require the [PyTidyLib] library, which depends on the [HTML Tidy]
+    library. If you do not have PyTidyLib installed, the tests which depend upon
+    it will be skipped. Given the difficulty in installing the HTML Tidy library
+    on many systems, you may choose to leave both libraries uninstalled and
+    depend on the Travis server to run those tests when you submit a pull
+    request.
+
+The above setup will only run tests against the code in one version of Python.
+However,  Python-Markdown supports multiple versions of Python. Therefore, a
+[tox] configuration is included in the repository, which includes test
+environments for all supported Python versions, a [Flake8] test environment, and
+a spellchecker for the documentation. While it is generally fine to leave those
+tests for the Travis server to run when a pull request is submitted, for more
+advanced changes, you may want to run those tests locally. To do so, simply
+install tox:
+
+```sh
+pip install tox
+```
+
+Then, to run all configured test environments, simply call the command `tox`
+with no arguments. See help (`tox -h`) for more options.
+
+!!! note
+
+    The tox environments expect that some dependencies are already installed on
+    your system. For example, by default, any Python version specific
+    environment will fail if that version of Python is not installed.
+    Additionally, the tox environments assume that the [HTML Tidy] library is
+    installed and may fail when attempting to install [PyTidyLib] if it is not.
+    Finally, the `spellchecker` environment requires [aspell] and the
+    `aspell-en` dictionary to be installed. Unfortunately, installing those
+    dependancies may differ significantly from system to system and is outside
+    the scope of this guide.
+
 ## Versions
 
 Python-Markdown follows [Semantic Versioning] and uses the
@@ -326,7 +422,7 @@ following steps:
 [issue tracker]: https://github.com/Python-Markdown/markdown/issues
 [syntax rules]: http://daringfireball.net/projects/markdown/syntax
 [Babelmark]: http://johnmacfarlane.net/babelmark2/
-[Using Pull Requests]: https://help.github.com/articles/using-pull-requests
+[Creating a pull request from a fork]: https://help.github.com/articles/creating-a-pull-request-from-a-fork/
 [action words]: https://help.github.com/articles/closing-issues-using-keywords/
 [PEP8 Style Guide]: https://www.python.org/dev/peps/pep-0008/
 [Flake8]: http://flake8.pycqa.org/en/latest/index.html
@@ -339,6 +435,17 @@ following steps:
 [codehilite]: extensions/code_hilite.md
 [toc]: extensions/toc.md
 [Admonition Extension]: extensions/admonition.md#syntax
+[fork]: https://help.github.com/articles/about-forks
+[cloning your fork]: https://help.github.com/articles/cloning-a-repository/
+[configure a remote]: https://help.github.com/articles/configuring-a-remote-for-a-fork
+[sync changes]: https://help.github.com/articles/syncing-a-fork
+[virtual environment]: https://virtualenv.pypa.io/en/stable/
+[User Guide]: https://virtualenv.pypa.io/en/stable/userguide/#usage
+[Development Mode]: https://setuptools.readthedocs.io/en/latest/setuptools.html#development-mode
+[PyTidyLib]: http://countergram.github.io/pytidylib/
+[HTML Tidy]: http://www.html-tidy.org/
+[tox]: https://tox.readthedocs.io/en/latest/
+[aspell]: http://aspell.net/
 [Semantic Versioning]: https://semver.org/
 [markdown/__init__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__init__.py#L36
 [PEP 440]:https://www.python.org/dev/peps/pep-0440/
