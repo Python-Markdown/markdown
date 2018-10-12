@@ -5,6 +5,7 @@ Abrahamsen
 Altmayer
 API
 Artem
+aspell
 Babelmark
 backtick
 backticks
@@ -26,6 +27,7 @@ CSS
 dedent
 deliminators
 deregister
+dependancies
 Dmitry
 docdata
 ElementTree
@@ -49,6 +51,7 @@ Kjell
 Krech
 kwargs
 Limberg
+MacOS
 Magne
 MAILTO
 makeExtension
@@ -70,6 +73,7 @@ OSX
 ol
 Ph
 PHP
+Posix
 postprocessor
 postprocessors
 preprocessor
