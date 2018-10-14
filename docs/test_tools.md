@@ -3,7 +3,7 @@ title: Test Tools
 # Test Tools
 
 Python-Markdown provides some testing tools which simplify testing actual
-Markdown output again expected output. The tools are built on the Python
+Markdown output against expected output. The tools are built on the Python
 standard  library [`unittest`][unittest]. Therefore, no additional libraries are
 required. While Python-Markdown uses the tools for its own tests, they were
 designed and built so that third party extensions could use them as well.
