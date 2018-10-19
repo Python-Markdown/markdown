@@ -23,7 +23,7 @@ The [Python-Markdown/markdown] project is organized as follows:
 
 * Branch `master` should generally be stable and release-ready at all times.
 * Version branches should be used for bug-fixes back-ported to the most recent
-  point release.
+  PATCH release.
 * No other branches should be created. Any other branches which exist are
   preserved for historical reasons only.
 
@@ -95,12 +95,10 @@ along with a request for feedback.
 
 Pull requests will generally not be accepted if any tests are failing.
 Therefore, it is recommended that you run the tests before submitting your pull
-request, ideally using `tox` in order to check that your modifications are
-compatible with all supported versions of Python. After making a pull request,
-check the Travis build status in the GitHub interface to ensure that all tests
-are running as expected. If any checks fail, you may push additional commits to
-your branch. GitHub will add those commits to the pull request and rerun the
-checks.
+request. After making a pull request, check the Travis build status in the
+GitHub interface to ensure that all tests are running as expected. If any checks
+fail, you may push additional commits to your branch. GitHub will add those
+commits to the pull request and rerun the checks.
 
 ## Style Guides
 
@@ -164,10 +162,10 @@ want to use your editor's tools to automatically hard wrap lines of text.
 Don't use abbreviations such as 'e.g.' but instead use the long form, such as
 'For example'.
 
-The documentation is built from the [Markdown] source files in the [docs
-directory] by the [MkDocs] static site generator. In addition to the basic
-Markdown syntax, the following extensions are supported: [extra], [admonition],
-[smarty], [codehilite], and [toc].
+The documentation is built from the [Markdown] source files in the [`docs`
+directory][docs directory] by the [MkDocs] static site generator. In addition to
+the basic Markdown syntax, the following extensions are supported: [extra],
+[admonition], [smarty], [codehilite], and [toc].
 
 There are a few conventions you should follow when working on the
 documentation.
@@ -335,39 +333,41 @@ with no arguments. See help (`tox -h`) for more options.
     installed and may fail when attempting to install [PyTidyLib] if it is not.
     Finally, the `spellchecker` environment requires [aspell] and the
     `aspell-en` dictionary to be installed. Unfortunately, installing those
-    dependancies may differ significantly from system to system and is outside
+    dependencies may differ significantly from system to system and is outside
     the scope of this guide.
 
 ## Versions
 
 Python-Markdown follows [Semantic Versioning] and uses the
-`MAJOR.MINOR.POINT(PRERELEASE/DEV)` format for specifying releases. The status
+`MAJOR.MINOR.PATCH[.dev#|a#|b#|rc#]` format for identifying releases. The status
 of the `master` branch should always be identified in the `__version_info__`
-variable defined in [`markdown/__init__.py`][markdown/__init__.py] and should
-conform to [PEP 440].
+tuple defined in [`markdown/__init__.py`][markdown/__init__.py]. The contents of
+that tuple will automatically be converted into a normalized version which
+conforms to [PEP 440]. An invalid `__version_info__` tuple will raise an error,
+preventing the library from running and the package from building.
 
 ### Version Status
 
 A MAJOR version is in development status when the MINOR version is `0`, the
-POINT version is `0`, and the version includes a `DEV` segment.
+PATCH version is `0`, and the version includes a `dev` segment.
 
 A MINOR version is in development status when the MINOR version is not `0`, the
-POINT version is `0`, and the version includes a `DEV` segment.
+PATCH version is `0`, and the version includes a `dev` segment.
 
 At all other times, the code is considered stable and release-ready.
 
-MAJOR and MINOR releases may or may not get pre-releases (beta, release
+MAJOR and MINOR releases may or may not get pre-releases (alpha, beta, release
 candidate, etc.) at the discretion of the project maintainers.
 
 ### Version Workflow
 
-Bug fixes may be committed to the `master` branch at any time.
+Bug fixes may be merged from a pull request to the `master` branch at any time.
 
-New features and backward incompatible changes may only be committed to the
+New features and backward incompatible changes may only be merged to the
 `master` branch when the MAJOR and/or MINOR version is in development status.
 
 A separate commit to the `master` branch should be made to bump up the MAJOR
-and/or MINOR version and set the development status. Only then will any pull
+and/or MINOR version and set development status. Only then will any pull
 requests implementing new features or backward incompatible changes be accepted.
 
 If a bug fix is deemed to be important and the `master` branch is in development
@@ -375,9 +375,9 @@ status, a back-port of the fix should be committed to a version branch. If the
 appropriate version branch does not exist, then it should be created and a pull
 request back-porting the fix made against that branch. The version branch should
 be named with the most recently released MINOR version. For example, if the
-`master` branch is at `3.1.0dev` and the most recent MINOR release was `3.0.4`,
+`master` branch is at `3.1.dev0` and the most recent MINOR release was `3.0.4`,
 then the version branch would be named `3.0` and any releases from that branch
-would increment the POINT version only (`3.0.5`, `3.0.6`...).
+would increment the PATCH version only (`3.0.5`, `3.0.6`...).
 
 ## Release Process
 
@@ -448,7 +448,7 @@ following steps:
 [aspell]: http://aspell.net/
 [Semantic Versioning]: https://semver.org/
 [markdown/__init__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__init__.py#L36
-[PEP 440]:https://www.python.org/dev/peps/pep-0440/
+[PEP 440]: https://www.python.org/dev/peps/pep-0440/
 [mkdocs.yml]: https://github.com/Python-Markdown/markdown/blob/master/mkdocs.yml
 [PyPI]: https://pypi.org/project/Markdown/
 [Python-Markdown/Python-Markdown.github.io]: https://github.com/Python-Markdown/Python-Markdown.github.io
