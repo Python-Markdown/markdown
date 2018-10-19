@@ -28,15 +28,13 @@ from markdown import __version__, __version_info__
 
 # Get development Status for classifiers
 dev_status_map = {
+    'dev':   '2 - Pre-Alpha',
     'alpha': '3 - Alpha',
     'beta':  '4 - Beta',
     'rc':    '4 - Beta',
     'final': '5 - Production/Stable'
 }
-if __version_info__[3] == 'alpha' and __version_info__[4] == 0:
-    DEVSTATUS = '2 - Pre-Alpha'
-else:
-    DEVSTATUS = dev_status_map[__version_info__[3]]
+DEVSTATUS = dev_status_map[__version_info__[3]]
 
 # The command line script name.  Currently set to "markdown_py" so as not to
 # conflict with the perl implimentation (which uses "markdown").
