@@ -390,9 +390,7 @@ following steps:
 2. Confirm that the release notes and change log have been updated and indicate
    the date of the new release.
 
-3. Update the version defined in [`markdown/__init__.py`][markdown/__init__.py]
-   as well as in the `theme.release` option of the [`mkdocs.yml`][mkdocs.yml]
-   configuration file.
+3. Update the version defined in [`markdown/__init__.py`][markdown/__init__.py].
 
 4. Build a local copy of the documentation, browse through the pages and
    confirm that no obvious issues exist with the documentation.
@@ -447,8 +445,7 @@ following steps:
 [tox]: https://tox.readthedocs.io/en/latest/
 [aspell]: http://aspell.net/
 [Semantic Versioning]: https://semver.org/
-[markdown/__init__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__init__.py#L36
+[markdown/__init__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__init__.py#L43
 [PEP 440]: https://www.python.org/dev/peps/pep-0440/
-[mkdocs.yml]: https://github.com/Python-Markdown/markdown/blob/master/mkdocs.yml
 [PyPI]: https://pypi.org/project/Markdown/
 [Python-Markdown/Python-Markdown.github.io]: https://github.com/Python-Markdown/Python-Markdown.github.io
