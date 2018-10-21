@@ -281,7 +281,7 @@ working copy into the environment in [Development Mode] after activating the
 virtual environment for the first time:
 
 ```sh
-python setup.py develop
+pip install --editable .
 ```
 
 Now any saved changes will immediately be available within the virtual
