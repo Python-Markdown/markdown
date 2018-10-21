@@ -77,6 +77,7 @@ setup(
     license='BSD License',
     packages=['markdown', 'markdown.extensions'],
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
+    install_requires=['setuptools=>36'],
     entry_points={
         'console_scripts': [
             '%s = markdown.__main__:run' % SCRIPT_NAME,
