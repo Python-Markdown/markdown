@@ -30,6 +30,7 @@ addons:
     - aspell-en
 
 install:
+  - pip install 'setuptools>=36'
   - pip install tox
   - pip install 'coverage<4.0'
   - pip install codecov

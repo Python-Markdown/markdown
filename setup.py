@@ -28,15 +28,13 @@ from markdown import __version__, __version_info__
 
 # Get development Status for classifiers
 dev_status_map = {
+    'dev':   '2 - Pre-Alpha',
     'alpha': '3 - Alpha',
     'beta':  '4 - Beta',
     'rc':    '4 - Beta',
     'final': '5 - Production/Stable'
 }
-if __version_info__[3] == 'alpha' and __version_info__[4] == 0:
-    DEVSTATUS = '2 - Pre-Alpha'
-else:
-    DEVSTATUS = dev_status_map[__version_info__[3]]
+DEVSTATUS = dev_status_map[__version_info__[3]]
 
 # The command line script name.  Currently set to "markdown_py" so as not to
 # conflict with the perl implimentation (which uses "markdown").
@@ -79,6 +77,7 @@ setup(
     license='BSD License',
     packages=['markdown', 'markdown.extensions'],
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
+    install_requires=['setuptools >= 36'],
     entry_points={
         'console_scripts': [
             '%s = markdown.__main__:run' % SCRIPT_NAME,
