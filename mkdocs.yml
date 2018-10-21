@@ -9,7 +9,7 @@ use_directory_urls: true
 theme:
   name: nature
   icon: py.png
-  release: "3.0.1"
+  release: !!python/name:markdown.__version__
   issue_tracker: https://github.com/Python-Markdown/markdown/issues
 
 nav:
