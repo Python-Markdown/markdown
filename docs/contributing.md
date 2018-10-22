@@ -29,9 +29,8 @@ The [Python-Markdown/markdown] project is organized as follows:
 
 ## Issues
 
-Please address issues on the correct channel. Usage questions should be directed
-to the discussion group. Feature requests, bug reports and other issues should
-be raised on the GitHub [issue tracker].
+Feature requests, bug reports, usage questions, and other issues can all be
+raised on the GitHub [issue tracker].
 
 When describing issues try to phrase your ticket in terms of the behavior you
 think needs to change rather than the code you think needs to change.
@@ -413,6 +412,53 @@ following steps:
 
         cd Python-Markdown.github.io
         mkdocs gh-deploy --config-file ../markdown/mkdocs.yml --remote-branch master
+
+## Issue and Pull Request Labels
+
+Below are the labels used to track and manages issues and pull requests. The
+labels are loosely grouped by their purpose, but it is not necessary for every
+issue to have a label from every group, and an issue may have more than one
+label from the same group.
+
+### Type of Issue or Pull Request
+
+| Label name | Description      |
+| ---------- | ---------------- |
+| `bug`      | Bug report.      |
+| `feature`  | Feature request. |
+| `support`  | Support request. |
+
+### Topic Categories
+
+| Label name  | Description                                        |
+| ----------- | -------------------------------------------------- |
+| `core`      | Related to the core parser code.                   |
+| `extension` | Related to one or more of the included extensions. |
+| `docs`      | Related to the project documentation.              |
+
+### Status of Issue
+
+| Label name           | Description                                         |
+| -------------------- | --------------------------------------------------- |
+| `more-info-needed`   | More information needs to be provided.              |
+| `needs-confirmation` | The alleged behavior needs to be confirmed.         |
+| `needs-decision`     | A decision needs to be made regarding request.      |
+| `confirmed`          | Confirmed bug report or approved feature request.   |
+| `duplicate`          | The issue has been previously reported.             |
+| `wontfix`            | The issue will not be fixed for the stated reasons. |
+| `invalid`            | Invalid report (user error, upstream issue, etc).   |
+| `3rd-party`          | Should be implemented as a third party extension.   |
+| `someday-maybe`      | Approved **low priority** request.                  |
+
+### Status of Pull Request
+
+| Label name         | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `work-in-progress` | A partial solution. More changes will be coming.     |
+| `needs-review`     | Needs to be reviewed and/or approved.                |
+| `requires-changes` | Awaiting updates after a review.                     |
+| `approved`         | The pull request is ready to be merged.              |
+| `rejected`         | The pull request is rejected for the stated reasons. |
 
 [Python-Markdown Organization]: https://github.com/Python-Markdown
 [Python-Markdown Code of Conduct]: https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md
