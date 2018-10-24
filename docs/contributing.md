@@ -360,10 +360,13 @@ candidate, etc.) at the discretion of the project maintainers.
 
 ### Version Workflow
 
-Bug fixes may be merged from a pull request to the `master` branch at any time.
+Bug fixes may be merged from a pull request to the `master` branch at any time
+so long as all tests pass, including one or more new tests which would have
+failed prior to the change.
 
 New features and backward incompatible changes may only be merged to the
-`master` branch when the MAJOR and/or MINOR version is in development status.
+`master` branch when the MAJOR and/or MINOR version is in development status
+pursuant to [Semantic Versioning].
 
 A separate commit to the `master` branch should be made to bump up the MAJOR
 and/or MINOR version and set development status. Only then will any pull
@@ -428,7 +431,7 @@ label from the same group.
 | `feature`  | Feature request. |
 | `support`  | Support request. |
 
-### Topic Categories
+### Category of Issue or Pull Request
 
 | Label name  | Description                                        |
 | ----------- | -------------------------------------------------- |
