@@ -425,43 +425,44 @@ label from the same group.
 
 ### Type of Issue or Pull Request
 
-| Label name | Description      |
-| ---------- | ---------------- |
-| `bug`      | Bug report.      |
-| `feature`  | Feature request. |
-| `support`  | Support request. |
+| Label name                   | Description      |
+| ---------------------------- | ---------------- |
+| `bug`{ .label .bug }         | Bug report.      |
+| `feature`{ .label .feature } | Feature request. |
+| `support`{ .label .support } | Support request. |
 
 ### Category of Issue or Pull Request
 
-| Label name  | Description                                        |
-| ----------- | -------------------------------------------------- |
-| `core`      | Related to the core parser code.                   |
-| `extension` | Related to one or more of the included extensions. |
-| `docs`      | Related to the project documentation.              |
+| Label name                       | Description                              |
+| -------------------------------- | ---------------------------------------- |
+| `core`{ .label .core }           | Related to the core parser code.                   |
+| `extension`{ .label .extension } | Related to one or more of the included extensions. |
+| `docs`{ .label .docs }           | Related to the project documentation.              |
 
 ### Status of Issue
 
-| Label name           | Description                                         |
-| -------------------- | --------------------------------------------------- |
-| `more-info-needed`   | More information needs to be provided.              |
-| `needs-confirmation` | The alleged behavior needs to be confirmed.         |
-| `needs-decision`     | A decision needs to be made regarding request.      |
-| `confirmed`          | Confirmed bug report or approved feature request.   |
-| `duplicate`          | The issue has been previously reported.             |
-| `wontfix`            | The issue will not be fixed for the stated reasons. |
-| `invalid`            | Invalid report (user error, upstream issue, etc).   |
-| `3rd-party`          | Should be implemented as a third party extension.   |
-| `someday-maybe`      | Approved **low priority** request.                  |
+| Label name                              | Description                       |
+| --------------------------------------- | --------------------------------- |
+| `more-info-needed`{ .label .pending }   | More information needs to be provided.              |
+| `needs-confirmation`{ .label .pending } | The alleged behavior needs to be confirmed.         |
+| `needs-decision`{ .label .pending }     | A decision needs to be made regarding request.      |
+| `confirmed`{ .label .approved }         | Confirmed bug report or approved feature request.   |
+| `someday-maybe`{ .label .low }          | Approved **low priority** request.                  |
+| `duplicate`{ .label .rejected }         | The issue has been previously reported.             |
+| `wontfix`{ .label .rejected }           | The issue will not be fixed for the stated reasons. |
+| `invalid`{ .label .rejected }           | Invalid report (user error, upstream issue, etc).   |
+| `3rd-party`{ .label .rejected }         | Should be implemented as a third party extension.   |
+
 
 ### Status of Pull Request
 
-| Label name         | Description                                          |
-| ------------------ | ---------------------------------------------------- |
-| `work-in-progress` | A partial solution. More changes will be coming.     |
-| `needs-review`     | Needs to be reviewed and/or approved.                |
-| `requires-changes` | Awaiting updates after a review.                     |
-| `approved`         | The pull request is ready to be merged.              |
-| `rejected`         | The pull request is rejected for the stated reasons. |
+| Label name                            | Description                         |
+| ------------------------------------- | ----------------------------------- |
+| `work-in-progress`{ .label .pending } | A partial solution. More changes will be coming.     |
+| `needs-review`{ .label .pending }     | Needs to be reviewed and/or approved.                |
+| `requires-changes`{ .label .pending } | Awaiting updates after a review.                     |
+| `approved`{ .label .approved }        | The pull request is ready to be merged.              |
+| `rejected`{ .label .rejected }        | The pull request is rejected for the stated reasons. |
 
 [Python-Markdown Organization]: https://github.com/Python-Markdown
 [Python-Markdown Code of Conduct]: https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md
@@ -498,3 +499,47 @@ label from the same group.
 [PEP 440]: https://www.python.org/dev/peps/pep-0440/
 [PyPI]: https://pypi.org/project/Markdown/
 [Python-Markdown/Python-Markdown.github.io]: https://github.com/Python-Markdown/Python-Markdown.github.io
+
+<style type="text/css">
+    /* GitHub Label Styles */
+
+    code.label {
+        color: #000000;
+        font-weight: 600;
+        line-height: 15px;
+        display: inline-block;
+        padding: 4px 6px;
+    }
+    code.bug {
+        background-color: #c45b46;
+    }
+    code.feature {
+        background-color: #7b17d8;
+        color: #ffffff;
+    }
+    code.support {
+        background-color: #efbe62;
+    }
+    code.core {
+        background-color: #0b02e1;
+        color: #ffffff;
+    }
+    code.extension {
+        background-color: #709ad8;
+    }
+    code.docs {
+        background-color: #b2ffeb;
+    }
+    code.approved {
+        background-color: #beed6d;
+    }
+    code.low {
+        background-color: #dddddd;
+    }
+    code.pending {
+        background-color: #f0f49a;
+    }
+    code.rejected {
+        background-color: #f7c7be;
+    }
+</style>
