@@ -3,6 +3,8 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+_______, 2018: Released version 3.1 ([Notes](release-3.1.md)).
+
 Sept 28, 2018: Released version 3.0.1 (a bug-fix release).
 
 * Brought back the `version` and `version_info` variables (#709).
