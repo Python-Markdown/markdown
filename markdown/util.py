@@ -202,12 +202,12 @@ class ModuleWrap(object):
         return sorted(list(attr))
 
     def __getattribute__(self, name):
-        """Get the module attribute first and fallback to the module if not available."""
+        """Get the class attribute first and fallback to the module if not available."""
 
         try:
-            return getattr(super(ModuleWrap, self).__getattribute__('_module'), name)
-        except AttributeError:
             return super(ModuleWrap, self).__getattribute__(name)
+        except AttributeError:
+            return getattr(super(ModuleWrap, self).__getattribute__('_module'), name)
 
 
 class AtomicString(text_type):

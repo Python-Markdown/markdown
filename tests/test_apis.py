@@ -1034,3 +1034,12 @@ class TestGeneralDeprecations(unittest.TestCase):
             self.assertTrue(len(w) == 1)
             self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
             self.assertEqual(version_info, markdown.__version_info__)
+
+    def test_deprecation_wrapper_dir(self):
+        """Tests the `__dir__` attribute of the class as it replaces the module's."""
+
+        dir_attr = dir(markdown)
+        self.assertTrue('version' in dir_attr)
+        self.assertTrue('__version__' in dir_attr)
+        self.assertTrue('version_info' in dir_attr)
+        self.assertTrue('__version_info__' in dir_attr)
