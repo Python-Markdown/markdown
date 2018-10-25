@@ -113,7 +113,7 @@ AUXILIARY GLOBAL FUNCTIONS
 """
 
 
-def deprecated(message):
+def deprecated(message, stacklevel=2):
     """
     Raise a DeprecationWarning when wrapped function/method is called.
 
@@ -125,7 +125,7 @@ def deprecated(message):
             warnings.warn(
                 "'{}' is deprecated. {}".format(func.__name__, message),
                 category=DeprecationWarning,
-                stacklevel=2
+                stacklevel=stacklevel
             )
             return func(*args, **kwargs)
         return deprecated_func
@@ -175,6 +175,44 @@ def code_escape(text):
 MISC AUXILIARY CLASSES
 =============================================================================
 """
+
+
+class ModuleWrap(object):
+    """
+    Provided so that we can deprecate old version methodology.
+
+    See comments from Guido: <https://mail.python.org/pipermail/python-ideas/2012-May/014969.html>
+    and see PEP 562 which this is essentially a backport of: <https://www.python.org/dev/peps/pep-0562/>.
+    """
+
+    def __init__(self, module):
+        """Initialize."""
+
+        self._module = sys.modules[module]
+        sys.modules[module] = self
+
+    def __dir__(self):
+        """
+        Implement the `dir` command.
+
+        Return module's results for the `dir` command along with any
+        attributes that have been added to the class.
+        """
+
+        attr = (
+            set(dir(super(ModuleWrap, self).__getattribute__('_module'))) |
+            (set(self.__class__.__dict__.keys()) - set(ModuleWrap.__dict__.keys()))
+        )
+
+        return sorted(list(attr))
+
+    def __getattribute__(self, name):
+        """Get the class attribute first and fallback to the module if not available."""
+
+        try:
+            return super(ModuleWrap, self).__getattribute__(name)
+        except AttributeError:
+            return getattr(super(ModuleWrap, self).__getattribute__('_module'), name)
 
 
 class AtomicString(text_type):
