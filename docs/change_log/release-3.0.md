@@ -185,12 +185,13 @@ necessary and any extensions which expect the keyword will raise a
 
 ### `markdown.version` and `markdown.version_info` deprecated
 
-Historically, version numbers where acquired via the attributes `markdown.version`
-and `markdown.version_info`. Moving forward, a more standardized approach is being
-followed and versions are acquired via the `markdown.__version__` and
-`markdown.__version_info__` attributes.  The legacy attributes are still available
-to allow distinguishing versions between the legacy Markdown 2.0 series and the
-Markdown 3.0 series, but in the future the legacy attributes will be removed.
+Historically, version numbers were acquired via the attributes
+`markdown.version` and `markdown.version_info`. Moving forward, a more
+standardized approach is being followed and versions are acquired via the
+`markdown.__version__` and `markdown.__version_info__` attributes.  The legacy
+attributes are still available to allow distinguishing versions between the
+legacy Markdown 2.0 series and the Markdown 3.0 series, but in the future the
+legacy attributes will be removed.
 
 ### Added new, more flexible `InlineProcessor` class
 
