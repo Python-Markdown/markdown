@@ -23,6 +23,7 @@ License: BSD (see LICENSE.md for details).
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from .core import Markdown, markdown, markdownFromFile
+from .util import ModuleWrap, deprecated
 from pkg_resources.extern import packaging
 
 # For backward compatibility as some extensions expect it...
@@ -63,6 +64,28 @@ def _get_version():  # pragma: no cover
 
 __version__ = _get_version()
 
+
 # Also support `version` for backward-compatabillity with <3.0 versions
-version_info = __version_info__
-version = __version__
+class _ModuleWrap(ModuleWrap):
+    """
+    Wrap module with special deprecator to deprecate global objects.
+
+    https://mail.python.org/pipermail/python-ideas/2012-May/014969.html
+    """
+
+    @property
+    @deprecated("Use '__version__' instead.", stacklevel=3)
+    def version(self):
+        """Get deprecated version."""
+
+        return super(_ModuleWrap, self).__getattribute__('_module').__version__
+
+    @property
+    @deprecated("Use '__version_info__' instead.", stacklevel=3)
+    def version_info(self):
+        """Get deprecated version info."""
+
+        return super(_ModuleWrap, self).__getattribute__('_module').__version_info__
+
+
+_ModuleWrap(__name__)

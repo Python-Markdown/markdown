@@ -113,7 +113,7 @@ AUXILIARY GLOBAL FUNCTIONS
 """
 
 
-def deprecated(message):
+def deprecated(message, stacklevel=2):
     """
     Raise a DeprecationWarning when wrapped function/method is called.
 
@@ -125,7 +125,7 @@ def deprecated(message):
             warnings.warn(
                 "'{}' is deprecated. {}".format(func.__name__, message),
                 category=DeprecationWarning,
-                stacklevel=2
+                stacklevel=stacklevel
             )
             return func(*args, **kwargs)
         return deprecated_func
@@ -175,6 +175,39 @@ def code_escape(text):
 MISC AUXILIARY CLASSES
 =============================================================================
 """
+
+
+class ModuleWrap(object):
+    """Provided so that we can deprecate old version methodology."""
+
+    def __init__(self, module):
+        """Initialize."""
+
+        self._module = sys.modules[module]
+        sys.modules[module] = self
+
+    def __dir__(self):
+        """
+        Implement the `dir` command.
+
+        Return module's `dir` and any attributes that are not private.
+        """
+
+        # Include the module's attributes and the the attributes that have been added.
+        attr = (
+            set(dir(super(ModuleWrap, self).__getattribute__('_module'))) |
+            (set(super(ModuleWrap, self).__dir__()) - set(dir(ModuleWrap)))
+        )
+
+        return sorted(list(attr))
+
+    def __getattribute__(self, name):
+        """Get the module attribute first and fallback to the module if not available."""
+
+        try:
+            return getattr(super(ModuleWrap, self).__getattribute__('_module'), name)
+        except AttributeError:
+            return super(ModuleWrap, self).__getattribute__(name)
 
 
 class AtomicString(text_type):

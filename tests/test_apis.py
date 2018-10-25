@@ -1004,3 +1004,33 @@ Some +test+ and a [+link+](http://test.com)
 
         self.md.reset()
         self.assertEqual(self.md.convert(test), result)
+
+
+class TestGeneralDeprecations(unittest.TestCase):
+    """Test general deprecations."""
+
+    def test_version_deprecation(self):
+        """Test that version is deprecated."""
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            version = markdown.version
+            # Verify some things
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+            self.assertEqual(version, markdown.__version__)
+
+    def test_version_info_deprecation(self):
+        """Test that version info is deprecated."""
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            version_info = markdown.version_info
+            # Verify some things
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+            self.assertEqual(version_info, markdown.__version_info__)
