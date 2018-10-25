@@ -178,7 +178,12 @@ MISC AUXILIARY CLASSES
 
 
 class ModuleWrap(object):
-    """Provided so that we can deprecate old version methodology."""
+    """
+    Provided so that we can deprecate old version methodology.
+
+    See comments from Guido: <https://mail.python.org/pipermail/python-ideas/2012-May/014969.html>
+    and see PEP 562 which this is essentially a backport of: <https://www.python.org/dev/peps/pep-0562/>.
+    """
 
     def __init__(self, module):
         """Initialize."""
@@ -190,10 +195,10 @@ class ModuleWrap(object):
         """
         Implement the `dir` command.
 
-        Return module's `dir` and any attributes that are not private.
+        Return module's results for the `dir` command along with any
+        attributes that have been added to the class.
         """
 
-        # Include the module's attributes and the the attributes that have been added.
         attr = (
             set(dir(super(ModuleWrap, self).__getattribute__('_module'))) |
             (set(self.__class__.__dict__.keys()) - set(ModuleWrap.__dict__.keys()))

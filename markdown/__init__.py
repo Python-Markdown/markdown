@@ -65,12 +65,12 @@ def _get_version():  # pragma: no cover
 __version__ = _get_version()
 
 
-# Also support `version` for backward-compatabillity with <3.0 versions
 class _ModuleWrap(ModuleWrap):
     """
-    Wrap module with special deprecator to deprecate global objects.
+    Wrap module so that we can control `__getattribute__` and `__dir__` logic.
 
-    https://mail.python.org/pipermail/python-ideas/2012-May/014969.html
+    Treat `version` and `version_info` as deprecated properties.
+    Provides backward-compatabillity with <3.0 versions.
     """
 
     @property
