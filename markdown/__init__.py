@@ -78,14 +78,14 @@ class _ModuleWrap(ModuleWrap):
     def version(self):
         """Get deprecated version."""
 
-        return super(_ModuleWrap, self).__getattribute__('_module').__version__
+        return __version__
 
     @property
     @deprecated("Use '__version_info__' instead.", stacklevel=3)
     def version_info(self):
         """Get deprecated version info."""
 
-        return super(_ModuleWrap, self).__getattribute__('_module').__version_info__
+        return __version_info__
 
 
 _ModuleWrap(__name__)
