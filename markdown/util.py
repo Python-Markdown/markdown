@@ -196,7 +196,7 @@ class ModuleWrap(object):
         # Include the module's attributes and the the attributes that have been added.
         attr = (
             set(dir(super(ModuleWrap, self).__getattribute__('_module'))) |
-            (set(super(ModuleWrap, self).__dir__()) - set(dir(ModuleWrap)))
+            (set(self.__class__.__dict__.keys()) - set(ModuleWrap.__dict__.keys()))
         )
 
         return sorted(list(attr))
