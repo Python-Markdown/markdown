@@ -5,6 +5,7 @@ Abrahamsen
 Altmayer
 API
 Artem
+aspell
 Babelmark
 backtick
 backticks
@@ -19,6 +20,7 @@ CamelCase
 Chodarev
 CLI
 CodeHilite
+codehilite
 Cogumbreiro
 convertFile
 CSS
@@ -48,6 +50,7 @@ Kjell
 Krech
 kwargs
 Limberg
+MacOS
 Magne
 MAILTO
 makeExtension
@@ -69,6 +72,7 @@ OSX
 ol
 Ph
 PHP
+Posix
 postprocessor
 postprocessors
 preprocessor
@@ -112,6 +116,7 @@ Swartz
 Szakmeister
 Takteyev
 Tiago
+toc
 tokenized
 tox
 Trac
@@ -126,11 +131,13 @@ untrusted
 UTF
 uTidylib
 versa
+versioning
 Waylan
 whitelist
 WikiLink
 WikiLinks
 Wolever
+workflow
 Xanthakis
 XHTML
 xhtml
@@ -142,3 +149,4 @@ JavaScript
 plugin
 plugins
 configs
+pre
