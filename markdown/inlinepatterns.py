@@ -617,7 +617,7 @@ class ImageInlineProcessor(LinkInlineProcessor):
 
 class ReferenceInlineProcessor(LinkInlineProcessor):
     """ Match to a stored reference and return link element. """
-    NEWLINE_CLEANUP_RE = re.compile(r'[ ]?\n', re.MULTILINE)
+    NEWLINE_CLEANUP_RE = re.compile(r'\s+', re.MULTILINE)
 
     RE_LINK = re.compile(r'\s?\[([^\]]*)\]', re.DOTALL | re.UNICODE)
 

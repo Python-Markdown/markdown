@@ -134,3 +134,23 @@ class TestAdvancedLinks(TestCase):
             '[title](http://example.com/?a=1&#x26;b=2)',
             '<p><a href="http://example.com/?a=1&#x26;b=2">title</a></p>'
         )
+
+    def test_reference_newlines(self):
+        """Test reference id whitespace cleanup."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Two things:
+
+                 - I would like to tell you about the [code of
+                   conduct][] we are using in this project.
+                 - Only one in fact.
+
+                [code of conduct]: https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md
+                """
+            ),
+            '<p>Two things:</p>\n<ul>\n<li>I would like to tell you about the '
+            '<a href="https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md">code of\n'
+            '   conduct</a> we are using in this project.</li>\n<li>Only one in fact.</li>\n</ul>'
+        )
