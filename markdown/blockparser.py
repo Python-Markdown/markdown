@@ -22,6 +22,10 @@ License: BSD (see LICENSE.md for details).
 
 from __future__ import unicode_literals
 from __future__ import absolute_import
+
+from collections import deque
+from re import search, MULTILINE, DOTALL
+
 from . import util
 
 
@@ -77,6 +81,66 @@ class BlockParser:
         # TODO: remove this later
         return self.md
 
+    def splitChunks(self, src):
+        """ Split Markdown source text into a list of chunks.
+        
+        HTML blocks (<TAG>~</TAG>) and code blocks(```~```) are put together in a chunk.
+        """
+        HTML_BLOCK_START = r"<[^/>][^>]*>\Z"
+        HTML_BLOCK_END   = r"</[^>]*>\Z"
+        CODE_BLOCK_SEPT  = "```"
+
+        ret  = []
+        temp = ""
+        state = deque([""])
+        skips = 0
+
+        for i, c in enumerate(src):
+            if skips > 0:
+                skips -= 1
+                continue
+
+            if c == "\n" and state[-1] == "":
+                v = 1
+                while True:
+                    if i + v >= len(src):
+                        v = 2
+                        break
+                    if src[i+v] != "\n":
+                        break
+                    v += 1
+                if v > 1:
+                    ret.append(temp)
+                    temp = ""
+                    continue
+
+            temp += c
+
+            if search(HTML_BLOCK_END, temp, MULTILINE | DOTALL) and state[-1] != "CODE":
+                state.pop()
+                if state[-1] != "HTML":
+                    ret.append(temp)
+                    temp = ""
+                    continue
+
+            if search(HTML_BLOCK_START, temp, MULTILINE | DOTALL) and state[-1] != "CODE":
+                state.append("HTML")
+                continue
+
+            if temp.endswith(CODE_BLOCK_SEPT):
+                if state[-1] == "CODE":
+                    state.pop()
+                    if state[-1] == "":
+                        ret.append(temp)
+                        temp = ""
+                        continue
+                else:
+                    state.append("CODE")
+
+        if temp:
+            ret.append(temp)
+        return ret
+    
     def parseDocument(self, lines):
         """ Parse a markdown document into an ElementTree.
 
@@ -104,7 +168,7 @@ class BlockParser:
         Nothing is returned.
 
         """
-        self.parseBlocks(parent, text.split('\n\n'))
+        self.parseBlocks(parent, self.splitChunks(text))
 
     def parseBlocks(self, parent, blocks):
         """ Process blocks of markdown text and attach to given etree node.
