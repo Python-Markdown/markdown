@@ -154,3 +154,20 @@ class TestAdvancedLinks(TestCase):
             '<a href="https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md">code of\n'
             '   conduct</a> we are using in this project.</li>\n<li>Only one in fact.</li>\n</ul>'
         )
+
+    def test_reference_across_blocks(self):
+        """Test references across blocks."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                I would like to tell you about the [code of
+
+                conduct][] we are using in this project.
+
+                [code of conduct]: https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md
+                """
+            ),
+            '<p>I would like to tell you about the [code of</p>\n'
+            '<p>conduct][] we are using in this project.</p>'
+        )
