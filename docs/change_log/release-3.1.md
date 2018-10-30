@@ -35,3 +35,4 @@ The following bug fixes are included in the 3.1 release:
 * Block level elements are defined per instance, not as class attributes
   (#731).
 * Double escaping of block code has been eliminated (#725).
+* Problems with newlines in references has been fixed (#742).
