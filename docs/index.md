@@ -80,8 +80,7 @@ are summarized below:
     The [syntax rules](http://daringfireball.net/projects/markdown/syntax#list)
     clearly state that when a list item consists of multiple paragraphs, "each
     subsequent paragraph in a list item **must** be indented by either 4 spaces
-    or one tab" (emphasis added). However, many implementations – including the
-    original markdown.pl implementation itself – do not enforce
+    or one tab" (emphasis added). However, many implementations do not enforce
     this rule and allow less than 4 spaces of indentation. The implementers of
     Python-Markdown consider it a bug to not enforce this rule.
 
@@ -92,9 +91,8 @@ are summarized below:
     In the event that one would prefer different behavior,
     [tab_length](reference.md#tab_length) can be set to whatever length is
     desired. Be warned however, as this will affect indentation for all aspects
-    of the syntax (including root level code blocks). Alternatively, you could
-    use an [extension](https://github.com/Python-Markdown/markdown/wiki/Third-Party-Extensions)
-    (search for "indent").
+    of the syntax (including root level code blocks). Alternatively, a 
+    [third party extension] may offer a solution that meets your needs.
 
 * __Consecutive Lists__
 
@@ -111,5 +109,6 @@ Support
 You may ask for help and discuss various other issues on the [mailing list][]
 and report bugs on the [bug tracker][].
 
+[third party extension]: https://github.com/Python-Markdown/markdown/wiki/Third-Party-Extensions
 [mailing list]: http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss
 [bug tracker]: http://github.com/Python-Markdown/markdown/issues
