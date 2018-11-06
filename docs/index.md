@@ -93,8 +93,8 @@ are summarized below:
     [tab_length](reference.md#tab_length) can be set to whatever length is
     desired. Be warned however, as this will affect indentation for all aspects
     of the syntax (including root level code blocks). Alternatively, you could
-    use the [mdx_truly_sane_lists](https://github.com/radude/mdx_truly_sane_lists)
-    extension.
+    use an [extension](https://github.com/Python-Markdown/markdown/wiki/Third-Party-Extensions)
+    (search for "indent").
 
 * __Consecutive Lists__
 
