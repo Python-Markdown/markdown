@@ -91,7 +91,8 @@ are summarized below:
     In the event that one would prefer different behavior,
     [tab_length](reference.md#tab_length) can be set to whatever length is
     desired. Be warned however, as this will affect indentation for all aspects
-    of the syntax (including root level code blocks).
+    of the syntax (including root level code blocks). Alternatively, a 
+    [third party extension] may offer a solution that meets your needs.
 
 * __Consecutive Lists__
 
@@ -108,5 +109,6 @@ Support
 You may ask for help and discuss various other issues on the [mailing list][]
 and report bugs on the [bug tracker][].
 
+[third party extension]: https://github.com/Python-Markdown/markdown/wiki/Third-Party-Extensions
 [mailing list]: http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss
 [bug tracker]: http://github.com/Python-Markdown/markdown/issues
