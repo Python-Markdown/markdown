@@ -423,7 +423,9 @@ class Registry(object):
         if isinstance(key, string_type):
             warnings.warn(
                 'Using setitem to register a processor or pattern is deprecated. '
-                'Use the `register` method instead.', DeprecationWarning
+                'Use the `register` method instead.',
+                DeprecationWarning,
+                stacklevel=2,
             )
             if key in self:
                 # Key already exists, replace without altering priority
@@ -445,7 +447,9 @@ class Registry(object):
             self.deregister(key)
             warnings.warn(
                 'Using del to remove a processor or pattern is deprecated. '
-                'Use the `deregister` method instead.', DeprecationWarning
+                'Use the `deregister` method instead.',
+                DeprecationWarning,
+                stacklevel=2,
             )
         else:
             raise TypeError
@@ -488,5 +492,7 @@ class Registry(object):
         self.register(value, key, priority)
         warnings.warn(
             'Using the add method to register a processor or pattern is deprecated. '
-            'Use the `register` method instead.', DeprecationWarning
+            'Use the `register` method instead.',
+            DeprecationWarning,
+            stacklevel=2,
         )
