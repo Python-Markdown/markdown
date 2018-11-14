@@ -30,15 +30,14 @@ addons:
     - aspell-en
 
 install:
-  - pip install 'setuptools>=36'
-  - pip install tox
-  - pip install 'coverage<4.0'
-  - pip install codecov
+  # NOTE: setuptools needs to be installed explicitly for py34 (trusty).
+  - pip install 'setuptools>=36' tox
 
 script:
   - tox
 
 after_success:
+  - pip install codecov
   - codecov
 
 branches:
