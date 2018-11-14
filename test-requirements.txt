@@ -1,5 +1,0 @@
-coverage<4.0
-pyyaml
-pytidylib
-mkdocs>=1.0
-mkdocs-nature
