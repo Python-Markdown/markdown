@@ -80,7 +80,7 @@ setup(
     install_requires=['setuptools >= 36'],
     extras_require={
         'testing': [
-            'coverage<4.0',
+            'coverage<5.0',
             'pyyaml',
         ],
     },
