@@ -23,13 +23,16 @@ matrix:
       dist: trusty
     - env: TOXENV=flake8
     - env: TOXENV=checkspelling
+      addons:
+        apt:
+          packages:
+          - aspell
+          - aspell-en
 
 addons:
   apt:
     packages:
     - libtidy-0.99-0
-    - aspell
-    - aspell-en
 
 install:
   # NOTE: setuptools needs to be installed explicitly for py34 (trusty).
