@@ -564,8 +564,9 @@ registry: `register` and `deregister`. Use `register` to add items and
 `deregister` to remove items. See each method for specifics.
 
 When registering an item, a "name" and a "priority" must be provided. All
-items are automatically sorted by "priority" from highest to lowest. The
-"name" is used to remove (`deregister`) and get items.
+items are automatically sorted by the value of the "priority" parameter such
+that the item with the highest value will be processed first. The "name" is
+used to remove (`deregister`) and get items.
 
 A `Registry` instance is like a list (which maintains order) when reading
 data. You may iterate over the items, get an item and get a count (length)
