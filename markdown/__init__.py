@@ -23,8 +23,10 @@ License: BSD (see LICENSE.md for details).
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from .core import Markdown, markdown, markdownFromFile
-from .util import ModuleWrap, deprecated
+from .util import PY37
+from .pep562 import Pep562
 from pkg_resources.extern import packaging
+import warnings
 
 # For backward compatibility as some extensions expect it...
 from .extensions import Extension  # noqa
@@ -64,28 +66,31 @@ def _get_version():  # pragma: no cover
 
 __version__ = _get_version()
 
-
-class _ModuleWrap(ModuleWrap):
-    """
-    Wrap module so that we can control `__getattribute__` and `__dir__` logic.
-
-    Treat `version` and `version_info` as deprecated properties.
-    Provides backward-compatabillity with <3.0 versions.
-    """
-
-    @property
-    @deprecated("Use '__version__' instead.", stacklevel=3)
-    def version(self):
-        """Get deprecated version."""
-
-        return __version__
-
-    @property
-    @deprecated("Use '__version_info__' instead.", stacklevel=3)
-    def version_info(self):
-        """Get deprecated version info."""
-
-        return __version_info__
+__deprecated__ = {
+    "version": ("__version__", __version__),
+    "version_info": ("__version_info__", __version_info__)
+}
 
 
-_ModuleWrap(__name__)
+def __getattr__(name):
+    """Get attribute."""
+
+    deprecated = __deprecated__.get(name)
+    if deprecated:
+        warnings.warn(
+            "'{}' is deprecated. Use '{}' instead.".format(name, deprecated[0]),
+            category=DeprecationWarning,
+            stacklevel=(3 if PY37 else 4)
+        )
+        return deprecated[1]
+    raise AttributeError("module '{}' has no attribute '{}'".format(__name__, name))
+
+
+def __dir__():
+    """Module directory."""
+
+    return sorted(list(__all__) + ['__version__', '__version_info__'] + list(__deprecated__.keys()))
+
+
+if not PY37:
+    Pep562(__name__)
