@@ -708,3 +708,23 @@ class TestHashHeaders(TestCase):
                 """
             )
         )
+
+    def test_escaped_hash(self):
+        self.assertMarkdownRenders(
+            "### H3 \\###",
+            self.dedent(
+                """
+                <h3>H3 #</h3>
+                """
+            )
+        )
+
+    def test_unescaped_hash(self):
+        self.assertMarkdownRenders(
+            "### H3 \\\\###",
+            self.dedent(
+                """
+                <h3>H3 \\</h3>
+                """
+            )
+        )
