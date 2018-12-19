@@ -901,7 +901,7 @@ class TestCliOptionParsing(unittest.TestCase):
         self.default_options['extension_configs'] = config
         self.assertEqual(options, self.default_options)
 
-    def testExtensonConfigOptionAsJSON(self):
+    def testExtensionConfigOptionAsJSON(self):
         config = {
             'markdown.extensions.wikilinks': {
                 'base_url': 'http://example.com/',
@@ -918,10 +918,10 @@ class TestCliOptionParsing(unittest.TestCase):
         self.default_options['extension_configs'] = config
         self.assertEqual(options, self.default_options)
 
-    def testExtensonConfigOptionMissingFile(self):
+    def testExtensionConfigOptionMissingFile(self):
         self.assertRaises(IOError, parse_options, ['-c', 'missing_file.yaml'])
 
-    def testExtensonConfigOptionBadFormat(self):
+    def testExtensionConfigOptionBadFormat(self):
         config = """
 [footnotes]
 PLACE_MARKER= ~~~footnotes~~~
