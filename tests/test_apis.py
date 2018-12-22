@@ -1039,7 +1039,7 @@ class TestGeneralDeprecations(unittest.TestCase):
         """Tests the `__dir__` attribute of the class as it replaces the module's."""
 
         dir_attr = dir(markdown)
-        self.assertTrue('version' in dir_attr)
+        self.assertFalse('version' in dir_attr)
         self.assertTrue('__version__' in dir_attr)
-        self.assertTrue('version_info' in dir_attr)
+        self.assertFalse('version_info' in dir_attr)
         self.assertTrue('__version_info__' in dir_attr)
