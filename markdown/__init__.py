@@ -86,11 +86,5 @@ def __getattr__(name):
     raise AttributeError("module '{}' has no attribute '{}'".format(__name__, name))
 
 
-def __dir__():
-    """Module directory."""
-
-    return sorted(list(__all__) + ['__version__', '__version_info__'] + list(__deprecated__.keys()))
-
-
 if not PY37:
     Pep562(__name__)
