@@ -38,3 +38,4 @@ The following bug fixes are included in the 3.1 release:
 * Double escaping of block code has been eliminated (#725).
 * Problems with newlines in references has been fixed (#742).
 * Escaped `#` are now handled in header syntax (#762).
+* Overlapping raw HTML matches no longer leave placeholders behind (#458).
