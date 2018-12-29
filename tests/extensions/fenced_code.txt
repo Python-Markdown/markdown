@@ -32,3 +32,9 @@ index 0000000..6e956a9
 +                       CONTEXT_DIFF_LINE_PATTERN,
 +```
 ```
+
+<details>
+```
+Begone placeholders!
+```
+</details>
