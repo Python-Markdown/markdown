@@ -186,9 +186,13 @@ class TocTreeprocessor(Treeprocessor):
 
     def add_permalink(self, c, elem_id):
         permalink = etree.Element("a")
-        permalink.text = ("%spara;" % AMP_SUBSTITUTE
-                          if self.use_permalinks is True
-                          else self.use_permalinks)
+        content = ("%spara;" % AMP_SUBSTITUTE
+                   if self.use_permalinks is True
+                   else self.use_permalinks)
+        if content.startswith("<") and content.endswith(">"):
+            permalink.append(etree.fromstring(content))
+        else:
+            permalink.text = content
         permalink.attrib["href"] = "#" + elem_id
         permalink.attrib["class"] = "headerlink"
         permalink.attrib["title"] = "Permanent link"
