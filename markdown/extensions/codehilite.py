@@ -56,10 +56,12 @@ class CodeHilite(object):
     * src: Source string or any object with a .readline attribute.
 
     * linenums: (Boolean) Set line numbering to 'on' (True),
-      'off' (False) or 'auto'(None). Set to 'auto' by default.
+      'off' (False) or 'auto' (None). Set to 'auto' by default.
 
-    * guess_lang: (Boolean) Turn language auto-detection
-      'on' or 'off' (on by default).
+    * default_lang: The language to use if it cannot be determined otherwise.
+
+    * guess_lang: (Boolean) Turn language auto-detection 'on' or 'off' (on by
+      default). Not used if 'default_lang' is set.
 
     * css_class: Set class name of wrapper div ('codehilite' by default).
 
@@ -73,12 +75,14 @@ class CodeHilite(object):
 
     """
 
-    def __init__(self, src=None, linenums=None, guess_lang=True,
-                 css_class="codehilite", lang=None, style='default',
-                 noclasses=False, tab_length=4, hl_lines=None, use_pygments=True):
+    def __init__(self, src=None, linenums=None, default_lang='',
+                 guess_lang=True, css_class="codehilite", lang=None,
+                 style='default', noclasses=False, tab_length=4, hl_lines=None,
+                 use_pygments=True):
         self.src = src
         self.lang = lang
         self.linenums = linenums
+        self.default_lang = default_lang
         self.guess_lang = guess_lang
         self.css_class = css_class
         self.style = style
@@ -108,7 +112,9 @@ class CodeHilite(object):
                 lexer = get_lexer_by_name(self.lang)
             except ValueError:
                 try:
-                    if self.guess_lang:
+                    if self.default_lang:
+                        lexer = get_lexer_by_name(self.default_lang)
+                    elif self.guess_lang:
                         lexer = guess_lexer(self.src)
                     else:
                         lexer = get_lexer_by_name('text')
@@ -215,6 +221,7 @@ class HiliteTreeprocessor(Treeprocessor):
                 code = CodeHilite(
                     self.code_unescape(block[0].text),
                     linenums=self.config['linenums'],
+                    default_lang=self.config['default_lang'],
                     guess_lang=self.config['guess_lang'],
                     css_class=self.config['css_class'],
                     style=self.config['pygments_style'],
@@ -239,6 +246,9 @@ class CodeHiliteExtension(Extension):
         self.config = {
             'linenums': [None,
                          "Use lines numbers. True=yes, False=no, None=auto"],
+            'default_lang': ['',
+                             "The language to use if it cannot be determined "
+                             "otherwise"],
             'guess_lang': [True,
                            "Automatic language detection - Default: True"],
             'css_class': ["codehilite",
