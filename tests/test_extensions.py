@@ -902,6 +902,23 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</h1>'                                                                       # noqa
         )
 
+    def testPermalinkWithEtreeElement(self):
+        """ Test TOC Permalink with etree Element. """
+        from markdown.util import etree
+        element = etree.Element("span")
+        element.text = "&para;"
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(permalink=element)]
+        )
+        text = '# Header'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="header">'                                                                         # noqa
+                'Header'                                                                               # noqa
+                '<a class="headerlink" href="#header" title="Permanent link"><span>&para;</span></a>'  # noqa
+            '</h1>'                                                                                    # noqa
+        )
+
     def testPermalinkWithSingleInlineCode(self):
         """ Test TOC Permalink with single inline code. """
         md = markdown.Markdown(

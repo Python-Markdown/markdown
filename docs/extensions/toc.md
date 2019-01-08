@@ -160,7 +160,7 @@ The following options are provided to configure the output:
 
     When set to `True` the paragraph symbol (&para; or "`&para;`") is used as
     the link text. When set to a string, the provided string is used as the link
-    text.
+    text. When set to an `etree.Element`, the provided instance is used as a link child.
 
 * **`baselevel`**:
     Base level for headers. Defaults to `1`.

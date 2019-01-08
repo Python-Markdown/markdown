@@ -132,7 +132,7 @@ class TocTreeprocessor(Treeprocessor):
         self.sep = config["separator"]
         self.use_anchors = parseBoolValue(config["anchorlink"])
         self.use_permalinks = parseBoolValue(config["permalink"], False)
-        if self.use_permalinks is None:
+        if self.use_permalinks is None or isinstance(config["permalink"], etree.Element):
             self.use_permalinks = config["permalink"]
         self.header_rgx = re.compile("[Hh][123456]")
         self.toc_depth = config["toc_depth"]
@@ -186,13 +186,12 @@ class TocTreeprocessor(Treeprocessor):
 
     def add_permalink(self, c, elem_id):
         permalink = etree.Element("a")
-        content = ("%spara;" % AMP_SUBSTITUTE
-                   if self.use_permalinks is True
-                   else self.use_permalinks)
-        if content.startswith("<") and content.endswith(">"):
-            permalink.append(etree.fromstring(content))
+        if isinstance(self.use_permalinks, etree.Element):
+            permalink.append(self.use_permalinks)
         else:
-            permalink.text = content
+            permalink.text = ("%spara;" % AMP_SUBSTITUTE
+                              if self.use_permalinks is True
+                              else self.use_permalinks)
         permalink.attrib["href"] = "#" + elem_id
         permalink.attrib["class"] = "headerlink"
         permalink.attrib["title"] = "Permanent link"
@@ -260,7 +259,7 @@ class TocTreeprocessor(Treeprocessor):
 
                 if self.use_anchors:
                     self.add_anchor(el, el.attrib["id"])
-                if self.use_permalinks:
+                if self.use_permalinks or isinstance(self.use_permalinks, etree.Element):
                     self.add_permalink(el, el.attrib["id"])
 
         toc_tokens = nest_toc_tokens(toc_tokens)
