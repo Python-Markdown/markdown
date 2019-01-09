@@ -24,6 +24,7 @@ from .. import util
 from collections import OrderedDict
 import re
 import copy
+import string
 
 FN_BACKLINK_TEXT = util.STX + "zz1337820767766393qq" + util.ETX
 NBSP_PLACEHOLDER = util.STX + "qq3936677670287331zz" + util.ETX
@@ -57,7 +58,15 @@ class FootnoteExtension(Extension):
                  "footnote number."],
             "SEPARATOR":
                 [":",
-                 "Footnote separator."]
+                 "Footnote separator."],
+            'USE_LETTERS':
+                [False,
+                 "Use letters (a-z) instead of numbers"
+                 "as footnote markers."],
+            'SHOW_BACKLINKS':
+                [True,
+                 "Enable or disable backlinks"
+                 "from the footnote to the reader's place."]
         }
         super(FootnoteExtension, self).__init__(**kwargs)
 
@@ -171,6 +180,8 @@ class FootnoteExtension(Extension):
         div.set('class', 'footnote')
         util.etree.SubElement(div, "hr")
         ol = util.etree.SubElement(div, "ol")
+        if self.getConfig("USE_LETTERS"):
+            ol.set("style", "list-style-type:lower-alpha")
         surrogate_parent = util.etree.Element("div")
 
         for index, id in enumerate(self.footnotes.keys(), start=1):
@@ -183,23 +194,24 @@ class FootnoteExtension(Extension):
             for el in list(surrogate_parent):
                 li.append(el)
                 surrogate_parent.remove(el)
-            backlink = util.etree.Element("a")
-            backlink.set("href", "#" + self.makeFootnoteRefId(id))
-            backlink.set("class", "footnote-backref")
-            backlink.set(
-                "title",
-                self.getConfig("BACKLINK_TITLE") % (index)
-            )
-            backlink.text = FN_BACKLINK_TEXT
+            if self.getConfig("SHOW_BACKLINKS"):
+                backlink = util.etree.Element("a")
+                backlink.set("href", "#" + self.makeFootnoteRefId(id))
+                backlink.set("class", "footnote-backref")
+                backlink.set(
+                    "title",
+                    self.getConfig("BACKLINK_TITLE") % (index)
+                )
+                backlink.text = FN_BACKLINK_TEXT
 
-            if len(li):
-                node = li[-1]
-                if node.tag == "p":
-                    node.text = node.text + NBSP_PLACEHOLDER
-                    node.append(backlink)
-                else:
-                    p = util.etree.SubElement(li, "p")
-                    p.append(backlink)
+                if len(li):
+                    node = li[-1]
+                    if node.tag == "p":
+                        node.text = node.text + NBSP_PLACEHOLDER
+                        node.append(backlink)
+                    else:
+                        p = util.etree.SubElement(li, "p")
+                        p.append(backlink)
         return div
 
 
@@ -320,7 +332,12 @@ class FootnoteInlineProcessor(InlineProcessor):
             sup.set('id', self.footnotes.makeFootnoteRefId(id, found=True))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
             a.set('class', 'footnote-ref')
-            a.text = util.text_type(list(self.footnotes.footnotes.keys()).index(id) + 1)
+            idx = list(self.footnotes.footnotes.keys()).index(id) + 1
+            if self.footnotes.getConfig("USE_LETTERS") and idx <= 26:
+                d = dict(enumerate(string.ascii_lowercase, 1))
+                a.text = util.text_type(d[idx])
+            else:
+                a.text = util.text_type(idx)
             return sup, m.start(0), m.end(0)
         else:
             return None, None, None
