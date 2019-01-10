@@ -162,6 +162,9 @@ The following options are provided to configure the output:
     the link text. When set to a string, the provided string is used as the link
     text.
 
+* **`permalink_class`**:
+    CSS class(es) used for the link. Default to `headerlink`.
+
 * **`baselevel`**:
     Base level for headers. Defaults to `1`.
 
