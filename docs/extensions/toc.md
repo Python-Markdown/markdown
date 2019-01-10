@@ -154,6 +154,9 @@ The following options are provided to configure the output:
 * **`anchorlink`**:
     Set to `True` to cause all headers to link to themselves. Default is `False`.
 
+* **`anchorlink_class`**:
+    CSS class(es) used for the link. Defaults to `toclink`.
+
 * **`permalink`**:
     Set to `True` or a string to generate permanent links at the end of each header.
     Useful with Sphinx style sheets.
@@ -163,7 +166,7 @@ The following options are provided to configure the output:
     text.
 
 * **`permalink_class`**:
-    CSS class(es) used for the link. Default to `headerlink`.
+    CSS class(es) used for the link. Defaults to `headerlink`.
 
 * **`baselevel`**:
     Base level for headers. Defaults to `1`.

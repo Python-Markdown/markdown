@@ -888,6 +888,30 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</h1>'                                                         # noqa
         )
 
+    def testAnchorLinkWithCustomClass(self):
+        """ Test TOC Anchorlink with a custom CSS class. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(anchorlink=True, anchorlink_class="custom")]
+        )
+        text = '# Header 1\n\n## Header *2*'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="header-1"><a class="custom" href="#header-1">Header 1</a></h1>\n'
+            '<h2 id="header-2"><a class="custom" href="#header-2">Header <em>2</em></a></h2>'
+        )
+
+    def testAnchorLinkWithCustomClasses(self):
+        """ Test TOC Anchorlink with custom CSS classes. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(anchorlink=True, anchorlink_class="custom1 custom2")]
+        )
+        text = '# Header 1\n\n## Header *2*'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="header-1"><a class="custom1 custom2" href="#header-1">Header 1</a></h1>\n'
+            '<h2 id="header-2"><a class="custom1 custom2" href="#header-2">Header <em>2</em></a></h2>'
+        )
+
     def testPermalink(self):
         """ Test TOC Permalink. """
         md = markdown.Markdown(
