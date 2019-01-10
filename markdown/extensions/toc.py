@@ -257,7 +257,7 @@ class TocTreeprocessor(Treeprocessor):
 
                 if self.use_anchors:
                     self.add_anchor(el, el.attrib["id"])
-                if self.use_permalinks:
+                if self.use_permalinks is not False:
                     self.add_permalink(el, el.attrib["id"])
 
         toc_tokens = nest_toc_tokens(toc_tokens)
