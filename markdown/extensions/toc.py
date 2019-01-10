@@ -136,6 +136,7 @@ class TocTreeprocessor(Treeprocessor):
         self.slugify = config["slugify"]
         self.sep = config["separator"]
         self.use_anchors = parseBoolValue(config["anchorlink"])
+        self.anchorlink_class = config["anchorlink_class"]
         self.use_permalinks = parseBoolValue(config["permalink"], False)
         if self.use_permalinks is None:
             self.use_permalinks = config["permalink"]
@@ -185,7 +186,7 @@ class TocTreeprocessor(Treeprocessor):
         anchor = etree.Element("a")
         anchor.text = c.text
         anchor.attrib["href"] = "#" + elem_id
-        anchor.attrib["class"] = "toclink"
+        anchor.attrib["class"] = self.anchorlink_class
         c.text = ""
         for elem in c:
             anchor.append(elem)
@@ -296,6 +297,9 @@ class TocExtension(Extension):
             "anchorlink": [False,
                            "True if header should be a self link - "
                            "Defaults to False"],
+            "anchorlink_class": ['toclink',
+                                 'CSS class(es) used for the link. '
+                                 'Defaults to "toclink"'],
             "permalink": [0,
                           "True or link text if a Sphinx-style permalink should "
                           "be added - Defaults to False"],
