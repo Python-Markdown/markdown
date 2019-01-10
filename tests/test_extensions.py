@@ -928,6 +928,20 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</h1>'                                                                                          # noqa
         )
 
+    def testPermalinkWithEmptyText(self):
+        """ Test TOC Permalink with empty text. """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(permalink="")]
+        )
+        text = '# Header'
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="header">'                                                      # noqa
+                'Header'                                                            # noqa
+                '<a class="headerlink" href="#header" title="Permanent link"></a>'  # noqa
+            '</h1>'                                                                 # noqa
+        )
+
     def testPermalinkWithCustomClass(self):
         """ Test TOC Permalink with a custom CSS class. """
         md = markdown.Markdown(
