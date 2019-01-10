@@ -134,6 +134,7 @@ class TocTreeprocessor(Treeprocessor):
         self.use_permalinks = parseBoolValue(config["permalink"], False)
         if self.use_permalinks is None:
             self.use_permalinks = config["permalink"]
+        self.permalink_class = config["permalink_class"]
         self.header_rgx = re.compile("[Hh][123456]")
         self.toc_depth = config["toc_depth"]
 
@@ -190,7 +191,7 @@ class TocTreeprocessor(Treeprocessor):
                           if self.use_permalinks is True
                           else self.use_permalinks)
         permalink.attrib["href"] = "#" + elem_id
-        permalink.attrib["class"] = "headerlink"
+        permalink.attrib["class"] = self.permalink_class
         permalink.attrib["title"] = "Permanent link"
         c.append(permalink)
 
@@ -290,6 +291,9 @@ class TocExtension(Extension):
             "permalink": [0,
                           "True or link text if a Sphinx-style permalink should "
                           "be added - Defaults to False"],
+            "permalink_class": ['headerlink',
+                                'CSS class(es) used for the link. '
+                                'Defaults to "headerlink"'],
             "baselevel": ['1', 'Base level for headers.'],
             "slugify": [slugify,
                         "Function to generate anchors based on header text - "
