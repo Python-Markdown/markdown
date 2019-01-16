@@ -417,6 +417,11 @@ class Registry(object):
         else:
             raise TypeError
 
+    def keys(self):
+        """ Return all stored keys, sorted by decreasing priority. """
+        self._sort()
+        return [x.name for x in self._priority]
+
     def add(self, key, value, location):
         """ Register a key by location. """
         if len(self) == 0:

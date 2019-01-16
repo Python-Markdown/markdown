@@ -399,6 +399,16 @@ class RegistryTests(unittest.TestCase):
         self.assertEqual(len(r), 2)
         self.assertEqual(list(r), ['b2', 'a'])
 
+    def testGetKeys(self):
+        r = markdown.util.Registry()
+        r.register(Item('a'), 'a', 20)
+        r.register(Item('c'), 'c', 30)
+        r.register(Item('b'), 'b', 10)
+        r.register(Item('d'), 'd', 40)
+        self.assertEqual(r.keys(), ['d', 'c', 'a', 'b'])
+        r.deregister('c')
+        self.assertEqual(r.keys(), ['d', 'a', 'b'])
+
     def testRegistryDeprecatedAdd(self):
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
