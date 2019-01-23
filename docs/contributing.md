@@ -430,6 +430,7 @@ label from the same group.
 | `bug`{ .label .bug }         | Bug report.      |
 | `feature`{ .label .feature } | Feature request. |
 | `support`{ .label .support } | Support request. |
+| `process`{ .label .process } | Discussions regarding policies and development process. |
 
 ### Category of Issue or Pull Request
 
@@ -519,6 +520,9 @@ label from the same group.
     }
     code.support {
         background-color: #efbe62;
+    }
+    code.process {
+        background-color: #eec9ff;
     }
     code.core {
         background-color: #0b02e1;
