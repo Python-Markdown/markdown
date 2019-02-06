@@ -1108,3 +1108,15 @@ Must not be confused with 'ndash'  (--) ... >>
 is the &sbquo;mdash&lsquo;: \u2014
 Must not be confused with &sbquo;ndash&lsquo;  (\u2013) \u2026 ]</p>"""
         self.assertEqual(self.md.convert(text), correct)
+
+
+class TestAutoDirection(unittest.TestCase):
+    def setUp(self):
+        self.md = markdown.Markdown(extensions=['autodirection'])
+
+    def testSimple(self):
+        text = "This is a test"
+        self.assertEqual(
+            self.md.convert(text),
+            '<p dir="auto">This is a test</p>'
+        )

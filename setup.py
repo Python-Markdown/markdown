@@ -90,6 +90,7 @@ setup(
         ],
         # Register the built in extensions
         'markdown.extensions': [
+            'autodirection = markdown.extensions.autodirection:AutoDirectionExtension',
             'abbr = markdown.extensions.abbr:AbbrExtension',
             'admonition = markdown.extensions.admonition:AdmonitionExtension',
             'attr_list = markdown.extensions.attr_list:AttrListExtension',
