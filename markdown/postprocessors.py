@@ -81,9 +81,14 @@ class RawHtmlPostprocessor(Postprocessor):
 
         if replacements:
             pattern = re.compile("|".join(re.escape(k) for k in replacements))
-            text = pattern.sub(lambda m: replacements[m.group(0)], text)
+            processed_text = pattern.sub(lambda m: replacements[m.group(0)], text)
+        else:
+            return text
 
-        return text
+        if processed_text == text:
+            return processed_text
+        else:
+            return self.run(processed_text)
 
     def isblocklevel(self, html):
         m = re.match(r'^\<\/?([^ >]+)', html)
