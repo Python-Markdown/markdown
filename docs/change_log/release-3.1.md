@@ -31,6 +31,7 @@ The following new features have been included in the release:
 
 The following bug fixes are included in the 3.1 release:
 
+* Overlapping raw HTML matches no longer leave placeholders behind (#458).
 * Emphasis patterns now recognize newline characters as whitespace (#783).
 * Version format had been updated to be PEP 440 compliant (#736).
 * Block level elements are defined per instance, not as class attributes
@@ -38,4 +39,3 @@ The following bug fixes are included in the 3.1 release:
 * Double escaping of block code has been eliminated (#725).
 * Problems with newlines in references has been fixed (#742).
 * Escaped `#` are now handled in header syntax (#762).
-* Overlapping raw HTML matches no longer leave placeholders behind (#458).
