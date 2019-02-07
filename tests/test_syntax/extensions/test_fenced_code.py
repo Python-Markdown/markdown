@@ -23,6 +23,7 @@ License: BSD (see LICENSE.md for details).
 from __future__ import unicode_literals
 from markdown.test_tools import TestCase
 
+
 class TestFencedCode(TestCase):
 
     # TODO: Move the rest of the fenced code tests here.
