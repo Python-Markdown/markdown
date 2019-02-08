@@ -196,6 +196,14 @@ The following options are provided to configure the output:
 * **`separator`**:
     Word separator. Character which replaces white space in id. Defaults to "`-`".
 
+* **`toc_height`**
+    Define from to which section level "n" (`<hn>` to `<h6>`, where `1 <= n <= 6`)
+    to include in the Table of Contents. Defaults to `1`.
+
+    When used with conjunction with `baselevel` this parameter will not follow.
+    To exclude the first level, you have to add the count of `baselevel` to
+    `toc_height`.
+
 * **`toc_depth`**
     Define up to which section level "n" (`<h1>` to `<hn>`, where `1 <= n <= 6`)
     to include in the Table of Contents. Defaults to `6`.

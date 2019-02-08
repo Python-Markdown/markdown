@@ -1021,6 +1021,33 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '<h1 id="toc"><em>[TOC]</em></h1>'          # noqa
         )
 
+    def testMinLevel(self):
+        """ Test toc_height setting """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(toc_height=2)]
+        )
+        text = '# Header 1 not in TOC\n\n## Header 2\n\n###Header 3'
+        self.assertEqual(
+            md.convert(text),
+            '<h1>Header 1 not in TOC</h1>\n'
+            '<h2 id="header-2">Header 2</h2>\n'
+            '<h3 id="header-3">Header 3</h3>'
+        )
+        self.assertEqual(
+            md.toc,
+            '<div class="toc">\n'
+              '<ul>\n'                                             # noqa
+                '<li><a href="#header-2">Header 2</a>'             # noqa
+                  '<ul>\n'                                         # noqa
+                    '<li><a href="#header-3">Header 3</a></li>\n'  # noqa
+                  '</ul>\n'                                        # noqa
+                '</li>\n'                                          # noqa
+              '</ul>\n'                                            # noqa
+            '</div>\n'
+        )
+
+        self.assertNotIn("Header 1", md.toc)
+
     def testMaxLevel(self):
         """ Test toc_depth setting """
         md = markdown.Markdown(
@@ -1047,6 +1074,33 @@ class TestTOC(TestCaseWithAssertStartsWith):
         )
 
         self.assertNotIn("Header 3", md.toc)
+
+    def testMinLevelwithBaseLevel(self):
+        """ Test toc_height setting together with baselevel """
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(toc_height=4,
+                                                             baselevel=3)]
+        )
+        text = '# First Header\n\n## Second Level\n\n### Third Level'
+        self.assertEqual(
+            md.convert(text),
+            '<h3>First Header</h3>\n'
+            '<h4 id="second-level">Second Level</h4>\n'
+            '<h5 id="third-level">Third Level</h5>'
+        )
+        self.assertEqual(
+            md.toc,
+            '<div class="toc">\n'
+              '<ul>\n'                                                  # noqa
+                '<li><a href="#second-level">Second Level</a>'          # noqa
+                  '<ul>\n'                                              # noqa
+                    '<li><a href="#third-level">Third Level</a></li>\n' # noqa
+                  '</ul>\n'                                             # noqa
+                '</li>\n'                                               # noqa
+              '</ul>\n'                                                 # noqa
+            '</div>\n'
+        )
+        self.assertNotIn("First Header", md.toc)
 
     def testMaxLevelwithBaseLevel(self):
         """ Test toc_depth setting together with baselevel """
