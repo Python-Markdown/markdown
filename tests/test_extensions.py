@@ -1024,22 +1024,23 @@ class TestTOC(TestCaseWithAssertStartsWith):
     def testMinLevel(self):
         """ Test toc_height setting """
         md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(toc_height=2)]
+            extensions=[markdown.extensions.toc.TocExtension(toc_height=3)]
         )
-        text = '# Header 1 not in TOC\n\n## Header 2\n\n###Header 3'
+        text = '# Header 1 not in TOC\n\n## Header 2 not in TOC\n\n### Header 3\n\n####Header 4'
         self.assertEqual(
             md.convert(text),
             '<h1>Header 1 not in TOC</h1>\n'
-            '<h2 id="header-2">Header 2</h2>\n'
-            '<h3 id="header-3">Header 3</h3>'
+            '<h2>Header 2 not in TOC</h2>\n'
+            '<h3 id="header-3">Header 3</h3>\n'
+            '<h4 id="header-4">Header 4</h4>'
         )
         self.assertEqual(
             md.toc,
             '<div class="toc">\n'
               '<ul>\n'                                             # noqa
-                '<li><a href="#header-2">Header 2</a>'             # noqa
+                '<li><a href="#header-3">Header 3</a>'             # noqa
                   '<ul>\n'                                         # noqa
-                    '<li><a href="#header-3">Header 3</a></li>\n'  # noqa
+                    '<li><a href="#header-4">Header 4</a></li>\n'  # noqa
                   '</ul>\n'                                        # noqa
                 '</li>\n'                                          # noqa
               '</ul>\n'                                            # noqa
