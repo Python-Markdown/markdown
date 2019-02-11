@@ -197,12 +197,15 @@ The following options are provided to configure the output:
     Word separator. Character which replaces white space in id. Defaults to "`-`".
 
 * **`toc_height`**
-    Define from to which section level "n" (`<hn>` to `<h6>`, where `1 <= n <= 6`)
-    to include in the Table of Contents. Defaults to `1`.
+    Define the highest section level "n" (`<hn>` to `<h6>`, where `1 <= n <= 6`)
+    to include in the Table of Contents. Section levels above are omitted.
+    Defaults to `1`.
 
-    When used with conjunction with `baselevel` this parameter will not follow.
-    To exclude the first level, you have to add the count of `baselevel` to
-    `toc_height`.
+    When used with conjunction with `baselevel`, this parameter will not
+    take the fitted hierarchy from `baselevel` into account.
+    If you set `baselevel` to 3 and `toc_height` to 2, the *first* headline
+    will be `<h3>` and so still included in the Table of Contents. To exclude
+    this first level, you have to set `toc_height` to 4.
 
 * **`toc_depth`**
     Define up to which section level "n" (`<h1>` to `<hn>`, where `1 <= n <= 6`)

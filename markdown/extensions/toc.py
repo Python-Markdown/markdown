@@ -298,8 +298,8 @@ class TocExtension(Extension):
                         "Defaults to the headerid ext's slugify function."],
             'separator': ['-', 'Word separator. Defaults to "-".'],
             "toc_height": [1,
-                           "Define from to which section level n (<hn>..<h6>) to "
-                           "include in the TOC"],
+                           "Define the highest section level n (<hn>..<h6>) to"
+                           "include in the TOC. Section levels above are omitted."],
             "toc_depth": [6,
                           "Define up to which section level n (<h1>..<hn>) to "
                           "include in the TOC"]
