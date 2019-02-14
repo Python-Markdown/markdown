@@ -304,7 +304,7 @@ class TocExtension(Extension):
                           "Define the range of section levels to include in"
                           "the Table of Contents. A single integer (b) defines"
                           "the bottom section level (<h1>..<hb>) only."
-                          "Two digits seperated by a hyphen in between"
+                          "Two digits separated by a hyphen in between"
                           " (```2-5```), define the top (t) and the bottom (b)"
                           " (<ht>..<hb>). Defaults to `6` (bottom)."],
         }
