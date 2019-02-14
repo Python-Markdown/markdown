@@ -235,7 +235,7 @@ class TocTreeprocessor(Treeprocessor):
         for el in doc.iter():
             if isinstance(el.tag, string_type) and self.header_rgx.match(el.tag):
                 self.set_level(el)
-                if type( self.toc_depth ) != int:
+                if type(self.toc_depth) != int:
                     toc_top, toc_bottom = self.toc_depth.split('-')
                 else:
                     toc_top = 1
