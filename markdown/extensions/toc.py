@@ -135,7 +135,6 @@ class TocTreeprocessor(Treeprocessor):
         if self.use_permalinks is None:
             self.use_permalinks = config["permalink"]
         self.header_rgx = re.compile("[Hh][123456]")
-        self.toc_height = config["toc_height"]
         self.toc_depth = config["toc_depth"]
 
     def iterparent(self, node):
@@ -236,8 +235,12 @@ class TocTreeprocessor(Treeprocessor):
         for el in doc.iter():
             if isinstance(el.tag, string_type) and self.header_rgx.match(el.tag):
                 self.set_level(el)
-                if int(el.tag[-1]) < int(self.toc_height) or int(el.tag[-1]) > int(self.toc_depth):
-
+                if type( self.toc_depth ) != int:
+                    toc_top, toc_bottom = self.toc_depth.split('-')
+                else:
+                    toc_top = 1
+                    toc_bottom = self.toc_depth
+                if int(el.tag[-1]) < int(toc_top) or int(el.tag[-1]) > int(toc_bottom):
                     continue
                 text = ''.join(el.itertext()).strip()
 
@@ -297,12 +300,13 @@ class TocExtension(Extension):
                         "Function to generate anchors based on header text - "
                         "Defaults to the headerid ext's slugify function."],
             'separator': ['-', 'Word separator. Defaults to "-".'],
-            "toc_height": [1,
-                           "Define the highest section level n (<hn>..<h6>) to"
-                           "include in the TOC. Section levels above are omitted."],
             "toc_depth": [6,
-                          "Define up to which section level n (<h1>..<hn>) to "
-                          "include in the TOC"]
+                          "Define the range of section levels to include in"
+                          "the Table of Contents. A single integer (b) defines"
+                          "the bottom section level (<h1>..<hb>) only."
+                          "Two digits seperated by a hyphen in between"
+                          " (```2-5```), define the top (t) and the bottom (b)"
+                          " (<ht>..<hb>). Defaults to `6` (bottom)."],
         }
 
         super(TocExtension, self).__init__(**kwargs)

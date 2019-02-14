@@ -196,21 +196,16 @@ The following options are provided to configure the output:
 * **`separator`**:
     Word separator. Character which replaces white space in id. Defaults to "`-`".
 
-* **`toc_height`**
-    Define the highest section level "n" (`<hn>` to `<h6>`, where `1 <= n <= 6`)
-    to include in the Table of Contents. Section levels above are omitted.
-    Defaults to `1`.
+* **`toc_depth`**
+    Define the range of section levels to include in the Table of Contents.
+    A single integer (b) defines the bottom section level (<h1>..<hb>) only.
+    Two digits seperated by a hyphen in between (```2-5```), define the
+    top (t) and the bottom (b) (<ht>..<hb>). Defaults to `6` (bottom).
 
     When used with conjunction with `baselevel`, this parameter will not
-    take the fitted hierarchy from `baselevel` into account.
-    If you set `baselevel` to 3 and `toc_height` to 2, the *first* headline
-    will be `<h3>` and so still included in the Table of Contents. To exclude
-    this first level, you have to set `toc_height` to 4.
-
-* **`toc_depth`**
-    Define up to which section level "n" (`<h1>` to `<hn>`, where `1 <= n <= 6`)
-    to include in the Table of Contents. Defaults to `6`.
-
-    When used with conjunction with `baselevel` this parameter will limit the
-    resulting (adjusted) heading. That is, if both `toc_depth` and `baselevel`
-    are 3, then only the highest level will be present in the table.
+    take the fitted hierarchy from `baselevel` into account. That is, if
+    both `toc_depth` and `baselevel` are 3, then only the highest level
+    will be present in the table. If you set `baselevel` to 3 and
+    `toc_depth` to '2-6', the *first* headline will be `<h3>` and so still
+    included in the Table of Contents. To exclude this first level, you
+    have to set `toc_depth` to '4-6'.

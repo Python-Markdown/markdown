@@ -1021,10 +1021,10 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '<h1 id="toc"><em>[TOC]</em></h1>'          # noqa
         )
 
-    def testMinLevel(self):
+    def testMinMaxLevel(self):
         """ Test toc_height setting """
         md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(toc_height=3)]
+            extensions=[markdown.extensions.toc.TocExtension(toc_depth='3-4')]
         )
         text = '# Header 1 not in TOC\n\n## Header 2 not in TOC\n\n### Header 3\n\n####Header 4'
         self.assertEqual(
@@ -1076,10 +1076,10 @@ class TestTOC(TestCaseWithAssertStartsWith):
 
         self.assertNotIn("Header 3", md.toc)
 
-    def testMinLevelwithBaseLevel(self):
+    def testMinMaxLevelwithBaseLevel(self):
         """ Test toc_height setting together with baselevel """
         md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(toc_height=4,
+            extensions=[markdown.extensions.toc.TocExtension(toc_depth='4-6',
                                                              baselevel=3)]
         )
         text = '# First Header\n\n## Second Level\n\n### Third Level'
