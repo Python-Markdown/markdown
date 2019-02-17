@@ -301,12 +301,12 @@ class TocExtension(Extension):
                         "Defaults to the headerid ext's slugify function."],
             'separator': ['-', 'Word separator. Defaults to "-".'],
             "toc_depth": [6,
-                          "Define the range of section levels to include in"
-                          "the Table of Contents. A single integer (b) defines"
-                          "the bottom section level (<h1>..<hb>) only."
-                          "Two digits separated by a hyphen in between"
-                          " (```2-5```), define the top (t) and the bottom (b)"
-                          " (<ht>..<hb>). Defaults to `6` (bottom)."],
+                          'Define the range of section levels to include in'
+                          'the Table of Contents. A single integer (b) defines'
+                          'the bottom section level (<h1>..<hb>) only.'
+                          'A string consisting of two digits separated by a hyphen'
+                          'in between ("2-5"), define the top (t) and the'
+                          'bottom (b) (<ht>..<hb>). Defaults to `6` (bottom).'],
         }
 
         super(TocExtension, self).__init__(**kwargs)

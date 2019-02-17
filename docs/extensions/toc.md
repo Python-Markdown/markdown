@@ -199,8 +199,8 @@ The following options are provided to configure the output:
 * **`toc_depth`**
     Define the range of section levels to include in the Table of Contents.
     A single integer (b) defines the bottom section level (<h1>..<hb>) only.
-    Two digits separated by a hyphen in between (```2-5```), define the
-    top (t) and the bottom (b) (<ht>..<hb>). Defaults to `6` (bottom).
+    A string consisting of two digits separated by a hyphen in between ("2-5"),
+    define the top (t) and the bottom (b) (<ht>..<hb>). Defaults to `6` (bottom).
 
     When used with conjunction with `baselevel`, this parameter will not
     take the fitted hierarchy from `baselevel` into account. That is, if
