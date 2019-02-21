@@ -135,12 +135,11 @@ class TocTreeprocessor(Treeprocessor):
         if self.use_permalinks is None:
             self.use_permalinks = config["permalink"]
         self.header_rgx = re.compile("[Hh][123456]")
-        self.toc_depth = config["toc_depth"]
-        if type(self.toc_depth) is not int:
-            self.toc_top, self.toc_bottom = self.toc_depth.split('-')
+        if isinstance(config["toc_depth"], basestring) and '-' in config["toc_depth"]:
+            self.toc_top, self.toc_bottom = [int(x) for x in config["toc_depth"].split('-')]
         else:
             self.toc_top = 1
-            self.toc_bottom = self.toc_depth
+            self.toc_bottom = int(config["toc_depth"])
 
     def iterparent(self, node):
         ''' Iterator wrapper to get allowed parent and child all at once. '''
@@ -240,7 +239,7 @@ class TocTreeprocessor(Treeprocessor):
         for el in doc.iter():
             if isinstance(el.tag, string_type) and self.header_rgx.match(el.tag):
                 self.set_level(el)
-                if int(el.tag[-1]) < int(self.toc_top) or int(el.tag[-1]) > int(self.toc_bottom):
+                if int(el.tag[-1]) < self.toc_top or int(el.tag[-1]) > self.toc_bottom:
                     continue
                 text = ''.join(el.itertext()).strip()
 
