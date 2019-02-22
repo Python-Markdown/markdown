@@ -27,6 +27,12 @@ The following new features have been included in the release:
   not valid in HTML5. The `refs` and `backrefs` classes already exist and
   serve the same purpose (#723).
 
+* A new option for `toc_depth` to set not only the bottom section level,
+  but also the top section level. A string consisting of two digits
+  separated by a hyphen in between ("2-5"), defines the top (t) and the
+  bottom (b) (<ht>..<hb>). A single integer still defines the bottom
+  section level (<h1>..<hb>) only. (#787).
+
 ## Bug fixes
 
 The following bug fixes are included in the 3.1 release:
