@@ -135,7 +135,7 @@ class TocTreeprocessor(Treeprocessor):
         if self.use_permalinks is None:
             self.use_permalinks = config["permalink"]
         self.header_rgx = re.compile("[Hh][123456]")
-        if isinstance(config["toc_depth"], basestring) and '-' in config["toc_depth"]:
+        if isinstance(config["toc_depth"], string_type) and '-' in config["toc_depth"]:
             self.toc_top, self.toc_bottom = [int(x) for x in config["toc_depth"].split('-')]
         else:
             self.toc_top = 1
