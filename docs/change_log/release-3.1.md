@@ -2,7 +2,7 @@ title: Release Notes for v3.1
 
 # Python-Markdown 3.1 Release Notes
 
-Python-Markdown version 3.1 supports Python versions 2.7, 3.4, 3.5, 3.6, 3.7,
+Python-Markdown version 3.1 supports Python versions 2.7, 3.5, 3.6, 3.7,
 PyPy and PyPy3.
 
 ## Backwards-incompatible changes
@@ -29,9 +29,9 @@ The following new features have been included in the release:
 
 * A new option for `toc_depth` to set not only the bottom section level,
   but also the top section level. A string consisting of two digits
-  separated by a hyphen in between ("2-5"), defines the top (t) and the
-  bottom (b) (<ht>..<hb>). A single integer still defines the bottom
-  section level (<h1>..<hb>) only. (#787).
+  separated by a hyphen in between (`"2-5"`), defines the top (`t`) and the
+  bottom (`b`) (`<ht>..<hb>`). A single integer still defines the bottom
+  section level (`<h1>..<hb>`) only. (#787).
 
 ## Bug fixes
 
