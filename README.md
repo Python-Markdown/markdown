@@ -43,10 +43,8 @@ See the change log at <https://Python-Markdown.github.io/change_log>.
 Support
 -------
 
-You may ask for help and discuss various other issues on the [mailing list][]
-and report bugs on the [bug tracker][].
+You may report bugs, ask for help, and discuss various other issues on the [bug tracker][].
 
-[mailing list]: http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss
 [bug tracker]: http://github.com/Python-Markdown/markdown/issues
 
 Code of Conduct
