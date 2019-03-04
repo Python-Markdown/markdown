@@ -55,10 +55,9 @@ supported by the `Available Extensions`_.
 Support
 =======
 
-You may ask for help and discuss various other issues on the
-`mailing list`_ and report bugs on the `bug tracker`_.
+You may report bugs, ask for help, and discuss various other issues on
+the `bug tracker`_.
 
-.. _`mailing list`: http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss
 .. _`bug tracker`: http://github.com/Python-Markdown/markdown/issues
 '''
 
