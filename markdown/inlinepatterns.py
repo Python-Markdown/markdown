@@ -147,10 +147,10 @@ IMAGE_REFERENCE_RE = IMAGE_LINK_RE
 NOT_STRONG_RE = r'((^|\s)(\*|_)(\s|$))'
 
 # <http://www.123.com>
-AUTOLINK_RE = r'<((?:[Ff]|[Hh][Tt])[Tt][Pp][Ss]?://[^>]*)>'
+AUTOLINK_RE = r'<((?:[Ff]|[Hh][Tt])[Tt][Pp][Ss]?://[^<>]*)>'
 
 # <me@example.com>
-AUTOMAIL_RE = r'<([^> \!]*@[^> ]*)>'
+AUTOMAIL_RE = r'<([^<> !]*@[^@<> ]*)>'
 
 # <...>
 HTML_RE = r'(\<([a-zA-Z/][^\>]*?|\!--.*?--)\>)'
@@ -433,7 +433,7 @@ class HtmlInlineProcessor(InlineProcessor):
 
 class LinkInlineProcessor(InlineProcessor):
     """ Return a link element from the given match. """
-    RE_LINK = re.compile(r'''\(\s*(?:(<.*?>)\s*(?:(['"])(.*?)\2\s*)?\))?''', re.DOTALL | re.UNICODE)
+    RE_LINK = re.compile(r'''\(\s*(?:(<[^<>]*>)\s*(?:('[^']*'|"[^"]*")\s*)?\))?''', re.DOTALL | re.UNICODE)
     RE_TITLE_CLEAN = re.compile(r'\s')
 
     def handleMatch(self, m, data):
@@ -467,8 +467,8 @@ class LinkInlineProcessor(InlineProcessor):
         if m and m.group(1):
             # Matches [Text](<link> "title")
             href = m.group(1)[1:-1].strip()
-            if m.group(3):
-                title = m.group(3)
+            if m.group(2):
+                title = m.group(2)[1:-1]
             index = m.end(0)
             handled = True
         elif m:
