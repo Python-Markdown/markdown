@@ -35,6 +35,7 @@ import re
 import xml.etree.ElementTree as etree
 from . import util
 from .blockparser import BlockParser
+from .htmlparser import HTMLExtractor
 
 logger = logging.getLogger('MARKDOWN')
 
@@ -45,6 +46,7 @@ def build_block_parser(md, **kwargs):
     parser.blockprocessors.register(EmptyBlockProcessor(parser), 'empty', 100)
     parser.blockprocessors.register(ListIndentProcessor(parser), 'indent', 90)
     parser.blockprocessors.register(CodeBlockProcessor(parser), 'code', 80)
+    parser.blockprocessors.register(RawHtmlProcessor(parser), 'html', 75)
     parser.blockprocessors.register(HashHeaderProcessor(parser), 'hashheader', 70)
     parser.blockprocessors.register(SetextHeaderProcessor(parser), 'setextheader', 60)
     parser.blockprocessors.register(HRProcessor(parser), 'hr', 50)
@@ -269,6 +271,27 @@ class CodeBlockProcessor(BlockProcessor):
             # line. Insert these lines as the first block of the master blocks
             # list for future processing.
             blocks.insert(0, theRest)
+
+
+class RawHtmlProcessor(BlockProcessor):
+
+    TAG_RE = re.compile(r'^\<(?P<tag>[^<> ]+)[^<>]*>')
+
+    def test(self, parent, block):
+        m = self.TAG_RE.match(block)
+        return m and self.parser.md.is_block_level(m.group('tag'))
+
+    def run(self, parent, blocks):
+        parser = HTMLExtractor(md=self.parser.md)
+        while blocks:
+            parser.feed(blocks.pop(0) + '\n\n')
+            if not parser.inraw:
+                break
+        # Insert Markdown back into blocks with raw HTML extracted.
+        parts = ''.join(parser.cleandoc).split('\n\n')
+        parts.reverse()
+        for block in parts:
+            blocks.insert(0, block)
 
 
 class BlockQuoteProcessor(BlockProcessor):
