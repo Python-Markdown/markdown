@@ -63,7 +63,7 @@ class HTMLExtractor(HTMLParser):
             self.cleandoc.append(text)
 
     def handle_endtag(self, tag):
-        text = '<{0}/>'.format(tag)
+        text = '</{0}>'.format(tag)
         if tag in self.stack:
             while self.stack:
                 if self.stack.pop() == tag:
