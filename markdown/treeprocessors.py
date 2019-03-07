@@ -74,7 +74,6 @@ class InlineProcessor(Treeprocessor):
                                       + len(self.__placeholder_suffix)
         self.__placeholder_re = util.INLINE_PLACEHOLDER_RE
         self.md = md
-        self.inlinePatterns = md.inlinePatterns
         self.ancestors = []
 
     @property
@@ -128,9 +127,9 @@ class InlineProcessor(Treeprocessor):
         """
         if not isinstance(data, util.AtomicString):
             startIndex = 0
-            while patternIndex < len(self.inlinePatterns):
+            while patternIndex < len(self.md.inlinePatterns):
                 data, matched, startIndex = self.__applyPattern(
-                    self.inlinePatterns[patternIndex], data, patternIndex, startIndex
+                    self.md.inlinePatterns[patternIndex], data, patternIndex, startIndex
                 )
                 if not matched:
                     patternIndex += 1
