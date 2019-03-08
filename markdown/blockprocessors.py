@@ -290,6 +290,7 @@ class RawHtmlProcessor(BlockProcessor):
             parser.feed(blocks.pop(0) + '\n\n')
             if not parser.inraw:
                 break
+        parser.close()
         # Insert Markdown back into blocks with raw HTML extracted.
         parts = ''.join(parser.cleandoc).split('\n\n')
         parts.reverse()
