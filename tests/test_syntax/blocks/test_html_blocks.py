@@ -20,7 +20,6 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-import unittest
 from markdown.test_tools import TestCase
 
 
@@ -67,6 +66,30 @@ class TestHTMLBlocks(TestCase):
         self.assertMarkdownRenders(
             '`<em>code span</em>`',
             '<p><code>&lt;em&gt;code span&lt;/em&gt;</code></p>'
+        )
+
+    def test_raw_empty(self):
+        self.assertMarkdownRenders(
+            '<p></p>',
+            '<p></p>'
+        )
+
+    def test_raw_empty_space(self):
+        self.assertMarkdownRenders(
+            '<p> </p>',
+            '<p> </p>'
+        )
+
+    def test_raw_empty_newline(self):
+        self.assertMarkdownRenders(
+            '<p>\n</p>',
+            '<p>\n</p>'
+        )
+
+    def test_raw_empty_blank_line(self):
+        self.assertMarkdownRenders(
+            '<p>\n\n</p>',
+            '<p>\n\n</p>'
         )
 
     def test_multiline_raw(self):
@@ -308,3 +331,206 @@ class TestHTMLBlocks(TestCase):
                 """
             )
         )
+
+    def test_raw_nested_inline(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div>
+                    <p>
+                        <span>*text*</span>
+                    </p>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                    <p>
+                        <span>*text*</span>
+                    </p>
+                </div>
+                """
+            )
+        )
+
+    def test_raw_nested_inline_with_blank_lines(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div>
+
+                    <p>
+
+                        <span>*text*</span>
+
+                    </p>
+
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+
+                    <p>
+
+                        <span>*text*</span>
+
+                    </p>
+
+                </div>
+                """
+            )
+        )
+
+    # TODO: fix this. Presumably as the parser finishes things up in the `handle_endtag`
+    # method and as there is no end tag here, that code never gets run. Is there a way
+    # to retrieve the unprocessed source text from HTMLParser? May have to read the source.
+    # The `test_raw_nested_p_no_end_tag` below works because of the closing `</div>`.
+    def test_raw_p_no_end_tag(self):
+        self.assertMarkdownRenders(
+            '<p>*text*',
+            '<p>*text*'
+        )
+
+    # TODO: fix this. See comment on previous test method.
+    def test_raw_multiple_p_no_end_tag(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <p>*text*'
+
+                <p>more *text*
+                """
+            ),
+            self.dedent(
+                """
+                <p>*text*'
+
+                <p>more *text*
+                """
+            )
+        )
+
+    # TODO: fix this. See comment on previous test method.
+    def test_raw_p_no_end_tag_followed_by_blank_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <p>*raw text*'
+
+                Still part of *raw* text.
+                """
+            ),
+            self.dedent(
+                """
+                <p>*raw text*'
+
+                Still part of *raw* text.
+                """
+            )
+        )
+
+    def test_raw_nested_p_no_end_tag(self):
+        self.assertMarkdownRenders(
+            '<div><p>*text*</div>',
+            '<div><p>*text*</div>'
+        )
+
+    def test_raw_open_bracket_only(self):
+        self.assertMarkdownRenders(
+            '<',
+            '<p>&lt;</p>'
+        )
+
+    def test_raw_open_bracket_followed_by_space(self):
+        self.assertMarkdownRenders(
+            '< foo',
+            '<p>&lt; foo</p>'
+        )
+
+    def test_raw_missing_close_bracket(self):
+        self.assertMarkdownRenders(
+            '<foo',
+            '<p>&lt;foo</p>'
+        )
+
+    def test_raw_attributes(self):
+        self.assertMarkdownRenders(
+            '<p id="foo", class="bar baz", style="margin: 15px; line-height: 1.5; text-align: center;">text</p>',
+            '<p id="foo", class="bar baz", style="margin: 15px; line-height: 1.5; text-align: center;">text</p>'
+        )
+
+    def test_raw_attributes_nested(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div id="foo, class="bar", style="background: #ffe7e8; border: 2px solid #e66465;">
+                    <p id="baz", style="margin: 15px; line-height: 1.5; text-align: center;">text</p>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div id="foo, class="bar", style="background: #ffe7e8; border: 2px solid #e66465;">
+                    <p id="baz", style="margin: 15px; line-height: 1.5; text-align: center;">text</p>
+                </div>
+                """
+            )
+        )
+
+    def test_raw_comment_one_line(self):
+        self.assertMarkdownRenders(
+            '<!-- *foo* -->',
+            '<!-- *foo* -->'
+        )
+
+    # TODO: Confirm this is correct
+    def test_raw_comment_one_line_followed_by_text(self):
+        self.assertMarkdownRenders(
+            '<!-- *foo* -->*bar*',
+            '<!-- *foo* -->*bar*'
+        )
+
+    def test_raw_multiline_comment(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!--
+                *foo*
+                -->
+                """
+            ),
+            self.dedent(
+                """
+                <!--
+                *foo*
+                -->
+                """
+            )
+        )
+
+    def test_raw_comment_with_blank_lines(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!--
+
+                *foo*
+
+                -->
+                """
+            ),
+            self.dedent(
+                """
+                <!--
+
+                *foo*
+
+                -->
+                """
+            )
+        )
+
+    # TODO: processing instruction, declaration, CDATA...
