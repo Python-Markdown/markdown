@@ -50,8 +50,10 @@ class HTMLExtractor(HTMLParser):
     def close(self):
         """Handle any buffered data."""
         HTMLParser.close(self)  # TODO: Use super when we drop PY2 support
+        # Handle any unclosed tags.
         if len(self._cache):
             self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
+            self._cache = []
 
     def handle_starttag(self, tag, attrs):
         self.stack.append(tag)
