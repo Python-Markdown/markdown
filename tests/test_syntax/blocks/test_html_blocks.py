@@ -486,7 +486,18 @@ class TestHTMLBlocks(TestCase):
             '<!-- *foo* -->'
         )
 
-    # TODO: Confirm this is correct
+    # TODO: Decide behavior here. Python-Markdown current outputs:
+    #
+    #   <!-- *foo* -->
+    #   <p><em>bar</em></p>
+    #
+    # But the reference implementation outputs:
+    #
+    #   <p><!-- *foo* --><em>bar</em></p>
+    #
+    # As the raw HTML is not alone on the line, the reference implementation
+    # considers it inline rather than block level. The behavior defined in
+    # the test below is from the CommonMark spec, which we don't follow.
     def test_raw_comment_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             '<!-- *foo* -->*bar*',
@@ -533,4 +544,223 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
-    # TODO: processing instruction, declaration, CDATA...
+    def test_raw_comment_indented(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!--
+
+                    *foo*
+
+                -->
+                """
+            ),
+            self.dedent(
+                """
+                <!--
+
+                    *foo*
+
+                -->
+                """
+            )
+        )
+
+    def test_raw_processing_instruction_one_line(self):
+        self.assertMarkdownRenders(
+            "<?php echo '>';' ?>",
+            "<?php echo '>';' ?>"
+        )
+
+    # This is inline as it is not on a line by itself.
+    def test_raw_processing_instruction_one_line_followed_by_text(self):
+        self.assertMarkdownRenders(
+            "<?php echo '>';' ?>*bar*",
+            "<p><?php echo '>'; ' ?><em>bar</em></p>"
+        )
+
+    def test_raw_multiline_processing_instruction(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <?php
+                echo '>';'
+                ?>
+                """
+            ),
+            self.dedent(
+                """
+                <?php
+                echo '>';'
+                ?>
+                """
+            )
+        )
+
+    def test_raw_processing_instruction_with_blank_lines(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <?php
+
+                echo '>';'
+
+                ?>
+                """
+            ),
+            self.dedent(
+                """
+                <?php
+
+                echo '>';'
+
+                ?>
+                """
+            )
+        )
+
+    def test_raw_processing_instruction_indented(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <?php
+
+                    echo '>';'
+
+                ?>
+                """
+            ),
+            self.dedent(
+                """
+                <?php
+
+                    echo '>';'
+
+                ?>
+                """
+            )
+        )
+
+    def test_raw_declaration_one_line(self):
+        self.assertMarkdownRenders(
+            '<!DOCTYPE html>',
+            '<!DOCTYPE html>'
+        )
+
+    # TODO: Decide correct behavior. This matches current behavior and Commonmark.
+    # The reference implementation considers this inline not block level:
+    #
+    #   <p><!DOCTYPE html><em>bar</em></p>
+    #
+    # But most implementations do this instead:
+    #
+    #   <p>&lt;!DOCTYPE html&gt;<em>bar</em></p>
+    #
+    # Either makes sense, but the later seems more correct to me.
+    def test_raw_declaration_one_line_followed_by_text(self):
+        self.assertMarkdownRenders(
+            '<!DOCTYPE html>*bar*',
+            '<!DOCTYPE html>*bar*'
+        )
+
+    def test_raw_multiline_declaration(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!DOCTYPE html PUBLIC
+                  "-//W3C//DTD XHTML 1.1//EN"
+                  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+                """
+            ),
+            self.dedent(
+                """
+                <!DOCTYPE html PUBLIC
+                  "-//W3C//DTD XHTML 1.1//EN"
+                  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+                """
+            )
+        )
+
+    def test_raw_cdata_one_line(self):
+        self.assertMarkdownRenders(
+            '<![CDATA[ document.write(">"); ]]>',
+            '<![CDATA[ document.write(">"); ]]>'
+        )
+
+    # TODO: Decide correct behavior. This matches current behavior and Commonmark.
+    # The reference implementation considers this inline not block level:
+    #
+    #   <p><![CDATA[ document.write(">"); ]]><em>bar</em></p>
+    #
+    # But most implementations do this instead:
+    #
+    #   <p>&lt;[CDATA[ document.write(“&gt;”); ]]&gt;<em>bar</em></p>
+    #
+    # Either makes sense, but the later seems more correct to me.
+    def test_raw_cdata_one_line_followed_by_text(self):
+        self.assertMarkdownRenders(
+            '<![CDATA[ document.write(">"); ]]>*bar*',
+            '<![CDATA[ document.write(">"); ]]>*bar*'
+        )
+
+    def test_raw_multiline_cdata(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <![CDATA[
+                document.write(">");
+                ]]>
+                """
+            ),
+            self.dedent(
+                """
+                <![CDATA[
+                document.write(">");
+                ]]>
+                """
+            )
+        )
+
+    def test_raw_cdata_with_blank_lines(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <![CDATA[
+
+                document.write(">");
+
+                ]]>
+                """
+            ),
+            self.dedent(
+                """
+                <![CDATA[
+
+                document.write(">");
+
+                ]]>
+                """
+            )
+        )
+
+    def test_raw_cdata_indented(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <![CDATA[
+
+                    document.write(">");
+
+                ]]>
+                """
+            ),
+            self.dedent(
+                """
+                <![CDATA[
+
+                    document.write(">");
+
+                ]]>
+                """
+            )
+        )
