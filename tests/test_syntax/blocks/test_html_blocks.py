@@ -565,6 +565,24 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
+    def test_raw_comment_nested(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div>
+                <!-- *foo* -->
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <!-- *foo* -->
+                </div>
+                """
+            )
+        )
+
     def test_raw_processing_instruction_one_line(self):
         self.assertMarkdownRenders(
             "<?php echo '>';' ?>",

@@ -91,3 +91,13 @@ class HTMLExtractor(HTMLParser):
             self._cache.append(data)
         else:
             self.cleandoc.append(data)
+
+    def handle_comment(self, data):
+        text = '<!--{}-->'.format(data)
+        line, col = self.getpos()
+        if self.inraw:
+            # Append this to the existing raw block
+            self._cache.append(text)
+        else:
+            # Handle this as a standalone raw block
+            self.cleandoc.append(self.md.htmlStash.store(text))
