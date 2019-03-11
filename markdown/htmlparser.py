@@ -22,10 +22,8 @@ License: BSD (see LICENSE.md for details).
 
 try:
     from HTMLParser import HTMLParser
-    PY2 = True
 except ImportError:
     from html.parser import HTMLParser
-    PY2 = False
 
 
 class HTMLExtractor(HTMLParser):
@@ -36,17 +34,24 @@ class HTMLExtractor(HTMLParser):
     to `md` and the remaining text is stored in `cleandoc` as a list of strings.
     """
 
-    def __init__(self, md):
-        if PY2:
-            # In PY2 HTMLParser is an old style class :(
-            HTMLParser.__init__(self)
-        else:
-            super(HTMLExtractor, self).__init__()
+    def __init__(self, md, *args, **kwargs):
+        # This calls self.reset
+        HTMLParser.__init__(self, *args, **kwargs)  # TODO: Use super when we drop PY2 support
         self.md = md
+
+    def reset(self):
+        """Reset this instance.  Loses all unprocessed data."""
         self.inraw = False
         self.stack = []  # When inraw==True, stack contains a list of tags
         self._cache = []
         self.cleandoc = []
+        HTMLParser.reset(self)  # TODO: Use super when we drop PY2 support
+
+    def close(self):
+        """Handle any buffered data."""
+        HTMLParser.close(self)  # TODO: Use super when we drop PY2 support
+        if len(self._cache):
+            self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
 
     def handle_starttag(self, tag, attrs):
         self.stack.append(tag)

@@ -384,17 +384,12 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
-    # TODO: fix this. Presumably as the parser finishes things up in the `handle_endtag`
-    # method and as there is no end tag here, that code never gets run. Is there a way
-    # to retrieve the unprocessed source text from HTMLParser? May have to read the source.
-    # The `test_raw_nested_p_no_end_tag` below works because of the closing `</div>`.
     def test_raw_p_no_end_tag(self):
         self.assertMarkdownRenders(
             '<p>*text*',
             '<p>*text*'
         )
 
-    # TODO: fix this. See comment on previous test method.
     def test_raw_multiple_p_no_end_tag(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -413,7 +408,6 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
-    # TODO: fix this. See comment on previous test method.
     def test_raw_p_no_end_tag_followed_by_blank_line(self):
         self.assertMarkdownRenders(
             self.dedent(
