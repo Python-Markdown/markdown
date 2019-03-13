@@ -69,6 +69,7 @@ try:  # pragma: no cover
     from html import entities
 except ImportError:  # pragma: no cover
     import htmlentitydefs as entities
+from collections import OrderedDict
 
 
 def build_inlinepatterns(md, **kwargs):
@@ -91,12 +92,8 @@ def build_inlinepatterns(md, **kwargs):
     inlinePatterns.register(HtmlInlineProcessor(HTML_RE, md), 'html', 90)
     inlinePatterns.register(HtmlInlineProcessor(ENTITY_RE, md), 'entity', 80)
     inlinePatterns.register(SimpleTextInlineProcessor(NOT_STRONG_RE), 'not_strong', 70)
-    inlinePatterns.register(DoubleTagInlineProcessor(EM_STRONG_RE, 'strong,em'), 'em_strong', 60)
-    inlinePatterns.register(DoubleTagInlineProcessor(STRONG_EM_RE, 'em,strong'), 'strong_em', 50)
-    inlinePatterns.register(SimpleTagInlineProcessor(STRONG_RE, 'strong'), 'strong', 40)
-    inlinePatterns.register(SimpleTagInlineProcessor(EMPHASIS_RE, 'em'), 'emphasis', 30)
-    inlinePatterns.register(SimpleTagInlineProcessor(SMART_STRONG_RE, 'strong'), 'strong2', 20)
-    inlinePatterns.register(SimpleTagInlineProcessor(SMART_EMPHASIS_RE, 'em'), 'emphasis2', 10)
+    inlinePatterns.register(AsteriskProcessor(r'\*'), 'em_strong', 60)
+    inlinePatterns.register(UnderscoreProcessor(r'_'), 'em_strong2', 50)
     return inlinePatterns
 
 
@@ -125,11 +122,23 @@ SMART_STRONG_RE = r'(?<!\w)(_{2})(?!_)(.+?)(?<!_)\1(?!\w)'
 # _smart_emphasis_
 SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\1(?!\w)'
 
+# __strong _em__
+SMART_STRONG_EM_RE = r'(?<!\w)(\_)\1(?!\1)(.+?)(?<!\w)\1(?!\1)(.+?)\1{3}(?!\w)'
+
 # ***strongem*** or ***em*strong**
-EM_STRONG_RE = r'(\*|_)\1{2}(.+?)\1(.*?)\1{2}'
+EM_STRONG_RE = r'(\*)\1{2}(.+?)\1(.*?)\1{2}'
+
+# ___strongem___ or ___em_strong__
+EM_STRONG2_RE = r'(_)\1{2}(.+?)\1(.*?)\1{2}'
 
 # ***strong**em*
-STRONG_EM_RE = r'(\*|_)\1{2}(.+?)\1{2}(.*?)\1'
+STRONG_EM_RE = r'(\*)\1{2}(.+?)\1{2}(.*?)\1'
+
+# ___strong__em_
+STRONG_EM2_RE = r'(_)\1{2}(.+?)\1{2}(.*?)\1'
+
+# __strong_em___
+STRONG_EM3_RE = r'(\*)\1(?!\1)(.+?)\1(?!\1)(.+?)\1{3}'
 
 # [text](url) or [text](<url>) or [text](url "title")
 LINK_RE = NOIMG + r'\['
@@ -429,6 +438,154 @@ class HtmlInlineProcessor(InlineProcessor):
                     return r'\%s' % value
 
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
+
+
+class AsteriskProcessor(InlineProcessor):
+    """Emphasis processor for handling strong and em matches inside asterisks."""
+
+    PATTERNS = [
+        (re.compile(EM_STRONG_RE, re.DOTALL | re.UNICODE), 'double', 'strong,em'),
+        (re.compile(STRONG_EM_RE, re.DOTALL | re.UNICODE), 'double', 'em,strong'),
+        (re.compile(STRONG_EM3_RE, re.DOTALL | re.UNICODE), 'double2', 'strong,em'),
+        (re.compile(STRONG_RE, re.DOTALL | re.UNICODE), 'single', 'strong'),
+        (re.compile(EMPHASIS_RE, re.DOTALL | re.UNICODE), 'single', 'em')
+    ]
+
+    def build_single(self, m, tag, idx):
+        """Return single tag."""
+        el1 = util.etree.Element(tag)
+        text = m.group(2)
+        self.parse_sub_patterns(text, el1, None, idx)
+        return el1
+
+    def build_double(self, m, tags, idx):
+        """Return double tag."""
+
+        tag1, tag2 = tags.split(",")
+        el1 = util.etree.Element(tag1)
+        el2 = util.etree.Element(tag2)
+        text = m.group(2)
+        self.parse_sub_patterns(text, el2, None, idx)
+        el1.append(el2)
+        if len(m.groups()) == 3:
+            text = m.group(3)
+            self.parse_sub_patterns(text, el1, el2, idx)
+        return el1
+
+    def build_double2(self, m, tags, idx):
+        """Return double tags (variant 2): `<strong>text <em>text</em></strong>`."""
+
+        tag1, tag2 = tags.split(",")
+        el1 = util.etree.Element(tag1)
+        el2 = util.etree.Element(tag2)
+        text = m.group(2)
+        self.parse_sub_patterns(text, el1, None, idx)
+        text = m.group(3)
+        el1.append(el2)
+        self.parse_sub_patterns(text, el2, None, idx)
+        return el1
+
+    def parse_sub_patterns(self, data, parent, last, idx):
+        """
+        Parses sub patterns.
+
+        `data` (`str`):
+            text to evaluate.
+
+        `parent` (`etree.Element`):
+            Parent to attach text and sub elements to.
+
+        `last` (`etree.Element`):
+            Last appended child to parent. Can also be None if parent has no children.
+
+        `idx` (`int`):
+            Current pattern index that was used to evaluate the parent.
+
+        """
+
+        offset = 0
+        pos = 0
+
+        length = len(data)
+        while pos < length:
+            # Find the start of potential emphasis or strong tokens
+            if self.compiled_re.match(data, pos):
+                matched = False
+                # See if the we can match an emphasis/strong pattern
+                for index, pattern in enumerate(self.PATTERNS):
+                    # Only evaluate patterns that are after what was used on the parent
+                    if index <= idx:
+                        continue
+                    m = pattern[0].match(data, pos)
+                    if m:
+                        # Append child nodes to parent
+                        # Text nodes should be appended to the last
+                        # child if present, and if not, it should
+                        # be added as the parent's text node.
+                        text = data[offset:m.start(0)]
+                        if text:
+                            if last is not None:
+                                last.tail = text
+                            else:
+                                parent.text = text
+                        el = self.build_element(m, pattern[1], pattern[2], index)
+                        parent.append(el)
+                        last = el
+                        # Move our position past the matched hunk
+                        offset = pos = m.end(0)
+                        matched = True
+                if not matched:
+                    # We matched nothing, move on to the next character
+                    pos += 1
+            else:
+                # Increment position as no potential emphasis start was found.
+                pos += 1
+
+        # Append any leftover text as a text node.
+        text = data[offset:]
+        if text:
+            if last is not None:
+                last.tail = text
+            else:
+                parent.text = text
+
+    def build_element(self, m, builder, tags, index):
+        """Element builder."""
+
+        if builder == 'double2':
+            return self.build_double2(m, tags, index)
+        elif builder == 'double':
+            return self.build_double(m, tags, index)
+        else:
+            return self.build_single(m, tags, index)
+
+    def handleMatch(self, m, data):
+        """Parse patterns."""
+
+        el = None
+        start = None
+        end = None
+
+        for index, pattern in enumerate(self.PATTERNS):
+            m1 = pattern[0].match(data, m.start(0))
+            if m1:
+                start = m1.start(0)
+                end = m1.end(0)
+                el = self.build_element(m1, pattern[1], pattern[2], index)
+                break
+        return el, start, end
+
+
+class UnderscoreProcessor(InlineProcessor):
+    """Emphasis processor for handling strong and em matches inside underscores."""
+
+    PATTERNS = [
+        (re.compile(EM_STRONG2_RE, re.DOTALL | re.UNICODE), 'double', 'strong,em'),
+        (re.compile(STRONG_EM2_RE, re.DOTALL | re.UNICODE), 'double', 'em,strong'),
+        (re.compile(SMART_STRONG_EM_RE, re.DOTALL | re.UNICODE), 'double2', 'strong,em'),
+        (re.compile(SMART_STRONG_RE, re.DOTALL | re.UNICODE), 'single', 'strong'),
+        (re.compile(SMART_EMPHASIS_RE, re.DOTALL | re.UNICODE), 'single', 'em')
+    ]
 
 
 class LinkInlineProcessor(InlineProcessor):
