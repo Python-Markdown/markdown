@@ -44,3 +44,8 @@ class LegacyEmExtension(Extension):
     def extendMarkdown(self, md):
         """ Modify inline patterns. """
         md.inlinePatterns.register(LegacyUnderscoreProcessor(r'_'), 'em_strong2', 50)
+
+
+def makeExtension(**kwargs):  # pragma: no cover
+    """ Return an instance of the LegacyEmExtension """
+    return LegacyEmExtension(**kwargs)

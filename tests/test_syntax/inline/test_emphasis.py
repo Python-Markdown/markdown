@@ -84,3 +84,27 @@ class TestNotEmphasis(TestCase):
             '_ bar _',
             '<p>_ bar _</p>'
         )
+
+    def test_complex_emphasis_asterisk(self):
+        self.assertMarkdownRenders(
+            'This is text **bold *italic bold*** with more text',
+            '<p>This is text <strong>bold <em>italic bold</em></strong> with more text</p>'
+        )
+
+    def test_complex_emphasis_asterisk_mid_word(self):
+        self.assertMarkdownRenders(
+            'This is text **bold*italic bold*** with more text',
+            '<p>This is text <strong>bold<em>italic bold</em></strong> with more text</p>'
+        )
+
+    def test_complex_emphasis_smart_underscore(self):
+        self.assertMarkdownRenders(
+            'This is text __bold _italic bold___ with more text',
+            '<p>This is text <strong>bold <em>italic bold</em></strong> with more text</p>'
+        )
+
+    def test_complex_emphasis_smart_underscore_mid_word(self):
+        self.assertMarkdownRenders(
+            'This is text __bold_italic bold___ with more text',
+            '<p>This is text __bold_italic bold___ with more text</p>'
+        )
