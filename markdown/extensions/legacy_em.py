@@ -13,7 +13,8 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import Extension
-from ..import inlinepatterns
+from .. import inlinepatterns
+import re
 
 # _emphasis_
 EMPHASIS_RE = r'(_)([^_]+)\1'
@@ -32,8 +33,8 @@ class LegacyUnderscoreProcessor(inlinepatterns.UnderscoreProcessor):
         (re.compile(inlinepatterns.EM_STRONG2_RE, re.DOTALL | re.UNICODE), 'double', 'strong,em'),
         (re.compile(inlinepatterns.STRONG_EM2_RE, re.DOTALL | re.UNICODE), 'double', 'em,strong'),
         (re.compile(STRONG_EM_RE, re.DOTALL | re.UNICODE), 'double2', 'strong,em'),
-        (re.compile(EMPHASIS_RE, re.DOTALL | re.UNICODE), 'single', 'strong'),
-        (re.compile(STRONG_RE, re.DOTALL | re.UNICODE), 'single', 'em')
+        (re.compile(STRONG_RE, re.DOTALL | re.UNICODE), 'single', 'strong'),
+        (re.compile(EMPHASIS_RE, re.DOTALL | re.UNICODE), 'single', 'em')
     ]
 
 
@@ -42,4 +43,4 @@ class LegacyEmExtension(Extension):
 
     def extendMarkdown(self, md):
         """ Modify inline patterns. """
-        md.inlinepatterns.register(LegacyUnderscoreProcessor(r'_'), 'em_strong2', 50)
+        md.inlinePatterns.register(LegacyUnderscoreProcessor(r'_'), 'em_strong2', 50)

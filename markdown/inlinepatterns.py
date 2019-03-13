@@ -69,7 +69,6 @@ try:  # pragma: no cover
     from html import entities
 except ImportError:  # pragma: no cover
     import htmlentitydefs as entities
-from collections import OrderedDict
 
 
 def build_inlinepatterns(md, **kwargs):
@@ -576,7 +575,7 @@ class AsteriskProcessor(InlineProcessor):
         return el, start, end
 
 
-class UnderscoreProcessor(InlineProcessor):
+class UnderscoreProcessor(AsteriskProcessor):
     """Emphasis processor for handling strong and em matches inside underscores."""
 
     PATTERNS = [
