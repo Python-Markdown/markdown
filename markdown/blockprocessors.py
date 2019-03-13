@@ -275,7 +275,7 @@ class CodeBlockProcessor(BlockProcessor):
 
 class RawHtmlProcessor(BlockProcessor):
 
-    TAG_RE = re.compile(r'^\<(?P<tag>[^<> ]+)[^<>]*>')
+    TAG_RE = re.compile(r'^[ ]{0,3}\<(?P<tag>[^<> ]+)[^<>]*>')
 
     def test(self, parent, block):
         m = self.TAG_RE.match(block)

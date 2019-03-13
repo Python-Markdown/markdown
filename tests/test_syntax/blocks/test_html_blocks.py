@@ -40,9 +40,19 @@ class TestHTMLBlocks(TestCase):
     def test_raw_indent_one_space(self):
         self.assertMarkdownRenders(
             ' <p>A *raw* paragraph.</p>',
-            # TODO: reevaluate. This matches strict rules and reference
-            # implementation version 1.0.1 but not 1.0.2b8.
-            '<p><p>A <em>raw</em> paragraph.</p></p>'
+            '<p>A *raw* paragraph.</p>'
+        )
+
+    def test_raw_indent_two_spaces(self):
+        self.assertMarkdownRenders(
+            '  <p>A *raw* paragraph.</p>',
+            '<p>A *raw* paragraph.</p>'
+        )
+
+    def test_raw_indent_three_spaces(self):
+        self.assertMarkdownRenders(
+            '   <p>A *raw* paragraph.</p>',
+            '<p>A *raw* paragraph.</p>'
         )
 
     def test_raw_indent_four_spaces(self):
