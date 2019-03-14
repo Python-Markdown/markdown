@@ -483,22 +483,12 @@ class TestHTMLBlocks(TestCase):
             '<!-- *foo* -->'
         )
 
-    # TODO: Decide behavior here. Python-Markdown current outputs:
-    #
-    #   <!-- *foo* -->
-    #   <p><em>bar</em></p>
-    #
-    # But the reference implementation outputs:
-    #
-    #   <p><!-- *foo* --><em>bar</em></p>
-    #
-    # As the raw HTML is not alone on the line, the reference implementation
-    # considers it inline rather than block level. The behavior defined in
-    # the test below is from the CommonMark spec, which we don't follow.
+    # Note: this is a change in behavior for Python_markdown but matches the reference implementation.
+    # Previous output was `<!-- *foo* -->\n<p><em>bar</em></p>`. Browsers render both the same.
     def test_raw_comment_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             '<!-- *foo* -->*bar*',
-            '<!-- *foo* -->*bar*'
+            '<p><!-- *foo* --><em>bar</em></p>'
         )
 
     def test_raw_multiline_comment(self):
@@ -577,6 +567,17 @@ class TestHTMLBlocks(TestCase):
                 <div>
                 <!-- *foo* -->
                 </div>
+                """
+            )
+        )
+
+    def test_comment_in_code_block(self):
+        self.assertMarkdownRenders(
+            '    <!-- *foo* -->',
+            self.dedent(
+                """
+                <pre><code>&lt;!-- *foo* --&gt;
+                </code></pre>
                 """
             )
         )
@@ -662,20 +663,12 @@ class TestHTMLBlocks(TestCase):
             '<!DOCTYPE html>'
         )
 
-    # TODO: Decide correct behavior. This matches current behavior and Commonmark.
-    # The reference implementation considers this inline not block level:
-    #
-    #   <p><!DOCTYPE html><em>bar</em></p>
-    #
-    # But most implementations do this instead:
-    #
-    #   <p>&lt;!DOCTYPE html&gt;<em>bar</em></p>
-    #
-    # Either makes sense, but the later seems more correct to me.
+    # Note: this is a change in behavior for Python_markdown but matches the reference implementation.
+    # Previous output was `<!DOCTYPE html>*bar*`.
     def test_raw_declaration_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             '<!DOCTYPE html>*bar*',
-            '<!DOCTYPE html>*bar*'
+            '<p><!DOCTYPE html><em>bar</em></p>'
         )
 
     def test_raw_multiline_declaration(self):
@@ -702,20 +695,12 @@ class TestHTMLBlocks(TestCase):
             '<![CDATA[ document.write(">"); ]]>'
         )
 
-    # TODO: Decide correct behavior. This matches current behavior and Commonmark.
-    # The reference implementation considers this inline not block level:
-    #
-    #   <p><![CDATA[ document.write(">"); ]]><em>bar</em></p>
-    #
-    # But most implementations do this instead:
-    #
-    #   <p>&lt;[CDATA[ document.write(“&gt;”); ]]&gt;<em>bar</em></p>
-    #
-    # Either makes sense, but the later seems more correct to me.
+    # Note: this is a change in behavior for Python_markdown but matches the reference implementation.
+    # Previous output was `<![CDATA[ document.write(">"); ]]>*bar*`.
     def test_raw_cdata_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             '<![CDATA[ document.write(">"); ]]>*bar*',
-            '<![CDATA[ document.write(">"); ]]>*bar*'
+            '<p><![CDATA[ document.write(">"); ]]><em>bar</em></p>'
         )
 
     def test_raw_multiline_cdata(self):

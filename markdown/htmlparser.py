@@ -98,12 +98,27 @@ class HTMLExtractor(HTMLParser):
         else:
             self.cleandoc.append(data)
 
-    def handle_comment(self, data):
-        text = '<!--{}-->'.format(data)
+    def handle_empty_tag(self, data):
+        """ Handle empty tags (`<data>`). """
         line, col = self.getpos()
         if self.inraw:
             # Append this to the existing raw block
-            self._cache.append(text)
-        else:
+            self._cache.append(data)
+        elif col < 4:
             # Handle this as a standalone raw block
-            self.cleandoc.append(self.md.htmlStash.store(text))
+            self.cleandoc.append(self.md.htmlStash.store(data))
+        else:
+            # Presumably part of a code block.
+            self.cleandoc.append(data)
+
+    def handle_comment(self, data):
+        self.handle_empty_tag('<!--{}-->'.format(data))
+
+    def handle_decl(self, data):
+        self.handle_empty_tag('<!{}>'.format(data))
+
+    def handle_pi(self, data):
+        self.handle_empty_tag('<?{}>'.format(data))
+
+    def handle_unknown_decl(self, data):
+        self.handle_empty_tag('<![{}]>'.format(data))
