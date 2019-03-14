@@ -178,23 +178,15 @@ class TestHTMLBlocks(TestCase):
                 More *Markdown* text.
                 """
             ),
-            # The raw gets treated as inline HTML. This follows the rules and this lib's
-            # previous behavior, but not the reference implementation. TODO: Reevaluate.
+            # TODO: Work out a way to eliminate the extra blank line.
             self.dedent(
                 """
-                <p>Some <em>Markdown</em> text.
-                <p><em>Raw</em> HTML.</p>
-                More <em>Markdown</em> text.</p>
+                <p>Some <em>Markdown</em> text.</p>
+                <p>*Raw* HTML.</p>
+
+                <p>More <em>Markdown</em> text.</p>
                 """
             )
-            # The reference implementation does this instead:
-            # self.dedent(
-            #     """
-            #     <p>Some <em>Markdown</em> text.</p>
-            #     <p>*Raw* HTML.</p>
-            #     <p>More <em>Markdown</em> text.</p>
-            #     """
-            # )
         )
 
     def test_raw_with_markdown_blocks(self):
@@ -225,12 +217,6 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
-    # TODO: This fails. Fix it.
-    # The HTML parser is mostly doing the correct thing here. The problem is that the
-    # two placeholders are in one paragraph so the postprocessor is not properly
-    # swaping then out. It checks for `<p>{ placeholder }</p>` but we have
-    # `<p>{ placeholder2 }\n{ placeholder2 }</p>`. We would need to add a second
-    # newline or use some other method than the current HTML stash.
     def test_adjacent_raw_blocks(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -239,9 +225,11 @@ class TestHTMLBlocks(TestCase):
                 <p>A second raw paragraph.</p>
                 """
             ),
+            # TODO: Work out a way to eliminate the extra blank line.
             self.dedent(
                 """
                 <p>A raw paragraph.</p>
+
                 <p>A second raw paragraph.</p>
                 """
             )

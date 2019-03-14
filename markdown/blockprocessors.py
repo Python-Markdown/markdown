@@ -275,10 +275,10 @@ class CodeBlockProcessor(BlockProcessor):
 
 class RawHtmlProcessor(BlockProcessor):
 
-    TAG_RE = re.compile(r'^[ ]{0,3}\<(?P<tag>[^<> ]+)[^<>]*>')
+    TAG_RE = re.compile(r'(^|\n)[ ]{0,3}\<(?P<tag>[^<> ]+)[^<>]*>')
 
     def test(self, parent, block):
-        m = self.TAG_RE.match(block)
+        m = self.TAG_RE.search(block)
         return m and self.parser.md.is_block_level(m.group('tag'))
 
     def run(self, parent, blocks):
@@ -289,6 +289,7 @@ class RawHtmlProcessor(BlockProcessor):
                 break
         parser.close()
         # Insert Markdown back into blocks with raw HTML extracted.
+        print parser.cleandoc
         parts = ''.join(parser.cleandoc).split('\n\n')
         parts.reverse()
         for block in parts:

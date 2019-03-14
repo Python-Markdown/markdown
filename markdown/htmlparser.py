@@ -20,6 +20,7 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+from __future__ import unicode_literals
 try:
     from HTMLParser import HTMLParser
 except ImportError:
@@ -62,6 +63,9 @@ class HTMLExtractor(HTMLParser):
         if col < 4 and self.md.is_block_level(tag) and not self.inraw:
             # Started a new raw block
             self.inraw = True
+            if len(self.cleandoc):
+                # Insert blank line between this and previous line.
+                self.cleandoc.append('\n')
 
         text = self.get_starttag_text()
         if self.inraw:
@@ -80,6 +84,8 @@ class HTMLExtractor(HTMLParser):
             self.inraw = False
             self._cache.append(text)
             self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
+            # Insert blank line between this and next line. TODO: make this conditional??
+            self.cleandoc.append('\n')
             self._cache = []
         elif self.inraw:
             self._cache.append(text)
