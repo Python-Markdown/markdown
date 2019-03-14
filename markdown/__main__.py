@@ -26,9 +26,17 @@ import codecs
 import warnings
 import markdown
 try:
-    import yaml
+    # We use `unsafe_load` because users may need to pass in actual Python
+    # objects. As this is only available from the CLI, the user has much
+    # worse problems if an attacker can use this as an attach vector.
+    from yaml import unsafe_load as yaml_load
 except ImportError:  # pragma: no cover
-    import json as yaml
+    try:
+        # Fall back to PyYAML <5.1
+        from yaml import load as yaml_load
+    except ImportError:
+        # Fall back to JSON
+        from json import load as yaml_load
 
 import logging
 from logging import DEBUG, WARNING, CRITICAL
@@ -97,7 +105,7 @@ def parse_options(args=None, values=None):
             options.configfile, mode="r", encoding=options.encoding
         ) as fp:
             try:
-                extension_configs = yaml.load(fp)
+                extension_configs = yaml_load(fp)
             except Exception as e:
                 message = "Failed parsing extension config file: %s" % \
                           options.configfile
