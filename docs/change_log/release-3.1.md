@@ -37,6 +37,7 @@ The following new features have been included in the release:
 
 The following bug fixes are included in the 3.1 release:
 
+* Update CLI to support PyYAML 5.1.
 * Overlapping raw HTML matches no longer leave placeholders behind (#458).
 * Emphasis patterns now recognize newline characters as whitespace (#783).
 * Version format had been updated to be PEP 440 compliant (#736).
