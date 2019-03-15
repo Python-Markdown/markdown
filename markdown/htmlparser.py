@@ -21,6 +21,7 @@ License: BSD (see LICENSE.md for details).
 """
 
 from __future__ import unicode_literals
+from . import util
 try:
     from HTMLParser import HTMLParser
 except ImportError:
@@ -36,6 +37,8 @@ class HTMLExtractor(HTMLParser):
     """
 
     def __init__(self, md, *args, **kwargs):
+        if util.PY3 and 'convert_charrefs' not in kwargs:
+            kwargs['convert_charrefs'] = False
         # This calls self.reset
         HTMLParser.__init__(self, *args, **kwargs)  # TODO: Use super when we drop PY2 support
         self.md = md
@@ -98,27 +101,35 @@ class HTMLExtractor(HTMLParser):
         else:
             self.cleandoc.append(data)
 
-    def handle_empty_tag(self, data):
+    def handle_empty_tag(self, data, is_block):
         """ Handle empty tags (`<data>`). """
         line, col = self.getpos()
         if self.inraw:
             # Append this to the existing raw block
             self._cache.append(data)
-        elif col < 4:
+        elif col < 4 and is_block:
             # Handle this as a standalone raw block
             self.cleandoc.append(self.md.htmlStash.store(data))
         else:
-            # Presumably part of a code block.
             self.cleandoc.append(data)
 
+    def handle_startendtag(self, tag, attrs):
+        self.handle_empty_tag(self.get_starttag_text(), is_block=self.md.is_block_level(tag))
+
+    def handle_charref(self, name):
+        self.handle_empty_tag('&#{};'.format(name), is_block=False)
+
+    def handle_entityref(self, name):
+        self.handle_empty_tag('&{};'.format(name), is_block=False)
+
     def handle_comment(self, data):
-        self.handle_empty_tag('<!--{}-->'.format(data))
+        self.handle_empty_tag('<!--{}-->'.format(data), is_block=True)
 
     def handle_decl(self, data):
-        self.handle_empty_tag('<!{}>'.format(data))
+        self.handle_empty_tag('<!{}>'.format(data), is_block=True)
 
     def handle_pi(self, data):
-        self.handle_empty_tag('<?{}>'.format(data))
+        self.handle_empty_tag('<?{}>'.format(data), is_block=True)
 
     def handle_unknown_decl(self, data):
-        self.handle_empty_tag('<![{}]>'.format(data))
+        self.handle_empty_tag('<![{}]>'.format(data), is_block=True)

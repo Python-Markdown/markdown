@@ -764,3 +764,51 @@ class TestHTMLBlocks(TestCase):
                 """
             )
         )
+
+    def test_charref(self):
+        self.assertMarkdownRenders(
+            '&sect;',
+            '<p>&sect;</p>'
+        )
+
+    def test_nested_charref(self):
+        self.assertMarkdownRenders(
+            '<p>&sect;</p>',
+            '<p>&sect;</p>'
+        )
+
+    def test_entityref(self):
+        self.assertMarkdownRenders(
+            '&#167;',
+            '<p>&#167;</p>'
+        )
+
+    def test_nested_entityref(self):
+        self.assertMarkdownRenders(
+            '<p>&#167;</p>',
+            '<p>&#167;</p>'
+        )
+
+    def test_startendtag(self):
+        self.assertMarkdownRenders(
+            '<link type="text/css" rel="stylesheet" href="style.css">',
+            '<p><link type="text/css" rel="stylesheet" href="style.css"></p>'
+        )
+
+    def test_closed_startendtag(self):
+        self.assertMarkdownRenders(
+            '<link type="text/css" rel="stylesheet" href="style.css" />',
+            '<p><link type="text/css" rel="stylesheet" href="style.css" /></p>'
+        )
+
+    def test_nested_startendtag(self):
+        self.assertMarkdownRenders(
+            '<div><link type="text/css" rel="stylesheet" href="style.css"></div>',
+            '<div><link type="text/css" rel="stylesheet" href="style.css"></div>'
+        )
+
+    def test_nested_closed_startendtag(self):
+        self.assertMarkdownRenders(
+            '<div><link type="text/css" rel="stylesheet" href="style.css" /></div>',
+            '<div><link type="text/css" rel="stylesheet" href="style.css" /></div>'
+        )
