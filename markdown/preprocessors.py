@@ -26,6 +26,7 @@ complicated.
 """
 
 from . import util
+from .htmlparser import HTMLExtractor
 import re
 
 
@@ -33,6 +34,7 @@ def build_preprocessors(md, **kwargs):
     """ Build the default set of preprocessors used by Markdown. """
     preprocessors = util.Registry()
     preprocessors.register(NormalizeWhitespace(md), 'normalize_whitespace', 30)
+    preprocessors.register(HtmlBlockPreprocessor(md), 'html_block', 20)
     preprocessors.register(ReferencePreprocessor(md), 'reference', 10)
     return preprocessors
 
@@ -68,6 +70,17 @@ class NormalizeWhitespace(Preprocessor):
         source = source.expandtabs(self.md.tab_length)
         source = re.sub(r'(?<=\n) +\n', '\n', source)
         return source.split('\n')
+
+
+class HtmlBlockPreprocessor(Preprocessor):
+    """Remove html blocks from the text and store them for later retrieval."""
+
+    def run(self, lines):
+        source = '\n'.join(lines)
+        parser = HTMLExtractor(md=self.md)
+        parser.feed(source)
+        parser.close()
+        return ''.join(parser.cleandoc).split('\n')
 
 
 class ReferencePreprocessor(Preprocessor):
