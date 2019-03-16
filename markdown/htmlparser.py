@@ -135,5 +135,6 @@ class HTMLExtractor(parser.HTMLParser):
     def handle_pi(self, data):
         self.handle_empty_tag('<?{}?>'.format(data), is_block=True)
 
-    def handle_unknown_decl(self, data):
-        self.handle_empty_tag('<![{}]>'.format(data), is_block=True)
+    def unknown_decl(self, data):
+        end = ']]>' if data.startswith('CDATA[') else ']>'
+        self.handle_empty_tag('<![{}{}'.format(data, end), is_block=True)
