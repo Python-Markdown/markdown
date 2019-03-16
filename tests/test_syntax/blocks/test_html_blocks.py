@@ -584,15 +584,15 @@ class TestHTMLBlocks(TestCase):
 
     def test_raw_processing_instruction_one_line(self):
         self.assertMarkdownRenders(
-            "<?php echo '>';' ?>",
-            "<?php echo '>';' ?>"
+            "<?php echo '>'; ?>",
+            "<?php echo '>'; ?>"
         )
 
     # This is inline as it is not on a line by itself.
     def test_raw_processing_instruction_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
-            "<?php echo '>';' ?>*bar*",
-            "<p><?php echo '>'; ' ?><em>bar</em></p>"
+            "<?php echo '>'; ?>*bar*",
+            "<p><?php echo '>'; ?><em>bar</em></p>"
         )
 
     def test_raw_multiline_processing_instruction(self):
@@ -600,14 +600,14 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <?php
-                echo '>';'
+                echo '>';
                 ?>
                 """
             ),
             self.dedent(
                 """
                 <?php
-                echo '>';'
+                echo '>';
                 ?>
                 """
             )
@@ -619,7 +619,7 @@ class TestHTMLBlocks(TestCase):
                 """
                 <?php
 
-                echo '>';'
+                echo '>';
 
                 ?>
                 """
@@ -628,7 +628,7 @@ class TestHTMLBlocks(TestCase):
                 """
                 <?php
 
-                echo '>';'
+                echo '>';
 
                 ?>
                 """
@@ -641,7 +641,7 @@ class TestHTMLBlocks(TestCase):
                 """
                 <?php
 
-                    echo '>';'
+                    echo '>';
 
                 ?>
                 """
@@ -650,7 +650,7 @@ class TestHTMLBlocks(TestCase):
                 """
                 <?php
 
-                    echo '>';'
+                    echo '>';
 
                 ?>
                 """
@@ -811,4 +811,20 @@ class TestHTMLBlocks(TestCase):
         self.assertMarkdownRenders(
             '<div><link type="text/css" rel="stylesheet" href="style.css" /></div>',
             '<div><link type="text/css" rel="stylesheet" href="style.css" /></div>'
+        )
+
+    def test_auto_links_dont_break_parser(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <https://example.com>
+
+                <email@example.com>
+                """
+            ),
+            '<p><a href="https://example.com">https://example.com</a></p>\n'
+            '<p><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#101;&#109;'
+            '&#97;&#105;&#108;&#64;&#101;&#120;&#97;&#109;&#112;&#108;&#101;'
+            '&#46;&#99;&#111;&#109;">&#101;&#109;&#97;&#105;&#108;&#64;&#101;'
+            '&#120;&#97;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#109;</a></p>'
         )
