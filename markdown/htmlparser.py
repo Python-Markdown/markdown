@@ -23,12 +23,16 @@ License: BSD (see LICENSE.md for details).
 from __future__ import unicode_literals
 from . import util
 try:
-    from HTMLParser import HTMLParser
+    import HTMLParser as parser
 except ImportError:
-    from html.parser import HTMLParser
+    from html import parser
+
+# Monkeypatch HTMLParser to only accept `?>` to close Processing Instructions.
+import re
+parser.piclose = re.compile(r'\?>')
 
 
-class HTMLExtractor(HTMLParser):
+class HTMLExtractor(parser.HTMLParser):
     """
     Extract raw HTML from text.
 
@@ -40,7 +44,7 @@ class HTMLExtractor(HTMLParser):
         if util.PY3 and 'convert_charrefs' not in kwargs:
             kwargs['convert_charrefs'] = False
         # This calls self.reset
-        HTMLParser.__init__(self, *args, **kwargs)  # TODO: Use super when we drop PY2 support
+        parser.HTMLParser.__init__(self, *args, **kwargs)  # TODO: Use super when we drop PY2 support
         self.md = md
 
     def reset(self):
@@ -49,11 +53,11 @@ class HTMLExtractor(HTMLParser):
         self.stack = []  # When inraw==True, stack contains a list of tags
         self._cache = []
         self.cleandoc = []
-        HTMLParser.reset(self)  # TODO: Use super when we drop PY2 support
+        parser.HTMLParser.reset(self)  # TODO: Use super when we drop PY2 support
 
     def close(self):
         """Handle any buffered data."""
-        HTMLParser.close(self)  # TODO: Use super when we drop PY2 support
+        parser.HTMLParser.close(self)  # TODO: Use super when we drop PY2 support
         # Handle any unclosed tags.
         if len(self._cache):
             self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
@@ -129,7 +133,7 @@ class HTMLExtractor(HTMLParser):
         self.handle_empty_tag('<!{}>'.format(data), is_block=True)
 
     def handle_pi(self, data):
-        self.handle_empty_tag('<?{}>'.format(data), is_block=True)
+        self.handle_empty_tag('<?{}?>'.format(data), is_block=True)
 
     def handle_unknown_decl(self, data):
         self.handle_empty_tag('<![{}]>'.format(data), is_block=True)
