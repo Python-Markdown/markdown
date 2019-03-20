@@ -471,6 +471,55 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
+    def test_raw_pre_tag(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Preserve whitespace in raw html
+
+                <pre>
+                class Foo():
+                    bar = 'bar'
+
+                    @property
+                    def baz(self):
+                        return self.bar
+                </pre>
+                """
+            ),
+            self.dedent(
+                """
+                <p>Preserve whitespace in raw html</p>
+                <pre>
+                class Foo():
+                    bar = 'bar'
+
+                    @property
+                    def baz(self):
+                        return self.bar
+                </pre>
+                """
+            )
+        )
+
+    def test_raw_pre_tag_nested_escaped_html(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <pre>
+                &lt;p&gt;foo&lt;/p&gt;
+                </pre>
+                """
+            ),
+            self.dedent(
+                """
+                <pre>
+                &lt;p&gt;foo&lt;/p&gt;
+                </pre>
+                """
+            )
+        )
+
     def test_raw_p_no_end_tag(self):
         self.assertMarkdownRenders(
             '<p>*text*',
@@ -548,14 +597,18 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <div id="foo, class="bar", style="background: #ffe7e8; border: 2px solid #e66465;">
-                    <p id="baz", style="margin: 15px; line-height: 1.5; text-align: center;">text</p>
+                    <p id="baz", style="margin: 15px; line-height: 1.5; text-align: center;">
+                        <img scr="../foo.jpg" title="with 'quoted' text." valueless_attr weirdness="<i>foo</i>" />
+                    </p>
                 </div>
                 """
             ),
             self.dedent(
                 """
                 <div id="foo, class="bar", style="background: #ffe7e8; border: 2px solid #e66465;">
-                    <p id="baz", style="margin: 15px; line-height: 1.5; text-align: center;">text</p>
+                    <p id="baz", style="margin: 15px; line-height: 1.5; text-align: center;">
+                        <img scr="../foo.jpg" title="with 'quoted' text." valueless_attr weirdness="<i>foo</i>" />
+                    </p>
                 </div>
                 """
             )
@@ -1063,6 +1116,13 @@ class TestHTMLBlocks(TestCase):
             '<p>&#167;</p>'
         )
 
+    # TODO: Fix this. `&T;` is not a valid charref.
+    def test_amperstand(self):
+        self.assertMarkdownRenders(
+            'AT&T & AT&amp;T',
+            '<p>AT&amp;T &amp; AT&amp;T</p>'
+        )
+
     def test_startendtag(self):
         self.assertMarkdownRenders(
             '<link type="text/css" rel="stylesheet" href="style.css">',
@@ -1101,4 +1161,21 @@ class TestHTMLBlocks(TestCase):
             '&#97;&#105;&#108;&#64;&#101;&#120;&#97;&#109;&#112;&#108;&#101;'
             '&#46;&#99;&#111;&#109;">&#101;&#109;&#97;&#105;&#108;&#64;&#101;'
             '&#120;&#97;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#109;</a></p>'
+        )
+
+    def test_text_links_ignored(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                https://example.com
+
+                email@example.com
+                """
+            ),
+            self.dedent(
+                """
+                <p>https://example.com</p>
+                <p>email@example.com</p>
+                """
+            ),
         )
