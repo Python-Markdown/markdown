@@ -102,6 +102,26 @@ class TestHTMLBlocks(TestCase):
             '<p>\n\n</p>'
         )
 
+    # Note: this is a change in behavior. We don't preserve capitalization on closing tags.
+    def test_raw_uppercase(self):
+        self.assertMarkdownRenders(
+            '<P>foo</P>',
+            '<P>foo</p>'
+        )
+
+    # TODO: fix this. The blank line is optional but matches previous behavior and reference implementation.
+    def test_multiple_raw_single__line(self):
+        self.assertMarkdownRenders(
+            '<p>*foo*</p><div>*bar*</div>',
+            self.dedent(
+                """
+                <p>*foo*</p>
+
+                <div>*bar*</div>
+                """
+            )
+        )
+
     def test_multiline_raw(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -169,7 +189,7 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
-    def test_raw_without_blank_lines(self):
+    def test_raw_surrounded_by_text_without_blank_lines(self):
         self.assertMarkdownRenders(
             self.dedent(
                 """
@@ -185,6 +205,18 @@ class TestHTMLBlocks(TestCase):
                 <p>*Raw* HTML.</p>
 
                 <p>More <em>Markdown</em> text.</p>
+                """
+            )
+        )
+
+    # TODO: fix this. A blank line between the tags is optional but would be a change in behavior.
+    def test_raw_one_line_followed_by_text(self):
+        self.assertMarkdownRenders(
+            '<p>*foo*</p>*bar*',
+            self.dedent(
+                """
+                <p>*foo*</p>
+                <p><em>bar</em></p>
                 """
             )
         )
@@ -251,6 +283,12 @@ class TestHTMLBlocks(TestCase):
                 <p>A second raw paragraph.</p>
                 """
             )
+        )
+
+    def test_nested_raw_one_line(self):
+        self.assertMarkdownRenders(
+            '<div><p>*foo*</p></div>',
+            '<div><p>*foo*</p></div>'
         )
 
     def test_nested_raw_block(self):
@@ -335,6 +373,12 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
+    def test_nested_inline_one_line(self):
+        self.assertMarkdownRenders(
+            '<p><em>foo</em><br></p>',
+            '<p><em>foo</em><br></p>'
+        )
+
     def test_raw_nested_inline(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -383,6 +427,46 @@ class TestHTMLBlocks(TestCase):
                     </p>
 
                 </div>
+                """
+            )
+        )
+
+    def test_raw_html5(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <section>
+                    <header>
+                        <hgroup>
+                            <h1>Hello :-)</h1>
+                        </hgroup>
+                    </header>
+                    <figure>
+                        <img src="image.png" alt="" />
+                        <figcaption>Caption</figcaption>
+                    </figure>
+                    <footer>
+                        <p>Some footer</p>
+                    </footer>
+                </section>
+                """
+            ),
+            self.dedent(
+                """
+                <section>
+                    <header>
+                        <hgroup>
+                            <h1>Hello :-)</h1>
+                        </hgroup>
+                    </header>
+                    <figure>
+                        <img src="image.png" alt="" />
+                        <figcaption>Caption</figcaption>
+                    </figure>
+                    <footer>
+                        <p>Some footer</p>
+                    </footer>
+                </section>
                 """
             )
         )
@@ -483,12 +567,52 @@ class TestHTMLBlocks(TestCase):
             '<!-- *foo* -->'
         )
 
+    def test_raw_comment_one_line_with_tag(self):
+        self.assertMarkdownRenders(
+            '<!-- <tag> -->',
+            '<!-- <tag> -->'
+        )
+
     # Note: this is a change in behavior for Python_markdown but matches the reference implementation.
     # Previous output was `<!-- *foo* -->\n<p><em>bar</em></p>`. Browsers render both the same.
     def test_raw_comment_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             '<!-- *foo* -->*bar*',
             '<p><!-- *foo* --><em>bar</em></p>'
+        )
+
+    # TODO: Fix this. This matches Python-Markdown's previous behavior but not the reference implementation,
+    # which outputs `<p><!-- *foo* --><p><em>bar</em></p></p>` (which is also the pre-fixed behavior).
+    def test_raw_comment_one_line_followed_by_html(self):
+        self.assertMarkdownRenders(
+            '<!-- *foo* --><p>*bar*</p>',
+            self.dedent(
+                """
+                <!-- *foo* -->
+                <p>*bar*</p>
+                """
+            )
+        )
+
+    # TODO: Fix this. The trailing space is triping up the postprocessor: `<p>{placeholder} </p>`.
+    # Note: this reflects a slight change in behavior as the trailing spacer is preserved. This matches
+    # the reference implementation. However, it should be ok if we did not preserve the trailing space.
+    def test_raw_comment_trailing_whitespace(self):
+        self.assertMarkdownRenders(
+            '<!-- *foo* --> ',
+            '<!-- *foo* --> '
+        )
+
+    # Note: this is a change in behavior for Python-Markdown, which does *not* match the reference
+    # implementation. However, it does match the HTML5 spec. Declarations must start with either
+    # `<!DOCTYPE` or `<![`. Anything else that starts with `<!` is a comment. According to the
+    # HTML5 spec, a comment without the hyphens is a "bogus comment", but a comment nonetheless.
+    # See https://www.w3.org/TR/html52/syntax.html#markup-declaration-open-state.
+    # If we wanted to change this behavior, we could override `HTMLParser.parse_bogus_comment()`.
+    def test_bogus_comment(self):
+        self.assertMarkdownRenders(
+            '<!*foo*>',
+            '<!--*foo*-->'
         )
 
     def test_raw_multiline_comment(self):
@@ -505,6 +629,56 @@ class TestHTMLBlocks(TestCase):
                 <!--
                 *foo*
                 -->
+                """
+            )
+        )
+
+    def test_raw_multiline_comment_with_tag(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!--
+                <tag>
+                -->
+                """
+            ),
+            self.dedent(
+                """
+                <!--
+                <tag>
+                -->
+                """
+            )
+        )
+
+    def test_raw_multiline_comment_first_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!-- *foo*
+                -->
+                """
+            ),
+            self.dedent(
+                """
+                <!-- *foo*
+                -->
+                """
+            )
+        )
+
+    def test_raw_multiline_comment_last_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!--
+                *foo* -->
+                """
+            ),
+            self.dedent(
+                """
+                <!--
+                *foo* -->
                 """
             )
         )
@@ -531,6 +705,64 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
+    def test_raw_comment_with_blank_lines_with_tag(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!--
+
+                <tag>
+
+                -->
+                """
+            ),
+            self.dedent(
+                """
+                <!--
+
+                <tag>
+
+                -->
+                """
+            )
+        )
+
+    def test_raw_comment_with_blank_lines_first_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!-- *foo*
+
+                -->
+                """
+            ),
+            self.dedent(
+                """
+                <!-- *foo*
+
+                -->
+                """
+            )
+        )
+
+    def test_raw_comment_with_blank_lines_last_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!--
+
+                *foo* -->
+                """
+            ),
+            self.dedent(
+                """
+                <!--
+
+                *foo* -->
+                """
+            )
+        )
+
     def test_raw_comment_indented(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -547,6 +779,28 @@ class TestHTMLBlocks(TestCase):
                 <!--
 
                     *foo*
+
+                -->
+                """
+            )
+        )
+
+    def test_raw_comment_indented_with_tag(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!--
+
+                    <tag>
+
+                -->
+                """
+            ),
+            self.dedent(
+                """
+                <!--
+
+                    <tag>
 
                 -->
                 """
@@ -578,6 +832,26 @@ class TestHTMLBlocks(TestCase):
                 """
                 <pre><code>&lt;!-- *foo* --&gt;
                 </code></pre>
+                """
+            )
+        )
+
+    # Note: This is a change in behavior. Previously, Python-Markdown interpreted this in the same manner
+    # as browsers and all text after the opening comment tag was considered to be in a comment. However,
+    # that did not match the reference implementation. The new behavior does.
+    def test_unclosed_comment_(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!-- unclosed comment
+
+                *not* a comment
+                """
+            ),
+            self.dedent(
+                """
+                <p>&lt;!-- unclosed comment</p>
+                <p><em>not</em> a comment</p>
                 """
             )
         )
