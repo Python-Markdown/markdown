@@ -1125,26 +1125,50 @@ class TestHTMLBlocks(TestCase):
 
     def test_startendtag(self):
         self.assertMarkdownRenders(
-            '<link type="text/css" rel="stylesheet" href="style.css">',
-            '<p><link type="text/css" rel="stylesheet" href="style.css"></p>'
+            '<hr>',
+            '<hr>'
+        )
+
+    def test_startendtag_with_attrs(self):
+        self.assertMarkdownRenders(
+            '<hr id="foo" class="bar">',
+            '<hr id="foo" class="bar">'
+        )
+
+    def test_startendtag_with_space(self):
+        self.assertMarkdownRenders(
+            '<hr >',
+            '<hr >'
         )
 
     def test_closed_startendtag(self):
         self.assertMarkdownRenders(
-            '<link type="text/css" rel="stylesheet" href="style.css" />',
-            '<p><link type="text/css" rel="stylesheet" href="style.css" /></p>'
+            '<hr />',
+            '<hr />'
+        )
+
+    def test_closed_startendtag_without_space(self):
+        self.assertMarkdownRenders(
+            '<hr/>',
+            '<hr/>'
+        )
+
+    def test_closed_startendtag_with_attrs(self):
+        self.assertMarkdownRenders(
+            '<hr id="foo" class="bar" />',
+            '<hr id="foo" class="bar" />'
         )
 
     def test_nested_startendtag(self):
         self.assertMarkdownRenders(
-            '<div><link type="text/css" rel="stylesheet" href="style.css"></div>',
-            '<div><link type="text/css" rel="stylesheet" href="style.css"></div>'
+            '<div><hr></div>',
+            '<div><hr></div>'
         )
 
     def test_nested_closed_startendtag(self):
         self.assertMarkdownRenders(
-            '<div><link type="text/css" rel="stylesheet" href="style.css" /></div>',
-            '<div><link type="text/css" rel="stylesheet" href="style.css" /></div>'
+            '<div><hr /></div>',
+            '<div><hr /></div>'
         )
 
     def test_auto_links_dont_break_parser(self):
@@ -1178,4 +1202,22 @@ class TestHTMLBlocks(TestCase):
                 <p>email@example.com</p>
                 """
             ),
+        )
+
+    # TODO: fix this
+    def text_invalid_tags(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <some [weird](http://example.com) stuff>
+
+                <some>> <<unbalanced>> <<brackets>
+                """
+            ),
+            self.dedent(
+                """
+                <p><some <a href="http://example.com">weird</a> stuff></p>
+                <p><some>&gt; &lt;<unbalanced>&gt; &lt;<brackets></p>
+                """
+            )
         )
