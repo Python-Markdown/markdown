@@ -83,7 +83,20 @@ class HTMLExtractor(parser.HTMLParser):
             self.cleandoc.append(text)
 
     def handle_endtag(self, tag):
-        text = '</{0}>'.format(tag)
+        # Attempt to extract actual tag from raw source text
+        if self.lineno > 1:
+            # Find start position: char index for end of line at self.lineno + self.offset
+            start = re.match(r'([^\n]*\n){{{}}}'.format(self.lineno-1), self.rawdata).end() + self.offset
+        else:
+            # On first line. Just use self.offset for start position.
+            start = self.offset
+        m = parser.endendtag.search(self.rawdata, start)
+        if m:
+            text = self.rawdata[start:m.end()]
+        else:
+            # Failed to extract from raw data. Assume well formed and lowercase.
+            text = '</{0}>'.format(tag)
+
         if tag in self.stack:
             while self.stack:
                 if self.stack.pop() == tag:
