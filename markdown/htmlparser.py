@@ -26,10 +26,12 @@ try:
     import HTMLParser as parser
 except ImportError:
     from html import parser
+import re
 
 # Monkeypatch HTMLParser to only accept `?>` to close Processing Instructions.
-import re
 parser.piclose = re.compile(r'\?>')
+# Monkeypatch HTMLParser to only recognize entity references with a closing semicolon.
+parser.entityref = re.compile(r'&([a-zA-Z][-.a-zA-Z0-9]*);')
 
 
 class HTMLExtractor(parser.HTMLParser):

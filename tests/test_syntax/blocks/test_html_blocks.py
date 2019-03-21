@@ -102,11 +102,11 @@ class TestHTMLBlocks(TestCase):
             '<p>\n\n</p>'
         )
 
-    # Note: this is a change in behavior. We don't preserve capitalization on closing tags.
+    # TODO: Fix this. Capitalization should be preserved on all tags.
     def test_raw_uppercase(self):
         self.assertMarkdownRenders(
-            '<P>foo</P>',
-            '<P>foo</p>'
+            '<DIV>foo</DIV>',
+            '<DIV>foo</DIV>'
         )
 
     # TODO: fix this. The blank line is optional but matches previous behavior and reference implementation.
