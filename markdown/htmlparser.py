@@ -107,7 +107,7 @@ class HTMLExtractor(parser.HTMLParser):
             self._cache.append(text)
             self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
             # Insert blank line between this and next line. TODO: make this conditional??
-            self.cleandoc.append('\n')
+            self.cleandoc.append('\n\n')
             self._cache = []
         elif self.inraw:
             self._cache.append(text)
@@ -129,6 +129,8 @@ class HTMLExtractor(parser.HTMLParser):
         elif col < 4 and is_block:
             # Handle this as a standalone raw block
             self.cleandoc.append(self.md.htmlStash.store(data))
+            # Insert blank line between this and next line.
+            self.cleandoc.append('\n\n')
         else:
             self.cleandoc.append(data)
 

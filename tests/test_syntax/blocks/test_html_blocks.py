@@ -126,7 +126,8 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
-    # TODO: fix this. The blank line is optional but matches previous behavior and reference implementation.
+    # Note: This is a change in behavior, but follows the rules and the reference implementation.
+    # To change we would need to not restrict block-level content to begin at start of line.
     def test_multiple_raw_single__line(self):
         self.assertMarkdownRenders(
             '<p>*foo*</p><div>*bar*</div>',
@@ -134,7 +135,7 @@ class TestHTMLBlocks(TestCase):
                 """
                 <p>*foo*</p>
 
-                <div>*bar*</div>
+                <p><div><em>bar</em></div></p>
                 """
             )
         )
@@ -226,13 +227,14 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
-    # TODO: fix this. A blank line between the tags is optional but would be a change in behavior.
+    # Note: The blank line between the tags is a change in behavior.
     def test_raw_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             '<p>*foo*</p>*bar*',
             self.dedent(
                 """
                 <p>*foo*</p>
+
                 <p><em>bar</em></p>
                 """
             )
@@ -643,34 +645,40 @@ class TestHTMLBlocks(TestCase):
             '<!-- <tag> -->'
         )
 
-    # Note: this is a change in behavior for Python_markdown but matches the reference implementation.
-    # Previous output was `<!-- *foo* -->\n<p><em>bar</em></p>`. Browsers render both the same.
+    # Note: this is a change in behavior for Python-Markdown only in that a blank line is added.
+    # While it does not match the reference implementation, there is no difference in rendering.
     def test_raw_comment_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             '<!-- *foo* -->*bar*',
-            '<p><!-- *foo* --><em>bar</em></p>'
+            self.dedent(
+                """
+                <!-- *foo* -->
+
+                <p><em>bar</em></p>
+                """
+            )
         )
 
-    # TODO: Fix this. This matches Python-Markdown's previous behavior but not the reference implementation,
-    # which outputs `<p><!-- *foo* --><p><em>bar</em></p></p>` (which is also the pre-fixed behavior).
+    # This is a change in behavior and does not match the reference implementation.
+    # We have no way to determine if text is on the same line, so we get this. TODO: reevaluate!
     def test_raw_comment_one_line_followed_by_html(self):
         self.assertMarkdownRenders(
             '<!-- *foo* --><p>*bar*</p>',
             self.dedent(
                 """
                 <!-- *foo* -->
-                <p>*bar*</p>
+
+                <p><p><em>bar</em></p></p>
                 """
             )
         )
 
-    # TODO: Fix this. The trailing space is triping up the postprocessor: `<p>{placeholder} </p>`.
-    # Note: this reflects a slight change in behavior as the trailing spacer is preserved. This matches
-    # the reference implementation. However, it should be ok if we did not preserve the trailing space.
+    # Note: Trailing (insignificant) whitespace is not preserved, which does not match the
+    # reference implementation. However, it is not a change in behavior for Python-Markdown.
     def test_raw_comment_trailing_whitespace(self):
         self.assertMarkdownRenders(
             '<!-- *foo* --> ',
-            '<!-- *foo* --> '
+            '<!-- *foo* -->'
         )
 
     # Note: this is a change in behavior for Python-Markdown, which does *not* match the reference
@@ -932,11 +940,18 @@ class TestHTMLBlocks(TestCase):
             "<?php echo '>'; ?>"
         )
 
-    # This is inline as it is not on a line by itself.
+    # This is a change in behavior and does not match the reference implementation.
+    # We have no way to determine if text is on the same line, so we get this. TODO: reevaluate!
     def test_raw_processing_instruction_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             "<?php echo '>'; ?>*bar*",
-            "<p><?php echo '>'; ?><em>bar</em></p>"
+            self.dedent(
+                """
+                <?php echo '>'; ?>
+                
+                <p><em>bar</em></p>
+                """
+            )
         )
 
     def test_raw_multiline_processing_instruction(self):
@@ -1007,12 +1022,18 @@ class TestHTMLBlocks(TestCase):
             '<!DOCTYPE html>'
         )
 
-    # Note: this is a change in behavior for Python_markdown but matches the reference implementation.
-    # Previous output was `<!DOCTYPE html>*bar*`.
+    # This is a change in behavior and does not match the reference implementation.
+    # We have no way to determine if text is on the same line, so we get this. TODO: reevaluate!
     def test_raw_declaration_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             '<!DOCTYPE html>*bar*',
-            '<p><!DOCTYPE html><em>bar</em></p>'
+            self.dedent(
+                """
+                <!DOCTYPE html>
+                
+                <p><em>bar</em></p>
+                """
+            )
         )
 
     def test_raw_multiline_declaration(self):
@@ -1039,12 +1060,17 @@ class TestHTMLBlocks(TestCase):
             '<![CDATA[ document.write(">"); ]]>'
         )
 
-    # Note: this is a change in behavior for Python_markdown but matches the reference implementation.
-    # Previous output was `<![CDATA[ document.write(">"); ]]>*bar*`.
+    # Note: this is a change. Neither previous output nor this match reference implementation.
     def test_raw_cdata_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             '<![CDATA[ document.write(">"); ]]>*bar*',
-            '<p><![CDATA[ document.write(">"); ]]><em>bar</em></p>'
+            self.dedent(
+                """
+                <![CDATA[ document.write(">"); ]]>
+
+                <p><em>bar</em></p>
+                """
+            )
         )
 
     def test_raw_multiline_cdata(self):
@@ -1220,7 +1246,6 @@ class TestHTMLBlocks(TestCase):
             ),
         )
 
-    # TODO: fix this
     def text_invalid_tags(self):
         self.assertMarkdownRenders(
             self.dedent(
