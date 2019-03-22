@@ -74,8 +74,8 @@ class TestHTMLBlocks(TestCase):
 
     def test_code_span(self):
         self.assertMarkdownRenders(
-            '`<em>code span</em>`',
-            '<p><code>&lt;em&gt;code span&lt;/em&gt;</code></p>'
+            '`<p>code span</p>`',
+            '<p><code>&lt;p&gt;code span&lt;/p&gt;</code></p>'
         )
 
     def test_raw_empty(self):
@@ -223,6 +223,25 @@ class TestHTMLBlocks(TestCase):
                 <p>*Raw* HTML.</p>
 
                 <p>More <em>Markdown</em> text.</p>
+                """
+            )
+        )
+
+    # TODO: Fix this. Not sure why its failing...
+    def test_multiline_markdown_with_code_span(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                A paragraph with a block-level
+                `<p>code span</p>`, which is
+                at the start of a line.
+                """
+            ),
+            self.dedent(
+                """
+                <p>A paragraph with a block-level
+                <code>&lt;p&gt;code span&lt;/p&gt;</code>.
+                More <em>Markdown</em> text.</p>
                 """
             )
         )
@@ -643,6 +662,12 @@ class TestHTMLBlocks(TestCase):
         self.assertMarkdownRenders(
             '<!-- <tag> -->',
             '<!-- <tag> -->'
+        )
+
+    def test_comment_in_code_span(self):
+        self.assertMarkdownRenders(
+            '`<!-- *foo* -->`',
+            '<p><code>&lt;!-- *foo* --&gt;</code></p>'
         )
 
     # Note: this is a change in behavior for Python-Markdown only in that a blank line is added.

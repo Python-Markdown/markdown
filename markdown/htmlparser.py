@@ -65,11 +65,30 @@ class HTMLExtractor(parser.HTMLParser):
             self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
             self._cache = []
 
+    @property
+    def line_offset(self):
+        """Returns char index in self.rawdata for the start of the current line. """
+        if self.lineno > 1:
+            return re.match(r'([^\n]*\n){{{}}}'.format(self.lineno-1), self.rawdata).end()
+        return 0
+
+    def at_line_start(self):
+        """
+        Returns True if current position is at start of line.
+
+        Allows for up to three blank spaces at start of line.
+        """
+        if self.offset == 0:
+            return True
+        if self.offset > 3:
+            return False
+        # Confirm up to first 3 chars are whitespace 
+        return self.rawdata[self.line_offset:self.offset].strip() == ''
+
     def handle_starttag(self, tag, attrs):
         self.stack.append(tag)
 
-        line, col = self.getpos()
-        if col < 4 and self.md.is_block_level(tag) and not self.inraw:
+        if self.at_line_start() and self.md.is_block_level(tag) and not self.inraw:
             # Started a new raw block
             self.inraw = True
             if len(self.cleandoc):
@@ -84,12 +103,7 @@ class HTMLExtractor(parser.HTMLParser):
 
     def handle_endtag(self, tag):
         # Attempt to extract actual tag from raw source text
-        if self.lineno > 1:
-            # Find start position: char index for end of line at self.lineno + self.offset
-            start = re.match(r'([^\n]*\n){{{}}}'.format(self.lineno-1), self.rawdata).end() + self.offset
-        else:
-            # On first line. Just use self.offset for start position.
-            start = self.offset
+        start = self.line_offset + self.offset
         m = parser.endendtag.search(self.rawdata, start)
         if m:
             text = self.rawdata[start:m.end()]
@@ -122,11 +136,10 @@ class HTMLExtractor(parser.HTMLParser):
 
     def handle_empty_tag(self, data, is_block):
         """ Handle empty tags (`<data>`). """
-        line, col = self.getpos()
         if self.inraw:
             # Append this to the existing raw block
             self._cache.append(data)
-        elif col < 4 and is_block:
+        elif self.at_line_start() and is_block:
             # Handle this as a standalone raw block
             self.cleandoc.append(self.md.htmlStash.store(data))
             # Insert blank line between this and next line.
