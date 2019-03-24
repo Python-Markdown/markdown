@@ -83,7 +83,7 @@ class HTMLExtractor(parser.HTMLParser):
         if self.offset > 3:
             return False
         # Confirm up to first 3 chars are whitespace 
-        return self.rawdata[self.line_offset:self.offset].strip() == ''
+        return self.rawdata[self.line_offset:self.line_offset + self.offset].strip() == ''
 
     def handle_starttag(self, tag, attrs):
         self.stack.append(tag)

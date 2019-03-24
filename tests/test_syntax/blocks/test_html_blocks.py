@@ -227,7 +227,6 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
-    # TODO: Fix this. Not sure why its failing...
     def test_multiline_markdown_with_code_span(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -240,8 +239,8 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <p>A paragraph with a block-level
-                <code>&lt;p&gt;code span&lt;/p&gt;</code>.
-                More <em>Markdown</em> text.</p>
+                <code>&lt;p&gt;code span&lt;/p&gt;</code>, which is
+                at the start of a line.</p>
                 """
             )
         )
