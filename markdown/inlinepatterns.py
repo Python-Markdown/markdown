@@ -64,6 +64,7 @@ So, we apply the expressions in the following order:
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from . import util
+from collections import namedtuple
 import re
 try:  # pragma: no cover
     from html import entities
@@ -177,6 +178,10 @@ def dequote(string):
         return string[1:-1]
     else:
         return string
+
+
+class EmStrongItem(namedtuple('EmStrongItem', ['pattern', 'builder', 'tags'])):
+    """Emphasis/strong pattern item."""
 
 
 """
@@ -443,11 +448,11 @@ class AsteriskProcessor(InlineProcessor):
     """Emphasis processor for handling strong and em matches inside asterisks."""
 
     PATTERNS = [
-        (re.compile(EM_STRONG_RE, re.DOTALL | re.UNICODE), 'double', 'strong,em'),
-        (re.compile(STRONG_EM_RE, re.DOTALL | re.UNICODE), 'double', 'em,strong'),
-        (re.compile(STRONG_EM3_RE, re.DOTALL | re.UNICODE), 'double2', 'strong,em'),
-        (re.compile(STRONG_RE, re.DOTALL | re.UNICODE), 'single', 'strong'),
-        (re.compile(EMPHASIS_RE, re.DOTALL | re.UNICODE), 'single', 'em')
+        EmStrongItem(re.compile(EM_STRONG_RE, re.DOTALL | re.UNICODE), 'double', 'strong,em'),
+        EmStrongItem(re.compile(STRONG_EM_RE, re.DOTALL | re.UNICODE), 'double', 'em,strong'),
+        EmStrongItem(re.compile(STRONG_EM3_RE, re.DOTALL | re.UNICODE), 'double2', 'strong,em'),
+        EmStrongItem(re.compile(STRONG_RE, re.DOTALL | re.UNICODE), 'single', 'strong'),
+        EmStrongItem(re.compile(EMPHASIS_RE, re.DOTALL | re.UNICODE), 'single', 'em')
     ]
 
     def build_single(self, m, tag, idx):
@@ -511,11 +516,11 @@ class AsteriskProcessor(InlineProcessor):
             if self.compiled_re.match(data, pos):
                 matched = False
                 # See if the we can match an emphasis/strong pattern
-                for index, pattern in enumerate(self.PATTERNS):
+                for index, item in enumerate(self.PATTERNS):
                     # Only evaluate patterns that are after what was used on the parent
                     if index <= idx:
                         continue
-                    m = pattern[0].match(data, pos)
+                    m = item.pattern.match(data, pos)
                     if m:
                         # Append child nodes to parent
                         # Text nodes should be appended to the last
@@ -527,7 +532,7 @@ class AsteriskProcessor(InlineProcessor):
                                 last.tail = text
                             else:
                                 parent.text = text
-                        el = self.build_element(m, pattern[1], pattern[2], index)
+                        el = self.build_element(m, item.builder, item.tags, index)
                         parent.append(el)
                         last = el
                         # Move our position past the matched hunk
@@ -565,12 +570,12 @@ class AsteriskProcessor(InlineProcessor):
         start = None
         end = None
 
-        for index, pattern in enumerate(self.PATTERNS):
-            m1 = pattern[0].match(data, m.start(0))
+        for index, item in enumerate(self.PATTERNS):
+            m1 = item.pattern.match(data, m.start(0))
             if m1:
                 start = m1.start(0)
                 end = m1.end(0)
-                el = self.build_element(m1, pattern[1], pattern[2], index)
+                el = self.build_element(m1, item.builder, item.tags, index)
                 break
         return el, start, end
 
@@ -579,11 +584,11 @@ class UnderscoreProcessor(AsteriskProcessor):
     """Emphasis processor for handling strong and em matches inside underscores."""
 
     PATTERNS = [
-        (re.compile(EM_STRONG2_RE, re.DOTALL | re.UNICODE), 'double', 'strong,em'),
-        (re.compile(STRONG_EM2_RE, re.DOTALL | re.UNICODE), 'double', 'em,strong'),
-        (re.compile(SMART_STRONG_EM_RE, re.DOTALL | re.UNICODE), 'double2', 'strong,em'),
-        (re.compile(SMART_STRONG_RE, re.DOTALL | re.UNICODE), 'single', 'strong'),
-        (re.compile(SMART_EMPHASIS_RE, re.DOTALL | re.UNICODE), 'single', 'em')
+        EmStrongItem(re.compile(EM_STRONG2_RE, re.DOTALL | re.UNICODE), 'double', 'strong,em'),
+        EmStrongItem(re.compile(STRONG_EM2_RE, re.DOTALL | re.UNICODE), 'double', 'em,strong'),
+        EmStrongItem(re.compile(SMART_STRONG_EM_RE, re.DOTALL | re.UNICODE), 'double2', 'strong,em'),
+        EmStrongItem(re.compile(SMART_STRONG_RE, re.DOTALL | re.UNICODE), 'single', 'strong'),
+        EmStrongItem(re.compile(SMART_EMPHASIS_RE, re.DOTALL | re.UNICODE), 'single', 'em')
     ]
 
 
