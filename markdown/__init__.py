@@ -43,7 +43,7 @@ __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 # (1, 2, 0, 'beta', 2) => "1.2b2"
 # (1, 2, 0, 'rc', 4) => "1.2rc4"
 # (1, 2, 0, 'final', 0) => "1.2"
-__version_info__ = (3, 1, 0, 'dev', 0)
+__version_info__ = (3, 1, 0, 'final', 0)
 
 
 def _get_version():  # pragma: no cover
