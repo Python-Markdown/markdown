@@ -108,3 +108,10 @@ class TestNotEmphasis(TestCase):
             'This is text __bold_italic bold___ with more text',
             '<p>This is text __bold_italic bold___ with more text</p>'
         )
+
+    def test_nested_emphasis(self):
+
+        self.assertMarkdownRenders(
+            'This text is **bold *italic* *italic* bold**',
+            '<p>This text is <strong>bold <em>italic</em> <em>italic</em> bold</strong></p>'
+        )

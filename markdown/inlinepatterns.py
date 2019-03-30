@@ -352,7 +352,7 @@ class SimpleTagInlineProcessor(InlineProcessor):
         InlineProcessor.__init__(self, pattern)
         self.tag = tag
 
-    def handleMatch(self, m, data):
+    def handleMatch(self, m, data):  # pragma: no cover
         el = util.etree.Element(self.tag)
         el.text = m.group(2)
         return el, m.start(0), m.end(0)
@@ -408,7 +408,7 @@ class DoubleTagInlineProcessor(SimpleTagInlineProcessor):
     Useful for strong emphasis etc.
 
     """
-    def handleMatch(self, m, data):
+    def handleMatch(self, m, data):  # pragma: no cover
         tag1, tag2 = self.tag.split(",")
         el1 = util.etree.Element(tag1)
         el2 = util.etree.SubElement(el1, tag2)
