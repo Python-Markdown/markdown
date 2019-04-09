@@ -22,7 +22,7 @@ from ..treeprocessors import Treeprocessor
 
 try:
     from pygments import highlight
-    from pygments.lexers import get_lexer_by_name, guess_lexer
+    from pygments.lexers import get_lexer_by_name, guess_lexer, load_lexer_from_file
     from pygments.formatters import get_formatter_by_name
     pygments = True
 except ImportError:
@@ -75,7 +75,8 @@ class CodeHilite(object):
 
     def __init__(self, src=None, linenums=None, guess_lang=True,
                  css_class="codehilite", lang=None, style='default',
-                 noclasses=False, tab_length=4, hl_lines=None, use_pygments=True):
+                 noclasses=False, tab_length=4, hl_lines=None, use_pygments=True,
+                 custom_lexers=[]):
         self.src = src
         self.lang = lang
         self.linenums = linenums
@@ -86,6 +87,27 @@ class CodeHilite(object):
         self.tab_length = tab_length
         self.hl_lines = hl_lines or []
         self.use_pygments = use_pygments
+        self.custom_lexers = custom_lexers
+
+    def get_pygments_lexer(self):
+        for lexername in self.custom_lexers:
+            if ':' in lexername:
+                pathname, classname = lexername.rsplit(':', 1)
+                lexer = load_lexer_from_file(pathname, classname)
+            else:
+                lexer = load_lexer_from_file(lexername)
+            if self.lang in lexer.aliases:
+                return lexer
+        try:
+            return get_lexer_by_name(self.lang)
+        except ValueError:
+            try:
+                if self.guess_lang:
+                    return guess_lexer(self.src)
+                else:
+                    return get_lexer_by_name('text')
+            except ValueError:
+                return get_lexer_by_name('text')
 
     def hilite(self):
         """
@@ -104,16 +126,7 @@ class CodeHilite(object):
             self._parseHeader()
 
         if pygments and self.use_pygments:
-            try:
-                lexer = get_lexer_by_name(self.lang)
-            except ValueError:
-                try:
-                    if self.guess_lang:
-                        lexer = guess_lexer(self.src)
-                    else:
-                        lexer = get_lexer_by_name('text')
-                except ValueError:
-                    lexer = get_lexer_by_name('text')
+            lexer = self.get_pygments_lexer()
             formatter = get_formatter_by_name('html',
                                               linenos=self.linenums,
                                               cssclass=self.css_class,
@@ -220,7 +233,8 @@ class HiliteTreeprocessor(Treeprocessor):
                     style=self.config['pygments_style'],
                     noclasses=self.config['noclasses'],
                     tab_length=self.md.tab_length,
-                    use_pygments=self.config['use_pygments']
+                    use_pygments=self.config['use_pygments'],
+                    custom_lexers=self.config['custom_lexers']
                 )
                 placeholder = self.md.htmlStash.store(code.hilite())
                 # Clear codeblock in etree instance
@@ -253,7 +267,10 @@ class CodeHiliteExtension(Extension):
             'use_pygments': [True,
                              'Use Pygments to Highlight code blocks. '
                              'Disable if using a JavaScript library. '
-                             'Default: True']
+                             'Default: True'],
+            'custom_lexers': [[],
+                               'Custom Pygments lexer files - '
+                               'Default: none']
             }
 
         super(CodeHiliteExtension, self).__init__(**kwargs)
