@@ -56,14 +56,18 @@ class CodeHilite(object):
     * src: Source string or any object with a .readline attribute.
 
     * linenums: (Boolean) Set line numbering to 'on' (True),
-      'off' (False) or 'auto'(None). Set to 'auto' by default.
+      'off' (False) or 'auto' (None). Set to 'auto' by default.
 
     * guess_lang: (Boolean) Turn language auto-detection
       'on' or 'off' (on by default).
 
     * css_class: Set class name of wrapper div ('codehilite' by default).
 
-    * hl_lines: (List of integers) Lines to emphasize, 1-indexed.
+    * lexer_options: Dictionary containing options passed to the Pygments lexer
+      if use_pygments is set to True.
+
+    * formatter_options: Dictionary containing options passed to the Pygments
+      formatter if use_pygments is set to True.
 
     Low Level Usage:
         >>> code = CodeHilite()
@@ -75,7 +79,8 @@ class CodeHilite(object):
 
     def __init__(self, src=None, linenums=None, guess_lang=True,
                  css_class="codehilite", lang=None, style='default',
-                 noclasses=False, tab_length=4, hl_lines=None, use_pygments=True):
+                 noclasses=False, tab_length=4, use_pygments=True,
+                 lexer_options={}, formatter_options={}):
         self.src = src
         self.lang = lang
         self.linenums = linenums
@@ -84,8 +89,9 @@ class CodeHilite(object):
         self.style = style
         self.noclasses = noclasses
         self.tab_length = tab_length
-        self.hl_lines = hl_lines or []
         self.use_pygments = use_pygments
+        self.lexer_options = lexer_options
+        self.formatter_options = formatter_options
 
     def hilite(self):
         """
@@ -105,21 +111,24 @@ class CodeHilite(object):
 
         if pygments and self.use_pygments:
             try:
-                lexer = get_lexer_by_name(self.lang)
+                lexer = get_lexer_by_name(self.lang, **self.lexer_options)
             except ValueError:
                 try:
                     if self.guess_lang:
-                        lexer = guess_lexer(self.src)
+                        lexer = guess_lexer(self.src, **self.lexer_options)
                     else:
-                        lexer = get_lexer_by_name('text')
+                        lexer = get_lexer_by_name('text', **self.lexer_options)
                 except ValueError:
-                    lexer = get_lexer_by_name('text')
-            formatter = get_formatter_by_name('html',
-                                              linenos=self.linenums,
-                                              cssclass=self.css_class,
-                                              style=self.style,
-                                              noclasses=self.noclasses,
-                                              hl_lines=self.hl_lines)
+                    lexer = get_lexer_by_name('text', **self.lexer_options)
+            if self.linenums:
+                self.formatter_options["linenos"] = True
+            if "cssclass" not in self.formatter_options:
+                self.formatter_options["cssclass"] = self.css_class
+            if "style" not in self.formatter_options:
+                self.formatter_options["style"] = self.style
+            if self.noclasses:
+                self.formatter_options["noclasses"] = True
+            formatter = get_formatter_by_name('html', **self.formatter_options)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
@@ -186,7 +195,9 @@ class CodeHilite(object):
                 # Overridable and Shebang exists - use line numbers
                 self.linenums = True
 
-            self.hl_lines = parse_hl_lines(m.group('hl_lines'))
+            if pygments and self.use_pygments:
+                self.formatter_options["hl_lines"] = parse_hl_lines(
+                    m.group('hl_lines'))
         else:
             # No match
             lines.insert(0, fl)
@@ -220,7 +231,9 @@ class HiliteTreeprocessor(Treeprocessor):
                     style=self.config['pygments_style'],
                     noclasses=self.config['noclasses'],
                     tab_length=self.md.tab_length,
-                    use_pygments=self.config['use_pygments']
+                    use_pygments=self.config['use_pygments'],
+                    lexer_options=self.config['lexer_options'],
+                    formatter_options=self.config['formatter_options']
                 )
                 placeholder = self.md.htmlStash.store(code.hilite())
                 # Clear codeblock in etree instance
@@ -238,22 +251,31 @@ class CodeHiliteExtension(Extension):
         # define default configs
         self.config = {
             'linenums': [None,
-                         "Use lines numbers. True=yes, False=no, None=auto"],
+                         "Use line numbers. True=yes, False=no, None=auto"],
             'guess_lang': [True,
                            "Automatic language detection - Default: True"],
             'css_class': ["codehilite",
                           "Set class name for wrapper <div> - "
                           "Default: codehilite"],
             'pygments_style': ['default',
-                               'Pygments HTML Formatter Style '
+                               '(Deprecated, use the style Pygments formatter '
+                               'option instead) Pygments HTML Formatter Style '
                                '(Colorscheme) - Default: default'],
             'noclasses': [False,
-                          'Use inline styles instead of CSS classes - '
-                          'Default false'],
+                          '(Deprecated, use the noclasses Pygments formatter '
+                          'option instead) Use inline styles instead of CSS '
+                          'classes - Default false'],
             'use_pygments': [True,
                              'Use Pygments to Highlight code blocks. '
                              'Disable if using a JavaScript library. '
-                             'Default: True']
+                             'Default: True'],
+            'lexer_options': [{},
+                              'Dictionary containing options passed to the '
+                              'Pygments lexer if use_pygments is set to True.'],
+            'formatter_options': [{},
+                                  'Dictionary containing options passed to '
+                                  'the Pygments formatter if use_pygments is '
+                                  'set to True.']
             }
 
         super(CodeHiliteExtension, self).__init__(**kwargs)
