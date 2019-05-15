@@ -22,9 +22,28 @@ License: BSD (see LICENSE.md for details).
 """
 
 
+import os
+import sys
 from setuptools import setup
-from markdown import __version__, __version_info__
 
+
+def get_version():
+    """Get version and version_info from markdown/__meta__.py file."""
+    module_path = os.path.join(os.path.dirname('__file__'), 'markdown', '__meta__.py')
+
+    if sys.version_info[0] == 2:
+        import imp
+        meta = imp.load_source('__meta__', module_path)
+        return meta.__version__, meta.__version_info__
+
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('__meta__', module_path)
+    meta = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(meta)
+    return meta.__version__, meta.__version_info__
+
+
+__version__, __version_info__ = get_version()
 
 # Get development Status for classifiers
 dev_status_map = {

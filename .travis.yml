@@ -25,6 +25,7 @@ matrix:
           packages:
           - aspell
           - aspell-en
+    - env: TOXENV=pep517check
 
 addons:
   apt:
