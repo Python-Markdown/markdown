@@ -20,7 +20,10 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-from pkg_resources.extern import packaging
+try:
+    import packaging.version
+except ImportError:
+    from pkg_resources.extern import packaging
 
 # __version_info__ format:
 # (major, minor, patch, dev/alpha/beta/rc/final, #)

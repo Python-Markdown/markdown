@@ -7,6 +7,8 @@ _______, 2019: Released version 3.1.1 (a bug-fix release).
 
 * Fixed import failure in `setup.py` when the source directory is not
   on `sys.path` (#823).
+* Prefer public `packaging` module to pkg_resources' private copy of
+  it (#825).
 
 Mar 25, 2019: Released version 3.1 ([Notes](release-3.1.md)).
 
