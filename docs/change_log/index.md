@@ -7,6 +7,7 @@ _______, 2019: Released version 3.1.1 (a bug-fix release).
 
 * Fixed import failure in `setup.py` when the source directory is not
   on `sys.path` (#823).
+* Fixed import failure on Arch Linux (#825).
 
 Mar 25, 2019: Released version 3.1 ([Notes](release-3.1.md)).
 
