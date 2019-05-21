@@ -3,7 +3,7 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-_______, 2019: Released version 3.1.1 (a bug-fix release).
+May 20, 2019: Released version 3.1.1 (a bug-fix release).
 
 * Fixed import failure in `setup.py` when the source directory is not
   on `sys.path` (#823).
