@@ -19,12 +19,15 @@ install:
 
 .PHONY : deploy
 deploy:
+	rm -rf build
 	rm -rf dist
 	python setup.py bdist_wheel sdist --formats gztar
 	twine upload dist/*
 
 .PHONY : build
 build:
+	rm -rf build
+	rm -rf dist
 	python setup.py bdist_wheel sdist --formats gztar
 
 .PHONY : build-win
