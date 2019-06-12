@@ -152,14 +152,14 @@ class FootnoteExtension(Extension):
         if self.getConfig("UNIQUE_IDS"):
             return 'fn%s%d-%s' % (self.get_separator(), self.unique_prefix, id)
         else:
-            return 'fn%s%s' % (self.get_separator(), id)
+            return 'fn{}{}'.format(self.get_separator(), id)
 
     def makeFootnoteRefId(self, id, found=False):
         """ Return footnote back-link id. """
         if self.getConfig("UNIQUE_IDS"):
             return self.unique_ref('fnref%s%d-%s' % (self.get_separator(), self.unique_prefix, id), found)
         else:
-            return self.unique_ref('fnref%s%s' % (self.get_separator(), id), found)
+            return self.unique_ref('fnref{}{}'.format(self.get_separator(), id), found)
 
     def makeFootnotesDiv(self, root):
         """ Return div of footnotes as et Element. """
@@ -355,7 +355,7 @@ class FootnotePostTreeprocessor(Treeprocessor):
     def get_num_duplicates(self, li):
         """ Get the number of duplicate refs of the footnote. """
         fn, rest = li.attrib.get('id', '').split(self.footnotes.get_separator(), 1)
-        link_id = '%sref%s%s' % (fn, self.footnotes.get_separator(), rest)
+        link_id = '{}ref{}{}'.format(fn, self.footnotes.get_separator(), rest)
         return self.footnotes.found_refs.get(link_id, 0)
 
     def handle_duplicates(self, parent):

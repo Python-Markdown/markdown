@@ -308,7 +308,7 @@ class EscapeInlineProcessor(InlineProcessor):
     def handleMatch(self, m, data):
         char = m.group(1)
         if char in self.md.ESCAPED_CHARS:
-            return '%s%s%s' % (util.STX, ord(char), util.ETX), m.start(0), m.end(0)
+            return '{}{}{}'.format(util.STX, ord(char), util.ETX), m.start(0), m.end(0)
         else:
             return None, m.start(0), m.end(0)
 
@@ -361,7 +361,7 @@ class BacktickInlineProcessor(InlineProcessor):
     """ Return a `<code>` element containing the matching text. """
     def __init__(self, pattern):
         InlineProcessor.__init__(self, pattern)
-        self.ESCAPED_BSLASH = '%s%s%s' % (util.STX, ord('\\'), util.ETX)
+        self.ESCAPED_BSLASH = '{}{}{}'.format(util.STX, ord('\\'), util.ETX)
         self.tag = 'code'
 
     def handleMatch(self, m, data):
@@ -708,7 +708,7 @@ class AutomailInlineProcessor(InlineProcessor):
             """Return entity definition by code, or the code if not defined."""
             entity = entities.codepoint2name.get(code)
             if entity:
-                return "%s%s;" % (util.AMP_SUBSTITUTE, entity)
+                return "{}{};".format(util.AMP_SUBSTITUTE, entity)
             else:
                 return "%s#%d;" % (util.AMP_SUBSTITUTE, code)
 

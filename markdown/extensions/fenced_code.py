@@ -91,9 +91,9 @@ class FencedBlockPreprocessor(Preprocessor):
                                              self._escape(m.group('code')))
 
                 placeholder = self.md.htmlStash.store(code)
-                text = '%s\n%s\n%s' % (text[:m.start()],
-                                       placeholder,
-                                       text[m.end():])
+                text = '{}\n{}\n{}'.format(text[:m.start()],
+                                           placeholder,
+                                           text[m.end():])
             else:
                 break
         return text.split("\n")

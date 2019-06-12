@@ -310,12 +310,12 @@ class InlineProcessor(Treeprocessor):
         placeholder = self.__stashNode(node, pattern.type())
 
         if new_style:
-            return "%s%s%s" % (data[:start],
-                               placeholder, data[end:]), True, 0
+            return "{}{}{}".format(data[:start],
+                                   placeholder, data[end:]), True, 0
         else:  # pragma: no cover
-            return "%s%s%s%s" % (leftData,
-                                 match.group(1),
-                                 placeholder, match.groups()[-1]), True, 0
+            return "{}{}{}{}".format(leftData,
+                                     match.group(1),
+                                     placeholder, match.groups()[-1]), True, 0
 
     def __build_ancestors(self, parent, parents):
         """Build the ancestor list."""
@@ -351,7 +351,7 @@ class InlineProcessor(Treeprocessor):
         # to ensure we don't have the user accidentally change it on us.
         tree_parents = [] if ancestors is None else ancestors[:]
 
-        self.parent_map = dict((c, p) for p in tree.iter() for c in p)
+        self.parent_map = {c: p for p in tree.iter() for c in p}
         stack = [(tree, tree_parents)]
 
         while stack:

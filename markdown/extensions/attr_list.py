@@ -145,7 +145,7 @@ class AttrListTreeprocessor(Treeprocessor):
                 # add to class
                 cls = elem.get('class')
                 if cls:
-                    elem.set('class', '%s %s' % (cls, v))
+                    elem.set('class', '{} {}'.format(cls, v))
                 else:
                     elem.set('class', v)
             else:
