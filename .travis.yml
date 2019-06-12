@@ -34,8 +34,7 @@ addons:
     - libtidy-0.99-0
 
 install:
-  # NOTE: setuptools needs to be installed explicitly for py34 (trusty).
-  - pip install 'setuptools>=36' tox
+  - pip install tox
 
 script:
   - tox

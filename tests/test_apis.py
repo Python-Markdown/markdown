@@ -1043,3 +1043,16 @@ class TestGeneralDeprecations(unittest.TestCase):
         self.assertTrue('__version__' in dir_attr)
         self.assertFalse('version_info' in dir_attr)
         self.assertTrue('__version_info__' in dir_attr)
+
+
+class TestVersion(unittest.TestCase):
+    def test_version(self):
+        self.assertIsInstance(markdown.__version_info__, tuple)
+        self.assertIsInstance(markdown.__version__, str)
+        # PEP 440 compliant.
+        # https://www.python.org/dev/peps/pep-0440/
+        regex = r'[0-9]+\.[0-9]+\.[0-9]+(?:(?:a|b|rc|\.dev)[0-9]+)?'
+        if PY3:
+            self.assertRegex(markdown.__version__, regex)
+        else:
+            self.assertRegexpMatches(markdown.__version__, regex)

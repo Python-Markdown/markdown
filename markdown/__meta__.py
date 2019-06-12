@@ -20,11 +20,6 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-try:
-    import packaging.version
-except ImportError:
-    from pkg_resources.extern import packaging
-
 # __version_info__ format:
 # (major, minor, patch, dev/alpha/beta/rc/final, #)
 # (1, 1, 2, 'dev', 0) => "1.1.2.dev0"
@@ -49,8 +44,7 @@ def _get_version():  # pragma: no cover
         mapping = {'alpha': 'a', 'beta': 'b', 'rc': 'rc'}
         v += mapping[__version_info__[3]] + str(__version_info__[4])
 
-    # Ensure version is valid and normalized
-    return str(packaging.version.Version(v))
+    return v
 
 
 __version__ = _get_version()
