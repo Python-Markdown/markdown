@@ -13,7 +13,7 @@
 [codecov-button]: https://codecov.io/gh/Python-Markdown/markdown/branch/master/graph/badge.svg
 [codecov]: https://codecov.io/gh/Python-Markdown/markdown
 [mdversion-button]: http://img.shields.io/pypi/v/Markdown.svg
-[md-pypi]: http://pypi.python.org/pypi/Markdown
+[md-pypi]: https://pypi.org/project/Markdown/
 [pyversion-button]: http://img.shields.io/pypi/pyversions/Markdown.svg
 [bsdlicense-button]: http://img.shields.io/badge/license-BSD-yellow.svg
 [bsdlicense]: http://opensource.org/licenses/BSD-3-Clause
