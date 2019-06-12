@@ -13,11 +13,11 @@ Author: 2013, Dmitry Shachnev <mitya57@gmail.com>
 
 All changes Copyright 2013-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
+License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 SmartyPants license:
 
-   Copyright (c) 2003 John Gruber <http://daringfireball.net/>
+   Copyright (c) 2003 John Gruber <https://daringfireball.net/>
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without

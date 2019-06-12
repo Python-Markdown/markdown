@@ -6,7 +6,7 @@
 # Copyright (c) 1999-2007 by Fredrik Lundh.  All rights reserved.
 #
 # fredrik@pythonware.com
-# http://www.pythonware.com
+# https://www.pythonware.com/
 #
 # --------------------------------------------------------------------
 # The ElementTree toolkit is

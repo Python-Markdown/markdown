@@ -9,11 +9,11 @@ Adds rST-style admonitions. Inspired by [rST][] feature with the same name.
 See <https://Python-Markdown.github.io/extensions/admonition>
 for documentation.
 
-Original code Copyright [Tiago Serafim](http://www.tiagoserafim.com/).
+Original code Copyright [Tiago Serafim](https://www.tiagoserafim.com/).
 
 All changes Copyright The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
+License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 

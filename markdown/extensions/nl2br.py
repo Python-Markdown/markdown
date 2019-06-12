@@ -8,11 +8,11 @@ GitHub-flavored Markdown does.
 See <https://Python-Markdown.github.io/extensions/nl2br>
 for documentation.
 
-Oringinal code Copyright 2011 [Brian Neal](http://deathofagremmie.com/)
+Oringinal code Copyright 2011 [Brian Neal](https://deathofagremmie.com/)
 
 All changes Copyright 2011-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
+License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 

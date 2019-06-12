@@ -167,7 +167,7 @@ testing dependencies and running of the tests on each supported Python version.
 See the wiki for instructions on [setting up a testing environment] to use tox.
 
 [unittest]: https://docs.python.org/3/library/unittest.html
-[Perl]: http://daringfireball.net/projects/markdown/
+[Perl]: https://daringfireball.net/projects/markdown/
 [PHP]: http://michelf.com/projects/php-markdown/
 [PyTidyLib]: http://countergram.com/open-source/pytidylib/
 [tox]: http://testrun.org/tox/latest/

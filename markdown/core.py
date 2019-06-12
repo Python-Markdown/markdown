@@ -78,7 +78,7 @@ class Markdown(object):
 
         self.block_level_elements = [
             # Elements which are invalid to wrap in a `<p>` tag.
-            # See http://w3c.github.io/html/grouping-content.html#the-p-element
+            # See https://w3c.github.io/html/grouping-content.html#the-p-element
             'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
             'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3',
             'h4', 'h5', 'h6', 'header', 'hr', 'main', 'menu', 'nav', 'ol', 'p', 'pre',

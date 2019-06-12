@@ -169,7 +169,7 @@ The `--extension_configs` option will only support YAML configuration files if
 dependencies. The format of your configuration file is automatically detected.
 
 [ec]: reference.md#extension_configs
-[YAML]: http://yaml.org/
-[JSON]: http://json.org/
-[PyYAML]: http://pyyaml.org/
+[YAML]: https://yaml.org/
+[JSON]: https://json.org/
+[PyYAML]: https://pyyaml.org/
 [2.5 release notes]: change_log/release-2.5.md

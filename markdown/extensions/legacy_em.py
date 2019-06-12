@@ -6,7 +6,7 @@ This extention provides legacy behavior for _connected_words_.
 
 Copyright 2015-2018 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
+License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 '''
 

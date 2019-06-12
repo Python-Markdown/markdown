@@ -67,7 +67,7 @@ though there are a few known issues. See Features_ for information
 on what exactly is supported and what is not. Additional features are
 supported by the `Available Extensions`_.
 
-.. _Markdown: http://daringfireball.net/projects/markdown/
+.. _Markdown: https://daringfireball.net/projects/markdown/
 .. _Features: https://Python-Markdown.github.io#features
 .. _`Available Extensions`: https://Python-Markdown.github.io/extensions/
 
@@ -77,7 +77,7 @@ Support
 You may report bugs, ask for help, and discuss various other issues on
 the `bug tracker`_.
 
-.. _`bug tracker`: http://github.com/Python-Markdown/markdown/issues
+.. _`bug tracker`: https://github.com/Python-Markdown/markdown/issues
 '''
 
 

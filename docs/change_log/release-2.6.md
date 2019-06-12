@@ -224,7 +224,7 @@ Official support for [PyPy] has been added. While Python-Markdown has most
 likely worked on PyPy for some time, it is now officially supported and tested
 on PyPy.
 
-[PyPy]: http://pypy.org/
+[PyPy]: https://pypy.org/
 
 ### YAML Style Meta-Data
 
@@ -239,9 +239,9 @@ suggested that a preprocessor (like [docdata]) or a third party extension be
 used if you want true YAML support. See [Issue #390][#390] for a full
 explanation.</ins>
 
-[MultiMarkdown]: http://fletcherpenney.net/MultiMarkdown_Syntax_Guide#metadata
+[MultiMarkdown]: https://fletcherpenney.net/multimarkdown/#metadata
 [Meta-Data]: ../extensions/meta_data.md
-[YAML]: http://yaml.org/
+[YAML]: https://yaml.org/
 [#390]: https://github.com/Python-Markdown/markdown/issues/390
 [docdata]: https://github.com/waylan/docdata
 
@@ -289,7 +289,7 @@ potentially be used by a JavaScript library in the browser to highlight the code
 block.
 
 [ch]: ../extensions/code_hilite.md
-[spec]: http://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
+[spec]: https://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
 
 ### Miscellaneous
 

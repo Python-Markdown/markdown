@@ -4,10 +4,10 @@ Python-Markdown
 ===============
 
 This is a Python implementation of John Gruber's
-[Markdown](http://daringfireball.net/projects/markdown/).
+[Markdown](https://daringfireball.net/projects/markdown/).
 It is almost completely compliant with the reference implementation,
 though there are a few very minor [differences](#differences). See John's
-[Syntax Documentation](http://daringfireball.net/projects/markdown/syntax)
+[Syntax Documentation](https://daringfireball.net/projects/markdown/syntax)
 for the syntax rules.
 
 To get started, see the [installation instructions](install.md), the [library
@@ -21,7 +21,7 @@ The Python-Markdown project is developed with the following goals in mind:
 * Maintain a Python 2 *and* Python 3 library (with an optional CLI wrapper)
   suited to use in web server environments (never raise an exception, never
   write to stdout, etc.) as an implementation of the markdown parser that
-  follows the [syntax rules](http://daringfireball.net/projects/markdown/syntax)
+  follows the [syntax rules](https://daringfireball.net/projects/markdown/syntax)
   and the behavior of the original (markdown.pl) implementation as reasonably as
   possible (see [differences](#differences) for a few exceptions).
 
@@ -61,10 +61,10 @@ Differences
 -----------
 
 While Python-Markdown strives to fully implement markdown as described in the
-[syntax rules](http://daringfireball.net/projects/markdown/syntax), the rules
+[syntax rules](https://daringfireball.net/projects/markdown/syntax), the rules
 can be interpreted in different ways and different implementations
 occasionally vary in their behavior (see the
-[Babelmark FAQ](http://johnmacfarlane.net/babelmark2/faq.html#what-are-some-examples-of-interesting-divergences-between-implementations)
+[Babelmark FAQ](https://johnmacfarlane.net/babelmark2/faq.html#what-are-some-examples-of-interesting-divergences-between-implementations)
 for some examples). Known and intentional differences found in Python-Markdown
 are summarized below:
 
@@ -77,7 +77,7 @@ are summarized below:
 
 * __Indentation/Tab Length__
 
-    The [syntax rules](http://daringfireball.net/projects/markdown/syntax#list)
+    The [syntax rules](https://daringfireball.net/projects/markdown/syntax#list)
     clearly state that when a list item consists of multiple paragraphs, "each
     subsequent paragraph in a list item **must** be indented by either 4 spaces
     or one tab" (emphasis added). However, many implementations do not enforce
@@ -109,4 +109,4 @@ Support
 You may report bugs, ask for help, and discuss various other issues on the [bug tracker][].
 
 [third party extension]: https://github.com/Python-Markdown/markdown/wiki/Third-Party-Extensions
-[bug tracker]: http://github.com/Python-Markdown/markdown/issues
+[bug tracker]: https://github.com/Python-Markdown/markdown/issues
