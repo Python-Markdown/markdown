@@ -109,7 +109,7 @@ class TestSetextHeaders(TestCase):
         )
 
     # TODO: fix this
-    # see http://johnmacfarlane.net/babelmark2/?normalize=1&text=Paragraph%0AAn+H1%0A%3D%3D%3D%3D%3D
+    # see https://johnmacfarlane.net/babelmark2/?normalize=1&text=Paragraph%0AAn+H1%0A%3D%3D%3D%3D%3D
     @unittest.skip('This is broken in Python-Markdown')
     def test_p_followed_by_setext_h1(self):
         self.assertMarkdownRenders(
@@ -129,7 +129,7 @@ class TestSetextHeaders(TestCase):
         )
 
     # TODO: fix this
-    # see http://johnmacfarlane.net/babelmark2/?normalize=1&text=Paragraph%0AAn+H2%0A-----
+    # see https://johnmacfarlane.net/babelmark2/?normalize=1&text=Paragraph%0AAn+H2%0A-----
     @unittest.skip('This is broken in Python-Markdown')
     def test_p_followed_by_setext_h2(self):
         self.assertMarkdownRenders(
@@ -585,7 +585,7 @@ class TestHashHeaders(TestCase):
 
     # TODO: Possibly change the following behavior. While this follows the behavior
     # of markdown.pl, it is rather uncommon and not nessecarily intuitive.
-    # See: http://johnmacfarlane.net/babelmark2/?normalize=1&text=%23+This+is+an+H1+%23+
+    # See: https://johnmacfarlane.net/babelmark2/?normalize=1&text=%23+This+is+an+H1+%23+
     def test_hash_h1_closed_trailing_space(self):
         self.assertMarkdownRenders(
             '# This is an H1 # ',

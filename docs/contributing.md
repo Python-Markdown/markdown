@@ -469,8 +469,8 @@ label from the same group.
 [Python-Markdown Code of Conduct]: https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md
 [Python-Markdown/markdown]: https://github.com/Python-Markdown/markdown
 [issue tracker]: https://github.com/Python-Markdown/markdown/issues
-[syntax rules]: http://daringfireball.net/projects/markdown/syntax
-[Babelmark]: http://johnmacfarlane.net/babelmark2/
+[syntax rules]: https://daringfireball.net/projects/markdown/syntax
+[Babelmark]: https://johnmacfarlane.net/babelmark2/
 [Creating a pull request from a fork]: https://help.github.com/articles/creating-a-pull-request-from-a-fork/
 [action words]: https://help.github.com/articles/closing-issues-using-keywords/
 [PEP8 Style Guide]: https://www.python.org/dev/peps/pep-0008/
@@ -491,8 +491,8 @@ label from the same group.
 [virtual environment]: https://virtualenv.pypa.io/en/stable/
 [User Guide]: https://virtualenv.pypa.io/en/stable/userguide/#usage
 [Development Mode]: https://setuptools.readthedocs.io/en/latest/setuptools.html#development-mode
-[PyTidyLib]: http://countergram.github.io/pytidylib/
-[HTML Tidy]: http://www.html-tidy.org/
+[PyTidyLib]: https://countergram.github.io/pytidylib/
+[HTML Tidy]: https://www.html-tidy.org/
 [tox]: https://tox.readthedocs.io/en/latest/
 [aspell]: http://aspell.net/
 [Semantic Versioning]: https://semver.org/

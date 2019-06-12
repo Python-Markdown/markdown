@@ -47,7 +47,7 @@ extension_configs = {
     [CodeHilite] Extension) like the third party library
     has been known to do.
 
-[SmartyPants]: http://pythonhosted.org/smartypants/
+[SmartyPants]: https://pythonhosted.org/smartypants/
 [CodeHilite]: code_hilite.md
 
 Usage
@@ -75,4 +75,4 @@ Further reading
 SmartyPants extension is based on the original SmartyPants implementation
 by John Gruber. Please read its [documentation][1] for details.
 
-[1]: http://daringfireball.net/projects/smartypants/
+[1]: https://daringfireball.net/projects/smartypants/

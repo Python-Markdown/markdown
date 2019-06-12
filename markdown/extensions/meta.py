@@ -11,7 +11,7 @@ Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com).
 
 All changes Copyright 2008-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
+License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 

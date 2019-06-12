@@ -14,7 +14,7 @@ directly by your python code.
 
 This extension is included in the standard Markdown library.
 
-[MultiMarkdown]: http://fletcherpenney.net/MultiMarkdown_Syntax_Guide#metadata
+[MultiMarkdown]: https://fletcherpenney.net/multimarkdown/#metadata
 
 Syntax
 ------

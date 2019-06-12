@@ -481,7 +481,7 @@ def set_link_class(self, element):
 ```
 
 For more information about working with ElementTree see the ElementTree
-[Documentation](http://effbot.org/zone/element-index.htm)
+[Documentation](https://effbot.org/zone/element-index.htm)
 ([Python Docs](http://docs.python.org/lib/module-xml.etree.ElementTree.html)).
 
 ## Integrating Your Code Into Markdown {: #integrating_into_markdown }
@@ -540,7 +540,7 @@ accepts one argument:
     Therefore, what you really should be doing is inserting processors and
     patterns into the markdown pipeline. Consider yourself warned!
 
-[monkey_patching]: http://en.wikipedia.org/wiki/Monkey_patch
+[monkey_patching]: https://en.wikipedia.org/wiki/Monkey_patch
 
 A simple example:
 
@@ -815,7 +815,7 @@ module and call the `makeExtension` function to initiate your extension.
 [registerExtension]: #registerextension
 [Config Settings]: #configsettings
 [makeExtension]: #makeextension
-[ElementTree]: http://effbot.org/zone/element-index.htm
+[ElementTree]: https://effbot.org/zone/element-index.htm
 [Available Extensions]: index.md
 [Footnotes]: https://github.com/Python-Markdown/mdx_footnotes
 [Definition Lists]: https://github.com/Python-Markdown/mdx_definition_lists

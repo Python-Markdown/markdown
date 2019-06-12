@@ -72,7 +72,7 @@ The above will output:
 ```
 ````
 
-[GitHub]: http://github.github.com/github-flavored-markdown/
+[GitHub]: https://github.github.com/github-flavored-markdown/
 
 ### Emphasized Lines
 

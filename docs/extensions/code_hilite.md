@@ -62,7 +62,7 @@ block will not be highlighted.
 
 [richeland]: https://github.com/richleland
 [rich]: https://github.com/richleland/pygments-css
-[preview]: http://richleland.github.io/pygments-css/
+[preview]: https://richleland.github.io/pygments-css/
 [documentation]: http://pygments.org/docs/
 
 ## Syntax
@@ -79,7 +79,7 @@ code block contains and each one has a different result.
     display of line numbers -- it only serves as a means to define the language
     of the code block.
 
-[syntax]: http://daringfireball.net/projects/markdown/syntax#precode
+[syntax]: https://daringfireball.net/projects/markdown/syntax#precode
 
 ### Shebang (with path)
 
@@ -222,4 +222,4 @@ The following options are provided to configure the output:
     (alternate output will not be entertained) and might be used by a JavaScript
     library in the browser to highlight the code block.
 
-[spec]: http://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
+[spec]: https://www.w3.org/TR/html5/text-level-semantics.html#the-code-element

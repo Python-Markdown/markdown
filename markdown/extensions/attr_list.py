@@ -13,7 +13,7 @@ Original code Copyright 2011 [Waylan Limberg](http://achinghead.com/).
 
 All changes Copyright 2011-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
+License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
@@ -155,7 +155,7 @@ class AttrListTreeprocessor(Treeprocessor):
     def sanitize_name(self, name):
         """
         Sanitize name as 'an XML Name, minus the ":"'.
-        See http://www.w3.org/TR/REC-xml-names/#NT-NCName
+        See https://www.w3.org/TR/REC-xml-names/#NT-NCName
         """
         return self.NAME_RE.sub('_', name)
 

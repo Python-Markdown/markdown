@@ -37,7 +37,7 @@ What's New in Python-Markdown 2.4
 
 [Dmitry Shachnev]: https://github.com/mitya57
 [Smarty Extension]: ../extensions/smarty.md
-[SmartyPants]: http://daringfireball.net/projects/smartypants/
+[SmartyPants]: https://daringfireball.net/projects/smartypants/
 
 * The [Table of Contents Extension] now supports new `permalink` option for
   creating [Sphinx]-style anchor links.

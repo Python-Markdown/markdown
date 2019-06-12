@@ -172,9 +172,9 @@ What's New in Python-Markdown 2.5
   files.
 
 [cli]: ../cli.md#using-extensions
-[YAML]: http://yaml.org/
-[JSON]: http://json.org/
-[PyYAML]: http://pyyaml.org/
+[YAML]: https://yaml.org/
+[JSON]: https://json.org/
+[PyYAML]: https://pyyaml.org/
 
 * The [Admonition Extension][ae] is no longer considered "experimental."
 
