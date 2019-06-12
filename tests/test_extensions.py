@@ -447,7 +447,7 @@ line 3
                 'fenced_code'
             ]
         )
-        self.assertTrue('<code class="language-python">' in md.convert(text))
+        self.assertIn('<code class="language-python">', md.convert(text))
 
     def testFencedLanguageDoubleEscape(self):
         """ Test entity escape logic in fences. """

@@ -144,8 +144,8 @@ class TestBlockParser(unittest.TestCase):
         """ Test BlockParser.parseDocument. """
         lines = ['#foo', '', 'bar', '', '    baz']
         tree = self.parser.parseDocument(lines)
-        self.assertTrue(isinstance(tree, markdown.util.etree.ElementTree))
-        self.assertTrue(markdown.util.etree.iselement(tree.getroot()))
+        self.assertIsInstance(tree, markdown.util.etree.ElementTree)
+        self.assertIs(markdown.util.etree.iselement(tree.getroot()), True)
         self.assertEqual(
             markdown.serializers.to_xhtml_string(tree.getroot()),
             "<div><h1>foo</h1><p>bar</p><pre><code>baz\n</code></pre></div>"
@@ -239,7 +239,7 @@ class RegistryTests(unittest.TestCase):
         r = markdown.util.Registry()
         r.register(Item('a'), 'a', 20)
         self.assertEqual(len(r), 1)
-        self.assertTrue(isinstance(r, markdown.util.Registry))
+        self.assertIsInstance(r, markdown.util.Registry)
 
     def testRegisterWithoutPriority(self):
         r = markdown.util.Registry()
@@ -256,20 +256,20 @@ class RegistryTests(unittest.TestCase):
 
     def testIsSorted(self):
         r = markdown.util.Registry()
-        self.assertFalse(r._is_sorted)
+        self.assertIs(r._is_sorted, False)
         r.register(Item('a'), 'a', 20)
         list(r)
-        self.assertTrue(r._is_sorted)
+        self.assertIs(r._is_sorted, True)
         r.register(Item('b'), 'b', 21)
-        self.assertFalse(r._is_sorted)
+        self.assertIs(r._is_sorted, False)
         r['a']
-        self.assertTrue(r._is_sorted)
+        self.assertIs(r._is_sorted, True)
         r._is_sorted = False
         r.get_index_for_name('a')
-        self.assertTrue(r._is_sorted)
+        self.assertIs(r._is_sorted, True)
         r._is_sorted = False
         repr(r)
-        self.assertTrue(r._is_sorted)
+        self.assertIs(r._is_sorted, True)
 
     def testDeregister(self):
         r = markdown.util.Registry()
@@ -293,9 +293,9 @@ class RegistryTests(unittest.TestCase):
         r = markdown.util.Registry()
         item = Item('a')
         r.register(item, 'a', 20)
-        self.assertTrue('a' in r)
-        self.assertTrue(item in r)
-        self.assertFalse('b' in r)
+        self.assertIs('a' in r, True)
+        self.assertIn(item, r)
+        self.assertNotIn('b', r)
 
     def testRegistryIter(self):
         r = markdown.util.Registry()
@@ -377,7 +377,7 @@ class RegistryTests(unittest.TestCase):
         r.register(Item('c'), 'c', 40)
         slc = r[1:]
         self.assertEqual(len(slc), 2)
-        self.assertTrue(isinstance(slc, markdown.util.Registry))
+        self.assertIsInstance(slc, markdown.util.Registry)
         self.assertEqual(list(slc), ['b', 'a'])
 
     def testGetIndexForName(self):
@@ -506,12 +506,12 @@ class testETreeComments(unittest.TestCase):
 
     def testCommentIsComment(self):
         """ Test that an ElementTree Comment passes the `is Comment` test. """
-        self.assertTrue(self.comment.tag is markdown.util.etree.test_comment)
+        self.assertIs(self.comment.tag, markdown.util.etree.test_comment)
 
     def testCommentIsBlockLevel(self):
         """ Test that an ElementTree Comment is recognized as BlockLevel. """
         md = markdown.Markdown()
-        self.assertFalse(md.is_block_level(self.comment.tag))
+        self.assertIs(md.is_block_level(self.comment.tag), False)
 
     def testCommentSerialization(self):
         """ Test that an ElementTree Comment serializes properly. """
@@ -762,7 +762,7 @@ class testAtomicString(unittest.TestCase):
 
 class TestConfigParsing(unittest.TestCase):
     def assertParses(self, value, result):
-        self.assertTrue(markdown.util.parseBoolValue(value, False) is result)
+        self.assertIs(markdown.util.parseBoolValue(value, False), result)
 
     def testBooleansParsing(self):
         self.assertParses(True, True)
@@ -773,8 +773,8 @@ class TestConfigParsing(unittest.TestCase):
         self.assertParses('none', False)
 
     def testPreserveNone(self):
-        self.assertTrue(markdown.util.parseBoolValue('None', preserve_none=True) is None)
-        self.assertTrue(markdown.util.parseBoolValue(None, preserve_none=True) is None)
+        self.assertIsNone(markdown.util.parseBoolValue('None', preserve_none=True))
+        self.assertIsNone(markdown.util.parseBoolValue(None, preserve_none=True))
 
     def testInvalidBooleansParsing(self):
         self.assertRaises(ValueError, markdown.util.parseBoolValue, 'novalue')
@@ -806,7 +806,7 @@ class TestCliOptionParsing(unittest.TestCase):
 
     def testQuietOption(self):
         options, logging_level = parse_options(['-q'])
-        self.assertTrue(logging_level > CRITICAL)
+        self.assertGreater(logging_level, CRITICAL)
 
     def testVerboseOption(self):
         options, logging_level = parse_options(['-v'])
@@ -1018,7 +1018,7 @@ class TestGeneralDeprecations(unittest.TestCase):
             # Trigger a warning.
             version = markdown.version
             # Verify some things
-            self.assertTrue(len(w) == 1)
+            self.assertEqual(len(w), 1)
             self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
             self.assertEqual(version, markdown.__version__)
 
@@ -1031,7 +1031,7 @@ class TestGeneralDeprecations(unittest.TestCase):
             # Trigger a warning.
             version_info = markdown.version_info
             # Verify some things
-            self.assertTrue(len(w) == 1)
+            self.assertEqual(len(w), 1)
             self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
             self.assertEqual(version_info, markdown.__version_info__)
 
@@ -1039,7 +1039,7 @@ class TestGeneralDeprecations(unittest.TestCase):
         """Tests the `__dir__` attribute of the class as it replaces the module's."""
 
         dir_attr = dir(markdown)
-        self.assertFalse('version' in dir_attr)
-        self.assertTrue('__version__' in dir_attr)
-        self.assertFalse('version_info' in dir_attr)
-        self.assertTrue('__version_info__' in dir_attr)
+        self.assertNotIn('version', dir_attr)
+        self.assertIn('__version__', dir_attr)
+        self.assertNotIn('version_info', dir_attr)
+        self.assertIn('__version_info__', dir_attr)
