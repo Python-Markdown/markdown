@@ -50,11 +50,11 @@ class Extension(object):
 
     def getConfigs(self):
         """ Return all configs settings as a dict. """
-        return dict([(key, self.getConfig(key)) for key in self.config.keys()])
+        return dict([(key, self.getConfig(key)) for key in self.config])
 
     def getConfigInfo(self):
         """ Return all config descriptions as a list of tuples. """
-        return [(key, self.config[key][1]) for key in self.config.keys()]
+        return [(key, self.config[key][1]) for key in self.config]
 
     def setConfig(self, key, value):
         """ Set a config setting for `key` with the given `value`. """

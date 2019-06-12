@@ -210,7 +210,7 @@ class Markdown(object):
         try:
             self.serializer = self.output_formats[self.output_format]
         except KeyError as e:
-            valid_formats = list(self.output_formats.keys())
+            valid_formats = list(self.output_formats)
             valid_formats.sort()
             message = 'Invalid Output Format: "%s". Use one of %s.' \
                 % (self.output_format,

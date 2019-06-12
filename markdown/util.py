@@ -296,7 +296,7 @@ class Registry(object):
     def __contains__(self, item):
         if isinstance(item, string_type):
             # Check if an item exists by this name.
-            return item in self._data.keys()
+            return item in self._data
         # Check if this instance exists.
         return item in self._data.values()
 

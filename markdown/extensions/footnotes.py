@@ -164,7 +164,7 @@ class FootnoteExtension(Extension):
     def makeFootnotesDiv(self, root):
         """ Return div of footnotes as et Element. """
 
-        if not list(self.footnotes.keys()):
+        if not self.footnotes:
             return None
 
         div = util.etree.Element("div")
@@ -173,7 +173,7 @@ class FootnoteExtension(Extension):
         ol = util.etree.SubElement(div, "ol")
         surrogate_parent = util.etree.Element("div")
 
-        for index, id in enumerate(self.footnotes.keys(), start=1):
+        for index, id in enumerate(self.footnotes, start=1):
             li = util.etree.SubElement(ol, "li")
             li.set("id", self.makeFootnoteId(id))
             # Parse footnote with surrogate parent as li cannot be used.
@@ -314,13 +314,13 @@ class FootnoteInlineProcessor(InlineProcessor):
 
     def handleMatch(self, m, data):
         id = m.group(1)
-        if id in self.footnotes.footnotes.keys():
+        if id in self.footnotes.footnotes:
             sup = util.etree.Element("sup")
             a = util.etree.SubElement(sup, "a")
             sup.set('id', self.footnotes.makeFootnoteRefId(id, found=True))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
             a.set('class', 'footnote-ref')
-            a.text = util.text_type(list(self.footnotes.footnotes.keys()).index(id) + 1)
+            a.text = util.text_type(list(self.footnotes.footnotes).index(id) + 1)
             return sup, m.start(0), m.end(0)
         else:
             return None, None, None
