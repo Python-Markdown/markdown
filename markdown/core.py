@@ -165,7 +165,7 @@ class Markdown(object):
         try:
             module = importlib.import_module(ext_name)
             logger.debug(
-                'Successfuly imported extension module "%s".' % ext_name
+                'Successfully imported extension module "%s".' % ext_name
             )
         except ImportError as e:
             message = 'Failed loading extension "%s".' % ext_name
