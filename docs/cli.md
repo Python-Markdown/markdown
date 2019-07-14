@@ -160,6 +160,18 @@ myext:
     option2: True
 ```
 
+Similarly, a [JSON] config file might look like this:
+
+```json
+{
+  "myext":
+  {
+    "option1": "value1",
+    "option2": "value2"
+  }
+}
+```
+
 Note that while the `--extension_configs` option does specify the
 `myext` extension, you still need to load the extension with the `-x` option,
 or the configuration for that extension will be ignored.
