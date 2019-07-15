@@ -160,7 +160,7 @@ myext:
     option2: True
 ```
 
-Similarly, a [JSON] config file might look like this:
+Similarly, a [JSON] configuration file might look like this:
 
 ```json
 {
