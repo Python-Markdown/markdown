@@ -114,3 +114,10 @@ See [Extensions](index.md) for general extension usage. Use `fenced_code` as
 the name of the extension.
 
 This extension does not accept any special configuration options.
+
+A trivial example:
+```
+markdown.markdown("""```python
+print('Hello, world.')
+```""", extensions=['fenced_code'])
+```
