@@ -93,3 +93,9 @@ The following options are provided to configure the output:
 
 * **`SEPARATOR`**:
     The text string used to set the footnote separator. Defaults to `:`.
+
+A trivial example:
+
+```python
+markdown.markdown(some_text, extensions=['footnotes'])
+```

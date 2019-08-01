@@ -72,6 +72,12 @@ The following options are provided to change the default behavior:
 
 * **`build_url`**: Callable which formats the URL from its parts.
 
+A trivial example:
+
+```python
+markdown.markdown(some_text, extensions=['wikilinks'])
+```
+
 ### Examples
 
 For an example, let us suppose links should always point to the sub-directory

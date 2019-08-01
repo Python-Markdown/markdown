@@ -69,6 +69,12 @@ Option                | Default value | Description
 `smart_ellipses`      | `True`        | whether to convert ellipses
 `substitutions`       | `{}`          | overwrite default substitutions
 
+A trivial example:
+
+```python
+markdown.markdown(some_text, extensions=['smarty'])
+```
+
 Further reading
 ---------------
 
