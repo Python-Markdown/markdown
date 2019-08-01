@@ -64,7 +64,7 @@ The above will output:
 </code></pre>
 ```
 
-[GitHub][]'s backtick (`\``) syntax is also supported:
+[GitHub][]'s backtick (`\``) syntax is also supported in this extension:
 
 ````md
 ```python
@@ -116,8 +116,7 @@ the name of the extension.
 This extension does not accept any special configuration options.
 
 A trivial example:
-```
-markdown.markdown("""```python
-print('Hello, world.')
-```""", extensions=['fenced_code'])
+
+```python
+markdown.markdown(some_text, extensions=['fenced_code'])
 ```

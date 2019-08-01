@@ -221,5 +221,11 @@ The following options are provided to configure the output:
     `<code>` tag as a class in the manner suggested by the [HTML5 spec][spec]
     (alternate output will not be entertained) and might be used by a JavaScript
     library in the browser to highlight the code block.
+    
+A trivial example:
+
+```python
+markdown.markdown(some_text, extensions=['codehilite'])
+```
 
 [spec]: https://www.w3.org/TR/html5/text-level-semantics.html#the-code-element

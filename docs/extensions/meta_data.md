@@ -60,6 +60,12 @@ Usage
 See [Extensions](index.md) for general extension usage. Use `meta` as the name
 of the extension.
 
+A trivial example:
+
+```python
+markdown.markdown(some_text, extensions=['meta'])
+```
+
 Accessing the Meta-Data
 -----------------------
 

@@ -56,3 +56,9 @@ See [Extensions](index.md) for general extension usage. Use `tables` as the
 name of the extension.
 
 This extension does not accept any special configuration options.
+
+A trivial example:
+
+```python
+markdown.markdown(some_text, extensions=['tables'])
+```

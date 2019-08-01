@@ -209,3 +209,9 @@ The following options are provided to configure the output:
     `toc_depth` to `"2-6"`, the *first* headline will be `<h3>` and so still
     included in the Table of Contents. To exclude this first level, you
     have to set `toc_depth` to `"4-6"`.
+
+A trivial example:
+
+```python
+markdown.markdown(some_text, extensions=['toc'])
+```
