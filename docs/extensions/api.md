@@ -672,7 +672,7 @@ When implemented this way the configuration parameters can be over-ridden at
 run time (thus the call to `super`). For example:
 
 ```python
-markdown.Markdown(extensions=[MyExtension(option1='other value'])
+markdown.Markdown(extensions=[MyExtension(option1='other value')])
 ```
 
 Note that if a keyword is passed in that is not already defined in
