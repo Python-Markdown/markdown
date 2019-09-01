@@ -35,7 +35,7 @@ addons:
 
 install:
   # NOTE: setuptools needs to be installed explicitly for py34 (trusty).
-  - pip install 'setuptools>=36' 'tox==3.7.0'
+  - pip install 'setuptools>=36' tox
 
 script:
   - tox
