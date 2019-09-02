@@ -31,6 +31,7 @@ nav:
       - Legacy Emphasis: extensions/legacy_em.md
       - Meta-Data: extensions/meta_data.md
       - New Line to Break: extensions/nl2br.md
+      - Markdown in HTML: extensions/md_in_html.md
       - Sane Lists: extensions/sane_lists.md
       - SmartyPants: extensions/smarty.md
       - Table of Contents: extensions/toc.md

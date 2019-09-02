@@ -27,6 +27,13 @@ These processors were replaced with two new ones:
 The [`legacy_em`](../extensions/legacy_em.md) extension was also modified with new,
 refactored logic and simply overrides the `em_strong2` inline processor.
 
+## New features
+
+The following new features have been included in the release:
+
+* Markdown parsing in HTML has been exposed via a separate extension called
+  [`md_in_html`](../extensions/md_in_html.md).
+
 ## Bug fixes
 
 The following bug fixes are included in the 3.2 release:
