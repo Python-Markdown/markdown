@@ -116,6 +116,7 @@ setup(
             'extra = markdown.extensions.extra:ExtraExtension',
             'fenced_code = markdown.extensions.fenced_code:FencedCodeExtension',
             'footnotes = markdown.extensions.footnotes:FootnoteExtension',
+            'md_in_html = markdown.extensions.md_in_html:MarkdownInHtmlExtension',
             'meta = markdown.extensions.meta:MetaExtension',
             'nl2br = markdown.extensions.nl2br:Nl2BrExtension',
             'sane_lists = markdown.extensions.sane_lists:SaneListExtension',
