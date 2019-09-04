@@ -1,6 +1,6 @@
-title: Extra Extension
+title: Markdown in HTML Extension
 
-# Python-Markdown Extra
+# Markdown in HTML
 
 ## Summary
 
