@@ -40,6 +40,7 @@ Some *emphasized{@id=bar}* text.
 
 ```html
 <p>Some <em id="bar">emphasized</em> text.</p>
+```
 
 You can also define attributes in images:
 
