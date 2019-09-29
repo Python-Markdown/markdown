@@ -227,7 +227,7 @@ class TestCodeHilite(TestCaseWithAssertStartsWith):
             md = markdown.Markdown(extensions=['codehilite'])
             if self.has_pygments:
                 self.assertStartsWith(
-                    '<div class="codehilite"><pre><span class="hll"',
+                    '<div class="codehilite"><pre><code><span class="hll"',
                     md.convert(text).replace('<span></span>', '')
                 )
             else:
@@ -262,10 +262,10 @@ class TestCodeHilite(TestCaseWithAssertStartsWith):
                 md.convert(text),
                 '<div class="codehilite"><pre>'
                 '<span></span>'
-                '<span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>'
+                '<code><span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>'
                 'This<span class="ni">&amp;amp;</span>That'
                 '<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>'
-                '\n</pre></div>'
+                '\n</code></pre></div>'
             )
         else:
             self.assertEqual(
@@ -285,7 +285,7 @@ class TestCodeHilite(TestCaseWithAssertStartsWith):
         if self.has_pygments:
             self.assertEqual(
                 md.convert(text),
-                '<div class="codehilite"><pre><span></span>&amp;\n&amp;amp;\n&amp;amp;amp;\n</pre></div>'
+                '<div class="codehilite"><pre><span></span><code>&amp;\n&amp;amp;\n&amp;amp;amp;\n</code></pre></div>'
             )
         else:
             self.assertEqual(
@@ -391,7 +391,7 @@ line 3
 
         if self.has_pygments:
             self.assertStartsWith(
-                '<div class="codehilite"><pre><span class="hll"',
+                '<div class="codehilite"><pre><code><span class="hll"',
                 md.convert(text).replace('<span></span>', '')
             )
         else:
@@ -426,7 +426,7 @@ line 3
             )
             if self.has_pygments:
                 self.assertStartsWith(
-                    '<div class="codehilite"><pre><span class="hll"',
+                    '<div class="codehilite"><pre><code><span class="hll"',
                     md.convert(text).replace('<span></span>', '')
                 )
             else:
@@ -463,11 +463,11 @@ line 3
             self.assertEqual(
                 md.convert(text),
                 '<div class="codehilite"><pre>'
-                '<span></span>'
+                '<span></span><code>'
                 '<span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>'
                 'This<span class="ni">&amp;amp;</span>That'
                 '<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>'
-                '\n</pre></div>'
+                '\n</code></pre></div>'
             )
         else:
             self.assertEqual(
@@ -490,7 +490,7 @@ line 3
         if self.has_pygments:
             self.assertEqual(
                 md.convert(text),
-                '<div class="codehilite"><pre><span></span>&amp;\n&amp;amp;\n&amp;amp;amp;\n</pre></div>'
+                '<div class="codehilite"><pre><span></span><code>&amp;\n&amp;amp;\n&amp;amp;amp;\n</code></pre></div>'
             )
         else:
             self.assertEqual(
