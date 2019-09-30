@@ -119,7 +119,8 @@ class CodeHilite(object):
                                               cssclass=self.css_class,
                                               style=self.style,
                                               noclasses=self.noclasses,
-                                              hl_lines=self.hl_lines)
+                                              hl_lines=self.hl_lines,
+                                              wrapcode=True)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs

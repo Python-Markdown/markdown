@@ -216,11 +216,18 @@ The following options are provided to configure the output:
     Use inline styles instead of CSS classes. Defaults to `False`.
 
 * **`use_pygments`**:
-    Defaults to `True`. Set to `False` to disable the use of Pygments.
-    If a language is defined for a code block, it will be assigned to the
-    `<code>` tag as a class in the manner suggested by the [HTML5 spec][spec]
-    (alternate output will not be entertained) and might be used by a JavaScript
-    library in the browser to highlight the code block.
+    Specifies the use of Pygments in generating the output.
+
+    If `True` (the default) and Pygments is available, CodeHilite will use
+    Pygments to analyze and format the output. Additionally, if using Pygments
+    &gt;= 2.4, the output will be wrapped in `<code>` tags, whereas earlier
+    versions will not.
+
+    Otherwise, Pygments will not be used. If a language is defined for a code
+    block, it will be assigned to the `<code>` tag as a class in the manner
+    suggested by the [HTML5 spec][spec] (alternate output will not be
+    entertained) and may be used by a JavaScript library in the browser to
+    highlight the code block.
     
 A trivial example:
 
