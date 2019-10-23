@@ -134,7 +134,8 @@ class TocTreeprocessor(Treeprocessor):
         self.use_permalinks = parseBoolValue(config["permalink"], False)
         if self.use_permalinks is None:
             self.use_permalinks = config["permalink"]
-        self.header_rgx = re.compile("[Hh][123456]")
+        self.header_rgx = re.compile("h[123456]", re.IGNORECASE)
+        self.dt_rgx = re.compile("dt", re.IGNORECASE)
         if isinstance(config["toc_depth"], string_type) and '-' in config["toc_depth"]:
             self.toc_top, self.toc_bottom = [int(x) for x in config["toc_depth"].split('-')]
         else:
@@ -237,31 +238,47 @@ class TocTreeprocessor(Treeprocessor):
 
         toc_tokens = []
         for el in doc.iter():
-            if isinstance(el.tag, string_type) and self.header_rgx.match(el.tag):
+            if not isinstance(el.tag, string_type)
+                continue
+
+            level = None
+            if self.header_rgx.match(el.tag):
+                # Adjust header level first.
                 self.set_level(el)
-                if int(el.tag[-1]) < self.toc_top or int(el.tag[-1]) > self.toc_bottom:
-                    continue
-                text = ''.join(el.itertext()).strip()
+                # Then get its level.
+                level = int(el.tag[-1])
+            else if self.dt_rgx.match(el.tag):
+                # Definition terms are outside of the header hierarchy,
+                # so let's give them a 7.
+                level = 7 + self.base_level
+            else:
+                # This kind of tag isn't included in the hierarchy.
+                continue
 
-                # Do not override pre-existing ids
-                if "id" not in el.attrib:
-                    innertext = stashedHTML2text(text, self.md)
-                    el.attrib["id"] = unique(self.slugify(innertext, self.sep), used_ids)
+            if level < self.toc_top or level > self.toc_bottom:
+                continue
 
-                toc_tokens.append({
-                    'level': int(el.tag[-1]),
-                    'id': el.attrib["id"],
-                    'name': el.attrib.get('data-toc-label', text)
-                })
+            text = ''.join(el.itertext()).strip()
 
-                # Remove the data-toc-label attribute as it is no longer needed
-                if 'data-toc-label' in el.attrib:
-                    del el.attrib['data-toc-label']
+            # Do not override pre-existing ids
+            if "id" not in el.attrib:
+                innertext = stashedHTML2text(text, self.md)
+                el.attrib["id"] = unique(self.slugify(innertext, self.sep), used_ids)
 
-                if self.use_anchors:
-                    self.add_anchor(el, el.attrib["id"])
-                if self.use_permalinks:
-                    self.add_permalink(el, el.attrib["id"])
+            toc_tokens.append({
+                'level': level,
+                'id': el.attrib["id"],
+                'name': el.attrib.get('data-toc-label', text)
+            })
+
+            # Remove the data-toc-label attribute as it is no longer needed
+            if 'data-toc-label' in el.attrib:
+                del el.attrib['data-toc-label']
+
+            if self.use_anchors:
+                self.add_anchor(el, el.attrib["id"])
+            if self.use_permalinks:
+                self.add_permalink(el, el.attrib["id"])
 
         toc_tokens = nest_toc_tokens(toc_tokens)
         div = self.build_toc_div(toc_tokens)
@@ -305,7 +322,10 @@ class TocExtension(Extension):
                           'the bottom section level (<h1>..<hb>) only.'
                           'A string consisting of two digits separated by a hyphen'
                           'in between ("2-5"), define the top (t) and the'
-                          'bottom (b) (<ht>..<hb>). Defaults to `6` (bottom).'],
+                          'bottom (b) (<ht>..<hb>). Defaults to `6` (bottom).'
+                          'You can also specify 7, which includes things not in'
+                          'the typical header hierarchy such as definition term'
+                          '(<dt>) elements.'],
         }
 
         super(TocExtension, self).__init__(**kwargs)
