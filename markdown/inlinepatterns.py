@@ -244,7 +244,7 @@ class Pattern:  # pragma: no cover
             id = m.group(1)
             if id in stash:
                 value = stash.get(id)
-                if isinstance(value, util.string_type):
+                if isinstance(value, str):
                     return value
                 else:
                     # An etree Element - return text content only
@@ -651,7 +651,7 @@ class LinkInlineProcessor(InlineProcessor):
             # Track last character
             last = ''
 
-            for pos in util.iterrange(index, len(data)):
+            for pos in range(index, len(data)):
                 c = data[pos]
                 if c == '(':
                     # Count nested (
@@ -737,7 +737,7 @@ class LinkInlineProcessor(InlineProcessor):
         """
         bracket_count = 1
         text = []
-        for pos in util.iterrange(index, len(data)):
+        for pos in range(index, len(data)):
             c = data[pos]
             if c == ']':
                 bracket_count -= 1

@@ -15,7 +15,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import etree, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE, string_type
+from ..util import etree, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE
 import re
 import unicodedata
 
@@ -133,7 +133,7 @@ class TocTreeprocessor(Treeprocessor):
         if self.use_permalinks is None:
             self.use_permalinks = config["permalink"]
         self.header_rgx = re.compile("[Hh][123456]")
-        if isinstance(config["toc_depth"], string_type) and '-' in config["toc_depth"]:
+        if isinstance(config["toc_depth"], str) and '-' in config["toc_depth"]:
             self.toc_top, self.toc_bottom = [int(x) for x in config["toc_depth"].split('-')]
         else:
             self.toc_top = 1
@@ -234,7 +234,7 @@ class TocTreeprocessor(Treeprocessor):
 
         toc_tokens = []
         for el in doc.iter():
-            if isinstance(el.tag, string_type) and self.header_rgx.match(el.tag):
+            if isinstance(el.tag, str) and self.header_rgx.match(el.tag):
                 self.set_level(el)
                 if int(el.tag[-1]) < self.toc_top or int(el.tag[-1]) > self.toc_bottom:
                     continue

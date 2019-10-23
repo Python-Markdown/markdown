@@ -318,7 +318,7 @@ class FootnoteInlineProcessor(InlineProcessor):
             sup.set('id', self.footnotes.makeFootnoteRefId(id, found=True))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
             a.set('class', 'footnote-ref')
-            a.text = util.text_type(list(self.footnotes.footnotes.keys()).index(id) + 1)
+            a.text = str(list(self.footnotes.footnotes.keys()).index(id) + 1)
             return sup, m.start(0), m.end(0)
         else:
             return None, None, None

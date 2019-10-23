@@ -119,7 +119,7 @@ class Markdown:
 
         """
         for ext in extensions:
-            if isinstance(ext, util.string_type):
+            if isinstance(ext, str):
                 ext = self.build_extension(ext, configs.get(ext, {}))
             if isinstance(ext, Extension):
                 ext._extendMarkdown(self)
@@ -218,7 +218,7 @@ class Markdown:
 
     def is_block_level(self, tag):
         """Check if the tag is a block level HTML tag."""
-        if isinstance(tag, util.string_type):
+        if isinstance(tag, str):
             return tag.lower().rstrip('/') in self.block_level_elements
         # Some ElementTree tags are not strings, so return False.
         return False
@@ -250,7 +250,7 @@ class Markdown:
             return ''  # a blank unicode string
 
         try:
-            source = util.text_type(source)
+            source = str(source)
         except UnicodeDecodeError as e:  # pragma: no cover
             # Customise error message while maintaining original trackback
             e.reason += '. -- Note: Markdown only accepts unicode input!'
@@ -318,7 +318,7 @@ class Markdown:
 
         # Read the source
         if input:
-            if isinstance(input, util.string_type):
+            if isinstance(input, str):
                 input_file = codecs.open(input, mode="r", encoding=encoding)
             else:
                 input_file = codecs.getreader(encoding)(input)
@@ -326,7 +326,7 @@ class Markdown:
             input_file.close()
         else:
             text = sys.stdin.read()
-            if not isinstance(text, util.text_type):  # pragma: no cover
+            if not isinstance(text, str):  # pragma: no cover
                 text = text.decode(encoding)
 
         text = text.lstrip('\ufeff')  # remove the byte-order mark
@@ -336,7 +336,7 @@ class Markdown:
 
         # Write to file or stdout
         if output:
-            if isinstance(output, util.string_type):
+            if isinstance(output, str):
                 output_file = codecs.open(output, "w",
                                           encoding=encoding,
                                           errors="xmlcharrefreplace")

@@ -34,7 +34,7 @@ def build_treeprocessors(md, **kwargs):
 def isString(s):
     """ Check if it's string """
     if not isinstance(s, util.AtomicString):
-        return isinstance(s, util.string_type)
+        return isinstance(s, str)
     return False
 
 

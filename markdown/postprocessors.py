@@ -111,7 +111,7 @@ class UnescapePostprocessor(Postprocessor):
     RE = re.compile(r'{}(\d+){}'.format(util.STX, util.ETX))
 
     def unescape(self, m):
-        return util.int2str(int(m.group(1)))
+        return chr(int(m.group(1)))
 
     def run(self, text):
         return self.RE.sub(self.unescape, text)

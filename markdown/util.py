@@ -26,23 +26,7 @@ from functools import wraps
 import warnings
 
 
-"""
-Python 3 Stuff
-=============================================================================
-"""
-PY3 = sys.version_info[0] == 3
 PY37 = (3, 7) <= sys.version_info
-
-if PY3:  # pragma: no cover
-    string_type = str
-    text_type = str
-    int2str = chr
-    iterrange = range
-else:  # pragma: no cover
-    string_type = basestring   # noqa
-    text_type = unicode        # noqa
-    int2str = unichr           # noqa
-    iterrange = xrange         # noqa
 
 
 """
@@ -134,7 +118,7 @@ def deprecated(message, stacklevel=2):
 @deprecated("Use 'Markdown.is_block_level' instead.")
 def isBlockLevel(tag):
     """Check if the tag is a block level HTML tag."""
-    if isinstance(tag, string_type):
+    if isinstance(tag, str):
         return tag.lower().rstrip('/') in BLOCK_LEVEL_ELEMENTS
     # Some ElementTree tags are not strings, so return False.
     return False
@@ -145,7 +129,7 @@ def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
        returns True or False. If preserve_none=True, returns True, False,
        or None. If parsing was not successful, raises  ValueError, or, if
        fail_on_errors=False, returns None."""
-    if not isinstance(value, string_type):
+    if not isinstance(value, str):
         if preserve_none and value is None:
             return value
         return bool(value)
@@ -176,7 +160,7 @@ MISC AUXILIARY CLASSES
 """
 
 
-class AtomicString(text_type):
+class AtomicString(str):
     """A string which should not be further processed."""
     pass
 
@@ -292,7 +276,7 @@ class Registry:
         self._is_sorted = False
 
     def __contains__(self, item):
-        if isinstance(item, string_type):
+        if isinstance(item, str):
             # Check if an item exists by this name.
             return item in self._data.keys()
         # Check if this instance exists.
@@ -381,7 +365,7 @@ class Registry:
 
     def __setitem__(self, key, value):
         """ Register item with priorty 5 less than lowest existing priority. """
-        if isinstance(key, string_type):
+        if isinstance(key, str):
             warnings.warn(
                 'Using setitem to register a processor or pattern is deprecated. '
                 'Use the `register` method instead.',

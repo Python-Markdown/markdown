@@ -37,14 +37,6 @@ from io import BytesIO
 from xml.etree.ElementTree import ProcessingInstruction
 
 
-PY3 = sys.version_info[0] == 3
-
-
-if not PY3:
-    def bytes(string, encoding):
-        return string.encode(encoding)
-
-
 class TestMarkdownBasics(unittest.TestCase):
     """ Tests basics of the Markdown class. """
 
@@ -441,12 +433,6 @@ class TestErrors(unittest.TestCase):
     def tearDown(self):
         # Reset warning behavior back to default
         warnings.simplefilter('default')
-
-    def testNonUnicodeSource(self):
-        """ Test falure on non-unicode source text. """
-        if not PY3:
-            source = "foo".encode('utf-16')
-            self.assertRaises(UnicodeDecodeError, markdown.markdown, source)
 
     def testBadOutputFormat(self):
         """ Test failure on bad output_format. """
@@ -863,7 +849,7 @@ class TestCliOptionParsing(unittest.TestCase):
 
     def create_config_file(self, config):
         """ Helper to create temp config files. """
-        if not isinstance(config, markdown.util.string_type):
+        if not isinstance(config, str):
             # convert to string
             config = yaml.dump(config)
         fd, self.tempfile = tempfile.mkstemp('.yml')
