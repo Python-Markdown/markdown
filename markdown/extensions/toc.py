@@ -238,7 +238,7 @@ class TocTreeprocessor(Treeprocessor):
 
         toc_tokens = []
         for el in doc.iter():
-            if not isinstance(el.tag, string_type)
+            if not isinstance(el.tag, string_type):
                 continue
 
             level = None
