@@ -15,8 +15,6 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
 
@@ -45,7 +43,7 @@ def parse_hl_lines(expr):
 
 
 # ------------------ The Main CodeHilite Class ----------------------
-class CodeHilite(object):
+class CodeHilite:
     """
     Determine language of source code, and pass it into pygments hilighter.
 
@@ -257,7 +255,7 @@ class CodeHiliteExtension(Extension):
                              'Default: True']
             }
 
-        super(CodeHiliteExtension, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
         """ Add HilitePostprocessor to Markdown instance. """

@@ -15,8 +15,6 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from . import Extension
 from ..blockprocessors import BlockProcessor, ListIndentProcessor
 from ..util import etree
@@ -45,7 +43,7 @@ class DefListProcessor(BlockProcessor):
         else:
             d, theRest = self.detab(block)
         if d:
-            d = '%s\n%s' % (m.group(2), d)
+            d = '{}\n{}'.format(m.group(2), d)
         else:
             d = m.group(2)
         sibling = self.lastChild(parent)

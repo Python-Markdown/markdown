@@ -13,8 +13,6 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import etree, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE, string_type
@@ -123,7 +121,7 @@ def nest_toc_tokens(toc_list):
 
 class TocTreeprocessor(Treeprocessor):
     def __init__(self, md, config):
-        super(TocTreeprocessor, self).__init__(md)
+        super().__init__(md)
 
         self.marker = config["marker"]
         self.title = config["title"]
@@ -150,8 +148,7 @@ class TocTreeprocessor(Treeprocessor):
         for child in node:
             if not self.header_rgx.match(child.tag) and child.tag not in ['pre', 'code']:
                 yield node, child
-                for p, c in self.iterparent(child):
-                    yield p, c
+                yield from self.iterparent(child)
 
     def replace_marker(self, root, elem):
         ''' Replace marker with elem. '''
@@ -308,7 +305,7 @@ class TocExtension(Extension):
                           'bottom (b) (<ht>..<hb>). Defaults to `6` (bottom).'],
         }
 
-        super(TocExtension, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
         md.registerExtension(self)

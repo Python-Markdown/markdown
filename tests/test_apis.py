@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Python Markdown
 
@@ -25,7 +24,6 @@ Python-Markdown Regression Tests
 Tests of the various APIs with the python markdown lib.
 """
 
-from __future__ import unicode_literals
 import unittest
 import sys
 import os
@@ -220,7 +218,7 @@ class TestHtmlStash(unittest.TestCase):
         self.assertEqual(self.stash.rawHtmlBlocks, [])
 
 
-class Item(object):
+class Item:
     """ A dummy Registry item object for testing. """
     def __init__(self, data):
         self.data = data

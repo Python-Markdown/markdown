@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Python Markdown
 
@@ -20,7 +19,6 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-from __future__ import unicode_literals
 import re
 import sys
 from collections import namedtuple
@@ -183,7 +181,7 @@ class AtomicString(text_type):
     pass
 
 
-class Processor(object):
+class Processor:
     def __init__(self, md=None):
         self.md = md
 
@@ -194,7 +192,7 @@ class Processor(object):
         return self.md
 
 
-class HtmlStash(object):
+class HtmlStash:
     """
     This class is used for stashing HTML objects that we extract
     in the beginning and replace with place-holders.
@@ -248,7 +246,7 @@ class HtmlStash(object):
 _PriorityItem = namedtuple('PriorityItem', ['name', 'priority'])
 
 
-class Registry(object):
+class Registry:
     """
     A priority sorted registry.
 
@@ -319,7 +317,7 @@ class Registry(object):
         return len(self._priority)
 
     def __repr__(self):
-        return '<{0}({1})>'.format(self.__class__.__name__, list(self))
+        return '<{}({})>'.format(self.__class__.__name__, list(self))
 
     def get_index_for_name(self, name):
         """
@@ -330,7 +328,7 @@ class Registry(object):
             return self._priority.index(
                 [x for x in self._priority if x.name == name][0]
             )
-        raise ValueError('No item named "{0}" exists.'.format(name))
+        raise ValueError('No item named "{}" exists.'.format(name))
 
     def register(self, item, name, priority):
         """

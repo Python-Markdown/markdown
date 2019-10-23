@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Python Markdown
 
@@ -20,9 +19,7 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-from __future__ import absolute_import
 import os
-import io
 import unittest
 import textwrap
 from . import markdown
@@ -108,9 +105,9 @@ class LegacyTestMeta(type):
 
         def generate_test(infile, outfile, normalize, kwargs):
             def test(self):
-                with io.open(infile, encoding="utf-8") as f:
+                with open(infile, encoding="utf-8") as f:
                     input = f.read()
-                with io.open(outfile, encoding="utf-8") as f:
+                with open(outfile, encoding="utf-8") as f:
                     # Normalize line endings
                     # (on Windows, git may have altered line endings).
                     expected = f.read().replace("\r\n", "\n")

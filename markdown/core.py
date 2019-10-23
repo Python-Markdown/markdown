@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Python Markdown
 
@@ -20,8 +19,6 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 import codecs
 import sys
 import logging
@@ -42,7 +39,7 @@ __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 logger = logging.getLogger('MARKDOWN')
 
 
-class Markdown(object):
+class Markdown:
     """Convert Markdown to HTML."""
 
     doc_tag = "div"     # Element used to wrap document - later removed
@@ -132,7 +129,7 @@ class Markdown(object):
                 )
             elif ext is not None:
                 raise TypeError(
-                    'Extension "%s.%s" must be of type: "%s.%s"' % (
+                    'Extension "{}.{}" must be of type: "{}.{}"'.format(
                         ext.__class__.__module__, ext.__class__.__name__,
                         Extension.__module__, Extension.__name__
                     )

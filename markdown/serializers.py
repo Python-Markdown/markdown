@@ -37,8 +37,6 @@
 # --------------------------------------------------------------------
 
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from xml.etree.ElementTree import ProcessingInstruction
 from . import util
 import re
@@ -63,7 +61,7 @@ except NameError:  # pragma: no cover
 
 def _raise_serialization_error(text):  # pragma: no cover
     raise TypeError(
-        "cannot serialize %r (type %s)" % (text, type(text).__name__)
+        "cannot serialize {!r} (type {})".format(text, type(text).__name__)
         )
 
 
@@ -158,7 +156,7 @@ def _serialize_html(write, elem, format):
                     # handle boolean attributes
                     write(" %s" % v)
                 else:
-                    write(' %s="%s"' % (k, v))
+                    write(' {}="{}"'.format(k, v))
         if namespace_uri:
             write(' xmlns="%s"' % (_escape_attrib(namespace_uri)))
         if format == "xhtml" and tag.lower() in HTML_EMPTY:

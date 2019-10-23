@@ -15,8 +15,6 @@ All changes Copyright 2008-2014 The Python Markdown Project
 License: [BSD](https://opensource.org/licenses/bsd-license.php)
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from . import Extension
 from ..preprocessors import Preprocessor
 from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
@@ -45,7 +43,7 @@ class FencedBlockPreprocessor(Preprocessor):
     LANG_TAG = ' class="%s"'
 
     def __init__(self, md):
-        super(FencedBlockPreprocessor, self).__init__(md)
+        super().__init__(md)
 
         self.checked_for_codehilite = False
         self.codehilite_conf = {}
@@ -91,9 +89,9 @@ class FencedBlockPreprocessor(Preprocessor):
                                              self._escape(m.group('code')))
 
                 placeholder = self.md.htmlStash.store(code)
-                text = '%s\n%s\n%s' % (text[:m.start()],
-                                       placeholder,
-                                       text[m.end():])
+                text = '{}\n{}\n{}'.format(text[:m.start()],
+                                           placeholder,
+                                           text[m.end():])
             else:
                 break
         return text.split("\n")

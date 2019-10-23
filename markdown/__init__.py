@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Python Markdown
 
@@ -20,8 +19,6 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from .core import Markdown, markdown, markdownFromFile
 from .util import PY37
 from .pep562 import Pep562

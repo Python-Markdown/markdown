@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Python Markdown
 
@@ -28,8 +27,6 @@ processing.
 
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from collections import OrderedDict
 from . import util
 import re
@@ -111,7 +108,7 @@ class AndSubstitutePostprocessor(Postprocessor):
 class UnescapePostprocessor(Postprocessor):
     """ Restore escaped chars """
 
-    RE = re.compile(r'%s(\d+)%s' % (util.STX, util.ETX))
+    RE = re.compile(r'{}(\d+){}'.format(util.STX, util.ETX))
 
     def unescape(self, m):
         return util.int2str(int(m.group(1)))

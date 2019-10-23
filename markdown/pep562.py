@@ -20,7 +20,6 @@ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABI
 CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 """
-from __future__ import unicode_literals
 import sys
 from collections import namedtuple
 import re
@@ -138,7 +137,7 @@ class Version(namedtuple("Version", ["major", "minor", "micro", "release", "pre"
             elif dev:
                 raise ValueError("Version is not a development release.")
 
-        return super(Version, cls).__new__(cls, major, minor, micro, release, pre, post, dev)
+        return super().__new__(cls, major, minor, micro, release, pre, post, dev)
 
     def _is_pre(self):
         """Is prerelease."""
@@ -210,7 +209,7 @@ def parse_version(ver, pre=False):
     return Version(major, minor, micro, release, pre, post, dev)
 
 
-class Pep562(object):
+class Pep562:
     """
     Backport of PEP 562 <https://pypi.org/search/?q=pep562>.
 
