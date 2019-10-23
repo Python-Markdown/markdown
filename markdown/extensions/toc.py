@@ -247,7 +247,7 @@ class TocTreeprocessor(Treeprocessor):
                 self.set_level(el)
                 # Then get its level.
                 level = int(el.tag[-1])
-            else if self.dt_rgx.match(el.tag):
+            elif self.dt_rgx.match(el.tag):
                 # Definition terms are outside of the header hierarchy,
                 # so let's give them a 7.
                 level = 7 + self.base_level
