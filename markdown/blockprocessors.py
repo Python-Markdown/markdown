@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Python Markdown
 
@@ -31,9 +30,6 @@ different type of block. Extensions may add/replace/remove BlockProcessors
 as they need to alter how markdown blocks are parsed.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 import logging
 import re
 from . import util
@@ -58,7 +54,7 @@ def build_block_parser(md, **kwargs):
     return parser
 
 
-class BlockProcessor(object):
+class BlockProcessor:
     """ Base class for block processors.
 
     Each subclass will provide the methods below to work with the source and
@@ -161,7 +157,7 @@ class ListIndentProcessor(BlockProcessor):
     LIST_TYPES = ['ul', 'ol']
 
     def __init__(self, *args):
-        super(ListIndentProcessor, self).__init__(*args)
+        super().__init__(*args)
         self.INDENT_RE = re.compile(r'^(([ ]{%s})+)' % self.tab_length)
 
     def test(self, parent, block):
@@ -259,7 +255,7 @@ class CodeBlockProcessor(BlockProcessor):
             code = sibling[0]
             block, theRest = self.detab(block)
             code.text = util.AtomicString(
-                '%s\n%s\n' % (code.text, util.code_escape(block.rstrip()))
+                '{}\n{}\n'.format(code.text, util.code_escape(block.rstrip()))
             )
         else:
             # This is a new codeblock. Create the elements and insert text.
@@ -331,7 +327,7 @@ class OListProcessor(BlockProcessor):
     SIBLING_TAGS = ['ol', 'ul']
 
     def __init__(self, parser):
-        super(OListProcessor, self).__init__(parser)
+        super().__init__(parser)
         # Detect an item (``1. item``). ``group(1)`` contains contents of item.
         self.RE = re.compile(r'^[ ]{0,%d}\d+\.[ ]+(.*)' % (self.tab_length - 1))
         # Detect items on secondary lines. they can be of either list type.
@@ -421,12 +417,12 @@ class OListProcessor(BlockProcessor):
                 # This is an indented (possibly nested) item.
                 if items[-1].startswith(' '*self.tab_length):
                     # Previous item was indented. Append to that item.
-                    items[-1] = '%s\n%s' % (items[-1], line)
+                    items[-1] = '{}\n{}'.format(items[-1], line)
                 else:
                     items.append(line)
             else:
                 # This is another line of previous item. Append to that item.
-                items[-1] = '%s\n%s' % (items[-1], line)
+                items[-1] = '{}\n{}'.format(items[-1], line)
         return items
 
 
@@ -436,7 +432,7 @@ class UListProcessor(OListProcessor):
     TAG = 'ul'
 
     def __init__(self, parser):
-        super(UListProcessor, self).__init__(parser)
+        super().__init__(parser)
         # Detect an item (``1. item``). ``group(1)`` contains contents of item.
         self.RE = re.compile(r'^[ ]{0,%d}[*+-][ ]+(.*)' % (self.tab_length - 1))
 
@@ -553,7 +549,7 @@ class EmptyBlockProcessor(BlockProcessor):
            len(sibling) and sibling[0].tag == 'code'):
             # Last block is a codeblock. Append to preserve whitespace.
             sibling[0].text = util.AtomicString(
-                '%s%s' % (sibling[0].text, filler)
+                '{}{}'.format(sibling[0].text, filler)
             )
 
 
@@ -580,13 +576,13 @@ class ParagraphProcessor(BlockProcessor):
                 if sibling is not None:
                     # Insetrt after sibling.
                     if sibling.tail:
-                        sibling.tail = '%s\n%s' % (sibling.tail, block)
+                        sibling.tail = '{}\n{}'.format(sibling.tail, block)
                     else:
                         sibling.tail = '\n%s' % block
                 else:
                     # Append to parent.text
                     if parent.text:
-                        parent.text = '%s\n%s' % (parent.text, block)
+                        parent.text = '{}\n{}'.format(parent.text, block)
                     else:
                         parent.text = block.lstrip()
             else:

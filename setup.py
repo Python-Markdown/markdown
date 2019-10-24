@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Python Markdown
 
@@ -23,18 +22,12 @@ License: BSD (see LICENSE.md for details).
 
 
 import os
-import sys
 from setuptools import setup
 
 
 def get_version():
     """Get version and version_info from markdown/__meta__.py file."""
     module_path = os.path.join(os.path.dirname('__file__'), 'markdown', '__meta__.py')
-
-    if sys.version_info[0] == 2:
-        import imp
-        meta = imp.load_source('__meta__', module_path)
-        return meta.__version__, meta.__version_info__
 
     import importlib.util
     spec = importlib.util.spec_from_file_location('__meta__', module_path)
@@ -94,7 +87,7 @@ setup(
     maintainer_email='waylan.limberg@icloud.com',
     license='BSD License',
     packages=['markdown', 'markdown.extensions'],
-    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*',
+    python_requires='>=3.5',
     install_requires=['setuptools >= 36'],
     extras_require={
         'testing': [
@@ -133,12 +126,11 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Communications :: Email :: Filters',

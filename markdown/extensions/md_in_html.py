@@ -14,8 +14,6 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from . import Extension
 from ..blockprocessors import BlockProcessor
 from .. import util

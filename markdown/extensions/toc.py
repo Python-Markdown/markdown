@@ -13,11 +13,9 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import etree, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE, string_type
+from ..util import etree, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE
 import re
 import unicodedata
 
@@ -123,7 +121,7 @@ def nest_toc_tokens(toc_list):
 
 class TocTreeprocessor(Treeprocessor):
     def __init__(self, md, config):
-        super(TocTreeprocessor, self).__init__(md)
+        super().__init__(md)
 
         self.marker = config["marker"]
         self.title = config["title"]
@@ -135,7 +133,7 @@ class TocTreeprocessor(Treeprocessor):
         if self.use_permalinks is None:
             self.use_permalinks = config["permalink"]
         self.header_rgx = re.compile("[Hh][123456]")
-        if isinstance(config["toc_depth"], string_type) and '-' in config["toc_depth"]:
+        if isinstance(config["toc_depth"], str) and '-' in config["toc_depth"]:
             self.toc_top, self.toc_bottom = [int(x) for x in config["toc_depth"].split('-')]
         else:
             self.toc_top = 1
@@ -150,8 +148,7 @@ class TocTreeprocessor(Treeprocessor):
         for child in node:
             if not self.header_rgx.match(child.tag) and child.tag not in ['pre', 'code']:
                 yield node, child
-                for p, c in self.iterparent(child):
-                    yield p, c
+                yield from self.iterparent(child)
 
     def replace_marker(self, root, elem):
         ''' Replace marker with elem. '''
@@ -237,7 +234,7 @@ class TocTreeprocessor(Treeprocessor):
 
         toc_tokens = []
         for el in doc.iter():
-            if isinstance(el.tag, string_type) and self.header_rgx.match(el.tag):
+            if isinstance(el.tag, str) and self.header_rgx.match(el.tag):
                 self.set_level(el)
                 if int(el.tag[-1]) < self.toc_top or int(el.tag[-1]) > self.toc_bottom:
                     continue
@@ -308,7 +305,7 @@ class TocExtension(Extension):
                           'bottom (b) (<ht>..<hb>). Defaults to `6` (bottom).'],
         }
 
-        super(TocExtension, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
         md.registerExtension(self)

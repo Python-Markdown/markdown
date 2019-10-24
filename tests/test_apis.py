@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Python Markdown
 
@@ -25,7 +24,6 @@ Python-Markdown Regression Tests
 Tests of the various APIs with the python markdown lib.
 """
 
-from __future__ import unicode_literals
 import unittest
 import sys
 import os
@@ -37,14 +35,6 @@ import yaml
 import tempfile
 from io import BytesIO
 from xml.etree.ElementTree import ProcessingInstruction
-
-
-PY3 = sys.version_info[0] == 3
-
-
-if not PY3:
-    def bytes(string, encoding):
-        return string.encode(encoding)
 
 
 class TestMarkdownBasics(unittest.TestCase):
@@ -220,7 +210,7 @@ class TestHtmlStash(unittest.TestCase):
         self.assertEqual(self.stash.rawHtmlBlocks, [])
 
 
-class Item(object):
+class Item:
     """ A dummy Registry item object for testing. """
     def __init__(self, data):
         self.data = data
@@ -443,12 +433,6 @@ class TestErrors(unittest.TestCase):
     def tearDown(self):
         # Reset warning behavior back to default
         warnings.simplefilter('default')
-
-    def testNonUnicodeSource(self):
-        """ Test falure on non-unicode source text. """
-        if not PY3:
-            source = "foo".encode('utf-16')
-            self.assertRaises(UnicodeDecodeError, markdown.markdown, source)
 
     def testBadOutputFormat(self):
         """ Test failure on bad output_format. """
@@ -865,7 +849,7 @@ class TestCliOptionParsing(unittest.TestCase):
 
     def create_config_file(self, config):
         """ Helper to create temp config files. """
-        if not isinstance(config, markdown.util.string_type):
+        if not isinstance(config, str):
             # convert to string
             config = yaml.dump(config)
         fd, self.tempfile = tempfile.mkstemp('.yml')

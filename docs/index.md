@@ -18,11 +18,11 @@ Goals
 
 The Python-Markdown project is developed with the following goals in mind:
 
-* Maintain a Python 2 *and* Python 3 library (with an optional CLI wrapper)
-  suited to use in web server environments (never raise an exception, never
-  write to stdout, etc.) as an implementation of the markdown parser that
-  follows the [syntax rules](https://daringfireball.net/projects/markdown/syntax)
-  and the behavior of the original (markdown.pl) implementation as reasonably as
+* Maintain a Python library (with an optional CLI wrapper) suited to use in web
+  server environments (never raise an exception, never write to stdout, etc.) as
+  an implementation of the markdown parser that follows the
+  [syntax rules](https://daringfireball.net/projects/markdown/syntax) and the
+  behavior of the original (markdown.pl) implementation as reasonably as
   possible (see [differences](#differences) for a few exceptions).
 
 * Provide an [Extension API](extensions/api.md) which makes it possible

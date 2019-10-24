@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Python Markdown
 
@@ -26,7 +25,6 @@ A collection of regression tests to confirm that the included extensions
 continue to work as advertised. This used to be accomplished by doctests.
 """
 
-from __future__ import unicode_literals
 import unittest
 import markdown
 
@@ -37,8 +35,8 @@ class TestCaseWithAssertStartsWith(unittest.TestCase):
         if not text.startswith(expectedPrefix):
             if len(expectedPrefix) + 5 < len(text):
                 text = text[:len(expectedPrefix) + 5] + '...'
-            standardMsg = '%s not found at the start of %s' % (repr(expectedPrefix),
-                                                               repr(text))
+            standardMsg = '{} not found at the start of {}'.format(repr(expectedPrefix),
+                                                                   repr(text))
             self.fail(self._formatMessage(msg, standardMsg))
 
 
@@ -982,9 +980,9 @@ class TestTOC(TestCaseWithAssertStartsWith):
     def testUniqueFunc(self):
         """ Test 'unique' function. """
         from markdown.extensions.toc import unique
-        ids = set(['foo'])
+        ids = {'foo'}
         self.assertEqual(unique('foo', ids), 'foo_1')
-        self.assertEqual(ids, set(['foo', 'foo_1']))
+        self.assertEqual(ids, {'foo', 'foo_1'})
 
     def testTocInHeaders(self):
 
