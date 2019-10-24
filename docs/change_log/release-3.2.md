@@ -2,7 +2,7 @@ title: Release Notes for v3.2
 
 # Python-Markdown 3.2 Release Notes
 
-Python-Markdown version 3.2 supports Python versions 3.5, 3.6, 3.7,
+Python-Markdown version 3.2 supports Python versions 3.5, 3.6, 3.7, 3.8,
 PyPy and PyPy3.
 
 ## Backwards-incompatible changes
@@ -55,6 +55,8 @@ The following new features have been included in the release:
 
 * Markdown parsing in HTML has been exposed via a separate extension called
   [`md_in_html`](../extensions/md_in_html.md).
+
+* Add support for Python 3.8.
 
 ## Bug fixes
 
