@@ -28,6 +28,12 @@ import warnings
 
 PY37 = (3, 7) <= sys.version_info
 
+# These are deprecated and will be removed in a future release
+string_type = str
+text_type = str
+int2str = chr
+iterrange = range
+
 
 """
 Constants you might want to modify
