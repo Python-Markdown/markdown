@@ -2,10 +2,15 @@ title: Release Notes for v3.2
 
 # Python-Markdown 3.2 Release Notes
 
-Python-Markdown version 3.2 supports Python versions 2.7, 3.5, 3.6, 3.7,
+Python-Markdown version 3.2 supports Python versions 3.5, 3.6, 3.7,
 PyPy and PyPy3.
 
 ## Backwards-incompatible changes
+
+### Drop support for Python 2.7
+
+Python 2.7 reaches end-of-life on 2020-01-01 and Python-Markdown 3.2 has dropped
+support for it. Please upgrade to Python 3, or use Python-Markdown 3.1.
 
 ### `em` and `strong` inline processor changes
 
