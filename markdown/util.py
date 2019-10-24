@@ -24,15 +24,19 @@ import sys
 from collections import namedtuple
 from functools import wraps
 import warnings
+from .pep562 import Pep562
 
 
 PY37 = (3, 7) <= sys.version_info
 
-# These are deprecated and will be removed in a future release
-string_type = str
-text_type = str
-int2str = chr
-iterrange = range
+
+# TODO: Remove deprecated variables in a future release.
+__deprecated__ = {
+    'string_type': ('str', str),
+    'text_type': ('str', str),
+    'int2str': ('chr', chr),
+    'iterrange': ('range', range)
+}
 
 
 """
@@ -447,3 +451,21 @@ class Registry:
             DeprecationWarning,
             stacklevel=2,
         )
+
+
+def __getattr__(name):
+    """Get attribute."""
+
+    deprecated = __deprecated__.get(name)
+    if deprecated:
+        warnings.warn(
+            "'{}' is deprecated. Use '{}' instead.".format(name, deprecated[0]),
+            category=DeprecationWarning,
+            stacklevel=(3 if PY37 else 4)
+        )
+        return deprecated[1]
+    raise AttributeError("module '{}' has no attribute '{}'".format(__name__, name))
+
+
+if not PY37:
+    Pep562(__name__)
