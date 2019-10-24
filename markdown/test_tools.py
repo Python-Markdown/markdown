@@ -147,13 +147,7 @@ class LegacyTestMeta(type):
         return type.__new__(cls, name, bases, dct)
 
 
-# Define LegacyTestCase class with metaclass in Py2 & Py3 compatible way.
-# See https://stackoverflow.com/a/38668373/866026
-# TODO: If/when py2 support is dropped change to:
-# class LegacyTestCase(unittest.Testcase, metaclass=LegacyTestMeta)
-
-
-class LegacyTestCase(LegacyTestMeta('LegacyTestCase', (unittest.TestCase,), {'__slots__': ()})):
+class LegacyTestCase(unittest.TestCase, metaclass=LegacyTestMeta):
     """
     A `unittest.TestCase` subclass for running Markdown's legacy file-based tests.
 
