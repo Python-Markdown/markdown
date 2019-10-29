@@ -47,7 +47,7 @@ Extension                          | Entry Point    | Dot Notation
 &nbsp; &nbsp; [Tables]             | `tables`       | `markdown.extensions.tables`
 [Admonition]                       | `admonition`   | `markdown.extensions.admonition`
 [CodeHilite]                       | `codehilite`   | `markdown.extensions.codehilite`
-[Legacy Attributes]                | `legacy_attr`  | `markdown.extensions.legacy_attr`
+[Legacy Attributes]                | `legacy_attrs`  | `markdown.extensions.legacy_attrs`
 [Legacy Emphasis]                  | `legacy_em`    | `markdown.extensions.legacy_em`
 [Meta-Data]                        | `meta`         | `markdown.extensions.meta`
 [New Line to Break]                | `nl2br`        | `markdown.extensions.nl2br`
@@ -65,7 +65,7 @@ Extension                          | Entry Point    | Dot Notation
 [Tables]: tables.md
 [Admonition]: admonition.md
 [CodeHilite]: code_hilite.md
-[Legacy Attributes]: legacy_attr.md
+[Legacy Attributes]: legacy_attrs.md
 [Legacy Emphasis]: legacy_em.md
 [Meta-Data]: meta_data.md
 [New Line to Break]: nl2br.md
