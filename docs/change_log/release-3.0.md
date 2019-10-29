@@ -18,7 +18,7 @@ ignored. Previously the keyword was `True` by default and enabled an
 undocumented way to define attributes on document elements. The feature has been
 removed from version 3.0. As most users did not use the undocumented feature, it
 should not affect most users. For the few who did use the feature, it can be
-enabled by using the [Legacy Attributes](../extensions/legacy_attr.md)
+enabled by using the [Legacy Attributes](../extensions/legacy_attrs.md)
 extension.
 
 ### `smart_emphasis` keyword and `smart_strong` extension deprecated

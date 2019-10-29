@@ -27,7 +27,7 @@ nav:
       - Extra: extensions/extra.md
       - Fenced Code Blocks: extensions/fenced_code_blocks.md
       - Footnotes: extensions/footnotes.md
-      - Legacy Attributes: extensions/legacy_attr.md
+      - Legacy Attributes: extensions/legacy_attrs.md
       - Legacy Emphasis: extensions/legacy_em.md
       - Meta-Data: extensions/meta_data.md
       - New Line to Break: extensions/nl2br.md
