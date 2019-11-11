@@ -294,8 +294,8 @@ class TocExtension(Extension):
                           "True or link text if a Sphinx-style permalink should "
                           "be added - Defaults to False"],
             "permalink_title": ["Permanent link",
-                      "Title attribute of the permalink - "
-                      "Defaults to 'Permanent link'"],
+                                "Title attribute of the permalink - "
+                                "Defaults to 'Permanent link'"],
             "baselevel": ['1', 'Base level for headers.'],
             "slugify": [slugify,
                         "Function to generate anchors based on header text - "
