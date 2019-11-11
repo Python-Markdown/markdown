@@ -162,6 +162,9 @@ The following options are provided to configure the output:
     the link text. When set to a string, the provided string is used as the link
     text.
 
+* **`permalink_title`**:
+    Title attribute of the permalink. Defaults to `Permanent link`.
+
 * **`baselevel`**:
     Base level for headers. Defaults to `1`.
 
