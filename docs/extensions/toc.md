@@ -169,7 +169,7 @@ The following options are provided to configure the output:
     CSS class(es) used for the link. Defaults to `headerlink`.
 
 * **`permalink_title`**:
-    Title attribute of the permalink. Defaults to `Permanent link`.
+    Title attribute of the permanent link. Defaults to `Permanent link`.
 
 * **`baselevel`**:
     Base level for headers. Defaults to `1`.
