@@ -163,7 +163,7 @@ The following options are provided to configure the output:
     text.
 
 * **`permalink_title`**:
-    Title attribute of the permalink. Defaults to `Permanent link`.
+    Title attribute of the permanent link. Defaults to `Permanent link`.
 
 * **`baselevel`**:
     Base level for headers. Defaults to `1`.
