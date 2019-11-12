@@ -58,6 +58,9 @@ The following new features have been included in the release:
 
 * Add support for Python 3.8.
 
+* A new `permalink_title` parameter has been added to the
+  [Table of Contents Extension](../extensions/toc.md).
+
 ## Bug fixes
 
 The following bug fixes are included in the 3.2 release:
