@@ -19,11 +19,18 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-from .core import Markdown, markdown, markdownFromFile
-from .util import PY37
-from .pep562 import Pep562
-from .__meta__ import __version__, __version_info__
-import warnings
+import sys
+
+# TODO: Remove this check at some point in the future.
+# (also remove flake8's 'ignore E402' comments below)
+if sys.version_info[0] < 3:  # pragma: no cover
+    raise ImportError('A recent version of Python 3 is required.')
+
+from .core import Markdown, markdown, markdownFromFile  # noqa: E402
+from .util import PY37                                  # noqa: E402
+from .pep562 import Pep562                              # noqa: E402
+from .__meta__ import __version__, __version_info__     # noqa: E402
+import warnings                                         # noqa: E402
 
 # For backward compatibility as some extensions expect it...
 from .extensions import Extension  # noqa
