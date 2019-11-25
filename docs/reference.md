@@ -225,7 +225,13 @@ __encoding__{: #encoding }
 The same options are available when initializing the `markdown.Markdown` class
 as on the [`markdown.markdown`](#markdown) function, except that the class does
 **not** accept a source text string on initialization. Rather, the source text
-string must be passed to one of two instance methods:
+string must be passed to one of two instance methods.
+
+!!! warning
+
+Instances of the `markdown.Markdown` class are only thread safe within the 
+thread they were created in. A single instance should not be accessed from
+multiple threads.
 
 #### Markdown.convert(source) {: #convert }
 
