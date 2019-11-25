@@ -19,6 +19,12 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+import sys
+
+# TODO: Remove this check at some point in the future.
+if sys.version_info[0] < 3:  # pragma: no cover
+    raise ImportError('A recent version of Python 3 is required.')
+
 from .core import Markdown, markdown, markdownFromFile
 from .util import PY37
 from .pep562 import Pep562
