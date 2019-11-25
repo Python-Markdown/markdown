@@ -53,14 +53,15 @@ continue to see the old behavior.
 
 The following new features have been included in the release:
 
+* Document thread safety (#812).
 * Markdown parsing in HTML has been exposed via a separate extension called
   [`md_in_html`](../extensions/md_in_html.md).
-
 * Add support for Python 3.8.
 
 ## Bug fixes
 
 The following bug fixes are included in the 3.2 release:
 
+* Unescape backslash-escaped characters in TOC ids (#864).
 * Refactor bold and italic logic in order to solve complex nesting issues (#792).
 * Always wrap CodeHilite code in <code> tags (#862).
