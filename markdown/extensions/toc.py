@@ -16,6 +16,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import etree, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE
+from ..postprocessors import UnescapePostprocessor
 import re
 import unicodedata
 
@@ -54,6 +55,12 @@ def stashedHTML2text(text, md):
         return re.sub(r'(<[^>]+>)|(&[\#a-zA-Z0-9]+;)', '', raw)
 
     return HTML_PLACEHOLDER_RE.sub(_html_sub, text)
+
+
+def unescape(text):
+    """ Unescape escaped text. """
+    c = UnescapePostprocessor()
+    return c.run(text)
 
 
 def nest_toc_tokens(toc_list):
@@ -242,7 +249,7 @@ class TocTreeprocessor(Treeprocessor):
 
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
-                    innertext = stashedHTML2text(text, self.md)
+                    innertext = unescape(stashedHTML2text(text, self.md))
                     el.attrib["id"] = unique(self.slugify(innertext, self.sep), used_ids)
 
                 toc_tokens.append({
