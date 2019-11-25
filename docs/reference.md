@@ -229,9 +229,9 @@ string must be passed to one of two instance methods.
 
 !!! warning
 
-Instances of the `markdown.Markdown` class are only thread safe within the 
-thread they were created in. A single instance should not be accessed from
-multiple threads.
+    Instances of the `markdown.Markdown` class are only thread safe within
+    the thread they were created in. A single instance should not be accessed
+    from multiple threads.
 
 #### Markdown.convert(source) {: #convert }
 
