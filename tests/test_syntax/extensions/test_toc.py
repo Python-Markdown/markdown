@@ -39,7 +39,7 @@ class TestTOC(TestCase):
             self.dedent(
                 '''
                 # Header 1
-                
+
                 ## Header *2*
                 '''
             ),
@@ -57,7 +57,7 @@ class TestTOC(TestCase):
             self.dedent(
                 '''
                 # Header 1
-                
+
                 ## Header *2*
                 '''
             ),
