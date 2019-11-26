@@ -109,3 +109,13 @@ class TestTOC(TestCase):
             '</h1>',                                                              # noqa
             extensions=[TocExtension(permalink=True, permalink_title="custom")]
         )
+
+    def testPermalinkWithEmptyTitle(self):
+        self.assertMarkdownRenders(
+            '# Header',
+            '<h1 id="header">'                                                    # noqa
+                'Header'                                                          # noqa
+                '<a class="headerlink" href="#header">&para;</a>'                 # noqa
+            '</h1>',                                                              # noqa
+            extensions=[TocExtension(permalink=True, permalink_title="")]
+        )
