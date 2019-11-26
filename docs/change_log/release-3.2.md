@@ -53,6 +53,12 @@ continue to see the old behavior.
 
 The following new features have been included in the release:
 
+* Two new configuration options have been added to the [toc](../extensions/toc.md)
+  extension: `anchorlink_class` and `permalink_class` which allows class(es) to be
+  assigned to the anchorlink and permalink HTML respectively. This allows using 
+  icon fonts from CSS for the links. Therefore, an empty string passed to `permalink`
+  now generates an empty permalink. Previously no permalink would have been
+  generated. (#776)
 * Document thread safety (#812).
 * Markdown parsing in HTML has been exposed via a separate extension called
   [`md_in_html`](../extensions/md_in_html.md).

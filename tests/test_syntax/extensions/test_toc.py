@@ -20,6 +20,7 @@ License: BSD (see LICENSE.md for details).
 """
 
 from markdown.test_tools import TestCase
+from markdown.extensions.toc import TocExtension
 
 
 class TestTOC(TestCase):
@@ -31,4 +32,70 @@ class TestTOC(TestCase):
             r'# escaped\_character',
             '<h1 id="escaped_character">escaped_character</h1>',
             extensions=['toc']
+        )
+
+    def testAnchorLinkWithCustomClass(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                # Header 1
+                
+                ## Header *2*
+                '''
+            ),
+            self.dedent(
+                '''
+                <h1 id="header-1"><a class="custom" href="#header-1">Header 1</a></h1>
+                <h2 id="header-2"><a class="custom" href="#header-2">Header <em>2</em></a></h2>
+                '''
+            ),
+            extensions=[TocExtension(anchorlink=True, anchorlink_class="custom")]
+        )
+
+    def testAnchorLinkWithCustomClasses(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                # Header 1
+                
+                ## Header *2*
+                '''
+            ),
+            self.dedent(
+                '''
+                <h1 id="header-1"><a class="custom1 custom2" href="#header-1">Header 1</a></h1>
+                <h2 id="header-2"><a class="custom1 custom2" href="#header-2">Header <em>2</em></a></h2>
+                '''
+            ),
+            extensions=[TocExtension(anchorlink=True, anchorlink_class="custom1 custom2")]
+        )
+
+    def testPermalinkWithEmptyText(self):
+        self.assertMarkdownRenders(
+            '# Header',
+            '<h1 id="header">'                                                      # noqa
+                'Header'                                                            # noqa
+                '<a class="headerlink" href="#header" title="Permanent link"></a>'  # noqa
+            '</h1>',                                                                # noqa
+            extensions=[TocExtension(permalink="")]
+        )
+
+    def testPermalinkWithCustomClass(self):
+        self.assertMarkdownRenders(
+            '# Header',
+            '<h1 id="header">'                                                        # noqa
+                'Header'                                                              # noqa
+                '<a class="custom" href="#header" title="Permanent link">&para;</a>'  # noqa
+            '</h1>',                                                                  # noqa
+            extensions=[TocExtension(permalink=True, permalink_class="custom")]
+        )
+
+    def testPermalinkWithCustomClasses(self):
+        self.assertMarkdownRenders(
+            '# Header',
+            '<h1 id="header">'                                                                 # noqa
+                'Header'                                                                       # noqa
+                '<a class="custom1 custom2" href="#header" title="Permanent link">&para;</a>'  # noqa
+            '</h1>',                                                                           # noqa
+            extensions=[TocExtension(permalink=True, permalink_class="custom1 custom2")]
         )
