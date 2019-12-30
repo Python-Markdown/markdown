@@ -69,8 +69,7 @@ class FencedBlockPreprocessor(Preprocessor):
         while 1:
             m = self.FENCED_BLOCK_RE.search(text)
             if m:
-                lang = None
-                id, classes, config = '', [], {}
+                lang, id, classes, config = None, '', [], {}
                 if m.group('attrs'):
                     id, classes, config = self.handle_attrs(get_attrs(m.group('attrs')))
                     if len(classes):
@@ -80,6 +79,7 @@ class FencedBlockPreprocessor(Preprocessor):
                         lang = m.group('lang')
                         classes.append(lang)
                     if m.group('hl_lines'):
+                        # Support hl_lines outside of attrs for backward-compatibility
                         config['hl_lines'] = parse_hl_lines(m.group('hl_lines'))
 
                 # If config is not empty, then the codehighlite extension
@@ -87,7 +87,14 @@ class FencedBlockPreprocessor(Preprocessor):
                 if self.codehilite_conf:
                     local_config = self.codehilite_conf.copy()
                     local_config.update(config)
-                    # TODO: pass id and classes to codehilite
+                    # Combine classes with cssclass. Ensure cssclass is at end
+                    # as pygments appends a suffix under certain circumstances.
+                    # Ignore ID as Pygments does not offer an option to set it.
+                    if classes:
+                        local_config['css_class'] = '{} {}'.format(
+                            ' '.join(classes),
+                            local_config['css_class']
+                        )
                     highliter = CodeHilite(
                         m.group('code'),
                         lang=lang,

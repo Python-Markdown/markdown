@@ -156,8 +156,6 @@ class TestExtensions(LegacyTestCase):
 
     wikilinks = Kwargs(extensions=['wikilinks'])
 
-    fenced_code = Kwargs(extensions=['fenced_code'])
-
     github_flavored = Kwargs(extensions=['fenced_code'])
 
     sane_lists = Kwargs(extensions=['sane_lists'])
