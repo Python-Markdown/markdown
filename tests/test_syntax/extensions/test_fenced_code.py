@@ -309,3 +309,163 @@ class TestFencedCode(TestCase):
             ),
             extensions=['fenced_code']
         )
+
+    def testFencedLanguageInAttr(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` {.python}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="python"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def testFencedMultipleClassesInAttr(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` {.python .foo .bar}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="python foo bar"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def testFencedIdInAttr(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { #foo }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code id="foo"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def testFencedIdAndLangInAttr(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python #foo }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code id="foo" class="python"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def testFencedIdAndLangAndClassInAttr(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python #foo .bar }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code id="foo" class="python bar"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def testFencedCodeWithHighlightLinesInAttr(self):
+        if self.has_pygments:
+            expected = self.dedent(
+                '''
+                <div class="codehilite"><pre><span></span><code><span class="hll">line 1
+                </span>line 2
+                <span class="hll">line 3
+                </span></code></pre></div>
+                '''
+            )
+        else:
+            expected = self.dedent(
+                    '''
+                    <pre class="codehilite"><code>line 1
+                    line 2
+                    line 3</code></pre>
+                    '''
+                )
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```{ hl_lines="1 3" }
+                line 1
+                line 2
+                line 3
+                ```
+                '''
+            ),
+            expected,
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
+                'fenced_code'
+            ]
+        )
+
+    def testFencedLanguageAndHighlightLinesInAttr(self):
+        if self.has_pygments:
+            expected = self.dedent(
+                '''
+                <div class="python codehilite"><pre><span></span><code><span class="hll"><span class="n">line</span> <span class="mi">1</span>
+                </span><span class="n">line</span> <span class="mi">2</span>
+                <span class="hll"><span class="n">line</span> <span class="mi">3</span>
+                </span></code></pre></div>
+                '''
+            )
+        else:
+            expected = self.dedent(
+                    '''
+                    <pre class="python codehilite"><code class="language-python">line 1
+                    line 2
+                    line 3</code></pre>
+                    '''
+                )
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python hl_lines="1 3" }
+                line 1
+                line 2
+                line 3
+                ```
+                '''
+            ),
+            expected,
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
+                'fenced_code'
+            ]
+        )
