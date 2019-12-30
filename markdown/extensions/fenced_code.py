@@ -106,7 +106,7 @@ class FencedBlockPreprocessor(Preprocessor):
                 else:
                     id_attr = class_attr = ''
                     if classes:
-                        class_attr = ' class="{}"'.format(' '.join(classes))
+                        class_attr = ' class="{}"'.format('language-' + ' '.join(classes))
                     if id:
                         id_attr = ' id="{}"'.format(id)
                     code = '<pre><code{id}{cls}>{code}</code></pre>'.format(

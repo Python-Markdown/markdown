@@ -105,7 +105,7 @@ class TestFencedCode(TestCase):
             ),
             self.dedent(
                 '''
-                <pre><code class="python"># Some python code
+                <pre><code class="language-python"># Some python code
                 </code></pre>
                 '''
             ),
@@ -123,7 +123,7 @@ class TestFencedCode(TestCase):
             ),
             self.dedent(
                 '''
-                <pre><code class="python"># Some python code
+                <pre><code class="language-python"># Some python code
                 </code></pre>
                 '''
             ),
@@ -321,7 +321,7 @@ class TestFencedCode(TestCase):
             ),
             self.dedent(
                 '''
-                <pre><code class="python"># Some python code
+                <pre><code class="language-python"># Some python code
                 </code></pre>
                 '''
             ),
@@ -339,7 +339,7 @@ class TestFencedCode(TestCase):
             ),
             self.dedent(
                 '''
-                <pre><code class="python foo bar"># Some python code
+                <pre><code class="language-python foo bar"># Some python code
                 </code></pre>
                 '''
             ),
@@ -375,7 +375,7 @@ class TestFencedCode(TestCase):
             ),
             self.dedent(
                 '''
-                <pre><code id="foo" class="python"># Some python code
+                <pre><code id="foo" class="language-python"># Some python code
                 </code></pre>
                 '''
             ),
@@ -393,7 +393,7 @@ class TestFencedCode(TestCase):
             ),
             self.dedent(
                 '''
-                <pre><code id="foo" class="python bar"># Some python code
+                <pre><code id="foo" class="language-python bar"># Some python code
                 </code></pre>
                 '''
             ),
