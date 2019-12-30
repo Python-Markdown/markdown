@@ -53,7 +53,6 @@ class TestFencedCode(TestCase):
             extensions=['fenced_code']
         )
 
-
     def testNestedFence(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -130,7 +129,6 @@ class TestFencedCode(TestCase):
             extensions=['fenced_code']
         )
 
-
     def testFencedCodeWithHighlightLines(self):
         if self.has_pygments:
             expected = self.dedent(
@@ -168,13 +166,12 @@ class TestFencedCode(TestCase):
 
     def testFencedLanguageAndHighlightLines(self):
         if self.has_pygments:
-            expected = self.dedent(
-                '''
-                <div class="python codehilite"><pre><span></span><code><span class="hll"><span class="n">line</span> <span class="mi">1</span>
-                </span><span class="n">line</span> <span class="mi">2</span>
-                <span class="hll"><span class="n">line</span> <span class="mi">3</span>
-                </span></code></pre></div>
-                '''
+            expected = (
+                '<div class="python codehilite"><pre><span></span><code>'
+                '<span class="hll"><span class="n">line</span> <span class="mi">1</span>\n'
+                '</span><span class="n">line</span> <span class="mi">2</span>\n'
+                '<span class="hll"><span class="n">line</span> <span class="mi">3</span>\n'
+                '</span></code></pre></div>'
             )
         else:
             expected = self.dedent(
@@ -222,20 +219,20 @@ class TestFencedCode(TestCase):
             ]
         )
 
-
     def testFencedLanguageDoubleEscape(self):
         if self.has_pygments:
-            expected = self.dedent(
-                '''
-                <div class="html codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>This<span class="ni">&amp;amp;</span>That<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
-                </code></pre></div>
-                '''
+            expected = (
+                '<div class="html codehilite"><pre><span></span><code>'
+                '<span class="p">&lt;</span><span class="nt">span</span>'
+                '<span class="p">&gt;</span>This<span class="ni">&amp;amp;</span>'
+                'That<span class="p">&lt;/</span><span class="nt">span</span>'
+                '<span class="p">&gt;</span>\n'
+                '</code></pre></div>'
             )
         else:
-            expected = self.dedent(
-                '''
-                <pre class="html codehilite"><code class="language-html">&lt;span&gt;This&amp;amp;That&lt;/span&gt;</code></pre>
-                '''
+            expected = (
+                '<pre class="html codehilite"><code class="language-html">'
+                '&lt;span&gt;This&amp;amp;That&lt;/span&gt;</code></pre>'
             )
         self.assertMarkdownRenders(
             self.dedent(
@@ -438,13 +435,12 @@ class TestFencedCode(TestCase):
 
     def testFencedLanguageAndHighlightLinesInAttr(self):
         if self.has_pygments:
-            expected = self.dedent(
-                '''
-                <div class="python codehilite"><pre><span></span><code><span class="hll"><span class="n">line</span> <span class="mi">1</span>
-                </span><span class="n">line</span> <span class="mi">2</span>
-                <span class="hll"><span class="n">line</span> <span class="mi">3</span>
-                </span></code></pre></div>
-                '''
+            expected = (
+                '<div class="python codehilite"><pre><span></span><code>'
+                '<span class="hll"><span class="n">line</span> <span class="mi">1</span>\n'
+                '</span><span class="n">line</span> <span class="mi">2</span>\n'
+                '<span class="hll"><span class="n">line</span> <span class="mi">3</span>\n'
+                '</span></code></pre></div>'
             )
         else:
             expected = self.dedent(
