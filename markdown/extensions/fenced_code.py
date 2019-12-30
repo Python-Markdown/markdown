@@ -109,7 +109,7 @@ class FencedBlockPreprocessor(Preprocessor):
                         class_attr = ' class="{}"'.format('language-' + ' '.join(classes))
                     if id:
                         id_attr = ' id="{}"'.format(id)
-                    code = '<pre><code{id}{cls}>{code}</code></pre>'.format(
+                    code = '<pre{id}><code{cls}>{code}</code></pre>'.format(
                         id=id_attr,
                         cls=class_attr,
                         code=self._escape(m.group('code'))
