@@ -36,12 +36,13 @@ class FencedCodeExtension(Extension):
 class FencedBlockPreprocessor(Preprocessor):
     FENCED_BLOCK_RE = re.compile(
         dedent(r'''
-            (?P<fence>^(?:~{3,}|`{3,}))[ ]*  # opening fence
-            (\.?(?P<lang>[\w#.+-]*)|         # optional (.)lang or ...
-            \{(?P<attrs>[^\}\n]*)\})?        # optional {attr list}
-            [ ]*\n                           # newline (end of opening fence)
-            (?P<code>.*?)(?<=\n)             # the code block
-            (?P=fence)[ ]*$                  # closing fence
+            (?P<fence>^(?:~{3,}|`{3,}))[ ]*                      # opening fence
+            ((\{(?P<attrs>[^\}\n]*)\})?|                         # (optional {attrs} or
+            (\.?(?P<lang>[\w#.+-]*))?[ ]*                        # optional (.)lang
+            (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot))?) # optional hl_lines)
+            [ ]*\n                                               # newline (end of opening fence)
+            (?P<code>.*?)(?<=\n)                                 # the code block
+            (?P=fence)[ ]*$                                      # closing fence
         '''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
@@ -74,9 +75,12 @@ class FencedBlockPreprocessor(Preprocessor):
                     id, classes, config = self.handle_attrs(get_attrs(m.group('attrs')))
                     if len(classes):
                         lang = classes[0]
-                elif m.group('lang'):
-                    lang = m.group('lang')
-                    classes.append(lang)
+                else:
+                    if m.group('lang'):
+                        lang = m.group('lang')
+                        classes.append(lang)
+                    if m.group('hl_lines'):
+                        config['hl_lines'] = parse_hl_lines(m.group('hl_lines'))
 
                 # If config is not empty, then the codehighlite extension
                 # is enabled, so we call it to highlight the code
