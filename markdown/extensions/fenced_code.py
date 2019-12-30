@@ -21,6 +21,7 @@ from . import Extension
 from ..preprocessors import Preprocessor
 from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
 from .attr_list import get_attrs
+from ..util import parseBoolValue
 import re
 
 
@@ -52,6 +53,13 @@ class FencedBlockPreprocessor(Preprocessor):
 
         self.checked_for_codehilite = False
         self.codehilite_conf = {}
+        # List of options to convert to bool values
+        self.bool_options = [
+            'linenums',
+            'guess_lang',
+            'noclasses',
+            'use_pygments'
+        ]
 
     def run(self, lines):
         """ Match and store Fenced Code Blocks in the HtmlStash. """
@@ -84,7 +92,7 @@ class FencedBlockPreprocessor(Preprocessor):
 
                 # If config is not empty, then the codehighlite extension
                 # is enabled, so we call it to highlight the code
-                if self.codehilite_conf:
+                if self.codehilite_conf and self.codehilite_conf['use_pygments'] and config.get('use_pygments', True):
                     local_config = self.codehilite_conf.copy()
                     local_config.update(config)
                     # Combine classes with cssclass. Ensure cssclass is at end
@@ -135,6 +143,8 @@ class FencedBlockPreprocessor(Preprocessor):
                 classes.append(v)
             elif k == 'hl_lines':
                 configs[k] = parse_hl_lines(v)
+            elif k in self.bool_options:
+                configs[k] = parseBoolValue(v, fail_on_errors=False, preserve_none=True)
             else:
                 configs[k] = v
         return id, classes, configs

@@ -212,7 +212,8 @@ class TestFencedCode(TestCase):
             ),
             self.dedent(
                 '''
-                <pre class="python codehilite"><code class="language-python"># Some python code</code></pre>
+                <pre><code class="language-python"># Some python code
+                </code></pre>
                 '''
             ),
             extensions=[
@@ -468,4 +469,61 @@ class TestFencedCode(TestCase):
                 markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
                 'fenced_code'
             ]
+        )
+
+    def testFencedLanguageIdInAttrAndPygmentsDisabled(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python #foo }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre id="foo"><code class="language-python"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(use_pygments=False),
+                'fenced_code'
+            ]
+        )
+
+    def testFencedLanguageIdAndPygmentsDisabledInAttr(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python #foo use_pygments=False }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre id="foo"><code class="language-python"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['codehilite', 'fenced_code']
+        )
+
+    def testFencedLanguageIdAndPygmentsDisabledInAttrNoCodehilite(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python #foo use_pygments=False }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre id="foo"><code class="language-python"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code']
         )
