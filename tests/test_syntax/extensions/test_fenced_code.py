@@ -523,3 +523,77 @@ class TestFencedCode(TestCase):
             ),
             extensions=['fenced_code']
         )
+
+    def testFencedLanguageAttrCssclass(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python css_class='pygments' }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="python pygments"><pre><span></span><code><span class="c1"># Some python code</span>
+                </code></pre></div>
+                '''
+            ),
+            extensions=['codehilite', 'fenced_code']
+        )
+
+    def testFencedLanguageAttrLinenums(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python linenums=True }
+                # Some python code
+                ```
+                '''
+            ),
+            (
+                '<table class="python codehilitetable"><tr>'
+                '<td class="linenos"><div class="linenodiv"><pre>1</pre></div></td>'
+                '<td class="code"><div class="python codehilite"><pre><span></span>'
+                '<code><span class="c1"># Some python code</span>\n'
+                '</code></pre></div>\n'
+                '</td></tr></table>'
+            ),
+            extensions=['codehilite', 'fenced_code']
+        )
+
+    def testFencedLanguageAttrGuesslang(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { guess_lang=False }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="codehilite"><pre><span></span><code># Some python code
+                </code></pre></div>
+                '''
+            ),
+            extensions=['codehilite', 'fenced_code']
+        )
+
+    def testFencedLanguageAttrNoclasses(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python noclasses=True }
+                # Some python code
+                ```
+                '''
+            ),
+            (
+                '<div class="python codehilite" style="background: #f8f8f8">'
+                '<pre style="line-height: 125%"><span></span><code>'
+                '<span style="color: #408080; font-style: italic"># Some python code</span>\n'
+                '</code></pre></div>'
+            ),
+            extensions=['codehilite', 'fenced_code']
+        )
