@@ -144,7 +144,8 @@ class TestFencedCode(TestCase):
                     '''
                     <pre class="codehilite"><code>line 1
                     line 2
-                    line 3</code></pre>
+                    line 3
+                    </code></pre>
                     '''
                 )
         self.assertMarkdownRenders(
@@ -178,7 +179,8 @@ class TestFencedCode(TestCase):
                     '''
                     <pre class="python codehilite"><code class="language-python">line 1
                     line 2
-                    line 3</code></pre>
+                    line 3
+                    </code></pre>
                     '''
                 )
         self.assertMarkdownRenders(
@@ -232,7 +234,8 @@ class TestFencedCode(TestCase):
         else:
             expected = (
                 '<pre class="html codehilite"><code class="language-html">'
-                '&lt;span&gt;This&amp;amp;That&lt;/span&gt;</code></pre>'
+                '&lt;span&gt;This&amp;amp;That&lt;/span&gt;\n'
+                '</code></pre>'
             )
         self.assertMarkdownRenders(
             self.dedent(
@@ -264,7 +267,8 @@ class TestFencedCode(TestCase):
                 '''
                 <pre class="text codehilite"><code class="language-text">&amp;
                 &amp;amp;
-                &amp;amp;amp;</code></pre>
+                &amp;amp;amp;
+                </code></pre>
                 '''
             )
         self.assertMarkdownRenders(
@@ -413,7 +417,8 @@ class TestFencedCode(TestCase):
                     '''
                     <pre class="codehilite"><code>line 1
                     line 2
-                    line 3</code></pre>
+                    line 3
+                    </code></pre>
                     '''
                 )
         self.assertMarkdownRenders(
@@ -447,7 +452,8 @@ class TestFencedCode(TestCase):
                     '''
                     <pre class="python codehilite"><code class="language-python">line 1
                     line 2
-                    line 3</code></pre>
+                    line 3
+                    </code></pre>
                     '''
                 )
         self.assertMarkdownRenders(
@@ -533,7 +539,10 @@ class TestFencedCode(TestCase):
                 '''
             )
         else:
-            expected = '<pre class="python pygments"><code class="language-python"># Some python code</code></pre>'
+            expected = (
+                '<pre class="python pygments"><code class="language-python"># Some python code\n'
+                '</code></pre>'
+            )
         self.assertMarkdownRenders(
             self.dedent(
                 '''
@@ -558,7 +567,7 @@ class TestFencedCode(TestCase):
             )
         else:
             expected = (
-                '<pre class="python codehilite"><code class="language-python linenums"># Some python code'
+                '<pre class="python codehilite"><code class="language-python linenums"># Some python code\n'
                 '</code></pre>'
             )
         self.assertMarkdownRenders(
@@ -582,7 +591,10 @@ class TestFencedCode(TestCase):
                 '''
             )
         else:
-            expected = '<pre class="codehilite"><code># Some python code</code></pre>'
+            expected = (
+                '<pre class="codehilite"><code># Some python code\n'
+                '</code></pre>'
+            )
         self.assertMarkdownRenders(
             self.dedent(
                 '''
@@ -604,7 +616,10 @@ class TestFencedCode(TestCase):
                 '</code></pre></div>'
             )
         else:
-            expected = '<pre class="python codehilite"><code class="language-python"># Some python code</code></pre>'
+            expected = (
+                '<pre class="python codehilite"><code class="language-python"># Some python code\n'
+                '</code></pre>'
+            )
         self.assertMarkdownRenders(
             self.dedent(
                 '''

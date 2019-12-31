@@ -45,45 +45,67 @@ def parse_hl_lines(expr):
 # ------------------ The Main CodeHilite Class ----------------------
 class CodeHilite:
     """
-    Determine language of source code, and pass it into pygments hilighter.
+    Determine language of source code, and pass it on to the Pygments highlighter.
 
-    Basic Usage:
-        >>> code = CodeHilite(src = 'some text')
-        >>> html = code.hilite()
+    Usage:
+        code = CodeHilite(src=some_code, lang='python')
+        html = code.hilite()
 
+    Arguments:
     * src: Source string or any object with a .readline attribute.
 
-    * linenums: (Boolean) Set line numbering to 'on' (True),
-      'off' (False) or 'auto'(None). Set to 'auto' by default.
+    * lang: String name of Pygments lexer to use for highlighting. Default: `None`.
 
-    * guess_lang: (Boolean) Turn language auto-detection
-      'on' or 'off' (on by default).
+    * guess_lang: Auto-detect which lexer to use. Ignored if `lang` is set to a valid
+      value. Default: `True`.
 
-    * css_class: Set class name of wrapper div ('codehilite' by default).
+    * use_pygments: Pass code to pygments for code highlighting. If `False`, the code is
+      instead wrapped for highlighting by a JavaScript library. Default: `True`.
 
-    * hl_lines: (List of integers) Lines to emphasize, 1-indexed.
+    * linenums: An alias to Pygments `linenos` formatter option. Default: `None`.
 
-    Low Level Usage:
-        >>> code = CodeHilite()
-        >>> code.src = 'some text' # String or anything with a .readline attr.
-        >>> code.linenos = True  # Turns line numbering on or of.
-        >>> html = code.hilite()
+    * css_class: An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
+
+    Other Options:
+    Any other options are accepted and passed on to the lexer and formatter. Therefore,
+    valid option include any options which are accepted by the `html` formatter or
+    whichever lexer the code's language uses. Note that most lexers do not have any
+    options. However, a few have very useful options, such as PHP's `startinline` option.
+    Any invalid options are ignored without error.
+
+    Formatter options: https://pygments.org/docs/formatters/#HtmlFormatter
+    Lexer Options: https://pygments.org/docs/lexers/
+
+    Advanced Usage:
+        code = CodeHilite(
+            src = some_code,
+            lang = 'php',
+            startinline = True,      # Lexer option. Snippet does not start with `<?php`.
+            linenostart = 42,        # Formatter option. Snippet starts on line 42.
+            hl_lines = [45, 49, 50], # Formatter option. Highlight lines 45, 49, and 50.
+            linenos = 'inline'       # Formatter option. Avoid alignment problems.
+        )
+        html = code.hilite()
 
     """
 
-    def __init__(self, src=None, linenums=None, guess_lang=True,
-                 css_class="codehilite", lang=None, style='default',
-                 noclasses=False, tab_length=4, hl_lines=None, use_pygments=True):
+    def __init__(self, src, **options):
         self.src = src
-        self.lang = lang
-        self.linenums = linenums
-        self.guess_lang = guess_lang
-        self.css_class = css_class
-        self.style = style
-        self.noclasses = noclasses
-        self.tab_length = tab_length
-        self.hl_lines = hl_lines or []
-        self.use_pygments = use_pygments
+        self.lang = options.pop('lang', None)
+        self.guess_lang = options.pop('guess_lang', True)
+        self.use_pygments = options.pop('use_pygments', True)
+
+        if 'linenos' not in options:
+            options['linenos'] = options.pop('linenums', None)
+        if 'cssclass' not in options:
+            options['cssclass'] = options.pop('css_class', 'codehilite')
+        if 'wrapcode' not in options:
+            # Override pygments default
+            options['wrapcode'] = True
+        # Disallow use of `full` option
+        options['full'] = False
+
+        self.options = options
 
     def hilite(self):
         """
@@ -103,22 +125,16 @@ class CodeHilite:
 
         if pygments and self.use_pygments:
             try:
-                lexer = get_lexer_by_name(self.lang)
+                lexer = get_lexer_by_name(self.lang, **self.options)
             except ValueError:
                 try:
                     if self.guess_lang:
-                        lexer = guess_lexer(self.src)
+                        lexer = guess_lexer(self.src, **self.options)
                     else:
-                        lexer = get_lexer_by_name('text')
+                        lexer = get_lexer_by_name('text', **self.options)
                 except ValueError:
-                    lexer = get_lexer_by_name('text')
-            formatter = get_formatter_by_name('html',
-                                              linenos=self.linenums,
-                                              cssclass=self.css_class,
-                                              style=self.style,
-                                              noclasses=self.noclasses,
-                                              hl_lines=self.hl_lines,
-                                              wrapcode=True)
+                    lexer = get_lexer_by_name('text', **self.options)
+            formatter = get_formatter_by_name('html', **self.options)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
@@ -128,14 +144,17 @@ class CodeHilite:
             txt = txt.replace('"', '&quot;')
             classes = []
             if self.lang:
-                classes.append('language-%s' % self.lang)
-            if self.linenums:
+                classes.append('language-{}'.format(self.lang))
+            if self.options['linenos']:
                 classes.append('linenums')
             class_str = ''
             if classes:
-                class_str = ' class="%s"' % ' '.join(classes)
-            return '<pre class="%s"><code%s>%s</code></pre>\n' % \
-                   (self.css_class, class_str, txt)
+                class_str = ' class="{}"'.format(' '.join(classes))
+            return '<pre class="{}"><code{}>{}\n</code></pre>\n'.format(
+                self.options['cssclass'],
+                class_str,
+                txt
+            )
 
     def _parseHeader(self):
         """
@@ -181,11 +200,11 @@ class CodeHilite:
             if m.group('path'):
                 # path exists - restore first line
                 lines.insert(0, fl)
-            if self.linenums is None and m.group('shebang'):
+            if self.options['linenos'] is None and m.group('shebang'):
                 # Overridable and Shebang exists - use line numbers
-                self.linenums = True
+                self.options['linenos'] = True
 
-            self.hl_lines = parse_hl_lines(m.group('hl_lines'))
+            self.options['hl_lines'] = parse_hl_lines(m.group('hl_lines'))
         else:
             # No match
             lines.insert(0, fl)
@@ -213,12 +232,11 @@ class HiliteTreeprocessor(Treeprocessor):
             if len(block) == 1 and block[0].tag == 'code':
                 code = CodeHilite(
                     self.code_unescape(block[0].text),
-                    linenums=self.config['linenums'],
+                    linenos=self.config['linenums'],
                     guess_lang=self.config['guess_lang'],
-                    css_class=self.config['css_class'],
+                    cssclass=self.config['css_class'],
                     style=self.config['pygments_style'],
                     noclasses=self.config['noclasses'],
-                    tab_length=self.md.tab_length,
                     use_pygments=self.config['use_pygments']
                 )
                 placeholder = self.md.htmlStash.store(code.hilite())
@@ -237,7 +255,7 @@ class CodeHiliteExtension(Extension):
         # define default configs
         self.config = {
             'linenums': [None,
-                         "Use lines numbers. True=yes, False=no, None=auto"],
+                         "Use lines numbers. True|table|inline=yes, False=no, None=auto"],
             'guess_lang': [True,
                            "Automatic language detection - Default: True"],
             'css_class': ["codehilite",
