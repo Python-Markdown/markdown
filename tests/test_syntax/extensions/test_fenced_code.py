@@ -525,6 +525,15 @@ class TestFencedCode(TestCase):
         )
 
     def testFencedLanguageAttrCssclass(self):
+        if self.has_pygments:
+            expected = self.dedent(
+                '''
+                <div class="python pygments"><pre><span></span><code><span class="c1"># Some python code</span>
+                </code></pre></div>
+                '''
+            )
+        else:
+            expected = '<pre class="python pygments"><code class="language-python"># Some python code</code></pre>'
         self.assertMarkdownRenders(
             self.dedent(
                 '''
@@ -533,16 +542,25 @@ class TestFencedCode(TestCase):
                 ```
                 '''
             ),
-            self.dedent(
-                '''
-                <div class="python pygments"><pre><span></span><code><span class="c1"># Some python code</span>
-                </code></pre></div>
-                '''
-            ),
+            expected,
             extensions=['codehilite', 'fenced_code']
         )
 
     def testFencedLanguageAttrLinenums(self):
+        if self.has_pygments:
+            expected = (
+                '<table class="python codehilitetable"><tr>'
+                '<td class="linenos"><div class="linenodiv"><pre>1</pre></div></td>'
+                '<td class="code"><div class="python codehilite"><pre><span></span>'
+                '<code><span class="c1"># Some python code</span>\n'
+                '</code></pre></div>\n'
+                '</td></tr></table>'
+            )
+        else:
+            expected = (
+                '<pre class="python codehilite"><code class="language-python linenums"># Some python code'
+                '</code></pre>'
+            )
         self.assertMarkdownRenders(
             self.dedent(
                 '''
@@ -551,18 +569,20 @@ class TestFencedCode(TestCase):
                 ```
                 '''
             ),
-            (
-                '<table class="python codehilitetable"><tr>'
-                '<td class="linenos"><div class="linenodiv"><pre>1</pre></div></td>'
-                '<td class="code"><div class="python codehilite"><pre><span></span>'
-                '<code><span class="c1"># Some python code</span>\n'
-                '</code></pre></div>\n'
-                '</td></tr></table>'
-            ),
+            expected,
             extensions=['codehilite', 'fenced_code']
         )
 
     def testFencedLanguageAttrGuesslang(self):
+        if self.has_pygments:
+            expected = self.dedent(
+                '''
+                <div class="codehilite"><pre><span></span><code># Some python code
+                </code></pre></div>
+                '''
+            )
+        else:
+            expected = '<pre class="codehilite"><code># Some python code</code></pre>'
         self.assertMarkdownRenders(
             self.dedent(
                 '''
@@ -571,16 +591,20 @@ class TestFencedCode(TestCase):
                 ```
                 '''
             ),
-            self.dedent(
-                '''
-                <div class="codehilite"><pre><span></span><code># Some python code
-                </code></pre></div>
-                '''
-            ),
+            expected,
             extensions=['codehilite', 'fenced_code']
         )
 
     def testFencedLanguageAttrNoclasses(self):
+        if self.has_pygments:
+            expected = (
+                '<div class="python codehilite" style="background: #f8f8f8">'
+                '<pre style="line-height: 125%"><span></span><code>'
+                '<span style="color: #408080; font-style: italic"># Some python code</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = '<pre class="python codehilite"><code class="language-python"># Some python code</code></pre>'
         self.assertMarkdownRenders(
             self.dedent(
                 '''
@@ -589,11 +613,6 @@ class TestFencedCode(TestCase):
                 ```
                 '''
             ),
-            (
-                '<div class="python codehilite" style="background: #f8f8f8">'
-                '<pre style="line-height: 125%"><span></span><code>'
-                '<span style="color: #408080; font-style: italic"># Some python code</span>\n'
-                '</code></pre></div>'
-            ),
+            expected,
             extensions=['codehilite', 'fenced_code']
         )
