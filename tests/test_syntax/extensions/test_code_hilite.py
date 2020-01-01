@@ -20,21 +20,312 @@ License: BSD (see LICENSE.md for details).
 """
 
 from markdown.test_tools import TestCase
-from markdown.extensions.codehilite import CodeHiliteExtension
+from markdown.extensions.codehilite import CodeHiliteExtension, CodeHilite
+
+try:
+    import pygments  # noqa
+    has_pygments = True
+except ImportError:
+    has_pygments = False
 
 
-class TestCodeHilite(TestCase):
+class TestCodeHiliteClass(TestCase):
+    """ Test the markdown.extensions.codehilite.CodeHilite class. """
+
+    maxDiff = None
+
+    def assertOutputEquals(self, source, expected, **options):
+        """
+        Test that source code block results in the expected output with given options.
+        """
+
+        output = CodeHilite(source, **options).hilite()
+        self.assertMultiLineEqual(output.strip(), expected)
+
+    def test_codehilite_defaults(self):
+        if has_pygments:
+            # Odd result as no lang given and a single comment is not enough for guessing.
+            expected = (
+                '<div class="codehilite"><pre><span></span><code><span class="err"># A Code Comment</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code># A Code Comment\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('# A Code Comment', expected)
+
+    def test_codehilite_guess_lang(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?php</span> '
+                '<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span>'
+                '<span class="p">);</span> <span class="cp">?&gt;</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code>&lt;?php print(&quot;Hello World&quot;); ?&gt;\n'
+                '</code></pre>'
+            )
+        # Use PHP as the the starting `<?php` tag ensures an accurate guess.
+        self.assertOutputEquals('<?php print("Hello World"); ?>', expected, guess_lang=True)
+
+    def test_codehilite_guess_lang_plain_text(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code><span class="err">plain text</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code>plain text\n'
+                '</code></pre>'
+            )
+        # This will be difficult to guess.
+        self.assertOutputEquals('plain text', expected, guess_lang=True)
+
+    def test_codehilite_set_lang(self):
+        if has_pygments:
+            # Note an extra `<span class="x">` is added to end of code block when lang explicitly set.
+            # Compare with expected output for `test_guess_lang`. Not sure why this happens.
+            expected = (
+                '<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?php</span> '
+                '<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span>'
+                '<span class="p">);</span> <span class="cp">?&gt;</span><span class="x"></span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-php">&lt;?php print(&quot;Hello World&quot;); ?&gt;\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('<?php print("Hello World"); ?>', expected, lang='php')
+
+    def test_codehilite_bad_lang(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?php</span> '
+                '<span class="k">print</span><span class="p">(</span><span class="s2">'
+                '&quot;Hello World&quot;</span><span class="p">);</span> <span class="cp">?&gt;</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            # Note that without pygments there is no way to check that the language name is bad.
+            expected = (
+                '<pre class="codehilite"><code class="language-unkown">'
+                '&lt;?php print(&quot;Hello World&quot;); ?&gt;\n'
+                '</code></pre>'
+            )
+        # The starting `<?php` tag ensures an accurate guess.
+        self.assertOutputEquals('<?php print("Hello World"); ?>', expected, lang='unkown')
+
+    def test_codehilite_use_pygments_false(self):
+        expected = (
+            '<pre class="codehilite"><code class="language-php">&lt;?php print(&quot;Hello World&quot;); ?&gt;\n'
+            '</code></pre>'
+        )
+        self.assertOutputEquals('<?php print("Hello World"); ?>', expected, lang='php', use_pygments=False)
+
+    def test_codehilite_linenos_true(self):
+        if has_pygments:
+            expected = (
+                '<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div>'
+                '</td><td class="code"><div class="codehilite"><pre><span></span><code>plain text\n'
+                '</code></pre></div>\n'
+                '</td></tr></table>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-text linenums">plain text\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('plain text', expected, lang='text', linenos=True)
+
+    def test_codehilite_linenos_false(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code>plain text\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-text">plain text\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('plain text', expected, lang='text', linenos=False)
+
+    def test_codehilite_linenos_none(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code>plain text\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-text">plain text\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('plain text', expected, lang='text', linenos=None)
+
+    def test_codehilite_linenos_table(self):
+        if has_pygments:
+            expected = (
+                '<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div>'
+                '</td><td class="code"><div class="codehilite"><pre><span></span><code>plain text\n'
+                '</code></pre></div>\n'
+                '</td></tr></table>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-text linenums">plain text\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('plain text', expected, lang='text', linenos='table')
+
+    def test_codehilite_linenos_inline(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code><span class="lineno">1 </span>plain text\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-text linenums">plain text\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('plain text', expected, lang='text', linenos='inline')
+
+    def test_codehilite_linenums_true(self):
+        if has_pygments:
+            expected = (
+                '<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div>'
+                '</td><td class="code"><div class="codehilite"><pre><span></span><code>plain text\n'
+                '</code></pre></div>\n'
+                '</td></tr></table>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-text linenums">plain text\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('plain text', expected, lang='text', linenums=True)
+
+    def test_codehilite_set_cssclass(self):
+        if has_pygments:
+            expected = (
+                '<div class="override"><pre><span></span><code>plain text\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="override"><code class="language-text">plain text\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('plain text', expected, lang='text', cssclass='override')
+
+    def test_codehilite_set_css_class(self):
+        if has_pygments:
+            expected = (
+                '<div class="override"><pre><span></span><code>plain text\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="override"><code class="language-text">plain text\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('plain text', expected, lang='text', css_class='override')
+
+    def test_codehilite_linenostart(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code><span class="lineno">42 </span>plain text\n'
+                '</code></pre></div>'
+            )
+        else:
+            # TODO: Implement linenostart for no-pygments. Will need to check what JS libs look for.
+            expected = (
+                '<pre class="codehilite"><code class="language-text linenums">plain text\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('plain text', expected, lang='text', linenos='inline', linenostart=42)
+
+    def test_codehilite_linenos_hl_lines(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code>'
+                '<span class="lineno">1 </span><span class="hll">line 1\n'
+                '</span><span class="lineno">2 </span>line 2\n'
+                '<span class="lineno">3 </span><span class="hll">line 3\n'
+                '</span></code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-text linenums">line 1\n'
+                'line 2\n'
+                'line 3\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('line 1\nline 2\nline 3', expected, lang='text', linenos='inline', hl_lines=[1, 3])
+
+    def test_codehilite_linenos_linenostep(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code><span class="lineno">  </span>line 1\n'
+                '<span class="lineno">2 </span>line 2\n'
+                '<span class="lineno">  </span>line 3\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-text linenums">line 1\n'
+                'line 2\n'
+                'line 3\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('line 1\nline 2\nline 3', expected, lang='text', linenos='inline', linenostep=2)
+
+    def test_codehilite_linenos_linenospecial(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code><span class="lineno">1 </span>line 1\n'
+                '<span class="lineno special">2 </span>line 2\n'
+                '<span class="lineno">3 </span>line 3\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-text linenums">line 1\n'
+                'line 2\n'
+                'line 3\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('line 1\nline 2\nline 3', expected, lang='text', linenos='inline', linenospecial=2)
+
+    def test_codehilite_startinline(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code><span class="k">print</span><span class="p">(</span>'
+                '<span class="s2">&quot;Hello World&quot;</span><span class="p">);</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-php">print(&quot;Hello World&quot;);\n'
+                '</code></pre>'
+            )
+        self.assertOutputEquals('print("Hello World");', expected, lang='php', startinline=True)
+
+
+class TestCodeHiliteExtension(TestCase):
     """ Test codehilite extension. """
 
-    def setUp(self):
-        self.has_pygments = True
-        try:
-            import pygments  # noqa
-        except ImportError:
-            self.has_pygments = False
+    maxDiff = None
 
     def testBasicCodeHilite(self):
-        if self.has_pygments:
+        if has_pygments:
             # Odd result as no lang given and a single comment is not enough for guessing.
             expected = (
                 '<div class="codehilite"><pre><span></span><code><span class="err"># A Code Comment</span>\n'
@@ -52,7 +343,7 @@ class TestCodeHilite(TestCase):
         )
 
     def testLinenumsTrue(self):
-        if self.has_pygments:
+        if has_pygments:
             expected = (
                 '<table class="codehilitetable"><tr>'
                 '<td class="linenos"><div class="linenodiv"><pre>1</pre></div></td>'
@@ -73,7 +364,7 @@ class TestCodeHilite(TestCase):
         )
 
     def testLinenumsFalse(self):
-        if self.has_pygments:
+        if has_pygments:
             expected = (
                 '<div class="codehilite"><pre><span></span><code><span class="c1"># A Code Comment</span>\n'
                 '</code></pre></div>'
@@ -93,7 +384,7 @@ class TestCodeHilite(TestCase):
         )
 
     def testLinenumsNone(self):
-        if self.has_pygments:
+        if has_pygments:
             expected = (
                 '<div class="codehilite"><pre><span></span><code><span class="err"># A Code Comment</span>\n'
                 '</code></pre></div>'
@@ -110,7 +401,7 @@ class TestCodeHilite(TestCase):
         )
 
     def testLinenumsNoneWithShebang(self):
-        if self.has_pygments:
+        if has_pygments:
             expected = (
                 '<table class="codehilitetable"><tr>'
                 '<td class="linenos"><div class="linenodiv"><pre>1</pre></div></td>'
@@ -134,7 +425,7 @@ class TestCodeHilite(TestCase):
         )
 
     def testLinenumsNoneWithColon(self):
-        if self.has_pygments:
+        if has_pygments:
             expected = (
                 '<div class="codehilite"><pre><span></span><code><span class="c1"># A Code Comment</span>\n'
                 '</code></pre></div>'
@@ -154,7 +445,7 @@ class TestCodeHilite(TestCase):
         )
 
     def testHighlightLinesWithColon(self):
-        if self.has_pygments:
+        if has_pygments:
             expected = (
                 '<div class="codehilite"><pre><span></span><code><span class="hll"><span class="c1">#line 1</span>\n'
                 '</span><span class="c1">#line 2</span>\n'
@@ -205,7 +496,7 @@ class TestCodeHilite(TestCase):
         )
 
     def testDoubleEscape(self):
-        if self.has_pygments:
+        if has_pygments:
             expected = (
                 '<div class="codehilite"><pre>'
                 '<span></span>'
@@ -230,7 +521,7 @@ class TestCodeHilite(TestCase):
         )
 
     def testHighlightAmps(self):
-        if self.has_pygments:
+        if has_pygments:
             expected = (
                 '<div class="codehilite"><pre><span></span><code>&amp;\n'
                 '&amp;amp;\n'
