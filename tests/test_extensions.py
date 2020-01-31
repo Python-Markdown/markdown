@@ -837,9 +837,9 @@ class TestTOC(TestCaseWithAssertStartsWith):
         self.assertEqual(
             self.md.toc,
             '<div class="toc">\n'
-              '<ul>\n'                                                       # noqa
-                '<li><a href="#foo-bar-baz">Foo <b>Bar</b> Baz.</a></li>\n'  # noqa
-              '</ul>\n'                                                      # noqa
+              '<ul>\n'                                                # noqa
+                '<li><a href="#foo-bar-baz">Foo Bar Baz.</a></li>\n'  # noqa
+              '</ul>\n'                                               # noqa
             '</div>\n'
         )
         self.assertEqual(self.md.toc_tokens, [
@@ -1012,15 +1012,15 @@ class TestTOC(TestCaseWithAssertStartsWith):
         self.assertEqual(
             md.toc,
             '<div class="toc">\n'
-              '<ul>\n'                                               # noqa
-                '<li><a href="#header-1">Header 1</a>'               # noqa
-                  '<ul>\n'                                           # noqa
-                    '<li><a href="#foo">Header 2</a></li>\n'         # noqa
-                    '<li><a href="#header-3">Foo Bar</a></li>\n'     # noqa
-                  '</ul>\n'                                          # noqa
-                '</li>\n'                                            # noqa
-                '<li><a href="#header-4">Foo <b>Baz</b></a></li>\n'  # noqa
-              '</ul>\n'                                              # noqa
+              '<ul>\n'                                            # noqa
+                '<li><a href="#header-1">Header 1</a>'            # noqa
+                  '<ul>\n'                                        # noqa
+                    '<li><a href="#foo">Header 2</a></li>\n'      # noqa
+                    '<li><a href="#header-3">Foo Bar</a></li>\n'  # noqa
+                  '</ul>\n'                                       # noqa
+                '</li>\n'                                         # noqa
+                '<li><a href="#header-4">Foo Baz</a></li>\n'      # noqa
+              '</ul>\n'                                           # noqa
             '</div>\n'
         )
         self.assertEqual(md.toc_tokens, [
