@@ -43,7 +43,7 @@ def unique(id, ids):
     return id
 
 
-def stashedHTML2text(text, md):
+def stashedHTML2text(text, md, strip_entities=True):
     """ Extract raw HTML from stash, reduce to plain text and swap with placeholder. """
     def _html_sub(m):
         """ Substitute raw html with plain text. """
@@ -51,8 +51,11 @@ def stashedHTML2text(text, md):
             raw = md.htmlStash.rawHtmlBlocks[int(m.group(1))]
         except (IndexError, TypeError):  # pragma: no cover
             return m.group(0)
-        # Strip out tags and entities - leaveing text
-        return re.sub(r'(<[^>]+>)|(&[\#a-zA-Z0-9]+;)', '', raw)
+        # Strip out tags and/or entities - leaving text
+        res = re.sub(r'(<[^>]+>)', '', raw)
+        if strip_entities:
+            res = re.sub(r'(&[\#a-zA-Z0-9]+;)', '', res)
+        return res
 
     return HTML_PLACEHOLDER_RE.sub(_html_sub, text)
 
@@ -259,7 +262,9 @@ class TocTreeprocessor(Treeprocessor):
                 toc_tokens.append({
                     'level': int(el.tag[-1]),
                     'id': el.attrib["id"],
-                    'name': el.attrib.get('data-toc-label', text)
+                    'name': unescape(stashedHTML2text(
+                        el.attrib.get('data-toc-label', text), self.md, strip_entities=False
+                    ))
                 })
 
                 # Remove the data-toc-label attribute as it is no longer needed
