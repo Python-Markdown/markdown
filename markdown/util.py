@@ -24,6 +24,7 @@ import sys
 from collections import namedtuple
 from functools import wraps
 import warnings
+import xml.etree.ElementTree
 from .pep562 import Pep562
 
 
@@ -32,6 +33,7 @@ PY37 = (3, 7) <= sys.version_info
 
 # TODO: Remove deprecated variables in a future release.
 __deprecated__ = {
+    'etree': ('xml.etree.ElementTree', xml.etree.ElementTree),
     'string_type': ('str', str),
     'text_type': ('str', str),
     'int2str': ('chr', chr),
@@ -81,23 +83,6 @@ RTL_BIDI_RANGES = (
     # Thaana (0780-07BF), Nko (07C0-07FF).
     ('\u2D30', '\u2D7F')  # Tifinagh
 )
-
-# Extensions should use "markdown.util.etree" instead of "etree" (or do `from
-# markdown.util import etree`).  Do not import it by yourself.
-
-try:  # pragma: no cover
-    # Is the C implementation of ElementTree available?
-    import xml.etree.cElementTree as etree
-    from xml.etree.ElementTree import Comment
-    # Serializers (including ours) test with non-c Comment
-    etree.test_comment = Comment
-    if etree.VERSION < "1.0.5":
-        raise RuntimeError("cElementTree version 1.0.5 or higher is required.")
-except (ImportError, RuntimeError):  # pragma: no cover
-    # Use the Python implementation of ElementTree?
-    import xml.etree.ElementTree as etree
-    if etree.VERSION < "1.1":
-        raise RuntimeError("ElementTree version 1.1 or higher is required")
 
 
 """

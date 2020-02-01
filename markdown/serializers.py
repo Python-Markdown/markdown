@@ -38,14 +38,8 @@
 
 
 from xml.etree.ElementTree import ProcessingInstruction
-from . import util
+from xml.etree.ElementTree import Comment, ElementTree, QName
 import re
-ElementTree = util.etree.ElementTree
-QName = util.etree.QName
-if hasattr(util.etree, 'test_comment'):  # pragma: no cover
-    Comment = util.etree.test_comment
-else:  # pragma: no cover
-    Comment = util.etree.Comment
 
 __all__ = ['to_html_string', 'to_xhtml_string']
 
