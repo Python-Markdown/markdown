@@ -17,7 +17,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..inlinepatterns import InlineProcessor
-from ..util import etree
+import xml.etree.ElementTree as etree
 import re
 
 
