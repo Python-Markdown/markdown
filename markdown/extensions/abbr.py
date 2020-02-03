@@ -19,8 +19,9 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 from . import Extension
 from ..preprocessors import Preprocessor
 from ..inlinepatterns import InlineProcessor
-from ..util import etree, AtomicString
+from ..util import AtomicString
 import re
+import xml.etree.ElementTree as etree
 
 # Global Vars
 ABBR_REF_RE = re.compile(r'[*]\[(?P<abbr>[^\]]*)\][ ]?:\s*(?P<title>.*)')

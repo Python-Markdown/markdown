@@ -82,7 +82,7 @@ For an example, consider this simplified emphasis pattern:
 
 ```python
 from markdown.inlinepatterns import Pattern
-from markdown.util import etree
+import xml.etree.ElementTree as etree
 
 class EmphasisPattern(Pattern):
     def handleMatch(self, m):
@@ -141,7 +141,7 @@ you'll need.
 
 ```python
 from markdown.inlinepatterns import InlineProcessor
-from markdown.util import etree
+import xml.etree.ElementTree as etree
 
 # an oversimplified regex
 MYPATTERN = r'\*([^*]+)\*'
@@ -184,7 +184,7 @@ in order to communicate to the parser that no match was found.
         if not handled:
             return None, None, None
 
-        el = util.etree.Element("a")
+        el = etree.Element("a")
         el.text = text
 
         el.set("href", href)
@@ -429,21 +429,11 @@ As mentioned, the Markdown parser converts a source document to an
 Markdown has provided some helpers to ease that manipulation within the context
 of the Markdown module.
 
-First, to get access to the ElementTree module import ElementTree from
-`markdown` rather than importing it directly. This will ensure you are using
-the same version of ElementTree as markdown. The module is found at
-`markdown.util.etree` within Markdown.
+First, import the ElementTree module:
 
 ```python
-from markdown.util import etree
+import xml.etree.ElementTree as etree
 ```
-
-`markdown.util.etree` tries to import ElementTree from any known location,
-first as a standard library module (from `xml.etree` in Python 2.5), then as
-a third party package (ElementTree). In each instance, `cElementTree` is
-tried first, then ElementTree if the faster C implementation is not
-available on your system.
-
 Sometimes you may want text inserted into an element to be parsed by
 [Inline Patterns][]. In such a situation, simply insert the text as you normally
 would and the text will be automatically run through the Inline Patterns.
@@ -482,7 +472,7 @@ def set_link_class(self, element):
 
 For more information about working with ElementTree see the ElementTree
 [Documentation](https://effbot.org/zone/element-index.htm)
-([Python Docs](http://docs.python.org/lib/module-xml.etree.ElementTree.html)).
+([Python Docs](https://docs.python.org/3/library/xml.etree.elementtree.html)).
 
 ## Integrating Your Code Into Markdown {: #integrating_into_markdown }
 

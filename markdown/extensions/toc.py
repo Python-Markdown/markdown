@@ -15,10 +15,11 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import etree, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE
+from ..util import parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE
 from ..postprocessors import UnescapePostprocessor
 import re
 import unicodedata
+import xml.etree.ElementTree as etree
 
 
 def slugify(value, separator):
