@@ -56,7 +56,7 @@ or the `xml.etree.ElementTree` module, based on their availability. In modern
 Python versions, the former is a deprecated alias for the latter. Thus, the
 compatibility layer is deprecated and extensions are advised to use 
 `xml.etree.ElementTree` directly. Importing `markdown.util.etree` will raise
-a `DeprecationWarning` begining in version 3.2 and may be removed in a future
+a `DeprecationWarning` beginning in version 3.2 and may be removed in a future
 release. 
 
 Therefore, extension developers are encouraged to replace
