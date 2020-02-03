@@ -49,15 +49,19 @@ Internally, this change relies on the Pygments 2.4, so you must be using at leas
 that version to see this effect. Users with earlier Pygments versions will
 continue to see the old behavior.
 
-### markdown.util.etree deprecated
+### `markdown.util.etree` deprecated
 
-Previously, Python-Markdown was using either `xml.etree.cElementTree` module or
-`xml.etree.ElementTree`, based on their availability. In modern Python versions,
-the former is a deprecated alias for the latter. Thus, the compatibility layer is
-deprecated and applications are advised to use `xml.etree.ElementTree` directly.
+Previously, Python-Markdown was using either the `xml.etree.cElementTree` module
+or the `xml.etree.ElementTree` module, based on their availability. In modern
+Python versions, the former is a deprecated alias for the latter. Thus, the
+compatibility layer is deprecated and extensions are advised to use 
+`xml.etree.ElementTree` directly. Importing `markdown.util.etree` will raise
+a `DeprecationWarning` begining in version 3.2 and may be removed in a future
+release. 
 
-If the code of your extension used `from markdown.util import etree`, replace it
-with `import xml.etree.ElementTree as etree`.
+Therefore, extension developers are encouraged to replace
+`from markdown.util import etree` with
+`import xml.etree.ElementTree as etree` in their code.
 
 ## New features
 
