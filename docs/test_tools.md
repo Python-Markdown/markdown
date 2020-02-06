@@ -158,17 +158,17 @@ python -m unittest discover tests
 That simple command will search everything in the `tests` directory and it's
 sub-directories and run all `unittest` tests that it finds, including
 `unittest.TestCase`, `markdown.test_tools.TestCase`, and
-`markdown.test_tools.LegacyTestCase` subclasses. Normal `unittest` discovery
+`markdown.test_tools.LegacyTestCase` subclasses. Normal [unittest] discovery
 rules apply.
 
-Python-Markdown's git repository also includes a `tox.ini` file, so [tox] can be
-used to automate the creation of virtual environments, installation of all
-testing dependencies and running of the tests on each supported Python version.
-See the wiki for instructions on [setting up a testing environment] to use tox.
+!!! seealso "See Also"
+
+    See the [Contributing Guide] for instructions on setting up a
+    [development environment] for running the tests.
 
 [unittest]: https://docs.python.org/3/library/unittest.html
 [Perl]: https://daringfireball.net/projects/markdown/
 [PHP]: http://michelf.com/projects/php-markdown/
 [PyTidyLib]: http://countergram.com/open-source/pytidylib/
-[tox]: http://testrun.org/tox/latest/
-[setting up a testing environment]: https://github.com/Python-Markdown/markdown/wiki/Test-Environment-Setup
+[Contributing Guide]: contributing.md
+[development environment]: contributing.md#development-environment

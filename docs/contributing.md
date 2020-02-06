@@ -335,6 +335,12 @@ with no arguments. See help (`tox -h`) for more options.
     dependencies may differ significantly from system to system and is outside
     the scope of this guide.
 
+!!! seealso "See Also"
+
+    Python-Markdown provides [test tools] which simply testing Markdown syntax.
+    Understanding those tools will often help in understanding why a test may be
+    failing.
+
 ## Versions
 
 Python-Markdown follows [Semantic Versioning] and uses the
@@ -495,6 +501,7 @@ label from the same group.
 [HTML Tidy]: https://www.html-tidy.org/
 [tox]: https://tox.readthedocs.io/en/latest/
 [aspell]: http://aspell.net/
+[test tools]: test_tools.md
 [Semantic Versioning]: https://semver.org/
 [markdown/__init__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__init__.py#L43
 [PEP 440]: https://www.python.org/dev/peps/pep-0440/
