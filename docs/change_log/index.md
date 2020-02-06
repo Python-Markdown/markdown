@@ -3,6 +3,8 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+Feb 7, 2020: Released version 3.2 ([Notes](release-3.2.md)).
+
 May 20, 2019: Released version 3.1.1 (a bug-fix release).
 
 * Fixed import failure in `setup.py` when the source directory is not
