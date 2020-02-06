@@ -127,6 +127,7 @@ Treeprocessors
 tuple
 tuples
 unescape
+unittest
 unordered
 untrusted
 UTF
