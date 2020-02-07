@@ -15,7 +15,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE
+from ..util import code_escape, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE
 from ..postprocessors import UnescapePostprocessor
 import re
 import unicodedata
@@ -264,7 +264,8 @@ class TocTreeprocessor(Treeprocessor):
                     'level': int(el.tag[-1]),
                     'id': el.attrib["id"],
                     'name': unescape(stashedHTML2text(
-                        el.attrib.get('data-toc-label', text), self.md, strip_entities=False
+                        code_escape(el.attrib.get('data-toc-label', text)),
+                        self.md, strip_entities=False
                     ))
                 })
 
