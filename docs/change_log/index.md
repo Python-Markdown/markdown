@@ -3,7 +3,10 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-Under Development: Released version 3.1.1 (a bug-fix release).
+Under Development: Released version 3.2.1 (a bug-fix release). 
+
+* The `name` property in `toc_tokens` from the TOC extension now
+  escapes HTML special characters (`<`, `>`, and `&`).
 
 Feb 7, 2020: Released version 3.2 ([Notes](release-3.2.md)).
 
