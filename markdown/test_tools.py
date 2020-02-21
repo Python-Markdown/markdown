@@ -167,7 +167,7 @@ class LegacyTestCase(unittest.TestCase, metaclass=LegacyTestMeta):
                     arguments for all test files in the directory.
 
     In addition, properties can be defined for each individual set of test files within
-    the directory. The property should be given the name of the file wihtout the file
+    the directory. The property should be given the name of the file without the file
     extension. Any spaces and dashes in the filename should be replaced with
     underscores. The value of the property should be a `Kwargs` instance which
     contains the keyword arguments that should be passed to `Markdown` for that
