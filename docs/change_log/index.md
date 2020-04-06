@@ -3,7 +3,7 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-Released version 3.2.2 (a bug-fix release).
+Under development: version 3.2.2 (a bug-fix release).
 
 * Fixed issue where double escaped entities could end up in TOC.
 
