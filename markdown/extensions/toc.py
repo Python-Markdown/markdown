@@ -15,9 +15,10 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import code_escape, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE
+from ..util import code_escape, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE, AtomicString
 from ..postprocessors import UnescapePostprocessor
 import re
+import html
 import unicodedata
 import xml.etree.ElementTree as etree
 
@@ -42,6 +43,18 @@ def unique(id, ids):
             id = '%s_%d' % (id, 1)
     ids.add(id)
     return id
+
+
+def get_name(el):
+    """Get title name."""
+
+    text = []
+    for c in el.itertext():
+        if isinstance(c, AtomicString):
+            text.append(html.unescape(c))
+        else:
+            text.append(c)
+    return ''.join(text).strip()
 
 
 def stashedHTML2text(text, md, strip_entities=True):
@@ -253,7 +266,7 @@ class TocTreeprocessor(Treeprocessor):
                 self.set_level(el)
                 if int(el.tag[-1]) < self.toc_top or int(el.tag[-1]) > self.toc_bottom:
                     continue
-                text = ''.join(el.itertext()).strip()
+                text = get_name(el)
 
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:

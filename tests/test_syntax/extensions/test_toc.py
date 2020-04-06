@@ -27,6 +27,28 @@ class TestTOC(TestCase):
 
     # TODO: Move the rest of the TOC tests here.
 
+    def test_escaped_code(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+
+                # `<test>`
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="toc">
+                <ul>
+                <li><a href="#test">&lt;test&gt;</a></li>
+                </ul>
+                </div>
+                <h1 id="test"><code>&lt;test&gt;</code></h1>
+                '''
+            ),
+            extensions=['toc']
+        )
+
     def test_escaped_char_in_id(self):
         self.assertMarkdownRenders(
             r'# escaped\_character',
