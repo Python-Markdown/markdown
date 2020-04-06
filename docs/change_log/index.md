@@ -3,7 +3,11 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-Feb 12, 2020: Released version 3.2.1 (a bug-fix release). 
+Released version 3.2.2 (a bug-fix release).
+
+* Fixed issue where double escaped entities could end up in TOC.
+
+Feb 12, 2020: Released version 3.2.1 (a bug-fix release).
 
 * The `name` property in `toc_tokens` from the TOC extension now
   escapes HTML special characters (`<`, `>`, and `&`).
