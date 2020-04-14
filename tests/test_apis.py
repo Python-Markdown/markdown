@@ -337,7 +337,7 @@ class RegistryTests(unittest.TestCase):
     def testRegistryDelItem(self):
         r = markdown.util.Registry()
         r.register(Item('a'), 'a', 20)
-        with self.assertRaises(TypeError):
+        with self.assertRaises(KeyError):
             del r[0]
         # TODO: restore this when deprecated __del__ is removed.
         # with self.assertRaises(TypeError):
