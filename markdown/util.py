@@ -399,7 +399,7 @@ class Registry:
                 stacklevel=2,
             )
         else:
-            raise KeyError(f'Cannot delete key {key}, not registered.')
+            raise KeyError('Cannot delete key {}, not registered.'.format(key))
 
     def add(self, key, value, location):
         """ Register a key by location. """
