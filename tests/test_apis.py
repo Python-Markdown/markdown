@@ -352,7 +352,7 @@ class RegistryTests(unittest.TestCase):
             self.assertEqual(list(r), ['a', 'c'])
             del r['a']
             self.assertEqual(list(r), ['c'])
-            with self.assertRaises(TypeError):
+            with self.assertRaises(KeyError):
                 del r['badname']
             del r['c']
             self.assertEqual(list(r), [])
