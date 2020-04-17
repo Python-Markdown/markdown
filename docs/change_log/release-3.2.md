@@ -94,3 +94,5 @@ The following bug fixes are included in the 3.2 release:
 * Unescape backslash-escaped characters in TOC ids (#864).
 * Refactor bold and italic logic in order to solve complex nesting issues (#792).
 * Always wrap CodeHilite code in `code` tags (#862)
+* `_extend_markdown()` now correctly reports if an extension's `extend_markdown()` raises a TypeError (#939).
+* Attempting to delete a nonexistent key from the patterns registry now raises KeyError instead of TypeError (#939). 
