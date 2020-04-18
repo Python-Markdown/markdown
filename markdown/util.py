@@ -27,6 +27,11 @@ import warnings
 import xml.etree.ElementTree
 from .pep562 import Pep562
 
+try:
+    from importlib import metadata
+except ImportError:
+    # <PY38 use backport
+    import importlib_metadata as metadata
 
 PY37 = (3, 7) <= sys.version_info
 
@@ -76,6 +81,8 @@ Constants you probably do not need to change
 -----------------------------------------------------------------------------
 """
 
+# Only load extension entry_points once.
+INSTALLED_EXTENSIONS = metadata.entry_points().get('markdown.extensions', ())
 RTL_BIDI_RANGES = (
     ('\u0590', '\u07FF'),
     # Hebrew (0590-05FF), Arabic (0600-06FF),
