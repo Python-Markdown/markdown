@@ -6,7 +6,10 @@ Python-Markdown Change Log
 Under development: version 3.2.2 (a bug-fix release).
 
 * Load entry_points (for extensions) only once using `importlib.metadata`.
-* Fixed issue where double escaped entities could end up in TOC.
+* Do not double escape entities in TOC.
+* Correctly report if an extension raises a `TypeError` (#939).
+* Raise a `KeyError` when attempting to delete a nonexistent key from the
+  extension registry (#939). 
 
 Feb 12, 2020: Released version 3.2.1 (a bug-fix release).
 
