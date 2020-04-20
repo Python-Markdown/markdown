@@ -3,24 +3,31 @@ title:      Extensions API
 # Writing Extensions for Python-Markdown
 
 Python-Markdown includes an API for extension writers to plug their own
-custom functionality and/or syntax into the parser. There are Preprocessors
-which allow you to alter the source before it is passed to the parser,
-inline patterns which allow you to add, remove or override the syntax of
-any inline elements, and Postprocessors which allow munging of the
-output of the parser before it is returned. If you really want to dive in,
-there are also Blockprocessors which are part of the core BlockParser.
+custom functionality and syntax into the parser. An extension will patch
+into one or more stages of the parser:
 
-As the parser builds an [ElementTree][ElementTree] object which is later rendered
-as Unicode text, there are also some helpers provided to ease manipulation of
-the tree. Each part of the API is discussed in its respective section below.
-Additionally, reading the source of some [Available Extensions][] may be
-helpful. For example, the [Footnotes][] extension uses most of the features
-documented here.
+* [*Preprocessors*](#preprocessors) alter the source before it is passed to the parser. 
+* [*Block Processors*](#blockprocessors) work with blocks of text separated by blank lines.
+* [*Inline Patterns*](#inlinepatterns) work with inline elements, such as `*strong*`. 
+* [*Tree Processors*](#treeprocessors) modify the constructed ElementTree
+* [*Postprocessors*](#postprocessors) munge of the output of the parser just before it is returned. 
+
+The parser loads text, applies the preprocessors, creates an
+[ElementTree][ElementTree] added to by the block processors and 
+inline patterns, renders the ElementTree as Unicode text, and then 
+then applies the postprocessors.
+
+There are classes and helpers provided to ease writing your extension. 
+Each part of the API is discussed in its respective section below.
+Additionally, you can walk through the [Tutorial on Writing Extensions][tutorial];
+look at some of the [Available Extensions][] and their [source code][extension source].
+As always, you may report bugs, ask for help, and discuss various 
+other issues on the [bug tracker].
 
 ## Preprocessors {: #preprocessors }
 
 Preprocessors munge the source text before it is passed into the Markdown
-core. This is an excellent place to clean up bad syntax, extract things the
+parser. This is an excellent place to clean up bad syntax, extract things the
 parser may otherwise choke on and perhaps even store it for later retrieval.
 
 Preprocessors should inherit from `markdown.preprocessors.Preprocessor` and
@@ -28,6 +35,7 @@ implement a `run` method with one argument `lines`. The `run` method of
 each Preprocessor will be passed the entire source text as a list of Unicode
 strings. Each string will contain one line of text. The `run` method should
 return either that list, or an altered list of Unicode strings.
+
 
 A pseudo example:
 
@@ -793,6 +801,9 @@ When Markdown is passed the "name" of your extension as a dot notation string
 that does not include a class (for example `path.to.module`), it will import the
 module and call the `makeExtension` function to initiate your extension.
 
+[bug tracker]: https://github.com/Python-Markdown/markdown/issues
+[extension source]:  https://github.com/Python-Markdown/markdown/tree/master/markdown/extensions
+[tutorial]: https://github.com/Python-Markdown/markdown/wiki/Tutorial:-Writing-Extensions-for-Python-Markdown
 [Preprocessors]: #preprocessors
 [Inline Patterns]: #inlinepatterns
 [Treeprocessors]: #treeprocessors
