@@ -807,8 +807,8 @@ module and call the `makeExtension` function to initiate your extension.
 [makeExtension]: #makeextension
 [ElementTree]: https://effbot.org/zone/element-index.htm
 [Available Extensions]: index.md
-[Footnotes]: https://github.com/Python-Markdown/mdx_footnotes
-[Definition Lists]: https://github.com/Python-Markdown/mdx_definition_lists
+[Footnotes]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
+[Definition Lists]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/definition_lists
 [library reference]: ../reference.md
 [setuptools]: https://packaging.python.org/key_projects/#setuptools
 [Entry points]: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins
