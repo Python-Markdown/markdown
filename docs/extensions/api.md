@@ -73,273 +73,6 @@ Some preprocessors in the Markdown source tree include:
 [c4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/meta.py#L32
 [c5]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L205
 
-## Inline Patterns {: #inlinepatterns }
-
-### Legacy
-
-Inline Patterns implement the inline HTML element syntax for Markdown such as
-`*emphasis*` or `[links](http://example.com)`. Pattern objects should be
-instances of classes that inherit from `markdown.inlinepatterns.Pattern` or
-one of its children. Each pattern object uses a single regular expression and
-must have the following methods:
-
-* **`getCompiledRegExp()`**:
-
-    Returns a compiled regular expression.
-
-* **`handleMatch(m)`**:
-
-    Accepts a match object and returns an ElementTree element of a plain
-    Unicode string.
-
-Also, Inline Patterns can define the property `ANCESTOR_EXCLUDES` with either
-a list or tuple of undesirable ancestors. The pattern should not match if it
-would cause the content to be a descendant of one of the defined tag names.
-
-Note that any regular expression returned by `getCompiledRegExp` must capture
-the whole block. Therefore, they should all start with `r'^(.*?)'` and end
-with `r'(.*?)!'`. When using the default `getCompiledRegExp()` method
-provided in the `Pattern` you can pass in a regular expression without that
-and `getCompiledRegExp` will wrap your expression for you and set the
-`re.DOTALL` and `re.UNICODE` flags. This means that the first group of your
-match will be `m.group(2)` as `m.group(1)` will match everything before the
-pattern.
-
-For an example, consider this simplified emphasis pattern:
-
-```python
-from markdown.inlinepatterns import Pattern
-import xml.etree.ElementTree as etree
-
-class EmphasisPattern(Pattern):
-    def handleMatch(self, m):
-        el = etree.Element('em')
-        el.text = m.group(2)
-        return el
-```
-
-As discussed in [Integrating Your Code Into Markdown][], an instance of this
-class will need to be provided to Markdown. That instance would be created
-like so:
-
-```python
-# an oversimplified regex
-MYPATTERN = r'\*([^*]+)\*'
-# pass in pattern and create instance
-emphasis = EmphasisPattern(MYPATTERN)
-```
-
-Actually it would not be necessary to create that pattern (and not just because
-a more sophisticated emphasis pattern already exists in Markdown). The fact is,
-that example pattern is not very DRY. A pattern for `**strong**` text would
-be almost identical, with the exception that it would create a 'strong' element.
-Therefore, Markdown provides a number of generic pattern classes that can
-provide some common functionality. For example, both emphasis and strong are
-implemented with separate instances of the `SimpleTagPattern` listed below.
-Feel free to use or extend any of the Pattern classes found at
-`markdown.inlinepatterns`.
-
-### Future
-
-While users can still create plugins with the existing
-`markdown.inlinepatterns.Pattern`, a new, more flexible inline processor has
-been added which users are encouraged to migrate to. The new inline processor
-is found at `markdown.inlinepatterns.InlineProcessor`.
-
-The new processor is very similar to legacy with two major distinctions.
-
-1. Patterns no longer need to match the entire block, so patterns no longer
-    start with `r'^(.*?)'` and end with `r'(.*?)!'`. This was a huge
-    performance sink and this requirement has been removed. The returned match
-    object will only contain what is explicitly matched in the pattern, and
-    extension pattern groups now start with `m.group(1)`.
-
-2. The `handleMatch` method now takes an additional input called `data`,
-    which is the entire block under analysis, not just what is matched with
-    the specified pattern. The method also returns the element *and* the index
-    boundaries relative to `data` that the return element is replacing
-    (usually `m.start(0)` and `m.end(0)`).  If the boundaries are returned as
-    `None`, it is assumed that the match did not take place, and nothing will
-    be altered in `data`.
-
-If all you need is the same functionality as the legacy processor, you can do
-as shown below. Most of the time, simple regular expression processing is all
-you'll need.
-
-```python
-from markdown.inlinepatterns import InlineProcessor
-import xml.etree.ElementTree as etree
-
-# an oversimplified regex
-MYPATTERN = r'\*([^*]+)\*'
-
-class EmphasisPattern(InlineProcessor):
-    def handleMatch(self, m, data):
-        el = etree.Element('em')
-        el.text = m.group(1)
-        return el, m.start(0), m.end(0)
-
-# pass in pattern and create instance
-emphasis = EmphasisPattern(MYPATTERN)
-```
-
-But, the new processor allows you handle much more complex patterns that are
-too much for Python's Re to handle.  For instance, to handle nested brackets in
-link patterns, the built-in link inline processor uses the following pattern to
-find where a link *might* start:
-
-```python
-LINK_RE = NOIMG + r'\['
-link = LinkInlineProcessor(LINK_RE, md_instance)
-```
-
-It then uses programmed logic to actually walk the string (`data`), starting at
-where the match started (`m.start(0)`). If for whatever reason, the text
-does not appear to be a link, it returns `None` for the start and end boundary
-in order to communicate to the parser that no match was found.
-
-```python
-    # Just a snippet of the link's handleMatch
-    # method to illustrate new logic
-    def handleMatch(self, m, data):
-        text, index, handled = self.getText(data, m.end(0))
-
-        if not handled:
-            return None, None, None
-
-        href, title, index, handled = self.getLink(data, index)
-        if not handled:
-            return None, None, None
-
-        el = etree.Element("a")
-        el.text = text
-
-        el.set("href", href)
-
-        if title is not None:
-            el.set("title", title)
-
-        return el, m.start(0), index
-```
-
-### Generic Pattern Classes
-
-Some example processors that are available.
-
-* **`SimpleTextInlineProcessor(pattern)`**:
-
-    Returns simple text of `group(2)` of a `pattern` and the start and end
-    position of the match.
-
-* **`SimpleTagInlineProcessor(pattern, tag)`**:
-
-    Returns an element of type "`tag`" with a text attribute of `group(3)`
-    of a `pattern`. `tag` should be a string of a HTML element (i.e.: 'em').
-    It also returns the start and end position of the match.
-
-* **`SubstituteTagInlineProcessor(pattern, tag)`**:
-
-    Returns an element of type "`tag`" with no children or text (i.e.: `br`)
-    and the start and end position of the match.
-
-A very small number of the basic legacy processors are still available to
-prevent breakage of 3rd party extensions during the transition period to the
-new processors. Three of the available processors are listed below.
-
-* **`SimpleTextPattern(pattern)`**:
-
-    Returns simple text of `group(2)` of a `pattern`.
-
-* **`SimpleTagPattern(pattern, tag)`**:
-
-    Returns an element of type "`tag`" with a text attribute of `group(3)`
-    of a `pattern`. `tag` should be a string of a HTML element (i.e.: 'em').
-
-* **`SubstituteTagPattern(pattern, tag)`**:
-
-    Returns an element of type "`tag`" with no children or text (i.e.: `br`).
-
-There may be other Pattern classes in the Markdown source that you could extend
-or use as well. Read through the source and see if there is anything you can
-use. You might even get a few ideas for different approaches to your specific
-situation.
-
-## Treeprocessors {: #treeprocessors }
-
-Treeprocessors manipulate an ElementTree object after it has passed through the
-core BlockParser. This is where additional manipulation of the tree takes
-place. Additionally, the InlineProcessor is a Treeprocessor which steps through
-the tree and runs the Inline Patterns on the text of each Element in the tree.
-
-A Treeprocessor should inherit from `markdown.treeprocessors.Treeprocessor`,
-over-ride the `run` method which takes one argument `root` (an ElementTree
-object) and either modifies that root element and returns `None` or returns a
-new ElementTree object.
-
-A pseudo example:
-
-```python
-from markdown.treeprocessors import Treeprocessor
-
-class MyTreeprocessor(Treeprocessor):
-    def run(self, root):
-        root.text = 'modified content'
-```
-
-Note that Python class methods return `None` by default when no `return`
-statement is defined.  Additionally all Python variables refer to objects by
-reference.  Therefore, the above `run` method modifies the `root` element
-in place and returns `None`. The changes made to the `root` element and its
-children are retained.
-
-Some may be inclined to return the modified `root` element. While that would
-work, it would cause a copy of the entire ElementTree to be generated each
-time the Treeprocessor is run. Therefore, it is generally expected that
-the `run` method would only return `None` or a new ElementTree object.
-
-For specifics on manipulating the ElementTree, see
-[Working with the ElementTree][workingwithetree] below.
-
-## Postprocessors {: #postprocessors }
-
-Postprocessors munge the document after the ElementTree has been
-serialized into a string. Postprocessors should be used to work with the
-text just before output.  Usually, they are used add back sections that were
-extracted in a preprocessor, fix up outgoing encodings, or wrap the whole 
-document.
-
-A Postprocessor should inherit from `markdown.postprocessors.Postprocessor`
-and implement a `run` method which takes a single parameter `text`, the entire
-HTML document as a single Unicode string.  `run` should return a single Unicode
-string ready for output.  Note that preprocessors use a list of lines while 
-postprocessors use a single multi-line string.
-
-Here is a simple example:
-
-```python
-from markdown.postprocessors import Postprocessor
-import re
-
-class ShowActualHtmlPostprocesor(Postprocessor):
-    """ Wrap entire output in <pre> tags as a diagnostic. """
-    def run(self, text):
-        return '<pre>\n' + re.sub('<', '&lt;', text) + '</pre>\n'
-```
-
-Some postprocessors in the Markdown source tree include:
-
-| Class  | Kind | Priority |  Description |
-| ----------------------------|-----------|----|-----------------------------------------------
-| [`raw_html`][p1] | built-in | 30 | Restore raw html from `htmlStash`, stored by `HTMLBlockPreprocessor`, and code highlighters.
-| [`amp_substitute`][p2] | built-in | 20 | Convert ampersand substitutes to `&`; used in links.
-| [`unescape`][p3] | built-in | 10 | Convert some escaped characters back from integers; used in links.
-| [`FootnotePostProcessor`][p4] | extension | 25 | Replace footnote placeholders with html entities; as set by other stages.
- 
- [p1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L65
- [p2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L100
- [p3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L108
- [p4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L404
- 
 ## BlockParser {: #blockparser }
 
 Sometimes, Preprocessors, Treeprocessors, Postprocessors, and Inline Patterns
@@ -467,6 +200,275 @@ the `BlockParser`. The new class would have to provide the same public API.
 However, be aware that other extensions may expect the core parser provided
 and will not work with such a drastically different parser.
 
+## Treeprocessors {: #treeprocessors }
+
+Treeprocessors manipulate an ElementTree object after it has passed through the
+core BlockParser. This is where additional manipulation of the tree takes
+place. Additionally, the InlineProcessor is a Treeprocessor which steps through
+the tree and runs the Inline Patterns on the text of each Element in the tree.
+
+A Treeprocessor should inherit from `markdown.treeprocessors.Treeprocessor`,
+over-ride the `run` method which takes one argument `root` (an ElementTree
+object) and either modifies that root element and returns `None` or returns a
+new ElementTree object.
+
+A pseudo example:
+
+```python
+from markdown.treeprocessors import Treeprocessor
+
+class MyTreeprocessor(Treeprocessor):
+    def run(self, root):
+        root.text = 'modified content'
+```
+
+Note that Python class methods return `None` by default when no `return`
+statement is defined.  Additionally all Python variables refer to objects by
+reference.  Therefore, the above `run` method modifies the `root` element
+in place and returns `None`. The changes made to the `root` element and its
+children are retained.
+
+Some may be inclined to return the modified `root` element. While that would
+work, it would cause a copy of the entire ElementTree to be generated each
+time the Treeprocessor is run. Therefore, it is generally expected that
+the `run` method would only return `None` or a new ElementTree object.
+
+For specifics on manipulating the ElementTree, see
+[Working with the ElementTree][workingwithetree] below.
+
+## Inline Patterns {: #inlinepatterns }
+
+
+### Future
+
+While users can still create plugins with the existing
+`markdown.inlinepatterns.Pattern`, a new, more flexible inline processor has
+been added which users are encouraged to migrate to. The new inline processor
+is found at `markdown.inlinepatterns.InlineProcessor`.
+
+The new processor is very similar to legacy with two major distinctions.
+
+1. Patterns no longer need to match the entire block, so patterns no longer
+    start with `r'^(.*?)'` and end with `r'(.*?)!'`. This was a huge
+    performance sink and this requirement has been removed. The returned match
+    object will only contain what is explicitly matched in the pattern, and
+    extension pattern groups now start with `m.group(1)`.
+
+2. The `handleMatch` method now takes an additional input called `data`,
+    which is the entire block under analysis, not just what is matched with
+    the specified pattern. The method also returns the element *and* the index
+    boundaries relative to `data` that the return element is replacing
+    (usually `m.start(0)` and `m.end(0)`).  If the boundaries are returned as
+    `None`, it is assumed that the match did not take place, and nothing will
+    be altered in `data`.
+
+If all you need is the same functionality as the legacy processor, you can do
+as shown below. Most of the time, simple regular expression processing is all
+you'll need.
+
+```python
+from markdown.inlinepatterns import InlineProcessor
+import xml.etree.ElementTree as etree
+
+# an oversimplified regex
+MYPATTERN = r'\*([^*]+)\*'
+
+class EmphasisPattern(InlineProcessor):
+    def handleMatch(self, m, data):
+        el = etree.Element('em')
+        el.text = m.group(1)
+        return el, m.start(0), m.end(0)
+
+# pass in pattern and create instance
+emphasis = EmphasisPattern(MYPATTERN)
+```
+
+But, the new processor allows you handle much more complex patterns that are
+too much for Python's Re to handle.  For instance, to handle nested brackets in
+link patterns, the built-in link inline processor uses the following pattern to
+find where a link *might* start:
+
+```python
+LINK_RE = NOIMG + r'\['
+link = LinkInlineProcessor(LINK_RE, md_instance)
+```
+
+It then uses programmed logic to actually walk the string (`data`), starting at
+where the match started (`m.start(0)`). If for whatever reason, the text
+does not appear to be a link, it returns `None` for the start and end boundary
+in order to communicate to the parser that no match was found.
+
+```python
+    # Just a snippet of the link's handleMatch
+    # method to illustrate new logic
+    def handleMatch(self, m, data):
+        text, index, handled = self.getText(data, m.end(0))
+
+        if not handled:
+            return None, None, None
+
+        href, title, index, handled = self.getLink(data, index)
+        if not handled:
+            return None, None, None
+
+        el = etree.Element("a")
+        el.text = text
+
+        el.set("href", href)
+
+        if title is not None:
+            el.set("title", title)
+
+        return el, m.start(0), index
+```
+
+### Generic Pattern Classes
+
+Some example processors that are available.
+
+* **`SimpleTextInlineProcessor(pattern)`**:
+
+    Returns simple text of `group(2)` of a `pattern` and the start and end
+    position of the match.
+
+* **`SimpleTagInlineProcessor(pattern, tag)`**:
+
+    Returns an element of type "`tag`" with a text attribute of `group(3)`
+    of a `pattern`. `tag` should be a string of a HTML element (i.e.: 'em').
+    It also returns the start and end position of the match.
+
+* **`SubstituteTagInlineProcessor(pattern, tag)`**:
+
+    Returns an element of type "`tag`" with no children or text (i.e.: `br`)
+    and the start and end position of the match.
+
+A very small number of the basic legacy processors are still available to
+prevent breakage of 3rd party extensions during the transition period to the
+new processors. Three of the available processors are listed below.
+
+* **`SimpleTextPattern(pattern)`**:
+
+    Returns simple text of `group(2)` of a `pattern`.
+
+* **`SimpleTagPattern(pattern, tag)`**:
+
+    Returns an element of type "`tag`" with a text attribute of `group(3)`
+    of a `pattern`. `tag` should be a string of a HTML element (i.e.: 'em').
+
+* **`SubstituteTagPattern(pattern, tag)`**:
+
+    Returns an element of type "`tag`" with no children or text (i.e.: `br`).
+
+There may be other Pattern classes in the Markdown source that you could extend
+or use as well. Read through the source and see if there is anything you can
+use. You might even get a few ideas for different approaches to your specific
+situation.
+
+### Legacy
+
+Inline Patterns implement the inline HTML element syntax for Markdown such as
+`*emphasis*` or `[links](http://example.com)`. Pattern objects should be
+instances of classes that inherit from `markdown.inlinepatterns.Pattern` or
+one of its children. Each pattern object uses a single regular expression and
+must have the following methods:
+
+* **`getCompiledRegExp()`**:
+
+    Returns a compiled regular expression.
+
+* **`handleMatch(m)`**:
+
+    Accepts a match object and returns an ElementTree element of a plain
+    Unicode string.
+
+Also, Inline Patterns can define the property `ANCESTOR_EXCLUDES` with either
+a list or tuple of undesirable ancestors. The pattern should not match if it
+would cause the content to be a descendant of one of the defined tag names.
+
+Note that any regular expression returned by `getCompiledRegExp` must capture
+the whole block. Therefore, they should all start with `r'^(.*?)'` and end
+with `r'(.*?)!'`. When using the default `getCompiledRegExp()` method
+provided in the `Pattern` you can pass in a regular expression without that
+and `getCompiledRegExp` will wrap your expression for you and set the
+`re.DOTALL` and `re.UNICODE` flags. This means that the first group of your
+match will be `m.group(2)` as `m.group(1)` will match everything before the
+pattern.
+
+For an example, consider this simplified emphasis pattern:
+
+```python
+from markdown.inlinepatterns import Pattern
+import xml.etree.ElementTree as etree
+
+class EmphasisPattern(Pattern):
+    def handleMatch(self, m):
+        el = etree.Element('em')
+        el.text = m.group(2)
+        return el
+```
+
+As discussed in [Integrating Your Code Into Markdown][], an instance of this
+class will need to be provided to Markdown. That instance would be created
+like so:
+
+```python
+# an oversimplified regex
+MYPATTERN = r'\*([^*]+)\*'
+# pass in pattern and create instance
+emphasis = EmphasisPattern(MYPATTERN)
+```
+
+Actually it would not be necessary to create that pattern (and not just because
+a more sophisticated emphasis pattern already exists in Markdown). The fact is,
+that example pattern is not very DRY. A pattern for `**strong**` text would
+be almost identical, with the exception that it would create a 'strong' element.
+Therefore, Markdown provides a number of generic pattern classes that can
+provide some common functionality. For example, both emphasis and strong are
+implemented with separate instances of the `SimpleTagPattern` listed below.
+Feel free to use or extend any of the Pattern classes found at
+`markdown.inlinepatterns`.
+
+## Postprocessors {: #postprocessors }
+
+Postprocessors munge the document after the ElementTree has been
+serialized into a string. Postprocessors should be used to work with the
+text just before output.  Usually, they are used add back sections that were
+extracted in a preprocessor, fix up outgoing encodings, or wrap the whole 
+document.
+
+A Postprocessor should inherit from `markdown.postprocessors.Postprocessor`
+and implement a `run` method which takes a single parameter `text`, the entire
+HTML document as a single Unicode string.  `run` should return a single Unicode
+string ready for output.  Note that preprocessors use a list of lines while 
+postprocessors use a single multi-line string.
+
+Here is a simple example:
+
+```python
+from markdown.postprocessors import Postprocessor
+import re
+
+class ShowActualHtmlPostprocesor(Postprocessor):
+    """ Wrap entire output in <pre> tags as a diagnostic. """
+    def run(self, text):
+        return '<pre>\n' + re.sub('<', '&lt;', text) + '</pre>\n'
+```
+
+Some postprocessors in the Markdown source tree include:
+
+| Class  | Kind | Priority |  Description |
+| ----------------------------|-----------|----|-----------------------------------------------
+| [`raw_html`][p1] | built-in | 30 | Restore raw html from `htmlStash`, stored by `HTMLBlockPreprocessor`, and code highlighters.
+| [`amp_substitute`][p2] | built-in | 20 | Convert ampersand substitutes to `&`; used in links.
+| [`unescape`][p3] | built-in | 10 | Convert some escaped characters back from integers; used in links.
+| [`FootnotePostProcessor`][p4] | extension | 25 | Replace footnote placeholders with html entities; as set by other stages.
+ 
+ [p1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L65
+ [p2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L100
+ [p3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L108
+ [p4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L404
+ 
+
 ## Working with the ElementTree {: #working_with_et }
 
 As mentioned, the Markdown parser converts a source document to an
@@ -588,71 +590,6 @@ class MyExtension(Extension):
         md.inlinePatterns.register(MyPattern(md), 'mypattern', 175)
 ```
 
-### Registry
-
-The `markdown.util.Registry` class is a priority sorted registry which Markdown
-uses internally to determine the processing order of its various processors and
-patterns.
-
-A `Registry` instance provides two public methods to alter the data of the
-registry: `register` and `deregister`. Use `register` to add items and
-`deregister` to remove items. See each method for specifics.
-
-When registering an item, a "name" and a "priority" must be provided. All
-items are automatically sorted by the value of the "priority" parameter such
-that the item with the highest value will be processed first. The "name" is
-used to remove (`deregister`) and get items.
-
-A `Registry` instance is like a list (which maintains order) when reading
-data. You may iterate over the items, get an item and get a count (length)
-of all items. You may also check that the registry contains an item.
-
-When getting an item you may use either the index of the item or the
-string-based "name". For example:
-
-    registry = Registry()
-    registry.register(SomeItem(), 'itemname', 20)
-    # Get the item by index
-    item = registry[0]
-    # Get the item by name
-    item = registry['itemname']
-
-When checking that the registry contains an item, you may use either the
-string-based "name", or a reference to the actual item. For example:
-
-    someitem = SomeItem()
-    registry.register(someitem, 'itemname', 20)
-    # Contains the name
-    assert 'itemname' in registry
-    # Contains the item instance
-    assert someitem in registry
-
-`markdown.util.Registry` has the following methods:
-
-#### `Registry.register(self, item, name, priority)` {: #registry.register }
-
-:   Add an item to the registry with the given name and priority.
-
-    Parameters:
-
-    * `item`: The item being registered.
-    * `name`: A string used to reference the item.
-    * `priority`: An integer or float used to sort against all items.
-
-    If an item is registered with a "name" which already exists, the existing
-    item is replaced with the new item. Tread carefully as the old item is lost
-    with no way to recover it. The new item will be sorted according to its
-    priority and will **not** retain the position of the old item.
-
-#### `Registry.deregister(self, name, strict=True)`  {: #registry.deregister }
-
-:   Remove an item from the registry.
-
-    Set `strict=False` to fail silently.
-
-#### `Registry.get_index_for_name(self, name)` {: #registry.get_index_for_name }
-
-:   Return the index of the given `name`.
 
 ### registerExtension {: #registerextension }
 
@@ -837,6 +774,72 @@ def makeExtension(**kwargs):
 When Markdown is passed the "name" of your extension as a dot notation string
 that does not include a class (for example `path.to.module`), it will import the
 module and call the `makeExtension` function to initiate your extension.
+
+### Registry
+
+The `markdown.util.Registry` class is a priority sorted registry which Markdown
+uses internally to determine the processing order of its various processors and
+patterns.
+
+A `Registry` instance provides two public methods to alter the data of the
+registry: `register` and `deregister`. Use `register` to add items and
+`deregister` to remove items. See each method for specifics.
+
+When registering an item, a "name" and a "priority" must be provided. All
+items are automatically sorted by the value of the "priority" parameter such
+that the item with the highest value will be processed first. The "name" is
+used to remove (`deregister`) and get items.
+
+A `Registry` instance is like a list (which maintains order) when reading
+data. You may iterate over the items, get an item and get a count (length)
+of all items. You may also check that the registry contains an item.
+
+When getting an item you may use either the index of the item or the
+string-based "name". For example:
+
+    registry = Registry()
+    registry.register(SomeItem(), 'itemname', 20)
+    # Get the item by index
+    item = registry[0]
+    # Get the item by name
+    item = registry['itemname']
+
+When checking that the registry contains an item, you may use either the
+string-based "name", or a reference to the actual item. For example:
+
+    someitem = SomeItem()
+    registry.register(someitem, 'itemname', 20)
+    # Contains the name
+    assert 'itemname' in registry
+    # Contains the item instance
+    assert someitem in registry
+
+`markdown.util.Registry` has the following methods:
+
+#### `Registry.register(self, item, name, priority)` {: #registry.register }
+
+:   Add an item to the registry with the given name and priority.
+
+    Parameters:
+
+    * `item`: The item being registered.
+    * `name`: A string used to reference the item.
+    * `priority`: An integer or float used to sort against all items.
+
+    If an item is registered with a "name" which already exists, the existing
+    item is replaced with the new item. Tread carefully as the old item is lost
+    with no way to recover it. The new item will be sorted according to its
+    priority and will **not** retain the position of the old item.
+
+#### `Registry.deregister(self, name, strict=True)`  {: #registry.deregister }
+
+:   Remove an item from the registry.
+
+    Set `strict=False` to fail silently.
+
+#### `Registry.get_index_for_name(self, name)` {: #registry.get_index_for_name }
+
+:   Return the index of the given `name`.
 
 [bug tracker]: https://github.com/Python-Markdown/markdown/issues
 [extension source]:  https://github.com/Python-Markdown/markdown/tree/master/markdown/extensions
