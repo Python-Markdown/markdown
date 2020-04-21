@@ -2,15 +2,17 @@ title:      Extensions API
 
 # Writing Extensions for Python-Markdown
 
+
 Python-Markdown includes an API for extension writers to plug their own
 custom functionality and syntax into the parser. An extension will patch
 into one or more stages of the parser:
 
 * [*Preprocessors*](#preprocessors) alter the source before it is passed to the parser. 
 * [*Block Processors*](#blockprocessors) work with blocks of text separated by blank lines.
-* [*Inline Patterns*](#inlinepatterns) work with inline elements, such as `*strong*`. 
 * [*Tree Processors*](#treeprocessors) modify the constructed ElementTree
+* [*Inline Patterns*](#inlinepatterns) are common tree processors for inline elements, such as `*strong*`. 
 * [*Postprocessors*](#postprocessors) munge of the output of the parser just before it is returned. 
+
 
 The parser loads text, applies the preprocessors, creates an
 [ElementTree][ElementTree] added to by the block processors and 
@@ -26,33 +28,50 @@ other issues on the [bug tracker].
 
 ## Preprocessors {: #preprocessors }
 
-Preprocessors munge the source text before it is passed into the Markdown
-parser. This is an excellent place to clean up bad syntax, extract things the
-parser may otherwise choke on and perhaps even store it for later retrieval.
+Preprocessors munge the source text before it is passed to the Markdown
+parser. This is an excellent place to clean up bad encodings or to extract 
+portions for later processing that the parser may otherwise choke on.
 
 Preprocessors should inherit from `markdown.preprocessors.Preprocessor` and
-implement a `run` method with one argument `lines`. The `run` method of
-each Preprocessor will be passed the entire source text as a list of Unicode
-strings. Each string will contain one line of text. The `run` method should
-return either that list, or an altered list of Unicode strings.
+implement a `run` method, which takes a single parameter `lines`. This parameter is
+the entire source text stored as a list of Unicode string, one per line.  `run` should
+return its processed list of of Unicode strings, one per line.
 
-
-A pseudo example:
+A simple example:
 
 ```python
 from markdown.preprocessors import Preprocessor
+import re
 
-class MyPreprocessor(Preprocessor):
+class NoRender(Preprocessor):
+    """ Skip any line with words 'NO RENDER' in it. """
     def run(self, lines):
         new_lines = []
         for line in lines:
-            m = MYREGEX.match(line)
+            m = re.search("NO RENDER", line)
             if m:
-                # do stuff
+                pass   # skipping this line
             else:
                 new_lines.append(line)
         return new_lines
 ```
+
+Some preprocessors in the Markdown source tree include:
+
+
+| Name  | kind | Priority |  Description |
+| ----------------------------|-----------|----|-----------------------------------------------
+| [NormalizeWhiteSpace][c1]   | built-in  | 30 | Normalizes whitespace by expanding tabs, fixing `\r` line endings, etc. |
+| [HtmlBlockPreprocessor][c2] | built-in  | 20 | Removes html blocks from the text and stores them for later processing |
+| [ReferencePreprocessor][c3] | built-in  | 10 | Removes reference definitions from text and stores for later processing |
+| [MetaPreprocessor][c4]      | extension | 27 | Strips and records meta data at top of documents |
+| [FootnotesPreprocessor][c5] | extension | 15 | Removes footnote blocks from the text and stores them for later processing |
+
+[c1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py#L62
+[c2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py#L74
+[c3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py#L339
+[c4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/meta.py#L32
+[c5]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L205
 
 ## Inline Patterns {: #inlinepatterns }
 
