@@ -59,13 +59,13 @@ class NoRender(Preprocessor):
 Some preprocessors in the Markdown source tree include:
 
 
-| Name  | kind | Priority |  Description |
+| Class  | Kind | Priority |  Description |
 | ----------------------------|-----------|----|-----------------------------------------------
-| [NormalizeWhiteSpace][c1]   | built-in  | 30 | Normalizes whitespace by expanding tabs, fixing `\r` line endings, etc. |
-| [HtmlBlockPreprocessor][c2] | built-in  | 20 | Removes html blocks from the text and stores them for later processing |
-| [ReferencePreprocessor][c3] | built-in  | 10 | Removes reference definitions from text and stores for later processing |
-| [MetaPreprocessor][c4]      | extension | 27 | Strips and records meta data at top of documents |
-| [FootnotesPreprocessor][c5] | extension | 15 | Removes footnote blocks from the text and stores them for later processing |
+| [`NormalizeWhiteSpace`][c1]   | built-in  | 30 | Normalizes whitespace by expanding tabs, fixing `\r` line endings, etc. |
+| [`HtmlBlockPreprocessor`][c2] | built-in  | 20 | Removes html blocks from the text and stores them for later processing |
+| [`ReferencePreprocessor`][c3] | built-in  | 10 | Removes reference definitions from text and stores for later processing |
+| [`MetaPreprocessor`][c4]      | extension | 27 | Strips and records meta data at top of documents |
+| [`FootnotesPreprocessor`][c5] | extension | 15 | Removes footnote blocks from the text and stores them for later processing |
 
 [c1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py#L62
 [c2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py#L74
@@ -302,26 +302,44 @@ For specifics on manipulating the ElementTree, see
 
 ## Postprocessors {: #postprocessors }
 
-Postprocessors manipulate the document after the ElementTree has been
+Postprocessors munge the document after the ElementTree has been
 serialized into a string. Postprocessors should be used to work with the
-text just before output.
+text just before output.  Usually, they are used add back sections that were
+extracted in a preprocessor, fix up outgoing encodings, or wrap the whole 
+document.
 
 A Postprocessor should inherit from `markdown.postprocessors.Postprocessor`
-and over-ride the `run` method which takes one argument `text` and returns
-a Unicode string.
+and implement a `run` method which takes a single parameter `text`, the entire
+HTML document as a single Unicode string.  `run` should return a single Unicode
+string ready for output.  Note that preprocessors use a list of lines while 
+postprocessors use a single multi-line string.
 
-Postprocessors are run after the ElementTree has been serialized back into
-Unicode text.  For example, this may be an appropriate place to add a table of
-contents to a document:
+Here is a simple example:
 
 ```python
 from markdown.postprocessors import Postprocessor
+import re
 
-class TocPostprocessor(Postprocessor):
+class ShowActualHtmlPostprocesor(Postprocessor):
+    """ Wrap entire output in <pre> tags as a diagnostic. """
     def run(self, text):
-        return MYMARKERRE.sub(MyToc, text)
+        return '<pre>\n' + re.sub('<', '&lt;', text) + '</pre>\n'
 ```
 
+Some postprocessors in the Markdown source tree include:
+
+| Class  | Kind | Priority |  Description |
+| ----------------------------|-----------|----|-----------------------------------------------
+| [`raw_html`][p1] | built-in | 30 | Restore raw html from `htmlStash`, stored by `HTMLBlockPreprocessor`, and code highlighters.
+| [`amp_substitute`][p2] | built-in | 20 | Convert ampersand substitutes to `&`; used in links.
+| [`unescape`][p3] | built-in | 10 | Convert some escaped characters back from integers; used in links.
+| [`FootnotePostProcessor`][p4] | extension | 25 | Replace footnote placeholders with html entities; as set by other stages.
+ 
+ [p1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L65
+ [p2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L100
+ [p3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L108
+ [p4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L404
+ 
 ## BlockParser {: #blockparser }
 
 Sometimes, Preprocessors, Treeprocessors, Postprocessors, and Inline Patterns
