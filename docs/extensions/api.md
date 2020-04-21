@@ -10,7 +10,7 @@ into one or more stages of the parser:
 * [*Preprocessors*](#preprocessors) alter the source before it is passed to the parser. 
 * [*Block Processors*](#blockprocessors) work with blocks of text separated by blank lines.
 * [*Tree Processors*](#treeprocessors) modify the constructed ElementTree
-* [*Inline Patterns*](#inlinepatterns) are common tree processors for inline elements, such as `*strong*`. 
+* [*Inline Processors*](#inlineprocessors) are common tree processors for inline elements, such as `*strong*`. 
 * [*Postprocessors*](#postprocessors) munge of the output of the parser just before it is returned. 
 
 
@@ -237,135 +237,137 @@ the `run` method would only return `None` or a new ElementTree object.
 For specifics on manipulating the ElementTree, see
 [Working with the ElementTree][workingwithetree] below.
 
-### Inline Patterns {: #inlinepatterns }
+### Inline Processors, also called Inline Patterns {: #inlineprocessors }
 
+Inline processors, also called inline patterns, are used to add formatting, 
+such as `**emphasis**`, by replacing a matched pattern with a new element tree node.
+It is an excellent for adding new syntax tags.  Inline
+processor code is often quite short.
 
-#### Current
+In version 3.0, a new, more flexible inline processor was
+added, `markdown.inlinepatterns.InlineProcessor`.   The 
+original inline processors, which inherit from 
+`markdown.inlinepatterns.Pattern` or one of its children are
+still supported, though users are encouraged to migrate.
 
-While users can still create plugins with the existing
-`markdown.inlinepatterns.Pattern`, a new, more flexible inline processor has
-been added which users are encouraged to migrate to. The new inline processor
-is found at `markdown.inlinepatterns.InlineProcessor`.
+#### Comparing the new `InlineProcessor` to the older `Patterns`
 
-The new processor is very similar to legacy with two major distinctions.
+The new `InlineProcessor` provides two major enchancements to `Patterns`:
 
 1. Patterns no longer need to match the entire block, so patterns no longer
-    start with `r'^(.*?)'` and end with `r'(.*?)!'`. This was a huge
-    performance sink and this requirement has been removed. The returned match
-    object will only contain what is explicitly matched in the pattern, and
+    start with `r'^(.*?)'` and end with `r'(.*?)%'`. This runs faster.
+    The returned [match object][] will only contain what is explicitly matched in the pattern, and
     extension pattern groups now start with `m.group(1)`.
 
 2. The `handleMatch` method now takes an additional input called `data`,
     which is the entire block under analysis, not just what is matched with
-    the specified pattern. The method also returns the element *and* the index
-    boundaries relative to `data` that the return element is replacing
+    the specified pattern. The method now returns the element *and* the indexes
+    relative to `data` that the return element is replacing
     (usually `m.start(0)` and `m.end(0)`).  If the boundaries are returned as
     `None`, it is assumed that the match did not take place, and nothing will
-    be altered in `data`.
+    be altered in `data`.  
+    
+    This allows handling of more complex constructs than
+    regular expressions can handle, e.g., matching nested brackets, and explicit control of the span 
+    "consumed" by the processor.
 
-If all you need is the same functionality as the legacy processor, you can do
-as shown below. Most of the time, simple regular expression processing is all
-you'll need.
+
+#### Inline Processor
+
+Inline processors should inherit from `InlineProcessor`.  They are passed a pattern string
+on initialization and implement a `handleMatch` method.
+
+`InlineProcessor.__init__(self, pattern, md=None)` creates an instance of the processor.  
+`pattern` is the regular expression string that must match the code block
+in order for the `handleMatch` method to be called.   `md`, an optional parameter,
+may be a copy of the `markdown` object to be stored as `self.md` if needed by `handleMatch`.
+
+`InlineProcessor.handleMatch(self, m, data)` should be overridden by the inline 
+processor being implemented.   `m` is the regular expression [match object][] generated
+by finding the `pattern`.   `data` is a single, multi-line, Unicode string containing
+the entire block of text around the pattern.  A block is text set apart
+by blank lines.  `handleMatch` retuns either `None, None, None`, indicating the
+provided match was rejected or `el, start, end`, if the match
+was successfully processed.  On success, `el` is the `elementTree.element` being
+added the tree, `start` and `end` are indexes in `data` that were "consumed" by
+the pattern.   Matching then continues within the block.
+
+On rejection, the unchanged block will be passed as `m` to the next match's `handleMatch`.  
+On success, the portion of the block from [`start` to `end`] will be replaced by a 
+placeholder before the next call to `handleMatch`.
+
+
+##### An execution example
+
+This example shows using the `InlineProcessor` making a simple
+regular expression replacement, changing `--strike--` to `<del>strike</del>`.
 
 ```python
 from markdown.inlinepatterns import InlineProcessor
 import xml.etree.ElementTree as etree
 
-# an oversimplified regex
-MYPATTERN = r'\*([^*]+)\*'
 
-class EmphasisPattern(InlineProcessor):
+class DelInlineProcessor(InlineProcessor):
     def handleMatch(self, m, data):
-        el = etree.Element('em')
+        el = etree.Element('del')
         el.text = m.group(1)
         return el, m.start(0), m.end(0)
 
-# pass in pattern and create instance
-emphasis = EmphasisPattern(MYPATTERN)
+class DelExtension(Extension):
+    def extendMarkdown(self, md):
+        DEL_PATTERN = r'--(.*?)--'  # like --del--
+        md.inlinePatterns.register(DelInlineProcessor(DEL_PATTERN, md), 'del', 175)
 ```
 
-But, the new processor allows you handle much more complex patterns that are
-too much for Python's Re to handle.  For instance, to handle nested brackets in
-link patterns, the built-in link inline processor uses the following pattern to
-find where a link *might* start:
+If we run with input:
 
-```python
-LINK_RE = NOIMG + r'\['
-link = LinkInlineProcessor(LINK_RE, md_instance)
+```
+Not in the block
+
+First line of the block.
+This is --strike one--.
+This is --strike two--.
+End of the block.
 ```
 
-It then uses programmed logic to actually walk the string (`data`), starting at
-where the match started (`m.start(0)`). If for whatever reason, the text
-does not appear to be a link, it returns `None` for the start and end boundary
-in order to communicate to the parser that no match was found.
+On the first call to `handleMatch`, `m` will be the match for `--strike one--` and 
+`data` will be the string:
+ 
+    First line of the block.\nThis is --strike one--.\nThis is --strike two--.\nEnd of the block.
+    
+Because the match was successful, the region between the returned `start` and `end` are 
+replaced with a token and the new element is added to the tree.  
 
-```python
-    # Just a snippet of the link's handleMatch
-    # method to illustrate new logic
-    def handleMatch(self, m, data):
-        text, index, handled = self.getText(data, m.end(0))
+On the second call to `handleMatch`, `m` will be the match for `--strike two--`
+and `data` will be the string:
 
-        if not handled:
-            return None, None, None
+    First line of the block.\nThis is klzzwxh:0000.\nThis is --strike two--.\nEnd of the block.
 
-        href, title, index, handled = self.getLink(data, index)
-        if not handled:
-            return None, None, None
+##### Examples in Markdown source tree
 
-        el = etree.Element("a")
-        el.text = text
+Here are some convenience functions and other examples:
 
-        el.set("href", href)
+| Class  | Kind | Priority |  Description |
+| ----------------------------|-----------|----|-----------------------------------------------
+| [`SimpleTextInlineProcessor`][i1] | convenience | - | Return text of group(1) of the pattern.
+| [`EscapeInlineProcessor`][i2]     | convenience  | - | escape (encode) a character, fixed by postprocessor `unescape`
+| [`SimpleTagInlineProcessor`][i3]  | convenience  | - | init with name of tag; return tag with group(3) as text.
+| [`SubstituteTagInlineProcessor`][i4] | convenience | - | init with name of tag; return tag with no children
+| [`AsteriskProcessor`][i5]         | built-in  | 60 | Emphasis processor for handling strong and em matches inside asteriks.
+| [`AbbrInlineProcessor`][i6]   | extension  | 20 | Apply tag to abbreviation registered by preprocessor.
+| [`WikiLinksInlineProcessor`][i7]   | extension  | 75  | Link `[[article names]]` to wiki given in metadata
+| [`FootnoteInlineProcessor`][i8]   | extension  |  175 | Replaces footnote in text with link to footnote div at bottom |
 
-        if title is not None:
-            el.set("title", title)
+[i1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L313
+[i2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L316
+[i3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L343
+[i4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L365
+[i5]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L445
+[i6]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/abbr.py#L79
+[i7]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/wikilinks.py#L52
+[i8]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L307
 
-        return el, m.start(0), index
-```
-
-#### Generic Pattern Classes
-
-Some example processors that are available.
-
-* **`SimpleTextInlineProcessor(pattern)`**:
-
-    Returns simple text of `group(2)` of a `pattern` and the start and end
-    position of the match.
-
-* **`SimpleTagInlineProcessor(pattern, tag)`**:
-
-    Returns an element of type "`tag`" with a text attribute of `group(3)`
-    of a `pattern`. `tag` should be a string of a HTML element (i.e.: 'em').
-    It also returns the start and end position of the match.
-
-* **`SubstituteTagInlineProcessor(pattern, tag)`**:
-
-    Returns an element of type "`tag`" with no children or text (i.e.: `br`)
-    and the start and end position of the match.
-
-A very small number of the basic legacy processors are still available to
-prevent breakage of 3rd party extensions during the transition period to the
-new processors. Three of the available processors are listed below.
-
-* **`SimpleTextPattern(pattern)`**:
-
-    Returns simple text of `group(2)` of a `pattern`.
-
-* **`SimpleTagPattern(pattern, tag)`**:
-
-    Returns an element of type "`tag`" with a text attribute of `group(3)`
-    of a `pattern`. `tag` should be a string of a HTML element (i.e.: 'em').
-
-* **`SubstituteTagPattern(pattern, tag)`**:
-
-    Returns an element of type "`tag`" with no children or text (i.e.: `br`).
-
-There may be other Pattern classes in the Markdown source that you could extend
-or use as well. Read through the source and see if there is anything you can
-use. You might even get a few ideas for different approaches to your specific
-situation.
-
-#### Legacy
+#### Legacy Documentation for `Pattern`
 
 Inline Patterns implement the inline HTML element syntax for Markdown such as
 `*emphasis*` or `[links](http://example.com)`. Pattern objects should be
@@ -842,11 +844,12 @@ string-based "name", or a reference to the actual item. For example:
 
 :   Return the index of the given `name`.
 
+[match object]: https://docs.python.org/3/library/re.html#match-objects
 [bug tracker]: https://github.com/Python-Markdown/markdown/issues
 [extension source]:  https://github.com/Python-Markdown/markdown/tree/master/markdown/extensions
 [tutorial]: https://github.com/Python-Markdown/markdown/wiki/Tutorial:-Writing-Extensions-for-Python-Markdown
 [Preprocessors]: #preprocessors
-[Inline Patterns]: #inlinepatterns
+[Inline Processors]: #inlineprocessors
 [Treeprocessors]: #treeprocessors
 [Postprocessors]: #postprocessors
 [BlockParser]: #blockparser
