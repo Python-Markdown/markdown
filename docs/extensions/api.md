@@ -252,7 +252,7 @@ still supported, though users are encouraged to migrate.
 
 #### Comparing the new `InlineProcessor` to the older `Patterns`
 
-The new `InlineProcessor` provides two major enchancements to `Patterns`:
+The new `InlineProcessor` provides two major enhancements to `Patterns`:
 
 1. Patterns no longer need to match the entire block, so patterns no longer
     start with `r'^(.*?)'` and end with `r'(.*?)%'`. This runs faster.
@@ -286,7 +286,7 @@ may be a copy of the `markdown` object to be stored as `self.md` if needed by `h
 processor being implemented.   `m` is the regular expression [match object][] generated
 by finding the `pattern`.   `data` is a single, multi-line, Unicode string containing
 the entire block of text around the pattern.  A block is text set apart
-by blank lines.  `handleMatch` retuns either `None, None, None`, indicating the
+by blank lines.  `handleMatch` returns either `None, None, None`, indicating the
 provided match was rejected or `el, start, end`, if the match
 was successfully processed.  On success, `el` is the `elementTree.element` being
 added the tree, `start` and `end` are indexes in `data` that were "consumed" by
@@ -304,6 +304,7 @@ regular expression replacement, changing `--strike--` to `<del>strike</del>`.
 
 ```python
 from markdown.inlinepatterns import InlineProcessor
+from markdown.extensions import Extension
 import xml.etree.ElementTree as etree
 
 
@@ -351,9 +352,9 @@ Here are some convenience functions and other examples:
 | ----------------------------|-----------|----|-----------------------------------------------
 | [`SimpleTextInlineProcessor`][i1] | convenience | - | Return text of group(1) of the pattern.
 | [`EscapeInlineProcessor`][i2]     | convenience  | - | escape (encode) a character, fixed by postprocessor `unescape`
-| [`SimpleTagInlineProcessor`][i3]  | convenience  | - | init with name of tag; return tag with group(3) as text.
-| [`SubstituteTagInlineProcessor`][i4] | convenience | - | init with name of tag; return tag with no children
-| [`AsteriskProcessor`][i5]         | built-in  | 60 | Emphasis processor for handling strong and em matches inside asteriks.
+| [`SimpleTagInlineProcessor`][i3]  | convenience  | - | `__init__` with name of tag; return tag with group(3) as text.
+| [`SubstituteTagInlineProcessor`][i4] | convenience | - | `__init__` with name of tag; return tag with no children
+| [`AsteriskProcessor`][i5]         | built-in  | 60 | Emphasis processor for handling strong and em matches inside asterisks.
 | [`AbbrInlineProcessor`][i6]   | extension  | 20 | Apply tag to abbreviation registered by preprocessor.
 | [`WikiLinksInlineProcessor`][i7]   | extension  | 75  | Link `[[article names]]` to wiki given in metadata
 | [`FootnoteInlineProcessor`][i8]   | extension  |  175 | Replaces footnote in text with link to footnote div at bottom |
@@ -517,7 +518,7 @@ def set_link_class(self, element):
     for child in element:
         if child.tag == "a":
               child.set("class", "myclass") #set the class attribute
-          set_link_class(child) # run recursively on children
+        set_link_class(child) # run recursively on children
 ```
 
 For more information about working with ElementTree see the ElementTree
@@ -848,11 +849,6 @@ string-based "name", or a reference to the actual item. For example:
 [bug tracker]: https://github.com/Python-Markdown/markdown/issues
 [extension source]:  https://github.com/Python-Markdown/markdown/tree/master/markdown/extensions
 [tutorial]: https://github.com/Python-Markdown/markdown/wiki/Tutorial:-Writing-Extensions-for-Python-Markdown
-[Preprocessors]: #preprocessors
-[Inline Processors]: #inlineprocessors
-[Treeprocessors]: #treeprocessors
-[Postprocessors]: #postprocessors
-[BlockParser]: #blockparser
 [workingwithetree]: #working_with_et
 [Integrating your code into Markdown]: #integrating_into_markdown
 [extendMarkdown]: #extendmarkdown
