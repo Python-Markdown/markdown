@@ -26,7 +26,8 @@ look at some of the [Available Extensions][] and their [source code][extension s
 As always, you may report bugs, ask for help, and discuss various 
 other issues on the [bug tracker].
 
-## Preprocessors {: #preprocessors }
+## Phases of processing {: #stages }
+### Preprocessors {: #preprocessors }
 
 Preprocessors munge the source text before it is passed to the Markdown
 parser. This is an excellent place to clean up bad encodings or to extract 
@@ -73,7 +74,7 @@ Some preprocessors in the Markdown source tree include:
 [c4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/meta.py#L32
 [c5]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L205
 
-## BlockParser {: #blockparser }
+### BlockParser {: #blockparser }
 
 Sometimes, Preprocessors, Treeprocessors, Postprocessors, and Inline Patterns
 are not going to do what you need. Perhaps you want a new type of block type
@@ -200,7 +201,7 @@ the `BlockParser`. The new class would have to provide the same public API.
 However, be aware that other extensions may expect the core parser provided
 and will not work with such a drastically different parser.
 
-## Treeprocessors {: #treeprocessors }
+### Treeprocessors {: #treeprocessors }
 
 Treeprocessors manipulate an ElementTree object after it has passed through the
 core BlockParser. This is where additional manipulation of the tree takes
@@ -236,10 +237,10 @@ the `run` method would only return `None` or a new ElementTree object.
 For specifics on manipulating the ElementTree, see
 [Working with the ElementTree][workingwithetree] below.
 
-## Inline Patterns {: #inlinepatterns }
+### Inline Patterns {: #inlinepatterns }
 
 
-### Future
+#### Current
 
 While users can still create plugins with the existing
 `markdown.inlinepatterns.Pattern`, a new, more flexible inline processor has
@@ -322,7 +323,7 @@ in order to communicate to the parser that no match was found.
         return el, m.start(0), index
 ```
 
-### Generic Pattern Classes
+#### Generic Pattern Classes
 
 Some example processors that are available.
 
@@ -364,7 +365,7 @@ or use as well. Read through the source and see if there is anything you can
 use. You might even get a few ideas for different approaches to your specific
 situation.
 
-### Legacy
+#### Legacy
 
 Inline Patterns implement the inline HTML element syntax for Markdown such as
 `*emphasis*` or `[links](http://example.com)`. Pattern objects should be
@@ -428,7 +429,7 @@ implemented with separate instances of the `SimpleTagPattern` listed below.
 Feel free to use or extend any of the Pattern classes found at
 `markdown.inlinepatterns`.
 
-## Postprocessors {: #postprocessors }
+### Postprocessors {: #postprocessors }
 
 Postprocessors munge the document after the ElementTree has been
 serialized into a string. Postprocessors should be used to work with the
@@ -775,7 +776,7 @@ When Markdown is passed the "name" of your extension as a dot notation string
 that does not include a class (for example `path.to.module`), it will import the
 module and call the `makeExtension` function to initiate your extension.
 
-### Registry
+## Registries
 
 The `markdown.util.Registry` class is a priority sorted registry which Markdown
 uses internally to determine the processing order of its various processors and
@@ -816,7 +817,7 @@ string-based "name", or a reference to the actual item. For example:
 
 `markdown.util.Registry` has the following methods:
 
-#### `Registry.register(self, item, name, priority)` {: #registry.register }
+### `Registry.register(self, item, name, priority)` {: #registry.register }
 
 :   Add an item to the registry with the given name and priority.
 
@@ -831,13 +832,13 @@ string-based "name", or a reference to the actual item. For example:
     with no way to recover it. The new item will be sorted according to its
     priority and will **not** retain the position of the old item.
 
-#### `Registry.deregister(self, name, strict=True)`  {: #registry.deregister }
+### `Registry.deregister(self, name, strict=True)`  {: #registry.deregister }
 
 :   Remove an item from the registry.
 
     Set `strict=False` to fail silently.
 
-#### `Registry.get_index_for_name(self, name)` {: #registry.get_index_for_name }
+### `Registry.get_index_for_name(self, name)` {: #registry.get_index_for_name }
 
 :   Return the index of the given `name`.
 
