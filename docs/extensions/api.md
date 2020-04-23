@@ -33,7 +33,7 @@ Preprocessors munge the source text before it is passed to the Markdown
 parser. This is an excellent place to clean up bad characters or to extract 
 portions for later processing that the parser may otherwise choke on.
 
-Preprocessors should inherit from `markdown.preprocessors.Preprocessor` and
+Preprocessors inherit from `markdown.preprocessors.Preprocessor` and
 implement a `run` method, which takes a single parameter `lines`. This parameter is
 the entire source text stored as a list of Unicode string, one per line.  `run` should
 return its processed list of of Unicode strings, one per line.
@@ -85,8 +85,8 @@ and produce a differently structured tree than
 other Markdown.  Block processors excel at code formatting, 
 equation layouts, and tables.  
 
-A block processor should inherit from `markdown.blockprocessors.BlockProcessor`, 
-be passed `md.parser` on initialization,
+Block processors inherit from `markdown.blockprocessors.BlockProcessor`, 
+are passed `md.parser` on initialization,
 and implement both the `test` and `run` methods:  
 
 * `test(self, parent, block)` takes two parameters: 
@@ -252,7 +252,7 @@ core BlockParser. This is where additional manipulation of the tree takes
 place. Additionally, the InlineProcessor is a Treeprocessor which steps through
 the tree and runs the Inline Patterns on the text of each Element in the tree.
 
-A Treeprocessor should inherit from `markdown.treeprocessors.Treeprocessor`,
+A Treeprocessor inherits from `markdown.treeprocessors.Treeprocessor`,
 over-ride the `run` method which takes one argument `root` (an ElementTree
 object) and either modifies that root element and returns `None` or returns a
 new ElementTree object.
@@ -288,38 +288,40 @@ such as `**emphasis**`, by replacing a matched pattern with a new element tree n
 It is an excellent for adding new syntax tags.  Inline
 processor code is often quite short.
 
+Inline processors inherit from `InlineProcessor`, are initialized, and
+implement `handleMatch`:
 
-
-
-
-
-Inline processors should inherit from `InlineProcessor`.  They are passed a pattern string
-on initialization and implement a `handleMatch` method.
-
-`InlineProcessor.__init__(self, pattern, md=None)` creates an instance of the processor.  
-`pattern` is the regular expression string that must match the code block
-in order for the `handleMatch` method to be called.   `md`, an optional parameter,
+*   `__init__(self, pattern, md=None)` is the inherited constructor.  You do not need to implement your own.
+    * `pattern` is the regular expression string that must match the code block
+in order for the `handleMatch` method to be called.   
+    * `md`, an optional parameter,
 may be a copy of the `markdown` object to be stored as `self.md` if needed by `handleMatch`.
 
-`InlineProcessor.handleMatch(self, m, data)` should be overridden by the inline 
-processor being implemented.   `m` is the regular expression [match object][] generated
-by finding the `pattern`.   `data` is a single, multi-line, Unicode string containing
+*   `handleMatch(self, m, data)` must be implemented.
+    *   `m` is the regular expression [match object][] found from the `pattern` from `__init__`.   
+    *   `data` is a single, multi-line, Unicode string containing
 the entire block of text around the pattern.  A block is text set apart
-by blank lines.  `handleMatch` returns either `None, None, None`, indicating the
+by blank lines.  
+    *   Returns either `None, None, None`, indicating the
 provided match was rejected or `el, start, end`, if the match
-was successfully processed.  On success, `el` is the `elementTree.element` being
+was successfully processed.  On success, `el` is the element being
 added the tree, `start` and `end` are indexes in `data` that were "consumed" by
-the pattern.   Matching then continues within the block.
+the pattern.  The "consumed" span will be replaced by a placeholder.  The same 
+inline processor may be called several times on the same block.
 
-On rejection, the unchanged block will be passed as `m` to the next match's `handleMatch`.  
-On success, the portion of the block from [`start` to `end`] will be replaced by a 
-placeholder before the next call to `handleMatch`.
+##### Convenience Classes
 
+Convenience subclasses of `InlineProcessor` are provide for common operations:
+
+* [`SimpleTextInlineProcessor`][i1] returns the text of `group(1)` of the match.
+* [`SubstituteTagInlineProcessor`][i4] is initialized as `SubstituteTagInlineProcessor(pattern, tag)`.
+    It returns a new element `tag` whenever `pattern` is matched.
+* [`SimpleTagInlineProcessor`][i3] is initialized as `SimpleTagInlineProcessor(pattern, tag)`.
+    It returns an element `tag` with a text field of `group(2)` of the match.
 
 ##### Example
 
-This example shows using the `InlineProcessor` making a simple
-regular expression replacement, changing `--strike--` to `<del>strike</del>`.
+This example changes `--strike--` to `<del>strike</del>`.
 
 ```python
 from markdown.inlinepatterns import InlineProcessor
@@ -339,29 +341,50 @@ class DelExtension(Extension):
         md.inlinePatterns.register(DelInlineProcessor(DEL_PATTERN, md), 'del', 175)
 ```
 
-If we run with input:
+Use this input example:
 
 ```
-Not in the block
-
 First line of the block.
 This is --strike one--.
 This is --strike two--.
 End of the block.
 ```
 
-On the first call to `handleMatch`, `m` will be the match for `--strike one--` and 
-`data` will be the string:
- 
-    First line of the block.\nThis is --strike one--.\nThis is --strike two--.\nEnd of the block.
-    
-Because the match was successful, the region between the returned `start` and `end` are 
-replaced with a token and the new element is added to the tree.  
+The example display:
 
-On the second call to `handleMatch`, `m` will be the match for `--strike two--`
-and `data` will be the string:
+<hr>
 
-    First line of the block.\nThis is klzzwxh:0000.\nThis is --strike two--.\nEnd of the block.
+<p>First line of the block.
+This is <del>strike one</del>.
+This is <del>strike two</del>.
+End of the block.</p>
+
+<hr>
+
+* On the first call to `handleMatch`
+    * `m` will be the match for `--strike one--`
+    * `data` will be the string: `First line of the block.\nThis is --strike one--.\nThis is --strike two--.\nEnd of the block.`
+
+    Because the match was successful, the region between the returned `start` and `end` are 
+replaced with a token and the new element is added to the tree.    
+
+* On the second call to `handleMatch`
+    * `m` will be the match for `--strike two--` 
+    * `data` will be the string `First line of the block.\nThis is klzzwxh:0000.\nThis is --strike two--.\nEnd of the block.`
+
+Alternately, we could implement this using a convenience function:
+
+```python
+from markdown.inlinepatterns import SimpleTagInlineProcessor
+from markdown.extensions import Extension
+
+class DelExtension(Extension):
+    def extendMarkdown(self, md):
+        md.inlinePatterns.register(
+            SimpleTagInlineProcessor(r'()--(.*?)--', 'del'),
+            'del', 175)
+```
+
 
 ##### Usages
 
@@ -369,16 +392,12 @@ Here are some convenience functions and other examples:
 
 | Class  | Kind |   Description |
 | ----------------------------|-----------|--------------------------------------------------
-| [`SimpleTextInlineProcessor`][i1] | convenience | Return text of group(1) of the pattern.
-| [`EscapeInlineProcessor`][i2]     | convenience  | escape (encode) a character, fixed by postprocessor `unescape`
-| [`SimpleTagInlineProcessor`][i3]  | convenience  | `__init__` with name of tag; return tag with group(3) as text.
-| [`SubstituteTagInlineProcessor`][i4] | convenience | `__init__` with name of tag; return tag with no children
 | [`AsteriskProcessor`][i5]         | built-in  | Emphasis processor for handling strong and em matches inside asterisks.
 | [`AbbrInlineProcessor`][i6]   | extension  | Apply tag to abbreviation registered by preprocessor.
 | [`WikiLinksInlineProcessor`][i7]   | extension  | Link `[[article names]]` to wiki given in metadata
 | [`FootnoteInlineProcessor`][i8]   | extension  |  Replaces footnote in text with link to footnote div at bottom |
 
-[i1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L313
+[i1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L310
 [i2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L316
 [i3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L343
 [i4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L365
@@ -488,7 +507,7 @@ text just before output.  Usually, they are used add back sections that were
 extracted in a preprocessor, fix up outgoing encodings, or wrap the whole 
 document.
 
-A Postprocessor should inherit from `markdown.postprocessors.Postprocessor`
+Postprocessors inherit from `markdown.postprocessors.Postprocessor`
 and implement a `run` method which takes a single parameter `text`, the entire
 HTML document as a single Unicode string.  `run` should return a single Unicode
 string ready for output.  Note that preprocessors use a list of lines while 
