@@ -82,7 +82,7 @@ Some preprocessors in the Markdown source tree include:
 A block processor parses blocks of text and adds new elements to the `ElementTree`. 
 Blocks of text, separated from other text by blank lines, may have a different syntax 
 and produce a differently structured tree than
-other Markdown.  Block processors excel at code formatters, 
+other Markdown.  Block processors excel at code formatting, 
 equation layouts, and tables.  
 
 A block processor should inherit from `markdown.blockprocessors.BlockProcessor`, 
@@ -120,96 +120,113 @@ does not affect lines indented less.
 Also, `BlockProcessor` provides the fields `self.tab_length`, 
 the tab length (default 4), and `self.parser`, the current `BlockParser` instance.  
 
-#### The BlockParser
+#### BlockParser
 
-`BlockParser`, not to be confused with `BlockProcessor`, is the class used by Markdown to cycles through all
-the block processors.   It includes a 
+`BlockParser`, not to be confused with `BlockProcessor`, is the class used by Markdown to 
+cycle through all the registered block processors.  You should never need to create your 
+own instance; use `self.parser` instead.
+
+The `BlockParser` instance provides a 
 stack of strings for its current state, which your processor can push with `self.parser.set(state)`, 
 pop with `self.parser.reset()`, or check the the top state with `self.parser.isstate(state)`.
 Be sure your code pops the states it pushes.  
 
-The parser can also be called recursively to parse up text, i.e., to process 
-Markup from within your block processor.  You can call `parseDocument(lines)` to parse
+The `BlockParser` instance can also be called recursively, that is, to process 
+blocks from within your block processor.  There are three methods:
+
+* `parseDocument(lines)` to parse
 a list of lines, each a single-line Unicode string, returning a complete `ElementTree`.
-`parseChunk(parent, text)` parses a single, multi-line, possibly multi-block, Unicode 
+* `parseChunk(parent, text)` parses a single, multi-line, possibly multi-block, Unicode 
 string `text`
-and attaches the resulting tree to `parent`.  `parseBlocks(parent, blocks)` takes
-a list of `blocks`, each a multi-line Unicode string without two newlines in a row, 
+and attaches the resulting tree to `parent`.  
+* `parseBlocks(parent, blocks)` takes
+a list of `blocks`, each a multi-line Unicode string without blank lines, 
 and attaches the resulting tree to `parent`.   
 
-For perspective, 
-the Markdown parser calls `parseDocument` which calls
-`parseChunk` which calls `parseBlocks` which calls your block processor, which might, in turn,
-call one of these parse routines.
+For perspective, Markdown calls `parseDocument` which calls
+`parseChunk` which calls `parseBlocks` which calls your block processor, which, in turn,
+might call one of these routines.
 
 #### Example
 
-This example calls out important paragraphs by giving them a border.  This
-text would take:
+This example calls out important paragraphs by giving them a border.  It looks for a fence line of 
+exclamation points before and after and renders the fenced blocks into a new, styled `div`.  If
+it does not find the ending fence line, it nothing.  
+
+
+Our code, like most block processors, is longer than other examples:
+
+```python
+def test_block_processor():
+    class BoxBlockProcessor(BlockProcessor):
+        RE_FENCE_START = r'^ *!{3,} *\n' # start line, e.g., `   !!!! `
+        RE_FENCE_END = r'\n *!{3,}\s*$'  # last non-blank line, e.g, '!!!\n  \n\n'
+
+        def test(self, parent, block):
+            return re.match(self.RE_FENCE_START, block)
+
+        def run(self, parent, blocks):
+            original_block = blocks[0]
+            blocks[0] = re.sub(self.RE_FENCE_START, '', blocks[0])
+
+            # Find block with ending fence
+            for block_num, block in enumerate(blocks):
+                if re.search(self.RE_FENCE_END, block):
+                    # remove fence
+                    blocks[block_num] = re.sub(self.RE_FENCE_END, '', block)
+                    # render fenced area inside a new div
+                    e = etree.SubElement(parent, 'div')
+                    e.set('style', 'display: inline-block; border: 1px solid red;')
+                    self.parser.parseBlocks(e, blocks[0:block_num + 1])
+                    # remove used blocks
+                    for i in range(0, block_num + 1):
+                        blocks.pop(0)
+                    return True  # or could have had no return statement
+            # No closing marker!  Restore and do nothing
+            blocks[0] = original_block
+            return False  # equivalent to our test() routine returning False
+
+    class BoxExtension(Extension):
+        def extendMarkdown(self, md):
+            md.parser.blockprocessors.register(BoxBlockProcessor(md.parser), 'box', 175)
+```
+
+Start with this example input:
 
     You could create zombies by mixing lime and coconut.
     
     !!!!!
     Never do that!
     
-    Everyone might die!  It would be **bad**!
+    Everyone might **die**!
     !!!!!
     
-    But anyway...
+    Let's not.
 
-and output:
+
+
+
+The fenced text adds one node with two children to the tree:
+
+* **div**, with a `style` attribute.  It renders as 
+  `<div style="display: inline-block; border: 1px solid red;">...</div>`
+    * **p** with text `Never do that!`
+    * **p** with text `Everyone might **die**`.  The conversion to a `<strong>` tag
+        will happen when running the inline processors, which is after all the block processors.
+
+
+The example display:
 
 <hr>
 
-<p>You could create zombies by putting the lime in the coconut.</p>
+<p>You could create zombies by mixing lime and coconut.</p>
 <div style="display: inline-block; border: 1px solid red;">
 <p>Never do that!</p>
-<p>Everyone might die!  It would be <strong>bad</strong>!</p>
+<p>Everyone might <strong>die</strong>!</p>
 </div>
-<p>But anyway...</p>
+<p>Let's not.</p>
 
 <hr>
-
-Here's the code that removes the fences and renders the fenced blocks into a new, styled `div`:
-
-```python
-class BoxBlockProcessor(BlockProcessor):
-    RE_FENCE_START = r'^ *!{3,} *\n'  # start line, e.g., `   !!!! `
-    RE_FENCE_END = r'\n *!{3,}\s*$'  # last non-blank line, e.g, '!!!\n  \n\n'
-
-    def test(self, parent, block):
-        # initial guess that this processor should run for this block.
-        return re.match(self.RE_FENCE_START, block)  
-
-    def run(self, parent, blocks):
-        original_block = blocks[0]
-        blocks[0] = re.sub(self.RE_FENCE_START, '', blocks[0])
-
-        # Find block with ending fence
-        for block_num, block in enumerate(blocks):
-            if re.search(self.RE_FENCE_END, block):
-                # remove fence
-                blocks[block_num] = re.sub(self.RE_FENCE_END, '', block)
-                # render fenced area inside a new div
-                e = etree.SubElement(parent, 'div')
-                e.set('style', 'border=1')
-                self.parser.parseBlocks(e, blocks[0:block_num + 1])
-                # remove used blocks
-                for i in range(0, block_num + 1):
-                    blocks.pop(0)
-                return  # any return except return False is success 
-        # Found no closing fence!  
-        blocks[0] = original_block
-        return False  # signal failure, equivalent to our test() routine returning False
-
-class BoxExtension(Extension):
-    def extendMarkdown(self, md):
-        md.parser.blockprocessors.register(BoxBlockProcessor(md.parser), 'box', 175)
-```
-
-Two items to note:  how `False` can be returned, and that the output tree has *not*
-added the `<strong>` tag for `It would be **bad**`.  That conversion will happen after
-all block processors have run, while running the inline processors.
 
 #### Usages
 
@@ -220,12 +237,12 @@ Some block processors in the Markdown source tree include:
 | [`HashHeaderProcessor`][b1] | built-in  |  Title hashes (`#`), which may split blocks |
 | [`HRProcessor`][b2]   | built-in  |  Horizontal lines, e.g., `---` |
 | [`OListProcessor`][b3] | built-in  |  Ordered lists; complex and using `state` |
-| [`Admonition`][b4] | extension |  [Admonitions][] render in new `div`s
+| [`Admonition`][b4] | extension |  Render each [Admonition][] in a new `div`
 
 [b1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py#L441
 [b2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py#L495
 [b3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py#L316
-[Admonitions]: https://python-markdown.github.io/extensions/admonition/
+[Admonition]: https://python-markdown.github.io/extensions/admonition/
 [b4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/admonition.py#L36
 
 ### Treeprocessors {: #treeprocessors }
