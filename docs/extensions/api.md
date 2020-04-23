@@ -77,7 +77,7 @@ Some preprocessors in the Markdown source tree include:
 [c4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/meta.py#L32
 [c5]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L205
 
-### BlockProcessors {: #blockprocessors }
+### Block Processors {: #blockprocessors }
 
 A block processor parses blocks of text and adds new elements to the `ElementTree`. 
 Blocks of text, separated from other text by blank lines, may have a different syntax 
@@ -245,17 +245,23 @@ Some block processors in the Markdown source tree include:
 [Admonition]: https://python-markdown.github.io/extensions/admonition/
 [b4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/admonition.py#L36
 
-### Treeprocessors {: #treeprocessors }
+### Tree processors {: #treeprocessors }
 
-Treeprocessors manipulate an ElementTree object after it has passed through the
-core BlockParser. This is where additional manipulation of the tree takes
-place. Additionally, the InlineProcessor is a Treeprocessor which steps through
-the tree and runs the Inline Patterns on the text of each Element in the tree.
+Tree processors manipulate the tree created by block processors.  They can even create an entirely new 
+ElementTree. This is an excellent place for creating summaries, adding collected references, or last
+minute adjustments.
 
-A Treeprocessor inherits from `markdown.treeprocessors.Treeprocessor`,
-over-ride the `run` method which takes one argument `root` (an ElementTree
-object) and either modifies that root element and returns `None` or returns a
-new ElementTree object.
+A tree processor inherits from `markdown.treeprocessors.Treeprocessor`. Note it is `Treeprocessor` not `TreeProcessor`.
+A tree processor must implement a `run` method which takes 
+a single argument `root`, the current `ElementTree`.  It may either return `None`, probably modifying `root`, or an
+entirely new `ElementTree` to replace the current tree.  For efficiency, it is preferred to return `None` and 
+modify the `root` in place.
+
+For specifics on manipulating the ElementTree, see
+[Working with the ElementTree][workingwithetree] below.
+
+
+#### Example
 
 A pseudo example:
 
@@ -265,21 +271,31 @@ from markdown.treeprocessors import Treeprocessor
 class MyTreeprocessor(Treeprocessor):
     def run(self, root):
         root.text = 'modified content'
+        # No return statement is same as `return None`
 ```
 
-Note that Python class methods return `None` by default when no `return`
-statement is defined.  Additionally all Python variables refer to objects by
-reference.  Therefore, the above `run` method modifies the `root` element
-in place and returns `None`. The changes made to the `root` element and its
-children are retained.
+#### Usages
 
-Some may be inclined to return the modified `root` element. While that would
-work, it would cause a copy of the entire ElementTree to be generated each
-time the Treeprocessor is run. Therefore, it is generally expected that
-the `run` method would only return `None` or a new ElementTree object.
+The  core `InlineProcessor` class is a tree processor.  It walks the tree, matching patterns, 
+and splitting and creating nodes on matches.
 
-For specifics on manipulating the ElementTree, see
-[Working with the ElementTree][workingwithetree] below.
+Additional tree processors in the Markdown source tree include:
+
+| Class  | Kind |  Description |
+| ----------------------------|-----------|--------------------------------------------------
+| [`PrettifyTreeprocessor`][e1] | built-in  |  Add line breaks to the html document |
+| [`TocTreeprocessor`][e2]   | extension  |  Builds a [table of contents][] from the finished tree |
+| [`FootnoteTreeprocessor`][e3] | extension  |  Create [footnote][] div at end of document |
+| [`FootnotePostTreeprocessor`][e4] | extension |  Amend div created by `FootnoteTreeprocessor` with duplicates |
+
+[e1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/treeprocessors.py#L400
+[e2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/toc.py#L146
+[e3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L381
+[e4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L328
+[table of contents]: https://python-markdown.github.io/extensions/toc/
+[footnote]: https://python-markdown.github.io/extensions/footnotes/
+
+
 
 ### Inline Processors {: #inlineprocessors }
 
