@@ -271,35 +271,10 @@ such as `**emphasis**`, by replacing a matched pattern with a new element tree n
 It is an excellent for adding new syntax tags.  Inline
 processor code is often quite short.
 
-In version 3.0, a new, more flexible inline processor was
-added, `markdown.inlinepatterns.InlineProcessor`.   The 
-original inline processors, which inherit from 
-`markdown.inlinepatterns.Pattern` or one of its children are
-still supported, though users are encouraged to migrate.
-
-#### Comparing the new `InlineProcessor` to the older `Patterns`
-
-The new `InlineProcessor` provides two major enhancements to `Patterns`:
-
-1. Patterns no longer need to match the entire block, so patterns no longer
-    start with `r'^(.*?)'` and end with `r'(.*?)%'`. This runs faster.
-    The returned [match object][] will only contain what is explicitly matched in the pattern, and
-    extension pattern groups now start with `m.group(1)`.
-
-2. The `handleMatch` method now takes an additional input called `data`,
-    which is the entire block under analysis, not just what is matched with
-    the specified pattern. The method now returns the element *and* the indexes
-    relative to `data` that the return element is replacing
-    (usually `m.start(0)` and `m.end(0)`).  If the boundaries are returned as
-    `None`, it is assumed that the match did not take place, and nothing will
-    be altered in `data`.  
-    
-    This allows handling of more complex constructs than
-    regular expressions can handle, e.g., matching nested brackets, and explicit control of the span 
-    "consumed" by the processor.
 
 
-#### Inline Processor
+
+
 
 Inline processors should inherit from `InlineProcessor`.  They are passed a pattern string
 on initialization and implement a `handleMatch` method.
@@ -395,7 +370,36 @@ Here are some convenience functions and other examples:
 [i7]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/wikilinks.py#L52
 [i8]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L307
 
-#### Legacy Documentation for `Pattern`
+### Patterns
+
+In version 3.0, a new, more flexible inline processor was
+added, `markdown.inlinepatterns.InlineProcessor`.   The 
+original inline processors, which inherit from 
+`markdown.inlinepatterns.Pattern` or one of its children are
+still supported, though users are encouraged to migrate.
+
+#### Comparison with new `InlineProcessor`
+
+The new `InlineProcessor` provides two major enhancements to `Patterns`:
+
+1. Patterns no longer need to match the entire block, so patterns no longer
+    start with `r'^(.*?)'` and end with `r'(.*?)%'`. This runs faster.
+    The returned [match object][] will only contain what is explicitly matched in the pattern, and
+    extension pattern groups now start with `m.group(1)`.
+
+2. The `handleMatch` method now takes an additional input called `data`,
+    which is the entire block under analysis, not just what is matched with
+    the specified pattern. The method now returns the element *and* the indexes
+    relative to `data` that the return element is replacing
+    (usually `m.start(0)` and `m.end(0)`).  If the boundaries are returned as
+    `None`, it is assumed that the match did not take place, and nothing will
+    be altered in `data`.  
+    
+    This allows handling of more complex constructs than
+    regular expressions can handle, e.g., matching nested brackets, and explicit control of the span 
+    "consumed" by the processor.
+    
+#### Legacy Documentation
 
 Inline Patterns implement the inline HTML element syntax for Markdown such as
 `*emphasis*` or `[links](http://example.com)`. Pattern objects should be
