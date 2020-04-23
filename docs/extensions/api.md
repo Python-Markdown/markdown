@@ -38,7 +38,9 @@ implement a `run` method, which takes a single parameter `lines`. This parameter
 the entire source text stored as a list of Unicode string, one per line.  `run` should
 return its processed list of of Unicode strings, one per line.
 
-A simple example:
+#### Example
+
+This simple example removes any lines with 'NO RENDER' before processing:
 
 ```python
 from markdown.preprocessors import Preprocessor
@@ -57,15 +59,17 @@ class NoRender(Preprocessor):
         return new_lines
 ```
 
+#### Usages
+
 Some preprocessors in the Markdown source tree include:
 
-| Class  | Kind | Priority |  Description |
-| ----------------------------|-----------|----|-----------------------------------------------
-| [`NormalizeWhiteSpace`][c1]   | built-in  | 30 | Normalizes whitespace by expanding tabs, fixing `\r` line endings, etc. |
-| [`HtmlBlockPreprocessor`][c2] | built-in  | 20 | Removes html blocks from the text and stores them for later processing |
-| [`ReferencePreprocessor`][c3] | built-in  | 10 | Removes reference definitions from text and stores for later processing |
-| [`MetaPreprocessor`][c4]      | extension | 27 | Strips and records meta data at top of documents |
-| [`FootnotesPreprocessor`][c5] | extension | 15 | Removes footnote blocks from the text and stores them for later processing |
+| Class  | Kind   | Description |
+| ----------------------------|-----------|-------------------------------------------------
+| [`NormalizeWhiteSpace`][c1]   | built-in  | Normalizes whitespace by expanding tabs, fixing `\r` line endings, etc. |
+| [`HtmlBlockPreprocessor`][c2] | built-in  | Removes html blocks from the text and stores them for later processing |
+| [`ReferencePreprocessor`][c3] | built-in  |Removes reference definitions from text and stores for later processing |
+| [`MetaPreprocessor`][c4]      | extension |Strips and records meta data at top of documents |
+| [`FootnotesPreprocessor`][c5] | extension | Removes footnote blocks from the text and stores them for later processing |
 
 [c1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py#L62
 [c2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py#L74
@@ -207,16 +211,16 @@ Two items to note:  how `False` can be returned, and that the output tree has *n
 added the `<strong>` tag for `It would be **bad**`.  That conversion will happen after
 all block processors have run, while running the inline processors.
 
-#### Usages:
+#### Usages
 
 Some block processors in the Markdown source tree include:
 
-| Class  | Kind | Priority |  Description |
-| ----------------------------|-----------|----|-----------------------------------------------
-| [`HashHeaderProcessor`][b1] | built-in  | 70 | Title hashes (`#`), which may split blocks |
-| [`HRProcessor`][b2]   | built-in  | 50 | Horizontal lines, e.g., `---` |
-| [`OListProcessor`][b3] | built-in  | 40 | Ordered lists; complex and using `state` |
-| [`Admonition`][b4] | extension | 105 | [Admonitions][] render in new `div`s
+| Class  | Kind |  Description |
+| ----------------------------|-----------|--------------------------------------------------
+| [`HashHeaderProcessor`][b1] | built-in  |  Title hashes (`#`), which may split blocks |
+| [`HRProcessor`][b2]   | built-in  |  Horizontal lines, e.g., `---` |
+| [`OListProcessor`][b3] | built-in  |  Ordered lists; complex and using `state` |
+| [`Admonition`][b4] | extension |  [Admonitions][] render in new `div`s
 
 [b1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py#L441
 [b2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py#L495
@@ -260,7 +264,7 @@ the `run` method would only return `None` or a new ElementTree object.
 For specifics on manipulating the ElementTree, see
 [Working with the ElementTree][workingwithetree] below.
 
-### Inline Processors, also called Inline Patterns {: #inlineprocessors }
+### Inline Processors {: #inlineprocessors }
 
 Inline processors, also called inline patterns, are used to add formatting, 
 such as `**emphasis**`, by replacing a matched pattern with a new element tree node.
@@ -320,7 +324,7 @@ On success, the portion of the block from [`start` to `end`] will be replaced by
 placeholder before the next call to `handleMatch`.
 
 
-##### An execution example
+##### Example
 
 This example shows using the `InlineProcessor` making a simple
 regular expression replacement, changing `--strike--` to `<del>strike</del>`.
@@ -367,20 +371,20 @@ and `data` will be the string:
 
     First line of the block.\nThis is klzzwxh:0000.\nThis is --strike two--.\nEnd of the block.
 
-##### Examples in Markdown source tree
+##### Usages
 
 Here are some convenience functions and other examples:
 
-| Class  | Kind | Priority |  Description |
-| ----------------------------|-----------|----|-----------------------------------------------
-| [`SimpleTextInlineProcessor`][i1] | convenience | - | Return text of group(1) of the pattern.
-| [`EscapeInlineProcessor`][i2]     | convenience  | - | escape (encode) a character, fixed by postprocessor `unescape`
-| [`SimpleTagInlineProcessor`][i3]  | convenience  | - | `__init__` with name of tag; return tag with group(3) as text.
-| [`SubstituteTagInlineProcessor`][i4] | convenience | - | `__init__` with name of tag; return tag with no children
-| [`AsteriskProcessor`][i5]         | built-in  | 60 | Emphasis processor for handling strong and em matches inside asterisks.
-| [`AbbrInlineProcessor`][i6]   | extension  | 20 | Apply tag to abbreviation registered by preprocessor.
-| [`WikiLinksInlineProcessor`][i7]   | extension  | 75  | Link `[[article names]]` to wiki given in metadata
-| [`FootnoteInlineProcessor`][i8]   | extension  |  175 | Replaces footnote in text with link to footnote div at bottom |
+| Class  | Kind |   Description |
+| ----------------------------|-----------|--------------------------------------------------
+| [`SimpleTextInlineProcessor`][i1] | convenience | Return text of group(1) of the pattern.
+| [`EscapeInlineProcessor`][i2]     | convenience  | escape (encode) a character, fixed by postprocessor `unescape`
+| [`SimpleTagInlineProcessor`][i3]  | convenience  | `__init__` with name of tag; return tag with group(3) as text.
+| [`SubstituteTagInlineProcessor`][i4] | convenience | `__init__` with name of tag; return tag with no children
+| [`AsteriskProcessor`][i5]         | built-in  | Emphasis processor for handling strong and em matches inside asterisks.
+| [`AbbrInlineProcessor`][i6]   | extension  | Apply tag to abbreviation registered by preprocessor.
+| [`WikiLinksInlineProcessor`][i7]   | extension  | Link `[[article names]]` to wiki given in metadata
+| [`FootnoteInlineProcessor`][i8]   | extension  |  Replaces footnote in text with link to footnote div at bottom |
 
 [i1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L313
 [i2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L316
@@ -469,7 +473,9 @@ HTML document as a single Unicode string.  `run` should return a single Unicode
 string ready for output.  Note that preprocessors use a list of lines while 
 postprocessors use a single multi-line string.
 
-Here is a simple example:
+#### Example
+
+Here is a simple example that change the output to one big page showing the raw html.
 
 ```python
 from markdown.postprocessors import Postprocessor
@@ -481,14 +487,16 @@ class ShowActualHtmlPostprocesor(Postprocessor):
         return '<pre>\n' + re.sub('<', '&lt;', text) + '</pre>\n'
 ```
 
+#### Usages
+
 Some postprocessors in the Markdown source tree include:
 
-| Class  | Kind | Priority |  Description |
-| ----------------------------|-----------|----|-----------------------------------------------
-| [`raw_html`][p1] | built-in | 30 | Restore raw html from `htmlStash`, stored by `HTMLBlockPreprocessor`, and code highlighters.
-| [`amp_substitute`][p2] | built-in | 20 | Convert ampersand substitutes to `&`; used in links.
-| [`unescape`][p3] | built-in | 10 | Convert some escaped characters back from integers; used in links.
-| [`FootnotePostProcessor`][p4] | extension | 25 | Replace footnote placeholders with html entities; as set by other stages.
+| Class  | Kind |  Description |
+| ----------------------------|-----------|-------------------------------------------------
+| [`raw_html`][p1] | built-in | Restore raw html from `htmlStash`, stored by `HTMLBlockPreprocessor`, and code highlighters.
+| [`amp_substitute`][p2] | built-in | Convert ampersand substitutes to `&`; used in links.
+| [`unescape`][p3] | built-in | Convert some escaped characters back from integers; used in links.
+| [`FootnotePostProcessor`][p4] | extension | Replace footnote placeholders with html entities; as set by other stages.
  
  [p1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L65
  [p2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L100
