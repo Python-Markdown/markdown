@@ -94,7 +94,7 @@ and implement both the `test` and `run` methods:
 Unicode string of the current block. `test`, often a regular expression match,
 returns a true value if the block processor's `run` method should be called to process 
 starting at that block.  
-* `run(parent, blocks)` has the same `parent` parameter as `test`; and 
+* `run(self, parent, blocks)` has the same `parent` parameter as `test`; and 
 `blocks` is the list of all remaining blocks in the document, starting with the `block` passed to `test`.
 `run` may return `False` (not `None`) to signal failure, meaning that it did not process the blocks after all.
 On success, `run` is expected to `pop` one or more blocks from the front of `blocks` and attach 
