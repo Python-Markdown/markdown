@@ -10,6 +10,8 @@ Under development: version 3.2.2 (a bug-fix release).
 * Correctly report if an extension raises a `TypeError` (#939).
 * Raise a `KeyError` when attempting to delete a nonexistent key from the
   extension registry (#939). 
+* Remove import of `packaging` (or `pkg_resources` fallback) entirely.
+* Remove `setuptools` as a run-time dependency (`install_required`).
 
 Feb 12, 2020: Released version 3.2.1 (a bug-fix release).
 
