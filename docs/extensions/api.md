@@ -80,13 +80,12 @@ Some preprocessors in the Markdown source tree include:
 
 A block processor parses blocks of text and adds new elements to the `ElementTree`. 
 Blocks of text, separated from other text by blank lines, may have a different syntax 
-and produce a differently structured tree than
-other Markdown.  Block processors excel at code formatting, 
-equation layouts, and tables.  
+and produce a differently structured tree than other Markdown.  Block processors excel 
+at code formatting, equation layouts, and tables.  
 
 Block processors inherit from `markdown.blockprocessors.BlockProcessor`, 
-are passed `md.parser` on initialization,
-and implement both the `test` and `run` methods:  
+are passed `md.parser` on initialization, and implement both the `test` and 
+`run` methods:  
 
 * `test(self, parent, block)` takes two parameters: 
 `parent` is the parent `ElementTree` element and `block` is a single, multi-line,
@@ -109,15 +108,15 @@ more.
 To make writing these complex beasts more tractable, three convenience functions have been
 provided by the `BlockProcessor` parent class:
 
-* `lastChild(parent)` returns the last child of 
-the given element or `None` if it has no children
+* `lastChild(parent)` returns the last child of the given element or `None` if it has no children
 * `detab(text)` removes one level of indent 
-(four spaces by default) from the front of each line of the given multi-line, text string, until a non-blank line is indented less.
-* `looseDetab(text, level)` removes multiple levels of indent from the front of each line of `text` but
-does not affect lines indented less.  
+(four spaces by default) from the front of each line of the given multi-line, text string, 
+until a non-blank line is indented less.
+* `looseDetab(text, level)` removes multiple levels of indent from the front of each line
+of `text` but does not affect lines indented less.  
 
-Also, `BlockProcessor` provides the fields `self.tab_length`, 
-the tab length (default 4), and `self.parser`, the current `BlockParser` instance.  
+Also, `BlockProcessor` provides the fields `self.tab_length`, the tab length (default 4), 
+and `self.parser`, the current `BlockParser` instance.  
 
 #### BlockParser
 
@@ -125,26 +124,22 @@ the tab length (default 4), and `self.parser`, the current `BlockParser` instanc
 cycle through all the registered block processors.  You should never need to create your 
 own instance; use `self.parser` instead.
 
-The `BlockParser` instance provides a 
-stack of strings for its current state, which your processor can push with `self.parser.set(state)`, 
-pop with `self.parser.reset()`, or check the the top state with `self.parser.isstate(state)`.
-Be sure your code pops the states it pushes.  
+The `BlockParser` instance provides a stack of strings for its current state, which your 
+processor can push with `self.parser.set(state)`,  pop with `self.parser.reset()`, or check 
+the the top state with `self.parser.isstate(state)`. Be sure your code pops the states it pushes.  
 
 The `BlockParser` instance can also be called recursively, that is, to process 
 blocks from within your block processor.  There are three methods:
 
-* `parseDocument(lines)` to parse
-a list of lines, each a single-line Unicode string, returning a complete `ElementTree`.
+* `parseDocument(lines)` to parse a list of lines, each a single-line Unicode string, 
+returning a complete `ElementTree`.
 * `parseChunk(parent, text)` parses a single, multi-line, possibly multi-block, Unicode 
-string `text`
-and attaches the resulting tree to `parent`.  
-* `parseBlocks(parent, blocks)` takes
-a list of `blocks`, each a multi-line Unicode string without blank lines, 
-and attaches the resulting tree to `parent`.   
+string `text` and attaches the resulting tree to `parent`.  
+* `parseBlocks(parent, blocks)` takes a list of `blocks`, each a multi-line Unicode 
+string without blank lines, and attaches the resulting tree to `parent`.   
 
-For perspective, Markdown calls `parseDocument` which calls
-`parseChunk` which calls `parseBlocks` which calls your block processor, which, in turn,
-might call one of these routines.
+For perspective, Markdown calls `parseDocument` which calls `parseChunk` which calls 
+`parseBlocks` which calls your block processor, which, in turn, might call one of these routines.
 
 #### Example
 
@@ -251,10 +246,9 @@ ElementTree. This is an excellent place for creating summaries, adding collected
 minute adjustments.
 
 A tree processor inherits from `markdown.treeprocessors.Treeprocessor`. Note it is `Treeprocessor` not `TreeProcessor`.
-A tree processor must implement a `run` method which takes 
-a single argument `root`, the current `ElementTree`.  It may either return `None`, probably modifying `root`, or an
-entirely new `ElementTree` to replace the current tree.  For efficiency, it is preferred to return `None` and 
-modify the `root` in place.
+A tree processor must implement a `run` method which takes a single argument `root`, the current `ElementTree`.
+It may either return `None`, probably modifying `root`, or an entirely new `ElementTree` to replace the 
+current tree.  For efficiency, it is preferred to return `None` and modify the `root` in place.
 
 For specifics on manipulating the ElementTree, see
 [Working with the ElementTree][workingwithetree] below.
@@ -300,29 +294,27 @@ Additional tree processors in the Markdown source tree include:
 
 Inline processors, also called inline patterns, are used to add formatting, 
 such as `**emphasis**`, by replacing a matched pattern with a new element tree node.
-It is an excellent for adding new syntax tags.  Inline
-processor code is often quite short.
+It is an excellent for adding new syntax tags.  Inline processor code is often quite short.
 
 Inline processors inherit from `InlineProcessor`, are initialized, and
 implement `handleMatch`:
 
 *   `__init__(self, pattern, md=None)` is the inherited constructor.  You do not need to implement your own.
     * `pattern` is the regular expression string that must match the code block
-in order for the `handleMatch` method to be called.   
-    * `md`, an optional parameter,
-may be a copy of the `markdown` object to be stored as `self.md` if needed by `handleMatch`.
+    in order for the `handleMatch` method to be called.   
+    * `md`, an optional parameter, may be a copy of the `markdown` object to be stored 
+    as `self.md` if needed by `handleMatch`.
 
 *   `handleMatch(self, m, data)` must be implemented.
     *   `m` is the regular expression [match object][] found from the `pattern` from `__init__`.   
     *   `data` is a single, multi-line, Unicode string containing
-the entire block of text around the pattern.  A block is text set apart
-by blank lines.  
-    *   Returns either `None, None, None`, indicating the
-provided match was rejected or `el, start, end`, if the match
-was successfully processed.  On success, `el` is the element being
-added the tree, `start` and `end` are indexes in `data` that were "consumed" by
-the pattern.  The "consumed" span will be replaced by a placeholder.  The same 
-inline processor may be called several times on the same block.
+    the entire block of text around the pattern.  A block is text set apart
+    by blank lines.  
+    *   Returns either `None, None, None`, indicating the provided match was rejected 
+    or `el, start, end`, if the match was successfully processed.  On success, `el` is 
+    the element being added the tree, `start` and `end` are indexes in `data` that were 
+    "consumed" by the pattern.  The "consumed" span will be replaced by a placeholder.  
+    The same inline processor may be called several times on the same block.
 
 ##### Convenience Classes
 
@@ -435,8 +427,8 @@ The new `InlineProcessor` provides two major enhancements to `Patterns`:
 
 1. Patterns no longer need to match the entire block, so patterns no longer
     start with `r'^(.*?)'` and end with `r'(.*?)%'`. This runs faster.
-    The returned [match object][] will only contain what is explicitly matched in the pattern, and
-    extension pattern groups now start with `m.group(1)`.
+    The returned [match object][] will only contain what is explicitly matched in 
+    the pattern, and extension pattern groups now start with `m.group(1)`.
 
 2. The `handleMatch` method now takes an additional input called `data`,
     which is the entire block under analysis, not just what is matched with
@@ -447,8 +439,8 @@ The new `InlineProcessor` provides two major enhancements to `Patterns`:
     be altered in `data`.  
     
     This allows handling of more complex constructs than
-    regular expressions can handle, e.g., matching nested brackets, and explicit control of the span 
-    "consumed" by the processor.
+    regular expressions can handle, e.g., matching nested brackets, and explicit 
+    control of the span "consumed" by the processor.
     
 #### Legacy Documentation
 
