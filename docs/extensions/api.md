@@ -70,11 +70,11 @@ Some preprocessors in the Markdown source tree include:
 | [`MetaPreprocessor`][c4]      | extension |Strips and records meta data at top of documents |
 | [`FootnotesPreprocessor`][c5] | extension | Removes footnote blocks from the text and stores them for later processing |
 
-[c1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py#L62
-[c2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py#L74
-[c3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py#L339
-[c4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/meta.py#L32
-[c5]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L205
+[c1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py
+[c2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py
+[c3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py
+[c4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/meta.py
+[c5]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
 
 ### Block Processors {: #blockprocessors }
 
@@ -233,11 +233,11 @@ Some block processors in the Markdown source tree include:
 | [`OListProcessor`][b3] | built-in  |  Ordered lists; complex and using `state` |
 | [`Admonition`][b4] | extension |  Render each [Admonition][] in a new `div`
 
-[b1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py#L441
-[b2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py#L495
-[b3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py#L316
+[b1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py
+[b2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py
+[b3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py
 [Admonition]: https://python-markdown.github.io/extensions/admonition/
-[b4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/admonition.py#L36
+[b4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/admonition.py
 
 ### Tree processors {: #treeprocessors }
 
@@ -281,10 +281,10 @@ Additional tree processors in the Markdown source tree include:
 | [`FootnoteTreeprocessor`][e3] | extension  |  Create [footnote][] div at end of document |
 | [`FootnotePostTreeprocessor`][e4] | extension |  Amend div created by `FootnoteTreeprocessor` with duplicates |
 
-[e1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/treeprocessors.py#L400
-[e2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/toc.py#L146
-[e3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L381
-[e4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L328
+[e1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/treeprocessors.py
+[e2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/toc.py
+[e3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
+[e4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
 [table of contents]: https://python-markdown.github.io/extensions/toc/
 [footnote]: https://python-markdown.github.io/extensions/footnotes/
 
@@ -404,14 +404,14 @@ Here are some convenience functions and other examples:
 | [`WikiLinksInlineProcessor`][i7]   | extension  | Link `[[article names]]` to wiki given in metadata
 | [`FootnoteInlineProcessor`][i8]   | extension  |  Replaces footnote in text with link to footnote div at bottom |
 
-[i1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L310
-[i2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L316
-[i3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L343
-[i4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L365
-[i5]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py#L445
-[i6]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/abbr.py#L79
-[i7]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/wikilinks.py#L52
-[i8]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L307
+[i1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
+[i2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
+[i3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
+[i4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
+[i5]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
+[i6]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/abbr.py
+[i7]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/wikilinks.py
+[i8]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
 
 ### Patterns
 
@@ -545,10 +545,10 @@ Some postprocessors in the Markdown source tree include:
 | [`unescape`][p3] | built-in | Convert some escaped characters back from integers; used in links.
 | [`FootnotePostProcessor`][p4] | extension | Replace footnote placeholders with html entities; as set by other stages.
  
- [p1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L65
- [p2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L100
- [p3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py#L108
- [p4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py#L404
+ [p1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py
+ [p2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py
+ [p3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py
+ [p4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
  
 
 ## Working with the ElementTree {: #working_with_et }
