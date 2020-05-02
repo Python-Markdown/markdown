@@ -52,10 +52,9 @@ class NoRender(Preprocessor):
         new_lines = []
         for line in lines:
             m = re.search("NO RENDER", line)
-            if m:
-                pass   # skipping this line
-            else:
-                new_lines.append(line)
+            if not m:    
+                # any line without NO RENDER is passed through
+                new_lines.append(line)  
         return new_lines
 ```
 
