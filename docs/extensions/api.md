@@ -35,8 +35,8 @@ portions for later processing that the parser may otherwise choke on.
 
 Preprocessors inherit from `markdown.preprocessors.Preprocessor` and
 implement a `run` method, which takes a single parameter `lines`. This parameter is
-the entire source text stored as a list of Unicode string, one per line.  `run` should
-return its processed list of of Unicode strings, one per line.
+the entire source text stored as a list of Unicode strings, one per line.  `run` should
+return its processed list of Unicode strings, one per line.
 
 #### Example
 
