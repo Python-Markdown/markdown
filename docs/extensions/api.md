@@ -172,37 +172,34 @@ def test_block_processor():
 Start with this example input:
 
 ``` text
-You could create zombies by mixing lime and coconut.
+A regular paragraph of text.
 
 !!!!!
-Never do that!
+First paragraph of wrapped text.
 
-Everyone might **die**!
+Second Paragraph of **wrapped** text.
 !!!!!
 
-Let's not.
+Another regular paragraph of text.
 ```
 
 The fenced text adds one node with two children to the tree:
 
-* **div**, with a `style` attribute.  It renders as 
+* `div`, with a `style` attribute.  It renders as 
   `<div style="display: inline-block; border: 1px solid red;">...</div>`
-    * **p** with text `Never do that!`
-    * **p** with text `Everyone might **die**`.  The conversion to a `<strong>` tag will happen when running the
-      inline processors, which is after all the block processors.
+    * `p` with text `First paragraph of wrapped text.`
+    * `p` with text `Second Paragraph of **wrapped** text`.  The conversion to a `<strong>` tag will happen when
+      running the inline processors, which will happen after all of the block processors have completed.
 
-The example display:
+The example output might display as follows:
 
-<hr>
-
-<p>You could create zombies by mixing lime and coconut.</p>
-<div style="display: inline-block; border: 1px solid red;">
-<p>Never do that!</p>
-<p>Everyone might <strong>die</strong>!</p>
-</div>
-<p>Let's not.</p>
-
-<hr>
+!!! note ""
+    <p>A regular paragraph of text.</p>
+    <div style="display: inline-block; border: 1px solid red;">
+    <p>First paragraph of wrapped text.</p>
+    <p>Second Paragraph of **wrapped** text.</p>
+    </div>
+    <p>Another regular paragraph of text.</p>
 
 #### Usages
 
@@ -277,23 +274,21 @@ processor code is often quite short.
 Inline processors inherit from `InlineProcessor`, are initialized, and implement `handleMatch`:
 
 *   `__init__(self, pattern, md=None)` is the inherited constructor.  You do not need to implement your own.
-    * `pattern` is the regular expression string that must match the code block
-    in order for the `handleMatch` method to be called.   
-    * `md`, an optional parameter, is a pointer to the instance of `markdown.Markdown` and is available 
-    as `self.md` on the `InlineProcessor` instance.
+    * `pattern` is the regular expression string that must match the code block in order for the `handleMatch` method
+      to be called.   
+    * `md`, an optional parameter, is a pointer to the instance of `markdown.Markdown` and is available as `self.md`
+      on the `InlineProcessor` instance.
 
 *   `handleMatch(self, m, data)` must be implemented in all `InlineProcessor` subclasses.
-    *   `m` is the regular expression [match object][] found by the `pattern` passed to `__init__`.   
-    *   `data` is a single, multi-line, Unicode string containing
-    the entire block of text around the pattern.  A block is text set apart
-    by blank lines.  
-    *   Returns either `None, None, None`, indicating the provided match was rejected 
-    or `el, start, end`, if the match was successfully processed.  On success, `el` is 
-    the element being added the tree, `start` and `end` are indexes in `data` that were 
-    "consumed" by the pattern.  The "consumed" span will be replaced by a placeholder.  
-    The same inline processor may be called several times on the same block.
+    * `m` is the regular expression [match object][] found by the `pattern` passed to `__init__`.   
+    * `data` is a single, multi-line, Unicode string containing the entire block of text around the pattern.  A block
+      is text set apart by blank lines.  
+    * Returns either `(None, None, None)`, indicating the provided match was rejected or `(el, start, end)`, if the
+      match was successfully processed.  On success, `el` is the element being added the tree, `start` and `end` are
+      indexes in `data` that were "consumed" by the pattern.  The "consumed" span will be replaced by a placeholder.
+      The same inline processor may be called several times on the same block.
 
-Inline Processors can define the property `ANCESTOR_EXCLUDES` with is either a list or tuple of undesirable ancestors.
+Inline Processors can define the property `ANCESTOR_EXCLUDES` which is either a list or tuple of undesirable ancestors.
 The processor will be skipped if it would cause the content to be a descendant of one of the listed tag names.
 
 ##### Convenience Classes
@@ -337,16 +332,13 @@ This is --strike two--.
 End of the block.
 ```
 
-The example display:
+The example output might display as follows:
 
-<hr>
-
-<p>First line of the block.
-This is <del>strike one</del>.
-This is <del>strike two</del>.
-End of the block.</p>
-
-<hr>
+!!! note ""
+    <p>First line of the block.
+    This is <del>strike one</del>.
+    This is <del>strike two</del>.
+    End of the block.</p>
 
 * On the first call to `handleMatch`
     * `m` will be the match for `--strike one--`
@@ -378,11 +370,7 @@ from markdown.extensions import Extension
 
 class DelExtension(Extension):
     def extendMarkdown(self, md):
-        md.inlinePatterns.register(
-            SimpleTagInlineProcessor(r'()--(.*?)--', 'del'),
-            'del',
-            175
-        )
+        md.inlinePatterns.register(SimpleTagInlineProcessor(r'()--(.*?)--', 'del'), 'del', 175)
 ```
 
 
@@ -663,8 +651,10 @@ If an extension uses any parameters that the user may want to change, those para
 ```python
 class MyExtension(markdown.extensions.Extension):
     def __init__(self, **kwargs):
-        self.config = {'option1' : ['value1', 'description1'],
-                       'option2' : ['value2', 'description2'] }
+        self.config = {
+            'option1' : ['value1', 'description1'],
+            'option2' : ['value2', 'description2']
+        }
         super(MyExtension, self).__init__(**kwargs)
 ```
 
