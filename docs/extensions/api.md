@@ -14,9 +14,9 @@ into one or more stages of the parser:
 * [*Postprocessors*](#postprocessors) munge of the output of the parser just before it is returned. 
 
 
-The parser loads text, applies the preprocessors, creates an
-[ElementTree][ElementTree] added to by the block processors and 
-inline patterns, renders the ElementTree as Unicode text, and then 
+The parser loads text, applies the preprocessors, creates and builds an
+[ElementTree][ElementTree] object from the block processors and 
+inline processors, renders the ElementTree object as Unicode text, and then 
 then applies the postprocessors.
 
 There are classes and helpers provided to ease writing your extension. 
@@ -131,7 +131,7 @@ the the top state with `self.parser.isstate(state)`. Be sure your code pops the 
 The `BlockParser` instance can also be called recursively, that is, to process 
 blocks from within your block processor.  There are three methods:
 
-* `parseDocument(lines)` to parse a list of lines, each a single-line Unicode string, 
+* `parseDocument(lines)` parses a list of lines, each a single-line Unicode string, 
 returning a complete `ElementTree`.
 * `parseChunk(parent, text)` parses a single, multi-line, possibly multi-block, Unicode 
 string `text` and attaches the resulting tree to `parent`.  
@@ -145,7 +145,7 @@ For perspective, Markdown calls `parseDocument` which calls `parseChunk` which c
 
 This example calls out important paragraphs by giving them a border.  It looks for a fence line of 
 exclamation points before and after and renders the fenced blocks into a new, styled `div`.  If
-it does not find the ending fence line, it nothing.  
+it does not find the ending fence line, it does nothing.  
 
 
 Our code, like most block processors, is longer than other examples:
@@ -242,13 +242,14 @@ Some block processors in the Markdown source tree include:
 ### Tree processors {: #treeprocessors }
 
 Tree processors manipulate the tree created by block processors.  They can even create an entirely new 
-ElementTree. This is an excellent place for creating summaries, adding collected references, or last
+ElementTree object. This is an excellent place for creating summaries, adding collected references, or last
 minute adjustments.
 
-A tree processor inherits from `markdown.treeprocessors.Treeprocessor`. Note it is `Treeprocessor` not `TreeProcessor`.
-A tree processor must implement a `run` method which takes a single argument `root`, the current `ElementTree`.
-It may either return `None`, probably modifying `root`, or an entirely new `ElementTree` to replace the 
-current tree.  For efficiency, it is preferred to return `None` and modify the `root` in place.
+A tree processor inherits from `markdown.treeprocessors.Treeprocessor`. Note it is `Treeprocessor` not
+`TreeProcessor`. A tree processor must implement a `run` method which takes a single argument `root`, the current
+`ElementTree`. It may return `None`, in which case the (possibly modified) `root` is used, or it may return an
+entirely new `ElementTree` object, which will replace the current tree.  For efficiency, it is preferred to return
+`None` and modify the `root` in place.
 
 For specifics on manipulating the ElementTree, see
 [Working with the ElementTree][workingwithetree] below.
@@ -269,8 +270,8 @@ class MyTreeprocessor(Treeprocessor):
 
 #### Usages
 
-The  core `InlineProcessor` class is a tree processor.  It walks the tree, matching patterns, 
-and splitting and creating nodes on matches.
+The  core `InlineProcessor` class is a tree processor.  It walks the tree, matches patterns, 
+and splits and creates nodes on matches.
 
 Additional tree processors in the Markdown source tree include:
 
@@ -292,9 +293,9 @@ Additional tree processors in the Markdown source tree include:
 
 ### Inline Processors {: #inlineprocessors }
 
-Inline processors, also called inline patterns, are used to add formatting, 
+Inline processors, previously called inline patterns, are used to add formatting, 
 such as `**emphasis**`, by replacing a matched pattern with a new element tree node.
-It is an excellent for adding new syntax tags.  Inline processor code is often quite short.
+It is an excellent for adding new syntax for inline tags.  Inline processor code is often quite short.
 
 Inline processors inherit from `InlineProcessor`, are initialized, and
 implement `handleMatch`:
@@ -302,11 +303,11 @@ implement `handleMatch`:
 *   `__init__(self, pattern, md=None)` is the inherited constructor.  You do not need to implement your own.
     * `pattern` is the regular expression string that must match the code block
     in order for the `handleMatch` method to be called.   
-    * `md`, an optional parameter, may be a copy of the `markdown` object to be stored 
-    as `self.md` if needed by `handleMatch`.
+    * `md`, an optional parameter, is a pointer to the instance of `markdown.Markdown` and is available 
+    as `self.md` on the `InlineProcessor` instance.
 
-*   `handleMatch(self, m, data)` must be implemented.
-    *   `m` is the regular expression [match object][] found from the `pattern` from `__init__`.   
+*   `handleMatch(self, m, data)` must be implemented in all `InlineProcessor` subclasses.
+    *   `m` is the regular expression [match object][] found by the `pattern` passed to `__init__`.   
     *   `data` is a single, multi-line, Unicode string containing
     the entire block of text around the pattern.  A block is text set apart
     by blank lines.  
@@ -315,6 +316,10 @@ implement `handleMatch`:
     the element being added the tree, `start` and `end` are indexes in `data` that were 
     "consumed" by the pattern.  The "consumed" span will be replaced by a placeholder.  
     The same inline processor may be called several times on the same block.
+
+Inline Processors can define the property `ANCESTOR_EXCLUDES` with is either
+a list or tuple of undesirable ancestors. The processor will be skipped if it
+would cause the content to be a descendant of one of the listed tag names.
 
 ##### Convenience Classes
 
@@ -373,13 +378,20 @@ End of the block.</p>
     * `data` will be the string: `First line of the block.\nThis is --strike one--.\nThis is --strike two--.\nEnd of the block.`
 
     Because the match was successful, the region between the returned `start` and `end` are 
-replaced with a token and the new element is added to the tree.    
+replaced with a placeholder token and the new element is added to the tree.    
 
 * On the second call to `handleMatch`
     * `m` will be the match for `--strike two--` 
     * `data` will be the string `First line of the block.\nThis is klzzwxh:0000.\nThis is --strike two--.\nEnd of the block.`
 
-Alternately, we could implement this using a convenience function:
+Note the placeholder token `klzzwxh:0000`. This allows the regular expression to be run against the entire block, not just the the text contained in an individual element. The placeholders will later be swapped back out for the actual elements by the parser.
+
+Actually it would not be necessary to create the above inline processor. The fact is, that example is not very DRY
+(Don't Repeat Yourself). A pattern for `**strong**` text would be almost identical, with the exception that it would
+create a `strong` element. Therefore, Markdown provides a number of generic inlineprocessor subclasses that can
+provide some common functionality. For example, strike could be implemented with an instance of the
+`SimpleTagInlineProcessor` class as demonstrated below. Feel free to use or extend any of the `InlineProcessor`
+subclasses found at `markdown.inlinepatterns`.
 
 ```python
 from markdown.inlinepatterns import SimpleTagInlineProcessor
@@ -417,7 +429,7 @@ Here are some convenience functions and other examples:
 
 In version 3.0, a new, more flexible inline processor was
 added, `markdown.inlinepatterns.InlineProcessor`.   The 
-original inline processors, which inherit from 
+original inline patterns, which inherit from 
 `markdown.inlinepatterns.Pattern` or one of its children are
 still supported, though users are encouraged to migrate.
 
@@ -425,8 +437,8 @@ still supported, though users are encouraged to migrate.
 
 The new `InlineProcessor` provides two major enhancements to `Patterns`:
 
-1. Patterns no longer need to match the entire block, so patterns no longer
-    start with `r'^(.*?)'` and end with `r'(.*?)%'`. This runs faster.
+1. Inlien Processors no longer need to match the entire block, so regular expressions no longer
+    need to start with `r'^(.*?)'` and end with `r'(.*?)%'`. This runs faster.
     The returned [match object][] will only contain what is explicitly matched in 
     the pattern, and extension pattern groups now start with `m.group(1)`.
 
@@ -442,9 +454,9 @@ The new `InlineProcessor` provides two major enhancements to `Patterns`:
     regular expressions can handle, e.g., matching nested brackets, and explicit 
     control of the span "consumed" by the processor.
     
-#### Legacy Documentation
+#### Inline Patterns
 
-Inline Patterns implement the inline HTML element syntax for Markdown such as
+Inline Patterns can implement inline HTML element syntax for Markdown such as
 `*emphasis*` or `[links](http://example.com)`. Pattern objects should be
 instances of classes that inherit from `markdown.inlinepatterns.Pattern` or
 one of its children. Each pattern object uses a single regular expression and
@@ -459,9 +471,9 @@ must have the following methods:
     Accepts a match object and returns an ElementTree element of a plain
     Unicode string.
 
-Also, Inline Patterns can define the property `ANCESTOR_EXCLUDES` with either
-a list or tuple of undesirable ancestors. The pattern should not match if it
-would cause the content to be a descendant of one of the defined tag names.
+Inline Patterns can define the property `ANCESTOR_EXCLUDES` with is either
+a list or tuple of undesirable ancestors. The pattern will be skipped if it
+would cause the content to be a descendant of one of the listed tag names.
 
 Note that any regular expression returned by `getCompiledRegExp` must capture
 the whole block. Therefore, they should all start with `r'^(.*?)'` and end
@@ -496,16 +508,6 @@ MYPATTERN = r'\*([^*]+)\*'
 emphasis = EmphasisPattern(MYPATTERN)
 ```
 
-Actually it would not be necessary to create that pattern (and not just because
-a more sophisticated emphasis pattern already exists in Markdown). The fact is,
-that example pattern is not very DRY. A pattern for `**strong**` text would
-be almost identical, with the exception that it would create a 'strong' element.
-Therefore, Markdown provides a number of generic pattern classes that can
-provide some common functionality. For example, both emphasis and strong are
-implemented with separate instances of the `SimpleTagPattern` listed below.
-Feel free to use or extend any of the Pattern classes found at
-`markdown.inlinepatterns`.
-
 ### Postprocessors {: #postprocessors }
 
 Postprocessors munge the document after the ElementTree has been
@@ -522,7 +524,7 @@ postprocessors use a single multi-line string.
 
 #### Example
 
-Here is a simple example that change the output to one big page showing the raw html.
+Here is a simple example that changes the output to one big page showing the raw html.
 
 ```python
 from markdown.postprocessors import Postprocessor
@@ -617,7 +619,7 @@ It is important to note that the order of the various processors and patterns
 matters. For example, if we replace `http://...` links with `<a>` elements, and
 *then* try to deal with  inline HTML, we will end up with a mess. Therefore, the
 various types of processors and patterns are stored within an instance of the
-Markdown class in a [Registry][]. Your `Extension` class will need to manipulate
+`markdown.Markdown` class in a [Registry][]. Your `Extension` class will need to manipulate
 those registries appropriately. You may `register` instances of your processors
 and patterns with an appropriate priority, `deregister` built-in instances, or
 replace a built-in instance with your own.
@@ -629,7 +631,7 @@ accepts one argument:
 
 * **`md`**:
 
-    A pointer to the instance of the Markdown class. You should use this to
+    A pointer to the instance of the `markdown.Markdown` class. You should use this to
     access the [Registries][Registry] of processors and patterns. They are
     found under the following attributes:
 
@@ -639,7 +641,7 @@ accepts one argument:
     * `md.treeprocessors`
     * `md.postprocessors`
 
-    Some other things you may want to access in the markdown instance are:
+    Some other things you may want to access on the `markdown.Markdown` instance are:
 
     * `md.htmlStash`
     * `md.output_formats`
@@ -654,10 +656,10 @@ accepts one argument:
 !!! Warning
     With access to the above items, theoretically you have the option to
     change anything through various [monkey_patching][] techniques. However,
-    you should be aware that the various undocumented parts of markdown may
+    you should be aware that the various undocumented parts of Markdown may
     change without notice and your monkey_patches may break with a new release.
     Therefore, what you really should be doing is inserting processors and
-    patterns into the markdown pipeline. Consider yourself warned!
+    patterns into the Markdown pipeline. Consider yourself warned!
 
 [monkey_patching]: https://en.wikipedia.org/wiki/Monkey_patch
 
@@ -676,7 +678,7 @@ class MyExtension(Extension):
 ### registerExtension {: #registerextension }
 
 Some extensions may need to have their state reset between multiple runs of the
-Markdown class. For example, consider the following use of the [Footnotes][]
+`markdown.Markdown` class. For example, consider the following use of the [Footnotes][]
 extension:
 
 ```python
@@ -702,7 +704,7 @@ def extendMarkdown(self, md):
     # insert processors and patterns here
 ```
 
-Then, each time `reset` is called on the Markdown instance, the `reset`
+Then, each time `reset` is called on the `markdown.Markdown` instance, the `reset`
 method of each registered extension will be called as well. You should also
 note that `reset` will be called on each registered extension after it is
 initialized the first time. Keep that in mind when over-riding the extension's
@@ -764,7 +766,7 @@ following methods available to assist in working with configuration settings:
 ### Naming an Extension { #naming_an_extension }
 
 As noted in the [library reference] an instance of an extension can be passed
-directly to Markdown. In fact, this is the preferred way to use third-party
+directly to `markdown.Markdown`. In fact, this is the preferred way to use third-party
 extensions.
 
 For example:
@@ -853,7 +855,7 @@ def makeExtension(**kwargs):
     return MyExtension(**kwargs)
 ```
 
-When Markdown is passed the "name" of your extension as a dot notation string
+When `markdown.Markdown` is passed the "name" of your extension as a dot notation string
 that does not include a class (for example `path.to.module`), it will import the
 module and call the `makeExtension` function to initiate your extension.
 
