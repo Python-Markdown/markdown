@@ -93,4 +93,4 @@ The following bug fixes are included in the 3.2 release:
 * HTML tag placeholders are no longer included in  `.toc_tokens` (#899).
 * Unescape backslash-escaped characters in TOC ids (#864).
 * Refactor bold and italic logic in order to solve complex nesting issues (#792).
-* Always wrap CodeHilite code in `code` tags (#862)
+* Always wrap CodeHilite code in `code` tags (#862).

@@ -30,6 +30,7 @@ deregister
 Dmitry
 docdata
 ElementTree
+encodings
 extendMarkdown
 Fauske
 Formatter
@@ -58,6 +59,7 @@ Manfed
 markdownFromFile
 Maruku
 md
+metadata
 MkDocs
 multi
 MultiMarkdown

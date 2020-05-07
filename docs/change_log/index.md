@@ -5,6 +5,7 @@ Python-Markdown Change Log
 
 Under development: version 3.2.2 (a bug-fix release).
 
+* Refactor extension API documentation (#729).
 * Load entry_points (for extensions) only once using `importlib.metadata`.
 * Do not double escape entities in TOC.
 * Correctly report if an extension raises a `TypeError` (#939).
