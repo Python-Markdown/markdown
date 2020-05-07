@@ -831,7 +831,7 @@ assert someitem in registry
 
 `markdown.util.Registry` has the following methods:
 
-### `Registry.register(self, item, name, priority)` {: #registry.register }
+### `Registry.register(self, item, name, priority)` {: #registry.register data-toc-label='Registry.register'}
 
 :   Add an item to the registry with the given name and priority.
 
@@ -845,13 +845,13 @@ assert someitem in registry
     Tread carefully as the old item is lost with no way to recover it. The new item will be sorted according to its
     priority and will **not** retain the position of the old item.
 
-### `Registry.deregister(self, name, strict=True)`  {: #registry.deregister }
+### `Registry.deregister(self, name, strict=True)`  {: #registry.deregister data-toc-label='Registry.deregister'}
 
 :   Remove an item from the registry.
 
     Set `strict=False` to fail silently.
 
-### `Registry.get_index_for_name(self, name)` {: #registry.get_index_for_name }
+### `Registry.get_index_for_name(self, name)` {: #registry.get_index_for_name data-toc-label='Registry.get_index_for_name'}
 
 :   Return the index of the given `name`.
 
