@@ -19,11 +19,6 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-try:
-    import packaging.version
-except ImportError:
-    from pkg_resources.extern import packaging
-
 # __version_info__ format:
 # (major, minor, patch, dev/alpha/beta/rc/final, #)
 # (1, 1, 2, 'dev', 0) => "1.1.2.dev0"
@@ -34,22 +29,21 @@ except ImportError:
 __version_info__ = (3, 2, 1, 'final', 0)
 
 
-def _get_version():  # pragma: no cover
+def _get_version(version_info):
     " Returns a PEP 440-compliant version number from version_info. "
-    assert len(__version_info__) == 5
-    assert __version_info__[3] in ('dev', 'alpha', 'beta', 'rc', 'final')
+    assert len(version_info) == 5
+    assert version_info[3] in ('dev', 'alpha', 'beta', 'rc', 'final')
 
-    parts = 2 if __version_info__[2] == 0 else 3
-    v = '.'.join(map(str, __version_info__[:parts]))
+    parts = 2 if version_info[2] == 0 else 3
+    v = '.'.join(map(str, version_info[:parts]))
 
-    if __version_info__[3] == 'dev':
-        v += '.dev' + str(__version_info__[4])
-    elif __version_info__[3] != 'final':
+    if version_info[3] == 'dev':
+        v += '.dev' + str(version_info[4])
+    elif version_info[3] != 'final':
         mapping = {'alpha': 'a', 'beta': 'b', 'rc': 'rc'}
-        v += mapping[__version_info__[3]] + str(__version_info__[4])
+        v += mapping[version_info[3]] + str(version_info[4])
 
-    # Ensure version is valid and normalized
-    return str(packaging.version.Version(v))
+    return v
 
 
-__version__ = _get_version()
+__version__ = _get_version(__version_info__)

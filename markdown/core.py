@@ -23,7 +23,6 @@ import codecs
 import sys
 import logging
 import importlib
-import pkg_resources
 from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
@@ -141,9 +140,8 @@ class Markdown:
         Build extension from a string name, then return an instance.
 
         First attempt to load an entry point. The string name must be registered as an entry point in the
-        `markdown.extensions` group which points to a subclass of the `markdown.extensions.Extension` class. If
-        multiple distributions have registered the same name, the first one found by `pkg_resources.iter_entry_points`
-        is returned.
+        `markdown.extensions` group which points to a subclass of the `markdown.extensions.Extension` class.
+        If multiple distributions have registered the same name, the first one found is returned.
 
         If no entry point is found, assume dot notation (`path.to.module:ClassName`). Load the specified class and
         return an instance. If no class is specified, import the module and call a `makeExtension` function and return
@@ -151,7 +149,7 @@ class Markdown:
         """
         configs = dict(configs)
 
-        entry_points = [ep for ep in pkg_resources.iter_entry_points('markdown.extensions', ext_name)]
+        entry_points = [ep for ep in util.INSTALLED_EXTENSIONS if ep.name == ext_name]
         if entry_points:
             ext = entry_points[0].load()
             return ext(**configs)
