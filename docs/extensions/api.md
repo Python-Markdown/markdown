@@ -361,7 +361,7 @@ actual elements by the parser.
 
 Actually it would not be necessary to create the above inline processor. The fact is, that example is not very DRY
 (Don't Repeat Yourself). A pattern for `**strong**` text would be almost identical, with the exception that it would
-create a `strong` element. Therefore, Markdown provides a number of generic inlineprocessor subclasses that can
+create a `strong` element. Therefore, Markdown provides a number of generic `InlineProcessor` subclasses that can
 provide some common functionality. For example, strike could be implemented with an instance of the
 `SimpleTagInlineProcessor` class as demonstrated below. Feel free to use or extend any of the `InlineProcessor`
 subclasses found at `markdown.inlinepatterns`.
