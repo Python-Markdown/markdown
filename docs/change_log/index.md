@@ -5,6 +5,7 @@ Python-Markdown Change Log
 
 Under development: version 3.2.2 (a bug-fix release).
 
+* Refactor extension API documentation (#729).
 * Fixed issue where double escaped entities could end up in TOC.
 
 Feb 12, 2020: Released version 3.2.1 (a bug-fix release).
