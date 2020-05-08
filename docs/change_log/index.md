@@ -3,7 +3,7 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-Under development: version 3.2.2 (a bug-fix release).
+May 8, 2020: version 3.2.2 (a bug-fix release).
 
 * Add `checklinks` tox environment to ensure all links in documentation are good.
 * Refactor extension API documentation (#729).
