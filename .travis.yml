@@ -21,6 +21,8 @@ matrix:
           - aspell
           - aspell-en
     - env: TOXENV=pep517check
+    - env: TOXENV=checklinks
+      before_install: npm install -g markdown-link-check
 
 addons:
   apt:
