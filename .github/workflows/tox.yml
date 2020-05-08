@@ -26,7 +26,7 @@ jobs:
         node-version: '10'
     - name: Install dependencies
       run: |
-        sudo apt-get install libtidy-0.99-0
+        sudo apt-get install libtidy-dev
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
         npm install -g markdown-link-check
