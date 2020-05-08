@@ -5,7 +5,7 @@ echo "Checking links in documentation..."
 # List of files in docs dir
 docs=$(find . -path './docs/*.md')
 # List of files in project root (README, etc)
-extras=$(find .  -name '*.md' -maxdepth 1)
+extras=$(find . -maxdepth 1 -name '*.md')
 # Combined list of files to check
 files=("${docs[@]}" "${extras[@]}")
 
