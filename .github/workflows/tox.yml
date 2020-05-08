@@ -1,18 +1,31 @@
 # This workflow will install Python dependencies and run tox tests with a matrix of Python versions.
-# Uses https://github.com/ymyzk/tox-gh-actions to define build matrix in the tox.ini file.
 
-name: tox tests
+name: CI
 
 on: [pull_request]
 
 jobs:
-  tests:
+  unittest:
 
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8, pypy3]
+        tox-env: [py35, py36, py37, py38, pypy3]
+        include:
+          - tox-env: py35
+            python-version: 3.5
+          - tox-env: py36
+            python-version: 3.6
+          - tox-env: py37
+            python-version: 3.7
+          - tox-env: py38
+            python-version: 3.8
+          - tox-env: pypy3
+            python-version: pypy3
+
+    env:
+      TOXENV: ${{ matrix.tox-env }}
 
     steps:
     - uses: actions/checkout@v2
@@ -20,16 +33,40 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libtidy-dev
+        python -m pip install --upgrade pip
+        pip install tox
+    - name: Test with tox
+      run: python -m tox
+
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        tox-env: [flake8, pep517check, checkspelling, checklinks]
+
+    env:
+      TOXENV: ${{ matrix.tox-env }}
+
+   steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
     - name: Setup Node
       uses: actions/setup-node@v1
       with:
         node-version: '10'
     - name: Install dependencies
       run: |
-        sudo apt-get install libtidy-dev
         python -m pip install --upgrade pip
-        pip install tox tox-gh-actions
+        pip install tox
         npm install -g markdown-link-check
         sudo apt-get install aspell aspell-en
     - name: Test with tox
-      run: tox
+      run: python -m tox
+
