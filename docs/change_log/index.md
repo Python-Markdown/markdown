@@ -263,4 +263,4 @@ escape, emphasis in the beginning of the paragraph.
 Nov. 2004: Added links, blockquotes, HTML blocks to Manfred
 Stienstra's code
 
-Apr. 2004: Manfred's version at <http://www.dwerg.net/projects/markdown/>
+Apr. 2004: Manfred's version at `http://www.dwerg.net/projects/markdown/`

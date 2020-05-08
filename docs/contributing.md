@@ -9,7 +9,7 @@ propose changes to this document in a pull request.
 
 This project and everyone participating in it is governed by the
 [Python-Markdown Code of Conduct]. By participating, you are expected to uphold
-this code. Please report unacceptable behavior to <markdown@freewisdom.org>.
+this code. Please report unacceptable behavior to [markdown@freewisdom.org][email].
 
 ## Project Organization
 
@@ -473,6 +473,7 @@ label from the same group.
 
 [Python-Markdown Organization]: https://github.com/Python-Markdown
 [Python-Markdown Code of Conduct]: https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md
+[email]: mailto:markdown@freewisdom.org
 [Python-Markdown/markdown]: https://github.com/Python-Markdown/markdown
 [issue tracker]: https://github.com/Python-Markdown/markdown/issues
 [syntax rules]: https://daringfireball.net/projects/markdown/syntax
@@ -495,7 +496,7 @@ label from the same group.
 [configure a remote]: https://help.github.com/articles/configuring-a-remote-for-a-fork
 [sync changes]: https://help.github.com/articles/syncing-a-fork
 [virtual environment]: https://virtualenv.pypa.io/en/stable/
-[User Guide]: https://virtualenv.pypa.io/en/stable/userguide/#usage
+[User Guide]: https://virtualenv.pypa.io/en/stable/user_guide.html
 [Development Mode]: https://setuptools.readthedocs.io/en/latest/setuptools.html#development-mode
 [PyTidyLib]: https://countergram.github.io/pytidylib/
 [HTML Tidy]: https://www.html-tidy.org/

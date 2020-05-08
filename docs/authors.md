@@ -28,7 +28,7 @@ Primary Authors
     Ph.D. Various pieces of his code still exist, most notably the basic
     structure.
 
-* __[Manfed Stienstra](http://www.dwerg.net/)__
+* __Manfed Stienstra__
 
     Manfed wrote the original version of the script and is responsible for
     various parts of the existing code base.

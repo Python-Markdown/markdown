@@ -58,7 +58,7 @@ Backwards-incompatible Changes
   PyTidyLib rather than using an extension (for example:
   `tidylib.tidy_fragment(markdown.markdown(source), options={...})`).
 
-[PyTidyLib]: http://countergram.com/open-source/pytidylib
+[PyTidyLib]: http://countergram.github.io/pytidylib/
 
 What's New in Python-Markdown 2.3
 ---------------------------------
