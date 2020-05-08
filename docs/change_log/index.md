@@ -5,6 +5,7 @@ Python-Markdown Change Log
 
 Under development: version 3.2.2 (a bug-fix release).
 
+* Add `checklinks` tox environment to ensure all links in documentation are good.
 * Refactor extension API documentation (#729).
 * Load entry_points (for extensions) only once using `importlib.metadata`.
 * Do not double escape entities in TOC.
@@ -262,4 +263,4 @@ escape, emphasis in the beginning of the paragraph.
 Nov. 2004: Added links, blockquotes, HTML blocks to Manfred
 Stienstra's code
 
-Apr. 2004: Manfred's version at <http://www.dwerg.net/projects/markdown/>
+Apr. 2004: Manfred's version at `http://www.dwerg.net/projects/markdown/`

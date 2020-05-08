@@ -169,6 +169,6 @@ rules apply.
 [unittest]: https://docs.python.org/3/library/unittest.html
 [Perl]: https://daringfireball.net/projects/markdown/
 [PHP]: http://michelf.com/projects/php-markdown/
-[PyTidyLib]: http://countergram.com/open-source/pytidylib/
+[PyTidyLib]: http://countergram.github.io/pytidylib/
 [Contributing Guide]: contributing.md
 [development environment]: contributing.md#development-environment

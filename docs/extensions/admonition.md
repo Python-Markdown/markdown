@@ -99,7 +99,7 @@ Styling
 There is no CSS included as part of this extension. Check out the default
 [Sphinx][sphinx] theme for inspiration.
 
-[sphinx]: http://sphinx.pocoo.org/
+[sphinx]: https://www.sphinx-doc.org/en/stable/
 
 ## Usage
 
