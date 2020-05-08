@@ -55,7 +55,7 @@ path.
 * **Windows**:
 
     Assuming a default install of Python on Windows, your "Scripts" directory
-    is most likely something like `C:\\Python26\Scripts`. Verify the location
+    is most likely something like `C:\\Python37\Scripts`. Verify the location
     of your "Scripts" directory and add it to you system path.
 
     Calling `markdown_py` from the command line will call the wrapper batch

@@ -34,6 +34,10 @@ part of the list.
 
     Fenced Code Blocks are only supported at the document root level.
     Therefore, they cannot be nested inside lists or blockquotes.
+    If you need to nest fenced code blocks, you may want to try the
+    the third party extension [SuperFences] instead.
+
+[SuperFences]: https://facelessuser.github.io/pymdown-extensions/extensions/superfences/
 
 ### Language
 
