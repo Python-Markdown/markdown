@@ -3,14 +3,10 @@
 
 name: tox tests
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [pull_request]
 
 jobs:
-  build:
+  tests:
 
     runs-on: ubuntu-latest
     strategy:
@@ -24,9 +20,16 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10'
     - name: Install dependencies
       run: |
+        sudo apt-get install libtidy-0.99-0
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
+        npm install -g markdown-link-check
+        sudo apt-get install aspell aspell-en
     - name: Test with tox
       run: tox
