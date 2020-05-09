@@ -37,9 +37,17 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install libtidy-dev
-        python -m pip install --upgrade pip tox
+        python -m pip install --upgrade pip tox coverage codecov
     - name: Run tox
       run: python -m tox
+    - name: Upload Results
+      if: success()
+      uses: codecov/codecov-action@v1
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: ${{ matrix.tox-env }}
+        fail_ci_if_error: false
 
   lint:
     runs-on: ubuntu-latest
