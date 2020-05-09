@@ -5,7 +5,7 @@ name: CI
 on: [pull_request]
 
 jobs:
-  unittest:
+  test:
 
     runs-on: ubuntu-latest
     strategy:
@@ -29,16 +29,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Setup Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         sudo apt-get install libtidy-dev
-        python -m pip install --upgrade pip
-        pip install tox
-    - name: Test with tox
+        python -m pip install --upgrade pip tox
+    - name: Run tox
       run: python -m tox
 
   lint:
@@ -51,9 +50,9 @@ jobs:
     env:
       TOXENV: ${{ matrix.tox-env }}
 
-   steps:
+    steps:
     - uses: actions/checkout@v2
-    - name: Set up Python
+    - name: Setup Python
       uses: actions/setup-python@v1
       with:
         python-version: 3.7
@@ -63,10 +62,9 @@ jobs:
         node-version: '10'
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install tox
-        npm install -g markdown-link-check
-        sudo apt-get install aspell aspell-en
-    - name: Test with tox
+        python -m pip install --upgrade pip tox
+        [[ "$TOXENV" == 'checklinks' ]] && npm install -g markdown-link-check
+        [[ "$TOXENV" == 'checkspelling' ]] && sudo apt-get install aspell aspell-en
+    - name: Run tox
       run: python -m tox
 
