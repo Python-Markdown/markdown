@@ -9,6 +9,7 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       max-parallel: 4
       matrix:
         tox-env: [py35, py36, py37, py38, pypy3]
@@ -43,6 +44,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       max-parallel: 4
       matrix:
         tox-env: [flake8, pep517check, checkspelling, checklinks]
@@ -63,8 +65,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip tox
-        [[ "$TOXENV" == 'checklinks' ]] && npm install -g markdown-link-check
-        [[ "$TOXENV" == 'checkspelling' ]] && sudo apt-get install aspell aspell-en
+        if [[ "$TOXENV" == 'checklinks' ]]; then npm install -g markdown-link-check; fi
+        if [[ "$TOXENV" == 'checkspelling' ]]; then sudo apt-get install aspell aspell-en; fi
     - name: Run tox
       run: python -m tox
 
