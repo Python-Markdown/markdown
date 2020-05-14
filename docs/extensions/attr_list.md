@@ -90,6 +90,35 @@ The above results in the following output:
 <p><a href="http://example.com" class="foo bar" title="Some title!">link</a></p>
 ```
 
+### Limitations
+
+There are a few types of elements which attribute lists do not work with. As a reminder, Markdown is a subset of HTML and anything which cannot be expressed in Markdown can always be expressed with raw HTML directly.
+
+__Code Blocks:__
+
+:   Code blocks are unique in that they must be able to display Markdown syntax. Therefore, there is no way to
+    determine if an attribute list is intended to be part of the code block or intended to define attributes on the
+    wrapping element. For that reason, the extension ignores code blocks. To define attributes on code blocks, the
+    [codehilite] and [fenced code blocks] extensions provide some options.
+
+[codehilite]: code_hilite.md
+[fenced code blocks]: fenced_code_blocks.md
+
+__Nested Elements:__
+
+:   Markdown provides mechanisms for nesting various block level elements within other elements. However, attribute
+    lists only ever get applied to the immediate parent. There is no way to specify that an attribute list should be
+    applied some number of levels up the document tree. For example, when including an attribute list within a
+    blockquote, the attribute list is only ever applied to the paragraph the list is defined in. There is no way to
+    define attributes on the `blockquote` element itself.
+
+__Implied Elements:__
+
+:   There are various HTML elements which are not represented in Markdown text, but only implied. For example, the
+    `ul` and `ol` elements do not exist in Markdown. They are only implied by the presence of list items (`li`). There
+    is no way to use an attribute list to define attributes on implied elements, including but not limited to the
+    following: `ul`, `ol`, `dl`, `table`, `thead`, `tbody`, `tr`, and `th`.
+
 ## Usage
 
 See [Extensions](index.md) for general extension usage. Use `attr_list` as the
