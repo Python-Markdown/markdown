@@ -347,8 +347,8 @@ class FootnotePostTreeprocessor(Treeprocessor):
                     self.offset += 1
                 # Add all the new duplicate links.
                 el = list(li)[-1]
-                for l in links:
-                    el.append(l)
+                for link in links:
+                    el.append(link)
                 break
 
     def get_num_duplicates(self, li):

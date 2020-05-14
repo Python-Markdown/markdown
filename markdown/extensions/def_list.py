@@ -34,8 +34,8 @@ class DefListProcessor(BlockProcessor):
 
         raw_block = blocks.pop(0)
         m = self.RE.search(raw_block)
-        terms = [l.strip() for l in
-                 raw_block[:m.start()].split('\n') if l.strip()]
+        terms = [term.strip() for term in
+                 raw_block[:m.start()].split('\n') if term.strip()]
         block = raw_block[m.end():]
         no_indent = self.NO_INDENT_RE.match(block)
         if no_indent:
