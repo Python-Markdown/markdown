@@ -75,6 +75,7 @@ jobs:
       with:
         python-version: 3.7
     - name: Setup Node
+      if: ${{ matrix.tox-env == 'checklinks' }}
       uses: actions/setup-node@v1
       with:
         node-version: '10'
