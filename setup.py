@@ -52,27 +52,8 @@ DEVSTATUS = dev_status_map[__version_info__[3]]
 # conflict with the perl implimentation (which uses "markdown").
 SCRIPT_NAME = 'markdown_py'
 
-
-long_description = '''
-This is a Python implementation of John Gruber's Markdown_.
-It is almost completely compliant with the reference implementation,
-though there are a few known issues. See Features_ for information
-on what exactly is supported and what is not. Additional features are
-supported by the `Available Extensions`_.
-
-.. _Markdown: https://daringfireball.net/projects/markdown/
-.. _Features: https://Python-Markdown.github.io#features
-.. _`Available Extensions`: https://Python-Markdown.github.io/extensions/
-
-Support
-=======
-
-You may report bugs, ask for help, and discuss various other issues on
-the `bug tracker`_.
-
-.. _`bug tracker`: https://github.com/Python-Markdown/markdown/issues
-'''
-
+with open('README.md') as f:
+    long_description = f.read()
 
 setup(
     name='Markdown',
@@ -81,6 +62,7 @@ setup(
     download_url='http://pypi.python.org/packages/source/M/Markdown/Markdown-%s-py2.py3-none-any.whl' % __version__,
     description='Python implementation of Markdown.',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Manfred Stienstra, Yuri takhteyev and Waylan limberg',
     author_email='waylan.limberg@icloud.com',
     maintainer='Waylan Limberg',
