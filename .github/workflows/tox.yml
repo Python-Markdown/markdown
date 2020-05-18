@@ -1,8 +1,16 @@
-# This workflow will install Python dependencies and run tox tests with a matrix of Python versions.
+# This workflow will install dependencies and run tests/linters with a matrix of tox environments.
 
 name: CI
 
-on: [pull_request]
+on:
+  push:
+    branches:
+    - master
+    tags:
+    - '**'
+  pull_request:
+    branches:
+    - '**'
 
 jobs:
   test:
