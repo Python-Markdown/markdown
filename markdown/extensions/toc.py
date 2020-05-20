@@ -25,8 +25,8 @@ import xml.etree.ElementTree as etree
 
 def slugify(value, separator):
     """ Slugify a string, to make it URL friendly. """
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = re.sub(r'[^\w\s-]', '', value.decode('ascii')).strip().lower()
+    value = unicodedata.normalize('NFKD', value).encode('utf-8', 'ignore')
+    value = re.sub(r'[^\w\s-]', '', value.decode('utf-8')).strip().lower()
     return re.sub(r'[%s\s]+' % separator, separator, value)
 
 
