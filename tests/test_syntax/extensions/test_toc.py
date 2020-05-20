@@ -157,7 +157,7 @@ class TestTOC(TestCase):
             '# Unicode ヘッダー',
             '<h1 id="unicode-ヘッター">'                                                            # noqa
                 'Unicode ヘッダー'                                                                  # noqa
-                '<a class="headerlink" href="#unicode-ヘッター" title="Permanent link">&para;</a>'  # noqa
+                '<a class="headerlink" href="#unicode-ヘッター" title="パーマリンク">&para;</a>'  # noqa
             '</h1>',                                                                                # noqa
             extensions=[TocExtension(permalink=True, permalink_title="パーマリンク")]
         )
