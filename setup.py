@@ -60,6 +60,11 @@ setup(
     version=__version__,
     url='https://Python-Markdown.github.io/',
     download_url='http://pypi.python.org/packages/source/M/Markdown/Markdown-%s-py2.py3-none-any.whl' % __version__,
+    project_urls={
+        'Documentation': 'https://Python-Markdown.github.io/',
+        'GitHub Project': 'https://github.com/Python-Markdown/markdown',
+        'Issue Tracker': 'https://github.com/Python-Markdown/markdown/issues'
+    },
     description='Python implementation of Markdown.',
     long_description=long_description,
     long_description_content_type='text/markdown',
