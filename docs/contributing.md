@@ -94,7 +94,7 @@ along with a request for feedback.
 
 Pull requests will generally not be accepted if any tests are failing.
 Therefore, it is recommended that you run the tests before submitting your pull
-request. After making a pull request, check the Travis build status in the
+request. After making a pull request, check the build status in the
 GitHub interface to ensure that all tests are running as expected. If any checks
 fail, you may push additional commits to your branch. GitHub will add those
 commits to the pull request and rerun the checks.
@@ -407,20 +407,25 @@ following steps:
 
         Bump version to X.X.X
 
-6. After all checks (Travis, etc.) have passed, merge the pull request.
+6. After all checks have passed, merge the pull request.
 
 7. Create a git tag with the new version as the tag name and push to the
-   [Python-Markdown/markdown] repository.
+   [Python-Markdown/markdown] repository. The new tag should trigger a GitHub
+   workflow which will automatically deploy the release to PyPI and update the
+   documentation.
 
-8. Deploy the release to [PyPI] with the command `make deploy`.
+    In the event that the deployment fails, the following steps can be taken to
+    deploy manually:
 
-9. Deploy an update to the documentation using [MkDocs]. The following example
-   assumes that local clones of the [Python-Markdown/markdown] and
-   [Python-Markdown/Python-Markdown.github.io] repositories are in sibling
-   directories named `markdown` and `Python-Markdown.github.io` respectively.
+    - Deploy the release to [PyPI] with the command `make deploy`.
 
-        cd Python-Markdown.github.io
-        mkdocs gh-deploy --config-file ../markdown/mkdocs.yml --remote-branch master
+    - Deploy an update to the documentation using [MkDocs]. The following example
+      assumes that local clones of the [Python-Markdown/markdown] and
+      [Python-Markdown/Python-Markdown.github.io] repositories are in sibling
+      directories named `markdown` and `Python-Markdown.github.io` respectively.
+
+            cd Python-Markdown.github.io
+            mkdocs gh-deploy --config-file ../markdown/mkdocs.yml --remote-branch master
 
 ## Issue and Pull Request Labels
 
