@@ -1,0 +1,53 @@
+name: deploy
+
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+
+  pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+      - name: Build
+        run: |
+          python setup.py bdist_wheel sdist --formats gztar
+      - name: Publish
+        if: success()
+        uses: pypa/gh-action-pypi-publish@v1.1.0
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_PASSWORD }}
+
+  ghpages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          python -m pip install -r doc-requirements.txt
+      - name: Build
+        run: |
+          python -m mkdocs build --clean --verbose
+      - name: Publish
+        if: success()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.PAGES_DEPLOY_KEY }}
+          external_repository: Python-Markdown/Python-Markdown.github.io
+          publish_branch: master
+          publish_dir: ./site
