@@ -68,6 +68,9 @@ jobs:
     env:
       TOXENV: ${{ matrix.tox-env }}
 
+    # Allow checklinks to fail
+    continue-on-error: ${{ matrix.tox-env == 'checklinks' }}
+
     steps:
     - uses: actions/checkout@v2
     - name: Setup Python
