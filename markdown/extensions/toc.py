@@ -23,11 +23,20 @@ import unicodedata
 import xml.etree.ElementTree as etree
 
 
+def _slugify(value, separator, encoding='ascii'):
+    value = unicodedata.normalize('NFKD', value).encode(encoding, 'ignore')
+    value = re.sub(r'[^\w\s-]', '', value.decode(encoding)).strip().lower()
+    return re.sub(r'[%s\s]+' % separator, separator, value)
+
+
 def slugify(value, separator):
     """ Slugify a string, to make it URL friendly. """
-    value = unicodedata.normalize('NFKD', value).encode('utf-8', 'ignore')
-    value = re.sub(r'[^\w\s-]', '', value.decode('utf-8')).strip().lower()
-    return re.sub(r'[%s\s]+' % separator, separator, value)
+    return _slugify(value, separator)
+
+
+def slugify_unicode(value, separator):
+    """ Slugify a string, to make it URL friendly. """
+    return _slugify(value, separator, 'utf-8')
 
 
 IDCOUNT_RE = re.compile(r'^(.*)_([0-9]+)$')
