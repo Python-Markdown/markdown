@@ -34,13 +34,14 @@ class FencedBlockPreprocessor(Preprocessor):
     FENCED_BLOCK_RE = re.compile(r'''
 (?P<fence>^(?:~{3,}|`{3,}))[ ]*         # Opening ``` or ~~~
 (\{?\.?(?P<lang>[\w#.+-]*))?[ ]*        # Optional {, and lang
+(?P<lang2>::[^}\n]*)?                   # Optional lang trailer (up to } or NL)
 # Optional highlight lines, single- or double-quote-delimited
 (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot))?[ ]*
 }?[ ]*\n                                # Optional closing }
 (?P<code>.*?)(?<=\n)
 (?P=fence)[ ]*$''', re.MULTILINE | re.DOTALL | re.VERBOSE)
     CODE_WRAP = '<pre><code%s>%s</code></pre>'
-    LANG_TAG = ' class="%s"'
+    LANG_TAG = ' class="%s%s"'
 
     def __init__(self, md):
         super().__init__(md)
@@ -66,7 +67,8 @@ class FencedBlockPreprocessor(Preprocessor):
             if m:
                 lang = ''
                 if m.group('lang'):
-                    lang = self.LANG_TAG % m.group('lang')
+                    lang = self.LANG_TAG % (m.group('lang'), m.group(
+                            'lang2') or '')
 
                 # If config is not empty, then the codehighlite extension
                 # is enabled, so we call it to highlight the code
