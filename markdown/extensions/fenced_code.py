@@ -123,7 +123,9 @@ class FencedBlockPreprocessor(Preprocessor):
                         # Only assign key/value pairs to code element if attr_list ext is enabled, key/value pairs
                         # were defined on the code block, and the `use_pygments` key was not set to True. The
                         # `use_pygments` key could be either set to False or not defined. It is omitted from output.
-                        kv_pairs = ' ' + ' '.join(f'{k}="{v}"' for k, v in config.items() if k != 'use_pygments')
+                        kv_pairs = ' ' + ' '.join(
+                            '{k}="{v}"'.format(k=k, v=v) for k, v in config.items() if k != 'use_pygments'
+                        )
                     code = '<pre{id}><code{cls}{kv}>{code}</code></pre>'.format(
                         id=id_attr,
                         cls=class_attr,
