@@ -78,12 +78,12 @@ not part of the list
 
 [SuperFences]: https://facelessuser.github.io/pymdown-extensions/extensions/superfences/
 
-### Attibutes
+### Attributes
 
-Various attributes may be defined on a per-code-block basis by befining them immeidately following the opening
-deliminator. The attributes should be wrapped in currly braces `{}` and be on the same line as the deliminator. It is
-generally best to seperate the attribute list from the deliminator with a space. Attributes within the list must be
-seperated by a space.
+Various attributes may be defined on a per-code-block basis by defining them immediately following the opening
+deliminator. The attributes should be wrapped in curly braces `{}` and be on the same line as the deliminator. It is
+generally best to separate the attribute list from the deliminator with a space. Attributes within the list must be
+separated by a space.
 
 ````md
 ``` { attributes go here }
@@ -134,7 +134,7 @@ In addition to the language, additional classes may be defined by prefixing them
 ````
 
 When defining multiple classes, only the first class will be used as the "language" for the code block. All others are
-assigned to the `<code>` tag unaltered. Additionaly, the curly braces and dot are required for all classes, including
+assigned to the `<code>` tag unaltered. Additionally, the curly braces and dot are required for all classes, including
 the language class if more than one class is defined.
 
 The above example will output the following HTML:
@@ -201,8 +201,8 @@ If the `attr_list` extension is not enabled, then the key/value pairs will be ig
 
 If the `fenced_code` extension and syntax highlighting are both enabled, then the Codehilite extension will be used
 for syntax highlighting the contents of the code block. The language defined in the attribute list will be passed to
-Codehilite to ensure that the cirrent language is used. If no language is specified and language guessing is not
-diabled for the Codehilite extension, then the language will be guessed.
+Codehilite to ensure that the current language is used. If no language is specified and language guessing is not
+disabled for the Codehilite extension, then the language will be guessed.
 
 [`codehilite`]: ./codehilite.md
 
@@ -217,12 +217,12 @@ A truncated code block...
 ```
 ````
 
-Valid options include any option accepted by Pygments' ['HTMLFormatter'] except for the `full` option, as well as any
+Valid options include any option accepted by Pygments' [`HTMLFormatter`] except for the `full` option, as well as any
 options accepted by the relevant [lexer] (each language has its own lexer). While most lexers don't have options that
 are all that useful in this context, there are a few important exceptions. For example, the [PHP lexer's]
 `startinline` option eliminates the need to start each code fragment with `<?php`.
 
-['HTMLFormatter']: https://pygments.org/docs/formatters/#HtmlFormatter
+[`HTMLFormatter`]: https://pygments.org/docs/formatters/#HtmlFormatter
 [lexer]: https://pygments.org/docs/lexers/
 [PHP lexer's]: https://pygments.org/docs/lexers/#lexers-for-php-and-related-languages
 
@@ -236,7 +236,7 @@ are all that useful in this context, there are a few important exceptions. For e
 
 ##### Enabling Syntax Highlighting
 
-**TODO**
+**TO-DO**
 
 ## Usage
 
