@@ -530,6 +530,24 @@ class TestFencedCode(TestCase):
             extensions=['fenced_code']
         )
 
+    def testFencedLanguageIdAndPygmentsEnabledInAttrNoCodehilite(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python #foo use_pygments=True }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre id="foo"><code class="language-python"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
     def testFencedLanguageAttrCssclass(self):
         if self.has_pygments:
             expected = self.dedent(
@@ -630,4 +648,58 @@ class TestFencedCode(TestCase):
             ),
             expected,
             extensions=['codehilite', 'fenced_code']
+        )
+
+    def testFencedLanguageNoCodehiliteWithAttrList(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python foo=bar }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-python" foo="bar"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
+    def testFencedLanguagePygmentsDisabledInAttrNoCodehiliteWithAttrList(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python foo=bar use_pygments=False }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-python" foo="bar"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
+    def testFencedLanguagePygmentsEnabledInAttrNoCodehiliteWithAttrList(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python foo=bar use_pygments=True }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-python"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
         )

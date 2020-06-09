@@ -20,7 +20,7 @@ from textwrap import dedent
 from . import Extension
 from ..preprocessors import Preprocessor
 from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
-from .attr_list import get_attrs
+from .attr_list import get_attrs, AttrListExtension
 from ..util import parseBoolValue
 import re
 
@@ -51,8 +51,9 @@ class FencedBlockPreprocessor(Preprocessor):
     def __init__(self, md):
         super().__init__(md)
 
-        self.checked_for_codehilite = False
+        self.checked_for_deps = False
         self.codehilite_conf = {}
+        self.use_attr_list = False
         # List of options to convert to bool values
         self.bool_options = [
             'linenums',
@@ -64,14 +65,15 @@ class FencedBlockPreprocessor(Preprocessor):
     def run(self, lines):
         """ Match and store Fenced Code Blocks in the HtmlStash. """
 
-        # Check for codehilite extension
-        if not self.checked_for_codehilite:
+        # Check for dependent extensions
+        if not self.checked_for_deps:
             for ext in self.md.registeredExtensions:
                 if isinstance(ext, CodeHiliteExtension):
                     self.codehilite_conf = ext.getConfigs()
-                    break
+                if isinstance(ext, AttrListExtension):
+                    self.use_attr_list = True
 
-            self.checked_for_codehilite = True
+            self.checked_for_deps = True
 
         text = "\n".join(lines)
         while 1:
@@ -112,14 +114,20 @@ class FencedBlockPreprocessor(Preprocessor):
 
                     code = highliter.hilite()
                 else:
-                    id_attr = class_attr = ''
+                    id_attr = class_attr = kv_pairs = ''
                     if classes:
                         class_attr = ' class="{}"'.format('language-' + ' '.join(classes))
                     if id:
                         id_attr = ' id="{}"'.format(id)
-                    code = '<pre{id}><code{cls}>{code}</code></pre>'.format(
+                    if self.use_attr_list and config and not config.get('use_pygments', False):
+                        # Only assign key/value pairs to code element if attr_list ext is enabled, key/value pairs
+                        # were defined on the code block, and the `use_pygments` key was not set to True. The
+                        # `use_pygments` key could be either set to False or not defined. It is omitted from output.
+                        kv_pairs = ' ' + ' '.join(f'{k}="{v}"' for k, v in config.items() if k != 'use_pygments')
+                    code = '<pre{id}><code{cls}{kv}>{code}</code></pre>'.format(
                         id=id_attr,
                         cls=class_attr,
+                        kv=kv_pairs,
                         code=self._escape(m.group('code'))
                     )
 
