@@ -17,9 +17,9 @@ Fenced Code Blocks are defined using the syntax originally established in [PHP M
 [php]: http://www.michelf.com/projects/php-markdown/extra/#fenced-code-blocks
 [gfm]: https://help.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks
 
-Fenced code blocks begin with three or more backticks (` ``` `) on a line by themselves and end with a matching set of
-backticks on a line by themselves. The closing set of backticks must contain the same number of backticks as the
-opening set. It is recommended that a blank line be placed before and after the code block as it is easier to read.
+Fenced code blocks begin with three or more backticks (` ``` `) or tildes (`~~~`) on a line by themselves and end with
+a matching set of backticks or tildes on a line by themselves. The closing set must contain the same number and type
+of characters as the opening set. It is recommended that a blank line be placed before and after the code block.
 
 ````md
 A paragraph before the code block.
@@ -73,8 +73,8 @@ not part of the list
 !!! warning
 
     Fenced Code Blocks are only supported at the document root level. Therefore, they cannot be nested inside lists or
-    blockquotes. If you need to nest fenced code blocks, you may want to try the the third party extension
-    [SuperFences] instead.
+    blockquotes. If you need to nest fenced code blocks, you may want to try the third party extension [SuperFences]
+    instead.
 
 [SuperFences]: https://facelessuser.github.io/pymdown-extensions/extensions/superfences/
 
@@ -95,7 +95,7 @@ How those attributes will affect the output will depend on various factors as de
 #### Language
 
 The language of the code within a code block can be specified for use by syntax highlighters, etc. The language should
-be prefixed with a dot and not contain any whitespace (`.language-name`). 
+be prefixed with a dot and not contain any whitespace (`.language-name`).
 
 ````md
 ``` { .html }
@@ -119,7 +119,8 @@ Either of the above examples will output the following HTML:
 ```
 
 Note that the language name has been prefixed with `language-` and it has been assigned to the `class` attribute on
-the `<code>` tag, which is the format suggested by the [HTML 5 Specification][html5] (see the second "example").
+the `<code>` tag, which is the format suggested by the [HTML 5 Specification][html5] (see the second "example" in the
+Specification).
 
 [html5]: https://html.spec.whatwg.org/#the-code-element
 
@@ -183,7 +184,7 @@ attributes on the `<code>` tag in the output. Key/value pairs must be defined us
 [`attr_list`]: ./attr_list.md
 
 ````md
-``` { .lang #example style="color: #333; background: #f8f8f8;"}
+``` { .lang #example style="color: #333; background: #f8f8f8;" }
 A code block with inline styles. Fancy!
 ```
 ````
@@ -201,12 +202,12 @@ If the `attr_list` extension is not enabled, then the key/value pairs will be ig
 
 If the `fenced_code` extension and syntax highlighting are both enabled, then the Codehilite extension will be used
 for syntax highlighting the contents of the code block. The language defined in the attribute list will be passed to
-Codehilite to ensure that the current language is used. If no language is specified and language guessing is not
+Codehilite to ensure that the correct language is used. If no language is specified and language guessing is not
 disabled for the Codehilite extension, then the language will be guessed.
 
 [`codehilite`]: ./codehilite.md
 
-The Codehilite extension uses the [Pygments] engine to do the syntax highlighting. Any valid Pygments options can be
+The Codehilite extension uses the [Pygments] engine to do syntax highlighting. Any valid Pygments options can be
 defined as key/value pairs in the attribute list and will be passed on to Pygments.
 
 [Pygments]: http://pygments.org/
@@ -218,9 +219,9 @@ A truncated code block...
 ````
 
 Valid options include any option accepted by Pygments' [`HTMLFormatter`] except for the `full` option, as well as any
-options accepted by the relevant [lexer] (each language has its own lexer). While most lexers don't have options that
-are all that useful in this context, there are a few important exceptions. For example, the [PHP lexer's]
-`startinline` option eliminates the need to start each code fragment with `<?php`.
+options accepted by the relevant [lexer][lexer] (each language has its own lexer). While most lexers don't have
+options that are all that useful in this context, there are a few important exceptions. For example, the
+[PHP lexer's] `startinline` option eliminates the need to start each code fragment with `<?php`.
 
 [`HTMLFormatter`]: https://pygments.org/docs/formatters/#HtmlFormatter
 [lexer]: https://pygments.org/docs/lexers/
@@ -240,8 +241,7 @@ are all that useful in this context, there are a few important exceptions. For e
 
 ## Usage
 
-See [Extensions](index.md) for general extension usage. Use `fenced_code` as
-the name of the extension.
+See [Extensions](index.md) for general extension usage. Use `fenced_code` as the name of the extension.
 
 This extension does not accept any special configuration options.
 
