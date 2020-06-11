@@ -89,6 +89,7 @@ separated by a space.
 ``` { attributes go here }
 a code block with attributes
 ```
+````
 
 How those attributes will affect the output will depend on various factors as described below.
 
@@ -176,12 +177,12 @@ A linkable code block
 
 #### Key/Value Pairs
 
-If the `fenced_code` and [`attr_list`] extensions are both enabled, then key/value pairs can be defined in the
-attribute list. So long as code highlighting is not enabled (see below), the key/value pairs will be assigned as
+If the `fenced_code` and [`attr_list`][attr_list] extensions are both enabled, then key/value pairs can be defined in
+the attribute list. So long as code highlighting is not enabled (see below), the key/value pairs will be assigned as
 attributes on the `<code>` tag in the output. Key/value pairs must be defined using the syntax documented for the
 `attr_list` extension (for example, values with whitespace must be wrapped in quotes).
 
-[`attr_list`]: ./attr_list.md
+[attr_list]: ./attr_list.md
 
 ````md
 ``` { .lang #example style="color: #333; background: #f8f8f8;" }
@@ -200,20 +201,20 @@ If the `attr_list` extension is not enabled, then the key/value pairs will be ig
 
 #### Syntax Highlighting
 
-If the `fenced_code` extension and syntax highlighting are both enabled, then the Codehilite extension will be used
-for syntax highlighting the contents of the code block. The language defined in the attribute list will be passed to
-Codehilite to ensure that the correct language is used. If no language is specified and language guessing is not
-disabled for the Codehilite extension, then the language will be guessed.
+If the `fenced_code` extension and syntax highlighting are both enabled, then the [`codehilite`][codehilite]
+extension will be used for syntax highlighting the contents of the code block. The language defined in the attribute
+list will be passed to `codehilite` to ensure that the correct language is used. If no language is specified and
+language guessing is not disabled for the `codehilite` extension, then the language will be guessed.
 
-[`codehilite`]: ./codehilite.md
+[codehilite]: ./code_hilite.md
 
-The Codehilite extension uses the [Pygments] engine to do syntax highlighting. Any valid Pygments options can be
+The `codehilite` extension uses the [Pygments] engine to do syntax highlighting. Any valid Pygments options can be
 defined as key/value pairs in the attribute list and will be passed on to Pygments.
 
 [Pygments]: http://pygments.org/
 
 ````md
-``` { .lang linenos=true linenostart=42 hl_lines="43-44 50" title="And Example Code Block"}`
+``` { .lang linenos=true linenostart=42 hl_lines="43-44 50" title="An Example Code Block" }`
 A truncated code block...
 ```
 ````
@@ -227,17 +228,32 @@ options that are all that useful in this context, there are a few important exce
 [lexer]: https://pygments.org/docs/lexers/
 [PHP lexer's]: https://pygments.org/docs/lexers/#lexers-for-php-and-related-languages
 
-!!! Note:
+!!! note
 
     The `fenced_code` extension does not alter the output provided by Pygments. Therefore, only options which Pygments
     provides can be ultilized. As Pygments does not currently provide a way to define an ID, any ID defined in an
     attribute list will be ignored when syntax highlighting is enabled. Additionaly, any key/value pairs which are not Pygments options will be ignored, regardless of whether the `attr_list` extension is enabled.
 
-    To disable syntax highlighting on an individual code block, include `use_pygments=false` in the attribute list. While the `use_pygments` key/value pair will not be included in the output, all other attributes will behave as they would if syntax highlighting was disabled for that code block only.
-
 ##### Enabling Syntax Highlighting
 
-**TO-DO**
+To enable syntax highlighting, the [`codehilite`][codehilite] extension must be enabled and the `codehilite`
+extension's `use_pygments` option must be set to `True` (the default).
+
+Alternatively, so long as the `codehilite` extension is enabled, you can override a global `use_pygments=False`
+option for an individual code block by including `use_pygments=true` in the attribute list. While the `use_pygments`
+key/value pair will not be included in the output, all other attributes will behave as they would if syntax
+highlighting was enabled only for that code block.
+
+Conversely, to disable syntax highlighting on an individual code block, include `use_pygments=false` in the attribute
+list. While the `use_pygments` key/value pair will not be included in the output, all other attributes will behave as
+they would if syntax highlighting was disabled for that code block regardless of any global setting.
+
+!!! seealso
+
+    You will need to properly install and setup Pygments for syntax highlighting to work. See the `codehilite`
+    extension's [documentation][setup] for details.
+
+[setup]: ./code_hilite.md#setup
 
 ## Usage
 
