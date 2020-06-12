@@ -276,14 +276,14 @@ class Markdown:
                     '<%s>' % self.doc_tag) + len(self.doc_tag) + 2
                 end = output.rindex('</%s>' % self.doc_tag)
                 output = output[start:end].strip()
-            except ValueError:  # pragma: no cover
+            except ValueError as e:  # pragma: no cover
                 if output.strip().endswith('<%s />' % self.doc_tag):
                     # We have an empty document
                     output = ''
                 else:
                     # We have a serious problem
                     raise ValueError('Markdown failed to strip top-level '
-                                     'tags. Document=%r' % output.strip())
+                                     'tags. Document=%r' % output.strip()) from e
 
         # Run the text post-processors
         for pp in self.postprocessors:
