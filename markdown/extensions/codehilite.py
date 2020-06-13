@@ -17,6 +17,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..treeprocessors import Treeprocessor
+from ..util import parseBoolValue
 
 try:  # pragma: no cover
     from pygments import highlight
@@ -68,7 +69,7 @@ class CodeHilite:
 
     Other Options:
     Any other options are accepted and passed on to the lexer and formatter. Therefore,
-    valid option include any options which are accepted by the `html` formatter or
+    valid options include any options which are accepted by the `html` formatter or
     whichever lexer the code's language uses. Note that most lexers do not have any
     options. However, a few have very useful options, such as PHP's `startinline` option.
     Any invalid options are ignored without error.
@@ -232,12 +233,9 @@ class HiliteTreeprocessor(Treeprocessor):
             if len(block) == 1 and block[0].tag == 'code':
                 code = CodeHilite(
                     self.code_unescape(block[0].text),
-                    linenos=self.config['linenums'],
-                    guess_lang=self.config['guess_lang'],
-                    cssclass=self.config['css_class'],
-                    style=self.config['pygments_style'],
-                    noclasses=self.config['noclasses'],
-                    use_pygments=self.config['use_pygments']
+                    tab_length=self.md.tab_length,
+                    style=self.config.pop('pygments_style'),
+                    **self.config
                 )
                 placeholder = self.md.htmlStash.store(code.hilite())
                 # Clear codeblock in etree instance
@@ -273,7 +271,18 @@ class CodeHiliteExtension(Extension):
                              'Default: True']
             }
 
-        super().__init__(**kwargs)
+        for key, value in kwargs.items():
+            if key in self.config:
+                self.setConfig(key, value)
+            else:
+                # manually set unknown keywords.
+                if isinstance(value, str):
+                    try:
+                        # Attempt to parse str as a bool value
+                        value = parseBoolValue(value, preserve_none=True)
+                    except ValueError:
+                        pass  # Assume it's not a bool value. Use as-is.
+                self.config[key] = [value, '']
 
     def extendMarkdown(self, md):
         """ Add HilitePostprocessor to Markdown instance. """
