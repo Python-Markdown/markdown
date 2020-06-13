@@ -14,9 +14,6 @@ This extension is included in the standard Markdown library.
 Fenced Code Blocks are defined using the syntax originally established in [PHP Markdown Extra][php] and popularized by
 [GitHub Flavored Markdown][gfm].
 
-[php]: http://www.michelf.com/projects/php-markdown/extra/#fenced-code-blocks
-[gfm]: https://help.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks
-
 Fenced code blocks begin with three or more backticks (` ``` `) or tildes (`~~~`) on a line by themselves and end with
 a matching set of backticks or tildes on a line by themselves. The closing set must contain the same number and type
 of characters as the opening set. It is recommended that a blank line be placed before and after the code block.
@@ -76,8 +73,6 @@ not part of the list
     blockquotes. If you need to nest fenced code blocks, you may want to try the third party extension [SuperFences]
     instead.
 
-[SuperFences]: https://facelessuser.github.io/pymdown-extensions/extensions/superfences/
-
 ### Attributes
 
 Various attributes may be defined on a per-code-block basis by defining them immediately following the opening
@@ -122,8 +117,6 @@ Either of the above examples will output the following HTML:
 Note that the language name has been prefixed with `language-` and it has been assigned to the `class` attribute on
 the `<code>` tag, which is the format suggested by the [HTML 5 Specification][html5] (see the second "example" in the
 Specification).
-
-[html5]: https://html.spec.whatwg.org/#the-code-element
 
 #### Classes
 
@@ -182,8 +175,6 @@ the attribute list. So long as code highlighting is not enabled (see below), the
 attributes on the `<code>` tag in the output. Key/value pairs must be defined using the syntax documented for the
 `attr_list` extension (for example, values with whitespace must be wrapped in quotes).
 
-[attr_list]: ./attr_list.md
-
 ````md
 ``` { .lang #example style="color: #333; background: #f8f8f8;" }
 A code block with inline styles. Fancy!
@@ -206,12 +197,8 @@ extension will be used for syntax highlighting the contents of the code block. T
 list will be passed to `codehilite` to ensure that the correct language is used. If no language is specified and
 language guessing is not disabled for the `codehilite` extension, then the language will be guessed.
 
-[codehilite]: ./code_hilite.md
-
 The `codehilite` extension uses the [Pygments] engine to do syntax highlighting. Any valid Pygments options can be
 defined as key/value pairs in the attribute list and will be passed on to Pygments.
-
-[Pygments]: http://pygments.org/
 
 ````md
 ``` { .lang linenos=true linenostart=42 hl_lines="43-44 50" title="An Example Code Block" }`
@@ -219,20 +206,16 @@ A truncated code block...
 ```
 ````
 
-Valid options include any option accepted by Pygments' [`HTMLFormatter`] except for the `full` option, as well as any
-options accepted by the relevant [lexer][lexer] (each language has its own lexer). While most lexers don't have
-options that are all that useful in this context, there are a few important exceptions. For example, the
+Valid options include any option accepted by Pygments' [`HTMLFormatter`][HTMLFormatter] except for the `full` option,
+as well as any options accepted by the relevant [lexer][lexer] (each language has its own lexer). While most lexers
+don't have options that are all that useful in this context, there are a few important exceptions. For example, the
 [PHP lexer's] `startinline` option eliminates the need to start each code fragment with `<?php`.
-
-[`HTMLFormatter`]: https://pygments.org/docs/formatters/#HtmlFormatter
-[lexer]: https://pygments.org/docs/lexers/
-[PHP lexer's]: https://pygments.org/docs/lexers/#lexers-for-php-and-related-languages
 
 !!! note
 
     The `fenced_code` extension does not alter the output provided by Pygments. Therefore, only options which Pygments
-    provides can be ultilized. As Pygments does not currently provide a way to define an ID, any ID defined in an
-    attribute list will be ignored when syntax highlighting is enabled. Additionaly, any key/value pairs which are not Pygments options will be ignored, regardless of whether the `attr_list` extension is enabled.
+    provides can be utilized. As Pygments does not currently provide a way to define an ID, any ID defined in an
+    attribute list will be ignored when syntax highlighting is enabled. Additionally, any key/value pairs which are not Pygments options will be ignored, regardless of whether the `attr_list` extension is enabled.
 
 ##### Enabling Syntax Highlighting
 
@@ -248,16 +231,14 @@ Conversely, to disable syntax highlighting on an individual code block, include 
 list. While the `use_pygments` key/value pair will not be included in the output, all other attributes will behave as
 they would if syntax highlighting was disabled for that code block regardless of any global setting.
 
-!!! seealso
+!!! seealso "See Also"
 
     You will need to properly install and setup Pygments for syntax highlighting to work. See the `codehilite`
     extension's [documentation][setup] for details.
 
-[setup]: ./code_hilite.md#setup
-
 ## Usage
 
-See [Extensions](index.md) for general extension usage. Use `fenced_code` as the name of the extension.
+See [Extensions] for general extension usage. Use `fenced_code` as the name of the extension.
 
 This extension does not accept any special configuration options.
 
@@ -266,3 +247,16 @@ A trivial example:
 ```python
 markdown.markdown(some_text, extensions=['fenced_code'])
 ```
+
+[php]: http://www.michelf.com/projects/php-markdown/extra/#fenced-code-blocks
+[gfm]: https://help.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks
+[SuperFences]: https://facelessuser.github.io/pymdown-extensions/extensions/superfences/
+[html5]: https://html.spec.whatwg.org/#the-code-element
+[attr_list]: ./attr_list.md
+[codehilite]: ./code_hilite.md
+[Pygments]: http://pygments.org/
+[HTMLFormatter]: https://pygments.org/docs/formatters/#HtmlFormatter
+[lexer]: https://pygments.org/docs/lexers/
+[PHP lexer's]: https://pygments.org/docs/lexers/#lexers-for-php-and-related-languages
+[setup]: ./code_hilite.md#setup
+[Extensions]: ./index.md
