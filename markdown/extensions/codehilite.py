@@ -39,7 +39,7 @@ def parse_hl_lines(expr):
 
     try:
         return list(map(int, expr.split()))
-    except ValueError:
+    except ValueError:  # pragma: no cover
         return []
 
 
@@ -196,7 +196,7 @@ class CodeHilite:
             # we have a match
             try:
                 self.lang = m.group('lang').lower()
-            except IndexError:
+            except IndexError:  # pragma: no cover
                 self.lang = None
             if m.group('path'):
                 # path exists - restore first line
@@ -234,7 +234,7 @@ class HiliteTreeprocessor(Treeprocessor):
                 code = CodeHilite(
                     self.code_unescape(block[0].text),
                     tab_length=self.md.tab_length,
-                    style=self.config.pop('pygments_style'),
+                    style=self.config.pop('pygments_style', 'default'),
                     **self.config
                 )
                 placeholder = self.md.htmlStash.store(code.hilite())

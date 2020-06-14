@@ -108,7 +108,7 @@ class FencedBlockPreprocessor(Preprocessor):
                     highliter = CodeHilite(
                         m.group('code'),
                         lang=lang,
-                        style=local_config.pop('pygments_style'),
+                        style=local_config.pop('pygments_style', 'default'),
                         **local_config
                     )
 

@@ -545,3 +545,21 @@ class TestCodeHiliteExtension(TestCase):
             expected,
             extensions=['codehilite']
         )
+
+    def testUnknownOption(self):
+        if has_pygments:
+            # Odd result as no lang given and a single comment is not enough for guessing.
+            expected = (
+                '<div class="codehilite"><pre><span></span><code><span class="err"># A Code Comment</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code># A Code Comment\n'
+                '</code></pre>'
+            )
+        self.assertMarkdownRenders(
+            '\t# A Code Comment',
+            expected,
+            extensions=[CodeHiliteExtension(unknown='some value')],
+        )
