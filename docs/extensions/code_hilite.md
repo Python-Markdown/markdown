@@ -186,8 +186,8 @@ configuring extensions.
 The following options are provided to configure the output:
 
 * **`linenums`**:
-    Use line numbers. Possible values are `True` for yes, `False` for no and
-    `None` for auto. Defaults to `None`.
+    An alias to Pygments' `linenos` formatter option. Possible values are `True` for yes, `False` for no and `None`
+    for auto. Defaults to `None`.
 
     Using `True` will force every code block to have line numbers, even when
     using colons (`:::`) for language identification.
@@ -202,7 +202,7 @@ The following options are provided to configure the output:
     highlighting blocks only when you explicitly set the language.
 
 * **`css_class`**:
-    Set CSS class name for the wrapper `<div>` tag. Defaults to
+    An alias to Pygments `cssclass` formatter option. Set CSS class name for the wrapper `<div>` tag. Defaults to
     `codehilite`.
 
 * **`pygments_style`**:
@@ -228,11 +228,19 @@ The following options are provided to configure the output:
     suggested by the [HTML5 spec][spec] (alternate output will not be
     entertained) and may be used by a JavaScript library in the browser to
     highlight the code block.
-    
+
+* Any other Pygments' options:
+
+    All other options are accepted and passed on to Pygments' lexer and formatter. Therefore,
+    valid options include any options which are accepted by the [html formatter] or
+    whichever [lexer] the code's language uses. Invalid options are ignored without error.
+
 A trivial example:
 
 ```python
 markdown.markdown(some_text, extensions=['codehilite'])
 ```
 
+[html formatter]: https://pygments.org/docs/formatters/#HtmlFormatter
+[lexer]: https://pygments.org/docs/lexers/
 [spec]: https://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
