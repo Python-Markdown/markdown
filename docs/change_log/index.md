@@ -3,9 +3,7 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-version 3.3.3 (under development)
-
-* Document limitations of `attr_list` extension (#965).
+Under development: version 3.3 ([Notes](release-3.3.md)).
 
 May 8, 2020: version 3.2.2 (a bug-fix release).
 
@@ -15,7 +13,7 @@ May 8, 2020: version 3.2.2 (a bug-fix release).
 * Do not double escape entities in TOC.
 * Correctly report if an extension raises a `TypeError` (#939).
 * Raise a `KeyError` when attempting to delete a nonexistent key from the
-  extension registry (#939). 
+  extension registry (#939).
 * Remove import of `packaging` (or `pkg_resources` fallback) entirely.
 * Remove `setuptools` as a run-time dependency (`install_required`).
 
