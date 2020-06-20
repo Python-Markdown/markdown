@@ -21,7 +21,7 @@ EMPHASIS_RE = r'(_)([^_]+)\1'
 STRONG_RE = r'(_{2})(.+?)\1'
 
 # __strong_em___
-STRONG_EM_RE = r'(_)\1(?!\1)(.+?)\1(?!\1)(.+?)\1{3}'
+STRONG_EM_RE = r'(_)\1(?!\1)([^_]+?)\1(?!\1)(.+?)\1{3}'
 
 
 class LegacyUnderscoreProcessor(UnderscoreProcessor):

@@ -114,3 +114,17 @@ class TestNotEmphasis(TestCase):
             'This text is **bold *italic* *italic* bold**',
             '<p>This text is <strong>bold <em>italic</em> <em>italic</em> bold</strong></p>'
         )
+
+    def test_complex_multple_emphasis_type(self):
+
+        self.assertMarkdownRenders(
+            'traced ***along*** bla **blocked** if other ***or***',
+            '<p>traced <strong><em>along</em></strong> bla <strong>blocked</strong> if other <strong><em>or</em></strong></p>'  # noqa: E501
+        )
+
+    def test_complex_multple_emphasis_type_variant2(self):
+
+        self.assertMarkdownRenders(
+            'on the **1-4 row** of the AP Combat Table ***and*** receive',
+            '<p>on the <strong>1-4 row</strong> of the AP Combat Table <strong><em>and</em></strong> receive</p>'
+        )
