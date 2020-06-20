@@ -135,8 +135,8 @@ STRONG_EM_RE = r'(\*)\1{2}(.+?)\1{2}(.*?)\1'
 # ___strong__em_
 STRONG_EM2_RE = r'(_)\1{2}(.+?)\1{2}(.*?)\1'
 
-# __strong_em___
-STRONG_EM3_RE = r'(\*)\1(?!\1)(.+?)\1(?!\1)(.+?)\1{3}'
+# **strong*em***
+STRONG_EM3_RE = r'(\*)\1(?!\1)([^*]+?)\1(?!\1)(.+?)\1{3}'
 
 # [text](url) or [text](<url>) or [text](url "title")
 LINK_RE = NOIMG + r'\['
