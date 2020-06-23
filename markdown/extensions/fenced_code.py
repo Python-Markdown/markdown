@@ -26,12 +26,17 @@ import re
 
 
 class FencedCodeExtension(Extension):
+    def __init__(self, **kwargs):
+        self.config = {
+            'lang_prefix': ['language-', 'Prefix prepended to the language. Default: "language-"']
+        }
+        super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
         """ Add FencedBlockPreprocessor to the Markdown instance. """
         md.registerExtension(self)
 
-        md.preprocessors.register(FencedBlockPreprocessor(md), 'fenced_code_block', 25)
+        md.preprocessors.register(FencedBlockPreprocessor(md, self.getConfigs()), 'fenced_code_block', 25)
 
 
 class FencedBlockPreprocessor(Preprocessor):
@@ -48,9 +53,9 @@ class FencedBlockPreprocessor(Preprocessor):
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
 
-    def __init__(self, md):
+    def __init__(self, md, config):
         super().__init__(md)
-
+        self.config = config
         self.checked_for_deps = False
         self.codehilite_conf = {}
         self.use_attr_list = False
@@ -116,7 +121,10 @@ class FencedBlockPreprocessor(Preprocessor):
                 else:
                     id_attr = class_attr = kv_pairs = ''
                     if classes:
-                        class_attr = ' class="{}"'.format('language-' + ' '.join(classes))
+                        class_attr = ' class="{}{}"'.format(
+                            self.config.get('lang_prefix', 'language-'),
+                            ' '.join(classes)
+                        )
                     if id:
                         id_attr = ' id="{}"'.format(id)
                     if self.use_attr_list and config and not config.get('use_pygments', False):

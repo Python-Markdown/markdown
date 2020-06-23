@@ -67,6 +67,9 @@ class CodeHilite:
 
     * css_class: An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
 
+    * lang_prefix: Prefix prepended to the language when `use_pygments` is `False`.
+      Default: "language-".
+
     Other Options:
     Any other options are accepted and passed on to the lexer and formatter. Therefore,
     valid options include any options which are accepted by the `html` formatter or
@@ -95,6 +98,7 @@ class CodeHilite:
         self.lang = options.pop('lang', None)
         self.guess_lang = options.pop('guess_lang', True)
         self.use_pygments = options.pop('use_pygments', True)
+        self.lang_prefix = options.pop('lang_prefix', 'language-')
 
         if 'linenos' not in options:
             options['linenos'] = options.pop('linenums', None)
@@ -145,7 +149,7 @@ class CodeHilite:
             txt = txt.replace('"', '&quot;')
             classes = []
             if self.lang:
-                classes.append('language-{}'.format(self.lang))
+                classes.append('{}{}'.format(self.lang_prefix, self.lang))
             if self.options['linenos']:
                 classes.append('linenums')
             class_str = ''
@@ -268,7 +272,11 @@ class CodeHiliteExtension(Extension):
             'use_pygments': [True,
                              'Use Pygments to Highlight code blocks. '
                              'Disable if using a JavaScript library. '
-                             'Default: True']
+                             'Default: True'],
+            'lang_prefix': [
+                'language-',
+                'Prefix prepended to the language when use_pygments is false. Default: "language-"'
+            ]
             }
 
         for key, value in kwargs.items():

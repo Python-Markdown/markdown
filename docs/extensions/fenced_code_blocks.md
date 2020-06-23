@@ -116,7 +116,8 @@ Either of the above examples will output the following HTML:
 
 Note that the language name has been prefixed with `language-` and it has been assigned to the `class` attribute on
 the `<code>` tag, which is the format suggested by the [HTML 5 Specification][html5] (see the second "example" in the
-Specification).
+Specification). While `language` is the default prefix, the prefix may be overridden using the
+[`lang_prefix`](#lang_prefix) configuration option.
 
 #### Classes
 
@@ -240,7 +241,12 @@ they would if syntax highlighting was disabled for that code block regardless of
 
 See [Extensions] for general extension usage. Use `fenced_code` as the name of the extension.
 
-This extension does not accept any special configuration options.
+See the [Library Reference] for information about configuring extensions.
+
+The following option is provided to configure the output:
+
+* **`lang_prefix`**{#lang_prefix}:
+    The prefix prepended to the language class assigned to the HTML `<code>` tag. Default: `language-`.
 
 A trivial example:
 
@@ -260,3 +266,4 @@ markdown.markdown(some_text, extensions=['fenced_code'])
 [PHP lexer's]: https://pygments.org/docs/lexers/#lexers-for-php-and-related-languages
 [setup]: ./code_hilite.md#setup
 [Extensions]: ./index.md
+[Library Reference]: ../reference.md#extensions

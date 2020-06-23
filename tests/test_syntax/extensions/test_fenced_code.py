@@ -703,3 +703,39 @@ class TestFencedCode(TestCase):
             ),
             extensions=['fenced_code', 'attr_list']
         )
+
+    def testFencedLanguageNoPrefix(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` python
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="python"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=[markdown.extensions.fenced_code.FencedCodeExtension(lang_prefix='')]
+        )
+
+    def testFencedLanguageAltPrefix(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` python
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="lang-python"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=[markdown.extensions.fenced_code.FencedCodeExtension(lang_prefix='lang-')]
+        )

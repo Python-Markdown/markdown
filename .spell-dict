@@ -77,6 +77,8 @@ PHP
 Posix
 postprocessor
 postprocessors
+prepend
+prepended
 preprocessor
 preprocessors
 Pygments

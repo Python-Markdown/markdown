@@ -128,6 +128,24 @@ class TestCodeHiliteClass(TestCase):
         )
         self.assertOutputEquals('<?php print("Hello World"); ?>', expected, lang='php', use_pygments=False)
 
+    def test_codehilite_lang_prefix_empty(self):
+        expected = (
+            '<pre class="codehilite"><code class="php">&lt;?php print(&quot;Hello World&quot;); ?&gt;\n'
+            '</code></pre>'
+        )
+        self.assertOutputEquals(
+            '<?php print("Hello World"); ?>', expected, lang='php', use_pygments=False, lang_prefix=''
+        )
+
+    def test_codehilite_lang_prefix(self):
+        expected = (
+            '<pre class="codehilite"><code class="lang-php">&lt;?php print(&quot;Hello World&quot;); ?&gt;\n'
+            '</code></pre>'
+        )
+        self.assertOutputEquals(
+            '<?php print("Hello World"); ?>', expected, lang='php', use_pygments=False, lang_prefix='lang-'
+        )
+
     def test_codehilite_linenos_true(self):
         if has_pygments:
             expected = (
@@ -493,6 +511,32 @@ class TestCodeHiliteExtension(TestCase):
                 '</code></pre>'
             ),
             extensions=[CodeHiliteExtension(use_pygments=False)]
+        )
+
+    def testLangPrefixEmpty(self):
+        self.assertMarkdownRenders(
+            (
+                '\t:::Python\n'
+                '\t# A Code Comment'
+            ),
+            (
+                '<pre class="codehilite"><code class="python"># A Code Comment\n'
+                '</code></pre>'
+            ),
+            extensions=[CodeHiliteExtension(use_pygments=False, lang_prefix='')]
+        )
+
+    def testLangPrefix(self):
+        self.assertMarkdownRenders(
+            (
+                '\t:::Python\n'
+                '\t# A Code Comment'
+            ),
+            (
+                '<pre class="codehilite"><code class="lang-python"># A Code Comment\n'
+                '</code></pre>'
+            ),
+            extensions=[CodeHiliteExtension(use_pygments=False, lang_prefix='lang-')]
         )
 
     def testDoubleEscape(self):

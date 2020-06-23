@@ -185,7 +185,7 @@ configuring extensions.
 
 The following options are provided to configure the output:
 
-* **`linenums`**:
+* **`linenums`**{ #linenums }:
     An alias to Pygments' `linenos` formatter option. Possible values are `True` for yes, `False` for no and `None`
     for auto. Defaults to `None`.
 
@@ -195,27 +195,27 @@ The following options are provided to configure the output:
     Using `False` will turn off all line numbers, even when using shebangs
     (`#!`) for language identification.
 
-* **`guess_lang`**:
+* **`guess_lang`**{ #guess_lang }:
     Automatic language detection. Defaults to `True`.
 
     Using `False` will prevent Pygments from guessing the language, and thus
     highlighting blocks only when you explicitly set the language.
 
-* **`css_class`**:
+* **`css_class`**{ #css_class }:
     An alias to Pygments `cssclass` formatter option. Set CSS class name for the wrapper `<div>` tag. Defaults to
     `codehilite`.
 
-* **`pygments_style`**:
+* **`pygments_style`**{ #pygments_style }:
     Pygments HTML Formatter Style (`ColorScheme`). Defaults to `default`.
 
     !!! Note
         This is useful only when `noclasses` is set to `True`, otherwise the
         CSS styles must be provided by the end user.
 
-* **`noclasses`**:
+* **`noclasses`**{ #noclasses }:
     Use inline styles instead of CSS classes. Defaults to `False`.
 
-* **`use_pygments`**:
+* **`use_pygments`**{ #use_pygments }:
     Specifies the use of Pygments in generating the output.
 
     If `True` (the default) and Pygments is available, CodeHilite will use
@@ -223,11 +223,16 @@ The following options are provided to configure the output:
     &gt;= 2.4, the output will be wrapped in `<code>` tags, whereas earlier
     versions will not.
 
-    Otherwise, Pygments will not be used. If a language is defined for a code
-    block, it will be assigned to the `<code>` tag as a class in the manner
-    suggested by the [HTML5 spec][spec] (alternate output will not be
-    entertained) and may be used by a JavaScript library in the browser to
-    highlight the code block.
+    Otherwise, Pygments will not be used. If a language is defined for a code block, it will be assigned to the
+    `<code>` tag as a class in the manner suggested by the [HTML5 spec][spec] and may be used by a JavaScript library
+    in the browser to highlight the code block. See the [`lang_prefix`](#lang_prefix) option to customize the prefix.
+
+* **`lang_prefix`**{ #lang_prefix }:
+    The prefix prepended to the language class assigned to the HTML `<code>` tag. Default: `language-`.
+
+    This option only applies when `use_pygments` is `False` as Pygments does not provide an option to include a
+    language prefix.
+
 
 * Any other Pygments' options:
 
