@@ -161,6 +161,7 @@ class AttrListTreeprocessor(Treeprocessor):
 class AttrListExtension(Extension):
     def extendMarkdown(self, md):
         md.treeprocessors.register(AttrListTreeprocessor(md), 'attr_list', 8)
+        md.registerExtension(self)
 
 
 def makeExtension(**kwargs):  # pragma: no cover

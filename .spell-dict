@@ -33,7 +33,7 @@ ElementTree
 encodings
 extendMarkdown
 Fauske
-Formatter
+formatter
 Fortin
 GitHub
 globals
@@ -77,6 +77,8 @@ PHP
 Posix
 postprocessor
 postprocessors
+prepend
+prepended
 preprocessor
 preprocessors
 Pygments

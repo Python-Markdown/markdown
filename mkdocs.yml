@@ -41,6 +41,7 @@ nav:
   - Test Tools: test_tools.md
   - Contributing to Python-Markdown: contributing.md
   - Change Log: change_log/index.md
+  - Release Notes for v.3.3: change_log/release-3.3.md
   - Release Notes for v.3.2: change_log/release-3.2.md
   - Release Notes for v.3.1: change_log/release-3.1.md
   - Release Notes for v.3.0: change_log/release-3.0.md
