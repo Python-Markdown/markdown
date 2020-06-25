@@ -43,6 +43,31 @@ The above example would result in the following attributes being defined:
 id="id2" class="class2 class3 class4"
 ```
 
+HTML includes support for some attributes to be a single term, like `checked`, for example. Therefore, the attribute
+list `{: checked }` would result in `checked` if the [output format](../reference.md#output_format) is `html` or
+`checked="checked"` if the output format is `xhtml`.
+
+Curly braces can be backslash escaped to avoid being identified as an attribute list.
+
+```text
+\{ not an attribute list }
+```
+
+The colon after the opening brace is optional, but is supported to maintain consistency with other implementations.
+Therefore, the following is also a valid attribute list:
+
+```text
+{ #someid .someclass somekey='some value' }
+```
+
+In addition, the spaces after the opening brace and before the closing brace are optional. They are recommended as
+they improve readability, but they are not required.
+
+The Attribute List extension does not have any knowledge of which keys and/or values are valid in HTML. Therefore, it
+is up to the document author to ensure that valid keys and values are used. However, the extension will escape any
+characters in the key which are not valid by replacing them with an underscore. Multiple consecutive invalid
+characters are reduced to a single underscore.
+
 ### Block Level
 
 To define attributes for a block level element, the attribute list should
@@ -59,7 +84,7 @@ The above results in the following output:
 <p id="an_id" class="a_class">This is a paragraph.</p>
 ```
 
-The one exception is headers, as they are only ever allowed on one line.
+An exception is headers, as they are only ever allowed on one line.
 
 ```text
 A setext style header {: #setext}
@@ -74,6 +99,10 @@ The above results in the following output:
 <h1 id="setext">A setext style header</h1>
 <h3 id="hash">A hash style header</h3>
 ```
+
+!!! seealso "See Also"
+    By default, the [Fenced Code Blocks](./fenced_code_blocks.md#attributes) extension includes limited support for
+    attribute lists. To get [full support](./fenced_code_blocks.md#keyvalue-pairs), both extensions must be enabled.
 
 ### Inline
 
@@ -92,7 +121,8 @@ The above results in the following output:
 
 ### Limitations
 
-There are a few types of elements which attribute lists do not work with. As a reminder, Markdown is a subset of HTML and anything which cannot be expressed in Markdown can always be expressed with raw HTML directly.
+There are a few types of elements which attribute lists do not work with. As a reminder, Markdown is a subset of HTML
+and anything which cannot be expressed in Markdown can always be expressed with raw HTML directly.
 
 __Code Blocks:__
 
