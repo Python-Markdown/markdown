@@ -132,6 +132,7 @@ Treeprocessors
 tuple
 tuples
 unescape
+unescaping
 unittest
 unordered
 untrusted

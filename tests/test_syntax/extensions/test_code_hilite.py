@@ -564,6 +564,29 @@ class TestCodeHiliteExtension(TestCase):
             extensions=['codehilite']
         )
 
+    def testEntitiesIntact(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre>'
+                '<span></span>'
+                '<code>&lt; &amp;lt; and &gt; &amp;gt;'
+                '\n</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-text">'
+                '&lt; &amp;lt; and &gt; &amp;gt;\n'
+                '</code></pre>'
+            )
+        self.assertMarkdownRenders(
+            (
+                '\t:::text\n'
+                '\t< &lt; and > &gt;'
+            ),
+            expected,
+            extensions=['codehilite']
+        )
+
     def testHighlightAmps(self):
         if has_pygments:
             expected = (

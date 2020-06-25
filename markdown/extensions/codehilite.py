@@ -225,9 +225,11 @@ class HiliteTreeprocessor(Treeprocessor):
 
     def code_unescape(self, text):
         """Unescape code."""
-        text = text.replace("&amp;", "&")
         text = text.replace("&lt;", "<")
         text = text.replace("&gt;", ">")
+        # Escaped '&' should be replaced at the end to avoid
+        # conflicting with < and >.
+        text = text.replace("&amp;", "&")
         return text
 
     def run(self, root):
