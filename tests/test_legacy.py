@@ -184,8 +184,6 @@ class TestExtensionsExtra(LegacyTestCase):
 
     tables = Kwargs(extensions=['tables'])
 
-    tables_and_attr_list = Kwargs(extensions=['tables', 'attr_list'])
-
     extra_config = Kwargs(
         extensions=['extra'],
         extension_configs={

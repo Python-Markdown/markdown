@@ -53,6 +53,9 @@ Curly braces can be backslash escaped to avoid being identified as an attribute 
 \{ not an attribute list }
 ```
 
+Opening and closing curly braces which are empty or only contain whitespace are ignored whether they are escaped or
+not. Additionally, any attribute lists which are not located in the specific locations documented below are ignored.
+
 The colon after the opening brace is optional, but is supported to maintain consistency with other implementations.
 Therefore, the following is also a valid attribute list:
 
@@ -119,6 +122,40 @@ The above results in the following output:
 <p><a href="http://example.com" class="foo bar" title="Some title!">link</a></p>
 ```
 
+If the [tables](./tables.md) extension is enabled, attribute lists can be defined on table cells. To differentiate
+attributes for an inline element from attributes for the containing cell, the attribute list must be separated from
+the content by at least one space and be defined at the end of the cell content. As table cells can only ever be on
+a single line, the attribute list must remain on the same line as the content of the cell.
+
+```text
+| set on td    | set on em   |
+|--------------|-------------|
+| *a* { .foo } | *b*{ .foo } |
+```
+
+The above example results in the following output:
+
+```html
+<table>
+  <thead>
+    <tr>
+      <th>set on td</th>
+      <th>set on em</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="foo"><em>a</em></td>
+      <td><em class="foo">b</em></td>
+    </tr>
+  </tbody>
+</table>
+```
+
+Note that in the first column, the attribute list is preceded by a space; therefore, it is assigned to the table cell
+(`<td>` element). However, in the second column, the attribute list is not preceded by a space; therefore, it is
+assigned to the inline element (`<em>`) which immediately preceded it.
+
 ### Limitations
 
 There are a few types of elements which attribute lists do not work with. As a reminder, Markdown is a subset of HTML
@@ -147,7 +184,7 @@ __Implied Elements:__
 :   There are various HTML elements which are not represented in Markdown text, but only implied. For example, the
     `ul` and `ol` elements do not exist in Markdown. They are only implied by the presence of list items (`li`). There
     is no way to use an attribute list to define attributes on implied elements, including but not limited to the
-    following: `ul`, `ol`, `dl`, `table`, `thead`, `tbody`, `tr`, and `th`.
+    following: `ul`, `ol`, `dl`, `table`, `thead`, `tbody`, and `tr`.
 
 ## Usage
 

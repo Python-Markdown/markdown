@@ -64,10 +64,10 @@ def isheader(elem):
 
 class AttrListTreeprocessor(Treeprocessor):
 
-    BASE_RE = r'\{\:?([^\}\n]*)\}'
-    HEADER_RE = re.compile(r'[ ]+%s[ ]*$' % BASE_RE)
-    BLOCK_RE = re.compile(r'\n[ ]*%s[ ]*$' % BASE_RE)
-    INLINE_RE = re.compile(r'^%s' % BASE_RE)
+    BASE_RE = r'\{\:?[ ]*([^\}\n ][^\}\n]*)[ ]*\}'
+    HEADER_RE = re.compile(r'[ ]+{}[ ]*$'.format(BASE_RE))
+    BLOCK_RE = re.compile(r'\n[ ]*{}[ ]*$'.format(BASE_RE))
+    INLINE_RE = re.compile(r'^{}'.format(BASE_RE))
     NAME_RE = re.compile(r'[^A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff'
                          r'\u0370-\u037d\u037f-\u1fff\u200c-\u200d'
                          r'\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff'
@@ -79,8 +79,8 @@ class AttrListTreeprocessor(Treeprocessor):
             if self.md.is_block_level(elem.tag):
                 # Block level: check for attrs on last line of text
                 RE = self.BLOCK_RE
-                if isheader(elem) or elem.tag == 'dt':
-                    # header or def-term: check for attrs at end of line
+                if isheader(elem) or elem.tag in ['dt', 'td']:
+                    # header, def-term, or table cell: check for attrs at end of element
                     RE = self.HEADER_RE
                 if len(elem) and elem.tag == 'li':
                     # special case list items. children may include a ul or ol.
@@ -120,8 +120,6 @@ class AttrListTreeprocessor(Treeprocessor):
                 elif elem.text:
                     # no children. Get from text.
                     m = RE.search(elem.text)
-                    if not m and elem.tag == 'td':
-                        m = re.search(self.BASE_RE, elem.text)
                     if m:
                         self.assign_attrs(elem, m.group(1))
                         elem.text = elem.text[:m.start()]

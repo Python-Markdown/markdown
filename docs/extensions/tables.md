@@ -49,6 +49,9 @@ will be rendered as:
 </table>
 ```
 
+!!! seealso "See Also"
+    The [Attribute Lists](./attr_list.md) extension includes support for defining attributes on table cells.
+
 Usage
 -----
 
