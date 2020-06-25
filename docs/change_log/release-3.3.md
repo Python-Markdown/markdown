@@ -31,6 +31,20 @@ markdown.markdown(src, extensions=[FencedCodeExtension(lang_prefix='')])
     provide an option to include the language class in the output, let alone prefix it. Therefore, any language prefix
     is only applied when syntax highlighting is disabled.
 
+### Attribute Lists are more strict (#898).
+
+Empty curly braces are now completely ignored by the [Attribute List] extension. Previously, the extension would
+recognize them as attribute lists and remove them from the document. Therefore, it is no longer necessary to backslash
+escape a set of curly braces which are empty or only contain whitespace.
+
+Despite not being documented, previously an attribute list could be defined anywhere within a table cell and get
+applied to the cell (`<td>` element). Now the attribute list must be defined at the end of the cell content and must
+be separated from the rest of the content by at least one space. This makes it easy to differentiate between attribute
+lists defined on inline elements within a cell and the attribute list for the cell itself. It is also more consistent
+with how attribute lists are defined on other types of elements.
+
+In addition, the documentation for the extensions received an overhaul. The features (#987) and limitations (#965) of the extension are now fully documented.
+
 ## New features
 
 The following new features have been included in the 3.3 release:
@@ -55,10 +69,10 @@ The following bug fixes are included in the 3.3 release:
 
 * Avoid a `RecursionError` from deeply nested blockquotes (#799).
 * Fix issues with complex emphasis (#979).
-* Limitations of `attr_list` extension are Documented (#965).
 * Fix unescaping of HTML characters `<>` in CodeHilite (#990).
 
 [spec]: https://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
 [fenced_code]: ../extensions/fenced_code_blocks.md
 [codehilite]: ../extensions/code_hilite.md
 [enabled]: ../extensions/fenced_code_blocks.md#enabling-syntax-highlighting
+[Attribute List]: ../extensions/attr_list.md
