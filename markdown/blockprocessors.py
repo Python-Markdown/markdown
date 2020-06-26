@@ -276,7 +276,7 @@ class BlockQuoteProcessor(BlockProcessor):
     RE = re.compile(r'(^|\n)[ ]{0,3}>[ ]?(.*)')
 
     def test(self, parent, block):
-        return bool(self.RE.search(block))
+        return bool(self.RE.search(block)) and not util.nearing_recursion_limit()
 
     def run(self, parent, blocks):
         block = blocks.pop(0)
