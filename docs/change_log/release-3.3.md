@@ -56,6 +56,7 @@ The following bug fixes are included in the 3.3 release:
 * Avoid a `RecursionError` from deeply nested blockquotes (#799).
 * Fix issues with complex emphasis (#979).
 * Limitations of `attr_list` extension are Documented (#965).
+* Fix unescaping of HTML characters `<>` in CodeHilite (#990).
 
 [spec]: https://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
 [fenced_code]: ../extensions/fenced_code_blocks.md
