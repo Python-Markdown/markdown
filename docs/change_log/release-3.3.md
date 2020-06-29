@@ -53,6 +53,7 @@ The following new features have been included in the 3.3 release:
 
 The following bug fixes are included in the 3.3 release:
 
+* Avoid a `RecursionError` from deeply nested blockquotes (#799).
 * Fix issues with complex emphasis (#979).
 * Limitations of `attr_list` extension are Documented (#965).
 
