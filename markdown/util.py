@@ -26,6 +26,7 @@ from functools import wraps
 import warnings
 import xml.etree.ElementTree
 from .pep562 import Pep562
+from itertools import count
 
 try:
     from importlib import metadata
@@ -154,6 +155,23 @@ def code_escape(text):
     if ">" in text:
         text = text.replace(">", "&gt;")
     return text
+
+
+def _get_stack_depth(size=2):
+    """Get stack size for caller's frame.
+    See https://stackoverflow.com/a/47956089/866026
+    """
+    frame = sys._getframe(size)
+
+    for size in count(size):
+        frame = frame.f_back
+        if not frame:
+            return size
+
+
+def nearing_recursion_limit():
+    """Return true if current stack depth is withing 100 of maximum limit."""
+    return sys.getrecursionlimit() - _get_stack_depth() < 100
 
 
 """
