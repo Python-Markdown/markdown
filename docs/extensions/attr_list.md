@@ -156,6 +156,8 @@ Note that in the first column, the attribute list is preceded by a space; theref
 (`<td>` element). However, in the second column, the attribute list is not preceded by a space; therefore, it is
 assigned to the inline element (`<em>`) which immediately preceded it.
 
+Attribute lists may also be defined on table header cells (`<th>` elements) in the same manner.
+
 ### Limitations
 
 There are a few types of elements which attribute lists do not work with. As a reminder, Markdown is a subset of HTML

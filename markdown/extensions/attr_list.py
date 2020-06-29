@@ -79,7 +79,7 @@ class AttrListTreeprocessor(Treeprocessor):
             if self.md.is_block_level(elem.tag):
                 # Block level: check for attrs on last line of text
                 RE = self.BLOCK_RE
-                if isheader(elem) or elem.tag in ['dt', 'td']:
+                if isheader(elem) or elem.tag in ['dt', 'td', 'th']:
                     # header, def-term, or table cell: check for attrs at end of element
                     RE = self.HEADER_RE
                 if len(elem) and elem.tag == 'li':

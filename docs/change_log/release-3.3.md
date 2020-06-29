@@ -43,6 +43,9 @@ be separated from the rest of the content by at least one space. This makes it e
 lists defined on inline elements within a cell and the attribute list for the cell itself. It is also more consistent
 with how attribute lists are defined on other types of elements.
 
+The extension has also added support for defining attribute lists on table header cells (`<th>` elements) in the same
+manner as data cells (`<td>` elements).
+
 In addition, the documentation for the extensions received an overhaul. The features (#987) and limitations (#965) of the extension are now fully documented.
 
 ## New features

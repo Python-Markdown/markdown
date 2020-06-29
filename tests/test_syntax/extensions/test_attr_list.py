@@ -39,9 +39,10 @@ class TestAttrList(TestCase):
         self.assertMarkdownRenders(
             self.dedent(
                 """
-                | valid on td | inline      | empty | missing space | not at end   |
+                | A { .foo }  | *B*{ .foo } | C { } | D{ .foo }     | E { .foo } F |
                 |-------------|-------------|-------|---------------|--------------|
                 | a { .foo }  | *b*{ .foo } | c { } | d{ .foo }     | e { .foo } f |
+                | valid on td | inline      | empty | missing space | not at end   |
                 """
             ),
             self.dedent(
@@ -49,11 +50,11 @@ class TestAttrList(TestCase):
                 <table>
                 <thead>
                 <tr>
-                <th>valid on td</th>
-                <th>inline</th>
-                <th>empty</th>
-                <th>missing space</th>
-                <th>not at end</th>
+                <th class="foo">A</th>
+                <th><em class="foo">B</em></th>
+                <th>C { }</th>
+                <th>D{ .foo }</th>
+                <th>E { .foo } F</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -63,6 +64,13 @@ class TestAttrList(TestCase):
                 <td>c { }</td>
                 <td>d{ .foo }</td>
                 <td>e { .foo } f</td>
+                </tr>
+                <tr>
+                <td>valid on td</td>
+                <td>inline</td>
+                <td>empty</td>
+                <td>missing space</td>
+                <td>not at end</td>
                 </tr>
                 </tbody>
                 </table>
