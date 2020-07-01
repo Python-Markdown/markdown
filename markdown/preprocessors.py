@@ -75,9 +75,11 @@ class NormalizeWhitespace(Preprocessor):
 class HtmlBlockPreprocessor(Preprocessor):
     """Remove html blocks from the text and store them for later retrieval."""
 
+    markdown_in_raw = False
+
     def run(self, lines):
         source = '\n'.join(lines)
-        parser = HTMLExtractor(md=self.md)
+        parser = HTMLExtractor(self.md, self.markdown_in_raw)
         parser.feed(source)
         parser.close()
         return ''.join(parser.cleandoc).split('\n')

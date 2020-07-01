@@ -36,12 +36,13 @@ class HTMLExtractor(parser.HTMLParser):
     to `md` and the remaining text is stored in `cleandoc` as a list of strings.
     """
 
-    def __init__(self, md, *args, **kwargs):
+    def __init__(self, md, md_in_raw, *args, **kwargs):
         if 'convert_charrefs' not in kwargs:
             kwargs['convert_charrefs'] = False
         # This calls self.reset
         super().__init__(*args, **kwargs)
         self.md = md
+        self.md_in_raw = md_in_raw
 
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
@@ -80,16 +81,25 @@ class HTMLExtractor(parser.HTMLParser):
         return self.rawdata[self.line_offset:self.line_offset + self.offset].strip() == ''
 
     def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
         self.stack.append(tag)
 
         if self.at_line_start() and self.md.is_block_level(tag) and not self.inraw:
-            # Started a new raw block
-            self.inraw = True
+            if not (self.md_in_raw and attrs.get('markdown', None) == '1'):
+                # Started a new raw block
+                self.inraw = True
             if len(self.cleandoc):
                 # Insert blank line between this and previous line.
                 self.cleandoc.append('\n')
 
-        text = self.get_starttag_text()
+        if self.md_in_raw and 'markdown' in attrs:
+            # Remove markdown attribute and rebuild start tag.
+            attrs.pop('markdown')
+            attrs_str = ' ' + ' '.join('{}="{}"'.format(k, v) for k, v in attrs.items()) if attrs else ''
+            text = '<{}{}>'.format(tag, attrs_str)
+        else:
+            text = self.get_starttag_text()
+
         if self.inraw:
             self._cache.append(text)
         else:
