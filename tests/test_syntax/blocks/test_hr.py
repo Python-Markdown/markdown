@@ -308,6 +308,22 @@ class TestHorizontalRules(TestCase):
             )
         )
 
+    def test_hr_after_emstrong(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ***text***
+                ***
+                """
+            ),
+            self.dedent(
+                """
+                <p><strong><em>text</em></strong></p>
+                <hr />
+                """
+            )
+        )
+
     def test_not_hr_2_asterisks(self):
         self.assertMarkdownRenders(
             '**',
