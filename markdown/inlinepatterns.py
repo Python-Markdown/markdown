@@ -84,6 +84,9 @@ def build_inlinepatterns(md, **kwargs):
     inlinePatterns.register(
         ShortReferenceInlineProcessor(REFERENCE_RE, md), 'short_reference', 130
     )
+    inlinePatterns.register(
+        ShortImageReferenceInlineProcessor(IMAGE_REFERENCE_RE, md), 'short_image_ref', 125
+    )
     inlinePatterns.register(AutolinkInlineProcessor(AUTOLINK_RE, md), 'autolink', 120)
     inlinePatterns.register(AutomailInlineProcessor(AUTOMAIL_RE, md), 'automail', 110)
     inlinePatterns.register(SubstituteTagInlineProcessor(LINE_BREAK_RE, 'br'), 'linebreak', 100)
@@ -842,6 +845,14 @@ class ImageReferenceInlineProcessor(ReferenceInlineProcessor):
             el.set("title", title)
         el.set("alt", self.unescape(text))
         return el
+
+
+class ShortImageReferenceInlineProcessor(ImageReferenceInlineProcessor):
+    """ Short form of inage reference: ![ref]. """
+    def evalId(self, data, index, text):
+        """Evaluate the id from of [ref]  """
+
+        return text.lower(), index, True
 
 
 class AutolinkInlineProcessor(InlineProcessor):
