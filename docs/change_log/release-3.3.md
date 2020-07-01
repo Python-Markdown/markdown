@@ -70,6 +70,7 @@ The following new features have been included in the 3.3 release:
 
 The following bug fixes are included in the 3.3 release:
 
+* Support short reference image links (#894).
 * Avoid a `RecursionError` from deeply nested blockquotes (#799).
 * Fix issues with complex emphasis (#979).
 * Fix unescaping of HTML characters `<>` in CodeHilite (#990).
