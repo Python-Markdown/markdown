@@ -972,7 +972,7 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <?php echo '>'; ?>
-                
+
                 <p><em>bar</em></p>
                 """
             )
@@ -1054,7 +1054,7 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <!DOCTYPE html>
-                
+
                 <p><em>bar</em></p>
                 """
             )

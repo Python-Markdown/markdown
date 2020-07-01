@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Python Markdown
 
@@ -13,19 +12,14 @@ Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
 Currently maintained by Waylan Limberg (https://github.com/waylan),
 Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
 
-Copyright 2007-2019 The Python Markdown Project (v. 1.7 and later)
+Copyright 2007-2020 The Python Markdown Project (v. 1.7 and later)
 Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 Copyright 2004 Manfred Stienstra (the original version)
 
 License: BSD (see LICENSE.md for details).
 """
 
-from __future__ import unicode_literals
-from . import util
-try:
-    import HTMLParser as parser
-except ImportError:
-    from html import parser
+from html import parser
 import re
 
 # Monkeypatch HTMLParser to only accept `?>` to close Processing Instructions.
@@ -43,10 +37,10 @@ class HTMLExtractor(parser.HTMLParser):
     """
 
     def __init__(self, md, *args, **kwargs):
-        if util.PY3 and 'convert_charrefs' not in kwargs:
+        if 'convert_charrefs' not in kwargs:
             kwargs['convert_charrefs'] = False
         # This calls self.reset
-        parser.HTMLParser.__init__(self, *args, **kwargs)  # TODO: Use super when we drop PY2 support
+        super().__init__(*args, **kwargs)
         self.md = md
 
     def reset(self):
@@ -55,11 +49,11 @@ class HTMLExtractor(parser.HTMLParser):
         self.stack = []  # When inraw==True, stack contains a list of tags
         self._cache = []
         self.cleandoc = []
-        parser.HTMLParser.reset(self)  # TODO: Use super when we drop PY2 support
+        super().reset()
 
     def close(self):
         """Handle any buffered data."""
-        parser.HTMLParser.close(self)  # TODO: Use super when we drop PY2 support
+        super().close()
         # Handle any unclosed tags.
         if len(self._cache):
             self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
@@ -82,7 +76,7 @@ class HTMLExtractor(parser.HTMLParser):
             return True
         if self.offset > 3:
             return False
-        # Confirm up to first 3 chars are whitespace 
+        # Confirm up to first 3 chars are whitespace
         return self.rawdata[self.line_offset:self.line_offset + self.offset].strip() == ''
 
     def handle_starttag(self, tag, attrs):
@@ -109,7 +103,7 @@ class HTMLExtractor(parser.HTMLParser):
             text = self.rawdata[start:m.end()]
         else:
             # Failed to extract from raw data. Assume well formed and lowercase.
-            text = '</{0}>'.format(tag)
+            text = '</{}>'.format(tag)
 
         if tag in self.stack:
             while self.stack:

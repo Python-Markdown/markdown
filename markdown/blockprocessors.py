@@ -35,7 +35,6 @@ import re
 import xml.etree.ElementTree as etree
 from . import util
 from .blockparser import BlockParser
-from .htmlparser import HTMLExtractor
 
 logger = logging.getLogger('MARKDOWN')
 
