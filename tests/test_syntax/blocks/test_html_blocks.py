@@ -134,7 +134,6 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <p>*foo*</p>
-
                 <p><div><em>bar</em></div></p>
                 """
             )
@@ -201,7 +200,6 @@ class TestHTMLBlocks(TestCase):
                 """
                 <p>Some <em>Markdown</em> text.</p>
                 <p>*Raw* HTML.</p>
-
                 <p>More <em>Markdown</em> text.</p>
                 """
             )
@@ -216,12 +214,10 @@ class TestHTMLBlocks(TestCase):
                 More *Markdown* text.
                 """
             ),
-            # TODO: Work out a way to eliminate the extra blank line.
             self.dedent(
                 """
                 <p>Some <em>Markdown</em> text.</p>
                 <p>*Raw* HTML.</p>
-
                 <p>More <em>Markdown</em> text.</p>
                 """
             )
@@ -245,14 +241,12 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
-    # Note: The blank line between the tags is a change in behavior.
     def test_raw_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             '<p>*foo*</p>*bar*',
             self.dedent(
                 """
                 <p>*foo*</p>
-
                 <p><em>bar</em></p>
                 """
             )
@@ -294,11 +288,9 @@ class TestHTMLBlocks(TestCase):
                 <p>A second raw paragraph.</p>
                 """
             ),
-            # TODO: Work out a way to eliminate the extra blank line.
             self.dedent(
                 """
                 <p>A raw paragraph.</p>
-
                 <p>A second raw paragraph.</p>
                 """
             )
@@ -316,7 +308,6 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <p>A raw paragraph.</p>
-
                 <p>A second raw paragraph.</p>
                 """
             )
@@ -669,15 +660,12 @@ class TestHTMLBlocks(TestCase):
             '<p><code>&lt;!-- *foo* --&gt;</code></p>'
         )
 
-    # Note: this is a change in behavior for Python-Markdown only in that a blank line is added.
-    # While it does not match the reference implementation, there is no difference in rendering.
     def test_raw_comment_one_line_followed_by_text(self):
         self.assertMarkdownRenders(
             '<!-- *foo* -->*bar*',
             self.dedent(
                 """
                 <!-- *foo* -->
-
                 <p><em>bar</em></p>
                 """
             )
@@ -691,7 +679,6 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <!-- *foo* -->
-
                 <p><p><em>bar</em></p></p>
                 """
             )
@@ -972,7 +959,6 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <?php echo '>'; ?>
-
                 <p><em>bar</em></p>
                 """
             )
@@ -1054,7 +1040,6 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <!DOCTYPE html>
-
                 <p><em>bar</em></p>
                 """
             )
@@ -1091,7 +1076,6 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <![CDATA[ document.write(">"); ]]>
-
                 <p><em>bar</em></p>
                 """
             )

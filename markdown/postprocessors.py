@@ -71,9 +71,8 @@ class RawHtmlPostprocessor(Postprocessor):
         for i in range(self.md.htmlStash.html_counter):
             html = self.md.htmlStash.rawHtmlBlocks[i]
             if self.isblocklevel(html):
-                replacements["<p>%s</p>" %
-                             (self.md.htmlStash.get_placeholder(i))] = \
-                    html + "\n"
+                replacements["<p>{}</p>".format(
+                    self.md.htmlStash.get_placeholder(i))] = html
             replacements[self.md.htmlStash.get_placeholder(i)] = html
 
         if replacements:
