@@ -78,6 +78,12 @@ class TestHTMLBlocks(TestCase):
             '<p><code>&lt;p&gt;code span&lt;/p&gt;</code></p>'
         )
 
+    def test_code_span_open_gt(self):
+        self.assertMarkdownRenders(
+            '*bar* `<` *foo*',
+            '<p><em>bar</em> <code>&lt;</code> <em>foo</em></p>'
+        )
+
     def test_raw_empty(self):
         self.assertMarkdownRenders(
             '<p></p>',
@@ -237,6 +243,26 @@ class TestHTMLBlocks(TestCase):
                 <p>A paragraph with a block-level
                 <code>&lt;p&gt;code span&lt;/p&gt;</code>, which is
                 at the start of a line.</p>
+                """
+            )
+        )
+
+    def test_raw_block_preceded_by_markdown_code_span_with_unclosed_block_tag(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                A paragraph with a block-level code span: `<div>`.
+
+                <p>*not markdown*</p>
+
+                This is *markdown*
+                """
+            ),
+            self.dedent(
+                """
+                <p>A paragraph with a block-level code span: <code>&lt;div&gt;</code>.</p>
+                <p>*not markdown*</p>
+                <p>This is <em>markdown</em></p>
                 """
             )
         )
