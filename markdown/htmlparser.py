@@ -48,7 +48,8 @@ class HTMLExtractor(parser.HTMLParser):
         """Reset this instance.  Loses all unprocessed data."""
         self.inraw = False
         self.stack = []  # When inraw==True, stack contains a list of tags
-        self.mdstack = []  # WHen markdown=1, stack contains a list of tags
+        self.container_index = None # Index in stack of parent tag of raw block
+        self.mdstack = []  # When markdown=1, stack contains a list of tags
         self._cache = []
         self.cleandoc = []
         super().reset()
@@ -92,6 +93,7 @@ class HTMLExtractor(parser.HTMLParser):
             if not (self.md_in_raw and attrs.get('markdown', None) == '1'):
                 # Started a new raw block
                 self.inraw = True
+                self.container_index = len(self.stack) - 1
             if len(self.cleandoc):
                 # Insert blank line between this and previous line.
                 self.cleandoc.append('\n')
@@ -126,9 +128,10 @@ class HTMLExtractor(parser.HTMLParser):
             while self.stack:
                 if self.stack.pop() == tag:
                     break
-        if self.inraw and len(self.stack) == 0:
+        if self.inraw and len(self.stack) <= self.container_index:
             # End of raw block
             self.inraw = False
+            self.container_index = None
             self._cache.append(text)
             self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
             # Insert blank line between this and next line. TODO: make this conditional??
