@@ -36,20 +36,18 @@ class HTMLExtractor(parser.HTMLParser):
     to `md` and the remaining text is stored in `cleandoc` as a list of strings.
     """
 
-    def __init__(self, md, md_in_raw, *args, **kwargs):
+    def __init__(self, md, *args, **kwargs):
         if 'convert_charrefs' not in kwargs:
             kwargs['convert_charrefs'] = False
         # This calls self.reset
         super().__init__(*args, **kwargs)
         self.md = md
-        self.md_in_raw = md_in_raw
 
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
         self.inraw = False
         self.stack = []  # When inraw==True, stack contains a list of tags
         self.container_index = -1 # Index in stack of parent tag of raw block
-        self.mdstack = []  # When markdown=1, stack contains a list of tags
         self._cache = []
         self.cleandoc = []
         super().reset()
@@ -90,29 +88,18 @@ class HTMLExtractor(parser.HTMLParser):
         self.stack.append(tag)
 
         if self.at_line_start() and self.md.is_block_level(tag) and not self.inraw:
-            if not (self.md_in_raw and attrs.get('markdown', None) == '1'):
-                # Started a new raw block
-                self.inraw = True
-                self.container_index = len(self.stack) - 1
+            # Started a new raw block
+            self.inraw = True
+            self.container_index = len(self.stack) - 1
             if len(self.cleandoc):
                 # Insert blank line between this and previous line.
                 self.cleandoc.append('\n')
 
-        if not self.inraw and self.md_in_raw and 'markdown' in attrs:
-            self.mdstack.append(tag)
-            # Remove markdown attribute and rebuild start tag.
-            attrs.pop('markdown')
-            attrs_str = ' ' + ' '.join('{}="{}"'.format(k, v) for k, v in attrs.items()) if attrs else ''
-            text = '<{}{}>'.format(tag, attrs_str)
-            self.cleandoc.append(self.md.htmlStash.store(text))
-            if tag != 'p':
-                self.cleandoc.append('\n\n')
+        text = self.get_starttag_text()
+        if self.inraw:
+            self._cache.append(text)
         else:
-            text = self.get_starttag_text()
-            if self.inraw:
-                self._cache.append(text)
-            else:
-                self.cleandoc.append(text)
+            self.cleandoc.append(text)
 
     def handle_endtag(self, tag):
         # Attempt to extract actual tag from raw source text
@@ -140,15 +127,6 @@ class HTMLExtractor(parser.HTMLParser):
             self._cache = []
         elif self.inraw:
             self._cache.append(text)
-        elif tag in self.mdstack:
-            # Handle closing tag of markdown=1 element
-            while self.mdstack:
-                if self.mdstack.pop() == tag:
-                    break
-            if tag != 'p':
-                self.cleandoc.append('\n\n')
-            self.cleandoc.append(self.md.htmlStash.store(text))
-            self.cleandoc.append('\n\n')
         else:
             self.cleandoc.append(text)
 

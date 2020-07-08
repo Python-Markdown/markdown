@@ -16,9 +16,98 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..blockprocessors import BlockProcessor
+from ..preprocessors import Preprocessor
 from .. import util
+from ..htmlparser import HTMLExtractor
+from html import parser
 import re
 import xml.etree.ElementTree as etree
+
+
+class HTMLExtractorExtra(HTMLExtractor):
+
+    def reset(self):
+        """Reset this instance.  Loses all unprocessed data."""
+        self.mdstack = []  # When markdown=1, stack contains a list of tags
+        super().reset()
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        self.stack.append(tag)
+
+        if self.at_line_start() and self.md.is_block_level(tag) and not self.inraw:
+            if not attrs.get('markdown', None) == '1':
+                # Started a new raw block
+                self.inraw = True
+                self.container_index = len(self.stack) - 1
+            if len(self.cleandoc):
+                # Insert blank line between this and previous line.
+                self.cleandoc.append('\n')
+
+        if not self.inraw and 'markdown' in attrs:
+            self.mdstack.append(tag)
+            # Remove markdown attribute and rebuild start tag.
+            attrs.pop('markdown')
+            attrs_str = ' ' + ' '.join('{}="{}"'.format(k, v) for k, v in attrs.items()) if attrs else ''
+            text = '<{}{}>'.format(tag, attrs_str)
+            self.cleandoc.append(self.md.htmlStash.store(text))
+            if tag != 'p':
+                self.cleandoc.append('\n\n')
+        else:
+            text = self.get_starttag_text()
+            if self.inraw:
+                self._cache.append(text)
+            else:
+                self.cleandoc.append(text)
+
+    def handle_endtag(self, tag):
+        # Attempt to extract actual tag from raw source text
+        start = self.line_offset + self.offset
+        m = parser.endendtag.search(self.rawdata, start)
+        if m:
+            text = self.rawdata[start:m.end()]
+        else:
+            # Failed to extract from raw data. Assume well formed and lowercase.
+            text = '</{}>'.format(tag)
+
+        if tag in self.stack:
+            while self.stack:
+                if self.stack.pop() == tag:
+                    break
+        if self.inraw and len(self.stack) <= self.container_index:
+            # End of raw block
+            self.inraw = False
+            self.stack = [] # Reset stack as it could have extranious items in it.
+            self.container_index = -1
+            self._cache.append(text)
+            self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
+            # Insert blank line between this and next line. TODO: make this conditional??
+            self.cleandoc.append('\n\n')
+            self._cache = []
+        elif self.inraw:
+            self._cache.append(text)
+        elif tag in self.mdstack:
+            # Handle closing tag of markdown=1 element
+            while self.mdstack:
+                if self.mdstack.pop() == tag:
+                    break
+            if tag != 'p':
+                self.cleandoc.append('\n\n')
+            self.cleandoc.append(self.md.htmlStash.store(text))
+            self.cleandoc.append('\n\n')
+        else:
+            self.cleandoc.append(text)
+
+
+class HtmlBlockPreprocessor(Preprocessor):
+    """Remove html blocks from the text and store them for later retrieval."""
+
+    def run(self, lines):
+        source = '\n'.join(lines)
+        parser = HTMLExtractorExtra(self.md)
+        parser.feed(source)
+        parser.close()
+        return ''.join(parser.cleandoc).split('\n')
 
 
 class MarkdownInHtmlProcessor(BlockProcessor):
@@ -86,8 +175,8 @@ class MarkdownInHtmlExtension(Extension):
     def extendMarkdown(self, md):
         """ Register extension instances. """
 
-        # Turn on processing of markdown text within raw html
-        md.preprocessors['html_block'].markdown_in_raw = True
+        # Replace raw HTML preprocessor
+        md.preprocessors.register(HtmlBlockPreprocessor(md), 'html_block', 20)
         # md.parser.blockprocessors.register(
         #     MarkdownInHtmlProcessor(md.parser), 'markdown_block', 105
         # )
