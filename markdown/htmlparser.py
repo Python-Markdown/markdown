@@ -79,18 +79,28 @@ class HTMLExtractor(parser.HTMLParser):
         # Confirm up to first 3 chars are whitespace
         return self.rawdata[self.line_offset:self.line_offset + self.offset].strip() == ''
 
-    def store_cache(self):
-        self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
+    def get_endtag_text(self, tag):
+        """
+        Returns the text of the end tag.
+
+        If it fails to extract the actual text from the raw data, it builds a closing tag with `tag`.
+        """
+        # Attempt to extract actual tag from raw source text
+        start = self.line_offset + self.offset
+        m = parser.endendtag.search(self.rawdata, start)
+        if m:
+            return self.rawdata[start:m.end()]
+        else:
+            # Failed to extract from raw data. Assume well formed and lowercase.
+            return '</{}>'.format(tag)
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
 
         if self.at_line_start() and self.md.is_block_level(tag) and not self.inraw:
-            # Started a new raw block
+            # Started a new raw block. Prepare stack.
             self.inraw = True
-            if len(self.cleandoc):
-                # Insert blank line between this and previous line.
-                self.cleandoc.append('\n')
+            self.cleandoc.append('\n')
 
         text = self.get_starttag_text()
         if self.inraw:
@@ -100,29 +110,22 @@ class HTMLExtractor(parser.HTMLParser):
             self.cleandoc.append(text)
 
     def handle_endtag(self, tag):
-        # Attempt to extract actual tag from raw source text
-        start = self.line_offset + self.offset
-        m = parser.endendtag.search(self.rawdata, start)
-        if m:
-            text = self.rawdata[start:m.end()]
-        else:
-            # Failed to extract from raw data. Assume well formed and lowercase.
-            text = '</{}>'.format(tag)
+        text = self.get_endtag_text(tag)
 
-        if self.inraw and tag in self.stack:
-            while self.stack:
-                if self.stack.pop() == tag:
-                    break
-        if self.inraw and len(self.stack) == 0:
-            # End of raw block
-            self.inraw = False
+        if self.inraw:
             self._cache.append(text)
-            self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
-            # Insert blank line between this and next line. TODO: make this conditional??
-            self.cleandoc.append('\n\n')
-            self._cache = []
-        elif self.inraw:
-            self._cache.append(text)
+            if tag in self.stack:
+                # Remove tag from stack
+                while self.stack:
+                    if self.stack.pop() == tag:
+                        break
+            if len(self.stack) == 0:
+                # End of raw block. Reset stack.
+                self.inraw = False
+                self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
+                # Insert blank line between this and next line.
+                self.cleandoc.append('\n\n')
+                self._cache = []
         else:
             self.cleandoc.append(text)
 
