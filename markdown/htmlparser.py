@@ -26,6 +26,10 @@ import re
 parser.piclose = re.compile(r'\?>')
 # Monkeypatch HTMLParser to only recognize entity references with a closing semicolon.
 parser.entityref = re.compile(r'&([a-zA-Z][-.a-zA-Z0-9]*);')
+# Monkeypatch HTMLParser to no longer support partial entities. We are always feeding a complete block,
+# so the 'incomplete' functionality is unnecessary. As the entityref regex is run right before incomplete,
+# and the two regex are the same, then incomplete will simply never match and we avoid the logic within.
+parser.incomplete = parser.entityref
 
 
 class HTMLExtractor(parser.HTMLParser):
