@@ -19,20 +19,29 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-from html import parser
 import re
+import importlib
+import sys
+
+
+# Import a copy of the html.parser lib as `htmlparser` so we can monkeypatch it.
+# Users can still do `from html import parser` and get the default behavior.
+spec = importlib.util.find_spec('html.parser')
+htmlparser = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(htmlparser)
+sys.modules['htmlparser'] = htmlparser
 
 # Monkeypatch HTMLParser to only accept `?>` to close Processing Instructions.
-parser.piclose = re.compile(r'\?>')
+htmlparser.piclose = re.compile(r'\?>')
 # Monkeypatch HTMLParser to only recognize entity references with a closing semicolon.
-parser.entityref = re.compile(r'&([a-zA-Z][-.a-zA-Z0-9]*);')
+htmlparser.entityref = re.compile(r'&([a-zA-Z][-.a-zA-Z0-9]*);')
 # Monkeypatch HTMLParser to no longer support partial entities. We are always feeding a complete block,
 # so the 'incomplete' functionality is unnecessary. As the entityref regex is run right before incomplete,
 # and the two regex are the same, then incomplete will simply never match and we avoid the logic within.
-parser.incomplete = parser.entityref
+htmlparser.incomplete = htmlparser.entityref
 
 
-class HTMLExtractor(parser.HTMLParser):
+class HTMLExtractor(htmlparser.HTMLParser):
     """
     Extract raw HTML from text.
 
@@ -91,7 +100,7 @@ class HTMLExtractor(parser.HTMLParser):
         """
         # Attempt to extract actual tag from raw source text
         start = self.line_offset + self.offset
-        m = parser.endendtag.search(self.rawdata, start)
+        m = htmlparser.endendtag.search(self.rawdata, start)
         if m:
             return self.rawdata[start:m.end()]
         else:
