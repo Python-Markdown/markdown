@@ -206,6 +206,7 @@ class TestHTMLBlocks(TestCase):
                 """
                 <p>Some <em>Markdown</em> text.</p>
                 <p>*Raw* HTML.</p>
+
                 <p>More <em>Markdown</em> text.</p>
                 """
             )
@@ -262,6 +263,7 @@ class TestHTMLBlocks(TestCase):
                 """
                 <p>A paragraph with a block-level code span: <code>&lt;div&gt;</code>.</p>
                 <p>*not markdown*</p>
+
                 <p>This is <em>markdown</em></p>
                 """
             )
@@ -334,6 +336,7 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <p>A raw paragraph.</p>
+                
                 <p>A second raw paragraph.</p>
                 """
             )

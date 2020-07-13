@@ -124,7 +124,10 @@ class HTMLExtractor(parser.HTMLParser):
                     if self.stack.pop() == tag:
                         break
             if len(self.stack) == 0:
-                # End of raw block. Reset stack.
+                # End of raw block.
+                if self.rawdata[self.line_offset + self.offset + len(text):].startswith('\n\n'):
+                    self._cache.append('\n')
+                # Reset stack.
                 self.inraw = False
                 self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
                 # Insert blank line between this and next line.
