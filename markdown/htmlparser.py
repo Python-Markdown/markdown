@@ -40,6 +40,10 @@ htmlparser.entityref = re.compile(r'&([a-zA-Z][-.a-zA-Z0-9]*);')
 # and the two regex are the same, then incomplete will simply never match and we avoid the logic within.
 htmlparser.incomplete = htmlparser.entityref
 
+# Match a blank line at the start of a block of text (two newlines).
+# The newlines may be preceded by additional whitespace.
+blank_line_re = re.compile(r'^([ ]*\n){2}')
+
 
 class HTMLExtractor(htmlparser.HTMLParser):
     """
@@ -135,9 +139,11 @@ class HTMLExtractor(htmlparser.HTMLParser):
                         break
             if len(self.stack) == 0:
                 # End of raw block.
-                if self.rawdata[self.line_offset + self.offset + len(text):].startswith('\n\n'):
+                if blank_line_re.match(self.rawdata[self.line_offset + self.offset + len(text):]):
+                    # Preserve blank line and end of raw block.
                     self._cache.append('\n')
                 else:
+                    # More content exists after endtag.
                     self.intail = True
                 # Reset stack.
                 self.inraw = False
@@ -163,9 +169,11 @@ class HTMLExtractor(htmlparser.HTMLParser):
             self._cache.append(data)
         elif self.at_line_start() and is_block:
             # Handle this as a standalone raw block
-            if self.rawdata[self.line_offset + self.offset + len(data):].startswith('\n\n'):
+            if blank_line_re.match(self.rawdata[self.line_offset + self.offset + len(data):]):
+                # Preserve blank line after tag in raw block.
                 data += '\n'
             else:
+                # More content exists after tag.
                 self.intail = True
             self.cleandoc.append(self.md.htmlStash.store(data))
             # Insert blank line between this and next line.
