@@ -289,6 +289,17 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
+    def test_raw_one_line_followed_by_span(self):
+        self.assertMarkdownRenders(
+            "<p>*foo*</p><span>*bar*</span>",
+            self.dedent(
+                """
+                <p>*foo*</p>
+                <p><span><em>bar</em></span></p>
+                """
+            )
+        )
+
     def test_raw_with_markdown_blocks(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -345,7 +356,7 @@ class TestHTMLBlocks(TestCase):
             self.dedent(
                 """
                 <p>A raw paragraph.</p>
-                
+
                 <p>A second raw paragraph.</p>
                 """
             )

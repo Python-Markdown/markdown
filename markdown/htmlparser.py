@@ -115,7 +115,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
 
-        if self.intail or (self.at_line_start() and self.md.is_block_level(tag) and not self.inraw):
+        if self.md.is_block_level(tag) and (self.intail or (self.at_line_start() and not self.inraw)):
             # Started a new raw block. Prepare stack.
             self.inraw = True
             self.cleandoc.append('\n')
