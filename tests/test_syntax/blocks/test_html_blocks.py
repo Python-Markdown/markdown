@@ -132,15 +132,24 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
-    # Note: This is a change in behavior, but follows the rules and the reference implementation.
-    # To change we would need to not restrict block-level content to begin at start of line.
-    def test_multiple_raw_single__line(self):
+    def test_multiple_raw_single_line(self):
         self.assertMarkdownRenders(
             '<p>*foo*</p><div>*bar*</div>',
             self.dedent(
                 """
                 <p>*foo*</p>
-                <p><div><em>bar</em></div></p>
+                <div>*bar*</div>
+                """
+            )
+        )
+
+    def test_multiple_raw_single_line_with_pi(self):
+        self.assertMarkdownRenders(
+            "<p>*foo*</p><?php echo '>'; ?>",
+            self.dedent(
+                """
+                <p>*foo*</p>
+                <?php echo '>'; ?>
                 """
             )
         )
@@ -700,15 +709,13 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
-    # This is a change in behavior and does not match the reference implementation.
-    # We have no way to determine if text is on the same line, so we get this. TODO: reevaluate!
     def test_raw_comment_one_line_followed_by_html(self):
         self.assertMarkdownRenders(
             '<!-- *foo* --><p>*bar*</p>',
             self.dedent(
                 """
                 <!-- *foo* -->
-                <p><p><em>bar</em></p></p>
+                <p>*bar*</p>
                 """
             )
         )

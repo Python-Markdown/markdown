@@ -59,6 +59,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
         self.inraw = False
+        self.intail = False
         self.stack = []  # When inraw==True, stack contains a list of tags
         self._cache = []
         self.cleandoc = []
@@ -110,7 +111,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
 
-        if self.at_line_start() and self.md.is_block_level(tag) and not self.inraw:
+        if self.intail or (self.at_line_start() and self.md.is_block_level(tag) and not self.inraw):
             # Started a new raw block. Prepare stack.
             self.inraw = True
             self.cleandoc.append('\n')
@@ -136,6 +137,8 @@ class HTMLExtractor(htmlparser.HTMLParser):
                 # End of raw block.
                 if self.rawdata[self.line_offset + self.offset + len(text):].startswith('\n\n'):
                     self._cache.append('\n')
+                else:
+                    self.intail = True
                 # Reset stack.
                 self.inraw = False
                 self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
@@ -146,6 +149,8 @@ class HTMLExtractor(htmlparser.HTMLParser):
             self.cleandoc.append(text)
 
     def handle_data(self, data):
+        if self.intail and '\n' in data:
+            self.intail = False
         if self.inraw:
             self._cache.append(data)
         else:
@@ -153,11 +158,15 @@ class HTMLExtractor(htmlparser.HTMLParser):
 
     def handle_empty_tag(self, data, is_block):
         """ Handle empty tags (`<data>`). """
-        if self.inraw:
+        if self.inraw or self.intail:
             # Append this to the existing raw block
             self._cache.append(data)
         elif self.at_line_start() and is_block:
             # Handle this as a standalone raw block
+            if self.rawdata[self.line_offset + self.offset + len(data):].startswith('\n\n'):
+                data += '\n'
+            else:
+                self.intail = True
             self.cleandoc.append(self.md.htmlStash.store(data))
             # Insert blank line between this and next line.
             self.cleandoc.append('\n\n')
