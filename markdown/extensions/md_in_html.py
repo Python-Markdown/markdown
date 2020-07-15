@@ -18,7 +18,7 @@ from . import Extension
 from ..blockprocessors import BlockProcessor
 from ..preprocessors import Preprocessor
 from .. import util
-from ..htmlparser import HTMLExtractor
+from ..htmlparser import HTMLExtractor, blank_line_re
 from html import parser
 import re
 import xml.etree.ElementTree as etree
@@ -33,15 +33,11 @@ class HTMLExtractorExtra(HTMLExtractor):
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
-        self.stack.append(tag)
 
-        if self.at_line_start() and self.md.is_block_level(tag) and not self.inraw:
+        if self.md.is_block_level(tag) and (self.intail or (self.at_line_start() and not self.inraw)):
             if not attrs.get('markdown', None) == '1':
-                # Started a new raw block
+                # Started a new raw block. Prepare stack.
                 self.inraw = True
-                self.container_index = len(self.stack) - 1
-            if len(self.cleandoc):
-                # Insert blank line between this and previous line.
                 self.cleandoc.append('\n')
 
         if not self.inraw and 'markdown' in attrs:
@@ -56,36 +52,35 @@ class HTMLExtractorExtra(HTMLExtractor):
         else:
             text = self.get_starttag_text()
             if self.inraw:
+                self.stack.append(tag)
                 self._cache.append(text)
             else:
                 self.cleandoc.append(text)
 
     def handle_endtag(self, tag):
-        # Attempt to extract actual tag from raw source text
-        start = self.line_offset + self.offset
-        m = parser.endendtag.search(self.rawdata, start)
-        if m:
-            text = self.rawdata[start:m.end()]
-        else:
-            # Failed to extract from raw data. Assume well formed and lowercase.
-            text = '</{}>'.format(tag)
+        text = self.get_endtag_text(tag)
 
-        if tag in self.stack:
-            while self.stack:
-                if self.stack.pop() == tag:
-                    break
-        if self.inraw and len(self.stack) <= self.container_index:
-            # End of raw block
-            self.inraw = False
-            self.stack = [] # Reset stack as it could have extranious items in it.
-            self.container_index = -1
+        if self.inraw:
             self._cache.append(text)
-            self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
-            # Insert blank line between this and next line. TODO: make this conditional??
-            self.cleandoc.append('\n\n')
-            self._cache = []
-        elif self.inraw:
-            self._cache.append(text)
+            if tag in self.stack:
+                # Remove tag from stack
+                while self.stack:
+                    if self.stack.pop() == tag:
+                        break
+            if len(self.stack) == 0:
+                # End of raw block.
+                if blank_line_re.match(self.rawdata[self.line_offset + self.offset + len(text):]):
+                    # Preserve blank line and end of raw block.
+                    self._cache.append('\n')
+                else:
+                    # More content exists after endtag.
+                    self.intail = True
+                # Reset stack.
+                self.inraw = False
+                self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
+                # Insert blank line between this and next line.
+                self.cleandoc.append('\n\n')
+                self._cache = []
         elif tag in self.mdstack:
             # Handle closing tag of markdown=1 element
             while self.mdstack:
