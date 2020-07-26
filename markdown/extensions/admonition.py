@@ -40,6 +40,14 @@ class AdmonitionProcessor(BlockProcessor):
     RE = re.compile(r'(?:^|\n)!!! ?([\w\-]+(?: +[\w\-]+)*)(?: +"(.*?)")? *(?:\n|$)')
     RE_SPACES = re.compile('  +')
 
+    def __init__(self, parser):
+        """Initialization."""
+
+        super().__init__(parser)
+
+        self.current_sibling = None
+        self.content_indention = 0
+
     def get_sibling(self, parent, block):
         """Get sibling admontion.
 
@@ -47,6 +55,14 @@ class AdmonitionProcessor(BlockProcessor):
         dealing with lists.
 
         """
+
+        # We already acquired the block via test
+        if self.current_sibling is not None:
+            sibling = self.current_sibling
+            block = block[self.content_indent:]
+            self.current_sibling = None
+            self.content_indent = 0
+            return sibling, block
 
         sibling = self.lastChild(parent)
 
@@ -56,6 +72,7 @@ class AdmonitionProcessor(BlockProcessor):
             # If the last child is a list and the content is idented sufficient
             # to be under it, then the content's is sibling is in the list.
             last_child = self.lastChild(sibling)
+            indent = 0
             while last_child:
                 if (
                     sibling and block.startswith(' ' * self.tab_length * 2) and
@@ -71,22 +88,34 @@ class AdmonitionProcessor(BlockProcessor):
                     # text's identation level so it will be evaluated correctly
                     # under the list.
                     block = block[self.tab_length:]
+                    indent += self.tab_length
                 else:
                     last_child = None
+
+            if not block.startswith(' ' * self.tab_length):
+                sibling = None
+
+            if sibling is not None:
+                self.current_sibling = sibling
+                self.content_indent = indent
 
         return sibling, block
 
     def test(self, parent, block):
-        sibling, block = self.get_sibling(parent, block)
-        return self.RE.search(block) or (block.startswith(' ' * self.tab_length) and sibling is not None)
+
+        if self.RE.search(block):
+            return True
+        else:
+            return self.get_sibling(parent, block)[0] is not None
 
     def run(self, parent, blocks):
         block = blocks.pop(0)
-        sibling, block = self.get_sibling(parent, block)
         m = self.RE.search(block)
 
         if m:
             block = block[m.end():]  # removes the first line
+        else:
+            sibling, block = self.get_sibling(parent, block)
 
         block, theRest = self.detab(block)
 
