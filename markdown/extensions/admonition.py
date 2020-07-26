@@ -76,10 +76,10 @@ class AdmonitionProcessor(BlockProcessor):
             while last_child:
                 if (
                     sibling and block.startswith(' ' * self.tab_length * 2) and
-                    last_child and last_child.tag in ('ul', 'ol')
+                    last_child and last_child.tag in ('ul', 'ol', 'dl')
                 ):
 
-                    # The expectation is that we'll find an <li>.
+                    # The expectation is that we'll find an <li> or <dt>.
                     # We should get it's last child as well.
                     sibling = self.lastChild(last_child)
                     last_child = self.lastChild(sibling) if sibling else None
@@ -129,7 +129,7 @@ class AdmonitionProcessor(BlockProcessor):
                 p.set('class', self.CLASSNAME_TITLE)
         else:
             # Sibling is a list item, but we need to wrap it's content should be wrapped in <p>
-            if sibling.tag == 'li' and sibling.text:
+            if sibling.tag in ('li', 'dd') and sibling.text:
                 text = sibling.text
                 sibling.text = ''
                 p = etree.SubElement(sibling, 'p')

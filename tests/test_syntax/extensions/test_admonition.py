@@ -145,3 +145,50 @@ class TestAdmonition(TestCase):
             ),
             extensions=['admonition']
         )
+
+    def test_definition_list(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - List
+
+                    !!! note "Admontion"
+
+                        Term
+
+                        :   Definition
+
+                            More text
+
+                        :   Another
+                            definition
+
+                            Even more text
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <p>List</p>
+                <div class="admonition note">
+                <p class="admonition-title">Admontion</p>
+                <dl>
+                <dt>Term</dt>
+                <dd>
+                <p>Definition</p>
+                <p>More text</p>
+                </dd>
+                <dd>
+                <p>Another
+                definition</p>
+                <p>Even more text</p>
+                </dd>
+                </dl>
+                </div>
+                </li>
+                </ul>
+                '''
+            ),
+            extensions=['admonition', 'def_list']
+        )
