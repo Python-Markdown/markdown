@@ -76,7 +76,7 @@ The following bug fixes are included in the 3.3 release:
 * Fix issues with complex emphasis (#979).
 * Fix unescaping of HTML characters `<>` in CodeHilite (#990).
 * Fix complex scenarios involving lists and admonitions (#1004).
-* Fix complex scenarios with nested ordered and unordered lists in a defintion list (#918).
+* Fix complex scenarios with nested ordered and unordered lists in a definition list (#918).
 
 [spec]: https://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
 [fenced_code]: ../extensions/fenced_code_blocks.md
