@@ -57,8 +57,10 @@ class AdmonitionProcessor(BlockProcessor):
             # to be under it, then the content's is sibling is in the list.
             last_child = self.lastChild(sibling)
             while last_child:
-                if (sibling and block.startswith(' ' * self.tab_length * 2) and
-                    last_child and last_child.tag in ('ul', 'ol')):
+                if (
+                    sibling and block.startswith(' ' * self.tab_length * 2) and
+                    last_child and last_child.tag in ('ul', 'ol')
+                ):
 
                     # The expectation is that we'll find an <li>.
                     # We should get it's last child as well.

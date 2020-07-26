@@ -20,7 +20,6 @@ License: BSD (see LICENSE.md for details).
 """
 
 from markdown.test_tools import TestCase
-import markdown
 
 
 class TestAdmonition(TestCase):
