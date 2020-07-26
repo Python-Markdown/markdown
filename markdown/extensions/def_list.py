@@ -87,13 +87,18 @@ class DefListProcessor(BlockProcessor):
 class DefListIndentProcessor(ListIndentProcessor):
     """ Process indented children of definition list items. """
 
-    ITEM_TYPES = ['dd']
-    LIST_TYPES = ['dl']
+    # Defintion lists need to be aware of all list types
+    ITEM_TYPES = ['dd', 'li']
+    LIST_TYPES = ['dl', 'ol', 'ul']
 
     def create_item(self, parent, block):
-        """ Create a new dd and parse the block with it as the parent. """
-        dd = etree.SubElement(parent, 'dd')
-        self.parser.parseBlocks(dd, [block])
+        """ Create a new dd or li (depending on parent) and parse the block with it as the parent. """
+
+        if parent.tag == 'dl':
+            dd = etree.SubElement(parent, 'dd')
+            self.parser.parseBlocks(dd, [block])
+        else:
+            super().create_item(parent, block)
 
 
 class DefListExtension(Extension):
