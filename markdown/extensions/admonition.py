@@ -40,19 +40,82 @@ class AdmonitionProcessor(BlockProcessor):
     RE = re.compile(r'(?:^|\n)!!! ?([\w\-]+(?: +[\w\-]+)*)(?: +"(.*?)")? *(?:\n|$)')
     RE_SPACES = re.compile('  +')
 
-    def test(self, parent, block):
+    def __init__(self, parser):
+        """Initialization."""
+
+        super().__init__(parser)
+
+        self.current_sibling = None
+        self.content_indention = 0
+
+    def get_sibling(self, parent, block):
+        """Get sibling admontion.
+
+        Retrieve the appropriate siblimg element. This can get trickly when
+        dealing with lists.
+
+        """
+
+        # We already acquired the block via test
+        if self.current_sibling is not None:
+            sibling = self.current_sibling
+            block = block[self.content_indent:]
+            self.current_sibling = None
+            self.content_indent = 0
+            return sibling, block
+
         sibling = self.lastChild(parent)
-        return self.RE.search(block) or \
-            (block.startswith(' ' * self.tab_length) and sibling is not None and
-             sibling.get('class', '').find(self.CLASSNAME) != -1)
+
+        if sibling is None or sibling.get('class', '').find(self.CLASSNAME) == -1:
+            sibling = None
+        else:
+            # If the last child is a list and the content is idented sufficient
+            # to be under it, then the content's is sibling is in the list.
+            last_child = self.lastChild(sibling)
+            indent = 0
+            while last_child:
+                if (
+                    sibling and block.startswith(' ' * self.tab_length * 2) and
+                    last_child and last_child.tag in ('ul', 'ol', 'dl')
+                ):
+
+                    # The expectation is that we'll find an <li> or <dt>.
+                    # We should get it's last child as well.
+                    sibling = self.lastChild(last_child)
+                    last_child = self.lastChild(sibling) if sibling else None
+
+                    # Context has been lost at this point, so we must adjust the
+                    # text's identation level so it will be evaluated correctly
+                    # under the list.
+                    block = block[self.tab_length:]
+                    indent += self.tab_length
+                else:
+                    last_child = None
+
+            if not block.startswith(' ' * self.tab_length):
+                sibling = None
+
+            if sibling is not None:
+                self.current_sibling = sibling
+                self.content_indent = indent
+
+        return sibling, block
+
+    def test(self, parent, block):
+
+        if self.RE.search(block):
+            return True
+        else:
+            return self.get_sibling(parent, block)[0] is not None
 
     def run(self, parent, blocks):
-        sibling = self.lastChild(parent)
         block = blocks.pop(0)
         m = self.RE.search(block)
 
         if m:
             block = block[m.end():]  # removes the first line
+        else:
+            sibling, block = self.get_sibling(parent, block)
 
         block, theRest = self.detab(block)
 
@@ -65,6 +128,13 @@ class AdmonitionProcessor(BlockProcessor):
                 p.text = title
                 p.set('class', self.CLASSNAME_TITLE)
         else:
+            # Sibling is a list item, but we need to wrap it's content should be wrapped in <p>
+            if sibling.tag in ('li', 'dd') and sibling.text:
+                text = sibling.text
+                sibling.text = ''
+                p = etree.SubElement(sibling, 'p')
+                p.text = text
+
             div = sibling
 
         self.parser.parseChunk(div, block)
