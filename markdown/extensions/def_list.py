@@ -94,11 +94,8 @@ class DefListIndentProcessor(ListIndentProcessor):
     def create_item(self, parent, block):
         """ Create a new dd or li (depending on parent) and parse the block with it as the parent. """
 
-        if parent.tag == 'dl':
-            dd = etree.SubElement(parent, 'dd')
-            self.parser.parseBlocks(dd, [block])
-        else:
-            super().create_item(parent, block)
+        dd = etree.SubElement(parent, 'dd')
+        self.parser.parseBlocks(dd, [block])
 
 
 class DefListExtension(Extension):
