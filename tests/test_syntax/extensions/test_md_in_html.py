@@ -446,3 +446,96 @@ class TestMdInHTML(TestCase):
                 """
             )
         )
+
+    def test_md1_unclosed_div(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+
+                _foo_
+
+                <div class="unclosed>
+
+                _bar_
+
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p><em>foo</em></p>
+                <div class="unclosed">
+                __bar__
+                </div>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_orphan_endtag(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+
+                _foo_
+
+                </p>
+
+                _bar_
+
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p><em>foo</em></p>
+                <p></p>
+                <p><em>bar</em></p>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_unclosed_p(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <p markdown="1">_foo_
+                <p markdown="1">_bar_
+                """
+            ),
+            self.dedent(
+                """
+                <p><em>foo</em>
+                </p>
+                <p><em>bar</em>
+                </p>
+                """
+            )
+        )
+
+    def test_md1_nested_unclosed_p(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                <p markdown="1">_foo_
+                <p markdown="1">_bar_
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p><em>foo</em>
+                </p>
+                <p><em>bar</em>
+                </p>
+                </div>
+                """
+            )
+        )
