@@ -24,74 +24,128 @@ import re
 import xml.etree.ElementTree as etree
 
 
+# Block-level tags in which the content only gets span level parsing
+span_tags = ['address', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'legend', 'li', 'p', 'td', 'th']
+
+# Block-level tags in which the content gets parsed as blocks
+block_tags = [
+    'address', 'article', 'aside', 'blockquote', 'body', 'colgroup', 'details', 'div', 'dl', 'fieldset',
+    'figcaption', 'figure', 'footer', 'form', 'iframe', 'header', 'hr', 'main', 'menu', 'nav',  'map',
+    'noscript', 'object', 'ol', 'section', 'table', 'tbody', 'thead', 'tfoot', 'tr', 'ul'
+]
+
+# Block-level tags which never get their content parsed.
+raw_tags = ['canvas', 'math', 'option', 'pre', 'script', 'style', 'textarea']
+
+block_level_tags = span_tags + block_tags + raw_tags
+
+
 class HTMLExtractorExtra(HTMLExtractor):
+    """
+    Override HTMLExtractor and create etree Elements for any elements which should have content parsed as Markdown.
+    """
 
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
         self.mdstack = []  # When markdown=1, stack contains a list of tags
+        self.treebuilder = etree.TreeBuilder(insert_comments=True, insert_pis=True)
+        self.mdstate = None  # one of 'block', 'span', 'off', or None
         super().reset()
 
-    def handle_starttag(self, tag, attrs):
-        attrs = dict(attrs)
+    def get_element(self):
+        """ Return element from treebuilder and reset treebuilder for later use. """
+        element = self.treebuilder.close()
+        self.treebuilder = etree.TreeBuilder(insert_comments=True, insert_pis=True)
+        return element
 
-        if self.md.is_block_level(tag) and (self.intail or (self.at_line_start() and not self.inraw)):
-            if not attrs.get('markdown', None) == '1':
-                # Started a new raw block. Prepare stack.
-                self.inraw = True
-                self.cleandoc.append('\n')
-
-        if not self.inraw and 'markdown' in attrs:
-            self.mdstack.append(tag)
-            # Remove markdown attribute and rebuild start tag.
-            attrs.pop('markdown')
-            attrs_str = ' ' + ' '.join('{}="{}"'.format(k, v) for k, v in attrs.items()) if attrs else ''
-            text = '<{}{}>'.format(tag, attrs_str)
-            self.cleandoc.append(self.md.htmlStash.store(text))
-            if tag != 'p':
-                self.cleandoc.append('\n\n')
+    def get_state(self, tag, attrs, parent_state=None):
+        """ Return state from tag and `markdown` attr. One of 'block', 'span', or 'off'. """
+        md_attr = attrs.get('markdown', '0')
+        if md_attr == 'markdown':
+            # `<tag markdown>` is the same as `<tag markdown='1'>`.
+            md_attr = '1'
+        if parent_state == 'off' or (parent_state == 'span' and md_attr != '0'):
+            # Only use the parent state if it is more restrictive than the markdown attribute.
+            md_attr = parent_state
+        if ((md_attr == '1' and tag in block_tags) or
+                (md_attr == 'block' and tag in span_tags + block_tags)):
+            return 'block'
+        elif ((md_attr == '1' and tag in span_tags) or
+              (md_attr == 'span' and tag in span_tags + block_tags)):
+            return 'span'
+        elif tag in block_level_tags:
+            return 'off'
         else:
-            text = self.get_starttag_text()
-            if self.inraw:
-                self.stack.append(tag)
-                self._cache.append(text)
+            return None
+
+    def handle_starttag(self, tag, attrs):
+        if tag in block_level_tags:
+            # Valueless attr (ex: `<tag checked>`) results in `[('checked', None)]`. Convert to `{'checked': 'checked'}`.
+            attrs = {key: value if value is not None else key for key, value in attrs}
+            state = self.get_state(tag, attrs, self.mdstate)
+
+            if self.inraw or (state in [None, 'off'] and not self.mdstack):
+                # fall back to default behavior
+                attrs.pop('markdown', None)
+                super().handle_starttag(tag, attrs)
             else:
-                self.cleandoc.append(text)
+                if 'p' in self.mdstack and tag in block_level_tags:
+                    # Close unclosed 'p' tag
+                    self.handle_endtag('p')
+                self.mdstate = state
+                self.mdstack.append(tag)
+                attrs['markdown'] = state
+                self.treebuilder.start(tag, attrs)
+        else:
+            # Span level tag
+            if self.inraw:
+                super().handle_starttag(tag, attrs)
+            else:
+                text = self.get_starttag_text()
+                self.handle_data(text)
 
     def handle_endtag(self, tag):
-        text = self.get_endtag_text(tag)
-
-        if self.inraw:
-            self._cache.append(text)
-            if tag in self.stack:
-                # Remove tag from stack
-                while self.stack:
-                    if self.stack.pop() == tag:
+        if tag in block_level_tags:
+            if self.inraw:
+                super().handle_endtag(tag)
+            elif tag in self.mdstack:
+                # Close element and any unclosed children
+                while self.mdstack:
+                    item = self.mdstack.pop()
+                    self.treebuilder.end(item)
+                    if item == tag:
                         break
-            if len(self.stack) == 0:
-                # End of raw block.
-                if blank_line_re.match(self.rawdata[self.line_offset + self.offset + len(text):]):
-                    # Preserve blank line and end of raw block.
-                    self._cache.append('\n')
-                else:
-                    # More content exists after endtag.
-                    self.intail = True
-                # Reset stack.
-                self.inraw = False
-                self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
-                # Insert blank line between this and next line.
-                self.cleandoc.append('\n\n')
-                self._cache = []
-        elif tag in self.mdstack:
-            # Handle closing tag of markdown=1 element
-            while self.mdstack:
-                if self.mdstack.pop() == tag:
-                    break
-            if tag != 'p':
-                self.cleandoc.append('\n\n')
-            self.cleandoc.append(self.md.htmlStash.store(text))
-            self.cleandoc.append('\n\n')
+                if not self.mdstack:
+                    # Last item in stack is closed. Stash it
+                    element = self.get_element()
+                    self.cleandoc.append(self.md.htmlStash.store(element))
+                    self.cleandoc.append('\n\n')
+                    self.state = None
+            else:
+                # Treat orphan closing tag as an empty tag.
+                self.handle_startendtag(tag, {})
         else:
-            self.cleandoc.append(text)
+            # Span level tag
+            if self.inraw:
+                super().handle_endtag(tag)
+            else:
+                text = self.get_endtag_text(tag)
+                self.handle_data(text)
+
+    def handle_data(self, data):
+        if self.inraw or not self.mdstack:
+            super().handle_data(data)
+        else:
+            self.treebuilder.data(data)
+
+    def handle_empty_tag(self, data, is_block):
+        if self.inraw or not self.mdstack:
+            super().handle_empty_tag(data, is_block)
+        else:
+            if self.at_line_start() and is_block:
+                self.handle_data('\n' + self.md.htmlStash.store(data) + '\n\n')
+            else:
+                self.handle_date(text)
 
 
 class HtmlBlockPreprocessor(Preprocessor):
@@ -106,62 +160,96 @@ class HtmlBlockPreprocessor(Preprocessor):
 
 
 class MarkdownInHtmlProcessor(BlockProcessor):
-    """Process Markdown Inside HTML Blocks."""
+    """Process Markdown Inside HTML Blocks which have been stored in the HtmlStash."""
+
     def test(self, parent, block):
-        return block == util.TAG_PLACEHOLDER % \
-            str(self.parser.blockprocessors.tag_counter + 1)
+        # ALways return True. `run` will return `False` it not a valid match.
+        return True
 
-    def _process_nests(self, element, block):
-        """Process the element's child elements in self.run."""
-        # Build list of indexes of each nest within the parent element.
-        nest_index = []  # a list of tuples: (left index, right index)
-        i = self.parser.blockprocessors.tag_counter + 1
-        while len(self._tag_data) > i and self._tag_data[i]['left_index']:
-            left_child_index = self._tag_data[i]['left_index']
-            right_child_index = self._tag_data[i]['right_index']
-            nest_index.append((left_child_index - 1, right_child_index))
-            i += 1
+    def parse_element_content(self, element):
+        """
+        Resursively parse the text content of an etree Element as Markdown.
 
-        # Create each nest subelement.
-        for i, (left_index, right_index) in enumerate(nest_index[:-1]):
-            self.run(element, block[left_index:right_index],
-                     block[right_index:nest_index[i + 1][0]], True)
-        self.run(element, block[nest_index[-1][0]:nest_index[-1][1]],  # last
-                 block[nest_index[-1][1]:], True)                      # nest
+        Any block level elements generated from the Markdown will be inserted as children of the element in place
+        of the text content. All `markdown` attributes are removed. For any elements in which Markdown parsing has
+        been dissabled, the text content of it and its chidlren are wrapped in an `AtomicString`.
+        """
 
-    def run(self, parent, blocks, tail=None, nest=False):
-        self._tag_data = self.parser.md.htmlStash.tag_data
+        md_attr = element.attrib.pop('markdown', 'off')
 
-        self.parser.blockprocessors.tag_counter += 1
-        tag = self._tag_data[self.parser.blockprocessors.tag_counter]
+        if md_attr == 'block':
+            # Parse content as block level
+            # The order in which the different parts are parsed (text, children, tails) is important here as the
+            # order of elements needs to be preserved. We can't be inserting items at a later point in the current
+            # iteration as we don't want to do raw processing on elements created from parsing Markdown text (for
+            # example). Therefore, the order of operations is children, tails, text.
 
-        # Create Element
-        markdown_value = tag['attrs'].pop('markdown')
-        element = etree.SubElement(parent, tag['tag'], tag['attrs'])
+            # Recursively parse existing children from raw HTML
+            for child in list(element):
+                self.parse_element_content(child)
 
-        # Slice Off Block
-        if nest:
-            self.parser.parseBlocks(parent, tail)  # Process Tail
-            block = blocks[1:]
-        else:  # includes nests since a third level of nesting isn't supported
-            block = blocks[tag['left_index'] + 1: tag['right_index']]
-            del blocks[:tag['right_index']]
+            # Parse Markdown text in tail of children. Do this seperate to avoid raw HTML parsing.
+            # Save the position of each item to be inserted later in reverse.
+            tails = []
+            for pos, child in enumerate(element):
+                if child.tail:
+                    block = child.tail
+                    child.tail = ''
+                    # Use a dummy placeholder element.
+                    dummy = etree.Element('div')
+                    self.parser.parseBlocks(dummy, block.split('\n'))
+                    children = list(dummy)
+                    children.reverse()
+                    tails.append((pos + 1, children))
 
-        # Process Text
-        if (self.parser.blockprocessors.contain_span_tags.match(  # Span Mode
-                tag['tag']) and markdown_value != 'block') or \
-                markdown_value == 'span':
-            element.text = '\n'.join(block)
-        else:                                                     # Block Mode
-            i = self.parser.blockprocessors.tag_counter + 1
-            if len(self._tag_data) > i and self._tag_data[i]['left_index']:
-                first_subelement_index = self._tag_data[i]['left_index'] - 1
-                self.parser.parseBlocks(
-                    element, block[:first_subelement_index])
-                if not nest:
-                    block = self._process_nests(element, block)
-            else:
-                self.parser.parseBlocks(element, block)
+            # Insert the elements created from the tails in reverse.
+            tails.reverse()
+            for pos, tail in tails:
+                for item in tail:
+                    element.insert(pos, item)
+
+            # Parse Markdown text content. Do this last to avoid raw HTML parsing.
+            if element.text:
+                block = element.text
+                element.text = ''
+                # Use a dummy placeholder element as the content needs to get inserted before existing children.
+                dummy = etree.Element('div')
+                self.parser.parseBlocks(dummy, block.split('\n'))
+                children = list(dummy)
+                children.reverse()
+                for child in children:
+                    element.insert(0, child)
+
+        elif md_attr == 'span':
+            # Span level parsing will be handled by inlineprocessors.
+            # Walk children here to remove any `markdown` attributes.
+            for child in list(element):
+                self.parse_element_content(child)
+
+        else:
+            # Disable inline parsing for everything else
+            element.text = util.AtomicString(element.text)
+            for child in list(element):
+                self.parse_element_content(child)
+                if child.tail:
+                    child.tail = util.AtomicString(child.tail)
+
+
+    def run(self, parent, blocks):
+        m = util.HTML_PLACEHOLDER_RE.match(blocks[0])
+        if m:
+            index = int(m.group(1))
+            element = self.parser.md.htmlStash.rawHtmlBlocks[index]
+            if isinstance(element, etree.Element):
+                # We have a match. Process it.
+                blocks.pop(0)
+                self.parse_element_content(element)
+                parent.append(element)
+                # Cleanup stash. Replace element with empty string to avoid confusing postprocessor.
+                self.parser.md.htmlStash.rawHtmlBlocks.pop(index)
+                self.parser.md.htmlStash.rawHtmlBlocks.insert(index, '')
+        # No match found.
+        return False
 
 
 class MarkdownInHtmlExtension(Extension):
@@ -172,12 +260,10 @@ class MarkdownInHtmlExtension(Extension):
 
         # Replace raw HTML preprocessor
         md.preprocessors.register(HtmlBlockPreprocessor(md), 'html_block', 20)
-        # md.parser.blockprocessors.register(
-        #     MarkdownInHtmlProcessor(md.parser), 'markdown_block', 105
-        # )
-        # md.parser.blockprocessors.tag_counter = -1
-        # md.parser.blockprocessors.contain_span_tags = re.compile(
-        #     r'^(p|h[1-6]|li|dd|dt|td|th|legend|address)$', re.IGNORECASE)
+        # Add blockprocessor which handles the placeholders for etree elements
+        md.parser.blockprocessors.register(
+            MarkdownInHtmlProcessor(md.parser), 'markdown_block', 105
+        )
 
 
 def makeExtension(**kwargs):  # pragma: no cover
