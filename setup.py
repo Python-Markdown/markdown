@@ -127,6 +127,7 @@ setup(
         'Topic :: Software Development :: Documentation',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Text Processing :: Filters',
-        'Topic :: Text Processing :: Markup :: HTML'
+        'Topic :: Text Processing :: Markup :: HTML',
+        'Topic :: Text Processing :: Markup :: Markdown'
     ]
 )
