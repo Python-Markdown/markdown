@@ -49,7 +49,7 @@ class HTMLExtractorExtra(HTMLExtractor):
         """Reset this instance.  Loses all unprocessed data."""
         self.mdstack = []  # When markdown=1, stack contains a list of tags
         self.treebuilder = etree.TreeBuilder(insert_comments=True, insert_pis=True)
-        self.mdstate = None  # one of 'block', 'span', 'off', or None
+        self.mdstate = []  # one of 'block', 'span', 'off', or None
         super().reset()
 
     def close(self):
@@ -69,12 +69,13 @@ class HTMLExtractorExtra(HTMLExtractor):
         self.treebuilder = etree.TreeBuilder(insert_comments=True, insert_pis=True)
         return element
 
-    def get_state(self, tag, attrs, parent_state=None):
+    def get_state(self, tag, attrs):
         """ Return state from tag and `markdown` attr. One of 'block', 'span', or 'off'. """
         md_attr = attrs.get('markdown', '0')
         if md_attr == 'markdown':
             # `<tag markdown>` is the same as `<tag markdown='1'>`.
             md_attr = '1'
+        parent_state = self.mdstate[-1] if self.mdstate else None
         if parent_state == 'off' or (parent_state == 'span' and md_attr != '0'):
             # Only use the parent state if it is more restrictive than the markdown attribute.
             md_attr = parent_state
@@ -93,7 +94,7 @@ class HTMLExtractorExtra(HTMLExtractor):
         if tag in block_level_tags:
             # Valueless attr (ex: `<tag checked>`) results in `[('checked', None)]`. Convert to `{'checked': 'checked'}`.
             attrs = {key: value if value is not None else key for key, value in attrs}
-            state = self.get_state(tag, attrs, self.mdstate)
+            state = self.get_state(tag, attrs)
 
             if self.inraw or (state in [None, 'off'] and not self.mdstack):
                 # fall back to default behavior
@@ -103,7 +104,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                 if 'p' in self.mdstack and tag in block_level_tags:
                     # Close unclosed 'p' tag
                     self.handle_endtag('p')
-                self.mdstate = state
+                self.mdstate.append(state)
                 self.mdstack.append(tag)
                 attrs['markdown'] = state
                 self.treebuilder.start(tag, attrs)
@@ -123,6 +124,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                 # Close element and any unclosed children
                 while self.mdstack:
                     item = self.mdstack.pop()
+                    self.mdstate.pop()
                     self.treebuilder.end(item)
                     if item == tag:
                         break
@@ -131,7 +133,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                     element = self.get_element()
                     self.cleandoc.append(self.md.htmlStash.store(element))
                     self.cleandoc.append('\n\n')
-                    self.state = None
+                    self.state = []
             else:
                 # Treat orphan closing tag as a span level tag.
                 text = self.get_endtag_text(tag)

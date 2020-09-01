@@ -387,6 +387,28 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_md_block_after_span_nested_in_block(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="block">
+                <div markdown="span">*foo*</div>
+                <div markdown="block">*bar*</div>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <div><em>foo</em></div>
+                <div>
+                <p><em>bar</em></p>
+                </div>
+                </div>
+                """
+            )
+        )
+
     def test_md1_nested_in_nomd(self):
         self.assertMarkdownRenders(
             self.dedent(
