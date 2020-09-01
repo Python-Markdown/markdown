@@ -52,6 +52,17 @@ class HTMLExtractorExtra(HTMLExtractor):
         self.mdstate = None  # one of 'block', 'span', 'off', or None
         super().reset()
 
+    def close(self):
+        """Handle any buffered data."""
+        super().close()
+        # Handle any unclosed tags.
+        if self.mdstack:
+            # Close the outermost parent. handle_endtag will close all unclosed children.
+            self.handle_endtag(self.mdstack[0])
+        if len(self._cache):
+            self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
+            self._cache = []
+
     def get_element(self):
         """ Return element from treebuilder and reset treebuilder for later use. """
         element = self.treebuilder.close()
@@ -122,8 +133,9 @@ class HTMLExtractorExtra(HTMLExtractor):
                     self.cleandoc.append('\n\n')
                     self.state = None
             else:
-                # Treat orphan closing tag as an empty tag.
-                self.handle_startendtag(tag, {})
+                # Treat orphan closing tag as a span level tag.
+                text = self.get_endtag_text(tag)
+                self.handle_data(text)
         else:
             # Span level tag
             if self.inraw:
@@ -241,13 +253,15 @@ class MarkdownInHtmlProcessor(BlockProcessor):
             index = int(m.group(1))
             element = self.parser.md.htmlStash.rawHtmlBlocks[index]
             if isinstance(element, etree.Element):
-                # We have a match. Process it.
+                # We have a matched element. Process it.
                 blocks.pop(0)
                 self.parse_element_content(element)
                 parent.append(element)
                 # Cleanup stash. Replace element with empty string to avoid confusing postprocessor.
                 self.parser.md.htmlStash.rawHtmlBlocks.pop(index)
                 self.parser.md.htmlStash.rawHtmlBlocks.insert(index, '')
+                # Comfirm the match to the blockparser.
+                return True
         # No match found.
         return False
 

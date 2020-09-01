@@ -455,7 +455,7 @@ class TestMdInHTML(TestCase):
 
                 _foo_
 
-                <div class="unclosed>
+                <div class="unclosed">
 
                 _bar_
 
@@ -467,7 +467,9 @@ class TestMdInHTML(TestCase):
                 <div>
                 <p><em>foo</em></p>
                 <div class="unclosed">
-                __bar__
+
+                _bar_
+
                 </div>
                 </div>
                 """
@@ -493,7 +495,7 @@ class TestMdInHTML(TestCase):
                 """
                 <div>
                 <p><em>foo</em></p>
-                <p></p>
+                </p>
                 <p><em>bar</em></p>
                 </div>
                 """
@@ -513,6 +515,7 @@ class TestMdInHTML(TestCase):
                 <p><em>foo</em>
                 </p>
                 <p><em>bar</em>
+
                 </p>
                 """
             )
