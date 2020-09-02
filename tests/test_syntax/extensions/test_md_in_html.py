@@ -226,7 +226,8 @@ class TestMdInHTML(TestCase):
 
                 A _Markdown_ paragraph before a raw child.
 
-                A second Markdown paragraph.
+                A second Markdown paragraph
+                with two lines.
 
                 <div markdown="1">
 
@@ -241,6 +242,7 @@ class TestMdInHTML(TestCase):
                 A _Markdown_ tail to the raw child.
 
                 A second tail item
+                with two lines.
 
                 <p markdown="1">More raw.</p>
 
@@ -251,14 +253,16 @@ class TestMdInHTML(TestCase):
                 """
                 <div>
                 <p>A <em>Markdown</em> paragraph before a raw child.</p>
-                <p>A second Markdown paragraph.</p>
+                <p>A second Markdown paragraph
+                with two lines.</p>
                 <div>
                 <p>A <em>raw</em> child.</p>
                 <p><em>foo</em></p>
                 <p>Raw child tail.</p>
                 </div>
                 <p>A <em>Markdown</em> tail to the raw child.</p>
-                <p>A second tail item</p>
+                <p>A second tail item
+                with two lines.</p>
                 <p>More raw.</p>
                 </div>
                 """

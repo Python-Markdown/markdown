@@ -207,11 +207,11 @@ class MarkdownInHtmlProcessor(BlockProcessor):
             tails = []
             for pos, child in enumerate(element):
                 if child.tail:
-                    block = child.tail
+                    block = child.tail.rstrip('\n')
                     child.tail = ''
                     # Use a dummy placeholder element.
                     dummy = etree.Element('div')
-                    self.parser.parseBlocks(dummy, block.split('\n'))
+                    self.parser.parseBlocks(dummy, block.split('\n\n'))
                     children = list(dummy)
                     children.reverse()
                     tails.append((pos + 1, children))
@@ -224,11 +224,11 @@ class MarkdownInHtmlProcessor(BlockProcessor):
 
             # Parse Markdown text content. Do this last to avoid raw HTML parsing.
             if element.text:
-                block = element.text
+                block = element.text.rstrip('\n')
                 element.text = ''
                 # Use a dummy placeholder element as the content needs to get inserted before existing children.
                 dummy = etree.Element('div')
-                self.parser.parseBlocks(dummy, block.split('\n'))
+                self.parser.parseBlocks(dummy, block.split('\n\n'))
                 children = list(dummy)
                 children.reverse()
                 for child in children:
