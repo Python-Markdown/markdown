@@ -568,3 +568,26 @@ class TestMdInHTML(TestCase):
                 """
             )
         )
+
+    def test_md1_nested_link_ref(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                [link]: http://example.com
+                <div markdown="1">
+                [link][link]
+                </div>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <div>
+                <p><a href="http://example.com">link</a></p>
+                </div>
+                </div>
+                """
+            )
+        )

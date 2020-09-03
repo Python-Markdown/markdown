@@ -35,7 +35,6 @@ def build_preprocessors(md, **kwargs):
     preprocessors = util.Registry()
     preprocessors.register(NormalizeWhitespace(md), 'normalize_whitespace', 30)
     preprocessors.register(HtmlBlockPreprocessor(md), 'html_block', 20)
-    preprocessors.register(ReferencePreprocessor(md), 'reference', 10)
     return preprocessors
 
 
@@ -81,37 +80,3 @@ class HtmlBlockPreprocessor(Preprocessor):
         parser.feed(source)
         parser.close()
         return ''.join(parser.cleandoc).split('\n')
-
-
-class ReferencePreprocessor(Preprocessor):
-    """ Remove reference definitions from text and store for later use. """
-
-    TITLE = r'[ ]*(\"(.*)\"|\'(.*)\'|\((.*)\))[ ]*'
-    RE = re.compile(
-        r'^[ ]{0,3}\[([^\]]*)\]:\s*([^ ]*)[ ]*(%s)?$' % TITLE, re.DOTALL
-    )
-    TITLE_RE = re.compile(r'^%s$' % TITLE)
-
-    def run(self, lines):
-        new_text = []
-        while lines:
-            line = lines.pop(0)
-            m = self.RE.match(line)
-            if m:
-                id = m.group(1).strip().lower()
-                link = m.group(2).lstrip('<').rstrip('>')
-                t = m.group(5) or m.group(6) or m.group(7)
-                if not t:
-                    # Check next line for title
-                    tm = self.TITLE_RE.match(lines[0])
-                    if tm:
-                        lines.pop(0)
-                        t = tm.group(2) or tm.group(3) or tm.group(4)
-                self.md.references[id] = (link, t)
-                # Preserve the line to prevent raw HTML indexing issue.
-                # https://github.com/Python-Markdown/markdown/issues/584
-                new_text.append('')
-            else:
-                new_text.append(line)
-
-        return new_text  # + "\n"
