@@ -615,3 +615,35 @@ class TestMdInHTML(TestCase):
             ),
             extensions=['md_in_html', 'abbr']
         )
+
+    def test_md1_nested_footnote_ref(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                [^1]: The footnote.
+                <div markdown="1">
+                Paragraph with a footnote.[^1]
+                </div>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <div>
+                <p>Paragraph with a footnote.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+                </div>
+                </div>
+                <div class="footnote">
+                <hr />
+                <ol>
+                <li id="fn:1">
+                <p>The footnote.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+                </li>
+                </ol>
+                </div>
+                """
+            ),
+            extensions=['md_in_html', 'footnotes']
+        )

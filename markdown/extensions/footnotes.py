@@ -15,6 +15,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..preprocessors import Preprocessor
+from ..blockprocessors import BlockProcessor
 from ..inlinepatterns import InlineProcessor
 from ..treeprocessors import Treeprocessor
 from ..postprocessors import Postprocessor
@@ -26,8 +27,6 @@ import xml.etree.ElementTree as etree
 
 FN_BACKLINK_TEXT = util.STX + "zz1337820767766393qq" + util.ETX
 NBSP_PLACEHOLDER = util.STX + "qq3936677670287331zz" + util.ETX
-DEF_RE = re.compile(r'[ ]{0,3}\[\^([^\]]*)\]:\s*(.*)')
-TABBED_RE = re.compile(r'((\t)|(    ))(.*)')
 RE_REF_ID = re.compile(r'(fnref)(\d+)')
 
 
@@ -72,8 +71,8 @@ class FootnoteExtension(Extension):
         md.registerExtension(self)
         self.parser = md.parser
         self.md = md
-        # Insert a preprocessor before ReferencePreprocessor
-        md.preprocessors.register(FootnotePreprocessor(self), 'footnote', 15)
+        # Insert a blockprocessor before ReferencePreprocessor
+        md.parser.blockprocessors.register(FootnoteBlockProcessor(self), 'footnote', 17)
 
         # Insert an inline pattern before ImageReferencePattern
         FOOTNOTE_RE = r'\[\^([^\]]*)\]'  # blah blah [^1] blah
@@ -202,106 +201,92 @@ class FootnoteExtension(Extension):
         return div
 
 
-class FootnotePreprocessor(Preprocessor):
+class FootnoteBlockProcessor(BlockProcessor):
     """ Find all footnote references and store for later use. """
 
+    RE = re.compile(r'^[ ]{0,3}\[\^([^\]]*)\]:[ ]*(.*)$', re.MULTILINE)
+
     def __init__(self, footnotes):
+        super().__init__(footnotes.parser)
         self.footnotes = footnotes
 
-    def run(self, lines):
-        """
-        Loop through lines and find, set, and remove footnote definitions.
+    def test(self, parent, block):
+        return True
 
-        Keywords:
+    def run(self, parent, blocks):
+        """ Find, set, and remove footnote definitions. """
+        block = blocks.pop(0)
+        m = self.RE.search(block)
+        if m:
+            id = m.group(1)
+            fn_blocks = [m.group(2)]
 
-        * lines: A list of lines of text
-
-        Return: A list of lines of text with footnote definitions removed.
-
-        """
-        newlines = []
-        i = 0
-        while True:
-            m = DEF_RE.match(lines[i])
-            if m:
-                fn, _i = self.detectTabbed(lines[i+1:])
-                fn.insert(0, m.group(2))
-                i += _i-1  # skip past footnote
-                footnote = "\n".join(fn)
-                self.footnotes.setFootnote(m.group(1), footnote.rstrip())
-                # Preserve a line for each block to prevent raw HTML indexing issue.
-                # https://github.com/Python-Markdown/markdown/issues/584
-                num_blocks = (len(footnote.split('\n\n')) * 2)
-                newlines.extend([''] * (num_blocks))
+            # Handle rest of block
+            therest = block[m.end():].lstrip('\n')
+            m2 = self.RE.search(therest)
+            if m2:
+                # Another footnote exists in the rest of this block.
+                # Any content before match is continuation of this footnote, which may be lazily indented.
+                before = therest[:m2.start()].rstrip('\n')
+                fn_blocks[0] = '\n'.join([fn_blocks[0], self.detab(before)]).lstrip('\n')
+                # Add back to blocks everything from begining of match forward for next iteration.
+                blocks.insert(0, therest[m2.start():])
             else:
-                newlines.append(lines[i])
-            if len(lines) > i+1:
-                i += 1
-            else:
-                break
-        return newlines
+                # All remaining lines of block are continuation of this footnote, which may be lazily indented.
+                fn_blocks[0] = '\n'.join([fn_blocks[0], self.detab(therest)]).strip('\n')
 
-    def detectTabbed(self, lines):
+                # Check for child elements in remaining blocks.
+                fn_blocks.extend(self.detectTabbed(blocks))
+
+            footnote = "\n\n".join(fn_blocks)
+            self.footnotes.setFootnote(id, footnote.rstrip())
+
+            if block[:m.start()].strip():
+                # Add any content before match back to blocks as separate block
+                blocks.insert(0, block[:m.start()].rstrip('\n'))
+            return True
+        # No match. Restore block.
+        blocks.insert(0, block)
+        return False
+
+    def detectTabbed(self, blocks):
         """ Find indented text and remove indent before further proccesing.
 
-        Keyword arguments:
-
-        * lines: an array of strings
-
-        Returns: a list of post processed items and the index of last line.
-
+        Returns: a list of blocks with indentation removed.
         """
-        items = []
-        blank_line = False  # have we encountered a blank line yet?
-        i = 0  # to keep track of where we are
-
-        def detab(line):
-            match = TABBED_RE.match(line)
-            if match:
-                return match.group(4)
-
-        for line in lines:
-            if line.strip():  # Non-blank line
-                detabbed_line = detab(line)
-                if detabbed_line:
-                    items.append(detabbed_line)
-                    i += 1
-                    continue
-                elif not blank_line and not DEF_RE.match(line):
-                    # not tabbed but still part of first par.
-                    items.append(line)
-                    i += 1
-                    continue
+        fn_blocks = []
+        while blocks:
+            if blocks[0].startswith(' '*4):
+                block = blocks.pop(0)
+                # Check for new footnotes within this block and split at new footnote.
+                m = self.RE.search(block)
+                if m:
+                    # Another footnote exists in this block.
+                    # Any content before match is continuation of this footnote, which may be lazily indented.
+                    before = block[:m.start()].rstrip('\n')
+                    fn_blocks.append(self.detab(before))
+                    # Add back to blocks everything from begining of match forward for next iteration.
+                    blocks.insert(0, block[m.start():])
+                    # End of this footnote.
+                    break
                 else:
-                    return items, i+1
+                    # Entire block is part of this footnote.
+                    fn_blocks.append(self.detab(block))
+            else:
+                # End of this footnote.
+                break
+        return fn_blocks
 
-            else:  # Blank line: _maybe_ we are done.
-                blank_line = True
-                i += 1  # advance
+    def detab(self, block):
+        """ Remove one level of indent from a block.
 
-                # Find the next non-blank line
-                for j in range(i, len(lines)):
-                    if lines[j].strip():
-                        next_line = lines[j]
-                        break
-                    else:
-                        # Include extreaneous padding to prevent raw HTML
-                        # parsing issue: https://github.com/Python-Markdown/markdown/issues/584
-                        items.append("")
-                        i += 1
-                else:
-                    break  # There is no more text; we are done.
-
-                # Check if the next non-blank line is tabbed
-                if detab(next_line):  # Yes, more work to do.
-                    items.append("")
-                    continue
-                else:
-                    break  # No, we are done.
-        else:
-            i += 1
-
-        return items, i
+        Preserve lazily indented blocks by only removing indent from indented lines.
+        """
+        lines = block.split('\n')
+        for i, line in enumerate(lines):
+            if line.startswith(' '*4):
+                lines[i] = line[4:]
+        return '\n'.join(lines)
 
 
 class FootnoteInlineProcessor(InlineProcessor):
