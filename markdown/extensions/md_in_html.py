@@ -46,7 +46,7 @@ class HTMLExtractorExtra(HTMLExtractor):
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
         self.mdstack = []  # When markdown=1, stack contains a list of tags
-        self.treebuilder = etree.TreeBuilder(insert_comments=True, insert_pis=True)
+        self.treebuilder = etree.TreeBuilder()
         self.mdstate = []  # one of 'block', 'span', 'off', or None
         super().reset()
 
