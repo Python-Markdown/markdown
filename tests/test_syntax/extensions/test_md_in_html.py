@@ -591,3 +591,27 @@ class TestMdInHTML(TestCase):
                 """
             )
         )
+
+    def test_md1_nested_abbr_ref(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                *[abbr]: Abbreviation
+                <div markdown="1">
+                abbr
+                </div>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <div>
+                <p><abbr title="Abbreviation">abbr</abbr></p>
+                </div>
+                </div>
+                """
+            ),
+            extensions=['md_in_html', 'abbr']
+        )
