@@ -18,9 +18,7 @@ from . import Extension
 from ..blockprocessors import BlockProcessor
 from ..preprocessors import Preprocessor
 from .. import util
-from ..htmlparser import HTMLExtractor, blank_line_re
-from html import parser
-import re
+from ..htmlparser import HTMLExtractor
 import xml.etree.ElementTree as etree
 
 
@@ -92,7 +90,8 @@ class HTMLExtractorExtra(HTMLExtractor):
 
     def handle_starttag(self, tag, attrs):
         if tag in block_level_tags:
-            # Valueless attr (ex: `<tag checked>`) results in `[('checked', None)]`. Convert to `{'checked': 'checked'}`.
+            # Valueless attr (ex: `<tag checked>`) results in `[('checked', None)]`.
+            # Convert to `{'checked': 'checked'}`.
             attrs = {key: value if value is not None else key for key, value in attrs}
             state = self.get_state(tag, attrs)
 
@@ -159,7 +158,7 @@ class HTMLExtractorExtra(HTMLExtractor):
             if self.at_line_start() and is_block:
                 self.handle_data('\n' + self.md.htmlStash.store(data) + '\n\n')
             else:
-                self.handle_date(text)
+                self.handle_date(data)
 
 
 class HtmlBlockPreprocessor(Preprocessor):
@@ -247,7 +246,6 @@ class MarkdownInHtmlProcessor(BlockProcessor):
                 self.parse_element_content(child)
                 if child.tail:
                     child.tail = util.AtomicString(child.tail)
-
 
     def run(self, parent, blocks):
         m = util.HTML_PLACEHOLDER_RE.match(blocks[0])

@@ -131,7 +131,6 @@ class TestPl2007(LegacyTestCase):
 class TestExtensions(LegacyTestCase):
     location = os.path.join(parent_test_dir, 'extensions')
     exclude = ['codehilite']
-    maxDiff = None
 
     attr_list = Kwargs(extensions=['attr_list', 'def_list', 'smarty'])
 

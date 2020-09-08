@@ -628,22 +628,20 @@ class TestMdInHTML(TestCase):
                 </div>
                 """
             ),
-            self.dedent(
-                """
-                <div>
-                <div>
-                <p>Paragraph with a footnote.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
-                </div>
-                </div>
-                <div class="footnote">
-                <hr />
-                <ol>
-                <li id="fn:1">
-                <p>The footnote.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-                </li>
-                </ol>
-                </div>
-                """
-            ),
+            '<div>\n'
+            '<div>\n'
+            '<p>Paragraph with a footnote.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>\n'
+            '</div>\n'
+            '</div>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>The footnote.&#160;'
+            '<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a>'
+            '</p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>',
             extensions=['md_in_html', 'footnotes']
         )
