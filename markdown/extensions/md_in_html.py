@@ -64,7 +64,7 @@ class HTMLExtractorExtra(HTMLExtractor):
     def get_element(self):
         """ Return element from treebuilder and reset treebuilder for later use. """
         element = self.treebuilder.close()
-        self.treebuilder = etree.TreeBuilder(insert_comments=True, insert_pis=True)
+        self.treebuilder = etree.TreeBuilder()
         return element
 
     def get_state(self, tag, attrs):
