@@ -4,7 +4,7 @@ title: Markdown in HTML Extension
 
 ## Summary
 
-An extensions that parses Markdown inside of HTML tags.
+An extension that parses Markdown inside of HTML tags.
 
 ## Syntax
 
@@ -191,10 +191,9 @@ behavior. However, if the value of an element's `markdown` attribute is the same
 parent, the the child element's behavior is observed. For example, a `block` element may contain either `block`
 elements or `span` elements as children and each element will be parsed using the specified behavior.
 
-### Normalization
+### Tag Normalization
 
-While the default behavior is for Markdown to not alter raw HTML, any block-level elements with the `markdown` element
-defined are normalized. For example, the following raw HTML:
+While the default behavior is for Markdown to not alter raw HTML, as this extension is parsing the content of raw HTML elements, it will do some normalization of the tags of block-level elements. For example, the following raw HTML:
 
 ```
 <div markdown="1">
@@ -207,15 +206,26 @@ defined are normalized. For example, the following raw HTML:
 
 ``` html
 <div>
-<p>A Markdown paragraph with <em>no</em> closing tag.</p>
+<p>A Markdown paragraph with <em>no</em> closing tag.
+</p>
 <p>A raw paragraph with *no* closing tag.
+</p>
 </div>
 ```
 
-Notice that the parser properly recognized that an unclosed  `<p>` tag ends when another `<p>` tag begins or when the
-parent element ends. While the first `<p>` element, which included a `markdown` attribute, had the closing tag added
-to the rendered output, the second `<p>` did not get the closing tag added as it did not have a `markdown` attribute.
-Of course, a browser will properly interpret both tags.
+Notice that the parser properly recognizes that an unclosed  `<p>` tag ends when another `<p>` tag begins or when the
+parent element ends. In both cases, a closing `</p>` was added to the end of the element, regardless of whether a
+`markdown` attribute was assigned to the element.
+
+To avoid any normalization, an element must not be a descendant of any block-level element which has a `markdown`
+attribute defined.
+
+!!! warning
+
+    The normalization behavior is only documented here so that document authors are not surprised when their carefully
+    crafted raw HTML is altered by Markdown. This extension should not be relied on to normalize and generate valid
+    HTML. For the best results, always include valid raw HTML (with both opening and closing tags) in your Markdown
+    documents.
 
 ## Usage
 
