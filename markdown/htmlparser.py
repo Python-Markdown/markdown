@@ -108,7 +108,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         m = htmlparser.endendtag.search(self.rawdata, start)
         if m:
             return self.rawdata[start:m.end()]
-        else:
+        else:  # pragma: no cover
             # Failed to extract from raw data. Assume well formed and lowercase.
             return '</{}>'.format(tag)
 

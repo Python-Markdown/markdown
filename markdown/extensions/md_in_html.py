@@ -57,9 +57,6 @@ class HTMLExtractorExtra(HTMLExtractor):
         if self.mdstack:
             # Close the outermost parent. handle_endtag will close all unclosed children.
             self.handle_endtag(self.mdstack[0])
-        if len(self._cache):
-            self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
-            self._cache = []
 
     def get_element(self):
         """ Return element from treebuilder and reset treebuilder for later use. """
@@ -85,7 +82,7 @@ class HTMLExtractorExtra(HTMLExtractor):
             return 'span'
         elif tag in block_level_tags:
             return 'off'
-        else:
+        else:  #pragma: no cover
             return None
 
     def handle_starttag(self, tag, attrs):
@@ -158,7 +155,7 @@ class HTMLExtractorExtra(HTMLExtractor):
             if self.at_line_start() and is_block:
                 self.handle_data('\n' + self.md.htmlStash.store(data) + '\n\n')
             else:
-                self.handle_date(data)
+                self.handle_data(data)
 
 
 class HtmlBlockPreprocessor(Preprocessor):

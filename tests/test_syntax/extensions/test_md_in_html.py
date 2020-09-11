@@ -319,6 +319,54 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_md1_nested_empty(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                A _Markdown_ paragraph before a raw empty tag.
+
+                <img src="image.png" alt="An image" />
+
+                A _Markdown_ tail to the raw empty tag.
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p>A <em>Markdown</em> paragraph before a raw empty tag.</p>
+                <p><img src="image.png" alt="An image" /></p>
+                <p>A <em>Markdown</em> tail to the raw empty tag.</p>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_nested_empty_block(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                A _Markdown_ paragraph before a raw empty tag.
+
+                <hr />
+
+                A _Markdown_ tail to the raw empty tag.
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p>A <em>Markdown</em> paragraph before a raw empty tag.</p>
+                <hr />
+                <p>A <em>Markdown</em> tail to the raw empty tag.</p>
+                </div>
+                """
+            )
+        )
+
     def test_md_span_paragraph(self):
         self.assertMarkdownRenders(
             '<p markdown="span">*foo*</p>',
@@ -408,6 +456,36 @@ class TestMdInHTML(TestCase):
                 <div>
                 <p><em>bar</em></p>
                 </div>
+                </div>
+                """
+            )
+        )
+
+    def test_nomd_nested_in_md1(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                *foo*
+                <div>
+                *foo*
+                <p>*bar*</p>
+                *baz*
+                </div>
+                *bar*
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p><em>foo</em></p>
+                <div>
+                *foo*
+                <p>*bar*</p>
+                *baz*
+                </div>
+                <p><em>bar</em></p>
                 </div>
                 """
             )
