@@ -55,7 +55,7 @@ block will not be highlighted.
     GitHub user [richeland] has provided a number of different [CSS style
     sheets][rich] which work with Pygments along with a [preview] of each theme.
     The `css_class` used is `.highlight`. Therefore, one would need to override the
-    [css_class](#css_class) option when using richeland's CSS styles. However, the
+    [`css_class`](#css_class) option when using richeland's CSS styles. However, the
     Python-Markdown project makes no guarantee that richeland's CSS styles will
     work with the version of Pygments you are using. To ensure complete
     compatibility, you should generate the CSS rules from your own installation
