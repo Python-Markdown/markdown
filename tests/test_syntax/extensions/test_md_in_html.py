@@ -654,6 +654,28 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_md1_nested_comment(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                A *Markdown* paragraph.
+                <!-- foobar -->
+                A *Markdown* paragraph.
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p>A <em>Markdown</em> paragraph.</p>
+                <!-- foobar -->
+                <p>A <em>Markdown</em> paragraph.</p>
+                </div>
+                """
+            )
+        )
+
     def test_md1_nested_link_ref(self):
         self.assertMarkdownRenders(
             self.dedent(
