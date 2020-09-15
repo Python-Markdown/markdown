@@ -22,7 +22,7 @@ License: BSD (see LICENSE.md for details).
 from markdown.test_tools import TestCase
 
 
-class TestAdvancedLinks(TestCase):
+class TestInlineLinks(TestCase):
 
     def test_nested_square_brackets(self):
         self.assertMarkdownRenders(
@@ -132,6 +132,188 @@ class TestAdvancedLinks(TestCase):
         self.assertMarkdownRenders(
             '[title](http://example.com/?a=1&#x26;b=2)',
             '<p><a href="http://example.com/?a=1&#x26;b=2">title</a></p>'
+        )
+
+
+class TestReferenceLinks(TestCase):
+
+    def test_ref_link(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]: http://example.com
+                """
+            ),
+            """<p><a href="http://example.com">Text</a></p>"""
+        )
+
+    def test_ref_link_angle_brackets(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]: <http://example.com>
+                """
+            ),
+            """<p><a href="http://example.com">Text</a></p>"""
+        )
+
+    def test_ref_link_no_space(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]:http://example.com
+                """
+            ),
+            """<p><a href="http://example.com">Text</a></p>"""
+        )
+
+    def test_ref_link_angle_brackets_no_space(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]:<http://example.com>
+                """
+            ),
+            """<p><a href="http://example.com">Text</a></p>"""
+        )
+
+    def test_ref_link_angle_brackets_title(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]: <http://example.com> "title"
+                """
+            ),
+            """<p><a href="http://example.com" title="title">Text</a></p>"""
+        )
+
+
+    def test_ref_link_title(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]: http://example.com "title"
+                """
+            ),
+            """<p><a href="http://example.com" title="title">Text</a></p>"""
+        )
+
+    def test_ref_link_angle_brackets_title_no_space(self):
+        # TODO: Maybe reevaluate this?
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]: <http://example.com>"title"
+                """
+            ),
+            """<p><a href="http://example.com&gt;&quot;title&quot;">Text</a></p>"""
+        )
+
+
+    def test_ref_link_title_no_space(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]: http://example.com"title"
+                """
+            ),
+            """<p><a href="http://example.com&quot;title&quot;">Text</a></p>"""
+        )
+
+    def test_ref_link_single_quoted_title(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]: http://example.com 'title'
+                """
+            ),
+            """<p><a href="http://example.com" title="title">Text</a></p>"""
+        )
+
+    def test_ref_link_title_nested_quote(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]: http://example.com "title'"
+                """
+            ),
+            """<p><a href="http://example.com" title="title'">Text</a></p>"""
+        )
+
+    def test_ref_link_single_quoted_title_nested_quote(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]: http://example.com 'title"'
+                """
+            ),
+            """<p><a href="http://example.com" title="title&quot;">Text</a></p>"""
+        )
+
+    def test_ref_link_override(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]: http://example.com 'ignore'
+                [Text]: https://example.com 'override'
+                """
+            ),
+            """<p><a href="https://example.com" title="override">Text</a></p>"""
+        )
+
+    def test_ref_link_title_no_blank_lines(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+                [Text]: http://example.com "title"
+                [Text]
+                """
+            ),
+            self.dedent(
+                """
+                <p><a href="http://example.com" title="title">Text</a></p>
+                <p><a href="http://example.com" title="title">Text</a></p>
+                """
+            )
+        )
+
+    def test_ref_link_multi_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]
+
+                [Text]:
+                    http://example.com
+                    "title"
+                """
+            ),
+            """<p><a href="http://example.com" title="title">Text</a></p>"""
         )
 
     def test_reference_newlines(self):
