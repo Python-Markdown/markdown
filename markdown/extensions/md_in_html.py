@@ -82,7 +82,7 @@ class HTMLExtractorExtra(HTMLExtractor):
             return 'span'
         elif tag in block_level_tags:
             return 'off'
-        else:  #pragma: no cover
+        else:  # pragma: no cover
             return None
 
     def handle_starttag(self, tag, attrs):

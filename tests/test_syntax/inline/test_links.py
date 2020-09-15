@@ -197,7 +197,6 @@ class TestReferenceLinks(TestCase):
             """<p><a href="http://example.com" title="title">Text</a></p>"""
         )
 
-
     def test_ref_link_title(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -222,7 +221,6 @@ class TestReferenceLinks(TestCase):
             ),
             """<p><a href="http://example.com&gt;&quot;title&quot;">Text</a></p>"""
         )
-
 
     def test_ref_link_title_no_space(self):
         self.assertMarkdownRenders(
