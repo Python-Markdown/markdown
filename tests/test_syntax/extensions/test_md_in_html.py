@@ -20,6 +20,7 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+from unittest import TestSuite
 from markdown.test_tools import TestCase
 from ..blocks.test_html_blocks import TestHTMLBlocks
 
@@ -752,3 +753,12 @@ class TestMdInHTML(TestCase):
             '</div>',
             extensions=['md_in_html', 'footnotes']
         )
+
+
+def load_tests(loader, tests, pattern):
+    ''' Ensure TestHTMLBlocks doesn't get run twice by excluding it here. '''
+    suite = TestSuite()
+    for test_class in [TestDefaultwMdInHTML, TestMdInHTML]:
+        tests = loader.loadTestsFromTestCase(test_class)
+        suite.addTests(tests)
+    return suite
