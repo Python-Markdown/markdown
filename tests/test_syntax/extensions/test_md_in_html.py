@@ -21,6 +21,13 @@ License: BSD (see LICENSE.md for details).
 """
 
 from markdown.test_tools import TestCase
+from ..blocks.test_html_blocks import TestHTMLBlocks
+
+
+class TestDefaultwMdInHTML(TestHTMLBlocks):
+    """ Ensure the md_in_html extension does not break the default behavior. """
+
+    default_kwargs = {'extensions': ['md_in_html']}
 
 
 class TestMdInHTML(TestCase):
