@@ -70,10 +70,10 @@ The following new features have been included in the 3.3 release:
   [html.parser.HTMLParser](https://docs.python.org/3/library/html.parser.html), which
   alleviates various bugs and simplify maintenance of the code (#803, #830).
 
-* The [Markdown in HTML](../md_in_html.md) extension has been rebuilt on the new HTML
-  Parser, which drastically simplifies it. Note that raw HTML elements with a `markdown`
-  attribute defined are now converted to ElementTree Elements and are rendered by the
-  serializer. Various bugs have been fixed (#803, #595, #780, and #1012).
+* The [Markdown in HTML](../extensions/md_in_html.md) extension has been rebuilt on the
+  new HTML Parser, which drastically simplifies it. Note that raw HTML elements with a
+  `markdown` attribute defined are now converted to ElementTree Elements and are rendered
+  by the serializer. Various bugs have been fixed (#803, #595, #780, and #1012).
 
 * Link reference parsing, abbreviation reference parsing and footnote reference parsing
   has all been moved from `preprocessors` to `blockprocessors`, which allows them to be
