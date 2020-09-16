@@ -24,7 +24,7 @@ import sys
 from collections import namedtuple
 from functools import wraps
 import warnings
-import xml.etree.ElementTree
+from xml.etree import ElementTree
 from .pep562 import Pep562
 from itertools import count
 
@@ -39,7 +39,7 @@ PY37 = (3, 7) <= sys.version_info
 
 # TODO: Remove deprecated variables in a future release.
 __deprecated__ = {
-    'etree': ('xml.etree.ElementTree', xml.etree.ElementTree),
+    'etree': ('xml.etree.ElementTree', ElementTree),
     'string_type': ('str', str),
     'text_type': ('str', str),
     'int2str': ('chr', chr),
