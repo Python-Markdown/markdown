@@ -21,7 +21,7 @@ from ..preprocessors import Preprocessor
 from ..inlinepatterns import InlineProcessor
 from ..util import AtomicString
 import re
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import Element
 
 # Global Vars
 ABBR_REF_RE = re.compile(r'[*]\[(?P<abbr>[^\]]*)\][ ]?:\s*(?P<title>.*)')
@@ -84,7 +84,7 @@ class AbbrInlineProcessor(InlineProcessor):
         self.title = title
 
     def handleMatch(self, m, data):
-        abbr = etree.Element('abbr')
+        abbr = Element('abbr')
         abbr.text = AtomicString(m.group('abbr'))
         abbr.set('title', self.title)
         return abbr, m.start(0), m.end(0)

@@ -17,7 +17,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..inlinepatterns import InlineProcessor
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import Element
 import re
 
 
@@ -59,7 +59,7 @@ class WikiLinksInlineProcessor(InlineProcessor):
             base_url, end_url, html_class = self._getMeta()
             label = m.group(1).strip()
             url = self.config['build_url'](label, base_url, end_url)
-            a = etree.Element('a')
+            a = Element('a')
             a.text = label
             a.set('href', url)
             if html_class:

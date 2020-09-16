@@ -17,7 +17,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..blockprocessors import BlockProcessor, ListIndentProcessor
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import SubElement
 import re
 
 
@@ -69,14 +69,14 @@ class DefListProcessor(BlockProcessor):
                 state = 'looselist'
         else:
             # This is a new list
-            dl = etree.SubElement(parent, 'dl')
+            dl = SubElement(parent, 'dl')
         # Add terms
         for term in terms:
-            dt = etree.SubElement(dl, 'dt')
+            dt = SubElement(dl, 'dt')
             dt.text = term
         # Add definition
         self.parser.state.set(state)
-        dd = etree.SubElement(dl, 'dd')
+        dd = SubElement(dl, 'dd')
         self.parser.parseBlocks(dd, [d])
         self.parser.state.reset()
 
@@ -94,7 +94,7 @@ class DefListIndentProcessor(ListIndentProcessor):
     def create_item(self, parent, block):
         """ Create a new dd or li (depending on parent) and parse the block with it as the parent. """
 
-        dd = etree.SubElement(parent, 'dd')
+        dd = SubElement(parent, 'dd')
         self.parser.parseBlocks(dd, [block])
 
 

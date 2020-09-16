@@ -17,7 +17,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..blockprocessors import BlockProcessor
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import SubElement
 import re
 PIPE_NONE = 0
 PIPE_LEFT = 1
@@ -91,10 +91,10 @@ class TableProcessor(BlockProcessor):
                 align.append(None)
 
         # Build table
-        table = etree.SubElement(parent, 'table')
-        thead = etree.SubElement(table, 'thead')
+        table = SubElement(parent, 'table')
+        thead = SubElement(table, 'thead')
         self._build_row(header, thead, align)
-        tbody = etree.SubElement(table, 'tbody')
+        tbody = SubElement(table, 'tbody')
         if len(rows) == 0:
             # Handle empty table
             self._build_empty_row(tbody, align)
@@ -104,15 +104,15 @@ class TableProcessor(BlockProcessor):
 
     def _build_empty_row(self, parent, align):
         """Build an empty row."""
-        tr = etree.SubElement(parent, 'tr')
+        tr = SubElement(parent, 'tr')
         count = len(align)
         while count:
-            etree.SubElement(tr, 'td')
+            SubElement(tr, 'td')
             count -= 1
 
     def _build_row(self, row, parent, align):
         """ Given a row of text, build table cells. """
-        tr = etree.SubElement(parent, 'tr')
+        tr = SubElement(parent, 'tr')
         tag = 'td'
         if parent.tag == 'thead':
             tag = 'th'
@@ -120,7 +120,7 @@ class TableProcessor(BlockProcessor):
         # We use align here rather than cells to ensure every row
         # contains the same number of columns.
         for i, a in enumerate(align):
-            c = etree.SubElement(tr, tag)
+            c = SubElement(tr, tag)
             try:
                 c.text = cells[i].strip(' ')
             except IndexError:  # pragma: no cover

@@ -22,7 +22,7 @@ from .. import util
 from collections import OrderedDict
 import re
 import copy
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import Element, SubElement
 
 FN_BACKLINK_TEXT = util.STX + "zz1337820767766393qq" + util.ETX
 NBSP_PLACEHOLDER = util.STX + "qq3936677670287331zz" + util.ETX
@@ -166,14 +166,14 @@ class FootnoteExtension(Extension):
         if not list(self.footnotes.keys()):
             return None
 
-        div = etree.Element("div")
+        div = Element("div")
         div.set('class', 'footnote')
-        etree.SubElement(div, "hr")
-        ol = etree.SubElement(div, "ol")
-        surrogate_parent = etree.Element("div")
+        SubElement(div, "hr")
+        ol = SubElement(div, "ol")
+        surrogate_parent = Element("div")
 
         for index, id in enumerate(self.footnotes.keys(), start=1):
-            li = etree.SubElement(ol, "li")
+            li = SubElement(ol, "li")
             li.set("id", self.makeFootnoteId(id))
             # Parse footnote with surrogate parent as li cannot be used.
             # List block handlers have special logic to deal with li.
@@ -182,7 +182,7 @@ class FootnoteExtension(Extension):
             for el in list(surrogate_parent):
                 li.append(el)
                 surrogate_parent.remove(el)
-            backlink = etree.Element("a")
+            backlink = Element("a")
             backlink.set("href", "#" + self.makeFootnoteRefId(id))
             backlink.set("class", "footnote-backref")
             backlink.set(
@@ -197,7 +197,7 @@ class FootnoteExtension(Extension):
                     node.text = node.text + NBSP_PLACEHOLDER
                     node.append(backlink)
                 else:
-                    p = etree.SubElement(li, "p")
+                    p = SubElement(li, "p")
                     p.append(backlink)
         return div
 
@@ -314,8 +314,8 @@ class FootnoteInlineProcessor(InlineProcessor):
     def handleMatch(self, m, data):
         id = m.group(1)
         if id in self.footnotes.footnotes.keys():
-            sup = etree.Element("sup")
-            a = etree.SubElement(sup, "a")
+            sup = Element("sup")
+            a = SubElement(sup, "a")
             sup.set('id', self.footnotes.makeFootnoteRefId(id, found=True))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
             a.set('class', 'footnote-ref')

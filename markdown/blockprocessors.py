@@ -32,7 +32,7 @@ as they need to alter how markdown blocks are parsed.
 
 import logging
 import re
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import Element, SubElement
 from . import util
 from .blockparser import BlockParser
 
@@ -195,7 +195,7 @@ class ListIndentProcessor(BlockProcessor):
                 # If the parent li has text, that text needs to be moved to a p
                 # The p must be 'inserted' at beginning of list in the event
                 # that other children already exist i.e.; a nested sublist.
-                p = etree.Element('p')
+                p = Element('p')
                 p.text = sibling[-1].text
                 sibling[-1].text = ''
                 sibling[-1].insert(0, p)
@@ -206,7 +206,7 @@ class ListIndentProcessor(BlockProcessor):
 
     def create_item(self, parent, block):
         """ Create a new li and parse the block with it as the parent. """
-        li = etree.SubElement(parent, 'li')
+        li = SubElement(parent, 'li')
         self.parser.parseBlocks(li, [block])
 
     def get_level(self, parent, block):
@@ -260,8 +260,8 @@ class CodeBlockProcessor(BlockProcessor):
             )
         else:
             # This is a new codeblock. Create the elements and insert text.
-            pre = etree.SubElement(parent, 'pre')
-            code = etree.SubElement(pre, 'code')
+            pre = SubElement(parent, 'pre')
+            code = SubElement(pre, 'code')
             block, theRest = self.detab(block)
             code.text = util.AtomicString('%s\n' % util.code_escape(block.rstrip()))
         if theRest:
@@ -295,7 +295,7 @@ class BlockQuoteProcessor(BlockProcessor):
             quote = sibling
         else:
             # This is a new blockquote. Create a new parent element.
-            quote = etree.SubElement(parent, 'blockquote')
+            quote = SubElement(parent, 'blockquote')
         # Recursively parse block with blockquote as parent.
         # change parser state so blockquotes embedded in lists use p tags
         self.parser.state.set('blockquote')
@@ -355,7 +355,7 @@ class OListProcessor(BlockProcessor):
                 # since it's possible there are other children for this
                 # sibling, we can't just SubElement the p, we need to
                 # insert it as the first item.
-                p = etree.Element('p')
+                p = Element('p')
                 p.text = lst[-1].text
                 lst[-1].text = ''
                 lst[-1].insert(0, p)
@@ -363,12 +363,12 @@ class OListProcessor(BlockProcessor):
             # likely only when a header is not followed by a blank line
             lch = self.lastChild(lst[-1])
             if lch is not None and lch.tail:
-                p = etree.SubElement(lst[-1], 'p')
+                p = SubElement(lst[-1], 'p')
                 p.text = lch.tail.lstrip()
                 lch.tail = ''
 
             # parse first block differently as it gets wrapped in a p.
-            li = etree.SubElement(lst, 'li')
+            li = SubElement(lst, 'li')
             self.parser.state.set('looselist')
             firstitem = items.pop(0)
             self.parser.parseBlocks(li, [firstitem])
@@ -382,7 +382,7 @@ class OListProcessor(BlockProcessor):
             lst = parent
         else:
             # This is a new list so create parent with appropriate tag.
-            lst = etree.SubElement(parent, self.TAG)
+            lst = SubElement(parent, self.TAG)
             # Check if a custom start integer is set
             if not self.LAZY_OL and self.STARTSWITH != '1':
                 lst.attrib['start'] = self.STARTSWITH
@@ -396,7 +396,7 @@ class OListProcessor(BlockProcessor):
                 self.parser.parseBlocks(lst[-1], [item])
             else:
                 # New item. Create li and parse with it as parent
-                li = etree.SubElement(lst, 'li')
+                li = SubElement(lst, 'li')
                 self.parser.parseBlocks(li, [item])
         self.parser.state.reset()
 
@@ -459,7 +459,7 @@ class HashHeaderProcessor(BlockProcessor):
                 # recursively parse this lines as a block.
                 self.parser.parseBlocks(parent, [before])
             # Create header using named groups from RE
-            h = etree.SubElement(parent, 'h%d' % len(m.group('level')))
+            h = SubElement(parent, 'h%d' % len(m.group('level')))
             h.text = m.group('header').strip()
             if after:
                 # Insert remaining lines as first block for future parsing.
@@ -485,7 +485,7 @@ class SetextHeaderProcessor(BlockProcessor):
             level = 1
         else:
             level = 2
-        h = etree.SubElement(parent, 'h%d' % level)
+        h = SubElement(parent, 'h%d' % level)
         h.text = lines[0].strip()
         if len(lines) > 2:
             # Block contains additional lines. Add to  master blocks for later.
@@ -519,7 +519,7 @@ class HRProcessor(BlockProcessor):
             # Recursively parse lines before hr so they get parsed first.
             self.parser.parseBlocks(parent, [prelines])
         # create hr
-        etree.SubElement(parent, 'hr')
+        SubElement(parent, 'hr')
         # check for lines in block after hr.
         postlines = block[match.end():].lstrip('\n')
         if postlines:
@@ -588,5 +588,5 @@ class ParagraphProcessor(BlockProcessor):
                         parent.text = block.lstrip()
             else:
                 # Create a regular paragraph
-                p = etree.SubElement(parent, 'p')
+                p = SubElement(parent, 'p')
                 p.text = block.lstrip()

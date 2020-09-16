@@ -19,7 +19,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..blockprocessors import BlockProcessor
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import SubElement
 import re
 
 
@@ -121,10 +121,10 @@ class AdmonitionProcessor(BlockProcessor):
 
         if m:
             klass, title = self.get_class_and_title(m)
-            div = etree.SubElement(parent, 'div')
+            div = SubElement(parent, 'div')
             div.set('class', '{} {}'.format(self.CLASSNAME, klass))
             if title:
-                p = etree.SubElement(div, 'p')
+                p = SubElement(div, 'p')
                 p.text = title
                 p.set('class', self.CLASSNAME_TITLE)
         else:
@@ -132,7 +132,7 @@ class AdmonitionProcessor(BlockProcessor):
             if sibling.tag in ('li', 'dd') and sibling.text:
                 text = sibling.text
                 sibling.text = ''
-                p = etree.SubElement(sibling, 'p')
+                p = SubElement(sibling, 'p')
                 p.text = text
 
             div = sibling

@@ -63,7 +63,7 @@ So, we apply the expressions in the following order:
 from . import util
 from collections import namedtuple
 import re
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import Element, SubElement
 try:  # pragma: no cover
     from html import entities
 except ImportError:  # pragma: no cover
@@ -338,7 +338,7 @@ class SimpleTagPattern(Pattern):  # pragma: no cover
         self.tag = tag
 
     def handleMatch(self, m):
-        el = etree.Element(self.tag)
+        el = Element(self.tag)
         el.text = m.group(3)
         return el
 
@@ -354,7 +354,7 @@ class SimpleTagInlineProcessor(InlineProcessor):
         self.tag = tag
 
     def handleMatch(self, m, data):  # pragma: no cover
-        el = etree.Element(self.tag)
+        el = Element(self.tag)
         el.text = m.group(2)
         return el, m.start(0), m.end(0)
 
@@ -362,13 +362,13 @@ class SimpleTagInlineProcessor(InlineProcessor):
 class SubstituteTagPattern(SimpleTagPattern):  # pragma: no cover
     """ Return an element of type `tag` with no children. """
     def handleMatch(self, m):
-        return etree.Element(self.tag)
+        return Element(self.tag)
 
 
 class SubstituteTagInlineProcessor(SimpleTagInlineProcessor):
     """ Return an element of type `tag` with no children. """
     def handleMatch(self, m, data):
-        return etree.Element(self.tag), m.start(0), m.end(0)
+        return Element(self.tag), m.start(0), m.end(0)
 
 
 class BacktickInlineProcessor(InlineProcessor):
@@ -380,7 +380,7 @@ class BacktickInlineProcessor(InlineProcessor):
 
     def handleMatch(self, m, data):
         if m.group(3):
-            el = etree.Element(self.tag)
+            el = Element(self.tag)
             el.text = util.AtomicString(util.code_escape(m.group(3).strip()))
             return el, m.start(0), m.end(0)
         else:
@@ -395,8 +395,8 @@ class DoubleTagPattern(SimpleTagPattern):  # pragma: no cover
     """
     def handleMatch(self, m):
         tag1, tag2 = self.tag.split(",")
-        el1 = etree.Element(tag1)
-        el2 = etree.SubElement(el1, tag2)
+        el1 = Element(tag1)
+        el2 = SubElement(el1, tag2)
         el2.text = m.group(3)
         if len(m.groups()) == 5:
             el2.tail = m.group(4)
@@ -411,8 +411,8 @@ class DoubleTagInlineProcessor(SimpleTagInlineProcessor):
     """
     def handleMatch(self, m, data):  # pragma: no cover
         tag1, tag2 = self.tag.split(",")
-        el1 = etree.Element(tag1)
-        el2 = etree.SubElement(el1, tag2)
+        el1 = Element(tag1)
+        el2 = SubElement(el1, tag2)
         el2.text = m.group(2)
         if len(m.groups()) == 3:
             el2.tail = m.group(3)
@@ -458,7 +458,7 @@ class AsteriskProcessor(InlineProcessor):
 
     def build_single(self, m, tag, idx):
         """Return single tag."""
-        el1 = etree.Element(tag)
+        el1 = Element(tag)
         text = m.group(2)
         self.parse_sub_patterns(text, el1, None, idx)
         return el1
@@ -467,8 +467,8 @@ class AsteriskProcessor(InlineProcessor):
         """Return double tag."""
 
         tag1, tag2 = tags.split(",")
-        el1 = etree.Element(tag1)
-        el2 = etree.Element(tag2)
+        el1 = Element(tag1)
+        el2 = Element(tag2)
         text = m.group(2)
         self.parse_sub_patterns(text, el2, None, idx)
         el1.append(el2)
@@ -481,8 +481,8 @@ class AsteriskProcessor(InlineProcessor):
         """Return double tags (variant 2): `<strong>text <em>text</em></strong>`."""
 
         tag1, tag2 = tags.split(",")
-        el1 = etree.Element(tag1)
-        el2 = etree.Element(tag2)
+        el1 = Element(tag1)
+        el2 = Element(tag2)
         text = m.group(2)
         self.parse_sub_patterns(text, el1, None, idx)
         text = m.group(3)
@@ -497,10 +497,10 @@ class AsteriskProcessor(InlineProcessor):
         `data` (`str`):
             text to evaluate.
 
-        `parent` (`etree.Element`):
+        `parent` (`Element`):
             Parent to attach text and sub elements to.
 
-        `last` (`etree.Element`):
+        `last` (`Element`):
             Last appended child to parent. Can also be None if parent has no children.
 
         `idx` (`int`):
@@ -608,7 +608,7 @@ class LinkInlineProcessor(InlineProcessor):
         if not handled:
             return None, None, None
 
-        el = etree.Element("a")
+        el = Element("a")
         el.text = text
 
         el.set("href", href)
@@ -766,7 +766,7 @@ class ImageInlineProcessor(LinkInlineProcessor):
         if not handled:
             return None, None, None
 
-        el = etree.Element("img")
+        el = Element("img")
 
         el.set("src", src)
 
@@ -818,7 +818,7 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
         return id, end, True
 
     def makeTag(self, href, title, text):
-        el = etree.Element('a')
+        el = Element('a')
 
         el.set('href', href)
         if title:
@@ -839,7 +839,7 @@ class ShortReferenceInlineProcessor(ReferenceInlineProcessor):
 class ImageReferenceInlineProcessor(ReferenceInlineProcessor):
     """ Match to a stored reference and return img element. """
     def makeTag(self, href, title, text):
-        el = etree.Element("img")
+        el = Element("img")
         el.set("src", href)
         if title:
             el.set("title", title)
@@ -858,7 +858,7 @@ class ShortImageReferenceInlineProcessor(ImageReferenceInlineProcessor):
 class AutolinkInlineProcessor(InlineProcessor):
     """ Return a link Element given an autolink (`<http://example/com>`). """
     def handleMatch(self, m, data):
-        el = etree.Element("a")
+        el = Element("a")
         el.set('href', self.unescape(m.group(1)))
         el.text = util.AtomicString(m.group(1))
         return el, m.start(0), m.end(0)
@@ -869,7 +869,7 @@ class AutomailInlineProcessor(InlineProcessor):
     Return a mailto link Element given an automail link (`<foo@example.com>`).
     """
     def handleMatch(self, m, data):
-        el = etree.Element('a')
+        el = Element('a')
         email = self.unescape(m.group(1))
         if email.startswith("mailto:"):
             email = email[len("mailto:"):]

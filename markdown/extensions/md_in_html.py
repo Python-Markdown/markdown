@@ -18,7 +18,7 @@ from . import Extension
 from ..blockprocessors import BlockProcessor
 from .. import util
 import re
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import SubElement
 
 
 class MarkdownInHtmlProcessor(BlockProcessor):
@@ -53,7 +53,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
 
         # Create Element
         markdown_value = tag['attrs'].pop('markdown')
-        element = etree.SubElement(parent, tag['tag'], tag['attrs'])
+        element = SubElement(parent, tag['tag'], tag['attrs'])
 
         # Slice Off Block
         if nest:

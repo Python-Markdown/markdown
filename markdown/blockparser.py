@@ -19,7 +19,7 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import Element, ElementTree
 from . import util
 
 
@@ -86,9 +86,9 @@ class BlockParser:
 
         """
         # Create a ElementTree from the lines
-        self.root = etree.Element(self.md.doc_tag)
+        self.root = Element(self.md.doc_tag)
         self.parseChunk(self.root, '\n'.join(lines))
-        return etree.ElementTree(self.root)
+        return ElementTree(self.root)
 
     def parseChunk(self, parent, text):
         """ Parse a chunk of markdown text and attach to given etree node.

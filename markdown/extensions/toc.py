@@ -20,7 +20,7 @@ from ..postprocessors import UnescapePostprocessor
 import re
 import html
 import unicodedata
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import Element, SubElement
 
 
 def slugify(value, separator):
@@ -201,7 +201,7 @@ class TocTreeprocessor(Treeprocessor):
         elem.tag = 'h%d' % level
 
     def add_anchor(self, c, elem_id):  # @ReservedAssignment
-        anchor = etree.Element("a")
+        anchor = Element("a")
         anchor.text = c.text
         anchor.attrib["href"] = "#" + elem_id
         anchor.attrib["class"] = self.anchorlink_class
@@ -213,7 +213,7 @@ class TocTreeprocessor(Treeprocessor):
         c.append(anchor)
 
     def add_permalink(self, c, elem_id):
-        permalink = etree.Element("a")
+        permalink = Element("a")
         permalink.text = ("%spara;" % AMP_SUBSTITUTE
                           if self.use_permalinks is True
                           else self.use_permalinks)
@@ -225,21 +225,21 @@ class TocTreeprocessor(Treeprocessor):
 
     def build_toc_div(self, toc_list):
         """ Return a string div given a toc list. """
-        div = etree.Element("div")
+        div = Element("div")
         div.attrib["class"] = "toc"
 
         # Add title to the div
         if self.title:
-            header = etree.SubElement(div, "span")
+            header = SubElement(div, "span")
             header.attrib["class"] = "toctitle"
             header.text = self.title
 
         def build_etree_ul(toc_list, parent):
-            ul = etree.SubElement(parent, "ul")
+            ul = SubElement(parent, "ul")
             for item in toc_list:
                 # List item link, to be inserted into the toc div
-                li = etree.SubElement(ul, "li")
-                link = etree.SubElement(li, "a")
+                li = SubElement(ul, "li")
+                link = SubElement(li, "a")
                 link.text = item.get('name', '')
                 link.attrib["href"] = '#' + item.get('id', '')
                 if item['children']:
