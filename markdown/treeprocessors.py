@@ -19,7 +19,7 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-import xml.etree.ElementTree as etree
+from xml.etree.ElementTree import Element
 from . import util
 from . import inlinepatterns
 
@@ -376,7 +376,7 @@ class InlineProcessor(Treeprocessor):
                     self.ancestors.pop()
                 if child.tail:
                     tail = self.__handleInline(child.tail)
-                    dumby = etree.Element('d')
+                    dumby = Element('d')
                     child.tail = None
                     tailResult = self.__processPlaceholders(tail, dumby, False)
                     if dumby.tail:
