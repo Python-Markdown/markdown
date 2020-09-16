@@ -113,8 +113,6 @@ class HTMLExtractor(htmlparser.HTMLParser):
             return '</{}>'.format(tag)
 
     def handle_starttag(self, tag, attrs):
-        attrs = dict(attrs)
-
         if self.md.is_block_level(tag) and (self.intail or (self.at_line_start() and not self.inraw)):
             # Started a new raw block. Prepare stack.
             self.inraw = True
