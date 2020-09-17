@@ -29,10 +29,34 @@ From the Python interpreter:
 >>> html = markdown.markdown(text, extensions=['extra'])
 ```
 
-There may be [additional extensions](index.md) that are distributed with
-Python-Markdown that are not included here in Extra. The features
-of those extensions are not part of PHP Markdown Extra, and
-therefore, not part of Python-Markdown Extra. If you really would
-like Extra to include additional extensions, we suggest creating
-your own clone of Extra under a different name
-(see the [Extension API](api.md)).
+To pass configuration options to the extensions included with Extra, they must be passed to Extra, with the
+underlying extension identified as well. In that way Extra will have access to the options and can pass them on to
+the appropriate underlying extension.
+
+```python
+config = {
+    'extra': {
+        'footnotes': {
+            'UNIQUE_IDS': True
+        },
+        'fenced_code': {
+            'lang_prefix': 'lang-'
+        }
+    },
+    'toc': {
+        'permalink': True
+    }
+}
+
+html = markdown.markdown(text, extensions=['extra', 'toc'], extension_configs=config)
+```
+
+Note that in the above example, `footnotes` and `fenced_code` are both nested under the `extra` key as those
+extensions are included with Extra. However, the `toc` extension is not included with `extra` and therefore its
+configuration options are not nested under the `extra` key.
+
+See each individual extension for a list of supported configuration options.
+
+There are many other [extensions](index.md) which are distributed with Python-Markdown that are not included here in
+Extra. The features of those extensions are not part of PHP Markdown Extra, and therefore, not part of Python-Markdown
+Extra.

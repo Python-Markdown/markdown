@@ -70,6 +70,7 @@ The following new features have been included in the 3.3 release:
 
 The following bug fixes are included in the 3.3 release:
 
+* Document how to pass configuration options to Extra (#1019).
 * Fix HR which follows strong em (#897).
 * Support short reference image links (#894).
 * Avoid a `RecursionError` from deeply nested blockquotes (#799).
