@@ -51,6 +51,7 @@ def build_block_parser(md, **kwargs):
     parser.blockprocessors.register(OListProcessor(parser), 'olist', 40)
     parser.blockprocessors.register(UListProcessor(parser), 'ulist', 30)
     parser.blockprocessors.register(BlockQuoteProcessor(parser), 'quote', 20)
+    parser.blockprocessors.register(ReferenceProcessor(parser), 'reference', 15)
     parser.blockprocessors.register(ParagraphProcessor(parser), 'paragraph', 10)
     return parser
 
@@ -552,6 +553,35 @@ class EmptyBlockProcessor(BlockProcessor):
             sibling[0].text = util.AtomicString(
                 '{}{}'.format(sibling[0].text, filler)
             )
+
+
+class ReferenceProcessor(BlockProcessor):
+    """ Process link references. """
+    RE = re.compile(
+        r'^[ ]{0,3}\[([^\]]*)\]:[ ]*\n?[ ]*([^\s]+)[ ]*\n?[ ]*((["\'])(.*)\4|\((.*)\))?[ ]*$', re.MULTILINE
+    )
+
+    def test(self, parent, block):
+        return True
+
+    def run(self, parent, blocks):
+        block = blocks.pop(0)
+        m = self.RE.search(block)
+        if m:
+            id = m.group(1).strip().lower()
+            link = m.group(2).lstrip('<').rstrip('>')
+            title = m.group(5) or m.group(6)
+            self.parser.md.references[id] = (link, title)
+            if block[m.end():].strip():
+                # Add any content after match back to blocks as separate block
+                blocks.insert(0, block[m.end():].lstrip('\n'))
+            if block[:m.start()].strip():
+                # Add any content before match back to blocks as separate block
+                blocks.insert(0, block[:m.start()].rstrip('\n'))
+            return True
+        # No match. Restore block.
+        blocks.insert(0, block)
+        return False
 
 
 class ParagraphProcessor(BlockProcessor):
