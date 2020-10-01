@@ -81,6 +81,13 @@ The following new features have been included in the 3.3 release:
   maintain the current behavior in the rebuilt Markdown in HTML extension. A few random
   edge-case bugs (see the included tests) were resolved in the process (#803).
 
+* An alternate function `markdown.extensions.headerid.slugify_unicode` has been included
+  with the [Table of Contents](../extensions/toc.md) extension which supports Unicode
+  characters in table of contents slugs. The old `markdown.extensions.headerid.slugify`
+  method which removes non-ASCII characters remains the default. Import and pass
+  `markdown.extensions.headerid.slugify_unicode` to the `slugify` configuration option
+  to use the new behavior.
+
 ## Bug fixes
 
 The following bug fixes are included in the 3.3 release:

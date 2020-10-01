@@ -141,3 +141,25 @@ class TestTOC(TestCase):
             '</h1>',                                                              # noqa
             extensions=[TocExtension(permalink=True, permalink_title="")]
         )
+
+    def testPermalinkWithUnicodeInID(self):
+        from markdown.extensions.toc import slugify_unicode
+        self.assertMarkdownRenders(
+            '# Unicode ヘッダー',
+            '<h1 id="unicode-ヘッター">'                                                            # noqa
+                'Unicode ヘッダー'                                                                  # noqa
+                '<a class="headerlink" href="#unicode-ヘッター" title="Permanent link">&para;</a>'  # noqa
+            '</h1>',                                                                                # noqa
+            extensions=[TocExtension(permalink=True, slugify=slugify_unicode)]
+        )
+
+    def testPermalinkWithUnicodeTitle(self):
+        from markdown.extensions.toc import slugify_unicode
+        self.assertMarkdownRenders(
+            '# Unicode ヘッダー',
+            '<h1 id="unicode-ヘッター">'                                                            # noqa
+                'Unicode ヘッダー'                                                                  # noqa
+                '<a class="headerlink" href="#unicode-ヘッター" title="パーマリンク">&para;</a>'    # noqa
+            '</h1>',                                                                                # noqa
+            extensions=[TocExtension(permalink=True, permalink_title="パーマリンク", slugify=slugify_unicode)]
+        )
