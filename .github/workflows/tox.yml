@@ -20,16 +20,16 @@ jobs:
       fail-fast: false
       max-parallel: 4
       matrix:
-        tox-env: [py35, py36, py37, py38, pypy3, pygments]
+        tox-env: [py36, py37, py38, py39, pypy3, pygments]
         include:
-          - tox-env: py35
-            python-version: 3.5
           - tox-env: py36
             python-version: 3.6
           - tox-env: py37
             python-version: 3.7
           - tox-env: py38
             python-version: 3.8
+          - tox-env: py39
+            python-version: 3.9
           - tox-env: pypy3
             python-version: pypy3
           - tox-env: pygments
@@ -91,4 +91,3 @@ jobs:
         if [[ "$TOXENV" == 'checkspelling' ]]; then sudo apt-get install aspell aspell-en; fi
     - name: Run tox
       run: python -m tox
-
