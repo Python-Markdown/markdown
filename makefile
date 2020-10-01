@@ -15,7 +15,7 @@ help:
 
 .PHONY : install
 install:
-	python setup.py install
+	python setup.py install or python setup.py build
 
 .PHONY : deploy
 deploy:
