@@ -3,7 +3,7 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-Under development: version 3.3 ([Notes](release-3.3.md)).
+Oct 6, 2020: version 3.3 ([Notes](release-3.3.md)).
 
 May 8, 2020: version 3.2.2 (a bug-fix release).
 
