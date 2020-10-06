@@ -2,8 +2,7 @@ title: Release Notes for v3.3
 
 # Python-Markdown 3.3 Release Notes
 
-Python-Markdown version 3.3 supports Python versions 3.5, 3.6, 3.7, 3.8, and
-PyPy3.
+Python-Markdown version 3.3 supports Python versions 3.6, 3.7, 3.8, 3.9 and PyPy3.
 
 ## Backwards-incompatible changes
 
@@ -87,6 +86,8 @@ The following new features have been included in the 3.3 release:
   method which removes non-ASCII characters remains the default. Import and pass
   `markdown.extensions.headerid.slugify_unicode` to the `slugify` configuration option
   to use the new behavior.
+
+* Support was added for Python 3.9 and dropped for Python 3.5.
 
 ## Bug fixes
 
