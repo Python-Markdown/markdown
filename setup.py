@@ -75,7 +75,7 @@ setup(
     license='BSD License',
     packages=['markdown', 'markdown.extensions'],
     python_requires='>=3.6',
-    install_requires=["importlib-metadata;python_version<'3.8'"],
+    install_requires=["importlib-metadata"],
     extras_require={
         'testing': [
             'coverage',
