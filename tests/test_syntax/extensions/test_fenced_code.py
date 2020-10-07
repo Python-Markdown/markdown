@@ -629,7 +629,7 @@ class TestFencedCode(TestCase):
         if self.has_pygments:
             expected = (
                 '<div class="python codehilite" style="background: #f8f8f8">'
-                '<pre style="line-height: 125%"><span></span><code>'
+                '<pre style="line-height: 125%; margin: 0;"><span></span><code>'
                 '<span style="color: #408080; font-style: italic"># Some python code</span>\n'
                 '</code></pre></div>'
             )
