@@ -21,6 +21,7 @@ License: BSD (see LICENSE.md for details).
 
 from markdown.test_tools import TestCase
 from markdown.extensions.codehilite import CodeHiliteExtension, CodeHilite
+import os
 
 try:
     import pygments  # noqa
@@ -28,9 +29,18 @@ try:
 except ImportError:
     has_pygments = False
 
+# The version required by the tests is the version specified and installed in the 'pygments' tox env.
+# In any environment where the PYGMENTS_VERSION environment variabe is either not defined or doesn't
+# match the version of Pygments installed, all tests which rely in pygments will be skipped.
+required_pygments_version = os.environ.get('PYGMENTS_VERSION', '')
+
 
 class TestCodeHiliteClass(TestCase):
     """ Test the markdown.extensions.codehilite.CodeHilite class. """
+
+    def setUp(self):
+        if has_pygments and pygments.__version__ != required_pygments_version:
+            self.skipTest(f'Pygments=={required_pygments_version} is required')
 
     maxDiff = None
 
@@ -339,6 +349,10 @@ class TestCodeHiliteClass(TestCase):
 
 class TestCodeHiliteExtension(TestCase):
     """ Test codehilite extension. """
+
+    def setUp(self):
+        if has_pygments and pygments.__version__ != required_pygments_version:
+            self.skipTest(f'Pygments=={required_pygments_version} is required')
 
     maxDiff = None
 
