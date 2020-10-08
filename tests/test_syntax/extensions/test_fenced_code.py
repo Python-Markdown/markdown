@@ -21,14 +21,19 @@ License: BSD (see LICENSE.md for details).
 
 from markdown.test_tools import TestCase
 import markdown
+import os
 
 
 class TestFencedCode(TestCase):
 
     def setUp(self):
-        self.has_pygments = True
+        # Only set self.has_pygments to True if pygments is installed and the version matches
+        # the version expected by the tests. The version expected by the tests is the version
+        # specified and installed in the 'pygments' tox env. Outside of the tox env, an environment
+        # variable named PYGMENTS_VERSION will need to be defined to force the tests to use pygments.
         try:
             import pygments  # noqa
+            self.has_pygments = pygments.__version__ == os.environ.get('PYGMENTS_VERSION', '')
         except ImportError:
             self.has_pygments = False
 

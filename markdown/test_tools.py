@@ -140,8 +140,11 @@ class LegacyTestMeta(type):
                     expected = f.read().replace("\r\n", "\n")
                 output = markdown(input, **kwargs)
                 if tidylib and normalize:
-                    expected = _normalize_whitespace(expected)
-                    output = _normalize_whitespace(output)
+                    try:
+                        expected = _normalize_whitespace(expected)
+                        output = _normalize_whitespace(output)
+                    except OSError:
+                        self.skipTest("Tidylib's c library not available.")
                 elif normalize:
                     self.skipTest('Tidylib not available.')
                 self.assertMultiLineEqual(output, expected)
