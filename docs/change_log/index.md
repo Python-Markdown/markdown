@@ -3,6 +3,10 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+Under development: version 3.3.1 (a bug-fix release).
+
+* Ensure consistent class handling by `fenced_code` and `codehilite` (#1032).
+
 Oct 6, 2020: version 3.3 ([Notes](release-3.3.md)).
 
 May 8, 2020: version 3.2.2 (a bug-fix release).

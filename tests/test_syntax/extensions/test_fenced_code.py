@@ -168,7 +168,7 @@ class TestFencedCode(TestCase):
     def testFencedLanguageAndHighlightLines(self):
         if self.has_pygments:
             expected = (
-                '<div class="python codehilite"><pre><span></span><code>'
+                '<div class="codehilite"><pre><span></span><code>'
                 '<span class="hll"><span class="n">line</span> <span class="mi">1</span>\n'
                 '</span><span class="n">line</span> <span class="mi">2</span>\n'
                 '<span class="hll"><span class="n">line</span> <span class="mi">3</span>\n'
@@ -177,7 +177,7 @@ class TestFencedCode(TestCase):
         else:
             expected = self.dedent(
                     '''
-                    <pre class="python codehilite"><code class="language-python">line 1
+                    <pre class="codehilite"><code class="language-python">line 1
                     line 2
                     line 3
                     </code></pre>
@@ -224,7 +224,7 @@ class TestFencedCode(TestCase):
     def testFencedLanguageDoubleEscape(self):
         if self.has_pygments:
             expected = (
-                '<div class="html codehilite"><pre><span></span><code>'
+                '<div class="codehilite"><pre><span></span><code>'
                 '<span class="p">&lt;</span><span class="nt">span</span>'
                 '<span class="p">&gt;</span>This<span class="ni">&amp;amp;</span>'
                 'That<span class="p">&lt;/</span><span class="nt">span</span>'
@@ -233,7 +233,7 @@ class TestFencedCode(TestCase):
             )
         else:
             expected = (
-                '<pre class="html codehilite"><code class="language-html">'
+                '<pre class="codehilite"><code class="language-html">'
                 '&lt;span&gt;This&amp;amp;That&lt;/span&gt;\n'
                 '</code></pre>'
             )
@@ -256,7 +256,7 @@ class TestFencedCode(TestCase):
         if self.has_pygments:
             expected = self.dedent(
                 '''
-                <div class="text codehilite"><pre><span></span><code>&amp;
+                <div class="codehilite"><pre><span></span><code>&amp;
                 &amp;amp;
                 &amp;amp;amp;
                 </code></pre></div>
@@ -265,7 +265,7 @@ class TestFencedCode(TestCase):
         else:
             expected = self.dedent(
                 '''
-                <pre class="text codehilite"><code class="language-text">&amp;
+                <pre class="codehilite"><code class="language-text">&amp;
                 &amp;amp;
                 &amp;amp;amp;
                 </code></pre>
@@ -341,7 +341,7 @@ class TestFencedCode(TestCase):
             ),
             self.dedent(
                 '''
-                <pre><code class="language-python foo bar"># Some python code
+                <pre class="foo bar"><code class="language-python"># Some python code
                 </code></pre>
                 '''
             ),
@@ -395,7 +395,7 @@ class TestFencedCode(TestCase):
             ),
             self.dedent(
                 '''
-                <pre id="foo"><code class="language-python bar"># Some python code
+                <pre id="foo" class="bar"><code class="language-python"># Some python code
                 </code></pre>
                 '''
             ),
@@ -441,7 +441,7 @@ class TestFencedCode(TestCase):
     def testFencedLanguageAndHighlightLinesInAttr(self):
         if self.has_pygments:
             expected = (
-                '<div class="python codehilite"><pre><span></span><code>'
+                '<div class="codehilite"><pre><span></span><code>'
                 '<span class="hll"><span class="n">line</span> <span class="mi">1</span>\n'
                 '</span><span class="n">line</span> <span class="mi">2</span>\n'
                 '<span class="hll"><span class="n">line</span> <span class="mi">3</span>\n'
@@ -450,7 +450,7 @@ class TestFencedCode(TestCase):
         else:
             expected = self.dedent(
                     '''
-                    <pre class="python codehilite"><code class="language-python">line 1
+                    <pre class="codehilite"><code class="language-python">line 1
                     line 2
                     line 3
                     </code></pre>
@@ -552,13 +552,13 @@ class TestFencedCode(TestCase):
         if self.has_pygments:
             expected = self.dedent(
                 '''
-                <div class="python pygments"><pre><span></span><code><span class="c1"># Some python code</span>
+                <div class="pygments"><pre><span></span><code><span class="c1"># Some python code</span>
                 </code></pre></div>
                 '''
             )
         else:
             expected = (
-                '<pre class="python pygments"><code class="language-python"># Some python code\n'
+                '<pre class="pygments"><code class="language-python"># Some python code\n'
                 '</code></pre>'
             )
         self.assertMarkdownRenders(
@@ -576,16 +576,16 @@ class TestFencedCode(TestCase):
     def testFencedLanguageAttrLinenums(self):
         if self.has_pygments:
             expected = (
-                '<table class="python codehilitetable"><tr>'
+                '<table class="codehilitetable"><tr>'
                 '<td class="linenos"><div class="linenodiv"><pre>1</pre></div></td>'
-                '<td class="code"><div class="python codehilite"><pre><span></span>'
+                '<td class="code"><div class="codehilite"><pre><span></span>'
                 '<code><span class="c1"># Some python code</span>\n'
                 '</code></pre></div>\n'
                 '</td></tr></table>'
             )
         else:
             expected = (
-                '<pre class="python codehilite"><code class="language-python linenums"># Some python code\n'
+                '<pre class="codehilite"><code class="language-python linenums"># Some python code\n'
                 '</code></pre>'
             )
         self.assertMarkdownRenders(
@@ -628,14 +628,14 @@ class TestFencedCode(TestCase):
     def testFencedLanguageAttrNoclasses(self):
         if self.has_pygments:
             expected = (
-                '<div class="python codehilite" style="background: #f8f8f8">'
+                '<div class="codehilite" style="background: #f8f8f8">'
                 '<pre style="line-height: 125%; margin: 0;"><span></span><code>'
                 '<span style="color: #408080; font-style: italic"># Some python code</span>\n'
                 '</code></pre></div>'
             )
         else:
             expected = (
-                '<pre class="python codehilite"><code class="language-python"># Some python code\n'
+                '<pre class="codehilite"><code class="language-python"># Some python code\n'
                 '</code></pre>'
             )
         self.assertMarkdownRenders(
