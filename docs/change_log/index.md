@@ -3,7 +3,7 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-Under development: version 3.3.1 (a bug-fix release).
+Oct 12, 2020: version 3.3.1 (a bug-fix release).
 
 * Correctly parse raw `script` and `style` tags (#1036).
 * Ensure consistent class handling by `fenced_code` and `codehilite` (#1032).

@@ -346,7 +346,7 @@ with no arguments. See help (`tox -h`) for more options.
 Python-Markdown follows [Semantic Versioning] and uses the
 `MAJOR.MINOR.PATCH[.dev#|a#|b#|rc#]` format for identifying releases. The status
 of the `master` branch should always be identified in the `__version_info__`
-tuple defined in [`markdown/__init__.py`][markdown/__init__.py]. The contents of
+tuple defined in [`markdown/__meta__.py`][markdown/__meta__.py]. The contents of
 that tuple will automatically be converted into a normalized version which
 conforms to [PEP 440]. An invalid `__version_info__` tuple will raise an error,
 preventing the library from running and the package from building.
@@ -398,7 +398,7 @@ following steps:
 2. Confirm that the release notes and change log have been updated and indicate
    the date of the new release.
 
-3. Update the version defined in [`markdown/__init__.py`][markdown/__init__.py].
+3. Update the version defined in [`markdown/__meta__.py`][markdown/__meta__.py].
 
 4. Build a local copy of the documentation, browse through the pages and
    confirm that no obvious issues exist with the documentation.
@@ -509,7 +509,7 @@ label from the same group.
 [aspell]: http://aspell.net/
 [test tools]: test_tools.md
 [Semantic Versioning]: https://semver.org/
-[markdown/__init__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__init__.py#L43
+[markdown/__meta__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__meta__.py#L29
 [PEP 440]: https://www.python.org/dev/peps/pep-0440/
 [PyPI]: https://pypi.org/project/Markdown/
 [Python-Markdown/Python-Markdown.github.io]: https://github.com/Python-Markdown/Python-Markdown.github.io
