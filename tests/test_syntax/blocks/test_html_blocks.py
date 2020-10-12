@@ -1317,3 +1317,50 @@ class TestHTMLBlocks(TestCase):
                 """
             )
         )
+
+    def test_script_tags(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <script>
+                *random stuff* <div> &amp;
+                </script>
+                
+                <style>
+                **more stuff**
+                </style>
+                """
+            ),
+            self.dedent(
+                """
+                <script>
+                *random stuff* <div> &amp;
+                </script>
+                
+                <style>
+                **more stuff**
+                </style>
+                """
+            )
+        )
+
+    def test_unclosed_script_tag(self):
+        # Ensure we have a working fix for https://bugs.python.org/issue41989
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <script>
+                *random stuff* <div> &amp;
+                
+                Still part of the *script* tag
+                """
+            ),
+            self.dedent(
+                """
+                <script>
+                *random stuff* <div> &amp;
+                
+                Still part of the *script* tag
+                """
+            )
+        )

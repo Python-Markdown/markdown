@@ -72,6 +72,13 @@ class HTMLExtractor(htmlparser.HTMLParser):
     def close(self):
         """Handle any buffered data."""
         super().close()
+        if len(self.rawdata):
+            # Temp fix for https://bugs.python.org/issue41989
+            # TODO: remove this when the bug is fixed in all supported Python versions.
+            if self.convert_charrefs and not self.cdata_elem:
+                self.handle_data(unescape(self.rawdata))
+            else:
+                self.handle_data(self.rawdata)
         # Handle any unclosed tags.
         if len(self._cache):
             self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
