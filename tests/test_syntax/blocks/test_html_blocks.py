@@ -1317,3 +1317,88 @@ class TestHTMLBlocks(TestCase):
                 """
             )
         )
+
+    def test_script_tags(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <script>
+                *random stuff* <div> &amp;
+                </script>
+
+                <style>
+                **more stuff**
+                </style>
+                """
+            ),
+            self.dedent(
+                """
+                <script>
+                *random stuff* <div> &amp;
+                </script>
+
+                <style>
+                **more stuff**
+                </style>
+                """
+            )
+        )
+
+    def test_unclosed_script_tag(self):
+        # Ensure we have a working fix for https://bugs.python.org/issue41989
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <script>
+                *random stuff* <div> &amp;
+
+                Still part of the *script* tag
+                """
+            ),
+            self.dedent(
+                """
+                <script>
+                *random stuff* <div> &amp;
+
+                Still part of the *script* tag
+                """
+            )
+        )
+
+    def test_inline_script_tags(self):
+        # Ensure inline script tags doesn't cause the parser to eat content (see #1036).
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Text `<script>` more *text*.
+
+                <div>
+                *foo*
+                </div>
+
+                <div>
+
+                bar
+
+                </div>
+
+                A new paragraph with a closing `</script>` tag.
+                """
+            ),
+            self.dedent(
+                """
+                <p>Text <code>&lt;script&gt;</code> more <em>text</em>.</p>
+                <div>
+                *foo*
+                </div>
+
+                <div>
+
+                bar
+
+                </div>
+
+                <p>A new paragraph with a closing <code>&lt;/script&gt;</code> tag.</p>
+                """
+            )
+        )

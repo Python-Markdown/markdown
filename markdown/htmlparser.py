@@ -72,6 +72,13 @@ class HTMLExtractor(htmlparser.HTMLParser):
     def close(self):
         """Handle any buffered data."""
         super().close()
+        if len(self.rawdata):
+            # Temp fix for https://bugs.python.org/issue41989
+            # TODO: remove this when the bug is fixed in all supported Python versions.
+            if self.convert_charrefs and not self.cdata_elem:  # pragma: no cover
+                self.handle_data(htmlparser.unescape(self.rawdata))
+            else:
+                self.handle_data(self.rawdata)
         # Handle any unclosed tags.
         if len(self._cache):
             self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
@@ -124,6 +131,9 @@ class HTMLExtractor(htmlparser.HTMLParser):
             self._cache.append(text)
         else:
             self.cleandoc.append(text)
+            if tag in self.CDATA_CONTENT_ELEMENTS:
+                # This is presumably a standalone tag in a code span (see #1036).
+                self.clear_cdata_mode()
 
     def handle_endtag(self, tag):
         text = self.get_endtag_text(tag)
@@ -200,3 +210,63 @@ class HTMLExtractor(htmlparser.HTMLParser):
     def unknown_decl(self, data):
         end = ']]>' if data.startswith('CDATA[') else ']>'
         self.handle_empty_tag('<![{}{}'.format(data, end), is_block=True)
+
+    # The rest has been copied from base class in standard lib to address #1036.
+    # As __startag_text is private, all references to it must be in this subclass.
+    # The last few lines of parse_starttag are reversed so that handle_starttag
+    # can override cdata_mode in certain situations (in a code span).
+    __starttag_text = None
+
+    def get_starttag_text(self):
+        """Return full source of start tag: '<...>'."""
+        return self.__starttag_text
+
+    def parse_starttag(self, i):  # pragma: no cover
+        self.__starttag_text = None
+        endpos = self.check_for_whole_start_tag(i)
+        if endpos < 0:
+            return endpos
+        rawdata = self.rawdata
+        self.__starttag_text = rawdata[i:endpos]
+
+        # Now parse the data between i+1 and j into a tag and attrs
+        attrs = []
+        match = htmlparser.tagfind_tolerant.match(rawdata, i+1)
+        assert match, 'unexpected call to parse_starttag()'
+        k = match.end()
+        self.lasttag = tag = match.group(1).lower()
+        while k < endpos:
+            m = htmlparser.attrfind_tolerant.match(rawdata, k)
+            if not m:
+                break
+            attrname, rest, attrvalue = m.group(1, 2, 3)
+            if not rest:
+                attrvalue = None
+            elif attrvalue[:1] == '\'' == attrvalue[-1:] or \
+                 attrvalue[:1] == '"' == attrvalue[-1:]:  # noqa: E127
+                attrvalue = attrvalue[1:-1]
+            if attrvalue:
+                attrvalue = htmlparser.unescape(attrvalue)
+            attrs.append((attrname.lower(), attrvalue))
+            k = m.end()
+
+        end = rawdata[k:endpos].strip()
+        if end not in (">", "/>"):
+            lineno, offset = self.getpos()
+            if "\n" in self.__starttag_text:
+                lineno = lineno + self.__starttag_text.count("\n")
+                offset = len(self.__starttag_text) \
+                         - self.__starttag_text.rfind("\n")  # noqa: E127
+            else:
+                offset = offset + len(self.__starttag_text)
+            self.handle_data(rawdata[i:endpos])
+            return endpos
+        if end.endswith('/>'):
+            # XHTML-style empty tag: <span attr="value" />
+            self.handle_startendtag(tag, attrs)
+        else:
+            # *** set cdata_mode first so we can override it in handle_starttag (see #1036) ***
+            if tag in self.CDATA_CONTENT_ELEMENTS:
+                self.set_cdata_mode(tag)
+            self.handle_starttag(tag, attrs)
+        return endpos
