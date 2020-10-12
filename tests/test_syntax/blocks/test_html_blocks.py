@@ -1325,7 +1325,7 @@ class TestHTMLBlocks(TestCase):
                 <script>
                 *random stuff* <div> &amp;
                 </script>
-                
+
                 <style>
                 **more stuff**
                 </style>
@@ -1336,7 +1336,7 @@ class TestHTMLBlocks(TestCase):
                 <script>
                 *random stuff* <div> &amp;
                 </script>
-                
+
                 <style>
                 **more stuff**
                 </style>
@@ -1351,7 +1351,7 @@ class TestHTMLBlocks(TestCase):
                 """
                 <script>
                 *random stuff* <div> &amp;
-                
+
                 Still part of the *script* tag
                 """
             ),
@@ -1359,19 +1359,19 @@ class TestHTMLBlocks(TestCase):
                 """
                 <script>
                 *random stuff* <div> &amp;
-                
+
                 Still part of the *script* tag
                 """
             )
         )
-    
+
     def test_inline_script_tags(self):
         # Ensure inline script tags doesn't cause the parser to eat content (see #1036).
         self.assertMarkdownRenders(
             self.dedent(
                 """
                 Text `<script>` more *text*.
-                
+
                 <div>
                 *foo*
                 </div>
@@ -1381,7 +1381,7 @@ class TestHTMLBlocks(TestCase):
                 bar
 
                 </div>
-                                
+
                 A new paragraph with a closing `</script>` tag.
                 """
             ),
@@ -1397,7 +1397,7 @@ class TestHTMLBlocks(TestCase):
                 bar
 
                 </div>
-                
+
                 <p>A new paragraph with a closing <code>&lt;/script&gt;</code> tag.</p>
                 """
             )

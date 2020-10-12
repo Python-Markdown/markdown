@@ -76,7 +76,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             # Temp fix for https://bugs.python.org/issue41989
             # TODO: remove this when the bug is fixed in all supported Python versions.
             if self.convert_charrefs and not self.cdata_elem:
-                self.handle_data(unescape(self.rawdata))
+                self.handle_data(htmlparser.unescape(self.rawdata))
             else:
                 self.handle_data(self.rawdata)
         # Handle any unclosed tags.
@@ -215,12 +215,12 @@ class HTMLExtractor(htmlparser.HTMLParser):
     # As __startag_text is private, all references to it must be in this subclass.
     # The last few lines of parse_starttag are reversed so that handle_starttag
     # can override cdata_mode in certain situations (in a code span).
-        __starttag_text = None
+    __starttag_text = None
 
     def get_starttag_text(self):
         """Return full source of start tag: '<...>'."""
         return self.__starttag_text
-        
+
     def parse_starttag(self, i):
         self.__starttag_text = None
         endpos = self.check_for_whole_start_tag(i)
@@ -243,7 +243,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             if not rest:
                 attrvalue = None
             elif attrvalue[:1] == '\'' == attrvalue[-1:] or \
-                 attrvalue[:1] == '"' == attrvalue[-1:]:
+                 attrvalue[:1] == '"' == attrvalue[-1:]:  # noqa: E127
                 attrvalue = attrvalue[1:-1]
             if attrvalue:
                 attrvalue = htmlparser.unescape(attrvalue)
@@ -256,7 +256,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             if "\n" in self.__starttag_text:
                 lineno = lineno + self.__starttag_text.count("\n")
                 offset = len(self.__starttag_text) \
-                         - self.__starttag_text.rfind("\n")
+                         - self.__starttag_text.rfind("\n")  # noqa: E127
             else:
                 offset = offset + len(self.__starttag_text)
             self.handle_data(rawdata[i:endpos])
