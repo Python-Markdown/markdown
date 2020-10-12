@@ -75,7 +75,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         if len(self.rawdata):
             # Temp fix for https://bugs.python.org/issue41989
             # TODO: remove this when the bug is fixed in all supported Python versions.
-            if self.convert_charrefs and not self.cdata_elem:
+            if self.convert_charrefs and not self.cdata_elem:  # pragma: no cover
                 self.handle_data(htmlparser.unescape(self.rawdata))
             else:
                 self.handle_data(self.rawdata)
@@ -221,7 +221,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         """Return full source of start tag: '<...>'."""
         return self.__starttag_text
 
-    def parse_starttag(self, i):
+    def parse_starttag(self, i):  # pragma: no cover
         self.__starttag_text = None
         endpos = self.check_for_whole_start_tag(i)
         if endpos < 0:
