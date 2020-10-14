@@ -23,6 +23,21 @@ License: BSD (see LICENSE.md for details).
 from unittest import TestSuite
 from markdown.test_tools import TestCase
 from ..blocks.test_html_blocks import TestHTMLBlocks
+from markdown import Markdown
+from xml.etree.ElementTree import Element
+
+
+class TestMarkdownInHTMLPostProcessor(TestCase):
+    """ Ensure any remaining elements in HTML stash are properly serialized. """
+
+    def test_stash_to_string(self):
+        # There should be no known cases where this actually happens so we need to
+        # forcefully pass an etree Element to the method to ensure proper behavior.
+        element = Element('div')
+        element.text = 'Foo bar.'
+        md = Markdown(extensions=['md_in_html'])
+        result = md.postprocessors['raw_html'].stash_to_string(element)
+        self.assertEqual(result, '<div>Foo bar.</div>')
 
 
 class TestDefaultwMdInHTML(TestHTMLBlocks):
@@ -758,7 +773,7 @@ class TestMdInHTML(TestCase):
 def load_tests(loader, tests, pattern):
     ''' Ensure TestHTMLBlocks doesn't get run twice by excluding it here. '''
     suite = TestSuite()
-    for test_class in [TestDefaultwMdInHTML, TestMdInHTML]:
+    for test_class in [TestDefaultwMdInHTML, TestMdInHTML, TestMarkdownInHTMLPostProcessor]:
         tests = loader.loadTestsFromTestCase(test_class)
         suite.addTests(tests)
     return suite

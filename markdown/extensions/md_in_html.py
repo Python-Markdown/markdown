@@ -17,6 +17,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 from . import Extension
 from ..blockprocessors import BlockProcessor
 from ..preprocessors import Preprocessor
+from ..postprocessors import RawHtmlPostprocessor
 from .. import util
 from ..htmlparser import HTMLExtractor
 import xml.etree.ElementTree as etree
@@ -263,6 +264,15 @@ class MarkdownInHtmlProcessor(BlockProcessor):
         return False
 
 
+class MarkdownInHTMLPostprocessor(RawHtmlPostprocessor):
+    def stash_to_string(self, text):
+        """ Override default to handle any etree elements still in the stash. """
+        if isinstance(text, etree.Element):
+            return self.md.serializer(text)
+        else:
+            return str(text)
+
+
 class MarkdownInHtmlExtension(Extension):
     """Add Markdown parsing in HTML to Markdown class."""
 
@@ -275,6 +285,8 @@ class MarkdownInHtmlExtension(Extension):
         md.parser.blockprocessors.register(
             MarkdownInHtmlProcessor(md.parser), 'markdown_block', 105
         )
+        # Replace raw HTML postprocessor
+        md.postprocessors.register(MarkdownInHTMLPostprocessor(md), 'raw_html', 30)
 
 
 def makeExtension(**kwargs):  # pragma: no cover
