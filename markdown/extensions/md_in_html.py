@@ -93,7 +93,7 @@ class HTMLExtractorExtra(HTMLExtractor):
             attrs = {key: value if value is not None else key for key, value in attrs}
             state = self.get_state(tag, attrs)
 
-            if self.inraw or (state in [None, 'off'] and not self.mdstack):
+            if self.inraw or (state in [None, 'off'] and not self.mdstack) or not self.at_line_start():
                 # fall back to default behavior
                 attrs.pop('markdown', None)
                 super().handle_starttag(tag, attrs)
