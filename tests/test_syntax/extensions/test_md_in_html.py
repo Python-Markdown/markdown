@@ -390,6 +390,52 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_md1_no_blank_line_before(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                A _Markdown_ paragraph with no blank line after.
+                <div markdown="1">
+                A _Markdown_ paragraph in an HTML block with no blank line before.
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <p>A <em>Markdown</em> paragraph with no blank line after.</p>
+                <div>
+                <p>A <em>Markdown</em> paragraph in an HTML block with no blank line before.</p>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_no_line_break(self):
+        # The div here is parsed as a span-level element. Bad input equals bad output!
+        self.assertMarkdownRenders(
+            'A _Markdown_ paragraph with <div markdown="1">no _line break_.</div>',
+            '<p>A <em>Markdown</em> paragraph with <div markdown="1">no <em>line break</em>.</div></p>'
+        )
+
+    def test_md1_in_tail(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div></div><div markdown="1">
+                A _Markdown_ paragraph in an HTML block in tail of previous element.
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div></div>
+                <div>
+                <p>A <em>Markdown</em> paragraph in an HTML block in tail of previous element.</p>
+                </div>
+                """
+            )
+        )
+
     def test_md_span_paragraph(self):
         self.assertMarkdownRenders(
             '<p markdown="span">*foo*</p>',
