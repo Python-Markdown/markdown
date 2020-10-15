@@ -390,6 +390,53 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_complex_nested_case(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                **test**
+                <div>
+                **test**
+                <img src=""/>
+                <code>Test</code>
+                <span>**test**</span>
+                <p>Test 2</p>
+                </div>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p><strong>test</strong></p>
+                <div>
+                **test**
+                <img src=""/>
+                <code>Test</code>
+                <span>**test**</span>
+                <p>Test 2</p>
+                </div>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_intail_md1(self):
+        self.assertMarkdownRenders(
+            '<div markdown="1">*foo*</div><div markdown="1">*bar*</div>',
+            self.dedent(
+                """
+                <div>
+                <p><em>foo</em></p>
+                </div>
+                <div>
+                <p><em>bar</em></p>
+                </div>
+                """
+            )
+        )
+
     def test_md1_no_blank_line_before(self):
         self.assertMarkdownRenders(
             self.dedent(

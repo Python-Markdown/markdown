@@ -90,8 +90,10 @@ class HTMLExtractorExtra(HTMLExtractor):
         """At line start."""
 
         value = super().at_line_start()
-        if not value and self.cleandoc and self.cleandoc[-1] == '\n\n':
-            value = True
+        if not value and self.cleandoc:
+            last = self.cleandoc[-1]
+            if isinstance(last, str) and last.endswith('\n'):
+                value = True
         return value
 
     def handle_starttag(self, tag, attrs):
@@ -119,7 +121,10 @@ class HTMLExtractorExtra(HTMLExtractor):
                 super().handle_starttag(tag, attrs)
             else:
                 text = self.get_starttag_text()
-                self.handle_data(text)
+                if self.mdstate and self.mdstate[-1] == "off":
+                    self.handle_data(self.md.htmlStash.store(text))
+                else:
+                    self.handle_data(text)
 
     def handle_endtag(self, tag):
         if tag in block_level_tags:
@@ -150,14 +155,20 @@ class HTMLExtractorExtra(HTMLExtractor):
             else:
                 # Treat orphan closing tag as a span level tag.
                 text = self.get_endtag_text(tag)
-                self.handle_data(text)
+                if self.mdstate and self.mdstate[-1] == "off":
+                    self.handle_data(self.md.htmlStash.store(text))
+                else:
+                    self.handle_data(text)
         else:
             # Span level tag
             if self.inraw:
                 super().handle_endtag(tag)
             else:
                 text = self.get_endtag_text(tag)
-                self.handle_data(text)
+                if self.mdstate and self.mdstate[-1] == "off":
+                    self.handle_data(self.md.htmlStash.store(text))
+                else:
+                    self.handle_data(text)
 
     def handle_data(self, data):
         if self.inraw or not self.mdstack:
@@ -172,7 +183,10 @@ class HTMLExtractorExtra(HTMLExtractor):
             if self.at_line_start() and is_block:
                 self.handle_data('\n' + self.md.htmlStash.store(data) + '\n\n')
             else:
-                self.handle_data(data)
+                if self.mdstate and self.mdstate[-1] == "off":
+                    self.handle_data(self.md.htmlStash.store(data))
+                else:
+                    self.handle_data(data)
 
 
 class HtmlBlockPreprocessor(Preprocessor):
