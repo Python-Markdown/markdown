@@ -86,6 +86,14 @@ class HTMLExtractorExtra(HTMLExtractor):
         else:  # pragma: no cover
             return None
 
+    def at_line_start(self):
+        """At line start."""
+
+        value = super().at_line_start()
+        if not value and self.cleandoc and self.cleandoc[-1] == '\n\n':
+            value = True
+        return value
+
     def handle_starttag(self, tag, attrs):
         if tag in block_level_tags:
             # Valueless attr (ex: `<tag checked>`) results in `[('checked', None)]`.
@@ -128,6 +136,14 @@ class HTMLExtractorExtra(HTMLExtractor):
                 if not self.mdstack:
                     # Last item in stack is closed. Stash it
                     element = self.get_element()
+                    # Get last entry to see if it ends in newlines
+                    # If it is an element, assume there is no newlines
+                    item = self.cleandoc[-1] if self.cleandoc else ''
+                    if not isinstance(item, str):
+                        item = ''
+                    # If we only have one newline before block element, add another
+                    if not item.endswith('\n\n') and item.endswith('\n'):
+                        self.cleandoc.append('\n')
                     self.cleandoc.append(self.md.htmlStash.store(element))
                     self.cleandoc.append('\n\n')
                     self.state = []
