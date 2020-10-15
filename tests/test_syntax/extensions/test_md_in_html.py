@@ -390,6 +390,36 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_orphan_end_tag_in_raw_html(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                <div>
+                Test
+
+                </pre>
+
+                Test
+                </div>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <div>
+                Test
+
+                </pre>
+
+                Test
+                </div>
+                </div>
+                """
+            )
+        )
+
     def test_complex_nested_case(self):
         self.assertMarkdownRenders(
             self.dedent(

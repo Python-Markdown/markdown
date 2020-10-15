@@ -90,10 +90,8 @@ class HTMLExtractorExtra(HTMLExtractor):
         """At line start."""
 
         value = super().at_line_start()
-        if not value and self.cleandoc:
-            last = self.cleandoc[-1]
-            if isinstance(last, str) and last.endswith('\n'):
-                value = True
+        if not value and self.cleandoc and self.cleandoc[-1].endswith('\n'):
+            value = True
         return value
 
     def handle_starttag(self, tag, attrs):
@@ -144,8 +142,6 @@ class HTMLExtractorExtra(HTMLExtractor):
                     # Get last entry to see if it ends in newlines
                     # If it is an element, assume there is no newlines
                     item = self.cleandoc[-1] if self.cleandoc else ''
-                    if not isinstance(item, str):
-                        item = ''
                     # If we only have one newline before block element, add another
                     if not item.endswith('\n\n') and item.endswith('\n'):
                         self.cleandoc.append('\n')
