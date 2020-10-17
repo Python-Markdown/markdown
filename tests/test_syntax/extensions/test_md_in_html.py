@@ -452,6 +452,43 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_complex_nested_case_whitespace(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Text with space\t
+                <div markdown="1">\t
+                \t
+                 <div>
+                **test**
+                <img src=""/>
+                <code>Test</code>
+                <span>**test**</span>
+                  <div>With whitespace</div>
+                <p>Test 2</p>
+                </div>
+                **test**
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <p>Text with space </p>
+                <div>
+                <div>
+                **test**
+                <img src=""/>
+                <code>Test</code>
+                <span>**test**</span>
+                  <div>With whitespace</div>
+                <p>Test 2</p>
+                </div>
+                <p><strong>test</strong></p>
+                </div>
+                """
+            )
+        )
+
     def test_md1_intail_md1(self):
         self.assertMarkdownRenders(
             '<div markdown="1">*foo*</div><div markdown="1">*bar*</div>',
