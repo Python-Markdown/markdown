@@ -3,6 +3,11 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+Oct 19, 2020: version 3.3.2 (a bug-fix release).
+
+* Properly parse inline HTML in md_in_html (#1040 & #1045).
+* Avoid crashing when md_in_html fails (#1040).
+
 Oct 12, 2020: version 3.3.1 (a bug-fix release).
 
 * Correctly parse raw `script` and `style` tags (#1036).
