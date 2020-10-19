@@ -86,6 +86,14 @@ class HTMLExtractorExtra(HTMLExtractor):
         else:  # pragma: no cover
             return None
 
+    def at_line_start(self):
+        """At line start."""
+
+        value = super().at_line_start()
+        if not value and self.cleandoc and self.cleandoc[-1].endswith('\n'):
+            value = True
+        return value
+
     def handle_starttag(self, tag, attrs):
         if tag in block_level_tags:
             # Valueless attr (ex: `<tag checked>`) results in `[('checked', None)]`.
@@ -93,7 +101,7 @@ class HTMLExtractorExtra(HTMLExtractor):
             attrs = {key: value if value is not None else key for key, value in attrs}
             state = self.get_state(tag, attrs)
 
-            if self.inraw or (state in [None, 'off'] and not self.mdstack):
+            if self.inraw or (state in [None, 'off'] and not self.mdstack) or not self.at_line_start():
                 # fall back to default behavior
                 attrs.pop('markdown', None)
                 super().handle_starttag(tag, attrs)
@@ -111,7 +119,10 @@ class HTMLExtractorExtra(HTMLExtractor):
                 super().handle_starttag(tag, attrs)
             else:
                 text = self.get_starttag_text()
-                self.handle_data(text)
+                if self.mdstate and self.mdstate[-1] == "off":
+                    self.handle_data(self.md.htmlStash.store(text))
+                else:
+                    self.handle_data(text)
 
     def handle_endtag(self, tag):
         if tag in block_level_tags:
@@ -128,20 +139,32 @@ class HTMLExtractorExtra(HTMLExtractor):
                 if not self.mdstack:
                     # Last item in stack is closed. Stash it
                     element = self.get_element()
+                    # Get last entry to see if it ends in newlines
+                    # If it is an element, assume there is no newlines
+                    item = self.cleandoc[-1] if self.cleandoc else ''
+                    # If we only have one newline before block element, add another
+                    if not item.endswith('\n\n') and item.endswith('\n'):
+                        self.cleandoc.append('\n')
                     self.cleandoc.append(self.md.htmlStash.store(element))
                     self.cleandoc.append('\n\n')
                     self.state = []
             else:
                 # Treat orphan closing tag as a span level tag.
                 text = self.get_endtag_text(tag)
-                self.handle_data(text)
+                if self.mdstate and self.mdstate[-1] == "off":
+                    self.handle_data(self.md.htmlStash.store(text))
+                else:
+                    self.handle_data(text)
         else:
             # Span level tag
             if self.inraw:
                 super().handle_endtag(tag)
             else:
                 text = self.get_endtag_text(tag)
-                self.handle_data(text)
+                if self.mdstate and self.mdstate[-1] == "off":
+                    self.handle_data(self.md.htmlStash.store(text))
+                else:
+                    self.handle_data(text)
 
     def handle_data(self, data):
         if self.inraw or not self.mdstack:
@@ -156,7 +179,10 @@ class HTMLExtractorExtra(HTMLExtractor):
             if self.at_line_start() and is_block:
                 self.handle_data('\n' + self.md.htmlStash.store(data) + '\n\n')
             else:
-                self.handle_data(data)
+                if self.mdstate and self.mdstate[-1] == "off":
+                    self.handle_data(self.md.htmlStash.store(data))
+                else:
+                    self.handle_data(data)
 
 
 class HtmlBlockPreprocessor(Preprocessor):

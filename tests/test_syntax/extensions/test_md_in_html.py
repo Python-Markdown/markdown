@@ -390,6 +390,166 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_orphan_end_tag_in_raw_html(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                <div>
+                Test
+
+                </pre>
+
+                Test
+                </div>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <div>
+                Test
+
+                </pre>
+
+                Test
+                </div>
+                </div>
+                """
+            )
+        )
+
+    def test_complex_nested_case(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                **test**
+                <div>
+                **test**
+                <img src=""/>
+                <code>Test</code>
+                <span>**test**</span>
+                <p>Test 2</p>
+                </div>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p><strong>test</strong></p>
+                <div>
+                **test**
+                <img src=""/>
+                <code>Test</code>
+                <span>**test**</span>
+                <p>Test 2</p>
+                </div>
+                </div>
+                """
+            )
+        )
+
+    def test_complex_nested_case_whitespace(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Text with space\t
+                <div markdown="1">\t
+                \t
+                 <div>
+                **test**
+                <img src=""/>
+                <code>Test</code>
+                <span>**test**</span>
+                  <div>With whitespace</div>
+                <p>Test 2</p>
+                </div>
+                **test**
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <p>Text with space </p>
+                <div>
+                <div>
+                **test**
+                <img src=""/>
+                <code>Test</code>
+                <span>**test**</span>
+                  <div>With whitespace</div>
+                <p>Test 2</p>
+                </div>
+                <p><strong>test</strong></p>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_intail_md1(self):
+        self.assertMarkdownRenders(
+            '<div markdown="1">*foo*</div><div markdown="1">*bar*</div>',
+            self.dedent(
+                """
+                <div>
+                <p><em>foo</em></p>
+                </div>
+                <div>
+                <p><em>bar</em></p>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_no_blank_line_before(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                A _Markdown_ paragraph with no blank line after.
+                <div markdown="1">
+                A _Markdown_ paragraph in an HTML block with no blank line before.
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <p>A <em>Markdown</em> paragraph with no blank line after.</p>
+                <div>
+                <p>A <em>Markdown</em> paragraph in an HTML block with no blank line before.</p>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_no_line_break(self):
+        # The div here is parsed as a span-level element. Bad input equals bad output!
+        self.assertMarkdownRenders(
+            'A _Markdown_ paragraph with <div markdown="1">no _line break_.</div>',
+            '<p>A <em>Markdown</em> paragraph with <div markdown="1">no <em>line break</em>.</div></p>'
+        )
+
+    def test_md1_in_tail(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div></div><div markdown="1">
+                A _Markdown_ paragraph in an HTML block in tail of previous element.
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div></div>
+                <div>
+                <p>A <em>Markdown</em> paragraph in an HTML block in tail of previous element.</p>
+                </div>
+                """
+            )
+        )
+
     def test_md_span_paragraph(self):
         self.assertMarkdownRenders(
             '<p markdown="span">*foo*</p>',
