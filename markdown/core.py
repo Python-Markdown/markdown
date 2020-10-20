@@ -77,11 +77,12 @@ class Markdown:
             # See https://w3c.github.io/html/grouping-content.html#the-p-element
             'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
             'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3',
-            'h4', 'h5', 'h6', 'header', 'hr', 'main', 'menu', 'nav', 'ol', 'p', 'pre',
-            'section', 'table', 'ul',
+            'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'main', 'menu', 'nav', 'ol',
+            'p', 'pre', 'section', 'table', 'ul',
             # Other elements which Markdown should not be mucking up the contents of.
-            'canvas', 'dd', 'dt', 'group', 'iframe', 'li', 'math', 'noscript', 'output',
-            'progress', 'script', 'style', 'tbody', 'td', 'th', 'thead', 'tr', 'video'
+            'canvas', 'colgroup', 'dd', 'body', 'dt', 'group', 'iframe', 'li', 'legend',
+            'math', 'map', 'noscript', 'output', 'object', 'option', 'progress', 'script',
+            'style', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'video'
         ]
 
         self.registeredExtensions = []

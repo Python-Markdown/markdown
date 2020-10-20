@@ -3,6 +3,10 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+Under development: version 3.3.3 (a bug-fix release).
+
+* Unify all block-level tags (#1047).
+
 Oct 19, 2020: version 3.3.2 (a bug-fix release).
 
 * Properly parse inline HTML in md_in_html (#1040 & #1045).
