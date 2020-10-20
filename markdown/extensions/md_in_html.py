@@ -23,26 +23,21 @@ from ..htmlparser import HTMLExtractor
 import xml.etree.ElementTree as etree
 
 
-# Block-level tags in which the content only gets span level parsing
-span_tags = ['address', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'legend', 'li', 'p', 'td', 'th']
-
-# Block-level tags in which the content gets parsed as blocks
-block_tags = [
-    'address', 'article', 'aside', 'blockquote', 'body', 'colgroup', 'details', 'div', 'dl', 'fieldset',
-    'figcaption', 'figure', 'footer', 'form', 'iframe', 'header', 'hr', 'main', 'menu', 'nav',  'map',
-    'noscript', 'object', 'ol', 'section', 'table', 'tbody', 'thead', 'tfoot', 'tr', 'ul'
-]
-
-# Block-level tags which never get their content parsed.
-raw_tags = ['canvas', 'math', 'option', 'pre', 'script', 'style', 'textarea']
-
-block_level_tags = span_tags + block_tags + raw_tags
-
-
 class HTMLExtractorExtra(HTMLExtractor):
     """
     Override HTMLExtractor and create etree Elements for any elements which should have content parsed as Markdown.
     """
+
+    def __init__(self, md, *args, **kwargs):
+        # All block-level tags.
+        self.block_level_tags = md.block_level_elements.copy()
+        # Block-level tags in which the content only gets span level parsing
+        self.span_tags = ['address', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'legend', 'li', 'p', 'td', 'th']
+        # Block-level tags which never get their content parsed.
+        self.raw_tags = ['canvas', 'math', 'option', 'pre', 'script', 'style', 'textarea']
+        # Block-level tags in which the content gets parsed as blocks
+        self.block_tags = [tag for tag in self.block_level_tags if tag not in self.span_tags + self.raw_tags]
+        super().__init__(md, *args, **kwargs)
 
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
@@ -75,13 +70,13 @@ class HTMLExtractorExtra(HTMLExtractor):
         if parent_state == 'off' or (parent_state == 'span' and md_attr != '0'):
             # Only use the parent state if it is more restrictive than the markdown attribute.
             md_attr = parent_state
-        if ((md_attr == '1' and tag in block_tags) or
-                (md_attr == 'block' and tag in span_tags + block_tags)):
+        if ((md_attr == '1' and tag in self.block_tags) or
+                (md_attr == 'block' and tag in self.span_tags + self.block_tags)):
             return 'block'
-        elif ((md_attr == '1' and tag in span_tags) or
-              (md_attr == 'span' and tag in span_tags + block_tags)):
+        elif ((md_attr == '1' and tag in self.span_tags) or
+              (md_attr == 'span' and tag in self.span_tags + self.block_tags)):
             return 'span'
-        elif tag in block_level_tags:
+        elif tag in self.block_level_tags:
             return 'off'
         else:  # pragma: no cover
             return None
@@ -95,7 +90,7 @@ class HTMLExtractorExtra(HTMLExtractor):
         return value
 
     def handle_starttag(self, tag, attrs):
-        if tag in block_level_tags:
+        if tag in self.block_level_tags:
             # Valueless attr (ex: `<tag checked>`) results in `[('checked', None)]`.
             # Convert to `{'checked': 'checked'}`.
             attrs = {key: value if value is not None else key for key, value in attrs}
@@ -106,7 +101,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                 attrs.pop('markdown', None)
                 super().handle_starttag(tag, attrs)
             else:
-                if 'p' in self.mdstack and tag in block_level_tags:
+                if 'p' in self.mdstack and tag in self.block_level_tags:
                     # Close unclosed 'p' tag
                     self.handle_endtag('p')
                 self.mdstate.append(state)
@@ -125,7 +120,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                     self.handle_data(text)
 
     def handle_endtag(self, tag):
-        if tag in block_level_tags:
+        if tag in self.block_level_tags:
             if self.inraw:
                 super().handle_endtag(tag)
             elif tag in self.mdstack:
