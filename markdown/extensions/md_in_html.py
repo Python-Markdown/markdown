@@ -260,6 +260,8 @@ class MarkdownInHtmlProcessor(BlockProcessor):
 
         else:
             # Disable inline parsing for everything else
+            if element.text is None:
+                element.text = ''
             element.text = util.AtomicString(element.text)
             for child in list(element):
                 self.parse_element_content(child)

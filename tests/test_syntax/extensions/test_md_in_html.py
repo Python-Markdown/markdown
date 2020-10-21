@@ -390,6 +390,24 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_empty_tags(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                <div></div>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <div></div>
+                </div>
+                """
+            )
+        )
+
     def test_orphan_end_tag_in_raw_html(self):
         self.assertMarkdownRenders(
             self.dedent(
