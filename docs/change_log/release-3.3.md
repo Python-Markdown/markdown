@@ -101,7 +101,6 @@ The following bug fixes are included in the 3.3 release:
 * Fix unescaping of HTML characters `<>` in CodeHilite (#990).
 * Fix complex scenarios involving lists and admonitions (#1004).
 * Fix complex scenarios with nested ordered and unordered lists in a definition list (#918).
-* Fix issue where some empty elements would have text rendered as `None` when using `md_in_html` (#1049).
 
 [spec]: https://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
 [fenced_code]: ../extensions/fenced_code_blocks.md
