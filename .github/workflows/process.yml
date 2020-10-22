@@ -12,13 +12,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: mskelton/changelog-reminder-action@v1
-    with:
-      # Match any file in the docs/change_log/ dir.
-      changelogRegex: "docs/change_log/.*"
-      # Only require changelog update if changes were made in markdown/
-      include: "markdown/.*"
-      message: |
-        @${{ github.actor }}, thank you for your contribution. It appears that you have not added a comment to the
-        change log describing the changes you have made. Doing so will help to ensure your contribution is accepted.
+      with:
+        # Match any file in the docs/change_log/ dir.
+        changelogRegex: "docs/change_log/.*"
+        # Only require changelog update if changes were made in markdown/
+        include: "markdown/.*"
+        message: |
+          @${{ github.actor }}, thank you for your contribution. It appears that you have not added a comment to the
+          change log describing the changes you have made. Doing so will help to ensure your contribution is accepted.
 
-        Please see the [Contributing Guide](https://python-markdown.github.io/contributing/#pull-requests) for details.
+          Please see the [Contributing Guide](https://python-markdown.github.io/contributing/#pull-requests) for details.
