@@ -52,7 +52,7 @@ Constants you might want to modify
 -----------------------------------------------------------------------------
 """
 
-# We should deprecate this as it are now defined on the class in core.py
+
 BLOCK_LEVEL_ELEMENTS = [
     # Elements which are invalid to wrap in a `<p>` tag.
     # See https://w3c.github.io/html/grouping-content.html#the-p-element
