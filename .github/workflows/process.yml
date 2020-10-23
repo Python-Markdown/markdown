@@ -22,3 +22,4 @@ jobs:
           change log describing the changes you have made. Doing so will help to ensure your contribution is accepted.
 
           Please see the [Contributing Guide](https://python-markdown.github.io/contributing/#pull-requests) for details.
+        token: ${{ secrets.GITHUB_TOKEN }}
