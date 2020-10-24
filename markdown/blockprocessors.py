@@ -496,16 +496,15 @@ class SetextHeaderProcessor(BlockProcessor):
 class HRProcessor(BlockProcessor):
     """ Process Horizontal Rules. """
 
-    RE = r'^[ ]{0,3}((-+[ ]{0,2}){3,}|(_+[ ]{0,2}){3,}|(\*+[ ]{0,2}){3,})[ ]*$'
+    # Python's re module doesn't officially support atomic grouping. However you can fake it.
+    # See https://stackoverflow.com/a/13577411/866026
+    RE = r'^[ ]{0,3}(?=(?P<atomicgroup>(-+[ ]{0,2}){3,}|(_+[ ]{0,2}){3,}|(\*+[ ]{0,2}){3,}))(?P=atomicgroup)[ ]*$'
     # Detect hr on any line of a block.
     SEARCH_RE = re.compile(RE, re.MULTILINE)
 
     def test(self, parent, block):
         m = self.SEARCH_RE.search(block)
-        # No atomic grouping in python so we simulate it here for performance.
-        # The regex only matches what would be in the atomic group - the HR.
-        # Then check if we are at end of block or if next char is a newline.
-        if m and (m.end() == len(block) or block[m.end()] == '\n'):
+        if m:
             # Save match object on class instance so we can use it later.
             self.match = m
             return True

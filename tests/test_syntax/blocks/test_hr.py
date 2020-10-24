@@ -377,3 +377,26 @@ class TestHorizontalRules(TestCase):
 
             '<p>_ _</p>'
         )
+
+    def test_2_consecutive_hr(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                - - -
+                - - -
+                """
+            ),
+            self.dedent(
+                """
+                <hr />
+                <hr />
+                """
+            )
+        )
+
+    def test_not_hr_end_in_char(self):
+        self.assertMarkdownRenders(
+            '--------------------------------------c',
+
+            '<p>--------------------------------------c</p>'
+        )
