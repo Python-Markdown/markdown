@@ -36,8 +36,9 @@ class HTMLExtractorExtra(HTMLExtractor):
         # Block-level tags which never get their content parsed.
         self.raw_tags = ['canvas', 'math', 'option', 'pre', 'script', 'style', 'textarea']
         # Block-level tags in which the content gets parsed as blocks
-        self.block_tags = [tag for tag in self.block_level_tags if tag not in self.span_tags + self.raw_tags]
         super().__init__(md, *args, **kwargs)
+
+        self.block_tags = [tag for tag in self.block_level_tags if tag not in self.span_tags + self.raw_tags + self.empty_tags]
 
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
