@@ -1405,7 +1405,13 @@ class TestHTMLBlocks(TestCase):
 
     def test_hr_only_start(self):
         self.assertMarkdownRenders(
-            "*emphasis1*\n<hr>\n*emphasis2*",
+            self.dedent(
+                """
+                *emphasis1*
+                <hr>
+                *emphasis2*
+                """
+            ),
             self.dedent(
                 """
                 <p><em>emphasis1</em></p>
@@ -1417,7 +1423,13 @@ class TestHTMLBlocks(TestCase):
 
     def test_hr_self_close(self):
         self.assertMarkdownRenders(
-            "*emphasis1*\n<hr/>\n*emphasis2*",
+            self.dedent(
+                """
+                *emphasis1*
+                <hr/>
+                *emphasis2*
+                """
+            ),
             self.dedent(
                 """
                 <p><em>emphasis1</em></p>
@@ -1428,8 +1440,15 @@ class TestHTMLBlocks(TestCase):
         )
 
     def test_hr_start_and_end(self):
+        # Browers ignore ending hr tags, so we don't try to do anything to handle them special.
         self.assertMarkdownRenders(
-            "*emphasis1*\n<hr></hr>\n*emphasis2*",
+            self.dedent(
+                """
+                *emphasis1*
+                <hr></hr>
+                *emphasis2*
+                """
+            ),
             self.dedent(
                 """
                 <p><em>emphasis1</em></p>
@@ -1441,8 +1460,15 @@ class TestHTMLBlocks(TestCase):
         )
 
     def test_hr_only_end(self):
+        # Browers ignore ending hr tags, so we don't try to do anything to handle them special.
         self.assertMarkdownRenders(
-            "*emphasis1*\n</hr>\n*emphasis2*",
+            self.dedent(
+                """
+                *emphasis1*
+                </hr>
+                *emphasis2*
+                """
+            ),
             self.dedent(
                 """
                 <p><em>emphasis1</em>
@@ -1453,9 +1479,18 @@ class TestHTMLBlocks(TestCase):
         )
 
     def test_hr_with_content(self):
-        # Content is not allowed and will be treated as normal content between two hr tags
+        # Browers ignore ending hr tags, so we don't try to do anything to handle them special.
+        # Content is not allowed and will be treated as normal content between two hr tags.
         self.assertMarkdownRenders(
-            "*emphasis1*\n<hr>\n**content**\n</hr>\n*emphasis2*",
+            self.dedent(
+                """
+                *emphasis1*
+                <hr>
+                **content**
+                </hr>
+                *emphasis2*
+                """
+            ),
             self.dedent(
                 """
                 <p><em>emphasis1</em></p>
