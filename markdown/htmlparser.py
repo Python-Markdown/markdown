@@ -58,7 +58,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             kwargs['convert_charrefs'] = False
 
         # Block tags that should contain no content (self closing)
-        self.empty_tags = ['hr']
+        self.empty_tags = set(['hr'])
 
         # This calls self.reset
         super().__init__(*args, **kwargs)
@@ -124,6 +124,11 @@ class HTMLExtractor(htmlparser.HTMLParser):
             return '</{}>'.format(tag)
 
     def handle_starttag(self, tag, attrs):
+        # Handle tags that should always be empty and do not specify a closing tag
+        if tag in self.empty_tags:
+            self.handle_startendtag(tag, attrs)
+            return
+
         if self.md.is_block_level(tag) and (self.intail or (self.at_line_start() and not self.inraw)):
             # Started a new raw block. Prepare stack.
             self.inraw = True
@@ -272,14 +277,6 @@ class HTMLExtractor(htmlparser.HTMLParser):
         if end.endswith('/>'):
             # XHTML-style empty tag: <span attr="value" />
             self.handle_startendtag(tag, attrs)
-        elif tag in self.empty_tags:
-            pattern = r'\s*</\s*{}\s*>'.format(tag)
-            if re.match(pattern, self.rawdata[self.line_offset + self.offset + len(self.__starttag_text):]):
-                if tag in self.CDATA_CONTENT_ELEMENTS:
-                    self.set_cdata_mode(tag)
-                self.handle_starttag(tag, attrs)
-            else:
-                self.handle_startendtag(tag, attrs)
         else:
             # *** set cdata_mode first so we can override it in handle_starttag (see #1036) ***
             if tag in self.CDATA_CONTENT_ELEMENTS:

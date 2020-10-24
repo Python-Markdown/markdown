@@ -1402,3 +1402,67 @@ class TestHTMLBlocks(TestCase):
                 """
             )
         )
+
+    def test_hr_only_start(self):
+        self.assertMarkdownRenders(
+            "*emphasis1*\n<hr>\n*emphasis2*",
+            self.dedent(
+                """
+                <p><em>emphasis1</em></p>
+                <hr>
+                <p><em>emphasis2</em></p>
+                """
+            )
+        )
+
+    def test_hr_self_close(self):
+        self.assertMarkdownRenders(
+            "*emphasis1*\n<hr/>\n*emphasis2*",
+            self.dedent(
+                """
+                <p><em>emphasis1</em></p>
+                <hr/>
+                <p><em>emphasis2</em></p>
+                """
+            )
+        )
+
+    def test_hr_start_and_end(self):
+        self.assertMarkdownRenders(
+            "*emphasis1*\n<hr></hr>\n*emphasis2*",
+            self.dedent(
+                """
+                <p><em>emphasis1</em></p>
+                <hr>
+                <p></hr>
+                <em>emphasis2</em></p>
+                """
+            )
+        )
+
+    def test_hr_only_end(self):
+        self.assertMarkdownRenders(
+            "*emphasis1*\n</hr>\n*emphasis2*",
+            self.dedent(
+                """
+                <p><em>emphasis1</em>
+                </hr>
+                <em>emphasis2</em></p>
+                """
+            )
+        )
+
+    def test_hr_with_content(self):
+        # Content is not allowed and will be treated as normal content between two hr tags
+        self.assertMarkdownRenders(
+            "*emphasis1*\n<hr>\n**content**\n</hr>\n*emphasis2*",
+            self.dedent(
+                """
+                <p><em>emphasis1</em></p>
+                <hr>
+                <p><strong>content</strong>
+                </hr>
+                <em>emphasis2</em></p>
+                """
+            )
+        )
