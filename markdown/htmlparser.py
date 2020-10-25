@@ -56,6 +56,10 @@ class HTMLExtractor(htmlparser.HTMLParser):
     def __init__(self, md, *args, **kwargs):
         if 'convert_charrefs' not in kwargs:
             kwargs['convert_charrefs'] = False
+
+        # Block tags that should contain no content (self closing)
+        self.empty_tags = set(['hr'])
+
         # This calls self.reset
         super().__init__(*args, **kwargs)
         self.md = md
@@ -120,6 +124,11 @@ class HTMLExtractor(htmlparser.HTMLParser):
             return '</{}>'.format(tag)
 
     def handle_starttag(self, tag, attrs):
+        # Handle tags that should always be empty and do not specify a closing tag
+        if tag in self.empty_tags:
+            self.handle_startendtag(tag, attrs)
+            return
+
         if self.md.is_block_level(tag) and (self.intail or (self.at_line_start() and not self.inraw)):
             # Started a new raw block. Prepare stack.
             self.inraw = True
@@ -183,6 +192,10 @@ class HTMLExtractor(htmlparser.HTMLParser):
             else:
                 # More content exists after tag.
                 self.intail = True
+            item = self.cleandoc[-1] if self.cleandoc else ''
+            # If we only have one newline before block element, add another
+            if not item.endswith('\n\n') and item.endswith('\n'):
+                self.cleandoc.append('\n')
             self.cleandoc.append(self.md.htmlStash.store(data))
             # Insert blank line between this and next line.
             self.cleandoc.append('\n\n')

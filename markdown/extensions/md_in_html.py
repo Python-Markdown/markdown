@@ -30,14 +30,18 @@ class HTMLExtractorExtra(HTMLExtractor):
 
     def __init__(self, md, *args, **kwargs):
         # All block-level tags.
-        self.block_level_tags = md.block_level_elements.copy()
+        self.block_level_tags = set(md.block_level_elements.copy())
         # Block-level tags in which the content only gets span level parsing
-        self.span_tags = ['address', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'legend', 'li', 'p', 'td', 'th']
+        self.span_tags = set(
+            ['address', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'legend', 'li', 'p', 'td', 'th']
+        )
         # Block-level tags which never get their content parsed.
-        self.raw_tags = ['canvas', 'math', 'option', 'pre', 'script', 'style', 'textarea']
+        self.raw_tags = set(['canvas', 'math', 'option', 'pre', 'script', 'style', 'textarea'])
         # Block-level tags in which the content gets parsed as blocks
-        self.block_tags = [tag for tag in self.block_level_tags if tag not in self.span_tags + self.raw_tags]
         super().__init__(md, *args, **kwargs)
+
+        self.block_tags = set(self.block_level_tags) - (self.span_tags | self.raw_tags | self.empty_tags)
+        self.span_and_blocks_tags = self.block_tags | self.span_tags
 
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
@@ -71,10 +75,10 @@ class HTMLExtractorExtra(HTMLExtractor):
             # Only use the parent state if it is more restrictive than the markdown attribute.
             md_attr = parent_state
         if ((md_attr == '1' and tag in self.block_tags) or
-                (md_attr == 'block' and tag in self.span_tags + self.block_tags)):
+                (md_attr == 'block' and tag in self.span_and_blocks_tags)):
             return 'block'
         elif ((md_attr == '1' and tag in self.span_tags) or
-              (md_attr == 'span' and tag in self.span_tags + self.block_tags)):
+              (md_attr == 'span' and tag in self.span_and_blocks_tags)):
             return 'span'
         elif tag in self.block_level_tags:
             return 'off'
@@ -90,6 +94,18 @@ class HTMLExtractorExtra(HTMLExtractor):
         return value
 
     def handle_starttag(self, tag, attrs):
+        # Handle tags that should always be empty and do not specify a closing tag
+        if tag in self.empty_tags:
+            attrs = {key: value if value is not None else key for key, value in attrs}
+            if "markdown" in attrs:
+                attrs.pop('markdown')
+                element = etree.Element(tag, attrs)
+                data = etree.tostring(element, encoding='unicode', method='html')
+            else:
+                data = self.get_starttag_text()
+            self.handle_empty_tag(data, True)
+            return
+
         if tag in self.block_level_tags:
             # Valueless attr (ex: `<tag checked>`) results in `[('checked', None)]`.
             # Convert to `{'checked': 'checked'}`.
@@ -160,6 +176,19 @@ class HTMLExtractorExtra(HTMLExtractor):
                     self.handle_data(self.md.htmlStash.store(text))
                 else:
                     self.handle_data(text)
+
+    def handle_startendtag(self, tag, attrs):
+        if tag in self.empty_tags:
+            attrs = {key: value if value is not None else key for key, value in attrs}
+            if "markdown" in attrs:
+                attrs.pop('markdown')
+                element = etree.Element(tag, attrs)
+                data = etree.tostring(element, encoding='unicode', method='html')
+            else:
+                data = self.get_starttag_text()
+        else:
+            data = self.get_starttag_text()
+        self.handle_empty_tag(data, is_block=self.md.is_block_level(tag))
 
     def handle_data(self, data):
         if self.inraw or not self.mdstack:
