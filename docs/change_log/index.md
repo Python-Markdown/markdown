@@ -3,7 +3,7 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-Under development: version 3.3.3 (a bug-fix release).
+Oct 25, 2020: version 3.3.3 (a bug-fix release).
 
 * Unify all block-level tags (#1047).
 * Fix issue where some empty elements would have text rendered as `None` when using `md_in_html` (#1049).
