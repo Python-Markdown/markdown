@@ -19,7 +19,7 @@ from ..blockprocessors import BlockProcessor
 from ..preprocessors import Preprocessor
 from ..postprocessors import RawHtmlPostprocessor
 from .. import util
-from ..htmlparser import HTMLExtractor
+from ..htmlparser import HTMLExtractor, blank_line_re
 import xml.etree.ElementTree as etree
 
 
@@ -87,7 +87,7 @@ class HTMLExtractorExtra(HTMLExtractor):
 
     def handle_starttag(self, tag, attrs):
         # Handle tags that should always be empty and do not specify a closing tag
-        if tag in self.empty_tags and self.at_line_start():
+        if tag in self.empty_tags and (self.at_line_start() or self.intail):
             attrs = {key: value if value is not None else key for key, value in attrs}
             if "markdown" in attrs:
                 attrs.pop('markdown')
@@ -98,7 +98,7 @@ class HTMLExtractorExtra(HTMLExtractor):
             self.handle_empty_tag(data, True)
             return
 
-        if tag in self.block_level_tags and self.at_line_start():
+        if tag in self.block_level_tags and (self.at_line_start() or self.intail):
             # Valueless attr (ex: `<tag checked>`) results in `[('checked', None)]`.
             # Convert to `{'checked': 'checked'}`.
             attrs = {key: value if value is not None else key for key, value in attrs}
@@ -150,6 +150,11 @@ class HTMLExtractorExtra(HTMLExtractor):
                     self.cleandoc.append(self.md.htmlStash.store(element))
                     self.cleandoc.append('\n\n')
                     self.state = []
+                    # Check if element has a tail
+                    if not blank_line_re.match(
+                            self.rawdata[self.line_offset + self.offset + len(self.get_endtag_text(tag)):]):
+                        # More content exists after endtag.
+                        self.intail = True
             else:
                 # Treat orphan closing tag as a span level tag.
                 text = self.get_endtag_text(tag)
@@ -182,6 +187,8 @@ class HTMLExtractorExtra(HTMLExtractor):
         self.handle_empty_tag(data, is_block=self.md.is_block_level(tag))
 
     def handle_data(self, data):
+        if self.intail and '\n' in data:
+            self.intail = False
         if self.inraw or not self.mdstack:
             super().handle_data(data)
         else:
