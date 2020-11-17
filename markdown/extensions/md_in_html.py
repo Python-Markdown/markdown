@@ -85,17 +85,9 @@ class HTMLExtractorExtra(HTMLExtractor):
         else:  # pragma: no cover
             return None
 
-    def at_line_start(self):
-        """At line start."""
-
-        value = super().at_line_start()
-        if not value and self.cleandoc and self.cleandoc[-1].endswith('\n'):
-            value = True
-        return value
-
     def handle_starttag(self, tag, attrs):
         # Handle tags that should always be empty and do not specify a closing tag
-        if tag in self.empty_tags:
+        if tag in self.empty_tags and self.at_line_start():
             attrs = {key: value if value is not None else key for key, value in attrs}
             if "markdown" in attrs:
                 attrs.pop('markdown')
@@ -106,13 +98,12 @@ class HTMLExtractorExtra(HTMLExtractor):
             self.handle_empty_tag(data, True)
             return
 
-        if tag in self.block_level_tags:
+        if tag in self.block_level_tags and self.at_line_start():
             # Valueless attr (ex: `<tag checked>`) results in `[('checked', None)]`.
             # Convert to `{'checked': 'checked'}`.
             attrs = {key: value if value is not None else key for key, value in attrs}
             state = self.get_state(tag, attrs)
-
-            if self.inraw or (state in [None, 'off'] and not self.mdstack) or not self.at_line_start():
+            if self.inraw or (state in [None, 'off'] and not self.mdstack):
                 # fall back to default behavior
                 attrs.pop('markdown', None)
                 super().handle_starttag(tag, attrs)
