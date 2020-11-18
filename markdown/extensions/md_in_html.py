@@ -125,6 +125,9 @@ class HTMLExtractorExtra(HTMLExtractor):
                     self.handle_data(self.md.htmlStash.store(text))
                 else:
                     self.handle_data(text)
+                if tag in self.CDATA_CONTENT_ELEMENTS:
+                    # This is presumably a standalone tag in a code span (see #1036).
+                    self.clear_cdata_mode()
 
     def handle_endtag(self, tag):
         if tag in self.block_level_tags:
