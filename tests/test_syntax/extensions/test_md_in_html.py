@@ -126,6 +126,72 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_md1_code_span(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                `<h1>code span</h1>`
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p><code>&lt;h1&gt;code span&lt;/h1&gt;</code></p>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_code_span_oneline(self):
+        self.assertMarkdownRenders(
+            '<div markdown="1">`<h1>code span</h1>`</div>',
+            self.dedent(
+                """
+                <div>
+                <p><code>&lt;h1&gt;code span&lt;/h1&gt;</code></p>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_code_span_unclosed(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                `<p>`
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p><code>&lt;p&gt;</code></p>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_code_span_script_tag(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                `<script>`
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p><code>&lt;script&gt;</code></p>
+                </div>
+                """
+            )
+        )
+
     def test_md1_div_blank_lines(self):
         self.assertMarkdownRenders(
             self.dedent(
