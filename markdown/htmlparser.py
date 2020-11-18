@@ -95,7 +95,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             m = re.match(r'([^\n]*\n){{{}}}'.format(self.lineno-1), self.rawdata)
             if m:
                 return m.end()
-            else:
+            else:  # pragma: no cover
                 # Value of self.lineno must exceed total number of lines.
                 # Find index of begining of last line.
                 return self.rawdata.rfind('\n')
