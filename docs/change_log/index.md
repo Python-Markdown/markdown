@@ -5,6 +5,7 @@ Python-Markdown Change Log
 
 Under development: version 3.3.4 (a bug-fix release).
 
+* Properly parse processing instructions in md_in_html (#1070).
 * Properly parse code spans in md_in_html (#1069).
 
 Oct 25, 2020: version 3.3.3 (a bug-fix release).

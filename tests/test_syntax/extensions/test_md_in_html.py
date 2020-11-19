@@ -634,6 +634,56 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_md1_PI_oneliner(self):
+        self.assertMarkdownRenders(
+            '<div markdown="1"><?php print("foo"); ?></div>',
+            self.dedent(
+                """
+                <div>
+                <?php print("foo"); ?>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_PI_multiline(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+                <?php print("foo"); ?>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <?php print("foo"); ?>
+                </div>
+                """
+            )
+        )
+
+    def test_md1_PI_blank_lines(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown="1">
+
+                <?php print("foo"); ?>
+
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <?php print("foo"); ?>
+                </div>
+                """
+            )
+        )
+
     def test_md_span_paragraph(self):
         self.assertMarkdownRenders(
             '<p markdown="span">*foo*</p>',
