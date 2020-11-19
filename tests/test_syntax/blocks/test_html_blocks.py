@@ -1073,6 +1073,27 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
+    def test_raw_processing_instruction_code_span(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                `<?php`
+
+                <div>
+                foo
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <p><code>&lt;?php</code></p>
+                <div>
+                foo
+                </div>
+                """
+            )
+        )
+
     def test_raw_declaration_one_line(self):
         self.assertMarkdownRenders(
             '<!DOCTYPE html>',

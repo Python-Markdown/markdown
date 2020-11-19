@@ -230,6 +230,14 @@ class HTMLExtractor(htmlparser.HTMLParser):
         end = ']]>' if data.startswith('CDATA[') else ']>'
         self.handle_empty_tag('<![{}{}'.format(data, end), is_block=True)
 
+    def parse_pi(self, i):
+        if self.at_line_start() or self.intail:
+            return super().parse_pi(i)
+        # This is not the beginning of a raw block so treat as plain data
+        # and avoid consuming any tags which may follow (see #1066).
+        self.handle_data('<?')
+        return i + 2
+
     # The rest has been copied from base class in standard lib to address #1036.
     # As __startag_text is private, all references to it must be in this subclass.
     # The last few lines of parse_starttag are reversed so that handle_starttag
