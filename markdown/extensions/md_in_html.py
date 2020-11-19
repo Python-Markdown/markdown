@@ -204,10 +204,7 @@ class HTMLExtractorExtra(HTMLExtractor):
             if self.at_line_start() and is_block:
                 self.handle_data('\n' + self.md.htmlStash.store(data) + '\n\n')
             else:
-                if self.mdstate and self.mdstate[-1] == "off":
-                    self.handle_data(self.md.htmlStash.store(data))
-                else:
-                    self.handle_data(data)
+                self.handle_data(self.md.htmlStash.store(data))
 
 
 class HtmlBlockPreprocessor(Preprocessor):
