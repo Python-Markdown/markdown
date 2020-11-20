@@ -1131,6 +1131,27 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
+    def test_raw_declaration_code_span(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                `<!`
+
+                <div>
+                foo
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <p><code>&lt;!</code></p>
+                <div>
+                foo
+                </div>
+                """
+            )
+        )
+
     def test_raw_cdata_one_line(self):
         self.assertMarkdownRenders(
             '<![CDATA[ document.write(">"); ]]>',
@@ -1207,6 +1228,27 @@ class TestHTMLBlocks(TestCase):
                     document.write(">");
 
                 ]]>
+                """
+            )
+        )
+
+    def test_raw_cdata_code_span(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                `<![`
+
+                <div>
+                foo
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <p><code>&lt;![</code></p>
+                <div>
+                foo
+                </div>
                 """
             )
         )

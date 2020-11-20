@@ -216,6 +216,16 @@ class HTMLExtractorExtra(HTMLExtractor):
         self.handle_data('<?')
         return i + 2
 
+    def parse_html_declaration(self, i):
+        if self.at_line_start() or self.intail or self.mdstack:
+            # The same override exists in HTMLExtractor without the check
+            # for mdstack. Therefore, use HTMLExtractor's parent instead.
+            return super(HTMLExtractor, self).parse_html_declaration(i)
+        # This is not the beginning of a raw block so treat as plain data
+        # and avoid consuming any tags which may follow (see #1066).
+        self.handle_data('<!')
+        return i + 2
+
 
 class HtmlBlockPreprocessor(Preprocessor):
     """Remove html blocks from the text and store them for later retrieval."""
