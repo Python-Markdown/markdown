@@ -663,6 +663,48 @@ class TestHTMLBlocks(TestCase):
             '<p>&lt;foo</p>'
         )
 
+    def test_raw_unclosed_tag_in_code_span(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                `<div`.
+
+                <div>
+                hello
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <p><code>&lt;div</code>.</p>
+                <div>
+                hello
+                </div>
+                """
+            )
+        )
+
+    def test_raw_unclosed_tag_in_code_span_space(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ` <div `.
+
+                <div>
+                hello
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <p><code>&lt;div</code>.</p>
+                <div>
+                hello
+                </div>
+                """
+            )
+        )
+
     def test_raw_attributes(self):
         self.assertMarkdownRenders(
             '<p id="foo", class="bar baz", style="margin: 15px; line-height: 1.5; text-align: center;">text</p>',

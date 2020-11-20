@@ -39,6 +39,22 @@ htmlparser.entityref = re.compile(r'&([a-zA-Z][-.a-zA-Z0-9]*);')
 # so the 'incomplete' functionality is unnecessary. As the entityref regex is run right before incomplete,
 # and the two regex are the same, then incomplete will simply never match and we avoid the logic within.
 htmlparser.incomplete = htmlparser.entityref
+# Monkeypatch HTMLParser to not accept a backtick in a tag name, attribute name, or bare value.
+htmlparser.locatestarttagend_tolerant = re.compile(r"""
+  <[a-zA-Z][^`\t\n\r\f />\x00]*       # tag name <= added backtick here
+  (?:[\s/]*                           # optional whitespace before attribute name
+    (?:(?<=['"\s/])[^`\s/>][^\s/=>]*  # attribute name <= added backtick here
+      (?:\s*=+\s*                     # value indicator
+        (?:'[^']*'                    # LITA-enclosed value
+          |"[^"]*"                    # LIT-enclosed value
+          |(?!['"])[^`>\s]*           # bare value <= added backtick here
+         )
+         (?:\s*,)*                    # possibly followed by a comma
+       )?(?:\s|/(?!>))*
+     )*
+   )?
+  \s*                                 # trailing whitespace
+""", re.VERBOSE)
 
 # Match a blank line at the start of a block of text (two newlines).
 # The newlines may be preceded by additional whitespace.
@@ -245,7 +261,6 @@ class HTMLExtractor(htmlparser.HTMLParser):
         # and avoid consuming any tags which may follow (see #1066).
         self.handle_data('<!')
         return i + 2
-
 
     # The rest has been copied from base class in standard lib to address #1036.
     # As __startag_text is private, all references to it must be in this subclass.
