@@ -45,7 +45,7 @@ html = markdown.markdown(your_text_string)
 For more advanced [installation] and [usage] documentation, see the `docs/` directory
 of the distribution or the project website at <https://Python-Markdown.github.io/>.
 
-[installation: https://python-markdown.github.io/install/
+[installation]: https://python-markdown.github.io/install/
 [usage]: https://python-markdown.github.io/reference/
 
 See the change log at <https://Python-Markdown.github.io/change_log>.
