@@ -34,7 +34,15 @@ supported by the [Available Extensions][].
 Documentation
 -------------
 
-Installation and usage documentation is available in the `docs/` directory
+```bash
+pip install markdown
+```
+```python
+import markdown
+html = markdown.markdown(your_text_string)
+```
+
+For more dvanced installation and usage documentation, see the `docs/` directory
 of the distribution and on the project website at
 <https://Python-Markdown.github.io/>.
 
