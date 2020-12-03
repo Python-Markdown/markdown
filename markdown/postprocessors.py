@@ -85,7 +85,7 @@ class RawHtmlPostprocessor(Postprocessor):
 
         if replacements:
             base_placeholder = util.HTML_PLACEHOLDER % r'([0-9]+)'
-            pattern = re.compile( "<p>{}</p>".format(base_placeholder) + '|' + base_placeholder )
+            pattern = re.compile("<p>{}</p>".format(base_placeholder) + '|' + base_placeholder)
             processed_text = pattern.sub(substitute_match, text)
         else:
             return text
