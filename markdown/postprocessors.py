@@ -75,9 +75,18 @@ class RawHtmlPostprocessor(Postprocessor):
                     self.md.htmlStash.get_placeholder(i))] = html
             replacements[self.md.htmlStash.get_placeholder(i)] = html
 
+        def substitute_match(m):
+            key = m.group(0)
+
+            if key not in replacements:
+                return '<p>' + replacements[key[3:-4]] + '</p>'
+
+            return replacements[key]
+
         if replacements:
-            pattern = re.compile("|".join(re.escape(k) for k in replacements))
-            processed_text = pattern.sub(lambda m: replacements[m.group(0)], text)
+            base_placeholder = util.HTML_PLACEHOLDER % r'([0-9]+)'
+            pattern = re.compile( "<p>{}</p>".format(base_placeholder) + '|' + base_placeholder )
+            processed_text = pattern.sub(substitute_match, text)
         else:
             return text
 
