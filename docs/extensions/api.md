@@ -551,9 +551,8 @@ def set_link_class(self, element):
         set_link_class(child) # run recursively on children
 ```
 
-For more information about working with ElementTree see the ElementTree
-[Documentation](https://effbot.org/zone/element-index.htm) ([Python
-Docs](https://docs.python.org/3/library/xml.etree.elementtree.html)).
+For more information about working with ElementTree see the [ElementTree
+Documentation][ElementTree].
 
 ## Integrating Your Code Into Markdown {: #integrating_into_markdown }
 
@@ -858,7 +857,7 @@ assert someitem in registry
 [registerExtension]: #registerextension
 [Config Settings]: #configsettings
 [makeExtension]: #makeextension
-[ElementTree]: https://effbot.org/zone/element-index.htm
+[ElementTree]: https://docs.python.org/3/library/xml.etree.elementtree.html
 [Available Extensions]: index.md
 [Footnotes]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
 [Definition Lists]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/definition_lists
