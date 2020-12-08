@@ -79,7 +79,10 @@ class RawHtmlPostprocessor(Postprocessor):
             key = m.group(0)
 
             if key not in replacements:
-                return f'<p>{ replacements[key[3:-4]] }</p>'
+                if key[3:-4] in replacements:
+                    return f'<p>{ replacements[key[3:-4]] }</p>'
+                else:
+                    return key
 
             return replacements[key]
 
