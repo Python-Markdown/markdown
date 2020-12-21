@@ -126,7 +126,8 @@ class InlineProcessor(Treeprocessor):
         """
         if not isinstance(data, util.AtomicString):
             startIndex = 0
-            while patternIndex < len(self.inlinePatterns):
+            count = len(self.inlinePatterns)
+            while patternIndex < count:
                 data, matched, startIndex = self.__applyPattern(
                     self.inlinePatterns[patternIndex], data, patternIndex, startIndex
                 )
