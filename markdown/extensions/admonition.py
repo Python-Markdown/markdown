@@ -113,6 +113,8 @@ class AdmonitionProcessor(BlockProcessor):
         m = self.RE.search(block)
 
         if m:
+            if m.start() > 0:
+                self.parser.parseBlocks(parent, [block[:m.start()]])
             block = block[m.end():]  # removes the first line
         else:
             sibling, block = self.get_sibling(parent, block)
