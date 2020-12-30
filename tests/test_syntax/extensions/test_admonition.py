@@ -204,6 +204,8 @@ class TestAdmonition(TestCase):
             ),
             self.dedent(
                 '''
+                <p>foo
+                <strong>foo</strong></p>
                 <div class="admonition note">
                 <p class="admonition-title">Admonition</p>
                 </div>
