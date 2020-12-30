@@ -8,6 +8,8 @@ Under development: version 3.3.4 (a bug-fix release).
 * Properly parse unclosed tags in code spans (#1066).
 * Properly parse processing instructions in md_in_html (#1070).
 * Properly parse code spans in md_in_html (#1069).
+* Disallow admonitions in the middle of a block (#1093).
+  Previously, text immediately before an admonition would just be dropped.
 * Simplified regex for HTML placeholders (#928) addressing (#932).
 
 Oct 25, 2020: version 3.3.3 (a bug-fix release).

@@ -204,9 +204,9 @@ class TestAdmonition(TestCase):
             ),
             self.dedent(
                 '''
-                <div class="admonition note">
-                <p class="admonition-title">Admonition</p>
-                </div>
+                <p>foo
+                <strong>foo</strong>
+                !!! note "Admonition"</p>
                 '''
             ),
             extensions=['admonition']
