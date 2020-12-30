@@ -192,3 +192,22 @@ class TestAdmonition(TestCase):
             ),
             extensions=['admonition', 'def_list']
         )
+
+    def test_with_preceding_text(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                foo
+                **foo**
+                !!! note "Admonition"
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Admonition</p>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
