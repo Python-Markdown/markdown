@@ -126,7 +126,7 @@ class TableProcessor(BlockProcessor):
             except IndexError:  # pragma: no cover
                 c.text = ""
             if a:
-                c.set('align', a)
+                c.set('style', 'text-align:'+a)
 
     def _split_row(self, row):
         """ split a row of text into list of cells. """

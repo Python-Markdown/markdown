@@ -5,6 +5,7 @@ Python-Markdown Change Log
 
 Under development: version 3.3.4 (a bug-fix release).
 
+* Use `style` attribute in tables for alignment instead of `align` for better CSS inter-operation
 * Properly parse unclosed tags in code spans (#1066).
 * Properly parse processing instructions in md_in_html (#1070).
 * Properly parse code spans in md_in_html (#1069).
