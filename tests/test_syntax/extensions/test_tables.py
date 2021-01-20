@@ -285,7 +285,7 @@ Content Cell  |  
 
     def test_three_spaces_prefix(self):
         self.assertMarkdownRenders(
-                """
+            """
 Three spaces in front of a table:
 
    First Header | Second Header
@@ -344,7 +344,7 @@ Three spaces in front of a table:
 
     def test_code_block_table(self):
         self.assertMarkdownRenders(
-                """
+            """
 Four spaces is a code block:
 
     First Header | Second Header
@@ -384,7 +384,7 @@ Four spaces is a code block:
 
     def test_inline_code_blocks(self):
         self.assertMarkdownRenders(
-                """
+            """
 More inline code block tests
 
 Column 1 | Column 2 | Column 3
@@ -474,10 +474,10 @@ words    |```` some ` | ` code ```` | more words
             ),
             extensions=['tables']
         )
-        
+
     def test_issue_440(self):
         self.assertMarkdownRenders(
-                """
+            """
 A test for issue #440:
 
 foo | bar
@@ -508,7 +508,7 @@ foo | (`bar`) and `baz`.
 
     def test_lists_not_tables(self):
         self.assertMarkdownRenders(
-                """
+            """
 Lists are not tables
 
  - this | should | not
@@ -528,7 +528,7 @@ Lists are not tables
 
     def test_issue_449(self):
         self.assertMarkdownRenders(
-                """
+            """
 Add tests for issue #449
 
 Odd backticks | Even backticks
@@ -706,7 +706,7 @@ Should not be code | Should be code
 
     def test_single_column_tables(self):
         self.assertMarkdownRenders(
-                """
+            """
 Single column tables
 
 | Is a Table |
@@ -913,4 +913,3 @@ row
             ),
             extensions=[TableExtension(use_align_attribute=True)]
         )
-
