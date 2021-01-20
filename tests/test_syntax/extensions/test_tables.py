@@ -22,6 +22,7 @@ License: BSD (see LICENSE.md for details).
 from markdown.test_tools import TestCase
 from markdown.extensions.tables import TableExtension
 
+
 class TestTableBlocks(TestCase):
 
     def test_empty_cells(self):
@@ -65,10 +66,10 @@ Content Cell  |  
         self.assertMarkdownRenders(
             self.dedent(
                 """
-				First Header  | Second Header
-				------------- | -------------
-				Content Cell  | Content Cell
-				Content Cell  | Content Cell
+                First Header  | Second Header
+                ------------- | -------------
+                Content Cell  | Content Cell
+                Content Cell  | Content Cell
                 """
             ),
             self.dedent(
