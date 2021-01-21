@@ -285,19 +285,20 @@ Content Cell  |  
 
     def test_three_spaces_prefix(self):
         self.assertMarkdownRenders(
-            """
-Three spaces in front of a table:
+            self.dedent(
+                """
+                Three spaces in front of a table:
 
-   First Header | Second Header
-   ------------ | -------------
-   Content Cell | Content Cell
-   Content Cell | Content Cell
+                   First Header | Second Header
+                   ------------ | -------------
+                   Content Cell | Content Cell
+                   Content Cell | Content Cell
 
-   | First Header | Second Header |
-   | ------------ | ------------- |
-   | Content Cell | Content Cell  |
-   | Content Cell | Content Cell  |
-""",
+                   | First Header | Second Header |
+                   | ------------ | ------------- |
+                   | Content Cell | Content Cell  |
+                   | Content Cell | Content Cell  |
+                """),
             self.dedent(
                 """
                 <p>Three spaces in front of a table:</p>
@@ -344,17 +345,18 @@ Three spaces in front of a table:
 
     def test_code_block_table(self):
         self.assertMarkdownRenders(
-            """
-Four spaces is a code block:
+            self.dedent(
+                """
+                Four spaces is a code block:
 
-    First Header | Second Header
-    ------------ | -------------
-    Content Cell | Content Cell
-    Content Cell | Content Cell
+                    First Header | Second Header
+                    ------------ | -------------
+                    Content Cell | Content Cell
+                    Content Cell | Content Cell
 
-| First Header | Second Header |
-| ------------ | ------------- |
-""",
+                | First Header | Second Header |
+                | ------------ | ------------- |
+                """),
             self.dedent(
                 """
                 <p>Four spaces is a code block:</p>
@@ -384,23 +386,24 @@ Four spaces is a code block:
 
     def test_inline_code_blocks(self):
         self.assertMarkdownRenders(
-            """
-More inline code block tests
+            self.dedent(
+                """
+                More inline code block tests
 
-Column 1 | Column 2 | Column 3
----------|----------|---------
-word 1   | word 2   | word 3
-word 1   | `word 2` | word 3
-word 1   | \\`word 2 | word 3
-word 1   | `word 2 | word 3
-word 1   | `word |2` | word 3
-words    |`` some | code `` | more words
-words    |``` some | code ``` | more words
-words    |```` some | code ```` | more words
-words    |`` some ` | ` code `` | more words
-words    |``` some ` | ` code ``` | more words
-words    |```` some ` | ` code ```` | more words
-""",
+                Column 1 | Column 2 | Column 3
+                ---------|----------|---------
+                word 1   | word 2   | word 3
+                word 1   | `word 2` | word 3
+                word 1   | \\`word 2 | word 3
+                word 1   | `word 2 | word 3
+                word 1   | `word |2` | word 3
+                words    |`` some | code `` | more words
+                words    |``` some | code ``` | more words
+                words    |```` some | code ```` | more words
+                words    |`` some ` | ` code `` | more words
+                words    |``` some ` | ` code ``` | more words
+                words    |```` some ` | ` code ```` | more words
+                """),
             self.dedent(
                 """
                 <p>More inline code block tests</p>
@@ -477,13 +480,14 @@ words    |```` some ` | ` code ```` | more words
 
     def test_issue_440(self):
         self.assertMarkdownRenders(
-            """
-A test for issue #440:
+            self.dedent(
+                """
+                A test for issue #440:
 
-foo | bar
---- | ---
-foo | (`bar`) and `baz`.
-""",
+                foo | bar
+                --- | ---
+                foo | (`bar`) and `baz`.
+                """),
             self.dedent(
                 """
                 <p>A test for issue #440:</p>
@@ -508,12 +512,13 @@ foo | (`bar`) and `baz`.
 
     def test_lists_not_tables(self):
         self.assertMarkdownRenders(
-            """
-Lists are not tables
+            self.dedent(
+                """
+                Lists are not tables
 
- - this | should | not
- - be | a | table
-""",
+                 - this | should | not
+                 - be | a | table
+                """),
             self.dedent(
                 """
                 <p>Lists are not tables</p>
@@ -706,46 +711,47 @@ Should not be code | Should be code
 
     def test_single_column_tables(self):
         self.assertMarkdownRenders(
-            """
-Single column tables
+            self.dedent(
+                """
+                Single column tables
 
-| Is a Table |
-| ---------- |
+                | Is a Table |
+                | ---------- |
 
-| Is a Table
-| ----------
+                | Is a Table
+                | ----------
 
-Is a Table |
----------- |
+                Is a Table |
+                ---------- |
 
-| Is a Table |
-| ---------- |
-| row        |
+                | Is a Table |
+                | ---------- |
+                | row        |
 
-| Is a Table
-| ----------
-| row
+                | Is a Table
+                | ----------
+                | row
 
-Is a Table |
----------- |
-row        |
+                Is a Table |
+                ---------- |
+                row        |
 
-| Is not a Table
---------------
-| row
+                | Is not a Table
+                --------------
+                | row
 
-Is not a Table |
---------------
-row            |
+                Is not a Table |
+                --------------
+                row            |
 
-| Is not a Table
-| --------------
-row
+                | Is not a Table
+                | --------------
+                row
 
-Is not a Table |
--------------- |
-row
-""",
+                Is not a Table |
+                -------------- |
+                row
+                """),
             self.dedent(
                 """
                 <p>Single column tables</p>
