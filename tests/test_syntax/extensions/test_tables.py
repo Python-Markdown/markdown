@@ -533,55 +533,56 @@ Content Cell  |  
 
     def test_issue_449(self):
         self.assertMarkdownRenders(
-            """
-Add tests for issue #449
+            self.dedent(
+                r"""
+                Add tests for issue #449
 
-Odd backticks | Even backticks
------------- | -------------
-``[!\\"\\#$%&'()*+,\\-./:;<=>?@\\[\\\\\\]^_`{|}~]`` | ``[!\\"\\#$%&'()*+,\\-./:;<=>?@\\[\\\\\\]^`_`{|}~]``
+                Odd backticks | Even backticks
+                ------------ | -------------
+                ``[!\"\#$%&'()*+,\-./:;<=>?@\[\\\]^_`{|}~]`` | ``[!\"\#$%&'()*+,\-./:;<=>?@\[\\\]^`_`{|}~]``
 
-Escapes | More Escapes
-------- | ------
-`` `\\`` | `\\`
+                Escapes | More Escapes
+                ------- | ------
+                `` `\`` | `\`
 
-Only the first backtick can be escaped
+                Only the first backtick can be escaped
 
-Escaped | Bacticks
-------- | ------
-\\`` \\`  | \\`\\`
+                Escaped | Bacticks
+                ------- | ------
+                \`` \`  | \`\`
 
-Test escaped pipes
+                Test escaped pipes
 
-Column 1 | Column 2
--------- | --------
-`|` \\|   | Pipes are okay in code and escaped. \\|
+                Column 1 | Column 2
+                -------- | --------
+                `|` \|   | Pipes are okay in code and escaped. \|
 
-| Column 1 | Column 2 |
-| -------- | -------- |
-| row1     | row1    \\|
-| row2     | row2     |
+                | Column 1 | Column 2 |
+                | -------- | -------- |
+                | row1     | row1    \|
+                | row2     | row2     |
 
-Test header escapes
+                Test header escapes
 
-| `` `\\`` \\| | `\\` \\|
-| ---------- | ---- |
-| row1       | row1 |
-| row2       | row2 |
+                | `` `\`` \| | `\` \|
+                | ---------- | ---- |
+                | row1       | row1 |
+                | row2       | row2 |
 
-Escaped pipes in format row should not be a table
+                Escaped pipes in format row should not be a table
 
-| Column1   | Column2 |
-| ------- \\|| ------- |
-| row1      | row1    |
-| row2      | row2    |
+                | Column1   | Column2 |
+                | ------- \|| ------- |
+                | row1      | row1    |
+                | row2      | row2    |
 
-Test escaped code in Table
+                Test escaped code in Table
 
-Should not be code | Should be code
------------------- | --------------
-\\`Not code\\`       | \\\\`code`
-\\\\\\`Not code\\\\\\`   | \\\\\\\\`code`
-""",
+                Should not be code | Should be code
+                ------------------ | --------------
+                \`Not code\`       | \\`code`
+                \\\`Not code\\\`   | \\\\`code`
+                """),
             self.dedent(
                 """
                 <p>Add tests for issue #449</p>
