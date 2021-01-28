@@ -540,6 +540,21 @@ td2.text = "*text* with **inline** formatting."    # Add markup text
 table.tail = "Text after table"                    # Add text after table
 ```
 
+If you have raw HTML data as a string to be inserted into the tree unmodified, rather than converting it into an
+`ElementTree` through `etree.fromstring()`, you can use `self.md.htmlStash.store(html)`. `html` here is your
+string of correct HTML, which will be stashed and put back into the output HTML at the end. The function returns
+a placeholder string that you should insert into the tree instead. This prevents subsequent processing steps
+modifying the HTML data. For example,
+
+```python
+html = "<p>This is some <em>raw</em> HTML data</p>"
+el = etree.Element("div")
+el.text = self.md.htmlStash.store(html)
+```
+
+Do store the `Markdown` object passed into `extendMarkdown` in your processor class object (here refered to
+as `self.md`).
+
 You can also manipulate an existing tree. Consider the following example which adds a `class` attribute to `<a>`
 elements:
 
