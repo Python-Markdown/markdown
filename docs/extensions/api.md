@@ -552,7 +552,7 @@ el = etree.Element("div")
 el.text = self.md.htmlStash.store(html)
 ```
 
-Do store the `Markdown` object passed into `extendMarkdown` in your processor class object (here refered to
+Do store the `Markdown` object passed into `extendMarkdown` in your processor class object (here referred to
 as `self.md`).
 
 You can also manipulate an existing tree. Consider the following example which adds a `class` attribute to `<a>`
