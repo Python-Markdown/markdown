@@ -557,7 +557,7 @@ Documentation][ElementTree].
 ## Working with Raw HTML {: #working_with_raw_html }
 
 Occasionally an extension may need to call out to a third party library which returns a pre-made string
-of raw HTML, which needs to be inserted into the document unmodified. Raw strings can be stashed for later
+of raw HTML that needs to be inserted into the document unmodified. Raw strings can be stashed for later
 retrieval using an `htmlStash` instance, rather than converting them into `ElementTree` objects. A raw string
 (which may or may not be raw HTML) passed to `self.md.htmlStash.store()` will be saved to the stash and a
 placeholder string will be returned which should be inserted into the tree instead. After the tree is
