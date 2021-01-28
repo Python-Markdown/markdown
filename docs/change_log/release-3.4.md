@@ -21,7 +21,7 @@ For example, to configure the old `align` behavior:
 ```python
 from markdown.extensions.tables import TableExtension
 
-markdown.markdown(src, extensions=[TableExtensioon(use_align_attribute=True)])
+markdown.markdown(src, extensions=[TableExtension(use_align_attribute=True)])
 ```
 
 In addition, tests were moved to the modern test environment.
