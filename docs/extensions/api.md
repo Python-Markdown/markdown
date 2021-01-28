@@ -540,21 +540,6 @@ td2.text = "*text* with **inline** formatting."    # Add markup text
 table.tail = "Text after table"                    # Add text after table
 ```
 
-If you have raw HTML data as a string to be inserted into the tree unmodified, rather than converting it into an
-`ElementTree` through `etree.fromstring()`, you can use `self.md.htmlStash.store(html)`. `html` here is your
-string of correct HTML, which will be stashed and put back into the output HTML at the end. The function returns
-a placeholder string that you should insert into the tree instead. This prevents subsequent processing steps
-modifying the HTML data. For example,
-
-```python
-html = "<p>This is some <em>raw</em> HTML data</p>"
-el = etree.Element("div")
-el.text = self.md.htmlStash.store(html)
-```
-
-Do store the `Markdown` object passed into `extendMarkdown` in your processor class object (here referred to
-as `self.md`).
-
 You can also manipulate an existing tree. Consider the following example which adds a `class` attribute to `<a>`
 elements:
 
@@ -568,6 +553,25 @@ def set_link_class(self, element):
 
 For more information about working with ElementTree see the [ElementTree
 Documentation][ElementTree].
+
+## Working with Raw HTML {: #working_with_raw_html }
+
+Occasionally an extension may need to call out to a third party library which returns a pre-made string
+of raw HTML, which needs to be inserted into the document unmodified. Raw strings can be stashed for later
+retrieval using an `htmlStash` instance, rather than converting them into `ElementTree` objects. A raw string
+(which may or may not be raw HTML) passed to `self.md.htmlStash.store()` will be saved to the stash and a
+placeholder string will be returned which should be inserted into the tree instead. After the tree is
+serialized, a postprocessor will replace the placeholder with the raw string. This prevents subsequent
+processing steps from modifying the HTML data. For example,
+
+```python
+html = "<p>This is some <em>raw</em> HTML data</p>"
+el = etree.Element("div")
+el.text = self.md.htmlStash.store(html)
+```
+
+For the global `htmlStash` instance to be available from a processor, the `markdown.Markdown` instance must
+be passed to the processor from [extendMarkdown](#extendmarkdown) and will be available as `self.md.htmlStash`.
 
 ## Integrating Your Code Into Markdown {: #integrating_into_markdown }
 
