@@ -78,13 +78,15 @@ class BlockProcessor:
         else:
             return None
 
-    def detab(self, text):
+    def detab(self, text, length=None):
         """ Remove a tab from the front of each line of the given text. """
+        if length is None:
+            length = self.tab_length
         newtext = []
         lines = text.split('\n')
         for line in lines:
-            if line.startswith(' '*self.tab_length):
-                newtext.append(line[self.tab_length:])
+            if line.startswith(' ' * length):
+                newtext.append(line[length:])
             elif not line.strip():
                 newtext.append('')
             else:
