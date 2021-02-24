@@ -21,7 +21,6 @@ License: BSD (see LICENSE.md for details).
 
 from markdown.test_tools import TestCase
 from markdown.extensions.toc import TocExtension
-from markdown import Markdown
 
 
 class TestTOC(TestCase):
@@ -123,8 +122,8 @@ class TestTOC(TestCase):
                 <h5 id="header-5-not-in-toc">Header 5 not in TOC</h5>
                 '''
             ),
-            expected_attrs = {
-                'toc':
+            expected_attrs={
+                'toc': (
                     '<div class="toc">\n'
                       '<ul>\n'                                             # noqa
                         '<li><a href="#header-3">Header 3</a>'             # noqa
@@ -133,7 +132,8 @@ class TestTOC(TestCase):
                           '</ul>\n'                                        # noqa
                         '</li>\n'                                          # noqa
                       '</ul>\n'                                            # noqa
-                    '</div>\n',
+                    '</div>\n'                                             # noqa
+                ),
                 'toc_tokens': [
                     {
                         'level': 3,
@@ -160,7 +160,7 @@ class TestTOC(TestCase):
                 # Header 1
 
                 ## Header 2
-                
+
                 ### Header 3 not in TOC
                 '''
             ),
@@ -171,8 +171,8 @@ class TestTOC(TestCase):
                 <h3 id="header-3-not-in-toc">Header 3 not in TOC</h3>
                 '''
             ),
-            expected_attrs = {
-                'toc':
+            expected_attrs={
+                'toc': (
                     '<div class="toc">\n'
                       '<ul>\n'                                             # noqa
                         '<li><a href="#header-1">Header 1</a>'             # noqa
@@ -181,7 +181,8 @@ class TestTOC(TestCase):
                           '</ul>\n'                                        # noqa
                         '</li>\n'                                          # noqa
                       '</ul>\n'                                            # noqa
-                    '</div>\n',
+                    '</div>\n'                                             # noqa
+                ),
                 'toc_tokens': [
                     {
                         'level': 1,
@@ -226,8 +227,8 @@ class TestTOC(TestCase):
                 '<a class="toclink" href="#header-4">Header 4</a></h4>\n'                        # noqa
             '<h5 id="header-5-not-in-toc">'                                                      # noqa
                 '<a class="toclink" href="#header-5-not-in-toc">Header 5 not in TOC</a></h5>',   # noqa
-            expected_attrs = {
-                'toc':
+            expected_attrs={
+                'toc': (
                     '<div class="toc">\n'
                       '<ul>\n'                                             # noqa
                         '<li><a href="#header-3">Header 3</a>'             # noqa
@@ -236,7 +237,8 @@ class TestTOC(TestCase):
                           '</ul>\n'                                        # noqa
                         '</li>\n'                                          # noqa
                       '</ul>\n'                                            # noqa
-                    '</div>\n',
+                    '</div>\n'                                             # noqa
+                ),
                 'toc_tokens': [
                     {
                         'level': 3,
@@ -281,8 +283,8 @@ class TestTOC(TestCase):
                 '<a class="headerlink" href="#header-4" title="Permanent link">&para;</a></h4>\n'             # noqa
             '<h5 id="header-5-not-in-toc">Header 5 not in TOC'                                                # noqa
                 '<a class="headerlink" href="#header-5-not-in-toc" title="Permanent link">&para;</a></h5>',   # noqa
-            expected_attrs = {
-                'toc':
+            expected_attrs={
+                'toc': (
                     '<div class="toc">\n'
                       '<ul>\n'                                             # noqa
                         '<li><a href="#header-3">Header 3</a>'             # noqa
@@ -291,7 +293,8 @@ class TestTOC(TestCase):
                           '</ul>\n'                                        # noqa
                         '</li>\n'                                          # noqa
                       '</ul>\n'                                            # noqa
-                    '</div>\n',
+                    '</div>\n'                                             # noqa
+                ),
                 'toc_tokens': [
                     {
                         'level': 3,
@@ -318,7 +321,7 @@ class TestTOC(TestCase):
                 # First Header
 
                 ## Second Level
-                
+
                 ### Third Level
 
                 #### Forth Level
@@ -332,8 +335,8 @@ class TestTOC(TestCase):
                 <h6 id="forth-level">Forth Level</h6>
                 '''
             ),
-            expected_attrs = {
-                'toc':
+            expected_attrs={
+                'toc': (
                     '<div class="toc">\n'
                       '<ul>\n'                                                  # noqa
                         '<li><a href="#second-level">Second Level</a>'          # noqa
@@ -342,7 +345,8 @@ class TestTOC(TestCase):
                           '</ul>\n'                                             # noqa
                         '</li>\n'                                               # noqa
                       '</ul>\n'                                                 # noqa
-                    '</div>\n',
+                    '</div>\n'                                                  # noqa
+                ),
                 'toc_tokens': [
                     {
                         'level': 4,
@@ -367,9 +371,9 @@ class TestTOC(TestCase):
             self.dedent(
                 '''
                 # Some Header
-                
+
                 ## Next Level
-                
+
                 ### Too High
                 '''
             ),
@@ -380,8 +384,8 @@ class TestTOC(TestCase):
                 <h4 id="too-high">Too High</h4>
                 '''
             ),
-            expected_attrs = {
-                'toc':
+            expected_attrs={
+                'toc': (
                     '<div class="toc">\n'
                       '<ul>\n'                                                 # noqa
                         '<li><a href="#some-header">Some Header</a>'           # noqa
@@ -390,7 +394,8 @@ class TestTOC(TestCase):
                           '</ul>\n'                                            # noqa
                         '</li>\n'                                              # noqa
                       '</ul>\n'                                                # noqa
-                    '</div>\n',
+                    '</div>\n'                                                 # noqa
+                ),
                 'toc_tokens': [
                     {
                         'level': 2,
@@ -532,7 +537,7 @@ class TestTOC(TestCase):
             '<h1 id="unicode-ヘッター">'                                                            # noqa
                 'Unicode ヘッダー'                                                                  # noqa
                 '<a class="headerlink" href="#unicode-ヘッター" title="Permanent link">&para;</a>'  # noqa
-            '</h1>',                                                                                # noqa
+            '</h1>',                                                                               # noqa
             extensions=[TocExtension(permalink=True, slugify=slugify_unicode)]
         )
 
@@ -540,9 +545,9 @@ class TestTOC(TestCase):
         from markdown.extensions.toc import slugify_unicode
         self.assertMarkdownRenders(
             '# Unicode ヘッダー',
-            '<h1 id="unicode-ヘッター">'                                                            # noqa
-                'Unicode ヘッダー'                                                                  # noqa
-                '<a class="headerlink" href="#unicode-ヘッター" title="パーマリンク">&para;</a>'    # noqa
-            '</h1>',                                                                                # noqa
+            '<h1 id="unicode-ヘッター">'                                                        # noqa
+                'Unicode ヘッダー'                                                              # noqa
+                '<a class="headerlink" href="#unicode-ヘッター" title="パーマリンク">&para;</a>'  # noqa
+            '</h1>',                                                                           # noqa
             extensions=[TocExtension(permalink=True, permalink_title="パーマリンク", slugify=slugify_unicode)]
         )
