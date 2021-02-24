@@ -3,7 +3,7 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-Under development: version 3.3.4 (a bug-fix release).
+Feb 24, 2021: version 3.3.4 (a bug-fix release).
 
 * Properly parse unclosed tags in code spans (#1066).
 * Properly parse processing instructions in md_in_html (#1070).
