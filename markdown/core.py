@@ -245,7 +245,7 @@ class Markdown:
         """
 
         # Fixup the source text
-        if not source.strip():
+        if not source or (source and not source.strip()):
             return ''  # a blank unicode string
 
         try:
