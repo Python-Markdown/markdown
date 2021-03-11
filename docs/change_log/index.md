@@ -3,7 +3,33 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-Under development: version 3.3 ([Notes](release-3.3.md)).
+Feb 24, 2021: version 3.3.4 (a bug-fix release).
+
+* Properly parse unclosed tags in code spans (#1066).
+* Properly parse processing instructions in md_in_html (#1070).
+* Properly parse code spans in md_in_html (#1069).
+* Preserve text immediately before an admonition (#1092).
+* Simplified regex for HTML placeholders (#928) addressing (#932).
+* Ensure `permalinks` and `ankorlinks` are not restricted by `toc_depth` (#1107).
+
+Oct 25, 2020: version 3.3.3 (a bug-fix release).
+
+* Unify all block-level tags (#1047).
+* Fix issue where some empty elements would have text rendered as `None` when using `md_in_html` (#1049).
+* Avoid catastrophic backtracking in `hr` regex (#1055).
+* Fix `hr` HTML handling (#1053).
+
+Oct 19, 2020: version 3.3.2 (a bug-fix release).
+
+* Properly parse inline HTML in md_in_html (#1040 & #1045).
+* Avoid crashing when md_in_html fails (#1040).
+
+Oct 12, 2020: version 3.3.1 (a bug-fix release).
+
+* Correctly parse raw `script` and `style` tags (#1036).
+* Ensure consistent class handling by `fenced_code` and `codehilite` (#1032).
+
+Oct 6, 2020: version 3.3 ([Notes](release-3.3.md)).
 
 May 8, 2020: version 3.2.2 (a bug-fix release).
 

@@ -21,6 +21,7 @@ License: BSD (see LICENSE.md for details).
 
 from markdown.test_tools import TestCase
 from markdown.extensions.codehilite import CodeHiliteExtension, CodeHilite
+import os
 
 try:
     import pygments  # noqa
@@ -28,9 +29,18 @@ try:
 except ImportError:
     has_pygments = False
 
+# The version required by the tests is the version specified and installed in the 'pygments' tox env.
+# In any environment where the PYGMENTS_VERSION environment variabe is either not defined or doesn't
+# match the version of Pygments installed, all tests which rely in pygments will be skipped.
+required_pygments_version = os.environ.get('PYGMENTS_VERSION', '')
+
 
 class TestCodeHiliteClass(TestCase):
     """ Test the markdown.extensions.codehilite.CodeHilite class. """
+
+    def setUp(self):
+        if has_pygments and pygments.__version__ != required_pygments_version:
+            self.skipTest(f'Pygments=={required_pygments_version} is required')
 
     maxDiff = None
 
@@ -205,7 +215,7 @@ class TestCodeHiliteClass(TestCase):
     def test_codehilite_linenos_inline(self):
         if has_pygments:
             expected = (
-                '<div class="codehilite"><pre><span></span><code><span class="lineno">1 </span>plain text\n'
+                '<div class="codehilite"><pre><span></span><code><span class="linenos">1</span>plain text\n'
                 '</code></pre></div>'
             )
         else:
@@ -259,7 +269,7 @@ class TestCodeHiliteClass(TestCase):
     def test_codehilite_linenostart(self):
         if has_pygments:
             expected = (
-                '<div class="codehilite"><pre><span></span><code><span class="lineno">42 </span>plain text\n'
+                '<div class="codehilite"><pre><span></span><code><span class="linenos">42</span>plain text\n'
                 '</code></pre></div>'
             )
         else:
@@ -274,9 +284,9 @@ class TestCodeHiliteClass(TestCase):
         if has_pygments:
             expected = (
                 '<div class="codehilite"><pre><span></span><code>'
-                '<span class="lineno">1 </span><span class="hll">line 1\n'
-                '</span><span class="lineno">2 </span>line 2\n'
-                '<span class="lineno">3 </span><span class="hll">line 3\n'
+                '<span class="linenos">1</span><span class="hll">line 1\n'
+                '</span><span class="linenos">2</span>line 2\n'
+                '<span class="linenos">3</span><span class="hll">line 3\n'
                 '</span></code></pre></div>'
             )
         else:
@@ -291,9 +301,9 @@ class TestCodeHiliteClass(TestCase):
     def test_codehilite_linenos_linenostep(self):
         if has_pygments:
             expected = (
-                '<div class="codehilite"><pre><span></span><code><span class="lineno">  </span>line 1\n'
-                '<span class="lineno">2 </span>line 2\n'
-                '<span class="lineno">  </span>line 3\n'
+                '<div class="codehilite"><pre><span></span><code><span class="linenos"> </span>line 1\n'
+                '<span class="linenos">2</span>line 2\n'
+                '<span class="linenos"> </span>line 3\n'
                 '</code></pre></div>'
             )
         else:
@@ -308,9 +318,9 @@ class TestCodeHiliteClass(TestCase):
     def test_codehilite_linenos_linenospecial(self):
         if has_pygments:
             expected = (
-                '<div class="codehilite"><pre><span></span><code><span class="lineno">1 </span>line 1\n'
-                '<span class="lineno special">2 </span>line 2\n'
-                '<span class="lineno">3 </span>line 3\n'
+                '<div class="codehilite"><pre><span></span><code><span class="linenos">1</span>line 1\n'
+                '<span class="linenos special">2</span>line 2\n'
+                '<span class="linenos">3</span>line 3\n'
                 '</code></pre></div>'
             )
         else:
@@ -339,6 +349,10 @@ class TestCodeHiliteClass(TestCase):
 
 class TestCodeHiliteExtension(TestCase):
     """ Test codehilite extension. """
+
+    def setUp(self):
+        if has_pygments and pygments.__version__ != required_pygments_version:
+            self.skipTest(f'Pygments=={required_pygments_version} is required')
 
     maxDiff = None
 

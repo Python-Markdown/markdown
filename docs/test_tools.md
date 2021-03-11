@@ -22,12 +22,16 @@ Properties
 test. The defaults can be overridden on individual tests.
 
 Methods
-: `assertMarkdownRenders`: accepts the source text, the expected output,
-  and any keywords to pass to Markdown. The `default_kwargs` defined on the
-  class are used except where overridden by keyword arguments. The output and
-  expected output are passed to `TestCase.assertMultiLineEqual`. An
-  `AssertionError` is raised with a diff if the actual output does not equal the
-  expected output.
+: `assertMarkdownRenders`: accepts the source text, the expected output, an optional
+  dictionary of `expected_attrs`, and any keywords to pass to Markdown. The
+  `default_kwargs` defined on the class are used except where overridden by
+  keyword arguments. The output and expected output are passed to
+  `TestCase.assertMultiLineEqual`. An `AssertionError` is raised with a diff
+  if the actual output does not equal the expected output. The optional
+  keyword `expected_attrs` accepts a dictionary of attribute names as keys with
+  expected values. Each value is checked against the attribute of that
+  name on the instance of the `Markdown` class using `TestCase.assertEqual`. An
+  `AssertionError` is raised if any value does not match the expected value.
 
 : `dedent`: Dedent triple-quoted strings.
 

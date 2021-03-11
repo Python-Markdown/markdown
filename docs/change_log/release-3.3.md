@@ -2,8 +2,7 @@ title: Release Notes for v3.3
 
 # Python-Markdown 3.3 Release Notes
 
-Python-Markdown version 3.3 supports Python versions 3.5, 3.6, 3.7, 3.8, and
-PyPy3.
+Python-Markdown version 3.3 supports Python versions 3.6, 3.7, 3.8, 3.9 and PyPy3.
 
 ## Backwards-incompatible changes
 
@@ -66,10 +65,35 @@ The following new features have been included in the 3.3 release:
   Any random HTML attribute can be defined and set on the `<code>` tag of fenced code
   blocks when the `attr_list` extension is enabled (#816).
 
+* The HTML parser has been completely replaced. The new HTML parser is built on Python's
+  [html.parser.HTMLParser](https://docs.python.org/3/library/html.parser.html), which
+  alleviates various bugs and simplify maintenance of the code (#803, #830).
+
+* The [Markdown in HTML](../extensions/md_in_html.md) extension has been rebuilt on the
+  new HTML Parser, which drastically simplifies it. Note that raw HTML elements with a
+  `markdown` attribute defined are now converted to ElementTree Elements and are rendered
+  by the serializer. Various bugs have been fixed (#803, #595, #780, and #1012).
+
+* Link reference parsing, abbreviation reference parsing and footnote reference parsing
+  has all been moved from `preprocessors` to `blockprocessors`, which allows them to be
+  nested within other block level elements. Specifically, this change was necessary to
+  maintain the current behavior in the rebuilt Markdown in HTML extension. A few random
+  edge-case bugs (see the included tests) were resolved in the process (#803).
+
+* An alternate function `markdown.extensions.headerid.slugify_unicode` has been included
+  with the [Table of Contents](../extensions/toc.md) extension which supports Unicode
+  characters in table of contents slugs. The old `markdown.extensions.headerid.slugify`
+  method which removes non-ASCII characters remains the default. Import and pass
+  `markdown.extensions.headerid.slugify_unicode` to the `slugify` configuration option
+  to use the new behavior.
+
+* Support was added for Python 3.9 and dropped for Python 3.5.
+
 ## Bug fixes
 
 The following bug fixes are included in the 3.3 release:
 
+* Document how to pass configuration options to Extra (#1019).
 * Fix HR which follows strong em (#897).
 * Support short reference image links (#894).
 * Avoid a `RecursionError` from deeply nested blockquotes (#799).
@@ -77,6 +101,7 @@ The following bug fixes are included in the 3.3 release:
 * Fix unescaping of HTML characters `<>` in CodeHilite (#990).
 * Fix complex scenarios involving lists and admonitions (#1004).
 * Fix complex scenarios with nested ordered and unordered lists in a definition list (#918).
+* Fix corner cases with lists under admonitions.
 
 [spec]: https://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
 [fenced_code]: ../extensions/fenced_code_blocks.md

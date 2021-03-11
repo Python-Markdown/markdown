@@ -51,6 +51,7 @@ def build_block_parser(md, **kwargs):
     parser.blockprocessors.register(OListProcessor(parser), 'olist', 40)
     parser.blockprocessors.register(UListProcessor(parser), 'ulist', 30)
     parser.blockprocessors.register(BlockQuoteProcessor(parser), 'quote', 20)
+    parser.blockprocessors.register(ReferenceProcessor(parser), 'reference', 15)
     parser.blockprocessors.register(ParagraphProcessor(parser), 'paragraph', 10)
     return parser
 
@@ -77,13 +78,15 @@ class BlockProcessor:
         else:
             return None
 
-    def detab(self, text):
+    def detab(self, text, length=None):
         """ Remove a tab from the front of each line of the given text. """
+        if length is None:
+            length = self.tab_length
         newtext = []
         lines = text.split('\n')
         for line in lines:
-            if line.startswith(' '*self.tab_length):
-                newtext.append(line[self.tab_length:])
+            if line.startswith(' ' * length):
+                newtext.append(line[length:])
             elif not line.strip():
                 newtext.append('')
             else:
@@ -495,16 +498,15 @@ class SetextHeaderProcessor(BlockProcessor):
 class HRProcessor(BlockProcessor):
     """ Process Horizontal Rules. """
 
-    RE = r'^[ ]{0,3}((-+[ ]{0,2}){3,}|(_+[ ]{0,2}){3,}|(\*+[ ]{0,2}){3,})[ ]*$'
+    # Python's re module doesn't officially support atomic grouping. However you can fake it.
+    # See https://stackoverflow.com/a/13577411/866026
+    RE = r'^[ ]{0,3}(?=(?P<atomicgroup>(-+[ ]{0,2}){3,}|(_+[ ]{0,2}){3,}|(\*+[ ]{0,2}){3,}))(?P=atomicgroup)[ ]*$'
     # Detect hr on any line of a block.
     SEARCH_RE = re.compile(RE, re.MULTILINE)
 
     def test(self, parent, block):
         m = self.SEARCH_RE.search(block)
-        # No atomic grouping in python so we simulate it here for performance.
-        # The regex only matches what would be in the atomic group - the HR.
-        # Then check if we are at end of block or if next char is a newline.
-        if m and (m.end() == len(block) or block[m.end()] == '\n'):
+        if m:
             # Save match object on class instance so we can use it later.
             self.match = m
             return True
@@ -552,6 +554,35 @@ class EmptyBlockProcessor(BlockProcessor):
             sibling[0].text = util.AtomicString(
                 '{}{}'.format(sibling[0].text, filler)
             )
+
+
+class ReferenceProcessor(BlockProcessor):
+    """ Process link references. """
+    RE = re.compile(
+        r'^[ ]{0,3}\[([^\]]*)\]:[ ]*\n?[ ]*([^\s]+)[ ]*\n?[ ]*((["\'])(.*)\4|\((.*)\))?[ ]*$', re.MULTILINE
+    )
+
+    def test(self, parent, block):
+        return True
+
+    def run(self, parent, blocks):
+        block = blocks.pop(0)
+        m = self.RE.search(block)
+        if m:
+            id = m.group(1).strip().lower()
+            link = m.group(2).lstrip('<').rstrip('>')
+            title = m.group(5) or m.group(6)
+            self.parser.md.references[id] = (link, title)
+            if block[m.end():].strip():
+                # Add any content after match back to blocks as separate block
+                blocks.insert(0, block[m.end():].lstrip('\n'))
+            if block[:m.start()].strip():
+                # Add any content before match back to blocks as separate block
+                blocks.insert(0, block[:m.start()].rstrip('\n'))
+            return True
+        # No match. Restore block.
+        blocks.insert(0, block)
+        return False
 
 
 class ParagraphProcessor(BlockProcessor):

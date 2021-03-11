@@ -88,11 +88,10 @@ class FencedBlockPreprocessor(Preprocessor):
                 if m.group('attrs'):
                     id, classes, config = self.handle_attrs(get_attrs(m.group('attrs')))
                     if len(classes):
-                        lang = classes[0]
+                        lang = classes.pop(0)
                 else:
                     if m.group('lang'):
                         lang = m.group('lang')
-                        classes.append(lang)
                     if m.group('hl_lines'):
                         # Support hl_lines outside of attrs for backward-compatibility
                         config['hl_lines'] = parse_hl_lines(m.group('hl_lines'))
@@ -119,12 +118,11 @@ class FencedBlockPreprocessor(Preprocessor):
 
                     code = highliter.hilite()
                 else:
-                    id_attr = class_attr = kv_pairs = ''
+                    id_attr = lang_attr = class_attr = kv_pairs = ''
+                    if lang:
+                        lang_attr = ' class="{}{}"'.format(self.config.get('lang_prefix', 'language-'), lang)
                     if classes:
-                        class_attr = ' class="{}{}"'.format(
-                            self.config.get('lang_prefix', 'language-'),
-                            ' '.join(classes)
-                        )
+                        class_attr = ' class="{}"'.format(' '.join(classes))
                     if id:
                         id_attr = ' id="{}"'.format(id)
                     if self.use_attr_list and config and not config.get('use_pygments', False):
@@ -134,9 +132,10 @@ class FencedBlockPreprocessor(Preprocessor):
                         kv_pairs = ' ' + ' '.join(
                             '{k}="{v}"'.format(k=k, v=v) for k, v in config.items() if k != 'use_pygments'
                         )
-                    code = '<pre{id}><code{cls}{kv}>{code}</code></pre>'.format(
+                    code = '<pre{id}{cls}><code{lang}{kv}>{code}</code></pre>'.format(
                         id=id_attr,
                         cls=class_attr,
+                        lang=lang_attr,
                         kv=kv_pairs,
                         code=self._escape(m.group('code'))
                     )

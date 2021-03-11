@@ -22,7 +22,7 @@ Primary Authors
     and has been assisting with maintenance, reviewing pull requests and ticket
     triage.
 
-* __[Yuri Takteyev](http://freewisdom.org/)__
+* __[Yuri Takteyev](https://github.com/yuri)__
 
     Yuri wrote most of the code found in version 1.x while procrastinating his
     Ph.D. Various pieces of his code still exist, most notably the basic

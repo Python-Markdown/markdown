@@ -130,13 +130,13 @@ In addition to the language, additional classes may be defined by prefixing them
 ````
 
 When defining multiple classes, only the first class will be used as the "language" for the code block. All others are
-assigned to the `<code>` tag unaltered. Additionally, the curly braces and dot are required for all classes, including
+assigned to the `<pre>` tag unaltered. Additionally, the curly braces and dot are required for all classes, including
 the language class if more than one class is defined.
 
 The above example will output the following HTML:
 
 ```html
-<pre><code class="language-html foo bar">&lt;p&gt;HTML Document&lt;/p&gt;
+<pre class="foo bar"><code class="language-html">&lt;p&gt;HTML Document&lt;/p&gt;
 </code></pre>
 ```
 

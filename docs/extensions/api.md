@@ -551,9 +551,27 @@ def set_link_class(self, element):
         set_link_class(child) # run recursively on children
 ```
 
-For more information about working with ElementTree see the ElementTree
-[Documentation](https://effbot.org/zone/element-index.htm) ([Python
-Docs](https://docs.python.org/3/library/xml.etree.elementtree.html)).
+For more information about working with ElementTree see the [ElementTree
+Documentation][ElementTree].
+
+## Working with Raw HTML {: #working_with_raw_html }
+
+Occasionally an extension may need to call out to a third party library which returns a pre-made string
+of raw HTML that needs to be inserted into the document unmodified. Raw strings can be stashed for later
+retrieval using an `htmlStash` instance, rather than converting them into `ElementTree` objects. A raw string
+(which may or may not be raw HTML) passed to `self.md.htmlStash.store()` will be saved to the stash and a
+placeholder string will be returned which should be inserted into the tree instead. After the tree is
+serialized, a postprocessor will replace the placeholder with the raw string. This prevents subsequent
+processing steps from modifying the HTML data. For example,
+
+```python
+html = "<p>This is some <em>raw</em> HTML data</p>"
+el = etree.Element("div")
+el.text = self.md.htmlStash.store(html)
+```
+
+For the global `htmlStash` instance to be available from a processor, the `markdown.Markdown` instance must
+be passed to the processor from [extendMarkdown](#extendmarkdown) and will be available as `self.md.htmlStash`.
 
 ## Integrating Your Code Into Markdown {: #integrating_into_markdown }
 
@@ -858,7 +876,7 @@ assert someitem in registry
 [registerExtension]: #registerextension
 [Config Settings]: #configsettings
 [makeExtension]: #makeextension
-[ElementTree]: https://effbot.org/zone/element-index.htm
+[ElementTree]: https://docs.python.org/3/library/xml.etree.elementtree.html
 [Available Extensions]: index.md
 [Footnotes]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
 [Definition Lists]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/definition_lists

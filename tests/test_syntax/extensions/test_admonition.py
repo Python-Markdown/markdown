@@ -192,3 +192,54 @@ class TestAdmonition(TestCase):
             ),
             extensions=['admonition', 'def_list']
         )
+
+    def test_with_preceding_text(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                foo
+                **foo**
+                !!! note "Admonition"
+                '''
+            ),
+            self.dedent(
+                '''
+                <p>foo
+                <strong>foo</strong></p>
+                <div class="admonition note">
+                <p class="admonition-title">Admonition</p>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_admontion_detabbing(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                !!! note "Admonition"
+                    - Parent 1
+
+                        - Child 1
+                        - Child 2
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Admonition</p>
+                <ul>
+                <li>
+                <p>Parent 1</p>
+                <ul>
+                <li>Child 1</li>
+                <li>Child 2</li>
+                </ul>
+                </li>
+                </ul>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )

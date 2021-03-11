@@ -69,16 +69,27 @@ class RawHtmlPostprocessor(Postprocessor):
         """ Iterate over html stash and restore html. """
         replacements = OrderedDict()
         for i in range(self.md.htmlStash.html_counter):
-            html = self.md.htmlStash.rawHtmlBlocks[i]
+            html = self.stash_to_string(self.md.htmlStash.rawHtmlBlocks[i])
             if self.isblocklevel(html):
-                replacements["<p>%s</p>" %
-                             (self.md.htmlStash.get_placeholder(i))] = \
-                    html + "\n"
+                replacements["<p>{}</p>".format(
+                    self.md.htmlStash.get_placeholder(i))] = html
             replacements[self.md.htmlStash.get_placeholder(i)] = html
 
+        def substitute_match(m):
+            key = m.group(0)
+
+            if key not in replacements:
+                if key[3:-4] in replacements:
+                    return f'<p>{ replacements[key[3:-4]] }</p>'
+                else:
+                    return key
+
+            return replacements[key]
+
         if replacements:
-            pattern = re.compile("|".join(re.escape(k) for k in replacements))
-            processed_text = pattern.sub(lambda m: replacements[m.group(0)], text)
+            base_placeholder = util.HTML_PLACEHOLDER % r'([0-9]+)'
+            pattern = re.compile(f'<p>{ base_placeholder }</p>|{ base_placeholder }')
+            processed_text = pattern.sub(substitute_match, text)
         else:
             return text
 
@@ -95,6 +106,10 @@ class RawHtmlPostprocessor(Postprocessor):
                 return True
             return self.md.is_block_level(m.group(1))
         return False
+
+    def stash_to_string(self, text):
+        """ Convert a stashed object to a string. """
+        return str(text)
 
 
 class AndSubstitutePostprocessor(Postprocessor):

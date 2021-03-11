@@ -829,7 +829,7 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
 
 
 class ShortReferenceInlineProcessor(ReferenceInlineProcessor):
-    """Shorte form of reference: [google]. """
+    """Short form of reference: [google]. """
     def evalId(self, data, index, text):
         """Evaluate the id from of [ref]  """
 
