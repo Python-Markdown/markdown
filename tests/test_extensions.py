@@ -622,12 +622,12 @@ class TestTOC(TestCaseWithAssertStartsWith):
         text = '[TOC]\n# *[TOC]*'
         self.assertEqual(
             self.md.convert(text),
-            '<div class="toc">\n'                       # noqa
-              '<ul>\n'                                  # noqa
-                '<li><a href="#toc">[TOC]</a></li>\n'   # noqa
-              '</ul>\n'                                 # noqa
-            '</div>\n'                                  # noqa
-            '<h1 id="toc"><em>[TOC]</em></h1>'          # noqa
+            '<div class="toc">\n'                                   # noqa
+              '<ul>\n'                                              # noqa
+                '<li class="toc1"><a href="#toc">[TOC]</a></li>\n'  # noqa
+              '</ul>\n'                                             # noqa
+            '</div>\n'                                              # noqa
+            '<h1 id="toc"><em>[TOC]</em></h1>'                      # noqa
         )
 
 
