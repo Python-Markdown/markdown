@@ -42,13 +42,13 @@ class FencedCodeExtension(Extension):
 class FencedBlockPreprocessor(Preprocessor):
     FENCED_BLOCK_RE = re.compile(
         dedent(r'''
-            (?P<fence>^(?:~{3,}|`{3,}))[ ]*                      # opening fence
-            ((\{(?P<attrs>[^\}\n]*)\})?|                         # (optional {attrs} or
-            (\.?(?P<lang>[\w#.+-]*))?[ ]*                        # optional (.)lang
-            (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot))?) # optional hl_lines)
-            [ ]*\n                                               # newline (end of opening fence)
-            (?P<code>.*?)(?<=\n)                                 # the code block
-            (?P=fence)[ ]*$                                      # closing fence
+            (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
+            ((\{(?P<attrs>[^\}\n]*)\})|                              # (optional {attrs} or
+            (\.?(?P<lang>[\w#.+-]*)[ ]*)?                            # optional (.)lang
+            (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot)[ ]*)?) # optional hl_lines)
+            \n                                                       # newline (end of opening fence)
+            (?P<code>.*?)(?<=\n)                                     # the code block
+            (?P=fence)[ ]*$                                          # closing fence
         '''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
