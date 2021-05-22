@@ -43,6 +43,21 @@ def parse_hl_lines(expr):
         return []
 
 
+def get_custom_lexer_by_name(_alias, custom_lexers, options):
+    """Provides similar functionality to get_lexer_by_name, but
+    for custom lexers.
+
+    Returns the corresponding lexer if it exists, otherwise raising
+    a ValueError.
+    """
+
+    for lex in custom_lexers:
+        if _alias in lex.aliases:
+            return lex(**options)
+
+    raise ValueError(f'Lexer with alias "{_alias}" was not found.')
+
+
 # ------------------ The Main CodeHilite Class ----------------------
 class CodeHilite:
     """
@@ -69,6 +84,10 @@ class CodeHilite:
 
     * lang_prefix: Prefix prepended to the language when `use_pygments` is `False`.
       Default: "language-".
+
+    * custom_lexers: An optional list of custom Pygments lexers. The lexer should
+      be an extension of a valid Pygments lexer class such as `RegexLexer`.
+      Default: [].
 
     Other Options:
     Any other options are accepted and passed on to the lexer and formatter. Therefore,
@@ -99,6 +118,7 @@ class CodeHilite:
         self.guess_lang = options.pop('guess_lang', True)
         self.use_pygments = options.pop('use_pygments', True)
         self.lang_prefix = options.pop('lang_prefix', 'language-')
+        self.custom_lexers = options.pop('custom_lexers', [])
 
         if 'linenos' not in options:
             options['linenos'] = options.pop('linenums', None)
@@ -133,12 +153,16 @@ class CodeHilite:
                 lexer = get_lexer_by_name(self.lang, **self.options)
             except ValueError:
                 try:
-                    if self.guess_lang:
-                        lexer = guess_lexer(self.src, **self.options)
-                    else:
+                    lexer = get_custom_lexer_by_name(
+                        self.lang, self.custom_lexers, self.options)
+                except ValueError:
+                    try:
+                        if self.guess_lang:
+                            lexer = guess_lexer(self.src, **self.options)
+                        else:
+                            lexer = get_lexer_by_name('text', **self.options)
+                    except ValueError:  # pragma: no cover
                         lexer = get_lexer_by_name('text', **self.options)
-                except ValueError:  # pragma: no cover
-                    lexer = get_lexer_by_name('text', **self.options)
             formatter = get_formatter_by_name('html', **self.options)
             return highlight(self.src, lexer, formatter)
         else:
@@ -278,7 +302,10 @@ class CodeHiliteExtension(Extension):
             'lang_prefix': [
                 'language-',
                 'Prefix prepended to the language when use_pygments is false. Default: "language-"'
-            ]
+            ],
+            'custom_lexers': [[],
+                             'Pass custom Pygments lexers - '
+                             'Default: []'],
             }
 
         for key, value in kwargs.items():
