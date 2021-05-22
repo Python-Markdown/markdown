@@ -20,11 +20,12 @@ License: BSD (see LICENSE.md for details).
 """
 
 from markdown.test_tools import TestCase
-from markdown.extensions.codehilite import CodeHiliteExtension, CodeHilite
+from markdown.extensions.codehilite import CodeHiliteExtension, CodeHilite, get_custom_lexer_by_name
 import os
 
 try:
     import pygments  # noqa
+    from pygments.lexer import RegexLexer
     has_pygments = True
 except ImportError:
     has_pygments = False
@@ -33,6 +34,52 @@ except ImportError:
 # In any environment where the PYGMENTS_VERSION environment variabe is either not defined or doesn't
 # match the version of Pygments installed, all tests which rely in pygments will be skipped.
 required_pygments_version = os.environ.get('PYGMENTS_VERSION', '')
+
+
+class TestGetCustomLexer(TestCase):
+    """ Test the get_custom_lexer_by_name function. """
+
+    def setUp(self):
+        if has_pygments and pygments.__version__ != required_pygments_version:
+            self.skipTest(f'Pygments=={required_pygments_version} is required')
+        else:
+            class DiffLexer(RegexLexer):
+                name = 'Diff'
+                aliases = ['diff']
+                filenames = ['*.diff']
+
+                tokens = {
+                    'root': [
+                        (r' .*\n', pygments.token.Text),
+                        (r'\+.*\n', pygments.token.Generic.Inserted),
+                        (r'-.*\n', pygments.token.Generic.Deleted),
+                        (r'@.*\n', pygments.token.Generic.Subheading),
+                        (r'Index.*\n', pygments.token.Generic.Heading),
+                        (r'=.*\n', pygments.token.Generic.Heading),
+                        (r'.*\n', pygments.token.Text),
+                    ]
+                }
+            self.test_lexer = DiffLexer
+
+    def test_lexer_found(self):
+
+        output = get_custom_lexer_by_name('diff', [self.test_lexer], {})
+        self.assertIsInstance(output, self.test_lexer)
+
+    def test_lexer_not_found(self):
+
+        self.assertRaises(ValueError, get_custom_lexer_by_name, 'go', [self.test_lexer], {})
+
+    def test_invalid_lexer_rejected(self):
+
+        class NotLexer:
+            pass
+
+        self.assertRaises(AttributeError, get_custom_lexer_by_name, 'diff', [NotLexer], {})
+
+    def test_empty_lexer_rejected(self):
+
+        self.assertRaises(ValueError, get_custom_lexer_by_name, 'diff', [], {})
 
 
 class TestCodeHiliteClass(TestCase):
