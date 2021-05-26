@@ -868,7 +868,7 @@ assert someitem in registry
 [match object]: https://docs.python.org/3/library/re.html#match-objects
 [bug tracker]: https://github.com/Python-Markdown/markdown/issues
 [extension source]:  https://github.com/Python-Markdown/markdown/tree/master/markdown/extensions
-[tutorial]: https://github.com/Python-Markdown/markdown/wiki/Tutorial:-Writing-Extensions-for-Python-Markdown
+[tutorial]: https://github.com/Python-Markdown/markdown/wiki/Tutorial-1---Writing-Extensions-for-Python-Markdown
 [workingwithetree]: #working_with_et
 [Integrating your code into Markdown]: #integrating_into_markdown
 [extendMarkdown]: #extendmarkdown
