@@ -21,12 +21,13 @@ License: BSD (see LICENSE.md for details).
 
 import re
 import sys
-from collections import namedtuple
-from functools import wraps
 import warnings
 import xml.etree.ElementTree
-from .pep562 import Pep562
+from collections import namedtuple
+from functools import wraps
 from itertools import count
+
+from .pep562 import Pep562
 
 try:
     from importlib import metadata
@@ -104,19 +105,22 @@ def deprecated(message, stacklevel=2):
     """
     Raise a DeprecationWarning when wrapped function/method is called.
 
-    Borrowed from https://stackoverflow.com/a/48632082/866026
+    Usage:
+        @deprecated("This method will be removed in version X; use Y instead.")
+        def some_method()"
+            pass
     """
-    def deprecated_decorator(func):
+    def wrapper(func):
         @wraps(func)
         def deprecated_func(*args, **kwargs):
             warnings.warn(
-                "'{}' is deprecated. {}".format(func.__name__, message),
+                f"'{func.__name__}' is deprecated. {message}",
                 category=DeprecationWarning,
                 stacklevel=stacklevel
             )
             return func(*args, **kwargs)
         return deprecated_func
-    return deprecated_decorator
+    return wrapper
 
 
 @deprecated("Use 'Markdown.is_block_level' instead.")
@@ -159,8 +163,7 @@ def code_escape(text):
 
 
 def _get_stack_depth(size=2):
-    """Get stack size for caller's frame.
-    See https://stackoverflow.com/a/47956089/866026
+    """Get current stack depth, performantly.
     """
     frame = sys._getframe(size)
 
