@@ -99,3 +99,16 @@ A trivial example:
 ```python
 markdown.markdown(some_text, extensions=['footnotes'])
 ```
+
+Note that the footnote extension needs to have its state reset between multiple runs of the `markdown.Markdown` class. Call `reset` like this:
+
+```python
+md = markdown.Markdown(extensions=['footnotes'])
+html1 = md.convert(text_with_footnote)
+md.reset()
+html2 = md.convert(text_without_footnote)
+```
+
+Without calling `reset`, the footnote definitions from the first document will be inserted into the second document, as
+they are still stored within the class instance.
+
