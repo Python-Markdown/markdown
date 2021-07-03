@@ -111,4 +111,3 @@ html2 = md.convert(text_without_footnote)
 
 Without calling `reset`, the footnote definitions from the first document will be inserted into the second document, as
 they are still stored within the class instance.
-
