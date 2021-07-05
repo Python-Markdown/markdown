@@ -7,10 +7,10 @@ on:
     branches:
       - master
     tags:
-      - "**"
+      - '**'
   pull_request:
     branches:
-      - "**"
+      - '**'
 
 jobs:
   test:
@@ -82,7 +82,7 @@ jobs:
         if: ${{ matrix.tox-env == 'checklinks' }}
         uses: actions/setup-node@v2
         with:
-          node-version: "10"
+          node-version: '10'
           cache: npm
       - name: Install dependencies
         run: |
