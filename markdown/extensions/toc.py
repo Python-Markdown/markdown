@@ -195,7 +195,12 @@ class TocTreeprocessor(Treeprocessor):
             # To keep the output from screwing up the
             # validation by putting a <div> inside of a <p>
             # we actually replace the <p> in its entirety.
-            if c.text and c.text.strip() == self.marker:
+
+            # The <p> element may contain more than a single text content
+            # (nl2br can introduce a <br>). In this situation, c.text returns
+            # the very first content, ignore children contents or tail content.
+            # len(c) == 0 is here to ensure there is only text in the <p>.
+            if c.text and c.text.strip() == self.marker and len(c) == 0:
                 for i in range(len(p)):
                     if p[i] == c:
                         p[i] = elem
