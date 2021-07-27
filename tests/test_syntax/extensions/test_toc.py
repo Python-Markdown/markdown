@@ -21,6 +21,7 @@ License: BSD (see LICENSE.md for details).
 
 from markdown.test_tools import TestCase
 from markdown.extensions.toc import TocExtension
+from markdown.extensions.nl2br import Nl2BrExtension
 
 
 class TestTOC(TestCase):
@@ -560,4 +561,11 @@ class TestTOC(TestCase):
                 '<a class="headerlink" href="#theatre" title="Permanent link">&para;</a>'  # noqa
             '</h1>',                                                                       # noqa
             extensions=[TocExtension(permalink=True)]
+        )
+
+    def testNl2brCompatibility(self):
+        self.assertMarkdownRenders(
+            '[TOC]\ntext',
+            '<p>[TOC]<br />\ntext</p>',
+            extensions=[TocExtension(), Nl2BrExtension()]
         )
