@@ -160,7 +160,7 @@ NOT_STRONG_RE = r'((^|\s)(\*|_)(\s|$))'
 AUTOLINK_RE = r'<((?:[Ff]|[Hh][Tt])[Tt][Pp][Ss]?://[^<>]*)>'
 
 # <me@example.com>
-AUTOMAIL_RE = r'<([^<> !]*@[^@<> ]*)>'
+AUTOMAIL_RE = r'<([^<> !]+@[^@<> ]+)>'
 
 # <...>
 HTML_RE = r'(<([a-zA-Z/][^<>]*|!--(?:(?!<!--|-->).)*--)>)'
