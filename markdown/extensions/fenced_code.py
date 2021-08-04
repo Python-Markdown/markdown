@@ -116,7 +116,7 @@ class FencedBlockPreprocessor(Preprocessor):
                         **local_config
                     )
 
-                    code = highliter.hilite()
+                    code = highliter.hilite(shebang=False)
                 else:
                     id_attr = lang_attr = class_attr = kv_pairs = ''
                     if lang:

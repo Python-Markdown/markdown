@@ -381,6 +381,36 @@ class TestFencedCodeWithCodehilite(TestCase):
         if has_pygments and pygments.__version__ != required_pygments_version:
             self.skipTest(f'Pygments=={required_pygments_version} is required')
 
+    def test_shebang(self):
+
+        if has_pygments:
+            expected = '''
+            <div class="codehilite"><pre><span></span><code>#!test
+            </code></pre></div>
+            '''
+        else:
+            expected = '''
+            <pre class="codehilite"><code>#!test
+            </code></pre>
+            '''
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```
+                #!test
+                ```
+                '''
+            ),
+            self.dedent(
+                expected
+            ),
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
+                'fenced_code'
+            ]
+        )
+
     def testFencedCodeWithHighlightLines(self):
         if has_pygments:
             expected = self.dedent(
