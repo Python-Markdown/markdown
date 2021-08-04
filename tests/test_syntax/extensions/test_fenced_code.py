@@ -48,8 +48,8 @@ class TestFencedCode(TestCase):
             ),
             self.dedent(
                 '''
-                <div class="codehilite"><pre><span></span><code>#!test
-                </code></pre></div>
+                <pre class="codehilite"><code>#!test
+                </code></pre>
                 '''
             ),
             extensions=['fenced_code', 'codehilite']
