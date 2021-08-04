@@ -7,6 +7,7 @@ Under development: version 3.3.5 (a bug-fix release).
 
 * Make the `slugify_unicode` function not remove diacritical marks (#1118).
 * Fix `[toc]` detection when used with `nl2br` extension (#1160)
+* Automatic Links improve email address validation when processing `@` inside HTML tags `<>` (#1165).
 
 Feb 24, 2021: version 3.3.4 (a bug-fix release).
 
