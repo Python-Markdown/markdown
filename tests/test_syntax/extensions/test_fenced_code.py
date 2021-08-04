@@ -37,6 +37,24 @@ required_pygments_version = os.environ.get('PYGMENTS_VERSION', '')
 
 class TestFencedCode(TestCase):
 
+    def test_shebang(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```
+                #!test
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="codehilite"><pre><span></span><code>#!test
+                </code></pre></div>
+                '''
+            ),
+            extensions=['fenced_code', 'codehilite']
+        )
+
     def testBasicFence(self):
         self.assertMarkdownRenders(
             self.dedent(
