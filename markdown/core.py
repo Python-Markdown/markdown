@@ -308,7 +308,7 @@ class Markdown:
         Keyword arguments:
 
         * input: File object or path. Reads from stdin if `None`.
-        * output: File object or path. Writes to stdout if `None`.
+        * output: File object or path. Writes to stdout if `None`. Set to `str` to return a string containing generated html.
         * encoding: Encoding of input and output files. Defaults to utf-8.
 
         """
@@ -333,9 +333,11 @@ class Markdown:
         # Convert
         html = self.convert(text)
 
-        # Write to file or stdout
+        # Write to string, file or stdout
         if output:
-            if isinstance(output, str):
+            if output == str:
+                return html.encode(encoding, "xmlcharrefreplace")
+            elif isinstance(output, str):
                 output_file = codecs.open(output, "w",
                                           encoding=encoding,
                                           errors="xmlcharrefreplace")
@@ -402,6 +404,6 @@ def markdownFromFile(**kwargs):
 
     """
     md = Markdown(**kwargs)
-    md.convertFile(kwargs.get('input', None),
+    return md.convertFile(kwargs.get('input', None),
                    kwargs.get('output', None),
                    kwargs.get('encoding', None))
