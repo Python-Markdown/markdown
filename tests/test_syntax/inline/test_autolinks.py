@@ -51,5 +51,5 @@ class TestAutomaticLinks(TestCase):
     def test_invalid_email_address_domain(self):
         self.assertMarkdownRenders(
             """Missing domain <local-part@>""",
-            """<p>Missing domain <local-part@></p>"""
+            """<p>Missing domain &lt;local-part@&gt;</p>"""
         )
