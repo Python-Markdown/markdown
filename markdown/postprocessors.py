@@ -65,6 +65,8 @@ class Postprocessor(util.Processor):
 class RawHtmlPostprocessor(Postprocessor):
     """ Restore raw html to the document. """
 
+    BLOCK_LEVEL_REGEX = re.compile(r'^\<\/?([^ >]+)')
+
     def run(self, text):
         """ Iterate over html stash and restore html. """
         replacements = OrderedDict()
@@ -99,7 +101,7 @@ class RawHtmlPostprocessor(Postprocessor):
             return self.run(processed_text)
 
     def isblocklevel(self, html):
-        m = re.match(r'^\<\/?([^ >]+)', html)
+        m = self.BLOCK_LEVEL_REGEX.match(html)
         if m:
             if m.group(1)[0] in ('!', '?', '@', '%'):
                 # Comment, php etc...
