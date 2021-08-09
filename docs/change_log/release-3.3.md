@@ -102,7 +102,6 @@ The following bug fixes are included in the 3.3 release:
 * Fix complex scenarios involving lists and admonitions (#1004).
 * Fix complex scenarios with nested ordered and unordered lists in a definition list (#918).
 * Fix corner cases with lists under admonitions.
-* Don't process shebangs in fenced code blocks when using CodeHilite (#1156).
 
 [spec]: https://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
 [fenced_code]: ../extensions/fenced_code_blocks.md
