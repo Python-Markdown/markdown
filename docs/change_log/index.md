@@ -18,7 +18,8 @@ Feb 24, 2021: version 3.3.4 (a bug-fix release).
 * Properly parse code spans in md_in_html (#1069).
 * Preserve text immediately before an admonition (#1092).
 * Simplified regex for HTML placeholders (#928) addressing (#932).
-* Ensure `permalinks` and `ankorlinks` are not restricted by `toc_depth` (#1107).
+* Ensure `permalinks` and `anchorlinks` are not restricted by `toc_depth` (#1107).
+* Fix corner cases with lists under admonitions (#1102).
 
 Oct 25, 2020: version 3.3.3 (a bug-fix release).
 
