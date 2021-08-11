@@ -112,7 +112,7 @@ class CodeHilite:
 
         self.options = options
 
-    def hilite(self):
+    def hilite(self, shebang=True):
         """
         Pass code to the [Pygments](http://pygments.pocoo.org/) highliter with
         optional line numbers. The output should then be styled with css to
@@ -125,7 +125,7 @@ class CodeHilite:
 
         self.src = self.src.strip('\n')
 
-        if self.lang is None:
+        if self.lang is None and shebang:
             self._parseHeader()
 
         if pygments and self.use_pygments:
