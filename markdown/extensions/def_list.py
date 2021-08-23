@@ -17,7 +17,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 from . import Extension
 from ..blockprocessors import BlockProcessor, ListIndentProcessor
-import xml.etree.ElementTree as etree
+from .. import etree
 import re
 
 

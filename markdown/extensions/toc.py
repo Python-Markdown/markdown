@@ -20,7 +20,7 @@ from ..postprocessors import UnescapePostprocessor
 import re
 import html
 import unicodedata
-import xml.etree.ElementTree as etree
+from .. import etree
 
 
 def slugify(value, separator, unicode=False):

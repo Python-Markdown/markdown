@@ -20,7 +20,7 @@ from ..preprocessors import Preprocessor
 from ..postprocessors import RawHtmlPostprocessor
 from .. import util
 from ..htmlparser import HTMLExtractor, blank_line_re
-import xml.etree.ElementTree as etree
+from .. import etree
 
 
 class HTMLExtractorExtra(HTMLExtractor):

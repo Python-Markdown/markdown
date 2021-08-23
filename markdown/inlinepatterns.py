@@ -63,7 +63,7 @@ So, we apply the expressions in the following order:
 from . import util
 from collections import namedtuple
 import re
-import xml.etree.ElementTree as etree
+from . import etree
 try:  # pragma: no cover
     from html import entities
 except ImportError:  # pragma: no cover

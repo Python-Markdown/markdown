@@ -21,7 +21,7 @@ from ..blockprocessors import BlockProcessor
 from ..inlinepatterns import InlineProcessor
 from ..util import AtomicString
 import re
-import xml.etree.ElementTree as etree
+from .. import etree
 
 
 class AbbrExtension(Extension):

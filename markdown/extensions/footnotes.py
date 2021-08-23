@@ -22,7 +22,7 @@ from .. import util
 from collections import OrderedDict
 import re
 import copy
-import xml.etree.ElementTree as etree
+from .. import etree
 
 FN_BACKLINK_TEXT = util.STX + "zz1337820767766393qq" + util.ETX
 NBSP_PLACEHOLDER = util.STX + "qq3936677670287331zz" + util.ETX

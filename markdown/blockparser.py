@@ -19,7 +19,7 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-import xml.etree.ElementTree as etree
+from . import etree
 from . import util
 
 

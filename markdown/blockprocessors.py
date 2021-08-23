@@ -32,7 +32,7 @@ as they need to alter how markdown blocks are parsed.
 
 import logging
 import re
-import xml.etree.ElementTree as etree
+from . import etree
 from . import util
 from .blockparser import BlockParser
 
