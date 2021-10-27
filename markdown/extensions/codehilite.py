@@ -99,6 +99,7 @@ class CodeHilite:
         self.guess_lang = options.pop('guess_lang', True)
         self.use_pygments = options.pop('use_pygments', True)
         self.lang_prefix = options.pop('lang_prefix', 'language-')
+        self.pygments_formatter = options.pop('pygments_formatter', 'html')
 
         if 'linenos' not in options:
             options['linenos'] = options.pop('linenums', None)
@@ -139,7 +140,10 @@ class CodeHilite:
                         lexer = get_lexer_by_name('text', **self.options)
                 except ValueError:  # pragma: no cover
                     lexer = get_lexer_by_name('text', **self.options)
-            formatter = get_formatter_by_name('html', **self.options)
+            if isinstance(self.pygments_formatter, str):
+                formatter = get_formatter_by_name(self.pygments_formatter, **self.options)
+            else:
+                formatter = self.pygments_formatter(**self.options)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
@@ -278,7 +282,11 @@ class CodeHiliteExtension(Extension):
             'lang_prefix': [
                 'language-',
                 'Prefix prepended to the language when use_pygments is false. Default: "language-"'
-            ]
+            ],
+            'pygments_formatter': ['html',
+                                   'Use a specific formatter for Pygments hilighting.'
+                                   'Default: "html"',
+                                   ],
             }
 
         for key, value in kwargs.items():
