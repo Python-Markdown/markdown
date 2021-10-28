@@ -20,11 +20,12 @@ License: BSD (see LICENSE.md for details).
 """
 
 from markdown.test_tools import TestCase
-import markdown
+import markdown, markdown.extensions.codehilite
 import os
 
 try:
     import pygments  # noqa
+    import pygments.formatters  # noqa
     has_pygments = True
 except ImportError:
     has_pygments = False
@@ -780,4 +781,53 @@ class TestFencedCodeWithCodehilite(TestCase):
             ),
             expected,
             extensions=['codehilite', 'fenced_code']
+        )
+
+    def testCustomPygmentsFormatter(self):
+        if has_pygments:
+            class CustomFormatter(pygments.formatters.HtmlFormatter):
+                def wrap(self, source, outfile):
+                    return self._wrap_div(self._wrap_code(source))
+
+                def _wrap_code(self, source):
+                    yield 0, '<code>'
+                    for i, t in source:
+                        if i == 1:
+                            t += '<br>'
+                        yield i, t
+                    yield 0, '</code>'
+
+            expected = '''
+            <div class="codehilite"><code>hello world
+            <br>hello another world
+            <br></code></div>
+            '''
+
+        else:
+            CustomFormatter = None
+            expected = '''
+            <pre class="codehilite"><code>hello world
+            hello another world
+            </code></pre>
+            '''
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```
+                hello world
+                hello another world
+                ```
+                '''
+            ),
+            self.dedent(
+                expected
+            ),
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(
+                    pygments_formatter=CustomFormatter,
+                    guess_lang=False,
+                ),
+                'fenced_code'
+            ]
         )
