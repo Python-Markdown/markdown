@@ -23,6 +23,7 @@ try:  # pragma: no cover
     from pygments import highlight
     from pygments.lexers import get_lexer_by_name, guess_lexer
     from pygments.formatters import get_formatter_by_name
+    from pygments.util import ClassNotFound
     pygments = True
 except ImportError:  # pragma: no cover
     pygments = False
@@ -141,7 +142,10 @@ class CodeHilite:
                 except ValueError:  # pragma: no cover
                     lexer = get_lexer_by_name('text', **self.options)
             if isinstance(self.pygments_formatter, str):
-                formatter = get_formatter_by_name(self.pygments_formatter, **self.options)
+                try:
+                    formatter = get_formatter_by_name(self.pygments_formatter, **self.options)
+                except ClassNotFound:
+                    formatter = get_formatter_by_name('html', **self.options)
             else:
                 formatter = self.pygments_formatter(**self.options)
             return highlight(self.src, lexer, formatter)

@@ -831,3 +831,82 @@ class TestFencedCodeWithCodehilite(TestCase):
                 'fenced_code'
             ]
         )
+
+    def testSvgCustomPygmentsFormatter(self):
+        if has_pygments:
+            expected = '''
+            <?xml version="1.0"?>
+            <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+            <svg xmlns="http://www.w3.org/2000/svg">
+            <g font-family="monospace" font-size="14px">
+            <text x="0" y="14" xml:space="preserve">hello&#160;world</text>
+            <text x="0" y="33" xml:space="preserve">hello&#160;another&#160;world</text>
+            <text x="0" y="52" xml:space="preserve"></text></g></svg>
+            '''
+
+        else:
+            CustomFormatter = None
+            expected = '''
+            <pre class="codehilite"><code>hello world
+            hello another world
+            </code></pre>
+            '''
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```
+                hello world
+                hello another world
+                ```
+                '''
+            ),
+            self.dedent(
+                expected
+            ),
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(
+                    pygments_formatter='svg',
+                    linenos=False,
+                    guess_lang=False,
+                ),
+                'fenced_code'
+            ]
+        )
+
+    def testInvalidCustomPygmentsFormatter(self):
+        if has_pygments:
+            expected = '''
+            <div class="codehilite"><pre><span></span><code>hello world
+            hello another world
+            </code></pre></div>
+            '''
+
+        else:
+            CustomFormatter = None
+            expected = '''
+            <pre class="codehilite"><code>hello world
+            hello another world
+            </code></pre>
+            '''
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```
+                hello world
+                hello another world
+                ```
+                '''
+            ),
+            self.dedent(
+                expected
+            ),
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(
+                    pygments_formatter='invalid',
+                    guess_lang=False,
+                ),
+                'fenced_code'
+            ]
+        )
