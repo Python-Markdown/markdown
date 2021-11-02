@@ -20,7 +20,8 @@ License: BSD (see LICENSE.md for details).
 """
 
 from markdown.test_tools import TestCase
-import markdown, markdown.extensions.codehilite
+import markdown
+import markdown.extensions.codehilite
 import os
 
 try:
@@ -845,7 +846,6 @@ class TestFencedCodeWithCodehilite(TestCase):
             '''
 
         else:
-            CustomFormatter = None
             expected = '''
             <pre class="codehilite"><code>hello world
             hello another world
@@ -883,7 +883,6 @@ class TestFencedCodeWithCodehilite(TestCase):
             '''
 
         else:
-            CustomFormatter = None
             expected = '''
             <pre class="codehilite"><code>hello world
             hello another world

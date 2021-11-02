@@ -6,7 +6,7 @@ Python-Markdown version 3.4 supports Python versions 3.6, 3.7, 3.8, 3.9 and PyPy
 
 ## Backwards-incompatible changes
 
-This release doesn't have any backwards-incompatible changes.
+This release does not have any backwards-incompatible changes.
 
 ## New features
 
