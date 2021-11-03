@@ -10,6 +10,7 @@ Under development: version 3.3.5 (a bug-fix release).
 * Re-use compiled regex for block level checks (#1169).
 * Don't process shebangs in fenced code blocks when using CodeHilite (#1156).
 * Improve email address validation for Automatic Links (#1165).
+* Ensure `<summary>` tags are parsed correctly (#1079).
 
 Feb 24, 2021: version 3.3.4 (a bug-fix release).
 

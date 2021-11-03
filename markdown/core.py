@@ -82,7 +82,7 @@ class Markdown:
             # Other elements which Markdown should not be mucking up the contents of.
             'canvas', 'colgroup', 'dd', 'body', 'dt', 'group', 'iframe', 'li', 'legend',
             'math', 'map', 'noscript', 'output', 'object', 'option', 'progress', 'script',
-            'style', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'video'
+            'style', 'summary', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'video'
         ]
 
         self.registeredExtensions = []
