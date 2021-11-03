@@ -283,6 +283,26 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def text_md1_details(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <details markdown="1">
+                <summary>Click to expand</summary>
+                *foo*
+                </details>
+                """
+            ),
+            self.dedent(
+                """
+                <details>
+                <summary>Click to expand</summary>
+                <p><em>foo</em></p>
+                </details>
+                """
+            )
+        )
+
     def test_md1_mix(self):
         self.assertMarkdownRenders(
             self.dedent(
