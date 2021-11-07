@@ -1,5 +1,3 @@
-title: Python-Markdown
-
 Python-Markdown
 ===============
 
