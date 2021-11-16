@@ -23,19 +23,19 @@ jobs:
         tox-env: [py36, py37, py38, py39, py310, pypy3, pygments]
         include:
           - tox-env: py36
-            python-version: 3.6
+            python-version: '3.6'
           - tox-env: py37
-            python-version: 3.7
+            python-version: '3.7'
           - tox-env: py38
-            python-version: 3.8
+            python-version: '3.8'
           - tox-env: py39
-            python-version: 3.9
+            python-version: '3.9'
           - tox-env: py310
-            python-version: 3.10
+            python-version: '3.10'
           - tox-env: pypy3
             python-version: pypy3
           - tox-env: pygments
-            python-version: 3.7
+            python-version: '3.7'
 
     env:
       TOXENV: ${{ matrix.tox-env }}
