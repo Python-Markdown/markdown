@@ -3,7 +3,7 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-Under development: version 3.3.5 (a bug-fix release).
+Nov 16, 2021: version 3.3.5 (a bug-fix release).
 
 * Make the `slugify_unicode` function not remove diacritical marks (#1118).
 * Fix `[toc]` detection when used with `nl2br` extension (#1160).
