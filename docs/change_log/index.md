@@ -11,6 +11,7 @@ Under development: version 3.3.5 (a bug-fix release).
 * Don't process shebangs in fenced code blocks when using CodeHilite (#1156).
 * Improve email address validation for Automatic Links (#1165).
 * Ensure `<summary>` tags are parsed correctly (#1079).
+* Support Python 3.10 (#1124).
 
 Feb 24, 2021: version 3.3.4 (a bug-fix release).
 
