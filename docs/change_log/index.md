@@ -3,6 +3,10 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+Nov 17, 2021: version 3.3.6 (a bug-fix release).
+
+* Fix a dependency issue (#1195, #1196).
+
 Nov 16, 2021: version 3.3.5 (a bug-fix release).
 
 * Make the `slugify_unicode` function not remove diacritical marks (#1118).
