@@ -83,7 +83,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            '%s = markdown.__main__:run' % SCRIPT_NAME,
+            f'{SCRIPT_NAME} = markdown.__main__:run',
         ],
         # Register the built in extensions
         'markdown.extensions': [
@@ -108,7 +108,7 @@ setup(
         ]
     },
     classifiers=[
-        'Development Status :: %s' % DEVSTATUS,
+        f'Development Status :: {DEVSTATUS}',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',

@@ -121,18 +121,16 @@ class Markdown:
         for ext in extensions:
             if isinstance(ext, str):
                 ext = self.build_extension(ext, configs.get(ext, {}))
+            cls = ext.__class__
             if isinstance(ext, Extension):
                 ext._extendMarkdown(self)
                 logger.debug(
-                    'Successfully loaded extension "%s.%s".'
-                    % (ext.__class__.__module__, ext.__class__.__name__)
+                    f'Successfully loaded extension "{cls.__module__}.{cls.__name__}".'
                 )
             elif ext is not None:
                 raise TypeError(
-                    'Extension "{}.{}" must be of type: "{}.{}"'.format(
-                        ext.__class__.__module__, ext.__class__.__name__,
-                        Extension.__module__, Extension.__name__
-                    )
+                    f'Extension "{cls.__module__}.{cls.__name__}" must be of type: '
+                    f'"{Extension.__module__}.{Extension.__name__}"'
                 )
         return self
 
@@ -161,10 +159,10 @@ class Markdown:
         try:
             module = importlib.import_module(ext_name)
             logger.debug(
-                'Successfully imported extension module "%s".' % ext_name
+                f'Successfully imported extension module "{ext_name}".'
             )
         except ImportError as e:
-            message = 'Failed loading extension "%s".' % ext_name
+            message = f'Failed loading extension "{ext_name}".'
             e.args = (message,) + e.args[1:]
             raise
 
@@ -177,8 +175,7 @@ class Markdown:
                 return module.makeExtension(**configs)
             except AttributeError as e:
                 message = e.args[0]
-                message = "Failed to initiate extension " \
-                          "'%s': %s" % (ext_name, message)
+                message = f"Failed to initiate extension '{ext_name}': {message}"
                 e.args = (message,) + e.args[1:]
                 raise
 
@@ -206,11 +203,8 @@ class Markdown:
         try:
             self.serializer = self.output_formats[self.output_format]
         except KeyError as e:
-            valid_formats = list(self.output_formats.keys())
-            valid_formats.sort()
-            message = 'Invalid Output Format: "%s". Use one of %s.' \
-                % (self.output_format,
-                   '"' + '", "'.join(valid_formats) + '"')
+            valid_formats = '"' + '", "'.join(sorted(self.output_formats)) + '"'
+            message = f'Invalid Output Format: "{self.output_format}". Use one of {valid_formats}.'
             e.args = (message,) + e.args[1:]
             raise
         return self
@@ -274,17 +268,16 @@ class Markdown:
         if self.stripTopLevelTags:
             try:
                 start = output.index(
-                    '<%s>' % self.doc_tag) + len(self.doc_tag) + 2
-                end = output.rindex('</%s>' % self.doc_tag)
+                    f'<{self.doc_tag}>') + len(self.doc_tag) + 2
+                end = output.rindex(f'</{self.doc_tag}>')
                 output = output[start:end].strip()
             except ValueError as e:  # pragma: no cover
-                if output.strip().endswith('<%s />' % self.doc_tag):
+                if output.strip().endswith(f'<{self.doc_tag} />'):
                     # We have an empty document
                     output = ''
                 else:
                     # We have a serious problem
-                    raise ValueError('Markdown failed to strip top-level '
-                                     'tags. Document=%r' % output.strip()) from e
+                    raise ValueError(f'Markdown failed to strip top-level tags. Document={output.strip()!r}') from e
 
         # Run the text post-processors
         for pp in self.postprocessors:

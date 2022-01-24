@@ -49,12 +49,12 @@ def __getattr__(name):
     deprecated = __deprecated__.get(name)
     if deprecated:
         warnings.warn(
-            "'{}' is deprecated. Use '{}' instead.".format(name, deprecated[0]),
+            f"'{name}' is deprecated. Use '{deprecated[0]}' instead.",
             category=DeprecationWarning,
             stacklevel=(3 if PY37 else 4)
         )
         return deprecated[1]
-    raise AttributeError("module '{}' has no attribute '{}'".format(__name__, name))
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 
 if not PY37:

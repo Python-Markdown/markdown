@@ -71,12 +71,12 @@ BLOCK_LEVEL_ELEMENTS = [
 STX = '\u0002'  # Use STX ("Start of text") for start-of-placeholder
 ETX = '\u0003'  # Use ETX ("End of text") for end-of-placeholder
 INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
-INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
+INLINE_PLACEHOLDER = f"{INLINE_PLACEHOLDER_PREFIX}%s{ETX}"
 INLINE_PLACEHOLDER_RE = re.compile(INLINE_PLACEHOLDER % r'([0-9]+)')
-AMP_SUBSTITUTE = STX+"amp"+ETX
-HTML_PLACEHOLDER = STX + "wzxhzdk:%s" + ETX
+AMP_SUBSTITUTE = f"{STX}amp{ETX}"
+HTML_PLACEHOLDER = f"{STX}wzxhzdk:%s{ETX}"
 HTML_PLACEHOLDER_RE = re.compile(HTML_PLACEHOLDER % r'([0-9]+)')
-TAG_PLACEHOLDER = STX + "hzzhzkh:%s" + ETX
+TAG_PLACEHOLDER = f"{STX}hzzhzkh:%s{ETX}"
 
 
 """
@@ -148,7 +148,7 @@ def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
     elif value.lower() in ('false', 'no', 'n', 'off', '0', 'none'):
         return False
     elif fail_on_errors:
-        raise ValueError('Cannot parse bool value: %r' % value)
+        raise ValueError(f'Cannot parse bool value: {value!r}')
 
 
 def code_escape(text):
@@ -325,7 +325,7 @@ class Registry:
         return len(self._priority)
 
     def __repr__(self):
-        return '<{}({})>'.format(self.__class__.__name__, list(self))
+        return f'<{self.__class__.__name__}({list(self)})>'
 
     def get_index_for_name(self, name):
         """
@@ -336,7 +336,7 @@ class Registry:
             return self._priority.index(
                 [x for x in self._priority if x.name == name][0]
             )
-        raise ValueError('No item named "{}" exists.'.format(name))
+        raise ValueError(f'No item named "{name}" exists.')
 
     def register(self, item, name, priority):
         """
@@ -421,7 +421,7 @@ class Registry:
                 stacklevel=2,
             )
         else:
-            raise KeyError('Cannot delete key {}, not registered.'.format(key))
+            raise KeyError(f'Cannot delete key {key}, not registered.')
 
     def add(self, key, value, location):
         """ Register a key by location. """
@@ -456,8 +456,7 @@ class Registry:
                     after = before - 10
             priority = before - ((before - after) / 2)
         else:
-            raise ValueError('Not a valid location: "%s". Location key '
-                             'must start with a ">" or "<".' % location)
+            raise ValueError(f'Not a valid location: "{location}". Location key must start with a ">" or "<".')
         self.register(value, key, priority)
         warnings.warn(
             'Using the add method to register a processor or pattern is deprecated. '
@@ -473,12 +472,12 @@ def __getattr__(name):
     deprecated = __deprecated__.get(name)
     if deprecated:
         warnings.warn(
-            "'{}' is deprecated. Use '{}' instead.".format(name, deprecated[0]),
+            f"'{name}' is deprecated. Use '{deprecated[0]}' instead.",
             category=DeprecationWarning,
             stacklevel=(3 if PY37 else 4)
         )
         return deprecated[1]
-    raise AttributeError("module '{}' has no attribute '{}'".format(__name__, name))
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 
 if not PY37:

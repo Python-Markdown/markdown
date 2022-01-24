@@ -206,9 +206,7 @@ class Pattern:  # pragma: no cover
 
         """
         self.pattern = pattern
-        self.compiled_re = re.compile(r"^(.*?)%s(.*)$" % pattern,
-                                      re.DOTALL | re.UNICODE)
-
+        self.compiled_re = re.compile(fr"^(.*?){pattern}(.*)$", re.DOTALL | re.UNICODE)
         self.md = md
 
     @property
@@ -322,7 +320,7 @@ class EscapeInlineProcessor(InlineProcessor):
     def handleMatch(self, m, data):
         char = m.group(1)
         if char in self.md.ESCAPED_CHARS:
-            return '{}{}{}'.format(util.STX, ord(char), util.ETX), m.start(0), m.end(0)
+            return f'{util.STX}{ord(char)}{util.ETX}', m.start(0), m.end(0)
         else:
             return None, m.start(0), m.end(0)
 
@@ -375,7 +373,7 @@ class BacktickInlineProcessor(InlineProcessor):
     """ Return a `<code>` element containing the matching text. """
     def __init__(self, pattern):
         InlineProcessor.__init__(self, pattern)
-        self.ESCAPED_BSLASH = '{}{}{}'.format(util.STX, ord('\\'), util.ETX)
+        self.ESCAPED_BSLASH = f'{util.STX}92{util.ETX}'  # ord('\\') = 92
         self.tag = 'code'
 
     def handleMatch(self, m, data):
@@ -440,7 +438,7 @@ class HtmlInlineProcessor(InlineProcessor):
                 try:
                     return self.md.serializer(value)
                 except Exception:
-                    return r'\%s' % value
+                    return f'\\{value}'
 
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
@@ -878,15 +876,14 @@ class AutomailInlineProcessor(InlineProcessor):
             """Return entity definition by code, or the code if not defined."""
             entity = entities.codepoint2name.get(code)
             if entity:
-                return "{}{};".format(util.AMP_SUBSTITUTE, entity)
+                return f"{util.AMP_SUBSTITUTE}{entity};"
             else:
-                return "%s#%d;" % (util.AMP_SUBSTITUTE, code)
+                return f"{util.AMP_SUBSTITUTE}#{code};"
 
         letters = [codepoint2name(ord(letter)) for letter in email]
         el.text = util.AtomicString(''.join(letters))
 
         mailto = "mailto:" + email
-        mailto = "".join([util.AMP_SUBSTITUTE + '#%d;' %
-                          ord(letter) for letter in mailto])
+        mailto = "".join([util.AMP_SUBSTITUTE + f'#{ord(letter)};' for letter in mailto])
         el.set('href', mailto)
         return el, m.start(0), m.end(0)

@@ -107,9 +107,11 @@ class FootnoteExtension(Extension):
             ref, rest = reference.split(self.get_separator(), 1)
             m = RE_REF_ID.match(ref)
             if m:
-                reference = '%s%d%s%s' % (m.group(1), int(m.group(2))+1, self.get_separator(), rest)
+                ref = m.group(1)
+                num = int(m.group(2)) + 1
             else:
-                reference = '%s%d%s%s' % (ref, 2, self.get_separator(), rest)
+                num = 2
+            reference = f'{ref}{num}{self.get_separator()}{rest}'
 
         self.used_refs.add(reference)
         if original_ref in self.found_refs:
@@ -147,16 +149,16 @@ class FootnoteExtension(Extension):
     def makeFootnoteId(self, id):
         """ Return footnote link id. """
         if self.getConfig("UNIQUE_IDS"):
-            return 'fn%s%d-%s' % (self.get_separator(), self.unique_prefix, id)
+            return f'fn{self.get_separator()}{self.unique_prefix:d}-{id}'
         else:
-            return 'fn{}{}'.format(self.get_separator(), id)
+            return f'fn{self.get_separator()}{id}'
 
     def makeFootnoteRefId(self, id, found=False):
         """ Return footnote back-link id. """
         if self.getConfig("UNIQUE_IDS"):
-            return self.unique_ref('fnref%s%d-%s' % (self.get_separator(), self.unique_prefix, id), found)
+            return self.unique_ref(f'fnref{self.get_separator()}{self.unique_prefix:d}-{id}', found)
         else:
-            return self.unique_ref('fnref{}{}'.format(self.get_separator(), id), found)
+            return self.unique_ref(f'fnref{self.get_separator()}{id}', found)
 
     def makeFootnotesDiv(self, root):
         """ Return div of footnotes as et Element. """
@@ -326,7 +328,7 @@ class FootnotePostTreeprocessor(Treeprocessor):
                 links = []
                 for index in range(2, duplicates + 1):
                     sib_link = copy.deepcopy(link)
-                    sib_link.attrib['href'] = '%s%d%s%s' % (ref, index, self.footnotes.get_separator(), rest)
+                    sib_link.attrib['href'] = f'{ref}{index}{self.footnotes.get_separator()}{rest}'
                     links.append(sib_link)
                     self.offset += 1
                 # Add all the new duplicate links.
@@ -338,7 +340,7 @@ class FootnotePostTreeprocessor(Treeprocessor):
     def get_num_duplicates(self, li):
         """ Get the number of duplicate refs of the footnote. """
         fn, rest = li.attrib.get('id', '').split(self.footnotes.get_separator(), 1)
-        link_id = '{}ref{}{}'.format(fn, self.footnotes.get_separator(), rest)
+        link_id = f'{fn}ref{self.footnotes.get_separator()}{rest}'
         return self.footnotes.found_refs.get(link_id, 0)
 
     def handle_duplicates(self, parent):

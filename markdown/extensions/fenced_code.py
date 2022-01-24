@@ -105,10 +105,7 @@ class FencedBlockPreprocessor(Preprocessor):
                     # as pygments appends a suffix under certain circumstances.
                     # Ignore ID as Pygments does not offer an option to set it.
                     if classes:
-                        local_config['css_class'] = '{} {}'.format(
-                            ' '.join(classes),
-                            local_config['css_class']
-                        )
+                        local_config['css_class'] = f"{' '.join(classes)} {local_config['css_class']}"
                     highliter = CodeHilite(
                         m.group('code'),
                         lang=lang,
@@ -120,30 +117,28 @@ class FencedBlockPreprocessor(Preprocessor):
                 else:
                     id_attr = lang_attr = class_attr = kv_pairs = ''
                     if lang:
-                        lang_attr = ' class="{}{}"'.format(self.config.get('lang_prefix', 'language-'), lang)
+                        lang_prefix = self.config.get('lang_prefix', 'language-')
+                        lang_attr = f' class="{lang_prefix}{lang}"'
                     if classes:
-                        class_attr = ' class="{}"'.format(' '.join(classes))
+                        class_attr = f' class="{" ".join(classes)}"'
                     if id:
-                        id_attr = ' id="{}"'.format(id)
+                        id_attr = f' id="{id}"'
                     if self.use_attr_list and config and not config.get('use_pygments', False):
                         # Only assign key/value pairs to code element if attr_list ext is enabled, key/value pairs
                         # were defined on the code block, and the `use_pygments` key was not set to True. The
                         # `use_pygments` key could be either set to False or not defined. It is omitted from output.
                         kv_pairs = ' ' + ' '.join(
-                            '{k}="{v}"'.format(k=k, v=v) for k, v in config.items() if k != 'use_pygments'
+                            f'{k}="{v}"' for k, v in config.items() if k != 'use_pygments'
                         )
-                    code = '<pre{id}{cls}><code{lang}{kv}>{code}</code></pre>'.format(
-                        id=id_attr,
-                        cls=class_attr,
-                        lang=lang_attr,
-                        kv=kv_pairs,
-                        code=self._escape(m.group('code'))
+                    code = (
+                        f'<pre{id_attr}{class_attr}>'
+                        f'<code{lang_attr}{kv_pairs}>'
+                        f'{self._escape(m.group("code"))}'
+                        f'</code></pre>'
                     )
 
                 placeholder = self.md.htmlStash.store(code)
-                text = '{}\n{}\n{}'.format(text[:m.start()],
-                                           placeholder,
-                                           text[m.end():])
+                text = f'{text[:m.start()]}\n{placeholder}\n{text[m.end():]}'
             else:
                 break
         return text.split("\n")

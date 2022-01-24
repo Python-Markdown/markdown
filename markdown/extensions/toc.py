@@ -30,7 +30,7 @@ def slugify(value, separator, unicode=False):
         value = unicodedata.normalize('NFKD', value)
         value = value.encode('ascii', 'ignore').decode('ascii')
     value = re.sub(r'[^\w\s-]', '', value).strip().lower()
-    return re.sub(r'[{}\s]+'.format(separator), separator, value)
+    return re.sub(fr'[{separator}\s]+', separator, value)
 
 
 def slugify_unicode(value, separator):
@@ -46,9 +46,9 @@ def unique(id, ids):
     while id in ids or not id:
         m = IDCOUNT_RE.match(id)
         if m:
-            id = '%s_%d' % (m.group(1), int(m.group(2))+1)
+            id = f'{m.group(1)}_{int(m.group(2)) + 1}'
         else:
-            id = '%s_%d' % (id, 1)
+            id = f'{id}_1'
     ids.add(id)
     return id
 
@@ -169,7 +169,7 @@ class TocTreeprocessor(Treeprocessor):
         self.permalink_title = config["permalink_title"]
         self.header_rgx = re.compile("[Hh][123456]")
         if isinstance(config["toc_depth"], str) and '-' in config["toc_depth"]:
-            self.toc_top, self.toc_bottom = [int(x) for x in config["toc_depth"].split('-')]
+            self.toc_top, self.toc_bottom = (int(x) for x in config["toc_depth"].split('-'))
         else:
             self.toc_top = 1
             self.toc_bottom = int(config["toc_depth"])
@@ -211,7 +211,7 @@ class TocTreeprocessor(Treeprocessor):
         level = int(elem.tag[-1]) + self.base_level
         if level > 6:
             level = 6
-        elem.tag = 'h%d' % level
+        elem.tag = f'h{level}'
 
     def add_anchor(self, c, elem_id):  # @ReservedAssignment
         anchor = etree.Element("a")
@@ -227,7 +227,7 @@ class TocTreeprocessor(Treeprocessor):
 
     def add_permalink(self, c, elem_id):
         permalink = etree.Element("a")
-        permalink.text = ("%spara;" % AMP_SUBSTITUTE
+        permalink.text = (f"{AMP_SUBSTITUTE}para;"
                           if self.use_permalinks is True
                           else self.use_permalinks)
         permalink.attrib["href"] = "#" + elem_id

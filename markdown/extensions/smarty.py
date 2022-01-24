@@ -116,8 +116,8 @@ substitutions = {
 
 # Special case if the very first character is a quote
 # followed by punctuation at a non-word-break. Close the quotes by brute force:
-singleQuoteStartRe = r"^'(?=%s\B)" % punctClass
-doubleQuoteStartRe = r'^"(?=%s\B)' % punctClass
+singleQuoteStartRe = fr"^'(?={punctClass}\B)"
+doubleQuoteStartRe = fr'^"(?={punctClass}\B)'
 
 # Special case for double sets of quotes, e.g.:
 #   <p>He said, "'Quoted' words in a larger quote."</p>
@@ -128,18 +128,18 @@ singleQuoteSetsRe = r"""'"(?=\w)"""
 decadeAbbrRe = r"(?<!\w)'(?=\d{2}s)"
 
 # Get most opening double quotes:
-openingDoubleQuotesRegex = r'%s"(?=\w)' % openingQuotesBase
+openingDoubleQuotesRegex = fr'{openingQuotesBase}"(?=\w)'
 
 # Double closing quotes:
 closingDoubleQuotesRegex = r'"(?=\s)'
-closingDoubleQuotesRegex2 = '(?<=%s)"' % closeClass
+closingDoubleQuotesRegex2 = f'(?<={closeClass})"'
 
 # Get most opening single quotes:
-openingSingleQuotesRegex = r"%s'(?=\w)" % openingQuotesBase
+openingSingleQuotesRegex = fr"{openingQuotesBase}'(?=\w)"
 
 # Single closing quotes:
-closingSingleQuotesRegex = r"(?<=%s)'(?!\s|s\b|\d)" % closeClass
-closingSingleQuotesRegex2 = r"(?<=%s)'(\s|s\b)" % closeClass
+closingSingleQuotesRegex = fr"(?<={closeClass})'(?!\s|s\b|\d)"
+closingSingleQuotesRegex2 = fr"(?<={closeClass})'(\s|s\b)"
 
 # All remaining quotes should be opening ones
 remainingSingleQuotesRegex = r"'"
@@ -188,7 +188,7 @@ class SmartyExtension(Extension):
         for ind, pattern in enumerate(patterns):
             pattern += (md,)
             pattern = SubstituteTextPattern(*pattern)
-            name = 'smarty-%s-%d' % (serie, ind)
+            name = f'smarty-{serie}-{ind}'
             self.inlinePatterns.register(pattern, name, priority-ind)
 
     def educateDashes(self, md):

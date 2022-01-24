@@ -83,7 +83,7 @@ class InlineProcessor(Treeprocessor):
 
     def __makePlaceholder(self, type):
         """ Generate a placeholder """
-        id = "%04d" % len(self.stashed_nodes)
+        id = f"{len(self.stashed_nodes):04}"
         hash = util.INLINE_PLACEHOLDER % id
         return hash, id
 
@@ -309,12 +309,9 @@ class InlineProcessor(Treeprocessor):
         placeholder = self.__stashNode(node, pattern.type())
 
         if new_style:
-            return "{}{}{}".format(data[:start],
-                                   placeholder, data[end:]), True, 0
+            return f"{data[:start]}{placeholder}{data[end:]}", True, 0
         else:  # pragma: no cover
-            return "{}{}{}{}".format(leftData,
-                                     match.group(1),
-                                     placeholder, match.groups()[-1]), True, 0
+            return f"{leftData}{match.group(1)}{placeholder}{match.groups()[-1]}", True, 0
 
     def __build_ancestors(self, parent, parents):
         """Build the ancestor list."""
@@ -428,7 +425,7 @@ class PrettifyTreeprocessor(Treeprocessor):
             if not br.tail or not br.tail.strip():
                 br.tail = '\n'
             else:
-                br.tail = '\n%s' % br.tail
+                br.tail = f'\n{br.tail}'
         # Clean up extra empty lines at end of code blocks.
         pres = root.iter('pre')
         for pre in pres:

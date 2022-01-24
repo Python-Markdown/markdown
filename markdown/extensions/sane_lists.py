@@ -27,8 +27,7 @@ class SaneOListProcessor(OListProcessor):
 
     def __init__(self, parser):
         super().__init__(parser)
-        self.CHILD_RE = re.compile(r'^[ ]{0,%d}((\d+\.))[ ]+(.*)' %
-                                   (self.tab_length - 1))
+        self.CHILD_RE = re.compile(fr'^[ ]{{0,{self.tab_length - 1}}}((\d+\.))[ ]+(.*)')
 
 
 class SaneUListProcessor(UListProcessor):
@@ -37,8 +36,7 @@ class SaneUListProcessor(UListProcessor):
 
     def __init__(self, parser):
         super().__init__(parser)
-        self.CHILD_RE = re.compile(r'^[ ]{0,%d}(([*+-]))[ ]+(.*)' %
-                                   (self.tab_length - 1))
+        self.CHILD_RE = re.compile(fr'^[ ]{{0,{self.tab_length - 1}}}(([*+-]))[ ]+(.*)')
 
 
 class SaneListExtension(Extension):

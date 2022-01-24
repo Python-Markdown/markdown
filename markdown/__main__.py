@@ -51,7 +51,7 @@ def parse_options(args=None, values=None):
        (STDIN is assumed if no INPUTFILE is given)"""
     desc = "A Python implementation of John Gruber's Markdown. " \
            "https://Python-Markdown.github.io/"
-    ver = "%%prog %s" % markdown.__version__
+    ver = f"%prog {markdown.__version__}"
 
     parser = optparse.OptionParser(usage=usage, description=desc, version=ver)
     parser.add_option("-f", "--file", dest="filename", default=None,
@@ -106,8 +106,7 @@ def parse_options(args=None, values=None):
             try:
                 extension_configs = yaml_load(fp)
             except Exception as e:
-                message = "Failed parsing extension config file: %s" % \
-                          options.configfile
+                message = f"Failed parsing extension config file: {options.configfile}"
                 e.args = (message,) + e.args[1:]
                 raise
 

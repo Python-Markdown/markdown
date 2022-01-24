@@ -162,7 +162,7 @@ class ListIndentProcessor(BlockProcessor):
 
     def __init__(self, *args):
         super().__init__(*args)
-        self.INDENT_RE = re.compile(r'^(([ ]{%s})+)' % self.tab_length)
+        self.INDENT_RE = re.compile(fr'^(([ ]{{{self.tab_length}}})+)')
 
     def test(self, parent, block):
         return block.startswith(' '*self.tab_length) and \
@@ -259,14 +259,14 @@ class CodeBlockProcessor(BlockProcessor):
             code = sibling[0]
             block, theRest = self.detab(block)
             code.text = util.AtomicString(
-                '{}\n{}\n'.format(code.text, util.code_escape(block.rstrip()))
+                f'{code.text}\n{util.code_escape(block.rstrip())}\n'
             )
         else:
             # This is a new codeblock. Create the elements and insert text.
             pre = etree.SubElement(parent, 'pre')
             code = etree.SubElement(pre, 'code')
             block, theRest = self.detab(block)
-            code.text = util.AtomicString('%s\n' % util.code_escape(block.rstrip()))
+            code.text = util.AtomicString(f'{util.code_escape(block.rstrip())}\n')
         if theRest:
             # This block contained unindented line(s) after the first indented
             # line. Insert these lines as the first block of the master blocks
@@ -421,12 +421,12 @@ class OListProcessor(BlockProcessor):
                 # This is an indented (possibly nested) item.
                 if items[-1].startswith(' '*self.tab_length):
                     # Previous item was indented. Append to that item.
-                    items[-1] = '{}\n{}'.format(items[-1], line)
+                    items[-1] = f'{items[-1]}\n{line}'
                 else:
                     items.append(line)
             else:
                 # This is another line of previous item. Append to that item.
-                items[-1] = '{}\n{}'.format(items[-1], line)
+                items[-1] = f'{items[-1]}\n{line}'
         return items
 
 
@@ -462,14 +462,14 @@ class HashHeaderProcessor(BlockProcessor):
                 # recursively parse this lines as a block.
                 self.parser.parseBlocks(parent, [before])
             # Create header using named groups from RE
-            h = etree.SubElement(parent, 'h%d' % len(m.group('level')))
+            h = etree.SubElement(parent, f"h{len(m.group('level'))}")
             h.text = m.group('header').strip()
             if after:
                 # Insert remaining lines as first block for future parsing.
                 blocks.insert(0, after)
         else:  # pragma: no cover
             # This should never happen, but just in case...
-            logger.warn("We've got a problem header: %r" % block)
+            logger.warn(f"We've got a problem header: {block!r}")
 
 
 class SetextHeaderProcessor(BlockProcessor):
@@ -488,7 +488,7 @@ class SetextHeaderProcessor(BlockProcessor):
             level = 1
         else:
             level = 2
-        h = etree.SubElement(parent, 'h%d' % level)
+        h = etree.SubElement(parent, f'h{level}')
         h.text = lines[0].strip()
         if len(lines) > 2:
             # Block contains additional lines. Add to  master blocks for later.
@@ -552,7 +552,7 @@ class EmptyBlockProcessor(BlockProcessor):
            len(sibling) and sibling[0].tag == 'code'):
             # Last block is a codeblock. Append to preserve whitespace.
             sibling[0].text = util.AtomicString(
-                '{}{}'.format(sibling[0].text, filler)
+                f'{sibling[0].text}{filler}'
             )
 
 
@@ -608,13 +608,13 @@ class ParagraphProcessor(BlockProcessor):
                 if sibling is not None:
                     # Insetrt after sibling.
                     if sibling.tail:
-                        sibling.tail = '{}\n{}'.format(sibling.tail, block)
+                        sibling.tail = f'{sibling.tail}\n{block}'
                     else:
-                        sibling.tail = '\n%s' % block
+                        sibling.tail = f'\n{block}'
                 else:
                     # Append to parent.text
                     if parent.text:
-                        parent.text = '{}\n{}'.format(parent.text, block)
+                        parent.text = f'{parent.text}\n{block}'
                     else:
                         parent.text = block.lstrip()
             else:

@@ -149,17 +149,14 @@ class CodeHilite:
             txt = txt.replace('"', '&quot;')
             classes = []
             if self.lang:
-                classes.append('{}{}'.format(self.lang_prefix, self.lang))
+                classes.append(f'{self.lang_prefix}{self.lang}')
             if self.options['linenos']:
                 classes.append('linenums')
             class_str = ''
             if classes:
-                class_str = ' class="{}"'.format(' '.join(classes))
-            return '<pre class="{}"><code{}>{}\n</code></pre>\n'.format(
-                self.options['cssclass'],
-                class_str,
-                txt
-            )
+                class_str = f' class="{" ".join(classes)}"'
+            cssclass = self.options['cssclass']
+            return f'<pre class="{cssclass}"><code{class_str}>{txt}\n</code></pre>\n'
 
     def _parseHeader(self):
         """

@@ -178,7 +178,7 @@ class LegacyTestMeta(type):
                         kws = kwargs.copy()
                         if tname in dct:
                             kws.update(dct[tname])
-                        test_name = 'test_%s' % tname
+                        test_name = f'test_{tname}'
                         if tname not in exclude:
                             dct[test_name] = generate_test(infile, outfile, normalize, kws)
                         else:

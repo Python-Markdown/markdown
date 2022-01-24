@@ -35,8 +35,7 @@ class TestCaseWithAssertStartsWith(unittest.TestCase):
         if not text.startswith(expectedPrefix):
             if len(expectedPrefix) + 5 < len(text):
                 text = text[:len(expectedPrefix) + 5] + '...'
-            standardMsg = '{} not found at the start of {}'.format(repr(expectedPrefix),
-                                                                   repr(text))
+            standardMsg = f'{repr(expectedPrefix)} not found at the start of {repr(text)}'
             self.fail(self._formatMessage(msg, standardMsg))
 
 

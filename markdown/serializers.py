@@ -55,7 +55,7 @@ except NameError:  # pragma: no cover
 
 def _raise_serialization_error(text):  # pragma: no cover
     raise TypeError(
-        "cannot serialize {!r} (type {})".format(text, type(text).__name__)
+        f"cannot serialize {text!r} (type {type(text).__name__})"
         )
 
 
@@ -117,9 +117,9 @@ def _serialize_html(write, elem, format):
     tag = elem.tag
     text = elem.text
     if tag is Comment:
-        write("<!--%s-->" % _escape_cdata(text))
+        write(f"<!--{_escape_cdata(text)}-->")
     elif tag is ProcessingInstruction:
-        write("<?%s?>" % _escape_cdata(text))
+        write(f"<?{_escape_cdata(text)}?>")
     elif tag is None:
         if text:
             write(_escape_cdata(text))
@@ -148,11 +148,11 @@ def _serialize_html(write, elem, format):
                     v = _escape_attrib_html(v)
                 if k == v and format == 'html':
                     # handle boolean attributes
-                    write(" %s" % v)
+                    write(f" {v}")
                 else:
-                    write(' {}="{}"'.format(k, v))
+                    write(f' {k}="{v}"')
         if namespace_uri:
-            write(' xmlns="%s"' % (_escape_attrib(namespace_uri)))
+            write(f' xmlns="{_escape_attrib(namespace_uri)}"')
         if format == "xhtml" and tag.lower() in HTML_EMPTY:
             write(" />")
         else:

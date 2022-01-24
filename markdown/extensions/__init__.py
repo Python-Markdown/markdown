@@ -80,8 +80,9 @@ class Extension:
                 # Must be a 2.x extension. Pass in a dumby md_globals.
                 self.extendMarkdown(md, {})
                 warnings.warn(
-                    "The 'md_globals' parameter of '{}.{}.extendMarkdown' is "
-                    "deprecated.".format(self.__class__.__module__, self.__class__.__name__),
+                    f"The 'md_globals' parameter of "
+                    f"'{self.__class__.__module__}.{self.__class__.__name__}.extendMarkdown' "
+                    f"is deprecated.",
                     category=DeprecationWarning,
                     stacklevel=2
                 )
@@ -102,6 +103,5 @@ class Extension:
 
         """
         raise NotImplementedError(
-            'Extension "%s.%s" must define an "extendMarkdown"'
-            'method.' % (self.__class__.__module__, self.__class__.__name__)
+            f'Extension "{self.__class__.__module__}.{self.__class__.__name__}" must define an "extendMarkdown"method.'
         )

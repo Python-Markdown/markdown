@@ -52,7 +52,7 @@ class AbbrPreprocessor(BlockProcessor):
             abbr = m.group('abbr').strip()
             title = m.group('title').strip()
             self.parser.md.inlinePatterns.register(
-                AbbrInlineProcessor(self._generate_pattern(abbr), title), 'abbr-%s' % abbr, 2
+                AbbrInlineProcessor(self._generate_pattern(abbr), title), f'abbr-{abbr}', 2
             )
             if block[m.end():].strip():
                 # Add any content after match back to blocks as separate block

@@ -32,11 +32,11 @@ class HTMLExtractorExtra(HTMLExtractor):
         # All block-level tags.
         self.block_level_tags = set(md.block_level_elements.copy())
         # Block-level tags in which the content only gets span level parsing
-        self.span_tags = set(
-            ['address', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'legend', 'li', 'p', 'summary', 'td', 'th']
-        )
+        self.span_tags = {
+            'address', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'legend', 'li', 'p', 'summary', 'td', 'th'
+        }
         # Block-level tags which never get their content parsed.
-        self.raw_tags = set(['canvas', 'math', 'option', 'pre', 'script', 'style', 'textarea'])
+        self.raw_tags = {'canvas', 'math', 'option', 'pre', 'script', 'style', 'textarea'}
 
         super().__init__(md, *args, **kwargs)
 
