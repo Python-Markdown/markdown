@@ -24,16 +24,10 @@ import sys
 import warnings
 import xml.etree.ElementTree
 from collections import namedtuple
-from functools import wraps
+from functools import wraps, lru_cache
 from itertools import count
 
 from .pep562 import Pep562
-
-if sys.version_info >= (3, 10):
-    from importlib import metadata
-else:
-    # <PY310 use backport
-    import importlib_metadata as metadata
 
 PY37 = (3, 7) <= sys.version_info
 
@@ -84,8 +78,6 @@ Constants you probably do not need to change
 -----------------------------------------------------------------------------
 """
 
-# Only load extension entry_points once.
-INSTALLED_EXTENSIONS = metadata.entry_points(group='markdown.extensions')
 RTL_BIDI_RANGES = (
     ('\u0590', '\u07FF'),
     # Hebrew (0590-05FF), Arabic (0600-06FF),
@@ -99,6 +91,16 @@ RTL_BIDI_RANGES = (
 AUXILIARY GLOBAL FUNCTIONS
 =============================================================================
 """
+
+
+@lru_cache(maxsize=None)
+def get_installed_extensions():
+    if sys.version_info >= (3, 10):
+        from importlib import metadata
+    else:  # <PY310 use backport
+        import importlib_metadata as metadata
+    # Only load extension entry_points once.
+    return metadata.entry_points(group='markdown.extensions')
 
 
 def deprecated(message, stacklevel=2):
