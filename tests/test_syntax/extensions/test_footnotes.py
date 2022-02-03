@@ -300,3 +300,39 @@ class TestFootnotes(TestCase):
             '</div>',
             extension_configs={'footnotes': {'SEPARATOR': '-'}}
         )
+
+    def test_backlink_title(self):
+        """Test backlink title configuration without placeholder."""
+
+        self.assertMarkdownRenders(
+            'paragraph[^1]\n\n[^1]: A Footnote',
+            '<p>paragraph<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>A Footnote&#160;<a class="footnote-backref" href="#fnref:1"'
+            ' title="Jump back to footnote">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>',
+            extension_configs={'footnotes': {'BACKLINK_TITLE': 'Jump back to footnote'}}
+        )
+
+    def test_superscript_text(self):
+        """Test superscript text configuration."""
+
+        self.assertMarkdownRenders(
+            'paragraph[^1]\n\n[^1]: A Footnote',
+            '<p>paragraph<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">[1]</a></sup></p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>A Footnote&#160;<a class="footnote-backref" href="#fnref:1"'
+            ' title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>',
+            extension_configs={'footnotes': {'SUPERSCRIPT_TEXT': '[{}]'}}
+        )
