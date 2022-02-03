@@ -47,6 +47,10 @@ class FootnoteExtension(Extension):
                 ["&#8617;",
                  "The text string that links from the footnote "
                  "to the reader's place."],
+            "SUPERSCRIPT_TEXT":
+                ["{}",
+                 "The text string that links from the reader's place "
+                 "to the footnote."],
             "BACKLINK_TITLE":
                 ["Jump back to footnote %d in the text",
                  "The text string used for the title HTML attribute "
@@ -306,7 +310,9 @@ class FootnoteInlineProcessor(InlineProcessor):
             sup.set('id', self.footnotes.makeFootnoteRefId(id, found=True))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
             a.set('class', 'footnote-ref')
-            a.text = str(list(self.footnotes.footnotes.keys()).index(id) + 1)
+            a.text = self.footnotes.getConfig("SUPERSCRIPT_TEXT").format(
+                list(self.footnotes.footnotes.keys()).index(id) + 1
+            )
             return sup, m.start(0), m.end(0)
         else:
             return None, None, None
