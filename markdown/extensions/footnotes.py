@@ -170,6 +170,9 @@ class FootnoteExtension(Extension):
         ol = etree.SubElement(div, "ol")
         surrogate_parent = etree.Element("div")
 
+        # Backward compatibility with old '%d' placeholder
+        backlink_title = self.getConfig("BACKLINK_TITLE").replace("%d", "{}")
+
         for index, id in enumerate(self.footnotes.keys(), start=1):
             li = etree.SubElement(ol, "li")
             li.set("id", self.makeFootnoteId(id))
@@ -185,7 +188,7 @@ class FootnoteExtension(Extension):
             backlink.set("class", "footnote-backref")
             backlink.set(
                 "title",
-                self.getConfig("BACKLINK_TITLE") % (index)
+                backlink_title.format(index)
             )
             backlink.text = FN_BACKLINK_TEXT
 
