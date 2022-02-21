@@ -244,6 +244,9 @@ class Markdown:
 
         """
 
+        # Prevent `AttributeError: 'NoneType' object has no attribute 'strip'`
+        if source is None:
+            return ''
         # Fixup the source text
         if not source.strip():
             return ''  # a blank unicode string
