@@ -7,7 +7,7 @@ PyPy3.
 
 ## Backwards-incompatible changes
 
-This release doesn't have any backwards-incompatible changes.
+This release does not have any backwards-incompatible changes.
 
 ## New features
 
