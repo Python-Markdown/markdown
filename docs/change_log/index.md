@@ -3,6 +3,8 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+(under development): version 3.4 ([Notes](release-3.4.md)).
+
 (under development): version 3.3.7 (a bug-fix release).
 
 * Disallow square brackets in reference link ids (#1209).
