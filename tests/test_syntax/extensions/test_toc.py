@@ -569,3 +569,46 @@ class TestTOC(TestCase):
             '<p>[TOC]<br />\ntext</p>',
             extensions=[TocExtension(), Nl2BrExtension()]
         )
+
+    def testTOCWithCustomClass(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+                # Header
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="custom">
+                <ul>
+                <li><a href="#header">Header</a></li>
+                </ul>
+                </div>
+                <h1 id="header">Header</h1>
+                '''
+            ),
+            extensions=[TocExtension(toc_class="custom")]
+        )
+
+    def testTOCWithCustomClasses(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+                # Header
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="custom1 custom2">
+                <ul>
+                <li><a href="#header">Header</a></li>
+                </ul>
+                </div>
+                <h1 id="header">Header</h1>
+                '''
+            ),
+            extensions=[TocExtension(toc_class="custom1 custom2")]
+        )
