@@ -42,7 +42,7 @@ class TestCase(unittest.TestCase):
 
     The `assertMarkdownRenders` method accepts the source text, the expected
     output, and any keywords to pass to Markdown. The `default_kwargs` are used
-    except where overridden by `kwargs`. The ouput and expected ouput are passed
+    except where overridden by `kwargs`. The output and expected output are passed
     to `TestCase.assertMultiLineEqual`. An AssertionError is raised with a diff
     if the actual output does not equal the expected output.
 
