@@ -106,11 +106,11 @@ class TestAbbr(unittest.TestCase):
     def testNestedAbbr(self):
         """ Test Nested Abbreviations. """
         text = '[ABBR](/foo) and _ABBR_\n\n' + \
-               '*[ABBR]: Abreviation'
+               '*[ABBR]: Abbreviation'
         self.assertEqual(
             self.md.convert(text),
-            '<p><a href="/foo"><abbr title="Abreviation">ABBR</abbr></a> '
-            'and <em><abbr title="Abreviation">ABBR</abbr></em></p>'
+            '<p><a href="/foo"><abbr title="Abbreviation">ABBR</abbr></a> '
+            'and <em><abbr title="Abbreviation">ABBR</abbr></em></p>'
         )
 
 
@@ -175,7 +175,7 @@ The body. This is paragraph one.'''
         self.assertEqual(self.md.Meta, {})
 
     def testMetaDataWithoutNewline(self):
-        """ Test doocument with only metadata and no newline at end."""
+        """ Test document with only metadata and no newline at end."""
         text = 'title: No newline'
         self.assertEqual(self.md.convert(text), '')
         self.assertEqual(self.md.Meta, {'title': ['No newline']})

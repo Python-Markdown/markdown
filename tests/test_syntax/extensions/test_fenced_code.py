@@ -30,7 +30,7 @@ except ImportError:
     has_pygments = False
 
 # The version required by the tests is the version specified and installed in the 'pygments' tox env.
-# In any environment where the PYGMENTS_VERSION environment variabe is either not defined or doesn't
+# In any environment where the PYGMENTS_VERSION environment variable is either not defined or doesn't
 # match the version of Pygments installed, all tests which rely in pygments will be skipped.
 required_pygments_version = os.environ.get('PYGMENTS_VERSION', '')
 

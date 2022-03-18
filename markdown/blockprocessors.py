@@ -321,7 +321,7 @@ class OListProcessor(BlockProcessor):
 
     TAG = 'ol'
     # The integer (python string) with which the lists starts (default=1)
-    # Eg: If list is intialized as)
+    # Eg: If list is initialized as)
     #   3. Item
     # The ol tag will get starts="3" attribute
     STARTSWITH = '1'

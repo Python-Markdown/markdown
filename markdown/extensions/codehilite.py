@@ -221,7 +221,7 @@ class CodeHilite:
 
 
 class HiliteTreeprocessor(Treeprocessor):
-    """ Hilight source code in code blocks. """
+    """ Highlight source code in code blocks. """
 
     def code_unescape(self, text):
         """Unescape code."""
@@ -253,7 +253,7 @@ class HiliteTreeprocessor(Treeprocessor):
 
 
 class CodeHiliteExtension(Extension):
-    """ Add source code hilighting to markdown codeblocks. """
+    """ Add source code highlighting to markdown codeblocks. """
 
     def __init__(self, **kwargs):
         # define default configs

@@ -200,7 +200,7 @@ class TableProcessor(BlockProcessor):
             if not throw_out:
                 good_pipes.append(pipe)
 
-        # Split row according to table delimeters.
+        # Split row according to table delimiters.
         pos = 0
         for pipe in good_pipes:
             elements.append(row[pos:pipe])
