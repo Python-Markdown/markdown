@@ -237,11 +237,12 @@ class HiliteTreeprocessor(Treeprocessor):
         blocks = root.iter('pre')
         for block in blocks:
             if len(block) == 1 and block[0].tag == 'code':
+                local_config = self.config.copy()
                 code = CodeHilite(
                     self.code_unescape(block[0].text),
                     tab_length=self.md.tab_length,
-                    style=self.config.pop('pygments_style', 'default'),
-                    **self.config
+                    style=local_config.pop('pygments_style', 'default'),
+                    **local_config
                 )
                 placeholder = self.md.htmlStash.store(code.hilite())
                 # Clear codeblock in etree instance

@@ -644,3 +644,35 @@ class TestCodeHiliteExtension(TestCase):
             expected,
             extensions=[CodeHiliteExtension(unknown='some value')],
         )
+
+    def testMultipleBlocksSameStyle(self):
+        if has_pygments:
+            # See also: https://github.com/Python-Markdown/markdown/issues/1240
+            expected = (
+                '<div class="codehilite" style="background: #202020"><pre style="line-height: 125%; margin: 0;">'
+                '<span></span><code><span style="color: #999999; font-style: italic"># First Code Block</span>\n'
+                '</code></pre></div>\n\n'
+                '<p>Normal paragraph</p>\n'
+                '<div class="codehilite" style="background: #202020"><pre style="line-height: 125%; margin: 0;">'
+                '<span></span><code><span style="color: #999999; font-style: italic"># Second Code Block</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-python"># First Code Block\n'
+                '</code></pre>\n\n'
+                '<p>Normal paragraph</p>\n'
+                '<pre class="codehilite"><code class="language-python"># Second Code Block\n'
+                '</code></pre>'
+            )
+        self.assertMarkdownRenders(
+            (
+                '\t:::Python\n'
+                '\t# First Code Block\n\n'
+                'Normal paragraph\n\n'
+                '\t:::Python\n'
+                '\t# Second Code Block'
+            ),
+            expected,
+            extensions=[CodeHiliteExtension(pygments_style="native", noclasses=True)]
+        )
