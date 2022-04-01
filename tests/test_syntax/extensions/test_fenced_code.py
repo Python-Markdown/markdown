@@ -781,3 +781,48 @@ class TestFencedCodeWithCodehilite(TestCase):
             expected,
             extensions=['codehilite', 'fenced_code']
         )
+
+    def testFencedMultpleBlocksSameStyle(self):
+        if has_pygments:
+            # See also: https://github.com/Python-Markdown/markdown/issues/1240
+            expected = (
+                '<div class="codehilite" style="background: #202020"><pre style="line-height: 125%; margin: 0;">'
+                '<span></span><code><span style="color: #999999; font-style: italic"># First Code Block</span>\n'
+                '</code></pre></div>\n\n'
+                '<p>Normal paragraph</p>\n'
+                '<div class="codehilite" style="background: #202020"><pre style="line-height: 125%; margin: 0;">'
+                '<span></span><code><span style="color: #999999; font-style: italic"># Second Code Block</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = '''
+            <pre class="codehilite"><code class="language-python"># First Code Block
+            </code></pre>
+
+            <p>Normal paragraph</p>
+            <pre class="codehilite"><code class="language-python"># Second Code Block
+            </code></pre>
+            '''
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python }
+                # First Code Block
+                ```
+
+                Normal paragraph
+
+                ``` { .python }
+                # Second Code Block
+                ```
+                '''
+            ),
+            self.dedent(
+                expected
+            ),
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(pygments_style="native", noclasses=True),
+                'fenced_code'
+            ]
+        )
