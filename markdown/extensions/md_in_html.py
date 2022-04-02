@@ -252,7 +252,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
 
         Any block level elements generated from the Markdown will be inserted as children of the element in place
         of the text content. All `markdown` attributes are removed. For any elements in which Markdown parsing has
-        been dissabled, the text content of it and its chidlren are wrapped in an `AtomicString`.
+        been disabled, the text content of it and its chidlren are wrapped in an `AtomicString`.
         """
 
         md_attr = element.attrib.pop('markdown', 'off')
@@ -329,7 +329,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
                 # Cleanup stash. Replace element with empty string to avoid confusing postprocessor.
                 self.parser.md.htmlStash.rawHtmlBlocks.pop(index)
                 self.parser.md.htmlStash.rawHtmlBlocks.insert(index, '')
-                # Comfirm the match to the blockparser.
+                # Confirm the match to the blockparser.
                 return True
         # No match found.
         return False

@@ -195,7 +195,7 @@ class LegacyTestCase(unittest.TestCase, metaclass=LegacyTestMeta):
     text-based test files and define various behaviors/defaults for those tests.
     The following properties are supported:
 
-    location: A path to the directory fo test files. An absolute path is preferred.
+    location: A path to the directory of test files. An absolute path is preferred.
     exclude: A list of tests to exclude. Each test name should comprise the filename
              without an extension.
     normalize: A boolean value indicating if the HTML should be normalized.

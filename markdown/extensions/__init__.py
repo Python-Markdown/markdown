@@ -90,7 +90,7 @@ class Extension:
 
     def extendMarkdown(self, md):
         """
-        Add the various proccessors and patterns to the Markdown Instance.
+        Add the various processors and patterns to the Markdown Instance.
 
         This method must be overridden by every extension.
 
