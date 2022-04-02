@@ -286,7 +286,7 @@ class BlockQuoteProcessor(BlockProcessor):
         m = self.RE.search(block)
         if m:
             before = block[:m.start()]  # Lines before blockquote
-            # Pass lines before blockquote in recursively for parsing forst.
+            # Pass lines before blockquote in recursively for parsing first.
             self.parser.parseBlocks(parent, [before])
             # Remove ``> `` from beginning of each line.
             block = '\n'.join(
