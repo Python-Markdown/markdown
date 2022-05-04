@@ -374,6 +374,24 @@ class TestFencedCode(TestCase):
             extensions=[markdown.extensions.fenced_code.FencedCodeExtension(lang_prefix='lang-')]
         )
 
+    def testFencedCodeEscapedAttrs(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { ."weird #"foo bar=">baz }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre id="&quot;foo"><code class="language-&quot;weird" bar="&quot;&gt;baz"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
 
 class TestFencedCodeWithCodehilite(TestCase):
 
