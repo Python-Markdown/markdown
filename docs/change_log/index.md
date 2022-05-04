@@ -7,6 +7,7 @@ Python-Markdown Change Log
 
 * Disallow square brackets in reference link ids (#1209).
 * Retain configured `pygments_style` after first code block (#1240).
+* Ensure fenced code attributes are properly escaped (#1247).
 
 Nov 17, 2021: version 3.3.6 (a bug-fix release).
 
