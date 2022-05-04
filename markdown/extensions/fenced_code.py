@@ -121,7 +121,8 @@ class FencedBlockPreprocessor(Preprocessor):
                 else:
                     id_attr = lang_attr = class_attr = kv_pairs = ''
                     if lang:
-                        lang_attr = f' class="{self.config.get("lang_prefix", "language-")}{_escape_attrib_html(lang)}"'
+                        prefix = self.config.get('lang_prefix', 'language-')
+                        lang_attr = f' class="{prefix}{_escape_attrib_html(lang)}"'
                     if classes:
                         class_attr = f' class="{_escape_attrib_html(" ".join(classes))}"'
                     if id:
