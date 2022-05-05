@@ -55,7 +55,7 @@ Support
 
 You may report bugs, ask for help, and discuss various other issues on the [bug tracker][].
 
-[bug tracker]: https://ithub.com/Python-Markdown/markdown/issues
+[bug tracker]: https://github.com/Python-Markdown/markdown/issues
 
 Code of Conduct
 ---------------
