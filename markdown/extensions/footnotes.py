@@ -47,6 +47,10 @@ class FootnoteExtension(Extension):
                 ["&#8617;",
                  "The text string that links from the footnote "
                  "to the reader's place."],
+            "SUPERSCRIPT_TEXT":
+                ["{}",
+                 "The text string that links from the reader's place "
+                 "to the footnote."],
             "BACKLINK_TITLE":
                 ["Jump back to footnote %d in the text",
                  "The text string used for the title HTML attribute "
@@ -170,6 +174,9 @@ class FootnoteExtension(Extension):
         ol = etree.SubElement(div, "ol")
         surrogate_parent = etree.Element("div")
 
+        # Backward compatibility with old '%d' placeholder
+        backlink_title = self.getConfig("BACKLINK_TITLE").replace("%d", "{}")
+
         for index, id in enumerate(self.footnotes.keys(), start=1):
             li = etree.SubElement(ol, "li")
             li.set("id", self.makeFootnoteId(id))
@@ -185,7 +192,7 @@ class FootnoteExtension(Extension):
             backlink.set("class", "footnote-backref")
             backlink.set(
                 "title",
-                self.getConfig("BACKLINK_TITLE") % (index)
+                backlink_title.format(index)
             )
             backlink.text = FN_BACKLINK_TEXT
 
@@ -303,7 +310,9 @@ class FootnoteInlineProcessor(InlineProcessor):
             sup.set('id', self.footnotes.makeFootnoteRefId(id, found=True))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
             a.set('class', 'footnote-ref')
-            a.text = str(list(self.footnotes.footnotes.keys()).index(id) + 1)
+            a.text = self.footnotes.getConfig("SUPERSCRIPT_TEXT").format(
+                list(self.footnotes.footnotes.keys()).index(id) + 1
+            )
             return sup, m.start(0), m.end(0)
         else:
             return None, None, None

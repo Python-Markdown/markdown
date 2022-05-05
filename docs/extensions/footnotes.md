@@ -86,10 +86,14 @@ The following options are provided to configure the output:
     The text string that links from the footnote definition back to the position
     in the document. Defaults to `&#8617;`.
 
+* **`SUPERSCRIPT_TEXT`**:
+    The text string that links from the position in the document to the footnote
+    definition. Defaults to `{}`, i.e. only the footnote's number.
+
 * **`BACKLINK_TITLE`**:
     The text string for the `title` HTML attribute of the footnote definition link.
-    `%d` will be replaced by the footnote number. Defaults to `Jump back to
-    footnote %d in the text`
+    The placeholder `{}` will be replaced by the footnote number. Defaults to
+    `Jump back to footnote {} in the text`.
 
 * **`SEPARATOR`**:
     The text string used to set the footnote separator. Defaults to `:`.
