@@ -64,7 +64,7 @@ def isheader(elem):
 
 class AttrListTreeprocessor(Treeprocessor):
 
-    BASE_RE = r'\{\:?[ ]*([^\}\n ][^\}\n]*)[ ]*\}'
+    BASE_RE = r'\{([\:\^])?[ ]*([^\}\n ][^\}\n]*)[ ]*\}'
     HEADER_RE = re.compile(r'[ ]+{}[ ]*$'.format(BASE_RE))
     BLOCK_RE = re.compile(r'\n[ ]*{}[ ]*$'.format(BASE_RE))
     INLINE_RE = re.compile(r'^{}'.format(BASE_RE))
@@ -75,7 +75,12 @@ class AttrListTreeprocessor(Treeprocessor):
                          r'\:\-\.0-9\u00b7\u0300-\u036f\u203f-\u2040]+')
 
     def run(self, doc):
+        li_parents = {}
         for elem in doc.iter():
+            if elem.tag in ['ol', 'ul']:
+                for child in elem:
+                    assert child not in li_parents
+                    li_parents[child] = elem
             if self.md.is_block_level(elem.tag):
                 # Block level: check for attrs on last line of text
                 RE = self.BLOCK_RE
@@ -94,25 +99,25 @@ class AttrListTreeprocessor(Treeprocessor):
                         # use tail of last child. no ul or ol.
                         m = RE.search(elem[-1].tail)
                         if m:
-                            self.assign_attrs(elem, m.group(1))
+                            self.assign_attrs(elem, m.group(2))
                             elem[-1].tail = elem[-1].tail[:m.start()]
                     elif pos is not None and pos > 0 and elem[pos-1].tail:
                         # use tail of last child before ul or ol
                         m = RE.search(elem[pos-1].tail)
                         if m:
-                            self.assign_attrs(elem, m.group(1))
+                            self.assign_attrs(elem, m.group(2))
                             elem[pos-1].tail = elem[pos-1].tail[:m.start()]
                     elif elem.text:
                         # use text. ul is first child.
                         m = RE.search(elem.text)
                         if m:
-                            self.assign_attrs(elem, m.group(1))
+                            self.assign_attrs(elem, m.group(2))
                             elem.text = elem.text[:m.start()]
                 elif len(elem) and elem[-1].tail:
                     # has children. Get from tail of last child
                     m = RE.search(elem[-1].tail)
                     if m:
-                        self.assign_attrs(elem, m.group(1))
+                        self.assign_attrs(elem, m.group(2))
                         elem[-1].tail = elem[-1].tail[:m.start()]
                         if isheader(elem):
                             # clean up trailing #s
@@ -121,7 +126,12 @@ class AttrListTreeprocessor(Treeprocessor):
                     # no children. Get from text.
                     m = RE.search(elem.text)
                     if m:
-                        self.assign_attrs(elem, m.group(1))
+                        if m.group(1) == '^' and elem.tag == 'li' and elem in li_parents:
+                            # Set on parent
+                            parent = li_parents[elem]
+                            self.assign_attrs(parent, m.group(2))
+                        else:
+                            self.assign_attrs(elem, m.group(2))
                         elem.text = elem.text[:m.start()]
                         if isheader(elem):
                             # clean up trailing #s
@@ -131,7 +141,7 @@ class AttrListTreeprocessor(Treeprocessor):
                 if elem.tail:
                     m = self.INLINE_RE.match(elem.tail)
                     if m:
-                        self.assign_attrs(elem, m.group(1))
+                        self.assign_attrs(elem, m.group(2))
                         elem.tail = elem.tail[m.end():]
 
     def assign_attrs(self, elem, attrs):

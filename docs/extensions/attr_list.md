@@ -158,6 +158,54 @@ assigned to the inline element (`<em>`) which immediately preceded it.
 
 Attribute lists may also be defined on table header cells (`<th>` elements) in the same manner.
 
+### Setting attributes on lists
+
+Unlike HTML there is no explicit start and end tag of a list in Markdown. A list begins when the first item
+is parsed, closed after the last item. So the list items are the only places on which an attribute can be set.
+To still be able to set attributes on the full list itself the following syntax can be used:
+
+
+```text
+1. Item1
+{^ start=4 }
+2. Item2
+{: #item2 }
+3. Item3
+{^ .inline }
+
+* Item1
+{^ .firstclass }
+* Item2
+{^ .secondclass }
+* Item3
+{^ #myid }
+```
+
+The use of `^` instead of `:` at the start of the attribute definition indicates that the attributes values are
+to be set on the parent of the list item, i.e. the implicitly generated list start tag (either `<ol>` or `<ul>`
+in the output HTML, depending on the type of list).
+
+The above example results in the following output, with the attribute values defined using the `{^ ... }`
+definition being "lifted" from the list items to the list start tag:
+
+```html
+<ol class="inline" start="4">
+<li>Item1, but start numbering at 4</li>
+<li id="item2">Item2</li>
+<li>Item3</li>
+</ol>
+<ul class="firstclass secondclass" id="myid">
+<li>Item1</li>
+<li>Item2</li>
+<li>Item3</li>
+</ul>
+
+```
+
+Note: the attribute definition syntax using `^` will only work for top-level lists, not for lists that are nested
+within other lists. Another limitation is that it's not possible to set an attribute on a list item and also define
+a parent attribute value using that same list item.
+
 ### Limitations
 
 There are a few types of elements which attribute lists do not work with. As a reminder, Markdown is a subset of HTML
