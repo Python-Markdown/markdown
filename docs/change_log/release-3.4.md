@@ -13,6 +13,9 @@ deprecates the use of the `align` attribute and it does not appear at all in the
 [HTML5 spec][spec5]. Therefore, by default, the [table] extension will now use the `style`
 attribute (setting just the `text-align` property) in `td` and `th` blocks.
 
+[spec4]: https://www.w3.org/TR/html4/present/graphics.html#h-15.1.2
+[spec5]: https://www.w3.org/TR/html53/tabular-data.html#attributes-common-to-td-and-th-elements
+
 The former behavior is available by setting the setting `use_align_attribute` configuration
 option to `True` when adding the extension.
 
@@ -36,7 +39,6 @@ The following new features have been included in the 3.3 release:
 
 ## Bug fixes
 
-The following bug fixes are included in the 3.3 release:
+The following bug fixes are included in the 3.4 release:
 
-[spec4]: https://www.w3.org/TR/html4/present/graphics.html#h-15.1.2
-[spec5]: https://www.w3.org/TR/html53/tabular-data.html#attributes-common-to-td-and-th-elements
+
