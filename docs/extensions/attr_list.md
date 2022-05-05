@@ -169,7 +169,7 @@ can be set. To still be able to set attributes on the full list itself the follo
 1. Item1
 {^ start=4 }
 2. Item2
-{: #item2 }
+{ #item2 }
 3. Item3
 {^ .inline }
 
@@ -181,7 +181,7 @@ can be set. To still be able to set attributes on the full list itself the follo
 {^ #myid }
 ```
 
-The use of `^` instead of `:` at the start of the attribute definition indicates that the attributes values are
+The use of `^` at the start of the attribute definition indicates that the attributes values are
 to be set on the parent of the list item, i.e. the implicitly generated list start tag (either `<ol>` or `<ul>`
 in the output HTML, depending on the type of list).
 
