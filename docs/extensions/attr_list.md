@@ -160,9 +160,9 @@ Attribute lists may also be defined on table header cells (`<th>` elements) in t
 
 ### Setting attributes on lists
 
-Unlike HTML there is no explicit start and end tag of a list in Markdown. A list begins when the first item
-is parsed, closed after the last item. So the list items are the only places on which an attribute can be set.
-To still be able to set attributes on the full list itself the following syntax can be used:
+Unlike HTML there is no explicit start and end tag of a list in Markdown. A list implicitly begins when the first item
+is parsed and is implicitly closed after the last item. But the list items are the only places on which attributes
+can be set. To still be able to set attributes on the full list itself the following syntax can be used:
 
 
 ```text
