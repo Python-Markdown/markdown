@@ -49,7 +49,7 @@ dev_status_map = {
 DEVSTATUS = dev_status_map[__version_info__[3]]
 
 # The command line script name.  Currently set to "markdown_py" so as not to
-# conflict with the perl implimentation (which uses "markdown").
+# conflict with the perl implementation (which uses "markdown").
 SCRIPT_NAME = 'markdown_py'
 
 with open('README.md') as f:

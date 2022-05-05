@@ -26,7 +26,7 @@ from ..util import parseBoolValue
 class Extension:
     """ Base class for extensions to subclass. """
 
-    # Default config -- to be overriden by a subclass
+    # Default config -- to be overridden by a subclass
     # Must be of the following format:
     #     {
     #       'key': ['value', 'description']
@@ -90,9 +90,9 @@ class Extension:
 
     def extendMarkdown(self, md):
         """
-        Add the various proccesors and patterns to the Markdown Instance.
+        Add the various processors and patterns to the Markdown Instance.
 
-        This method must be overriden by every extension.
+        This method must be overridden by every extension.
 
         Keyword arguments:
 
