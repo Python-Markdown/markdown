@@ -44,7 +44,7 @@ class TestPhp(LegacyTestCase):
     """
     Notes on "excluded" tests:
 
-    Quotes in attributes: attributes get output in differant order
+    Quotes in attributes: attributes get output in different order
 
     Inline HTML (Span): Backtick in raw HTML attribute TODO: fixme
 
@@ -60,7 +60,7 @@ class TestPhp(LegacyTestCase):
 
     Mixed OLs and ULs: We match markdown.pl here. I think PHP is wrong here
 
-    Emphasis: We have various minor differances in combined & incorrect em markup.
+    Emphasis: We have various minor differences in combined & incorrect em markup.
     Maybe fix a few of them - but most aren't too important
 
     Code block in a list item: We match markdown.pl - not sure how php gets that output??
@@ -181,8 +181,6 @@ class TestExtensionsExtra(LegacyTestCase):
     abbr = Kwargs(extensions=['abbr'])
 
     footnotes = Kwargs(extensions=['footnotes'])
-
-    tables = Kwargs(extensions=['tables'])
 
     extra_config = Kwargs(
         extensions=['extra'],

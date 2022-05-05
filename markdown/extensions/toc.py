@@ -369,7 +369,7 @@ class TocExtension(Extension):
         self.reset()
         tocext = self.TreeProcessorClass(md, self.getConfigs())
         # Headerid ext is set to '>prettify'. With this set to '_end',
-        # it should always come after headerid ext (and honor ids assinged
+        # it should always come after headerid ext (and honor ids assigned
         # by the header id extension) if both are used. Same goes for
         # attr_list extension. This must come last because we don't want
         # to redefine ids after toc is created. But we do want toc prettified.
