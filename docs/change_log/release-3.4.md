@@ -51,6 +51,10 @@ The following new features have been included in the 3.3 release:
       Ex: `[{}]` will give <sup>[1]</sup>, `({})` will give <sup>(1)</sup>,
       or just by default, the current behavior: <sup>1</sup>.
 
+* The [Table of Contents](../extensions/toc.md) extension now accepts a `toc_class`
+  parameter which can be used to set the CSS class(es) on the `<div>` that contains the
+  Table of Contents (#1224).
+
 ## Bug fixes
 
 The following bug fixes are included in the 3.4 release:
