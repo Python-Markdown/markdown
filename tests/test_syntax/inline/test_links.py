@@ -350,3 +350,37 @@ class TestReferenceLinks(TestCase):
             '<p>I would like to tell you about the [code of</p>\n'
             '<p>conduct][] we are using in this project.</p>'
         )
+
+    def test_ref_link_nested_left_bracket(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text[]
+
+                [Text[]: http://example.com
+                """
+            ),
+            self.dedent(
+                """
+                <p>[Text[]</p>
+                <p>[Text[]: http://example.com</p>
+                """
+            )
+        )
+
+    def test_ref_link_nested_right_bracket(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text]]
+
+                [Text]]: http://example.com
+                """
+            ),
+            self.dedent(
+                """
+                <p>[Text]]</p>
+                <p>[Text]]: http://example.com</p>
+                """
+            )
+        )

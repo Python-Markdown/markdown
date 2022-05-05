@@ -5,11 +5,11 @@ title:      Extensions API
 Python-Markdown includes an API for extension writers to plug their own custom functionality and syntax into the
 parser. An extension will patch into one or more stages of the parser:
 
-* [*Preprocessors*](#preprocessors) alter the source before it is passed to the parser. 
+* [*Preprocessors*](#preprocessors) alter the source before it is passed to the parser.
 * [*Block Processors*](#blockprocessors) work with blocks of text separated by blank lines.
 * [*Tree Processors*](#treeprocessors) modify the constructed ElementTree
-* [*Inline Processors*](#inlineprocessors) are common tree processors for inline elements, such as `*strong*`. 
-* [*Postprocessors*](#postprocessors) munge of the output of the parser just before it is returned. 
+* [*Inline Processors*](#inlineprocessors) are common tree processors for inline elements, such as `*strong*`.
+* [*Postprocessors*](#postprocessors) munge of the output of the parser just before it is returned.
 
 The parser loads text, applies the preprocessors, creates and builds an [ElementTree][ElementTree] object from the
 block processors and inline processors, renders the ElementTree object as Unicode text, and then then applies the
@@ -45,9 +45,9 @@ class NoRender(Preprocessor):
         new_lines = []
         for line in lines:
             m = re.search("NO RENDER", line)
-            if not m:    
+            if not m:
                 # any line without NO RENDER is passed through
-                new_lines.append(line)  
+                new_lines.append(line)
         return new_lines
 ```
 
@@ -72,19 +72,19 @@ Some preprocessors in the Markdown source tree include:
 ### Block Processors {: #blockprocessors }
 
 A block processor parses blocks of text and adds new elements to the `ElementTree`. Blocks of text, separated from
-other text by blank lines, may have a different syntax and produce a differently structured tree than other Markdown. 
+other text by blank lines, may have a different syntax and produce a differently structured tree than other Markdown.
 Block processors excel at code formatting, equation layouts, and tables.
 
 Block processors inherit from `markdown.blockprocessors.BlockProcessor`, are passed `md.parser` on initialization, and
-implement both the `test` and `run` methods:  
+implement both the `test` and `run` methods:
 
 * `test(self, parent, block)` takes two parameters: `parent` is the parent `ElementTree` element and `block` is a
   single, multi-line, Unicode string of the current block. `test`, often a regular expression match, returns a true
-  value if the block processor's `run` method should be called to process starting at that block.  
+  value if the block processor's `run` method should be called to process starting at that block.
 * `run(self, parent, blocks)` has the same `parent` parameter as `test`; and `blocks` is the list of all remaining
   blocks in the document, starting with the `block` passed to `test`. `run` may return `False` (not `None`) to signal
   failure, meaning that it did not process the blocks after all. On success, `run` is expected to `pop` one or more
-  blocks from the front of `blocks` and attach new nodes to `parent`.  
+  blocks from the front of `blocks` and attach new nodes to `parent`.
 
 Crafting block processors is more involved and flexible than the other processors, involving controlling recursive
 parsing of the block's contents and managing state across invocations. For example, a blank line is allowed in
@@ -97,12 +97,12 @@ To make writing these complex beasts more tractable, three convenience functions
 
 * `lastChild(parent)` returns the last child of the given element or `None` if it has no children.
 * `detab(text)` removes one level of indent (four spaces by default) from the front of each line of the given
-  multi-line, text string, until a non-blank line is indented less. 
+  multi-line, text string, until a non-blank line is indented less.
 * `looseDetab(text, level)` removes multiple levels
-  of indent from the front of each line of `text` but does not affect lines indented less.  
+  of indent from the front of each line of `text` but does not affect lines indented less.
 
 Also, `BlockProcessor` provides the fields `self.tab_length`, the tab length (default 4), and `self.parser`, the
-current `BlockParser` instance.  
+current `BlockParser` instance.
 
 #### BlockParser
 
@@ -119,9 +119,9 @@ processor.  There are three methods:
 * `parseDocument(lines)` parses a list of lines, each a single-line Unicode string, returning a complete
   `ElementTree`.
 * `parseChunk(parent, text)` parses a single, multi-line, possibly multi-block, Unicode string `text` and attaches the
-  resulting tree to `parent`.  
+  resulting tree to `parent`.
 * `parseBlocks(parent, blocks)` takes a list of `blocks`, each a multi-line Unicode string without blank lines, and
-  attaches the resulting tree to `parent`.   
+  attaches the resulting tree to `parent`.
 
 For perspective, Markdown calls `parseDocument` which calls `parseChunk` which calls `parseBlocks` which calls your
 block processor, which, in turn, might call one of these routines.
@@ -130,7 +130,7 @@ block processor, which, in turn, might call one of these routines.
 
 This example calls out important paragraphs by giving them a border.  It looks for a fence line of exclamation points
 before and after and renders the fenced blocks into a new, styled `div`.  If it does not find the ending fence line,
-it does nothing.  
+it does nothing.
 
 Our code, like most block processors, is longer than other examples:
 
@@ -185,7 +185,7 @@ Another regular paragraph of text.
 
 The fenced text adds one node with two children to the tree:
 
-* `div`, with a `style` attribute.  It renders as 
+* `div`, with a `style` attribute.  It renders as
   `<div style="display: inline-block; border: 1px solid red;">...</div>`
     * `p` with text `First paragraph of wrapped text.`
     * `p` with text `Second Paragraph of **wrapped** text`.  The conversion to a `<strong>` tag will happen when
@@ -277,14 +277,14 @@ Inline processors inherit from `InlineProcessor`, are initialized, and implement
 
 *   `__init__(self, pattern, md=None)` is the inherited constructor.  You do not need to implement your own.
     * `pattern` is the regular expression string that must match the code block in order for the `handleMatch` method
-      to be called.   
+      to be called.
     * `md`, an optional parameter, is a pointer to the instance of `markdown.Markdown` and is available as `self.md`
       on the `InlineProcessor` instance.
 
 *   `handleMatch(self, m, data)` must be implemented in all `InlineProcessor` subclasses.
-    * `m` is the regular expression [match object][] found by the `pattern` passed to `__init__`.   
+    * `m` is the regular expression [match object][] found by the `pattern` passed to `__init__`.
     * `data` is a single, multi-line, Unicode string containing the entire block of text around the pattern.  A block
-      is text set apart by blank lines.  
+      is text set apart by blank lines.
     * Returns either `(None, None, None)`, indicating the provided match was rejected or `(el, start, end)`, if the
       match was successfully processed.  On success, `el` is the element being added the tree, `start` and `end` are
       indexes in `data` that were "consumed" by the pattern.  The "consumed" span will be replaced by a placeholder.
@@ -348,10 +348,10 @@ The example output might display as follows:
       `First line of the block.\nThis is --strike one--.\nThis is --strike two--.\nEnd of the block.`
 
     Because the match was successful, the region between the returned `start` and `end` are replaced with a
-    placeholder token and the new element is added to the tree.    
+    placeholder token and the new element is added to the tree.
 
 * On the second call to `handleMatch`
-    * `m` will be the match for `--strike two--` 
+    * `m` will be the match for `--strike two--`
     * `data` will be the string
       `First line of the block.\nThis is klzzwxh:0000.\nThis is --strike two--.\nEnd of the block.`
 
@@ -417,7 +417,7 @@ The new `InlineProcessor` provides two major enhancements to `Patterns`:
 
     This allows handling of more complex constructs than regular expressions can handle, e.g., matching nested
     brackets, and explicit control of the span "consumed" by the processor.
-    
+
 #### Inline Patterns
 
 Inline Patterns can implement inline HTML element syntax for Markdown such as `*emphasis*` or
@@ -499,12 +499,12 @@ Some postprocessors in the Markdown source tree include:
 | [`amp_substitute`][p2]        | built-in  | Convert ampersand substitutes to `&`; used in links |
 | [`unescape`][p3]              | built-in  | Convert some escaped characters back from integers; used in links |
 | [`FootnotePostProcessor`][p4] | extension | Replace footnote placeholders with html entities; as set by other stages |
- 
+
  [p1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py
  [p2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py
  [p3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py
  [p4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
- 
+
 
 ## Working with the ElementTree {: #working_with_et }
 
@@ -553,6 +553,25 @@ def set_link_class(self, element):
 
 For more information about working with ElementTree see the [ElementTree
 Documentation][ElementTree].
+
+## Working with Raw HTML {: #working_with_raw_html }
+
+Occasionally an extension may need to call out to a third party library which returns a pre-made string
+of raw HTML that needs to be inserted into the document unmodified. Raw strings can be stashed for later
+retrieval using an `htmlStash` instance, rather than converting them into `ElementTree` objects. A raw string
+(which may or may not be raw HTML) passed to `self.md.htmlStash.store()` will be saved to the stash and a
+placeholder string will be returned which should be inserted into the tree instead. After the tree is
+serialized, a postprocessor will replace the placeholder with the raw string. This prevents subsequent
+processing steps from modifying the HTML data. For example,
+
+```python
+html = "<p>This is some <em>raw</em> HTML data</p>"
+el = etree.Element("div")
+el.text = self.md.htmlStash.store(html)
+```
+
+For the global `htmlStash` instance to be available from a processor, the `markdown.Markdown` instance must
+be passed to the processor from [extendMarkdown](#extendmarkdown) and will be available as `self.md.htmlStash`.
 
 ## Integrating Your Code Into Markdown {: #integrating_into_markdown }
 
@@ -833,7 +852,7 @@ assert someitem in registry
     * `priority`: An integer or float used to sort against all items.
 
     If an item is registered with a "name" which already exists, the existing item is replaced with the new item.
-    Tread carefully as the old item is lost with no way to recover it. The new item will be sorted according to its
+    Be careful as the old item is lost with no way to recover it. The new item will be sorted according to its
     priority and will **not** retain the position of the old item.
 
 ### `Registry.deregister(self, name, strict=True)`  {: #registry.deregister data-toc-label='Registry.deregister'}
@@ -849,7 +868,7 @@ assert someitem in registry
 [match object]: https://docs.python.org/3/library/re.html#match-objects
 [bug tracker]: https://github.com/Python-Markdown/markdown/issues
 [extension source]:  https://github.com/Python-Markdown/markdown/tree/master/markdown/extensions
-[tutorial]: https://github.com/Python-Markdown/markdown/wiki/Tutorial:-Writing-Extensions-for-Python-Markdown
+[tutorial]: https://github.com/Python-Markdown/markdown/wiki/Tutorial-1---Writing-Extensions-for-Python-Markdown
 [workingwithetree]: #working_with_et
 [Integrating your code into Markdown]: #integrating_into_markdown
 [extendMarkdown]: #extendmarkdown

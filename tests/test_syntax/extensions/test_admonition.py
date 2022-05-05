@@ -213,3 +213,33 @@ class TestAdmonition(TestCase):
             ),
             extensions=['admonition']
         )
+
+    def test_admontion_detabbing(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                !!! note "Admonition"
+                    - Parent 1
+
+                        - Child 1
+                        - Child 2
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Admonition</p>
+                <ul>
+                <li>
+                <p>Parent 1</p>
+                <ul>
+                <li>Child 1</li>
+                <li>Child 2</li>
+                </ul>
+                </li>
+                </ul>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )

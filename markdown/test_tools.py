@@ -23,7 +23,7 @@ import os
 import sys
 import unittest
 import textwrap
-from . import markdown, util
+from . import markdown, Markdown, util
 
 try:
     import tidylib
@@ -42,7 +42,7 @@ class TestCase(unittest.TestCase):
 
     The `assertMarkdownRenders` method accepts the source text, the expected
     output, and any keywords to pass to Markdown. The `default_kwargs` are used
-    except where overridden by `kwargs`. The ouput and expected ouput are passed
+    except where overridden by `kwargs`. The output and expected output are passed
     to `TestCase.assertMultiLineEqual`. An AssertionError is raised with a diff
     if the actual output does not equal the expected output.
 
@@ -54,15 +54,25 @@ class TestCase(unittest.TestCase):
 
     default_kwargs = {}
 
-    def assertMarkdownRenders(self, source, expected, **kwargs):
+    def assertMarkdownRenders(self, source, expected, expected_attrs=None, **kwargs):
         """
         Test that source Markdown text renders to expected output with given keywords.
+
+        `expected_attrs` accepts a dict. Each key should be the name of an attribute
+        on the `Markdown` instance and the value should be the expected value after
+        the source text is parsed by Markdown. After the expected output is tested,
+        the expected value for each attribute is compared against the actual
+        attribute of the `Markdown` instance using `TestCase.assertEqual`.
         """
 
+        expected_attrs = expected_attrs or {}
         kws = self.default_kwargs.copy()
         kws.update(kwargs)
-        output = markdown(source, **kws)
+        md = Markdown(**kws)
+        output = md.convert(source)
         self.assertMultiLineEqual(output, expected)
+        for key, value in expected_attrs.items():
+            self.assertEqual(getattr(md, key), value)
 
     def dedent(self, text):
         """
@@ -185,7 +195,7 @@ class LegacyTestCase(unittest.TestCase, metaclass=LegacyTestMeta):
     text-based test files and define various behaviors/defaults for those tests.
     The following properties are supported:
 
-    location: A path to the directory fo test files. An absolute path is preferred.
+    location: A path to the directory of test files. An absolute path is preferred.
     exclude: A list of tests to exclude. Each test name should comprise the filename
              without an extension.
     normalize: A boolean value indicating if the HTML should be normalized.

@@ -112,7 +112,7 @@ class CodeHilite:
 
         self.options = options
 
-    def hilite(self):
+    def hilite(self, shebang=True):
         """
         Pass code to the [Pygments](http://pygments.pocoo.org/) highliter with
         optional line numbers. The output should then be styled with css to
@@ -125,7 +125,7 @@ class CodeHilite:
 
         self.src = self.src.strip('\n')
 
-        if self.lang is None:
+        if self.lang is None and shebang:
             self._parseHeader()
 
         if pygments and self.use_pygments:
@@ -221,7 +221,7 @@ class CodeHilite:
 
 
 class HiliteTreeprocessor(Treeprocessor):
-    """ Hilight source code in code blocks. """
+    """ Highlight source code in code blocks. """
 
     def code_unescape(self, text):
         """Unescape code."""
@@ -237,11 +237,12 @@ class HiliteTreeprocessor(Treeprocessor):
         blocks = root.iter('pre')
         for block in blocks:
             if len(block) == 1 and block[0].tag == 'code':
+                local_config = self.config.copy()
                 code = CodeHilite(
                     self.code_unescape(block[0].text),
                     tab_length=self.md.tab_length,
-                    style=self.config.pop('pygments_style', 'default'),
-                    **self.config
+                    style=local_config.pop('pygments_style', 'default'),
+                    **local_config
                 )
                 placeholder = self.md.htmlStash.store(code.hilite())
                 # Clear codeblock in etree instance
@@ -253,7 +254,7 @@ class HiliteTreeprocessor(Treeprocessor):
 
 
 class CodeHiliteExtension(Extension):
-    """ Add source code hilighting to markdown codeblocks. """
+    """ Add source code highlighting to markdown codeblocks. """
 
     def __init__(self, **kwargs):
         # define default configs

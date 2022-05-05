@@ -99,3 +99,31 @@ A trivial example:
 ```python
 markdown.markdown(some_text, extensions=['footnotes'])
 ```
+
+Resetting Instance State
+-----
+
+Footnote definitions are stored within the  `markdown.Markdown` class instance between
+multiple runs of the class.  This allows footnotes from all runs to be included in
+output, with  links and references that are unique, even though the class has been
+called multiple times.
+
+However, if needed, the definitions can be cleared between runs by calling `reset`.
+
+For instance, the home page of a blog might include the content from multiple documents.
+By not calling `reset`, all of the footnotes will be rendered, and they will all have
+unique links and references.
+
+On the other hand, individual blog post pages might need the content from only one
+document, and should have footnotes pertaining only to that page. By calling `reset`
+between runs, the footnote definitions from the first document will be cleared before
+the second document is rendered.
+
+An example of calling `reset`:
+
+```python
+md = markdown.Markdown(extensions=['footnotes'])
+html1 = md.convert(text_with_footnote)
+md.reset()
+html2 = md.convert(text_without_footnote)
+```

@@ -228,7 +228,7 @@ class FootnoteBlockProcessor(BlockProcessor):
                 # Any content before match is continuation of this footnote, which may be lazily indented.
                 before = therest[:m2.start()].rstrip('\n')
                 fn_blocks[0] = '\n'.join([fn_blocks[0], self.detab(before)]).lstrip('\n')
-                # Add back to blocks everything from begining of match forward for next iteration.
+                # Add back to blocks everything from beginning of match forward for next iteration.
                 blocks.insert(0, therest[m2.start():])
             else:
                 # All remaining lines of block are continuation of this footnote, which may be lazily indented.
@@ -264,7 +264,7 @@ class FootnoteBlockProcessor(BlockProcessor):
                     # Any content before match is continuation of this footnote, which may be lazily indented.
                     before = block[:m.start()].rstrip('\n')
                     fn_blocks.append(self.detab(before))
-                    # Add back to blocks everything from begining of match forward for next iteration.
+                    # Add back to blocks everything from beginning of match forward for next iteration.
                     blocks.insert(0, block[m.start():])
                     # End of this footnote.
                     break
@@ -355,7 +355,7 @@ class FootnotePostTreeprocessor(Treeprocessor):
         self.offset = 0
         for div in root.iter('div'):
             if div.attrib.get('class', '') == 'footnote':
-                # Footnotes shoul be under the first orderd list under
+                # Footnotes should be under the first ordered list under
                 # the footnote div.  So once we find it, quit.
                 for ol in div.iter('ol'):
                     self.handle_duplicates(ol)

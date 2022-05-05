@@ -160,10 +160,10 @@ NOT_STRONG_RE = r'((^|\s)(\*|_)(\s|$))'
 AUTOLINK_RE = r'<((?:[Ff]|[Hh][Tt])[Tt][Pp][Ss]?://[^<>]*)>'
 
 # <me@example.com>
-AUTOMAIL_RE = r'<([^<> !]*@[^@<> ]*)>'
+AUTOMAIL_RE = r'<([^<> !]+@[^@<> ]+)>'
 
 # <...>
-HTML_RE = r'(<([a-zA-Z/][^<>]*|!--(?:(?!<!--|-->).)*--)>)'
+HTML_RE = r'(<(\/?[a-zA-Z][^<>@ ]*( [^<>]*)?|!--(?:(?!<!--|-->).)*--)>)'
 
 # "&#38;" (decimal) or "&#x26;" (hex) or "&amp;" (named)
 ENTITY_RE = r'(&(?:\#[0-9]+|\#x[0-9a-fA-F]+|[a-zA-Z0-9]+);)'
@@ -673,7 +673,7 @@ class LinkInlineProcessor(InlineProcessor):
                         bracket_count -= 1
                     elif backtrack_count > 0:
                         backtrack_count -= 1
-                        # We've found our backup end location if the title doesn't reslove.
+                        # We've found our backup end location if the title doesn't resolve.
                         if backtrack_count == 0:
                             last_bracket = index + 1
 
@@ -829,7 +829,7 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
 
 
 class ShortReferenceInlineProcessor(ReferenceInlineProcessor):
-    """Shorte form of reference: [google]. """
+    """Short form of reference: [google]. """
     def evalId(self, data, index, text):
         """Evaluate the id from of [ref]  """
 

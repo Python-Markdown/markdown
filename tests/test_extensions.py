@@ -106,11 +106,11 @@ class TestAbbr(unittest.TestCase):
     def testNestedAbbr(self):
         """ Test Nested Abbreviations. """
         text = '[ABBR](/foo) and _ABBR_\n\n' + \
-               '*[ABBR]: Abreviation'
+               '*[ABBR]: Abbreviation'
         self.assertEqual(
             self.md.convert(text),
-            '<p><a href="/foo"><abbr title="Abreviation">ABBR</abbr></a> '
-            'and <em><abbr title="Abreviation">ABBR</abbr></em></p>'
+            '<p><a href="/foo"><abbr title="Abbreviation">ABBR</abbr></a> '
+            'and <em><abbr title="Abbreviation">ABBR</abbr></em></p>'
         )
 
 
@@ -175,7 +175,7 @@ The body. This is paragraph one.'''
         self.assertEqual(self.md.Meta, {})
 
     def testMetaDataWithoutNewline(self):
-        """ Test doocument with only metadata and no newline at end."""
+        """ Test document with only metadata and no newline at end."""
         text = 'title: No newline'
         self.assertEqual(self.md.convert(text), '')
         self.assertEqual(self.md.Meta, {'title': ['No newline']})
@@ -536,90 +536,6 @@ class TestTOC(TestCaseWithAssertStartsWith):
             {'level': 1, 'id': 'some-header-with-markup', 'name': 'Some Header with markup.', 'children': []},
         ])
 
-    def testAnchorLink(self):
-        """ Test TOC Anchorlink. """
-        md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(anchorlink=True)]
-        )
-        text = '# Header 1\n\n## Header *2*'
-        self.assertEqual(
-            md.convert(text),
-            '<h1 id="header-1"><a class="toclink" href="#header-1">Header 1</a></h1>\n'
-            '<h2 id="header-2"><a class="toclink" href="#header-2">Header <em>2</em></a></h2>'
-        )
-
-    def testAnchorLinkWithSingleInlineCode(self):
-        """ Test TOC Anchorlink with single inline code. """
-        md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(anchorlink=True)]
-        )
-        text = '# This is `code`.'
-        self.assertEqual(
-            md.convert(text),
-            '<h1 id="this-is-code">'                        # noqa
-                '<a class="toclink" href="#this-is-code">'  # noqa
-                    'This is <code>code</code>.'            # noqa
-                '</a>'                                      # noqa
-            '</h1>'                                         # noqa
-        )
-
-    def testAnchorLinkWithDoubleInlineCode(self):
-        """ Test TOC Anchorlink with double inline code. """
-        md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(anchorlink=True)]
-        )
-        text = '# This is `code` and `this` too.'
-        self.assertEqual(
-            md.convert(text),
-            '<h1 id="this-is-code-and-this-too">'                           # noqa
-                '<a class="toclink" href="#this-is-code-and-this-too">'     # noqa
-                    'This is <code>code</code> and <code>this</code> too.'  # noqa
-                '</a>'                                                      # noqa
-            '</h1>'                                                         # noqa
-        )
-
-    def testPermalink(self):
-        """ Test TOC Permalink. """
-        md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(permalink=True)]
-        )
-        text = '# Header'
-        self.assertEqual(
-            md.convert(text),
-            '<h1 id="header">'                                                            # noqa
-                'Header'                                                                  # noqa
-                '<a class="headerlink" href="#header" title="Permanent link">&para;</a>'  # noqa
-            '</h1>'                                                                       # noqa
-        )
-
-    def testPermalinkWithSingleInlineCode(self):
-        """ Test TOC Permalink with single inline code. """
-        md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(permalink=True)]
-        )
-        text = '# This is `code`.'
-        self.assertEqual(
-            md.convert(text),
-            '<h1 id="this-is-code">'                                                            # noqa
-                'This is <code>code</code>.'                                                    # noqa
-                '<a class="headerlink" href="#this-is-code" title="Permanent link">&para;</a>'  # noqa
-            '</h1>'                                                                             # noqa
-        )
-
-    def testPermalinkWithDoubleInlineCode(self):
-        """ Test TOC Permalink with double inline code. """
-        md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(permalink=True)]
-        )
-        text = '# This is `code` and `this` too.'
-        self.assertEqual(
-            md.convert(text),
-            '<h1 id="this-is-code-and-this-too">'                                                            # noqa
-                'This is <code>code</code> and <code>this</code> too.'                                       # noqa
-                '<a class="headerlink" href="#this-is-code-and-this-too" title="Permanent link">&para;</a>'  # noqa
-            '</h1>'                                                                                          # noqa
-        )
-
     def testTitle(self):
         """ Test TOC Title. """
         md = markdown.Markdown(
@@ -713,115 +629,6 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</div>\n'                                  # noqa
             '<h1 id="toc"><em>[TOC]</em></h1>'          # noqa
         )
-
-    def testMinMaxLevel(self):
-        """ Test toc_height setting """
-        md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(toc_depth='3-4')]
-        )
-        text = '# Header 1 not in TOC\n\n## Header 2 not in TOC\n\n### Header 3\n\n####Header 4'
-        self.assertEqual(
-            md.convert(text),
-            '<h1>Header 1 not in TOC</h1>\n'
-            '<h2>Header 2 not in TOC</h2>\n'
-            '<h3 id="header-3">Header 3</h3>\n'
-            '<h4 id="header-4">Header 4</h4>'
-        )
-        self.assertEqual(
-            md.toc,
-            '<div class="toc">\n'
-              '<ul>\n'                                             # noqa
-                '<li><a href="#header-3">Header 3</a>'             # noqa
-                  '<ul>\n'                                         # noqa
-                    '<li><a href="#header-4">Header 4</a></li>\n'  # noqa
-                  '</ul>\n'                                        # noqa
-                '</li>\n'                                          # noqa
-              '</ul>\n'                                            # noqa
-            '</div>\n'
-        )
-
-        self.assertNotIn("Header 1", md.toc)
-
-    def testMaxLevel(self):
-        """ Test toc_depth setting """
-        md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(toc_depth=2)]
-        )
-        text = '# Header 1\n\n## Header 2\n\n###Header 3 not in TOC'
-        self.assertEqual(
-            md.convert(text),
-            '<h1 id="header-1">Header 1</h1>\n'
-            '<h2 id="header-2">Header 2</h2>\n'
-            '<h3>Header 3 not in TOC</h3>'
-        )
-        self.assertEqual(
-            md.toc,
-            '<div class="toc">\n'
-              '<ul>\n'                                             # noqa
-                '<li><a href="#header-1">Header 1</a>'             # noqa
-                  '<ul>\n'                                         # noqa
-                    '<li><a href="#header-2">Header 2</a></li>\n'  # noqa
-                  '</ul>\n'                                        # noqa
-                '</li>\n'                                          # noqa
-              '</ul>\n'                                            # noqa
-            '</div>\n'
-        )
-
-        self.assertNotIn("Header 3", md.toc)
-
-    def testMinMaxLevelwithBaseLevel(self):
-        """ Test toc_height setting together with baselevel """
-        md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(toc_depth='4-6',
-                                                             baselevel=3)]
-        )
-        text = '# First Header\n\n## Second Level\n\n### Third Level'
-        self.assertEqual(
-            md.convert(text),
-            '<h3>First Header</h3>\n'
-            '<h4 id="second-level">Second Level</h4>\n'
-            '<h5 id="third-level">Third Level</h5>'
-        )
-        self.assertEqual(
-            md.toc,
-            '<div class="toc">\n'
-              '<ul>\n'                                                  # noqa
-                '<li><a href="#second-level">Second Level</a>'          # noqa
-                  '<ul>\n'                                              # noqa
-                    '<li><a href="#third-level">Third Level</a></li>\n' # noqa
-                  '</ul>\n'                                             # noqa
-                '</li>\n'                                               # noqa
-              '</ul>\n'                                                 # noqa
-            '</div>\n'
-        )
-        self.assertNotIn("First Header", md.toc)
-
-    def testMaxLevelwithBaseLevel(self):
-        """ Test toc_depth setting together with baselevel """
-        md = markdown.Markdown(
-            extensions=[markdown.extensions.toc.TocExtension(toc_depth=3,
-                                                             baselevel=2)]
-        )
-        text = '# Some Header\n\n## Next Level\n\n### Too High'
-        self.assertEqual(
-            md.convert(text),
-            '<h2 id="some-header">Some Header</h2>\n'
-            '<h3 id="next-level">Next Level</h3>\n'
-            '<h4>Too High</h4>'
-        )
-        self.assertEqual(
-            md.toc,
-            '<div class="toc">\n'
-              '<ul>\n'                                                 # noqa
-                '<li><a href="#some-header">Some Header</a>'           # noqa
-                  '<ul>\n'                                             # noqa
-                    '<li><a href="#next-level">Next Level</a></li>\n'  # noqa
-                  '</ul>\n'                                            # noqa
-                '</li>\n'                                              # noqa
-              '</ul>\n'                                                # noqa
-            '</div>\n'
-        )
-        self.assertNotIn("Too High", md.toc)
 
 
 class TestSmarty(unittest.TestCase):

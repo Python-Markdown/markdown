@@ -30,7 +30,7 @@ except ImportError:
     has_pygments = False
 
 # The version required by the tests is the version specified and installed in the 'pygments' tox env.
-# In any environment where the PYGMENTS_VERSION environment variabe is either not defined or doesn't
+# In any environment where the PYGMENTS_VERSION environment variable is either not defined or doesn't
 # match the version of Pygments installed, all tests which rely in pygments will be skipped.
 required_pygments_version = os.environ.get('PYGMENTS_VERSION', '')
 
@@ -374,12 +374,60 @@ class TestFencedCode(TestCase):
             extensions=[markdown.extensions.fenced_code.FencedCodeExtension(lang_prefix='lang-')]
         )
 
+    def testFencedCodeEscapedAttrs(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { ."weird #"foo bar=">baz }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre id="&quot;foo"><code class="language-&quot;weird" bar="&quot;&gt;baz"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
 
 class TestFencedCodeWithCodehilite(TestCase):
 
     def setUp(self):
         if has_pygments and pygments.__version__ != required_pygments_version:
             self.skipTest(f'Pygments=={required_pygments_version} is required')
+
+    def test_shebang(self):
+
+        if has_pygments:
+            expected = '''
+            <div class="codehilite"><pre><span></span><code>#!test
+            </code></pre></div>
+            '''
+        else:
+            expected = '''
+            <pre class="codehilite"><code>#!test
+            </code></pre>
+            '''
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```
+                #!test
+                ```
+                '''
+            ),
+            self.dedent(
+                expected
+            ),
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(linenums=None, guess_lang=False),
+                'fenced_code'
+            ]
+        )
 
     def testFencedCodeWithHighlightLines(self):
         if has_pygments:
@@ -750,4 +798,49 @@ class TestFencedCodeWithCodehilite(TestCase):
             ),
             expected,
             extensions=['codehilite', 'fenced_code']
+        )
+
+    def testFencedMultpleBlocksSameStyle(self):
+        if has_pygments:
+            # See also: https://github.com/Python-Markdown/markdown/issues/1240
+            expected = (
+                '<div class="codehilite" style="background: #202020"><pre style="line-height: 125%; margin: 0;">'
+                '<span></span><code><span style="color: #999999; font-style: italic"># First Code Block</span>\n'
+                '</code></pre></div>\n\n'
+                '<p>Normal paragraph</p>\n'
+                '<div class="codehilite" style="background: #202020"><pre style="line-height: 125%; margin: 0;">'
+                '<span></span><code><span style="color: #999999; font-style: italic"># Second Code Block</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = '''
+            <pre class="codehilite"><code class="language-python"># First Code Block
+            </code></pre>
+
+            <p>Normal paragraph</p>
+            <pre class="codehilite"><code class="language-python"># Second Code Block
+            </code></pre>
+            '''
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python }
+                # First Code Block
+                ```
+
+                Normal paragraph
+
+                ``` { .python }
+                # Second Code Block
+                ```
+                '''
+            ),
+            self.dedent(
+                expected
+            ),
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(pygments_style="native", noclasses=True),
+                'fenced_code'
+            ]
         )

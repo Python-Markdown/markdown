@@ -48,29 +48,32 @@ class AdmonitionProcessor(BlockProcessor):
         self.current_sibling = None
         self.content_indention = 0
 
-    def get_sibling(self, parent, block):
-        """Get sibling admontion.
+    def parse_content(self, parent, block):
+        """Get sibling admonition.
 
-        Retrieve the appropriate siblimg element. This can get trickly when
+        Retrieve the appropriate sibling element. This can get tricky when
         dealing with lists.
 
         """
 
+        old_block = block
+        the_rest = ''
+
         # We already acquired the block via test
         if self.current_sibling is not None:
             sibling = self.current_sibling
-            block = block[self.content_indent:]
+            block, the_rest = self.detab(block, self.content_indent)
             self.current_sibling = None
             self.content_indent = 0
-            return sibling, block
+            return sibling, block, the_rest
 
         sibling = self.lastChild(parent)
 
         if sibling is None or sibling.get('class', '').find(self.CLASSNAME) == -1:
             sibling = None
         else:
-            # If the last child is a list and the content is idented sufficient
-            # to be under it, then the content's is sibling is in the list.
+            # If the last child is a list and the content is sufficiently indented
+            # to be under it, then the content's sibling is in the list.
             last_child = self.lastChild(sibling)
             indent = 0
             while last_child:
@@ -80,12 +83,12 @@ class AdmonitionProcessor(BlockProcessor):
                 ):
 
                     # The expectation is that we'll find an <li> or <dt>.
-                    # We should get it's last child as well.
+                    # We should get its last child as well.
                     sibling = self.lastChild(last_child)
                     last_child = self.lastChild(sibling) if sibling else None
 
                     # Context has been lost at this point, so we must adjust the
-                    # text's identation level so it will be evaluated correctly
+                    # text's indentation level so it will be evaluated correctly
                     # under the list.
                     block = block[self.tab_length:]
                     indent += self.tab_length
@@ -96,17 +99,19 @@ class AdmonitionProcessor(BlockProcessor):
                 sibling = None
 
             if sibling is not None:
+                indent += self.tab_length
+                block, the_rest = self.detab(old_block, indent)
                 self.current_sibling = sibling
                 self.content_indent = indent
 
-        return sibling, block
+        return sibling, block, the_rest
 
     def test(self, parent, block):
 
         if self.RE.search(block):
             return True
         else:
-            return self.get_sibling(parent, block)[0] is not None
+            return self.parse_content(parent, block)[0] is not None
 
     def run(self, parent, blocks):
         block = blocks.pop(0)
@@ -116,10 +121,9 @@ class AdmonitionProcessor(BlockProcessor):
             if m.start() > 0:
                 self.parser.parseBlocks(parent, [block[:m.start()]])
             block = block[m.end():]  # removes the first line
+            block, theRest = self.detab(block)
         else:
-            sibling, block = self.get_sibling(parent, block)
-
-        block, theRest = self.detab(block)
+            sibling, block, theRest = self.parse_content(parent, block)
 
         if m:
             klass, title = self.get_class_and_title(m)

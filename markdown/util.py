@@ -21,17 +21,18 @@ License: BSD (see LICENSE.md for details).
 
 import re
 import sys
-from collections import namedtuple
-from functools import wraps
 import warnings
 import xml.etree.ElementTree
-from .pep562 import Pep562
+from collections import namedtuple
+from functools import wraps
 from itertools import count
 
-try:
+from .pep562 import Pep562
+
+if sys.version_info >= (3, 10):
     from importlib import metadata
-except ImportError:
-    # <PY38 use backport
+else:
+    # <PY310 use backport
     import importlib_metadata as metadata
 
 PY37 = (3, 7) <= sys.version_info
@@ -84,7 +85,7 @@ Constants you probably do not need to change
 """
 
 # Only load extension entry_points once.
-INSTALLED_EXTENSIONS = metadata.entry_points().get('markdown.extensions', ())
+INSTALLED_EXTENSIONS = metadata.entry_points(group='markdown.extensions')
 RTL_BIDI_RANGES = (
     ('\u0590', '\u07FF'),
     # Hebrew (0590-05FF), Arabic (0600-06FF),
@@ -104,19 +105,22 @@ def deprecated(message, stacklevel=2):
     """
     Raise a DeprecationWarning when wrapped function/method is called.
 
-    Borrowed from https://stackoverflow.com/a/48632082/866026
+    Usage:
+        @deprecated("This method will be removed in version X; use Y instead.")
+        def some_method()"
+            pass
     """
-    def deprecated_decorator(func):
+    def wrapper(func):
         @wraps(func)
         def deprecated_func(*args, **kwargs):
             warnings.warn(
-                "'{}' is deprecated. {}".format(func.__name__, message),
+                f"'{func.__name__}' is deprecated. {message}",
                 category=DeprecationWarning,
                 stacklevel=stacklevel
             )
             return func(*args, **kwargs)
         return deprecated_func
-    return deprecated_decorator
+    return wrapper
 
 
 @deprecated("Use 'Markdown.is_block_level' instead.")
@@ -159,8 +163,7 @@ def code_escape(text):
 
 
 def _get_stack_depth(size=2):
-    """Get stack size for caller's frame.
-    See https://stackoverflow.com/a/47956089/866026
+    """Get current stack depth, performantly.
     """
     frame = sys._getframe(size)
 
@@ -171,7 +174,7 @@ def _get_stack_depth(size=2):
 
 
 def nearing_recursion_limit():
-    """Return true if current stack depth is withing 100 of maximum limit."""
+    """Return true if current stack depth is within 100 of maximum limit."""
     return sys.getrecursionlimit() - _get_stack_depth() < 100
 
 
@@ -346,7 +349,7 @@ class Registry:
         * `priority`: An integer or float used to sort against all items.
 
         If an item is registered with a "name" which already exists, the
-        existing item is replaced with the new item. Tread carefully as the
+        existing item is replaced with the new item. Treat carefully as the
         old item is lost with no way to recover it. The new item will be
         sorted according to its priority and will **not** retain the position
         of the old item.
@@ -385,7 +388,7 @@ class Registry:
     # Deprecated Methods which provide a smooth transition from OrderedDict
 
     def __setitem__(self, key, value):
-        """ Register item with priorty 5 less than lowest existing priority. """
+        """ Register item with priority 5 less than lowest existing priority. """
         if isinstance(key, str):
             warnings.warn(
                 'Using setitem to register a processor or pattern is deprecated. '

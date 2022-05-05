@@ -9,7 +9,7 @@ propose changes to this document in a pull request.
 
 This project and everyone participating in it is governed by the
 [Python-Markdown Code of Conduct]. By participating, you are expected to uphold
-this code. Please report unacceptable behavior to [markdown@freewisdom.org][email].
+this code. Please report unacceptable behavior to <python.markdown@gmail.com>.
 
 ## Project Organization
 
@@ -478,7 +478,6 @@ label from the same group.
 
 [Python-Markdown Organization]: https://github.com/Python-Markdown
 [Python-Markdown Code of Conduct]: https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md
-[email]: mailto:markdown@freewisdom.org
 [Python-Markdown/markdown]: https://github.com/Python-Markdown/markdown
 [issue tracker]: https://github.com/Python-Markdown/markdown/issues
 [syntax rules]: https://daringfireball.net/projects/markdown/syntax

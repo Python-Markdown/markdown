@@ -5,13 +5,35 @@ Python-Markdown Change Log
 
 Under development: version 3.4.0 ([Notes](release-3.4.md)).
 
-Under development: version 3.3.4 (a bug-fix release).
+May 5, 2022: version 3.3.7 (a bug-fix release).
+
+* Disallow square brackets in reference link ids (#1209).
+* Retain configured `pygments_style` after first code block (#1240).
+* Ensure fenced code attributes are properly escaped (#1247).
+
+Nov 17, 2021: version 3.3.6 (a bug-fix release).
+
+* Fix a dependency issue (#1195, #1196).
+
+Nov 16, 2021: version 3.3.5 (a bug-fix release).
+
+* Make the `slugify_unicode` function not remove diacritical marks (#1118).
+* Fix `[toc]` detection when used with `nl2br` extension (#1160).
+* Re-use compiled regex for block level checks (#1169).
+* Don't process shebangs in fenced code blocks when using CodeHilite (#1156).
+* Improve email address validation for Automatic Links (#1165).
+* Ensure `<summary>` tags are parsed correctly (#1079).
+* Support Python 3.10 (#1124).
+
+Feb 24, 2021: version 3.3.4 (a bug-fix release).
 
 * Properly parse unclosed tags in code spans (#1066).
 * Properly parse processing instructions in md_in_html (#1070).
 * Properly parse code spans in md_in_html (#1069).
 * Preserve text immediately before an admonition (#1092).
 * Simplified regex for HTML placeholders (#928) addressing (#932).
+* Ensure `permalinks` and `anchorlinks` are not restricted by `toc_depth` (#1107).
+* Fix corner cases with lists under admonitions (#1102).
 
 Oct 25, 2020: version 3.3.3 (a bug-fix release).
 
