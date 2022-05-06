@@ -79,7 +79,6 @@ class AttrListTreeprocessor(Treeprocessor):
         for elem in doc.iter():
             if elem.tag in ['ol', 'ul']:
                 for child in elem:
-                    assert child not in li_parents
                     li_parents[child] = elem
             if self.md.is_block_level(elem.tag):
                 # Block level: check for attrs on last line of text
