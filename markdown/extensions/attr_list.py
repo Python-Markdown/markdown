@@ -143,21 +143,21 @@ class AttrListTreeprocessor(Treeprocessor):
 
     def assign_attrs(self, elem, attrs, parent=None):
         """ Assign attrs to element. """
-        real_elem = elem
+        apply_elem = elem
         for k, v in get_attrs(attrs):
             if k == '.':
                 # add to class
-                cls = real_elem.get('class')
+                cls = apply_elem.get('class')
                 if cls:
-                    real_elem.set('class', '{} {}'.format(cls, v))
+                    apply_elem.set('class', '{} {}'.format(cls, v))
                 else:
-                    real_elem.set('class', v)
+                    apply_elem.set('class', v)
             elif k == '^' and parent is not None:
                 # set on parent from now on
-                real_elem = parent
+                apply_elem = parent
             else:
                 # assign attr k with v
-                real_elem.set(self.sanitize_name(k), v)
+                apply_elem.set(self.sanitize_name(k), v)
 
     def sanitize_name(self, name):
         """
