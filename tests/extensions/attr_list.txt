@@ -96,17 +96,17 @@ key=value }
 # Setting list item parent attributes
 
 1. Item1, but start numbering at 4
-{^ start=4 }
+{ #item1 ^ start=4 }
 2. Item2
 { #item2 }
-3. Item3
-{^ .inline }
+3. Item3, set inline class on table
+{ #item3 ^ .inline }
 
 ## Unordered list
 
 * Item1
-{^ .firstclass }
+{ .itemclass ^ .listclass1 }
 * Item2
-{^ .secondclass }
+{ ^ .listclass2 }
 * Item3
-{^ #myid }
+{ #myid ^ #listid }

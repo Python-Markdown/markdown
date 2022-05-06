@@ -64,7 +64,7 @@ def isheader(elem):
 
 class AttrListTreeprocessor(Treeprocessor):
 
-    BASE_RE = r'\{([\:\^])?[ ]*([^\}\n ][^\}\n]*)[ ]*\}'
+    BASE_RE = r'\{\:?[ ]*([^\}\n ][^\}\n]*)[ ]*\}'
     HEADER_RE = re.compile(r'[ ]+{}[ ]*$'.format(BASE_RE))
     BLOCK_RE = re.compile(r'\n[ ]*{}[ ]*$'.format(BASE_RE))
     INLINE_RE = re.compile(r'^{}'.format(BASE_RE))
@@ -99,25 +99,25 @@ class AttrListTreeprocessor(Treeprocessor):
                         # use tail of last child. no ul or ol.
                         m = RE.search(elem[-1].tail)
                         if m:
-                            self.assign_attrs(elem, m.group(2))
+                            self.assign_attrs(elem, m.group(1))
                             elem[-1].tail = elem[-1].tail[:m.start()]
                     elif pos is not None and pos > 0 and elem[pos-1].tail:
                         # use tail of last child before ul or ol
                         m = RE.search(elem[pos-1].tail)
                         if m:
-                            self.assign_attrs(elem, m.group(2))
+                            self.assign_attrs(elem, m.group(1))
                             elem[pos-1].tail = elem[pos-1].tail[:m.start()]
                     elif elem.text:
                         # use text. ul is first child.
                         m = RE.search(elem.text)
                         if m:
-                            self.assign_attrs(elem, m.group(2))
+                            self.assign_attrs(elem, m.group(1))
                             elem.text = elem.text[:m.start()]
                 elif len(elem) and elem[-1].tail:
                     # has children. Get from tail of last child
                     m = RE.search(elem[-1].tail)
                     if m:
-                        self.assign_attrs(elem, m.group(2))
+                        self.assign_attrs(elem, m.group(1))
                         elem[-1].tail = elem[-1].tail[:m.start()]
                         if isheader(elem):
                             # clean up trailing #s
@@ -126,12 +126,10 @@ class AttrListTreeprocessor(Treeprocessor):
                     # no children. Get from text.
                     m = RE.search(elem.text)
                     if m:
-                        if m.group(1) == '^' and elem.tag == 'li' and elem in li_parents:
-                            # Set on parent
+                        parent = None
+                        if elem.tag == 'li' and elem in li_parents:
                             parent = li_parents[elem]
-                            self.assign_attrs(parent, m.group(2))
-                        else:
-                            self.assign_attrs(elem, m.group(2))
+                        self.assign_attrs(elem, m.group(1), parent)
                         elem.text = elem.text[:m.start()]
                         if isheader(elem):
                             # clean up trailing #s
@@ -141,22 +139,26 @@ class AttrListTreeprocessor(Treeprocessor):
                 if elem.tail:
                     m = self.INLINE_RE.match(elem.tail)
                     if m:
-                        self.assign_attrs(elem, m.group(2))
+                        self.assign_attrs(elem, m.group(1))
                         elem.tail = elem.tail[m.end():]
 
-    def assign_attrs(self, elem, attrs):
+    def assign_attrs(self, elem, attrs, parent=None):
         """ Assign attrs to element. """
+        real_elem = elem
         for k, v in get_attrs(attrs):
             if k == '.':
                 # add to class
-                cls = elem.get('class')
+                cls = real_elem.get('class')
                 if cls:
-                    elem.set('class', '{} {}'.format(cls, v))
+                    real_elem.set('class', '{} {}'.format(cls, v))
                 else:
-                    elem.set('class', v)
+                    real_elem.set('class', v)
+            elif k == '^' and parent is not None:
+                # set on parent from now on
+                real_elem = parent
             else:
                 # assign attr k with v
-                elem.set(self.sanitize_name(k), v)
+                real_elem.set(self.sanitize_name(k), v)
 
     def sanitize_name(self, name):
         """
