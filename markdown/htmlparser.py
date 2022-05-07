@@ -113,7 +113,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
                 return m.end()
             else:  # pragma: no cover
                 # Value of self.lineno must exceed total number of lines.
-                # Find index of begining of last line.
+                # Find index of beginning of last line.
                 return self.rawdata.rfind('\n')
         return 0
 

@@ -673,7 +673,7 @@ class LinkInlineProcessor(InlineProcessor):
                         bracket_count -= 1
                     elif backtrack_count > 0:
                         backtrack_count -= 1
-                        # We've found our backup end location if the title doesn't reslove.
+                        # We've found our backup end location if the title doesn't resolve.
                         if backtrack_count == 0:
                             last_bracket = index + 1
 

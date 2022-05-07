@@ -30,7 +30,7 @@ except ImportError:
     has_pygments = False
 
 # The version required by the tests is the version specified and installed in the 'pygments' tox env.
-# In any environment where the PYGMENTS_VERSION environment variabe is either not defined or doesn't
+# In any environment where the PYGMENTS_VERSION environment variable is either not defined or doesn't
 # match the version of Pygments installed, all tests which rely in pygments will be skipped.
 required_pygments_version = os.environ.get('PYGMENTS_VERSION', '')
 
@@ -643,4 +643,36 @@ class TestCodeHiliteExtension(TestCase):
             '\t# A Code Comment',
             expected,
             extensions=[CodeHiliteExtension(unknown='some value')],
+        )
+
+    def testMultipleBlocksSameStyle(self):
+        if has_pygments:
+            # See also: https://github.com/Python-Markdown/markdown/issues/1240
+            expected = (
+                '<div class="codehilite" style="background: #202020"><pre style="line-height: 125%; margin: 0;">'
+                '<span></span><code><span style="color: #999999; font-style: italic"># First Code Block</span>\n'
+                '</code></pre></div>\n\n'
+                '<p>Normal paragraph</p>\n'
+                '<div class="codehilite" style="background: #202020"><pre style="line-height: 125%; margin: 0;">'
+                '<span></span><code><span style="color: #999999; font-style: italic"># Second Code Block</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-python"># First Code Block\n'
+                '</code></pre>\n\n'
+                '<p>Normal paragraph</p>\n'
+                '<pre class="codehilite"><code class="language-python"># Second Code Block\n'
+                '</code></pre>'
+            )
+        self.assertMarkdownRenders(
+            (
+                '\t:::Python\n'
+                '\t# First Code Block\n\n'
+                'Normal paragraph\n\n'
+                '\t:::Python\n'
+                '\t# Second Code Block'
+            ),
+            expected,
+            extensions=[CodeHiliteExtension(pygments_style="native", noclasses=True)]
         )

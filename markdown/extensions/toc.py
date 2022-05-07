@@ -160,6 +160,7 @@ class TocTreeprocessor(Treeprocessor):
         self.base_level = int(config["baselevel"]) - 1
         self.slugify = config["slugify"]
         self.sep = config["separator"]
+        self.toc_class = config["toc_class"]
         self.use_anchors = parseBoolValue(config["anchorlink"])
         self.anchorlink_class = config["anchorlink_class"]
         self.use_permalinks = parseBoolValue(config["permalink"], False)
@@ -239,7 +240,7 @@ class TocTreeprocessor(Treeprocessor):
     def build_toc_div(self, toc_list):
         """ Return a string div given a toc list. """
         div = etree.Element("div")
-        div.attrib["class"] = "toc"
+        div.attrib["class"] = self.toc_class
 
         # Add title to the div
         if self.title:
@@ -328,6 +329,9 @@ class TocExtension(Extension):
             "title": ["",
                       "Title to insert into TOC <div> - "
                       "Defaults to an empty string"],
+            "toc_class": ['toc',
+                          'CSS class(es) used for the link. '
+                          'Defaults to "toclink"'],
             "anchorlink": [False,
                            "True if header should be a self link - "
                            "Defaults to False"],
@@ -365,7 +369,7 @@ class TocExtension(Extension):
         self.reset()
         tocext = self.TreeProcessorClass(md, self.getConfigs())
         # Headerid ext is set to '>prettify'. With this set to '_end',
-        # it should always come after headerid ext (and honor ids assinged
+        # it should always come after headerid ext (and honor ids assigned
         # by the header id extension) if both are used. Same goes for
         # attr_list extension. This must come last because we don't want
         # to redefine ids after toc is created. But we do want toc prettified.

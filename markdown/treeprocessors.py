@@ -331,7 +331,7 @@ class InlineProcessor(Treeprocessor):
 
         Iterate over ElementTree, find elements with inline tag, apply inline
         patterns and append newly created Elements to tree.  If you don't
-        want to process your data with inline paterns, instead of normal
+        want to process your data with inline patterns, instead of normal
         string, use subclass AtomicString:
 
             node.text = markdown.AtomicString("This will not be processed.")

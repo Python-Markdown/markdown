@@ -29,10 +29,10 @@ from itertools import count
 
 from .pep562 import Pep562
 
-try:
+if sys.version_info >= (3, 10):
     from importlib import metadata
-except ImportError:
-    # <PY38 use backport
+else:
+    # <PY310 use backport
     import importlib_metadata as metadata
 
 PY37 = (3, 7) <= sys.version_info
@@ -85,7 +85,7 @@ Constants you probably do not need to change
 """
 
 # Only load extension entry_points once.
-INSTALLED_EXTENSIONS = metadata.entry_points().get('markdown.extensions', ())
+INSTALLED_EXTENSIONS = metadata.entry_points(group='markdown.extensions')
 RTL_BIDI_RANGES = (
     ('\u0590', '\u07FF'),
     # Hebrew (0590-05FF), Arabic (0600-06FF),
@@ -174,7 +174,7 @@ def _get_stack_depth(size=2):
 
 
 def nearing_recursion_limit():
-    """Return true if current stack depth is withing 100 of maximum limit."""
+    """Return true if current stack depth is within 100 of maximum limit."""
     return sys.getrecursionlimit() - _get_stack_depth() < 100
 
 
@@ -349,7 +349,7 @@ class Registry:
         * `priority`: An integer or float used to sort against all items.
 
         If an item is registered with a "name" which already exists, the
-        existing item is replaced with the new item. Tread carefully as the
+        existing item is replaced with the new item. Treat carefully as the
         old item is lost with no way to recover it. The new item will be
         sorted according to its priority and will **not** retain the position
         of the old item.
@@ -388,7 +388,7 @@ class Registry:
     # Deprecated Methods which provide a smooth transition from OrderedDict
 
     def __setitem__(self, key, value):
-        """ Register item with priorty 5 less than lowest existing priority. """
+        """ Register item with priority 5 less than lowest existing priority. """
         if isinstance(key, str):
             warnings.warn(
                 'Using setitem to register a processor or pattern is deprecated. '

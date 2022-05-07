@@ -49,7 +49,7 @@ dev_status_map = {
 DEVSTATUS = dev_status_map[__version_info__[3]]
 
 # The command line script name.  Currently set to "markdown_py" so as not to
-# conflict with the perl implimentation (which uses "markdown").
+# conflict with the perl implementation (which uses "markdown").
 SCRIPT_NAME = 'markdown_py'
 
 with open('README.md') as f:
@@ -74,7 +74,7 @@ setup(
     license='BSD License',
     packages=['markdown', 'markdown.extensions'],
     python_requires='>=3.6',
-    install_requires=["importlib-metadata;python_version<'3.8'"],
+    install_requires=["importlib-metadata>=4.4;python_version<'3.10'"],
     extras_require={
         'testing': [
             'coverage',
@@ -117,6 +117,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
