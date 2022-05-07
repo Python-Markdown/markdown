@@ -818,6 +818,7 @@ class TestFencedCodeWithCodehilite(TestCase):
             expected = '''
             <pre class="codehilite"><code class="language-python"># First Code Block
             </code></pre>
+
             <p>Normal paragraph</p>
             <pre class="codehilite"><code class="language-python"># Second Code Block
             </code></pre>
@@ -829,7 +830,9 @@ class TestFencedCodeWithCodehilite(TestCase):
                 ``` { .python }
                 # First Code Block
                 ```
+
                 Normal paragraph
+
                 ``` { .python }
                 # Second Code Block
                 ```
