@@ -32,7 +32,7 @@ In addition, tests were moved to the modern test environment.
 
 ## New features
 
-The following new features have been included in the 3.3 release:
+The following new features have been included in the 3.4 release:
 
 * Use `style` attribute in tables for alignment instead of `align` for better CSS
   inter-operation. The old behavior is available by setting `use_align_attribute=True` when
@@ -54,6 +54,12 @@ The following new features have been included in the 3.3 release:
 * The [Table of Contents](../extensions/toc.md) extension now accepts a `toc_class`
   parameter which can be used to set the CSS class(es) on the `<div>` that contains the
   Table of Contents (#1224).
+
+* The Codehilite extension now supports a `pygments_formatter` option that can be set to
+    use a custom formatter class with Pygments.
+    - If set to a string like `'html'`, we get the default formatter by that name.
+    - If set to a class (or any callable), it is called with all the options to get a
+      formatter instance.
 
 ## Bug fixes
 

@@ -234,6 +234,15 @@ The following options are provided to configure the output:
     This option only applies when `use_pygments` is `False` as Pygments does not provide an option to include a
     language prefix.
 
+* **`pygments_formatter`**{ #pygments_formatter }:
+    This option can be used to change the Pygments formatter used for highlighting the code blocks. By default, this
+    is set to the string `'html'`, which means it'll use the default `HtmlFormatter` provided by Pygments.
+
+    This can be set to a string representing any of the other default formatters, or set to a formatter class (or
+    any callable).
+
+    To see what formatters are available and how to subclass an existing formatter, please visit [Pygments
+    documentation on this topic][pygments formatters].
 
 * Any other Pygments' options:
 
@@ -250,3 +259,4 @@ markdown.markdown(some_text, extensions=['codehilite'])
 [html formatter]: https://pygments.org/docs/formatters/#HtmlFormatter
 [lexer]: https://pygments.org/docs/lexers/
 [spec]: https://www.w3.org/TR/html5/text-level-semantics.html#the-code-element
+[pygments formatters]: https://pygments.org/docs/formatters/
