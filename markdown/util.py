@@ -101,13 +101,13 @@ AUXILIARY GLOBAL FUNCTIONS
 """
 
 
-def deprecated(message, stacklevel=2):
+def deprecated(message: str, stacklevel : int = 2):
     """
     Raise a DeprecationWarning when wrapped function/method is called.
 
     Usage:
         @deprecated("This method will be removed in version X; use Y instead.")
-        def some_method()"
+        def some_method():
             pass
     """
     def wrapper(func):
