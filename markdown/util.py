@@ -101,7 +101,7 @@ AUXILIARY GLOBAL FUNCTIONS
 """
 
 
-def deprecated(message: str, stacklevel : int = 2):
+def deprecated(message: str, stacklevel: int = 2):
     """
     Raise a DeprecationWarning when wrapped function/method is called.
 
