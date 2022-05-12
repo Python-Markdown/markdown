@@ -15,8 +15,6 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
-from multiprocessing.sharedctypes import Value
-from random import lognormvariate
 from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import parseBoolValue
