@@ -228,11 +228,13 @@ The following options are provided to configure the output:
     `<code>` tag as a class in the manner suggested by the [HTML5 spec][spec] and may be used by a JavaScript library
     in the browser to highlight the code block. See the [`lang_prefix`](#lang_prefix) option to customize the prefix.
 
+* **`pygments_add_lang_class`**{ #pygments_add_lang_class }:
+    When `pygments_add_lang_class` is `True`, the language of a code block will be assigned to the `<code>` tag as a
+    class in the manner suggested by the [HTML5 spec][spec]. The language can be defined by the code block or guessed by
+    Pygments when `guess_lang` is `True`.
+
 * **`lang_prefix`**{ #lang_prefix }:
     The prefix prepended to the language class assigned to the HTML `<code>` tag. Default: `language-`.
-
-    This option only applies when `use_pygments` is `False` as Pygments does not provide an option to include a
-    language prefix.
 
 * **`pygments_formatter`**{ #pygments_formatter }:
     This option can be used to change the Pygments formatter used for highlighting the code blocks. By default, this
