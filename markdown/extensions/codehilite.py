@@ -15,6 +15,8 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
+from multiprocessing.sharedctypes import Value
+from random import lognormvariate
 from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import parseBoolValue
@@ -22,11 +24,33 @@ from ..util import parseBoolValue
 try:  # pragma: no cover
     from pygments import highlight
     from pygments.lexers import get_lexer_by_name, guess_lexer
-    from pygments.formatters import get_formatter_by_name
+    from pygments.formatters import get_formatter_by_name, HtmlFormatter
     from pygments.util import ClassNotFound
+
     pygments = True
 except ImportError:  # pragma: no cover
     pygments = False
+
+
+if pygments:
+
+    class HtmlAddLangClassFormatter(HtmlFormatter):
+        def __init__(self, lang=None, lang_prefix="language-", **options):
+            super().__init__(**options)
+            self.lang = lang
+            self.lang_prefix = lang_prefix
+
+        def wrap(self, source, outfile):
+            # Always use the div > pre > code structure
+            return self._wrap_div(self._wrap_pre(self._wrap_code(source)))
+
+        def _wrap_code(self, inner):
+            if self.lang:
+                yield 0, f'<code class="{self.lang_prefix}{self.lang}">'
+            else:
+                yield 0, '<code>'
+            yield from inner
+            yield 0, '</code>'
 
 
 def parse_hl_lines(expr):
@@ -68,8 +92,11 @@ class CodeHilite:
 
     * css_class: An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
 
-    * lang_prefix: Prefix prepended to the language when `use_pygments` is `False`.
-      Default: "language-".
+    * lang_prefix: Prefix prepended to the language when `use_pygments` is `False` or both
+      `use_pygments` and `pygments_add_lang_class` are `True`. Default: "language-".
+
+    * pygments_add_lang_class: Add the language as a class of the enclosing `<code>` tag.
+      Default: `False`.
 
     Other Options:
     Any other options are accepted and passed on to the lexer and formatter. Therefore,
@@ -101,6 +128,7 @@ class CodeHilite:
         self.use_pygments = options.pop('use_pygments', True)
         self.lang_prefix = options.pop('lang_prefix', 'language-')
         self.pygments_formatter = options.pop('pygments_formatter', 'html')
+        self.pygments_add_lang_class = options.pop('pygments_add_lang_class', False)
 
         if 'linenos' not in options:
             options['linenos'] = options.pop('linenums', None)
@@ -111,6 +139,10 @@ class CodeHilite:
             options['wrapcode'] = True
         # Disallow use of `full` option
         options['full'] = False
+
+        # Use the custom HTML formatter unless user has specified a custom one
+        if self.pygments_add_lang_class and self.pygments_formatter == 'html':
+            self.pygments_formatter = HtmlAddLangClassFormatter
 
         self.options = options
 
@@ -146,6 +178,14 @@ class CodeHilite:
                     formatter = get_formatter_by_name(self.pygments_formatter, **self.options)
                 except ClassNotFound:
                     formatter = get_formatter_by_name('html', **self.options)
+            elif self.pygments_add_lang_class:
+                if not self.lang:
+                    # Use the langauge the lexer gusses
+                    self.lang = lexer.aliases[0]
+                formatter = self.pygments_formatter(
+                    lang=self.lang, lang_prefix=self.lang_prefix,
+                    **self.options
+                )
             else:
                 formatter = self.pygments_formatter(**self.options)
             return highlight(self.src, lexer, formatter)
