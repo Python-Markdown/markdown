@@ -62,7 +62,7 @@ The following new features have been included in the 3.4 release:
       formatter instance.
 
 * The CodeHilite extension now supports a `pygments_add_lang_class` option that assigns
-    the language of a code block to its enclosing `<code>` tag in the Pygment generated
+    the language of a code block to its enclosing `<code>` tag in the Pygments generated
     output, so the output is [HTML5 compliant].
 
 [code-lang-spec5]: https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-code-element
