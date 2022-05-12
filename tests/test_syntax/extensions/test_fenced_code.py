@@ -896,6 +896,34 @@ class TestFencedCodeWithCodehilite(TestCase):
             ]
         )
 
+    def testCodeLangPygmentsFormatter(self):
+        expected = '''
+            <div class="codehilite"><pre><span></span><code class="language-text">hello world
+            hello another world
+            </code></pre></div>
+            '''
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```
+                hello world
+                hello another world
+                ```
+                '''
+            ),
+            self.dedent(
+                expected
+            ),
+            extensions=[
+                markdown.extensions.codehilite.CodeHiliteExtension(
+                    guess_lang=False,
+                    pygments_add_lang_class=True,
+                ),
+                'fenced_code'
+            ]
+        )
+
     def testSvgCustomPygmentsFormatter(self):
         if has_pygments:
             expected = '''
