@@ -423,6 +423,7 @@ class Registry:
         else:
             raise KeyError('Cannot delete key {}, not registered.'.format(key))
 
+    @deprecated('Use the `register` method instead.')
     def add(self, key, value, location):
         """ Register a key by location. """
         if len(self) == 0:
@@ -459,12 +460,6 @@ class Registry:
             raise ValueError('Not a valid location: "%s". Location key '
                              'must start with a ">" or "<".' % location)
         self.register(value, key, priority)
-        warnings.warn(
-            'Using the add method to register a processor or pattern is deprecated. '
-            'Use the `register` method instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
 
 
 def __getattr__(name):
