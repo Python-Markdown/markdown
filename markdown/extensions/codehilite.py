@@ -52,6 +52,9 @@ if pygments:
             yield from inner
             yield 0, '</code>'
 
+else:
+    HtmlAddLangClassFormatter = None
+
 
 def parse_hl_lines(expr):
     """Support our syntax for emphasizing certain lines of code.

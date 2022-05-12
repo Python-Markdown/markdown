@@ -896,17 +896,24 @@ class TestFencedCodeWithCodehilite(TestCase):
             ]
         )
 
-    def testCodeLangPygmentsFormatter(self):
-        expected = '''
-            <div class="codehilite"><pre><span></span><code class="language-text">hello world
-            hello another world
-            </code></pre></div>
-            '''
+    def testPygmentsAddLangClassFormatter(self):
+        if has_pygments:
+            expected = '''
+                <div class="codehilite"><pre><span></span><code class="language-text">hello world
+                hello another world
+                </code></pre></div>
+                '''
+        else:
+            expected = '''
+                <pre class="codehilite"><code class="language-text">hello world
+                hello another world
+                </code></pre>
+                '''
 
         self.assertMarkdownRenders(
             self.dedent(
                 '''
-                ```
+                ```text
                 hello world
                 hello another world
                 ```

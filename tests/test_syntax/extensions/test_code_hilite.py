@@ -515,9 +515,15 @@ class TestCodeHiliteExtension(TestCase):
         )
 
     def testPygmentsAddLangClass(self):
-        expected = self.dedent('''
+        if has_pygments:
+            expected = self.dedent('''
             <div class="codehilite"><pre><span></span><code class="language-python"><span class="c1"># A Code Comment</span>
             </code></pre></div>
+            ''')
+        else:
+            expected = self.dedent('''
+            <pre class="codehilite"><code class="language-python"># A Code Comment
+            </code></pre>
             ''')
 
         self.assertMarkdownRenders(
