@@ -10,7 +10,7 @@ PyPy3.
 ### The `table` extension now uses a `style` attribute instead of `align` attribute for alignment.
 
 The [HTML4 spec][spec4] specifically
-deprecates the use of the `align` attribute and it does not appear at all in the 
+deprecates the use of the `align` attribute and it does not appear at all in the
 [HTML5 spec][spec5]. Therefore, by default, the [table] extension will now use the `style`
 attribute (setting just the `text-align` property) in `td` and `th` blocks.
 
@@ -55,11 +55,17 @@ The following new features have been included in the 3.4 release:
   parameter which can be used to set the CSS class(es) on the `<div>` that contains the
   Table of Contents (#1224).
 
-* The Codehilite extension now supports a `pygments_formatter` option that can be set to
+* The CodeHilite extension now supports a `pygments_formatter` option that can be set to
     use a custom formatter class with Pygments.
     - If set to a string like `'html'`, we get the default formatter by that name.
     - If set to a class (or any callable), it is called with all the options to get a
       formatter instance.
+
+* The CodeHilite extension now supports a `pygments_add_lang_class` option that assigns
+    the language of a code block to its enclosing `<code>` tag in the Pygment generated
+    output, so the output is [HTML5 compliant].
+
+[code-lang-spec5]: https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-code-element
 
 ## Bug fixes
 
