@@ -519,13 +519,15 @@ class TestCodeHiliteExtension(TestCase):
             expected = (
                 '<div class="codehilite"><pre><span></span><code class="language-python">'
                 '<span class="c1"># A Code Comment</span>\n'
-                '</code></pre></div>\n'
+                '</code></pre></div>'
             )
         else:
             expected = (
                 '<pre class="codehilite"><code class="language-python"># A Code Comment\n'
-                '</code></pre>\n'
+                '</code></pre>'
             )
+            from markdown.extensions.codehilite import HtmlAddLangClassFormatter
+            assert HtmlAddLangClassFormatter is None
 
         self.assertMarkdownRenders(
             '\t:::Python\n'
@@ -534,6 +536,30 @@ class TestCodeHiliteExtension(TestCase):
             extensions=[
                 CodeHiliteExtension(
                     guess_lang=False,
+                    pygments_add_lang_class=True,
+                )
+            ]
+        )
+
+    def testPygmentsAddLangClassGuessLang(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code class="language-js+php"><span class="cp">&lt;?php</span> '
+                '<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span>'
+                '<span class="p">);</span> <span class="cp">?&gt;</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code>&lt;?php print(&quot;Hello World&quot;); ?&gt;\n'
+                '</code></pre>'
+            )
+        # Use PHP as the the starting `<?php` tag ensures an accurate guess.
+        self.assertMarkdownRenders(
+            '\t<?php print("Hello World"); ?>',
+            expected,
+            extensions=[
+                CodeHiliteExtension(
                     pygments_add_lang_class=True,
                 )
             ]
