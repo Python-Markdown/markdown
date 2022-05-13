@@ -566,6 +566,30 @@ class TestCodeHiliteExtension(TestCase):
             ]
         )
 
+    def testPygmentsAddLangClassEmptyLang(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span>'
+                '<code class="language-text"># A Code Comment\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code># A Code Comment\n'
+                '</code></pre>'
+            )
+        # Use PHP as the the starting `<?php` tag ensures an accurate guess.
+        self.assertMarkdownRenders(
+            '\t# A Code Comment',
+            expected,
+            extensions=[
+                CodeHiliteExtension(
+                    guess_lang=False,
+                    pygments_add_lang_class=True,
+                )
+            ]
+        )
+
     def testUsePygmentsFalse(self):
         self.assertMarkdownRenders(
             (

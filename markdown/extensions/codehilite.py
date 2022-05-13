@@ -45,7 +45,7 @@ if pygments:
         def _wrap_code(self, inner):
             if self.lang:
                 yield 0, f'<code class="{self.lang_prefix}{self.lang}">'
-            else:
+            else:  # pragma: no cover
                 yield 0, '<code>'
             yield from inner
             yield 0, '</code>'
