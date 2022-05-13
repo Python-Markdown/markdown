@@ -544,7 +544,8 @@ class TestCodeHiliteExtension(TestCase):
     def testPygmentsAddLangClassGuessLang(self):
         if has_pygments:
             expected = (
-                '<div class="codehilite"><pre><span></span><code class="language-js+php"><span class="cp">&lt;?php</span> '
+                '<div class="codehilite"><pre><span></span>'
+                '<code class="language-js+php"><span class="cp">&lt;?php</span> '
                 '<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span>'
                 '<span class="p">);</span> <span class="cp">?&gt;</span>\n'
                 '</code></pre></div>'
