@@ -420,7 +420,7 @@ class RegistryTests(unittest.TestCase):
                 r.add('f', Item('f'), 'badlocation')
 
             # Check the warnings
-            self.assertEqual(len(w), 7)
+            self.assertEqual(len(w), 8)
             self.assertTrue(all(issubclass(x.category, DeprecationWarning) for x in w))
 
 
