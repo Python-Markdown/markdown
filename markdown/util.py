@@ -387,7 +387,7 @@ class Registry:
 
     # Deprecated Methods which provide a smooth transition from OrderedDict
 
-    @deprecated('Use the `deregister` method instead.')
+    @deprecated('Use the `register` method instead.')
     def __setitem__(self, key, value):
         """ Register item with priority 5 less than lowest existing priority. """
         if isinstance(key, str):
