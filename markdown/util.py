@@ -387,15 +387,10 @@ class Registry:
 
     # Deprecated Methods which provide a smooth transition from OrderedDict
 
+    @deprecated('Use the `register` method instead.')
     def __setitem__(self, key, value):
         """ Register item with priority 5 less than lowest existing priority. """
         if isinstance(key, str):
-            warnings.warn(
-                'Using setitem to register a processor or pattern is deprecated. '
-                'Use the `register` method instead.',
-                DeprecationWarning,
-                stacklevel=2,
-            )
             if key in self:
                 # Key already exists, replace without altering priority
                 self._data[key] = value
@@ -410,16 +405,11 @@ class Registry:
         else:
             raise TypeError
 
+    @deprecated('Use the `deregister` method instead.')
     def __delitem__(self, key):
         """ Deregister an item by name. """
         if key in self:
             self.deregister(key)
-            warnings.warn(
-                'Using del to remove a processor or pattern is deprecated. '
-                'Use the `deregister` method instead.',
-                DeprecationWarning,
-                stacklevel=2,
-            )
         else:
             raise KeyError('Cannot delete key {}, not registered.'.format(key))
 

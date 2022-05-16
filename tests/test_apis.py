@@ -358,7 +358,7 @@ class RegistryTests(unittest.TestCase):
             self.assertEqual(list(r), [])
 
             # Check the warnings
-            self.assertEqual(len(w), 3)
+            self.assertEqual(len(w), 4)
             self.assertTrue(all(issubclass(x.category, DeprecationWarning) for x in w))
 
     def testRegistrySlice(self):
