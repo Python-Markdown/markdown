@@ -64,12 +64,14 @@ class CodeHilite:
     * use_pygments: Pass code to pygments for code highlighting. If `False`, the code is
       instead wrapped for highlighting by a JavaScript library. Default: `True`.
 
+    * pygments_formatter: The name of a Pygments formatter or a formatter class used for
+      highlighting the code blocks. Default: `html`.
+
     * linenums: An alias to Pygments `linenos` formatter option. Default: `None`.
 
     * css_class: An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
 
-    * lang_prefix: Prefix prepended to the language when `use_pygments` is `False`.
-      Default: "language-".
+    * lang_prefix: Prefix prepended to the language. Default: "language-".
 
     Other Options:
     Any other options are accepted and passed on to the lexer and formatter. Therefore,
@@ -80,6 +82,10 @@ class CodeHilite:
 
     Formatter options: https://pygments.org/docs/formatters/#HtmlFormatter
     Lexer Options: https://pygments.org/docs/lexers/
+
+    Additionally, when Pygments is enabled, the code's language is passed to the
+    formatter as an extra option `lang_str`, whose value being `{lang_prefix}{lang}`.
+    This option has no effect to the Pygments's builtin formatters.
 
     Advanced Usage:
         code = CodeHilite(
@@ -141,13 +147,17 @@ class CodeHilite:
                         lexer = get_lexer_by_name('text', **self.options)
                 except ValueError:  # pragma: no cover
                     lexer = get_lexer_by_name('text', **self.options)
+            if not self.lang:
+                # Use the guessed lexer's langauge instead
+                self.lang = lexer.aliases[0]
+            lang_str = f'{self.lang_prefix}{self.lang}'
             if isinstance(self.pygments_formatter, str):
                 try:
                     formatter = get_formatter_by_name(self.pygments_formatter, **self.options)
                 except ClassNotFound:
                     formatter = get_formatter_by_name('html', **self.options)
             else:
-                formatter = self.pygments_formatter(**self.options)
+                formatter = self.pygments_formatter(lang_str=lang_str, **self.options)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
