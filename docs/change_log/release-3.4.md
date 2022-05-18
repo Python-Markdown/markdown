@@ -57,7 +57,7 @@ The following new features have been included in the 3.4 release:
 
 * The CodeHilite extension now supports a `pygments_formatter` option that can be set to
     use a custom formatter class with Pygments (#1187). Additionally, the specified
-    Pygments formatter received an extra option `lang_str` to denote the language of
+    Pygments formatter is passed an extra option `lang_str` to denote the language of
     the code block (#1258).
     - If set to a string like `'html'`, we get the default formatter by that name.
     - If set to a class (or any callable), it is called with all the options to get a
