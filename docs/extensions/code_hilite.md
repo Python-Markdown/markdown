@@ -268,7 +268,9 @@ from pygments.formatters import HtmlFormatter
 class CustomHtmlFormatter(HtmlFormatter):
     def __init__(self, lang_str='', **options):
         super().__init__(**options)
-        self.lang_str = lang_str  # Given value is {lang_prefix}{lang}
+        # lang_str has the value {lang_prefix}{lang}
+        # specified by the CodeHilite's options
+        self.lang_str = lang_str
 
     def _wrap_code(self, source):
         yield 0, f'<code class="{self.lang_str}">'
