@@ -231,15 +231,17 @@ The following options are provided to configure the output:
 * **`lang_prefix`**{ #lang_prefix }:
     The prefix prepended to the language class assigned to the HTML `<code>` tag. Default: `language-`.
 
-    This option only applies when `use_pygments` is `False` as Pygments does not provide an option to include a
-    language prefix.
-
 * **`pygments_formatter`**{ #pygments_formatter }:
     This option can be used to change the Pygments formatter used for highlighting the code blocks. By default, this
     is set to the string `'html'`, which means it'll use the default `HtmlFormatter` provided by Pygments.
 
     This can be set to a string representing any of the other default formatters, or set to a formatter class (or
     any callable).
+
+    The code's language is always passed to the formatter as an extra option `lang_str`, with the value formatted as
+    `{lang_prefix}{lang}`. If the language is unspecified, the language guessed by Pygments will be used. While
+    this option has no effect to the Pygments's builtin formatters, a user can make use of the language in their custom
+    formatter. See an example below.
 
     To see what formatters are available and how to subclass an existing formatter, please visit [Pygments
     documentation on this topic][pygments formatters].
@@ -254,6 +256,50 @@ A trivial example:
 
 ```python
 markdown.markdown(some_text, extensions=['codehilite'])
+```
+
+To keep the code block's language in the Pygments generated HTML output, one can provide a custom Pygments formatter
+that takes the `lang_str` option. For example,
+
+```python
+from pygments.formatters import HtmlFormatter
+from markdown.extensions.codehilite import CodeHiliteExtension
+
+
+class CustomHtmlFormatter(HtmlFormatter):
+    def __init__(self, lang_str='', **options):
+        super().__init__(**options)
+        # lang_str has the value {lang_prefix}{lang}
+        # specified by the CodeHilite's options
+        self.lang_str = lang_str
+
+    def _wrap_code(self, source):
+        yield 0, f'<code class="{self.lang_str}">'
+        yield from source
+        yield 0, '</code>'
+
+
+some_text = '''\
+    :::python
+    print('hellow world')
+'''
+
+markdown.markdown(
+    some_text,
+    extensions=[CodeHiliteExtension(pygments_formatter=CustomHtmlFormatter)],
+)
+```
+
+The formatter above will output the following HTML structure for the code block:
+
+```html
+<div class="codehilite">
+    <pre>
+        <code class="language-python">
+        ...
+        </code>
+    </pre>
+</div>
 ```
 
 [html formatter]: https://pygments.org/docs/formatters/#HtmlFormatter
