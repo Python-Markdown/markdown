@@ -354,6 +354,22 @@ class TestCodeHiliteExtension(TestCase):
         if has_pygments and pygments.__version__ != required_pygments_version:
             self.skipTest(f'Pygments=={required_pygments_version} is required')
 
+        # Define a custom Pygments formatter (same example in the documentation)
+        if has_pygments:
+            class CustomAddLangHtmlFormatter(pygments.formatters.HtmlFormatter):
+                def __init__(self, lang_str='', **options):
+                    super().__init__(**options)
+                    self.lang_str = lang_str
+
+                def _wrap_code(self, source):
+                    yield 0, f'<code class="{self.lang_str}">'
+                    yield from source
+                    yield 0, '</code>'
+        else:
+            CustomAddLangHtmlFormatter = None
+
+        self.custom_pygments_formatter = CustomAddLangHtmlFormatter
+
     maxDiff = None
 
     def testBasicCodeHilite(self):
@@ -675,4 +691,74 @@ class TestCodeHiliteExtension(TestCase):
             ),
             expected,
             extensions=[CodeHiliteExtension(pygments_style="native", noclasses=True)]
+        )
+
+    def testFormatterLangStr(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span><code class="language-python">'
+                '<span class="c1"># A Code Comment</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-python"># A Code Comment\n'
+                '</code></pre>'
+            )
+
+        self.assertMarkdownRenders(
+            '\t:::Python\n'
+            '\t# A Code Comment',
+            expected,
+            extensions=[
+                CodeHiliteExtension(
+                    guess_lang=False,
+                    pygments_formatter=self.custom_pygments_formatter
+                )
+            ]
+        )
+
+    def testFormatterLangStrGuessLang(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span>'
+                '<code class="language-js+php"><span class="cp">&lt;?php</span> '
+                '<span class="k">print</span><span class="p">(</span>'
+                '<span class="s2">&quot;Hello World&quot;</span>'
+                '<span class="p">);</span> <span class="cp">?&gt;</span>\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code>&lt;?php print(&quot;Hello World&quot;); ?&gt;\n'
+                '</code></pre>'
+            )
+        # Use PHP as the the starting `<?php` tag ensures an accurate guess.
+        self.assertMarkdownRenders(
+            '\t<?php print("Hello World"); ?>',
+            expected,
+            extensions=[CodeHiliteExtension(pygments_formatter=self.custom_pygments_formatter)]
+        )
+
+    def testFormatterLangStrEmptyLang(self):
+        if has_pygments:
+            expected = (
+                '<div class="codehilite"><pre><span></span>'
+                '<code class="language-text"># A Code Comment\n'
+                '</code></pre></div>'
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code># A Code Comment\n'
+                '</code></pre>'
+            )
+        self.assertMarkdownRenders(
+            '\t# A Code Comment',
+            expected,
+            extensions=[
+                CodeHiliteExtension(
+                    guess_lang=False,
+                    pygments_formatter=self.custom_pygments_formatter,
+                )
+            ]
         )
