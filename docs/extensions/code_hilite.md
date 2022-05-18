@@ -238,9 +238,9 @@ The following options are provided to configure the output:
     This can be set to a string representing any of the other default formatters, or set to a formatter class (or
     any callable).
 
-    The code's language is always passed to the formatter as an extra option `lang_str`, whose value being
-    `{lang_prefix}{lang}`. If the language is unspecified, the language guessed by Pygments will be used instead. While
-    this option has no effect to the Pygments's builtin formatters, user can take in the language input in their custom
+    The code's language is always passed to the formatter as an extra option `lang_str`, with the value formatted as
+    `{lang_prefix}{lang}`. If the language is unspecified, the language guessed by Pygments will be used. While
+    this option has no effect to the Pygments's builtin formatters, a user can make use of the language in their custom
     formatter. See an example below.
 
     To see what formatters are available and how to subclass an existing formatter, please visit [Pygments
@@ -263,6 +263,7 @@ that takes the `lang_str` option. For example,
 
 ```python
 from pygments.formatters import HtmlFormatter
+from markdown.extensions.codehilite import CodeHiliteExtension
 
 
 class CustomHtmlFormatter(HtmlFormatter):
@@ -285,10 +286,7 @@ some_text = '''\
 
 markdown.markdown(
     some_text,
-    extensions=['markdown.extensions.codehilite'],
-    extension_configs={'markdown.extensions.codehilite': {
-        'pygments_formatter': CustomHtmlFormatter
-    }}
+    extensions=[CodeHiliteExtension(pygments_formatter=CustomHtmlFormatter)],
 )
 ```
 
