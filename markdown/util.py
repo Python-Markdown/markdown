@@ -28,16 +28,6 @@ from functools import wraps, lru_cache
 from itertools import count
 
 
-# TODO: Remove deprecated variables in a future release.
-__deprecated__ = {
-    'etree': ('xml.etree.ElementTree', xml.etree.ElementTree),
-    'string_type': ('str', str),
-    'text_type': ('str', str),
-    'int2str': ('chr', chr),
-    'iterrange': ('range', range)
-}
-
-
 """
 Constants you might want to modify
 -----------------------------------------------------------------------------
@@ -121,15 +111,6 @@ def deprecated(message, stacklevel=2):
     return wrapper
 
 
-@deprecated("Use 'Markdown.is_block_level' instead.")
-def isBlockLevel(tag):
-    """Check if the tag is a block level HTML tag."""
-    if isinstance(tag, str):
-        return tag.lower().rstrip('/') in BLOCK_LEVEL_ELEMENTS
-    # Some ElementTree tags are not strings, so return False.
-    return False
-
-
 def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
     """Parses a string representing bool value. If parsing was successful,
        returns True or False. If preserve_none=True, returns True, False,
@@ -190,12 +171,6 @@ class AtomicString(str):
 class Processor:
     def __init__(self, md=None):
         self.md = md
-
-    @property
-    @deprecated("Use 'md' instead.")
-    def markdown(self):
-        # TODO: remove this later
-        return self.md
 
 
 class HtmlStash:
@@ -382,83 +357,3 @@ class Registry:
         if not self._is_sorted:
             self._priority.sort(key=lambda item: item.priority, reverse=True)
             self._is_sorted = True
-
-    # Deprecated Methods which provide a smooth transition from OrderedDict
-
-    @deprecated('Use the `register` method instead.')
-    def __setitem__(self, key, value):
-        """ Register item with priority 5 less than lowest existing priority. """
-        if isinstance(key, str):
-            if key in self:
-                # Key already exists, replace without altering priority
-                self._data[key] = value
-                return
-            if len(self) == 0:
-                # This is the first item. Set priority to 50.
-                priority = 50
-            else:
-                self._sort()
-                priority = self._priority[-1].priority - 5
-            self.register(value, key, priority)
-        else:
-            raise TypeError
-
-    @deprecated('Use the `deregister` method instead.')
-    def __delitem__(self, key):
-        """ Deregister an item by name. """
-        if key in self:
-            self.deregister(key)
-        else:
-            raise KeyError('Cannot delete key {}, not registered.'.format(key))
-
-    @deprecated('Use the `register` method instead.')
-    def add(self, key, value, location):
-        """ Register a key by location. """
-        if len(self) == 0:
-            # This is the first item. Set priority to 50.
-            priority = 50
-        elif location == '_begin':
-            self._sort()
-            # Set priority 5 greater than highest existing priority
-            priority = self._priority[0].priority + 5
-        elif location == '_end':
-            self._sort()
-            # Set priority 5 less than lowest existing priority
-            priority = self._priority[-1].priority - 5
-        elif location.startswith('<') or location.startswith('>'):
-            # Set priority halfway between existing priorities.
-            i = self.get_index_for_name(location[1:])
-            if location.startswith('<'):
-                after = self._priority[i].priority
-                if i > 0:
-                    before = self._priority[i-1].priority
-                else:
-                    # Location is first item`
-                    before = after + 10
-            else:
-                # location.startswith('>')
-                before = self._priority[i].priority
-                if i < len(self) - 1:
-                    after = self._priority[i+1].priority
-                else:
-                    # location is last item
-                    after = before - 10
-            priority = before - ((before - after) / 2)
-        else:
-            raise ValueError('Not a valid location: "%s". Location key '
-                             'must start with a ">" or "<".' % location)
-        self.register(value, key, priority)
-
-
-def __getattr__(name):
-    """Get attribute."""
-
-    deprecated = __deprecated__.get(name)
-    if deprecated:
-        warnings.warn(
-            "'{}' is deprecated. Use '{}' instead.".format(name, deprecated[0]),
-            category=DeprecationWarning,
-            stacklevel=(3 if (3, 7) <= sys.version_info else 4)
-        )
-        return deprecated[1]
-    raise AttributeError("module '{}' has no attribute '{}'".format(__name__, name))

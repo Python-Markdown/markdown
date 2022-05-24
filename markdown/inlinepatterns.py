@@ -211,12 +211,6 @@ class Pattern:  # pragma: no cover
 
         self.md = md
 
-    @property
-    @util.deprecated("Use 'md' instead.")
-    def markdown(self):
-        # TODO: remove this later
-        return self.md
-
     def getCompiledRegExp(self):
         """ Return a compiled regular expression. """
         return self.compiled_re

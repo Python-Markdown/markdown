@@ -122,7 +122,7 @@ class Markdown:
             if isinstance(ext, str):
                 ext = self.build_extension(ext, configs.get(ext, {}))
             if isinstance(ext, Extension):
-                ext._extendMarkdown(self)
+                ext.extendMarkdown(self)
                 logger.debug(
                     'Successfully loaded extension "%s.%s".'
                     % (ext.__class__.__module__, ext.__class__.__name__)

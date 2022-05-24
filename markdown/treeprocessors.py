@@ -75,12 +75,6 @@ class InlineProcessor(Treeprocessor):
         self.inlinePatterns = md.inlinePatterns
         self.ancestors = []
 
-    @property
-    @util.deprecated("Use 'md' instead.")
-    def markdown(self):
-        # TODO: remove this later
-        return self.md
-
     def __makePlaceholder(self, type):
         """ Generate a placeholder """
         id = "%04d" % len(self.stashed_nodes)
