@@ -19,7 +19,6 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-import warnings
 from ..util import parseBoolValue
 
 

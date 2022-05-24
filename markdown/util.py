@@ -22,7 +22,6 @@ License: BSD (see LICENSE.md for details).
 import re
 import sys
 import warnings
-import xml.etree.ElementTree
 from collections import namedtuple
 from functools import wraps, lru_cache
 from itertools import count
