@@ -20,10 +20,8 @@ jobs:
       fail-fast: false
       max-parallel: 4
       matrix:
-        tox-env: [py36, py37, py38, py39, py310, pypy3, pygments]
+        tox-env: [py37, py38, py39, py310, pypy3, pygments]
         include:
-          - tox-env: py36
-            python-version: '3.6'
           - tox-env: py37
             python-version: '3.7'
           - tox-env: py38
