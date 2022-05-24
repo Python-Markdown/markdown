@@ -2,7 +2,7 @@ title: Release Notes for v3.4
 
 # Python-Markdown 3.4 Release Notes
 
-Python-Markdown version 3.4 supports Python versions 3.6, 3.7, 3.8, 3.9, 3.10 and
+Python-Markdown version 3.4 supports Python versions 3.7, 3.8, 3.9, 3.10 and
 PyPy3.
 
 ## Backwards-incompatible changes
