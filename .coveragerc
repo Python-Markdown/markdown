@@ -3,4 +3,3 @@ omit=
     *site-packages*
     tests/*
     markdown/test_tools.py
-    markdown/pep562.py

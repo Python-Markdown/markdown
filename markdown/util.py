@@ -27,10 +27,6 @@ from collections import namedtuple
 from functools import wraps, lru_cache
 from itertools import count
 
-from .pep562 import Pep562
-
-PY37 = (3, 7) <= sys.version_info
-
 
 # TODO: Remove deprecated variables in a future release.
 __deprecated__ = {
@@ -462,11 +458,7 @@ def __getattr__(name):
         warnings.warn(
             "'{}' is deprecated. Use '{}' instead.".format(name, deprecated[0]),
             category=DeprecationWarning,
-            stacklevel=(3 if PY37 else 4)
+            stacklevel=(3 if (3, 7) <= sys.version_info else 4)
         )
         return deprecated[1]
     raise AttributeError("module '{}' has no attribute '{}'".format(__name__, name))
-
-
-if not PY37:
-    Pep562(__name__)
