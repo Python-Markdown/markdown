@@ -176,7 +176,7 @@ def _get_stack_depth(size=2):
 
 
 def nearing_recursion_limit():
-    """Return true if current stack depth is withing 100 of maximum limit."""
+    """Return true if current stack depth is within 100 of maximum limit."""
     return sys.getrecursionlimit() - _get_stack_depth() < 100
 
 
@@ -351,7 +351,7 @@ class Registry:
         * `priority`: An integer or float used to sort against all items.
 
         If an item is registered with a "name" which already exists, the
-        existing item is replaced with the new item. Tread carefully as the
+        existing item is replaced with the new item. Treat carefully as the
         old item is lost with no way to recover it. The new item will be
         sorted according to its priority and will **not** retain the position
         of the old item.
@@ -389,15 +389,10 @@ class Registry:
 
     # Deprecated Methods which provide a smooth transition from OrderedDict
 
+    @deprecated('Use the `register` method instead.')
     def __setitem__(self, key, value):
-        """ Register item with priorty 5 less than lowest existing priority. """
+        """ Register item with priority 5 less than lowest existing priority. """
         if isinstance(key, str):
-            warnings.warn(
-                'Using setitem to register a processor or pattern is deprecated. '
-                'Use the `register` method instead.',
-                DeprecationWarning,
-                stacklevel=2,
-            )
             if key in self:
                 # Key already exists, replace without altering priority
                 self._data[key] = value
@@ -412,19 +407,15 @@ class Registry:
         else:
             raise TypeError
 
+    @deprecated('Use the `deregister` method instead.')
     def __delitem__(self, key):
         """ Deregister an item by name. """
         if key in self:
             self.deregister(key)
-            warnings.warn(
-                'Using del to remove a processor or pattern is deprecated. '
-                'Use the `deregister` method instead.',
-                DeprecationWarning,
-                stacklevel=2,
-            )
         else:
             raise KeyError('Cannot delete key {}, not registered.'.format(key))
 
+    @deprecated('Use the `register` method instead.')
     def add(self, key, value, location):
         """ Register a key by location. """
         if len(self) == 0:
@@ -461,12 +452,6 @@ class Registry:
             raise ValueError('Not a valid location: "%s". Location key '
                              'must start with a ">" or "<".' % location)
         self.register(value, key, priority)
-        warnings.warn(
-            'Using the add method to register a processor or pattern is deprecated. '
-            'Use the `register` method instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
 
 
 def __getattr__(name):

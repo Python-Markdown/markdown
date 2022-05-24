@@ -1066,7 +1066,7 @@ class TestMdInHTML(TestCase):
         )
 
     def test_md1_hr_start_and_end(self):
-        # Browers ignore ending hr tags, so we don't try to do anything to handle them special.
+        # Browsers ignore ending hr tags, so we don't try to do anything to handle them special.
         self.assertMarkdownRenders(
             self.dedent(
                 """
@@ -1086,7 +1086,7 @@ class TestMdInHTML(TestCase):
         )
 
     def test_md1_hr_only_end(self):
-        # Browers ignore ending hr tags, so we don't try to do anything to handle them special.
+        # Browsers ignore ending hr tags, so we don't try to do anything to handle them special.
         self.assertMarkdownRenders(
             self.dedent(
                 """
@@ -1105,7 +1105,7 @@ class TestMdInHTML(TestCase):
         )
 
     def test_md1_hr_with_content(self):
-        # Browers ignore ending hr tags, so we don't try to do anything to handle them special.
+        # Browsers ignore ending hr tags, so we don't try to do anything to handle them special.
         # Content is not allowed and will be treated as normal content between two hr tags
         self.assertMarkdownRenders(
             self.dedent(
@@ -1129,7 +1129,7 @@ class TestMdInHTML(TestCase):
         )
 
     def test_no_md1_hr_with_content(self):
-        # Browers ignore ending hr tags, so we don't try to do anything to handle them special.
+        # Browsers ignore ending hr tags, so we don't try to do anything to handle them special.
         # Content is not allowed and will be treated as normal content between two hr tags
         self.assertMarkdownRenders(
             self.dedent(

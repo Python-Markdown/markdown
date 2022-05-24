@@ -151,6 +151,9 @@ The following options are provided to configure the output:
 * **`title`**:
     Title to insert in the Table of Contents' `<div>`. Defaults to `None`.
 
+* **`toc_class`**:
+    CSS class(es) used for the `<div>` containing the Table of Contents. Defaults to `toc`.
+
 * **`anchorlink`**:
     Set to `True` to cause all headers to link to themselves. Default is `False`.
 

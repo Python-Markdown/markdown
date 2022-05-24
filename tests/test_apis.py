@@ -272,11 +272,11 @@ class RegistryTests(unittest.TestCase):
         self.assertEqual(len(r), 2)
         r.deregister('c', strict=False)
         self.assertEqual(len(r), 1)
-        # deregister non-existant item with strict=False
+        # deregister non-existent item with strict=False
         r.deregister('d', strict=False)
         self.assertEqual(len(r), 1)
         with self.assertRaises(ValueError):
-            # deregister non-existant item with strict=True
+            # deregister non-existent item with strict=True
             r.deregister('e')
         self.assertEqual(list(r), ['a'])
 
@@ -358,7 +358,7 @@ class RegistryTests(unittest.TestCase):
             self.assertEqual(list(r), [])
 
             # Check the warnings
-            self.assertEqual(len(w), 3)
+            self.assertEqual(len(w), 4)
             self.assertTrue(all(issubclass(x.category, DeprecationWarning) for x in w))
 
     def testRegistrySlice(self):
@@ -420,7 +420,7 @@ class RegistryTests(unittest.TestCase):
                 r.add('f', Item('f'), 'badlocation')
 
             # Check the warnings
-            self.assertEqual(len(w), 7)
+            self.assertEqual(len(w), 8)
             self.assertTrue(all(issubclass(x.category, DeprecationWarning) for x in w))
 
 
@@ -455,7 +455,7 @@ class TestErrors(unittest.TestCase):
         self.assertRaises(TypeError, markdown.Markdown, extensions=[object])
 
     def testDotNotationExtensionWithBadClass(self):
-        """ Test Extension loading with non-existant class name (`path.to.module:Class`). """
+        """ Test Extension loading with non-existent class name (`path.to.module:Class`). """
         self.assertRaises(
             AttributeError,
             markdown.Markdown,

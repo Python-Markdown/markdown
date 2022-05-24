@@ -22,3 +22,14 @@ jobs:
           change log describing the changes you have made. Doing so will help to ensure your contribution is accepted.
 
           Please see the [Contributing Guide](https://python-markdown.github.io/contributing/#pull-requests) for details.
+
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: yes
+        use-verbose-mode: yes
+        check-modified-files-only: yes
+        base-branch: master

@@ -287,7 +287,7 @@ class TestDefList(TestCase):
 
                         term
 
-                        :   defintion
+                        :   definition
 
                             1.  list
 
@@ -305,7 +305,7 @@ class TestDefList(TestCase):
                 <dl>
                 <dt>term</dt>
                 <dd>
-                <p>defintion</p>
+                <p>definition</p>
                 <ol>
                 <li>
                 <p>list</p>
