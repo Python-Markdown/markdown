@@ -27,8 +27,6 @@ if sys.version_info[0] < 3:  # pragma: no cover
     raise ImportError('A recent version of Python 3 is required.')
 
 from .core import Markdown, markdown, markdownFromFile  # noqa: E402
-from .util import PY37                                  # noqa: E402
-from .pep562 import Pep562                              # noqa: E402
 from .__meta__ import __version__, __version_info__     # noqa: E402
 import warnings                                         # noqa: E402
 
@@ -51,11 +49,7 @@ def __getattr__(name):
         warnings.warn(
             "'{}' is deprecated. Use '{}' instead.".format(name, deprecated[0]),
             category=DeprecationWarning,
-            stacklevel=(3 if PY37 else 4)
+            stacklevel=(3 if (3, 7) <= sys.version_info else 4)
         )
         return deprecated[1]
     raise AttributeError("module '{}' has no attribute '{}'".format(__name__, name))
-
-
-if not PY37:
-    Pep562(__name__)
