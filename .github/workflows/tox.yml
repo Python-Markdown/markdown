@@ -31,7 +31,7 @@ jobs:
           - tox-env: py310
             python-version: '3.10'
           - tox-env: pypy3
-            python-version: pypy3
+            python-version: pypy-3.7
           - tox-env: pygments
             python-version: '3.7'
 
@@ -41,7 +41,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Setup Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
