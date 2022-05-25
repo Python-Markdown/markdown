@@ -68,4 +68,4 @@ The following new features have been included in the 3.4 release:
 The following bug fixes are included in the 3.4 release:
 
 * Extension entry-points are only loaded if needed (#1216).
-* Added a `None` check to PrettifyTreeprocessor (#1261).
+* Added a `None` check to `PrettifyTreeprocessor` (#1261).
