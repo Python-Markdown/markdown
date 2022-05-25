@@ -32,7 +32,7 @@ In addition, tests were moved to the modern test environment.
 
 ### Previously deprecated objects have been removed
 
-Various objects were dreprecated in version 3.0 and began raising deprecation
+Various objects were deprecated in version 3.0 and began raising deprecation
 warnings (see the [version 3.0 release notes] for details). Any of those object
 which remained in version 3.3 have been removed from the codebase in version 3.4
 and will now raise errors. A summary of the objects are provided below.
