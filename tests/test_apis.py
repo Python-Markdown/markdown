@@ -527,6 +527,7 @@ class testElementTailTests(unittest.TestCase):
 
 class testElementPreCodeTests(unittest.TestCase):
     """ Element PreCode Tests """
+    def setUp(self):
         md = markdown.Markdown()
         self.pretty = markdown.treeprocessors.PrettifyTreeprocessor(md)
 
