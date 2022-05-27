@@ -30,6 +30,34 @@ markdown.markdown(src, extensions=[TableExtension(use_align_attribute=True)])
 
 In addition, tests were moved to the modern test environment.
 
+### Previously deprecated objects have been removed
+
+Various objects were deprecated in version 3.0 and began raising deprecation
+warnings (see the [version 3.0 release notes] for details). Any of those object
+which remained in version 3.3 have been removed from the codebase in version 3.4
+and will now raise errors. A summary of the objects are provided below.
+
+[version 3.0 release notes]: release-3.0.md
+
+| Deprecated Object                      | Replacement Object                  |
+|----------------------------------------|-------------------------------------|
+| `markdown.version`                     | `markdown.__version__`              |
+| `markdown.version_info`                | `markdown.__version_info__`         |
+| `markdown.util.etree`                  | `xml.etree.ElementTree`             |
+| `markdown.util.string_type`            | `str`                               |
+| `markdown.util.text_type`              | `str`                               |
+| `markdown.util.int2str`                | `chr`                               |
+| `markdown.util.iterrange`              | `range`                             |
+| `markdown.util.isBlockLevel`           | `markdown.Markdown.is_block_level`  |
+| `markdown.util.Processor().markdown`   | `markdown.util.Processor().md`      |
+| `markdown.util.Registry().__setitem__` | `markdown.util.Registry().register` |
+| `markdown.util.Registry().__delitem__` |`markdown.util.Registry().deregister`|
+| `markdown.util.Registry().add`         | `markdown.util.Registry().register` |
+
+In addition, the `md_globals` parameter of
+`Markdown.extensions.Extension.extendMarkdown()` is no longer recognized as a
+valid parameter and will raise an error if provided.
+
 ## New features
 
 The following new features have been included in the 3.4 release:
