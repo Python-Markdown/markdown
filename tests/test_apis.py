@@ -525,6 +525,43 @@ class testElementTailTests(unittest.TestCase):
         self.assertEqual(br.tail, "\n")
 
 
+class testElementPreCodeTests(unittest.TestCase):
+    """ Element PreCode Tests """
+    def setUp(self):
+        md = markdown.Markdown()
+        self.pretty = markdown.treeprocessors.PrettifyTreeprocessor(md)
+
+    def prettify(self, xml):
+        root = etree.fromstring(xml)
+        self.pretty.run(root)
+        return etree.tostring(root, encoding="unicode", short_empty_elements=False)
+
+    def testPreCodeEmpty(self):
+        xml = "<pre><code></code></pre>"
+        expected = "<pre><code></code></pre>\n"
+        self.assertEqual(expected, self.prettify(xml))
+
+    def testPreCodeWithChildren(self):
+        xml = "<pre><code> <span /></code></pre>"
+        expected = "<pre><code> <span></span></code></pre>\n"
+        self.assertEqual(expected, self.prettify(xml))
+
+    def testPreCodeWithSpaceOnly(self):
+        xml = "<pre><code> </code></pre>"
+        expected = "<pre><code>\n</code></pre>\n"
+        self.assertEqual(expected, self.prettify(xml))
+
+    def testPreCodeWithText(self):
+        xml = "<pre><code> hello</code></pre>"
+        expected = "<pre><code> hello\n</code></pre>\n"
+        self.assertEqual(expected, self.prettify(xml))
+
+    def testPreCodeWithTrailingSpace(self):
+        xml = "<pre><code> hello </code></pre>"
+        expected = "<pre><code> hello\n</code></pre>\n"
+        self.assertEqual(expected, self.prettify(xml))
+
+
 class testSerializers(unittest.TestCase):
     """ Test the html and xhtml serializers. """
 

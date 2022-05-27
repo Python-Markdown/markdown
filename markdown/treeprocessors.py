@@ -432,5 +432,8 @@ class PrettifyTreeprocessor(Treeprocessor):
         # Clean up extra empty lines at end of code blocks.
         pres = root.iter('pre')
         for pre in pres:
-            if len(pre) and pre[0].tag == 'code' and pre[0].text is not None:
-                pre[0].text = util.AtomicString(pre[0].text.rstrip() + '\n')
+            if len(pre) and pre[0].tag == 'code':
+                code = pre[0]
+                # Only prettify code containing text only
+                if not len(code) and code.text is not None:
+                    code.text = util.AtomicString(code.text.rstrip() + '\n')
