@@ -406,8 +406,6 @@ class PrettifyTreeprocessor(Treeprocessor):
             for e in elem:
                 if self.md.is_block_level(e.tag):
                     self._prettifyETree(e)
-            if not elem.tail or not elem.tail.strip():
-                elem.tail = i
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
 
