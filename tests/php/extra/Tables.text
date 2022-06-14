@@ -50,14 +50,14 @@ With leading and tailing pipes:
 
 * * *
 
-Table alignement:
+Table alignment:
 
 | Default   | Right     |  Center   |     Left  |
 | --------- |:--------- |:---------:| ---------:|
 | Long Cell | Long Cell | Long Cell | Long Cell |
 | Cell      | Cell      |   Cell    |     Cell  |
 
-Table alignement (alternate spacing):
+Table alignment (alternate spacing):
 
 | Default   | Right     |  Center   |     Left  |
 | --------- | :-------- | :-------: | --------: |

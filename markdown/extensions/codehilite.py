@@ -148,7 +148,7 @@ class CodeHilite:
                 except ValueError:  # pragma: no cover
                     lexer = get_lexer_by_name('text', **self.options)
             if not self.lang:
-                # Use the guessed lexer's langauge instead
+                # Use the guessed lexer's language instead
                 self.lang = lexer.aliases[0]
             lang_str = f'{self.lang_prefix}{self.lang}'
             if isinstance(self.pygments_formatter, str):
@@ -299,7 +299,7 @@ class CodeHiliteExtension(Extension):
                 'Prefix prepended to the language when use_pygments is false. Default: "language-"'
             ],
             'pygments_formatter': ['html',
-                                   'Use a specific formatter for Pygments hilighting.'
+                                   'Use a specific formatter for Pygments highlighting.'
                                    'Default: "html"',
                                    ],
             }
