@@ -14,7 +14,7 @@ This is the first paragraph.[^first]
 Some paragraph with a footnote[^1], and another[^2].
 
 [^1]: Content for fifth footnote.
-[^2]: Content for sixth footnote spanning on 
+[^2]: Content for sixth footnote spaning on 
     three lines, with some span-level markup like
     _emphasis_, a [link][].
 
@@ -50,8 +50,8 @@ footnote test[^reference].
 	This footnote has a footnote of its own.[^nested]
 
 [^nested]:
-	This footnote should appear even though as it is referred
-	from another footnote. But [^reference] should be literal
+	This footnote should appear even though as it is refered
+	from another footnote. But [^reference] should be litteral
 	since the footnote with that name has already been used.
 
  - - -
