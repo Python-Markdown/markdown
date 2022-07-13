@@ -120,6 +120,7 @@ class AndSubstitutePostprocessor(Postprocessor):
         text = text.replace(util.AMP_SUBSTITUTE, "&")
         return text
 
+
 @util.deprecated(
     "This class will be removed in the future; "
     "use 'treeprocessors.UnescapeTreeprocessor' instead."

@@ -30,12 +30,12 @@ markdown.markdown(src, extensions=[TableExtension(use_align_attribute=True)])
 
 In addition, tests were moved to the modern test environment.
 
-### `UnescapePostprocessor` deprecated and replaced with `UnescapeTreeprocessor` (#1131).
+### Backslash unescaping moved to Treeprocessor (#1131).
 
-Unescaping backslash escapes has been moved to a treeprocessor. However, it is
-recognized that varous third-party extensions may be calling the old class at
+Unescaping backslash escapes has been moved to a Treeprocessor. However, it is
+recognized that various third-party extensions may be calling the old class at
 `postprocessors.UnescapePostprocessor`. Therefore, the old class remains in the
-codebase, but has been deprecated and will be removed in a future release. The
+code base, but has been deprecated and will be removed in a future release. The
 new class `treeprocessors.UnescapeTreeprocessor` should be used instead.
 
 ### Previously deprecated objects have been removed
