@@ -37,7 +37,6 @@ def build_postprocessors(md, **kwargs):
     postprocessors = util.Registry()
     postprocessors.register(RawHtmlPostprocessor(md), 'raw_html', 30)
     postprocessors.register(AndSubstitutePostprocessor(), 'amp_substitute', 20)
-    postprocessors.register(UnescapePostprocessor(), 'unescape', 10)
     return postprocessors
 
 
@@ -121,7 +120,10 @@ class AndSubstitutePostprocessor(Postprocessor):
         text = text.replace(util.AMP_SUBSTITUTE, "&")
         return text
 
-
+@util.deprecated(
+    "This class will be removed in the future; "
+    "use 'treeprocessors.UnescapeTreeprocessor' instead."
+)
 class UnescapePostprocessor(Postprocessor):
     """ Restore escaped chars """
 

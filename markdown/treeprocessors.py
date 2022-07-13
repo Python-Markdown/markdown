@@ -19,6 +19,7 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+import re
 import xml.etree.ElementTree as etree
 from . import util
 from . import inlinepatterns
@@ -29,6 +30,7 @@ def build_treeprocessors(md, **kwargs):
     treeprocessors = util.Registry()
     treeprocessors.register(InlineProcessor(md), 'inline', 20)
     treeprocessors.register(PrettifyTreeprocessor(md), 'prettify', 10)
+    treeprocessors.register(UnescapeTreeprocessor(md), 'unescape', 0)
     return treeprocessors
 
 
@@ -429,3 +431,28 @@ class PrettifyTreeprocessor(Treeprocessor):
                 # Only prettify code containing text only
                 if not len(code) and code.text is not None:
                     code.text = util.AtomicString(code.text.rstrip() + '\n')
+
+
+class UnescapeTreeprocessor(Treeprocessor):
+    """ Restore escaped chars """
+
+    RE = re.compile(r'{}(\d+){}'.format(util.STX, util.ETX))
+
+    def _unescape(self, m):
+        return chr(int(m.group(1)))
+
+    def unescape(self, text):
+        return self.RE.sub(self._unescape, text)
+
+    def run(self, root):
+        """ Loop over all elements and unescape all text. """
+        for elem in root.iter():
+            # Unescape text content
+            if elem.text and not elem.tag == 'code':
+                elem.text = self.unescape(elem.text)
+            # Unescape tail content
+            if elem.tail:
+                elem.tail = self.unescape(elem.tail)
+            # Unescape attribute values
+            for key, value in elem.items():
+                elem.set(key, self.unescape(value))
