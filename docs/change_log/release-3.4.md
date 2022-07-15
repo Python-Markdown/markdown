@@ -16,7 +16,7 @@ the [tables] extension will now use the `style` attribute (setting just the
 
 [spec4]: https://www.w3.org/TR/html4/present/graphics.html#h-15.1.2
 [spec5]: https://www.w3.org/TR/html53/tabular-data.html#attributes-common-to-td-and-th-elements
-[tables]: ../extensions/tables/
+[tables]: ../extensions/tables.md
 
 The former behavior is available by setting the `use_align_attribute`
 configuration option to `True` when enabling the extension.
@@ -92,14 +92,14 @@ The following new features have been included in the 3.4 release:
 * The CodeHilite extension now supports a `pygments_formatter` option that can
   be set to a custom formatter class (#1187).
 
-    - If `pygments_formatter` is set to a string (ex: `'html'`), Pygment's
+    - If `pygments_formatter` is set to a string (ex: `'html'`), Pygments'
       default formatter by that name is used.
     - If `pygments_formatter` is set to a formatter class (or any callable
       which returns a formatter instance), then an instance of that class is
       used.
 
     The formatter class is now passed an additional option, `lang_str`, to
-    denote the language of the code block (#1258). While Pygment's built-in
+    denote the language of the code block (#1258). While Pygments' built-in
     formatters will ignore the option, a custom formatter assigned to the
     `pygments_formatter` option can make use of the `lang_str` to include the
     code block's language in the output.
