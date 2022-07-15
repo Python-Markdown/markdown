@@ -20,7 +20,7 @@ License: BSD (see LICENSE.md for details).
 """
 
 import re
-import importlib
+import importlib.util
 import sys
 
 
