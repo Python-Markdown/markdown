@@ -232,7 +232,7 @@ The following options are provided to configure the output:
     The prefix prepended to the language class assigned to the HTML `<code>` tag. Default: `language-`.
 
 * **`pygments_formatter`**{ #pygments_formatter }:
-    This option can be used to change the Pygments formatter used for highlighting the code blocks. By default, this
+    This option can be used to change the Pygments formatter used for highlighting code blocks. By default, this
     is set to the string `'html'`, which means it'll use the default `HtmlFormatter` provided by Pygments.
 
     This can be set to a string representing any of the other default formatters, or set to a formatter class (or
@@ -290,7 +290,7 @@ markdown.markdown(
 )
 ```
 
-The formatter above will output the following HTML structure for the code block:
+The formatter above will output the following HTML structure for a code block:
 
 ```html
 <div class="codehilite">
