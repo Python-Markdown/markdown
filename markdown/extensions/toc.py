@@ -16,7 +16,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import code_escape, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE, AtomicString
-from ..postprocessors import UnescapePostprocessor
+from ..treeprocessors import UnescapeTreeprocessor
 import re
 import html
 import unicodedata
@@ -84,8 +84,8 @@ def stashedHTML2text(text, md, strip_entities=True):
 
 def unescape(text):
     """ Unescape escaped text. """
-    c = UnescapePostprocessor()
-    return c.run(text)
+    c = UnescapeTreeprocessor()
+    return c.unescape(text)
 
 
 def nest_toc_tokens(toc_list):
@@ -289,10 +289,10 @@ class TocTreeprocessor(Treeprocessor):
                     toc_tokens.append({
                         'level': int(el.tag[-1]),
                         'id': el.attrib["id"],
-                        'name': unescape(stashedHTML2text(
+                        'name': stashedHTML2text(
                             code_escape(el.attrib.get('data-toc-label', text)),
                             self.md, strip_entities=False
-                        ))
+                        )
                     })
 
                 # Remove the data-toc-label attribute as it is no longer needed
