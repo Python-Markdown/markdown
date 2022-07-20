@@ -37,7 +37,7 @@ a one-line code block
 ````
 
 To include a set of backticks (or tildes) within a code block, use a different number of backticks for the
-deliminators.
+delimiters.
 
 `````md
 ````

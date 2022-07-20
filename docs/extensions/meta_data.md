@@ -45,11 +45,11 @@ many lines as desired.
 The first blank line ends all meta-data for the document. Therefore, the first
 line of a document must not be blank.
 
-Alternatively, You may use YAML style deliminators to mark the start and/or end
+Alternatively, You may use YAML style delimiters to mark the start and/or end
 of your meta-data. When doing so, the first line of your document must be `---`.
 The meta-data ends at the first blank line or the first line containing an end
 deliminator (either `---` or `...`), whichever comes first. Even though YAML
-deliminators are supported, meta-data is not parsed as YAML.
+delimiters are supported, meta-data is not parsed as YAML.
 
 All meta-data is stripped from the document prior to any further processing
 by Markdown.

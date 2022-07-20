@@ -182,7 +182,7 @@ class CodeHilite:
     def _parseHeader(self):
         """
         Determines language of a code block from shebang line and whether the
-        said line should be removed or left in place. If the sheband line
+        said line should be removed or left in place. If the shebang line
         contains a path (even a single /) then it is assumed to be a real
         shebang line and left alone. However, if no path is given
         (e.i.: #!python or :::python) then it is assumed to be a mock shebang
