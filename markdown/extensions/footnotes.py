@@ -256,7 +256,7 @@ class FootnoteBlockProcessor(BlockProcessor):
         return False
 
     def detectTabbed(self, blocks):
-        """ Find indented text and remove indent before further proccesing.
+        """ Find indented text and remove indent before further processing.
 
         Returns: a list of blocks with indentation removed.
         """

@@ -66,7 +66,7 @@ class TestPhp(LegacyTestCase):
     Code block in a list item: We match markdown.pl - not sure how php gets that output??
 
     PHP-Specific Bugs: Not sure what to make of the escaping stuff here.
-    Why is PHP not removing a blackslash?
+    Why is PHP not removing a backslash?
     """
     location = os.path.join(parent_test_dir, 'php')
     normalize = True
