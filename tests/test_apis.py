@@ -436,7 +436,7 @@ class testETreeComments(unittest.TestCase):
 
     def testCommentPrettify(self):
         """ Test that an ElementTree Comment is prettified properly. """
-        pretty = markdown.treeprocessors.PrettifyTreeprocessor(markdown.Markdown())
+        pretty = markdown.treeprocessors.PrettifyTreeProcessor(markdown.Markdown())
         pretty.run(self.comment)
         self.assertEqual(
             markdown.serializers.to_html_string(self.comment),
@@ -447,7 +447,7 @@ class testETreeComments(unittest.TestCase):
 class testElementTailTests(unittest.TestCase):
     """ Element Tail Tests """
     def setUp(self):
-        self.pretty = markdown.treeprocessors.PrettifyTreeprocessor(markdown.Markdown())
+        self.pretty = markdown.treeprocessors.PrettifyTreeProcessor(markdown.Markdown())
 
     def testBrTailNoNewline(self):
         """ Test that last <br> in tree has a new line tail """
@@ -462,7 +462,7 @@ class testElementPreCodeTests(unittest.TestCase):
     """ Element PreCode Tests """
     def setUp(self):
         md = markdown.Markdown()
-        self.pretty = markdown.treeprocessors.PrettifyTreeprocessor(md)
+        self.pretty = markdown.treeprocessors.PrettifyTreeProcessor(md)
 
     def prettify(self, xml):
         root = etree.fromstring(xml)

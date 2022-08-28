@@ -32,14 +32,14 @@ years. This extension can be used to continue to render those documents correctl
 """
 
 import re
-from markdown.treeprocessors import Treeprocessor, isString
+from markdown.treeprocessors import TreeProcessor, isString
 from markdown.extensions import Extension
 
 
 ATTR_RE = re.compile(r'\{@([^\}]*)=([^\}]*)}')  # {@id=123}
 
 
-class LegacyAttrs(Treeprocessor):
+class LegacyAttrs(TreeProcessor):
     def run(self, doc):
         """Find and set values of attributes ({@key=value}). """
         for el in doc.iter():

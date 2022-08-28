@@ -16,7 +16,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 from . import Extension
 from ..blockprocessors import BlockProcessor
 from ..inlinepatterns import InlineProcessor
-from ..treeprocessors import Treeprocessor
+from ..treeprocessors import TreeProcessor
 from ..postprocessors import Postprocessor
 from .. import util
 from collections import OrderedDict
@@ -83,13 +83,13 @@ class FootnoteExtension(Extension):
         # Insert a tree-processor that would actually add the footnote div
         # This must be before all other treeprocessors (i.e., inline and
         # codehilite) so they can run on the the contents of the div.
-        md.treeprocessors.register(FootnoteTreeprocessor(self), 'footnote', 50)
+        md.treeprocessors.register(FootnoteTreeProcessor(self), 'footnote', 50)
 
         # Insert a tree-processor that will run after inline is done.
         # In this tree-processor we want to check our duplicate footnote tracker
         # And add additional backrefs to the footnote pointing back to the
         # duplicated references.
-        md.treeprocessors.register(FootnotePostTreeprocessor(self), 'footnote-duplicate', 15)
+        md.treeprocessors.register(FootnotePostTreeProcessor(self), 'footnote-duplicate', 15)
 
         # Insert a postprocessor after amp_substitute processor
         md.postprocessors.register(FootnotePostprocessor(self), 'footnote', 25)
@@ -318,7 +318,7 @@ class FootnoteInlineProcessor(InlineProcessor):
             return None, None, None
 
 
-class FootnotePostTreeprocessor(Treeprocessor):
+class FootnotePostTreeProcessor(TreeProcessor):
     """ Amend footnote div with duplicates. """
 
     def __init__(self, footnotes):
@@ -371,7 +371,7 @@ class FootnotePostTreeprocessor(Treeprocessor):
                     break
 
 
-class FootnoteTreeprocessor(Treeprocessor):
+class FootnoteTreeProcessor(TreeProcessor):
     """ Build and append footnote div to end of document. """
 
     def __init__(self, footnotes):

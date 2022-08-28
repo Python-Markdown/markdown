@@ -16,7 +16,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 """
 
 from . import Extension
-from ..treeprocessors import Treeprocessor
+from ..treeprocessors import TreeProcessor
 from ..util import parseBoolValue
 
 try:  # pragma: no cover
@@ -238,7 +238,7 @@ class CodeHilite:
 # ------------------ The Markdown Extension -------------------------------
 
 
-class HiliteTreeprocessor(Treeprocessor):
+class HiliteTreeProcessor(TreeProcessor):
     """ Highlight source code in code blocks. """
 
     def code_unescape(self, text):
@@ -319,7 +319,7 @@ class CodeHiliteExtension(Extension):
 
     def extendMarkdown(self, md):
         """ Add HilitePostprocessor to Markdown instance. """
-        hiliter = HiliteTreeprocessor(md)
+        hiliter = HiliteTreeProcessor(md)
         hiliter.config = self.getConfigs()
         md.treeprocessors.register(hiliter, 'hilite', 30)
 

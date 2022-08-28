@@ -14,9 +14,9 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 """
 
 from . import Extension
-from ..treeprocessors import Treeprocessor
+from ..treeprocessors import TreeProcessor
 from ..util import code_escape, parseBoolValue, AMP_SUBSTITUTE, HTML_PLACEHOLDER_RE, AtomicString
-from ..treeprocessors import UnescapeTreeprocessor
+from ..treeprocessors import UnescapeTreeProcessor
 import re
 import html
 import unicodedata
@@ -84,7 +84,7 @@ def stashedHTML2text(text, md, strip_entities=True):
 
 def unescape(text):
     """ Unescape escaped text. """
-    c = UnescapeTreeprocessor()
+    c = UnescapeTreeProcessor()
     return c.unescape(text)
 
 
@@ -151,7 +151,7 @@ def nest_toc_tokens(toc_list):
     return ordered_list
 
 
-class TocTreeprocessor(Treeprocessor):
+class TocTreeProcessor(TreeProcessor):
     def __init__(self, md, config):
         super().__init__(md)
 
@@ -319,7 +319,7 @@ class TocTreeprocessor(Treeprocessor):
 
 class TocExtension(Extension):
 
-    TreeProcessorClass = TocTreeprocessor
+    TreeProcessorClass = TocTreeProcessor
 
     def __init__(self, **kwargs):
         self.config = {

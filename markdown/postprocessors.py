@@ -123,7 +123,7 @@ class AndSubstitutePostprocessor(Postprocessor):
 
 @util.deprecated(
     "This class will be removed in the future; "
-    "use 'treeprocessors.UnescapeTreeprocessor' instead."
+    "use 'treeprocessors.UnescapeTreeProcessor' instead."
 )
 class UnescapePostprocessor(Postprocessor):
     """ Restore escaped chars """

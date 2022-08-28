@@ -18,7 +18,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 """
 
 from . import Extension
-from ..treeprocessors import Treeprocessor
+from ..treeprocessors import TreeProcessor
 import re
 
 
@@ -62,7 +62,7 @@ def isheader(elem):
     return elem.tag in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 
-class AttrListTreeprocessor(Treeprocessor):
+class AttrListTreeProcessor(TreeProcessor):
 
     BASE_RE = r'\{\:?[ ]*([^\}\n ][^\}\n]*)[ ]*\}'
     HEADER_RE = re.compile(r'[ ]+{}[ ]*$'.format(BASE_RE))
@@ -158,7 +158,7 @@ class AttrListTreeprocessor(Treeprocessor):
 
 class AttrListExtension(Extension):
     def extendMarkdown(self, md):
-        md.treeprocessors.register(AttrListTreeprocessor(md), 'attr_list', 8)
+        md.treeprocessors.register(AttrListTreeProcessor(md), 'attr_list', 8)
         md.registerExtension(self)
 
 

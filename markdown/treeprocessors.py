@@ -29,8 +29,8 @@ def build_treeprocessors(md, **kwargs):
     """ Build the default treeprocessors for Markdown. """
     treeprocessors = util.Registry()
     treeprocessors.register(InlineProcessor(md), 'inline', 20)
-    treeprocessors.register(PrettifyTreeprocessor(md), 'prettify', 10)
-    treeprocessors.register(UnescapeTreeprocessor(md), 'unescape', 0)
+    treeprocessors.register(PrettifyTreeProcessor(md), 'prettify', 10)
+    treeprocessors.register(UnescapeTreeProcessor(md), 'unescape', 0)
     return treeprocessors
 
 
@@ -41,20 +41,20 @@ def isString(s):
     return False
 
 
-class Treeprocessor(util.Processor):
+class TreeProcessor(util.Processor):
     """
-    Treeprocessors are run on the ElementTree object before serialization.
+    TreeProcessors are run on the ElementTree object before serialization.
 
-    Each Treeprocessor implements a "run" method that takes a pointer to an
+    Each TreeProcessor implements a "run" method that takes a pointer to an
     ElementTree, modifies it as necessary and returns an ElementTree
     object.
 
-    Treeprocessors must extend markdown.Treeprocessor.
+    TreeProcessors must extend markdown.TreeProcessor.
 
     """
     def run(self, root):
         """
-        Subclasses of Treeprocessor should implement a `run` method, which
+        Subclasses of TreeProcessor should implement a `run` method, which
         takes a root ElementTree. This method can return another ElementTree
         object, and the existing root ElementTree will be replaced, or it can
         modify the current tree and return None.
@@ -62,9 +62,12 @@ class Treeprocessor(util.Processor):
         pass  # pragma: no cover
 
 
-class InlineProcessor(Treeprocessor):
+Treeprocessor = TreeProcessor
+
+
+class InlineProcessor(TreeProcessor):
     """
-    A Treeprocessor that traverses a tree, applying inline patterns.
+    A TreeProcessor that traverses a tree, applying inline patterns.
     """
 
     def __init__(self, md):
@@ -394,7 +397,7 @@ class InlineProcessor(Treeprocessor):
         return tree
 
 
-class PrettifyTreeprocessor(Treeprocessor):
+class PrettifyTreeProcessor(TreeProcessor):
     """ Add linebreaks to the html document. """
 
     def _prettifyETree(self, elem):
@@ -433,7 +436,7 @@ class PrettifyTreeprocessor(Treeprocessor):
                     code.text = util.AtomicString(code.text.rstrip() + '\n')
 
 
-class UnescapeTreeprocessor(Treeprocessor):
+class UnescapeTreeProcessor(TreeProcessor):
     """ Restore escaped chars """
 
     RE = re.compile(r'{}(\d+){}'.format(util.STX, util.ETX))
