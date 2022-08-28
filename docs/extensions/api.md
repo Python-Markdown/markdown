@@ -218,18 +218,17 @@ Some block processors in the Markdown source tree include:
 [Admonition]: https://python-markdown.github.io/extensions/admonition/
 [b4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/admonition.py
 
-### Tree processors {: #treeprocessors }
+### Tree Processors {: #treeprocessors }
 
 Tree processors manipulate the tree created by block processors.  They can even create an entirely new ElementTree
 object. This is an excellent place for creating summaries, adding collected references, or last minute adjustments.
 
-A tree processor must inherit from `markdown.treeprocessors.Treeprocessor` (note the capitalization). A tree processor
-must implement a `run` method which takes a single argument `root`. In most cases `root` would be an
-`xml.etree.ElementTree.Element` instance; however, in rare cases it could be some other type of ElementTree object.
-The `run` method may return `None`, in which case the (possibly modified) original `root` object is used, or it may
-return an entirely new `Element` object, which will replace the existing `root` object and all of its children.  It is
-generally preferred to modify `root` in place and return `None`, which avoids creating multiple copies of the entire
-document tree in memory.
+A tree processor must inherit from `markdown.treeprocessors.TreeProcessor`. A tree processor must implement a `run`
+method which takes a single argument `root`. In most cases `root` would be an `xml.etree.ElementTree.Element` instance;
+however, in rare cases it could be some other type of ElementTree object. The `run` method may return `None`, in which
+case the (possibly modified) original `root` object is used, or it may return an entirely new `Element` object, which
+will replace the existing `root` object and all of its children.  It is generally preferred to modify `root` in place
+and return `None`, which avoids creating multiple copies of the entire document tree in memory.
 
 For specifics on manipulating the ElementTree, see [Working with the ElementTree][workingwithetree] below.
 
@@ -238,9 +237,9 @@ For specifics on manipulating the ElementTree, see [Working with the ElementTree
 A pseudo example:
 
 ```python
-from markdown.treeprocessors import Treeprocessor
+from markdown.treeprocessors import TreeProcessor
 
-class MyTreeprocessor(Treeprocessor):
+class MyTreeProcessor(TreeProcessor):
     def run(self, root):
         root.text = 'modified content'
         # No return statement is same as `return None`
