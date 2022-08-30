@@ -15,20 +15,20 @@ help:
 
 .PHONY : install
 install:
-	python setup.py install
+	pip install .
 
 .PHONY : deploy
 deploy:
 	rm -rf build
 	rm -rf dist
-	python setup.py bdist_wheel sdist --formats gztar
+	python -m build
 	twine upload dist/*
 
 .PHONY : build
 build:
 	rm -rf build
 	rm -rf dist
-	python setup.py bdist_wheel sdist --formats gztar
+	python -m build
 
 .PHONY : build-win
 build-win:
