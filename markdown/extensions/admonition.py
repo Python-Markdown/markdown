@@ -18,7 +18,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 """
 
 from . import Extension
-from ..blockprocessors import BlockProcessor
+from ..blockprocessors import Blockprocessor
 import xml.etree.ElementTree as etree
 import re
 
@@ -33,7 +33,7 @@ class AdmonitionExtension(Extension):
         md.parser.blockprocessors.register(AdmonitionProcessor(md.parser), 'admonition', 105)
 
 
-class AdmonitionProcessor(BlockProcessor):
+class AdmonitionProcessor(Blockprocessor):
 
     CLASSNAME = 'admonition'
     CLASSNAME_TITLE = 'admonition-title'

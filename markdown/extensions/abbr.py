@@ -17,7 +17,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 '''
 
 from . import Extension
-from ..blockprocessors import BlockProcessor
+from ..blockprocessors import Blockprocessor
 from ..inlinepatterns import InlineProcessor
 from ..util import AtomicString
 import re
@@ -32,7 +32,7 @@ class AbbrExtension(Extension):
         md.parser.blockprocessors.register(AbbrPreprocessor(md.parser), 'abbr', 16)
 
 
-class AbbrPreprocessor(BlockProcessor):
+class AbbrPreprocessor(Blockprocessor):
     """ Abbreviation Preprocessor - parse text for abbr references. """
 
     RE = re.compile(r'^[*]\[(?P<abbr>[^\]]*)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)

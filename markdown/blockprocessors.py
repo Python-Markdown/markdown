@@ -25,8 +25,8 @@ This parser handles basic parsing of Markdown blocks.  It doesn't concern
 itself with inline elements such as **bold** or *italics*, but rather just
 catches blocks, lists, quotes, etc.
 
-The BlockParser is made up of a bunch of BlockProcessors, each handling a
-different type of block. Extensions may add/replace/remove BlockProcessors
+The BlockParser is made up of a bunch of Blockprocessors, each handling a
+different type of block. Extensions may add/replace/remove Blockprocessors
 as they need to alter how markdown blocks are parsed.
 """
 
@@ -56,7 +56,7 @@ def build_block_parser(md, **kwargs):
     return parser
 
 
-class BlockProcessor:
+class Blockprocessor:
     """ Base class for block processors.
 
     Each subclass will provide the methods below to work with the source and
@@ -146,7 +146,11 @@ class BlockProcessor:
         pass  # pragma: no cover
 
 
-class ListIndentProcessor(BlockProcessor):
+# this alias is for backwards compatibility with the old BlockProcessor
+BlockProcessor = Blockprocessor
+
+
+class ListIndentProcessor(Blockprocessor):
     """ Process children of list items.
 
     Example:
@@ -241,7 +245,7 @@ class ListIndentProcessor(BlockProcessor):
         return level, parent
 
 
-class CodeBlockProcessor(BlockProcessor):
+class CodeBlockProcessor(Blockprocessor):
     """ Process code blocks. """
 
     def test(self, parent, block):
@@ -274,7 +278,7 @@ class CodeBlockProcessor(BlockProcessor):
             blocks.insert(0, theRest)
 
 
-class BlockQuoteProcessor(BlockProcessor):
+class BlockQuoteProcessor(Blockprocessor):
 
     RE = re.compile(r'(^|\n)[ ]{0,3}>[ ]?(.*)')
 
@@ -316,7 +320,7 @@ class BlockQuoteProcessor(BlockProcessor):
             return line
 
 
-class OListProcessor(BlockProcessor):
+class OListProcessor(Blockprocessor):
     """ Process ordered list blocks. """
 
     TAG = 'ol'
@@ -441,7 +445,7 @@ class UListProcessor(OListProcessor):
         self.RE = re.compile(r'^[ ]{0,%d}[*+-][ ]+(.*)' % (self.tab_length - 1))
 
 
-class HashHeaderProcessor(BlockProcessor):
+class HashHeaderProcessor(Blockprocessor):
     """ Process Hash Headers. """
 
     # Detect a header at start of any line in block
@@ -472,7 +476,7 @@ class HashHeaderProcessor(BlockProcessor):
             logger.warn("We've got a problem header: %r" % block)
 
 
-class SetextHeaderProcessor(BlockProcessor):
+class SetextHeaderProcessor(Blockprocessor):
     """ Process Setext-style Headers. """
 
     # Detect Setext-style header. Must be first 2 lines of block.
@@ -495,7 +499,7 @@ class SetextHeaderProcessor(BlockProcessor):
             blocks.insert(0, '\n'.join(lines[2:]))
 
 
-class HRProcessor(BlockProcessor):
+class HRProcessor(Blockprocessor):
     """ Process Horizontal Rules. """
 
     # Python's re module doesn't officially support atomic grouping. However you can fake it.
@@ -529,7 +533,7 @@ class HRProcessor(BlockProcessor):
             blocks.insert(0, postlines)
 
 
-class EmptyBlockProcessor(BlockProcessor):
+class EmptyBlockProcessor(Blockprocessor):
     """ Process blocks that are empty or start with an empty line. """
 
     def test(self, parent, block):
@@ -556,7 +560,7 @@ class EmptyBlockProcessor(BlockProcessor):
             )
 
 
-class ReferenceProcessor(BlockProcessor):
+class ReferenceProcessor(Blockprocessor):
     """ Process link references. """
     RE = re.compile(
         r'^[ ]{0,3}\[([^\[\]]*)\]:[ ]*\n?[ ]*([^\s]+)[ ]*(?:\n[ ]*)?((["\'])(.*)\4[ ]*|\((.*)\)[ ]*)?$', re.MULTILINE
@@ -585,7 +589,7 @@ class ReferenceProcessor(BlockProcessor):
         return False
 
 
-class ParagraphProcessor(BlockProcessor):
+class ParagraphProcessor(Blockprocessor):
     """ Process Paragraph blocks. """
 
     def test(self, parent, block):

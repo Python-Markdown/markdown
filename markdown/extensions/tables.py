@@ -16,7 +16,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 """
 
 from . import Extension
-from ..blockprocessors import BlockProcessor
+from ..blockprocessors import Blockprocessor
 import xml.etree.ElementTree as etree
 import re
 PIPE_NONE = 0
@@ -24,7 +24,7 @@ PIPE_LEFT = 1
 PIPE_RIGHT = 2
 
 
-class TableProcessor(BlockProcessor):
+class TableProcessor(Blockprocessor):
     """ Process Tables. """
 
     RE_CODE_PIPES = re.compile(r'(?:(\\\\)|(\\`+)|(`+)|(\\\|)|(\|))')

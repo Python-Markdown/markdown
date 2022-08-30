@@ -16,12 +16,12 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 """
 
 from . import Extension
-from ..blockprocessors import BlockProcessor, ListIndentProcessor
+from ..blockprocessors import Blockprocessor, ListIndentProcessor
 import xml.etree.ElementTree as etree
 import re
 
 
-class DefListProcessor(BlockProcessor):
+class DefListProcessor(Blockprocessor):
     """ Process Definition Lists. """
 
     RE = re.compile(r'(^|\n)[ ]{0,3}:[ ]{1,3}(.*?)(\n|$)')

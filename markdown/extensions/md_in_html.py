@@ -15,7 +15,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 """
 
 from . import Extension
-from ..blockprocessors import BlockProcessor
+from ..blockprocessors import Blockprocessor
 from ..preprocessors import Preprocessor
 from ..postprocessors import RawHtmlPostprocessor
 from .. import util
@@ -239,7 +239,7 @@ class HtmlBlockPreprocessor(Preprocessor):
         return ''.join(parser.cleandoc).split('\n')
 
 
-class MarkdownInHtmlProcessor(BlockProcessor):
+class MarkdownInHtmlProcessor(Blockprocessor):
     """Process Markdown Inside HTML Blocks which have been stored in the HtmlStash."""
 
     def test(self, parent, block):

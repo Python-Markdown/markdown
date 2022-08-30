@@ -60,7 +60,7 @@ class State(list):
 class BlockParser:
     """ Parse Markdown blocks into an ElementTree object.
 
-    A wrapper class that stitches the various BlockProcessors together,
+    A wrapper class that stitches the various Blockprocessors together,
     looping through them and creating an ElementTree object.
     """
 
@@ -107,7 +107,7 @@ class BlockParser:
         internally.
 
         This is a public method as an extension may need to add/alter
-        additional BlockProcessors which call this method to recursively
+        additional Blockprocessors which call this method to recursively
         parse a nested block.
 
         """

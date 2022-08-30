@@ -14,7 +14,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 """
 
 from . import Extension
-from ..blockprocessors import BlockProcessor
+from ..blockprocessors import Blockprocessor
 from ..inlinepatterns import InlineProcessor
 from ..treeprocessors import Treeprocessor
 from ..postprocessors import Postprocessor
@@ -207,7 +207,7 @@ class FootnoteExtension(Extension):
         return div
 
 
-class FootnoteBlockProcessor(BlockProcessor):
+class FootnoteBlockProcessor(Blockprocessor):
     """ Find all footnote references and store for later use. """
 
     RE = re.compile(r'^[ ]{0,3}\[\^([^\]]*)\]:[ ]*(.*)$', re.MULTILINE)
