@@ -20,7 +20,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
       - name: Build
         run: |
-          python setup.py bdist_wheel sdist --formats gztar
+          python -m build
       - name: Publish
         if: success()
         uses: pypa/gh-action-pypi-publish@v1.1.0
