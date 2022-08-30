@@ -1,4 +1,84 @@
 [build-system]
-# Minimum requirements for the build system to execute.
-requires = ["setuptools>=36.6", "wheel"]
+requires = ["setuptools>=64.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "Markdown"
+description = "Python implementation of Markdown."
+authors = [
+    { name="Manfred Stienstra, Yuri takhteyev and Waylan limberg", email="python.markdown@gmail.com"},
+]
+maintainers = [
+    { name="Waylan Limberg", email="python.markdown@gmail.com"},
+]
+readme = "README.md"
+license = { file="LICENSE.md" }
+requires-python = ">=3.7"
+dependencies = ['importlib-metadata>=4.4;python_version<"3.10"']
+classifiers = [
+    "Development Status :: 5 - Production/Stable ",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: ",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Communications :: Email :: Filters",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content :: CGI Tools/Libraries",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Filters",
+    "Topic :: Text Processing :: Markup :: HTML",
+    "Topic :: Text Processing :: Markup :: Markdown"
+]
+
+dynamic = ["version"]
+
+[project.scripts]
+markdown_py = "markdown.__main__:run"
+
+[project.entry-points."markdown.extensions"]
+abbr = "markdown.extensions.abbr:AbbrExtension"
+admonition = "markdown.extensions.admonition:AdmonitionExtension"
+attr_list = "markdown.extensions.attr_list:AttrListExtension"
+codehilite = "markdown.extensions.codehilite:CodeHiliteExtension"
+def_list = "markdown.extensions.def_list:DefListExtension"
+extra = "markdown.extensions.extra:ExtraExtension"
+fenced_code = "markdown.extensions.fenced_code:FencedCodeExtension"
+footnotes = "markdown.extensions.footnotes:FootnoteExtension"
+md_in_html = "markdown.extensions.md_in_html:MarkdownInHtmlExtension"
+meta = "markdown.extensions.meta:MetaExtension"
+nl2br = "markdown.extensions.nl2br:Nl2BrExtension"
+sane_lists = "markdown.extensions.sane_lists:SaneListExtension"
+smarty = "markdown.extensions.smarty:SmartyExtension"
+tables = "markdown.extensions.tables:TableExtension"
+toc = "markdown.extensions.toc:TocExtension"
+wikilinks = "markdown.extensions.wikilinks:WikiLinkExtension"
+legacy_attrs = "markdown.extensions.legacy_attrs:LegacyAttrExtension"
+legacy_em = "markdown.extensions.legacy_em:LegacyEmExtension"
+
+[project.optional-dependencies]
+testing = [
+    "coverage",
+    "pyyaml",
+]
+
+[project.urls]
+"Documentation" = "https://Python-Markdown.github.io/"
+"GitHub Project" = "https://github.com/Python-Markdown/markdown"
+"Issue Tracker" = "https://github.com/Python-Markdown/markdown/issues"
+
+[tool.setuptools]
+packages = [
+    "markdown",
+    "markdown.extensions",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "markdown.__meta__.__version__" }
