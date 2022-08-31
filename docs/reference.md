@@ -169,7 +169,7 @@ __output_format__{: #output_format }:
     Supported formats are:
 
     * `"xhtml"`: Outputs XHTML style tags. **Default**.
-    * `"html5"`: Outputs HTML style tags.
+    * `"html"`: Outputs HTML style tags.
 
     The values can be in either lowercase or uppercase.
 
