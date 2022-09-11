@@ -629,3 +629,114 @@ class TestTOC(TestCase):
             ),
             extensions=[TocExtension(toc_class="custom1 custom2")]
         )
+
+    def testTOCWithEmptyClass(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+                # Header
+                '''
+            ),
+            self.dedent(
+                '''
+                <div>
+                <ul>
+                <li><a href="#header">Header</a></li>
+                </ul>
+                </div>
+                <h1 id="header">Header</h1>
+                '''
+            ),
+            extensions=[TocExtension(toc_class="")]
+        )
+
+    def testTOCWithCustomTag(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+                # Header
+                '''
+            ),
+            self.dedent(
+                '''
+                <details class="toc">
+                <ul>
+                <li><a href="#header">Header</a></li>
+                </ul>
+                </details>
+                <h1 id="header">Header</h1>
+                '''
+            ),
+            extensions=[TocExtension(toc_tag="details")]
+        )
+
+    def testTOCWithCustomTitleTag(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+                # Header
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="toc">
+                <div class="toctitle">ToC</div>
+                <ul>
+                <li><a href="#header">Header</a></li>
+                </ul>
+                </div>
+                <h1 id="header">Header</h1>
+                '''
+            ),
+            extensions=[TocExtension(title_tag="div", title='ToC')]
+        )
+
+    def testTOCWithCustomTitleClass(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+                # Header
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="toc"><span class="tocname">ToC</span><ul>
+                <li><a href="#header">Header</a></li>
+                </ul>
+                </div>
+                <h1 id="header">Header</h1>
+                '''
+            ),
+            extensions=[TocExtension(title_class="tocname", title='ToC')]
+        )
+
+    def testTOCAsDetailsWithSummary(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+                # Header
+                '''
+            ),
+            self.dedent(
+                '''
+                <details>
+                <summary>Summary</summary>
+                <ul>
+                <li><a href="#header">Header</a></li>
+                </ul>
+                </details>
+                <h1 id="header">Header</h1>
+                '''
+            ),
+            extensions=[TocExtension(title='Summary', title_class="", title_tag="summary", toc_class="", toc_tag="details")]
+        )
