@@ -154,7 +154,7 @@ REFERENCE_RE = LINK_RE
 IMAGE_REFERENCE_RE = IMAGE_LINK_RE
 
 # stand-alone * or _
-NOT_STRONG_RE = r'((^|\s)(\*|_)(\s|$))'
+NOT_STRONG_RE = r'((^|(?<=\s))(\*{1,3}|_{1,3})(?=\s|$))'
 
 # <http://www.123.com>
 AUTOLINK_RE = r'<((?:[Ff]|[Hh][Tt])[Tt][Pp][Ss]?://[^<>]*)>'
