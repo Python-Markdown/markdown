@@ -36,6 +36,42 @@ class TestNotEmphasis(TestCase):
             '<p>_</p>'
         )
 
+    def test_standalone_asterisks_consecutive(self):
+        self.assertMarkdownRenders(
+            'Foo * * * *',
+            '<p>Foo * * * *</p>'
+        )
+
+    def test_standalone_understore_consecutive(self):
+        self.assertMarkdownRenders(
+            'Foo _ _ _ _',
+            '<p>Foo _ _ _ _</p>'
+        )
+
+    def test_standalone_asterisks_pairs(self):
+        self.assertMarkdownRenders(
+            'Foo ** ** ** **',
+            '<p>Foo ** ** ** **</p>'
+        )
+
+    def test_standalone_understore_pairs(self):
+        self.assertMarkdownRenders(
+            'Foo __ __ __ __',
+            '<p>Foo __ __ __ __</p>'
+        )
+
+    def test_standalone_asterisks_triples(self):
+        self.assertMarkdownRenders(
+            'Foo *** *** *** ***',
+            '<p>Foo *** *** *** ***</p>'
+        )
+
+    def test_standalone_understore_triples(self):
+        self.assertMarkdownRenders(
+            'Foo ___ ___ ___ ___',
+            '<p>Foo ___ ___ ___ ___</p>'
+        )
+
     def test_standalone_asterisk_in_text(self):
         self.assertMarkdownRenders(
             'foo * bar',
@@ -72,10 +108,16 @@ class TestNotEmphasis(TestCase):
             '<p>foo\n_ bar _\nbaz</p>'
         )
 
-    def test_standalone_asterisks_at_end(self):
+    def test_standalone_underscore_at_begin(self):
         self.assertMarkdownRenders(
-            'foo * bar *',
-            '<p>foo * bar *</p>'
+            '_ foo_ bar',
+            '<p>_ foo_ bar</p>'
+        )
+
+    def test_standalone_asterisk_at_end(self):
+        self.assertMarkdownRenders(
+            'foo *bar *',
+            '<p>foo *bar *</p>'
         )
 
     def test_standalone_understores_at_begin_end(self):

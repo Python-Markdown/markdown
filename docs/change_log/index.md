@@ -3,6 +3,10 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+*under development*: version 3.4.1 (a bug-fix release).
+
+* Improve standalone * and _ parsing (#1300).
+
 July 15, 2022: version 3.4.1 (a bug-fix release).
 
 * Fix an import issue with `importlib.util` (#1274).
