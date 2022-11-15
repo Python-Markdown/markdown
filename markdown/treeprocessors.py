@@ -436,7 +436,7 @@ class PrettifyTreeprocessor(Treeprocessor):
 class UnescapeTreeprocessor(Treeprocessor):
     """ Restore escaped chars """
 
-    RE = re.compile(r'{}(\d+){}'.format(util.STX, util.ETX))
+    RE = re.compile(fr'{util.STX}(\d+){util.ETX}')
 
     def _unescape(self, m):
         return chr(int(m.group(1)))

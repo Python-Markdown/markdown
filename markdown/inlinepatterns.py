@@ -316,7 +316,7 @@ class EscapeInlineProcessor(InlineProcessor):
     def handleMatch(self, m, data):
         char = m.group(1)
         if char in self.md.ESCAPED_CHARS:
-            return '{}{}{}'.format(util.STX, ord(char), util.ETX), m.start(0), m.end(0)
+            return f'{util.STX}{ord(char)}{util.ETX}', m.start(0), m.end(0)
         else:
             return None, m.start(0), m.end(0)
 
@@ -872,7 +872,7 @@ class AutomailInlineProcessor(InlineProcessor):
             """Return entity definition by code, or the code if not defined."""
             entity = entities.codepoint2name.get(code)
             if entity:
-                return "{}{};".format(util.AMP_SUBSTITUTE, entity)
+                return f"{util.AMP_SUBSTITUTE}{entity};"
             else:
                 return "%s#%d;" % (util.AMP_SUBSTITUTE, code)
 

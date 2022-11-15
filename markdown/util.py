@@ -297,7 +297,7 @@ class Registry:
         return len(self._priority)
 
     def __repr__(self):
-        return '<{}({})>'.format(self.__class__.__name__, list(self))
+        return f'<{self.__class__.__name__}({list(self)})>'
 
     def get_index_for_name(self, name):
         """
@@ -308,7 +308,7 @@ class Registry:
             return self._priority.index(
                 [x for x in self._priority if x.name == name][0]
             )
-        raise ValueError('No item named "{}" exists.'.format(name))
+        raise ValueError(f'No item named "{name}" exists.')
 
     def register(self, item, name, priority):
         """

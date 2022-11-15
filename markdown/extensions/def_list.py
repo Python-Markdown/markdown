@@ -43,7 +43,7 @@ class DefListProcessor(BlockProcessor):
         else:
             d, theRest = self.detab(block)
         if d:
-            d = '{}\n{}'.format(m.group(2), d)
+            d = f'{m.group(2)}\n{d}'
         else:
             d = m.group(2)
         sibling = self.lastChild(parent)

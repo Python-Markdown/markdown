@@ -55,7 +55,7 @@ except NameError:  # pragma: no cover
 
 def _raise_serialization_error(text):  # pragma: no cover
     raise TypeError(
-        "cannot serialize {!r} (type {})".format(text, type(text).__name__)
+        f"cannot serialize {text!r} (type {type(text).__name__})"
         )
 
 
@@ -150,7 +150,7 @@ def _serialize_html(write, elem, format):
                     # handle boolean attributes
                     write(" %s" % v)
                 else:
-                    write(' {}="{}"'.format(k, v))
+                    write(f' {k}="{v}"')
         if namespace_uri:
             write(' xmlns="%s"' % (_escape_attrib(namespace_uri)))
         if format == "xhtml" and tag.lower() in HTML_EMPTY:

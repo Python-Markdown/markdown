@@ -259,7 +259,7 @@ class CodeBlockProcessor(BlockProcessor):
             code = sibling[0]
             block, theRest = self.detab(block)
             code.text = util.AtomicString(
-                '{}\n{}\n'.format(code.text, util.code_escape(block.rstrip()))
+                f'{code.text}\n{util.code_escape(block.rstrip())}\n'
             )
         else:
             # This is a new codeblock. Create the elements and insert text.
@@ -421,12 +421,12 @@ class OListProcessor(BlockProcessor):
                 # This is an indented (possibly nested) item.
                 if items[-1].startswith(' '*self.tab_length):
                     # Previous item was indented. Append to that item.
-                    items[-1] = '{}\n{}'.format(items[-1], line)
+                    items[-1] = f'{items[-1]}\n{line}'
                 else:
                     items.append(line)
             else:
                 # This is another line of previous item. Append to that item.
-                items[-1] = '{}\n{}'.format(items[-1], line)
+                items[-1] = f'{items[-1]}\n{line}'
         return items
 
 
@@ -552,7 +552,7 @@ class EmptyBlockProcessor(BlockProcessor):
            len(sibling) and sibling[0].tag == 'code'):
             # Last block is a codeblock. Append to preserve whitespace.
             sibling[0].text = util.AtomicString(
-                '{}{}'.format(sibling[0].text, filler)
+                f'{sibling[0].text}{filler}'
             )
 
 
@@ -608,13 +608,13 @@ class ParagraphProcessor(BlockProcessor):
                 if sibling is not None:
                     # Insetrt after sibling.
                     if sibling.tail:
-                        sibling.tail = '{}\n{}'.format(sibling.tail, block)
+                        sibling.tail = f'{sibling.tail}\n{block}'
                     else:
                         sibling.tail = '\n%s' % block
                 else:
                     # Append to parent.text
                     if parent.text:
-                        parent.text = '{}\n{}'.format(parent.text, block)
+                        parent.text = f'{parent.text}\n{block}'
                     else:
                         parent.text = block.lstrip()
             else:

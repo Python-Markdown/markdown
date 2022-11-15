@@ -30,7 +30,7 @@ def slugify(value, separator, unicode=False):
         value = unicodedata.normalize('NFKD', value)
         value = value.encode('ascii', 'ignore').decode('ascii')
     value = re.sub(r'[^\w\s-]', '', value).strip().lower()
-    return re.sub(r'[{}\s]+'.format(separator), separator, value)
+    return re.sub(fr'[{separator}\s]+', separator, value)
 
 
 def slugify_unicode(value, separator):
@@ -170,7 +170,7 @@ class TocTreeprocessor(Treeprocessor):
         self.permalink_title = config["permalink_title"]
         self.header_rgx = re.compile("[Hh][123456]")
         if isinstance(config["toc_depth"], str) and '-' in config["toc_depth"]:
-            self.toc_top, self.toc_bottom = [int(x) for x in config["toc_depth"].split('-')]
+            self.toc_top, self.toc_bottom = (int(x) for x in config["toc_depth"].split('-'))
         else:
             self.toc_top = 1
             self.toc_bottom = int(config["toc_depth"])

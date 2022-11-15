@@ -167,7 +167,7 @@ class CodeHilite:
             txt = txt.replace('"', '&quot;')
             classes = []
             if self.lang:
-                classes.append('{}{}'.format(self.lang_prefix, self.lang))
+                classes.append(f'{self.lang_prefix}{self.lang}')
             if self.options['linenos']:
                 classes.append('linenums')
             class_str = ''

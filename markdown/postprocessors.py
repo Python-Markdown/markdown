@@ -128,7 +128,7 @@ class AndSubstitutePostprocessor(Postprocessor):
 class UnescapePostprocessor(Postprocessor):
     """ Restore escaped chars """
 
-    RE = re.compile(r'{}(\d+){}'.format(util.STX, util.ETX))
+    RE = re.compile(fr'{util.STX}(\d+){util.ETX}')
 
     def unescape(self, m):
         return chr(int(m.group(1)))
