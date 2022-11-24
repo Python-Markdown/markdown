@@ -122,7 +122,7 @@ class CodeHilite:
 
     def hilite(self, shebang=True):
         """
-        Pass code to the [Pygments](http://pygments.pocoo.org/) highliter with
+        Pass code to the [Pygments](https://pygments.org/) highliter with
         optional line numbers. The output should then be styled with css to
         your liking. No styles are applied by default - only styling hooks
         (i.e.: <span class="k">).
