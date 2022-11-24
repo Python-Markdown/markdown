@@ -195,7 +195,7 @@ The following options are provided to configure the output:
 * **`slugify`**:
     Callable to generate anchors.
 
-    Default: `markdown.extensions.headerid.slugify`
+    Default: `markdown.extensions.toc.slugify`
 
     In order to use a different algorithm to define the id attributes, define  and
     pass in a callable which takes the following two arguments:
@@ -206,7 +206,7 @@ The following options are provided to configure the output:
     The callable must return a string appropriate for use in HTML `id` attributes.
 
     An alternate version of the default callable supporting Unicode strings is also
-    provided as `markdown.extensions.headerid.slugify_unicode`.
+    provided as `markdown.extensions.toc.slugify_unicode`.
 
 * **`separator`**:
     Word separator. Character which replaces white space in id. Defaults to "`-`".
