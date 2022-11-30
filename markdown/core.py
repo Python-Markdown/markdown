@@ -80,7 +80,7 @@ class Markdown:
             'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'main', 'menu', 'nav', 'ol',
             'p', 'pre', 'section', 'table', 'ul',
             # Other elements which Markdown should not be mucking up the contents of.
-            'canvas', 'colgroup', 'dd', 'body', 'dt', 'group', 'iframe', 'li', 'legend',
+            'canvas', 'colgroup', 'dd', 'html', 'body', 'dt', 'group', 'iframe', 'li', 'legend',
             'math', 'map', 'noscript', 'output', 'object', 'option', 'progress', 'script',
             'style', 'summary', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'video'
         ]
