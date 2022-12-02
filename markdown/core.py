@@ -31,6 +31,7 @@ from .inlinepatterns import build_inlinepatterns
 from .postprocessors import build_postprocessors
 from .extensions import Extension
 from .serializers import to_html_string, to_xhtml_string
+from .util import BLOCK_LEVEL_ELEMENTS
 
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
@@ -72,18 +73,7 @@ class Markdown:
         self.ESCAPED_CHARS = ['\\', '`', '*', '_', '{', '}', '[', ']',
                               '(', ')', '>', '#', '+', '-', '.', '!']
 
-        self.block_level_elements = [
-            # Elements which are invalid to wrap in a `<p>` tag.
-            # See https://w3c.github.io/html/grouping-content.html#the-p-element
-            'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
-            'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3',
-            'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'main', 'menu', 'nav', 'ol',
-            'p', 'pre', 'section', 'table', 'ul',
-            # Other elements which Markdown should not be mucking up the contents of.
-            'canvas', 'colgroup', 'dd', 'body', 'dt', 'group', 'iframe', 'li', 'legend',
-            'math', 'map', 'noscript', 'output', 'object', 'option', 'progress', 'script',
-            'style', 'summary', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'video'
-        ]
+        self.block_level_elements = BLOCK_LEVEL_ELEMENTS.copy()
 
         self.registeredExtensions = []
         self.docType = ""
