@@ -7,6 +7,7 @@ Python-Markdown Change Log
 
 * Improve standalone * and _ parsing (#1300).
 * Consider `<html>` HTML tag a block-level element (#1309).
+* Officially support for Python 3.11.
 
 July 15, 2022: version 3.4.1 (a bug-fix release).
 
