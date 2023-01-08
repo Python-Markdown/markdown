@@ -2,7 +2,7 @@ site_name: Python-Markdown
 site_url: https://Python-Markdown.github.io/
 repo_url: https://github.com/Python-Markdown/markdown
 site_author: "The Python-Markdown Project"
-copyright: "Copyright &copy; 2010-2017"
+copyright: "Copyright &copy; 2010-2023"
 
 use_directory_urls: true
 
