@@ -308,7 +308,7 @@ class BlockQuoteProcessor(BlockProcessor):
     def clean(self, line):
         """ Remove ``>`` from beginning of a line. """
         m = self.RE.match(line)
-        if line.strip() == ">":
+        if line.strip() == ">" or line.strip() == "&gt;":
             return ""
         elif m:
             return m.group(3)
