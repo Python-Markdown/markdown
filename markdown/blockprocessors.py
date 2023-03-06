@@ -276,7 +276,7 @@ class CodeBlockProcessor(BlockProcessor):
 
 class BlockQuoteProcessor(BlockProcessor):
 
-    RE = re.compile(r'(^|\n)[ ]{0,3}>[ ]?(.*)')
+    RE = re.compile(r'(^|\n)[ ]{0,3}(>|&gt;)[ ]?(.*)')
 
     def test(self, parent, block):
         return bool(self.RE.search(block)) and not util.nearing_recursion_limit()
@@ -311,7 +311,7 @@ class BlockQuoteProcessor(BlockProcessor):
         if line.strip() == ">":
             return ""
         elif m:
-            return m.group(2)
+            return m.group(3)
         else:
             return line
 
