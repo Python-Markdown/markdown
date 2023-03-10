@@ -47,7 +47,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = [
+testing = [
     'coverage',
     'pyyaml',
 ]
