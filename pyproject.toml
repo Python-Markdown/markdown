@@ -2,3 +2,88 @@
 # Minimum requirements for the build system to execute.
 requires = ["setuptools>=36.6", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = 'Markdown'
+dynamic = ['version']
+description = "Python implementation of John Gruber's Markdown."
+readme = {file = 'README.md', content-type='text/markdown'}
+authors = [
+    {name = 'Manfred Stienstra'},
+    {name = 'Yuri takhteyev'},
+    {name = 'Waylan limberg', email = 'python.markdown@gmail.com'}
+]
+maintainers = [
+    {name = 'Waylan Limberg', email = 'python.markdown@gmail.com'}
+]
+license = {file = 'LICENSE.md'}
+requires-python = '>=3.7'
+dependencies = [
+    "importlib-metadata>=4.4;python_version<'3.10'"
+]
+keywords = ['markdown', 'markdown-parser', 'python-markdown', 'markdown-to-html']
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'License :: OSI Approved :: BSD License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: Implementation :: CPython',
+    'Programming Language :: Python :: Implementation :: PyPy',
+    'Topic :: Communications :: Email :: Filters',
+    'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: CGI Tools/Libraries',
+    'Topic :: Internet :: WWW/HTTP :: Site Management',
+    'Topic :: Software Development :: Documentation',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Text Processing :: Filters',
+    'Topic :: Text Processing :: Markup :: HTML',
+    'Topic :: Text Processing :: Markup :: Markdown'
+]
+
+[project.optional-dependencies]
+test = [
+    'coverage',
+    'pyyaml',
+]
+
+[project.urls]
+'Homepage' = 'https://Python-Markdown.github.io/'
+'Documentation' = 'https://Python-Markdown.github.io/'
+'Repository' = 'https://github.com/Python-Markdown/markdown'
+'Issue Tracker' = 'https://github.com/Python-Markdown/markdown/issues'
+'Changelog' = 'https://github.com/Python-Markdown/markdown/blob/master/docs/change_log/index.md'
+
+[project.entry-points.scripts]
+markdown_py = 'markdown.__main__:run'
+
+[project.entry-points.'markdown.extensions']
+abbr = 'markdown.extensions.abbr:AbbrExtension'
+admonition = 'markdown.extensions.admonition:AdmonitionExtension'
+attr_list = 'markdown.extensions.attr_list:AttrListExtension'
+codehilite = 'markdown.extensions.codehilite:CodeHiliteExtension'
+def_list = 'markdown.extensions.def_list:DefListExtension'
+extra = 'markdown.extensions.extra:ExtraExtension'
+fenced_code = 'markdown.extensions.fenced_code:FencedCodeExtension'
+footnotes = 'markdown.extensions.footnotes:FootnoteExtension'
+md_in_html = 'markdown.extensions.md_in_html:MarkdownInHtmlExtension'
+meta = 'markdown.extensions.meta:MetaExtension'
+nl2br = 'markdown.extensions.nl2br:Nl2BrExtension'
+sane_lists = 'markdown.extensions.sane_lists:SaneListExtension'
+smarty = 'markdown.extensions.smarty:SmartyExtension'
+tables = 'markdown.extensions.tables:TableExtension'
+toc = 'markdown.extensions.toc:TocExtension'
+wikilinks = 'markdown.extensions.wikilinks:WikiLinkExtension'
+legacy_attrs = 'markdown.extensions.legacy_attrs:LegacyAttrExtension'
+legacy_em = 'markdown.extensions.legacy_em:LegacyEmExtension'
+
+[tool.setuptools]
+packages = ['markdown', 'markdown.extensions']
+
+[tool.setuptools.dynamic]
+version = {attr = 'markdown.__meta__.__version__'}
