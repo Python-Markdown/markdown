@@ -1,6 +1,6 @@
 [build-system]
 # Minimum requirements for the build system to execute.
-requires = ["setuptools>=36.6", "wheel"]
+requires = ["setuptools>=61.2", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -10,11 +10,12 @@ description = "Python implementation of John Gruber's Markdown."
 readme = {file = 'README.md', content-type='text/markdown'}
 authors = [
     {name = 'Manfred Stienstra'},
-    {name = 'Yuri takhteyev'},
+    {name = 'Yuri Takhteyev'},
     {name = 'Waylan limberg', email = 'python.markdown@gmail.com'}
 ]
 maintainers = [
-    {name = 'Waylan Limberg', email = 'python.markdown@gmail.com'}
+    {name = 'Waylan Limberg', email = 'python.markdown@gmail.com'},
+    {name = 'Isaac Muse'}
 ]
 license = {file = 'LICENSE.md'}
 requires-python = '>=3.7'
