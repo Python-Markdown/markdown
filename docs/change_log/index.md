@@ -3,7 +3,7 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-*under development*: version 3.4.2 (a bug-fix release).
+March 22, 2023: version 3.4.2 (a bug-fix release).
 
 * Improve standalone * and _ parsing (#1300).
 * Consider `<html>` HTML tag a block-level element (#1309).
