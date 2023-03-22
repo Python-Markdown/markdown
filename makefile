@@ -8,7 +8,6 @@ help:
 	@echo '    install       Install Python-Markdown locally'
 	@echo '    deploy        Register and upload a new release to PyPI'
 	@echo '    build         Build a source distribution'
-	@echo '    build-win     Build a Windows exe distribution'
 	@echo '    docs          Build documentation'
 	@echo '    test          Run all tests'
 	@echo '    clean         Clean up the source directories'
@@ -21,18 +20,14 @@ install:
 deploy:
 	rm -rf build
 	rm -rf dist
-	python setup.py bdist_wheel sdist --formats gztar
+	python -m build
 	twine upload dist/*
 
 .PHONY : build
 build:
 	rm -rf build
 	rm -rf dist
-	python setup.py bdist_wheel sdist --formats gztar
-
-.PHONY : build-win
-build-win:
-	python setup.py bdist_wininst
+	python -m build
 
 .PHONY : docs
 docs:

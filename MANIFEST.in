@@ -1,8 +1,6 @@
 recursive-include markdown *.py
 recursive-include docs *
 recursive-include tests *.txt *.html *.py
-include setup.py
-include setup.cfg
 include makefile
 include LICENSE.md
 include README.md

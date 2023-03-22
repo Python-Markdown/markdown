@@ -3,11 +3,12 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
-*under development*: version 3.4.1 (a bug-fix release).
+*under development*: version 3.4.2 (a bug-fix release).
 
 * Improve standalone * and _ parsing (#1300).
 * Consider `<html>` HTML tag a block-level element (#1309).
-* Officially support for Python 3.11.
+* Officially support Python 3.11.
+* Switch from `setup.py` to `pyproject.toml`.
 
 July 15, 2022: version 3.4.1 (a bug-fix release).
 
