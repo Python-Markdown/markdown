@@ -60,7 +60,7 @@ testing = [
 'Issue Tracker' = 'https://github.com/Python-Markdown/markdown/issues'
 'Changelog' = 'https://github.com/Python-Markdown/markdown/blob/master/docs/change_log/index.md'
 
-[project.entry-points.scripts]
+[project.scripts]
 markdown_py = 'markdown.__main__:run'
 
 [project.entry-points.'markdown.extensions']
