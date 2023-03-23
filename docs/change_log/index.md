@@ -3,6 +3,10 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+March 23, 2023: version 3.4.3 (a bug-fix release).
+
+* Restore console script (#1327).
+
 March 22, 2023: version 3.4.2 (a bug-fix release).
 
 * Improve standalone * and _ parsing (#1300).
