@@ -1,0 +1,91 @@
+spellchecker: aspell
+
+matrix:
+- name: mkdocs
+  group: docs
+  sources:
+  - site/**/*.html
+  aspell:
+    lang: en
+    d: en_US
+  dictionary:
+    wordlists:
+    - .spell-dict
+    output: build/dictionary/mkdocs.dic
+  pipeline:
+  - pyspelling.filters.html:
+      comments: false
+      attributes:
+      - title
+      - alt
+      ignores:
+      - 'code, pre'
+  - pyspelling.filters.url:
+
+- name: markdown
+  group: docs
+  sources:
+  - README.md
+  - INSTALL.md
+  - LICENSE.md
+  - CODE_OF_CONDUCT.md
+  aspell:
+    lang: en
+    d: en_US
+  dictionary:
+    wordlists:
+    - .spell-dict
+    output: build/dictionary/markdown.dic
+  pipeline:
+  - pyspelling.filters.markdown:
+  - pyspelling.filters.html:
+      comments: false
+      attributes:
+      - title
+      - alt
+      ignores:
+      - code
+      - pre
+  - pyspelling.filters.url:
+
+- name: python
+  group: source
+  sources:
+  - setup.py
+  - '{pyspelling,tests,tools}/**/*.py'
+  aspell:
+    lang: en
+    d: en_US
+  dictionary:
+    wordlists:
+    - .spell-dict
+    output: build/dictionary/python.dic
+  pipeline:
+  - pyspelling.filters.python:
+      group_comments: true
+  - pyspelling.flow_control.wildcard:
+      allow:
+      - py-comment
+  - pyspelling.filters.context:
+      context_visible_first: true
+      delimiters:
+      # Ignore lint (noqa) and coverage (pragma) as well as shebang (#!)
+      - open: '^(?: *(?:noqa\b|pragma: no cover)|!)'
+        close: '$'
+      # Ignore Python encoding string -*- encoding stuff -*-
+      - open: '^ *-\*-'
+        close: '-\*-$'
+  - pyspelling.filters.context:
+      context_visible_first: true
+      escapes: '\\[\\`]'
+      delimiters:
+      # Ignore multiline content between fences (fences can have 3 or more back ticks)
+      # ```
+      # content
+      # ```
+      - open: '(?s)^(?P<open> *`{3,})$'
+        close: '^(?P=open)$'
+      # Ignore text between inline back ticks
+      - open: '(?P<open>`+)'
+        close: '(?P=open)'
+  - pyspelling.filters.url:
