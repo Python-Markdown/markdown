@@ -12,7 +12,7 @@ Therefore, the tools are importable from `markdown.test_tools`.
 The test tools include two different `unittest.TestCase` subclasses:
 `markdown.test_tools.TestCase` and `markdown.test_tools.LegacyTestCase`.
 
-## markdown.test_tools.TestCase
+## `markdown.test_tools.TestCase`
 
 The `markdown.test_tools.TestCase` class is a `unittest.TestCase` subclass with
 a few additional helpers to make testing Markdown output easier.
@@ -66,7 +66,7 @@ class TestHr(TestCase):
         )
 ```
 
-## markdown.test_tools.LegacyTestCase
+## `markdown.test_tools.LegacyTestCase`
 
 In the past Python-Markdown exclusively used file-based tests. Many of those
 tests still exist in Python-Markdown's test suite, including the test files from
