@@ -16,7 +16,6 @@ matrix:
   - pyspelling.filters.html:
       comments: false
       attributes:
-      - title
       - alt
       ignores:
       - 'code, pre'
