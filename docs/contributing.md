@@ -421,8 +421,9 @@ following steps:
 
     - Deploy an update to the documentation using [MkDocs]. The following example
       assumes that local clones of the [Python-Markdown/markdown] and
-      [Python-Markdown/Python-Markdown.github.io] repositories are in sibling
-      directories named `markdown` and `Python-Markdown.github.io` respectively.
+      [`Python-Markdown/Python-Markdown.github.io`][Python-Markdown/Python-Markdown.github.io]
+      repositories are in sibling directories named `markdown` and `Python-Markdown.github.io`
+      respectively.
 
             cd Python-Markdown.github.io
             mkdocs gh-deploy --config-file ../markdown/mkdocs.yml --remote-branch master
