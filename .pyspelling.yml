@@ -20,6 +20,8 @@ matrix:
       - alt
       ignores:
       - 'code, pre'
+      captures:
+      - '[role=main] *|*:not(script,style)'
   - pyspelling.filters.url:
 
 - name: markdown
@@ -46,8 +48,7 @@ matrix:
       - title
       - alt
       ignores:
-      - code
-      - pre
+      - 'code, pre'
   - pyspelling.filters.url:
 
 - name: python
