@@ -38,6 +38,8 @@ matrix:
     output: build/dictionary/markdown.dic
   pipeline:
   - pyspelling.filters.markdown:
+      markdown_extensions:
+      - smarty
   - pyspelling.filters.html:
       comments: false
       attributes:
