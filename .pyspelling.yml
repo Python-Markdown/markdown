@@ -49,8 +49,7 @@ matrix:
 - name: python
   group: source
   sources:
-  - setup.py
-  - '{pyspelling,tests,tools}/**/*.py'
+  - '{markdown,tests}/**/*.py'
   aspell:
     lang: en
     d: en_US
@@ -73,6 +72,9 @@ matrix:
       # Ignore Python encoding string -*- encoding stuff -*-
       - open: '^ *-\*-'
         close: '-\*-$'
+      # Ignore possessive endings
+      - open: '(?<=\w)''s(?!\w)'
+        close: '\b'
   - pyspelling.filters.context:
       context_visible_first: true
       escapes: '\\[\\`]'
