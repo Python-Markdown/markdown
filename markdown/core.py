@@ -55,16 +55,16 @@ class Markdown:
 
         Keyword arguments:
 
-        * extensions: A list of extensions.
+        * `extensions`: A list of extensions.
             If an item is an instance of a subclass of `markdown.extension.Extension`, the  instance will be used
             as-is. If an item is of type string, first an entry point will be loaded. If that fails, the string is
-            assumed to use Python dot notation (`path.to.module:ClassName`) to load a markdown.Extension subclass. If
+            assumed to use Python dot notation (`path.to.module:ClassName`) to load a `markdown.Extension` subclass. If
             no class is specified, then a `makeExtension` function is called within the specified module.
-        * extension_configs: Configuration settings for extensions.
-        * output_format: Format of output. Supported formats are:
-            * "xhtml": Outputs XHTML style tags. Default.
-            * "html": Outputs HTML style tags.
-        * tab_length: Length of tabs in the source. Default: 4
+        * `extension_configs`: Configuration settings for extensions.
+        * `output_format`: Format of output. Supported formats are:
+            * `xhtml`: Outputs XHTML style tags. Default.
+            * `html`: Outputs HTML style tags.
+        * `tab_length`: Length of tabs in the source. Default: 4
 
         """
 
@@ -103,9 +103,9 @@ class Markdown:
 
         Keyword arguments:
 
-        * extensions: A list of extensions, which can either
+        * `extensions`: A list of extensions, which can either
            be strings or objects.
-        * configs: A dictionary mapping extension names to config options.
+        * `configs`: A dictionary mapping extension names to `configs` options.
 
         """
         for ext in extensions:
@@ -136,7 +136,7 @@ class Markdown:
 
         If no entry point is found, assume dot notation (`path.to.module:ClassName`). Load the specified class and
         return an instance. If no class is specified, import the module and call a `makeExtension` function and return
-        the Extension instance returned by that function.
+        the `Extension` instance returned by that function.
         """
         configs = dict(configs)
 
@@ -162,7 +162,7 @@ class Markdown:
             # Load given class name from module.
             return getattr(module, class_name)(**configs)
         else:
-            # Expect  makeExtension() function to return a class.
+            # Expect  `makeExtension()` function to return a class.
             try:
                 return module.makeExtension(**configs)
             except AttributeError as e:
@@ -192,7 +192,7 @@ class Markdown:
 
     def set_output_format(self, format):
         """ Set the output format for the class instance. """
-        self.output_format = format.lower().rstrip('145')  # ignore num
+        self.output_format = format.lower().rstrip('145')  # ignore number
         try:
             self.serializer = self.output_formats[self.output_format]
         except KeyError as e:
@@ -218,31 +218,31 @@ class Markdown:
 
         Keyword arguments:
 
-        * source: Source text as a Unicode string.
+        * `source`: Source text as a Unicode string.
 
         Markdown processing takes place in five steps:
 
-        1. A bunch of "preprocessors" munge the input text.
-        2. BlockParser() parses the high-level structural elements of the
-           pre-processed text into an ElementTree.
-        3. A bunch of "treeprocessors" are run against the ElementTree. One
-           such treeprocessor runs InlinePatterns against the ElementTree,
+        1. A bunch of `preprocessors` munge the input text.
+        2. `BlockParser()` parses the high-level structural elements of the
+           pre-processed text into an `ElementTree`.
+        3. A bunch of `treeprocessors` are run against the `ElementTree`. One
+           such `treeprocessor` runs `InlinePatterns` against the `ElementTree`,
            detecting inline markup.
-        4. Some post-processors are run against the text after the ElementTree
+        4. Some post-processors are run against the text after the `ElementTree`
            has been serialized into text.
         5. The output is written to a string.
 
         """
 
-        # Fixup the source text
+        # Fix up the source text
         if not source.strip():
-            return ''  # a blank unicode string
+            return ''  # a blank Unicode string
 
         try:
             source = str(source)
         except UnicodeDecodeError as e:  # pragma: no cover
-            # Customise error message while maintaining original trackback
-            e.reason += '. -- Note: Markdown only accepts unicode input!'
+            # Customize error message while maintaining original traceback
+            e.reason += '. -- Note: Markdown only accepts Unicode input!'
             raise
 
         # Split into lines and run the line preprocessors.
@@ -283,23 +283,23 @@ class Markdown:
         return output.strip()
 
     def convertFile(self, input=None, output=None, encoding=None):
-        """Converts a markdown file and returns the HTML as a unicode string.
+        """Converts a markdown file and returns the HTML as a Unicode string.
 
-        Decodes the file using the provided encoding (defaults to utf-8),
+        Decodes the file using the provided encoding (defaults to `utf-8`),
         passes the file content to markdown, and outputs the html to either
         the provided stream or the file with provided name, using the same
-        encoding as the source file. The 'xmlcharrefreplace' error handler is
+        encoding as the source file. The `xmlcharrefreplace` error handler is
         used when encoding the output.
 
-        **Note:** This is the only place that decoding and encoding of unicode
-        takes place in Python-Markdown.  (All other code is unicode-in /
-        unicode-out.)
+        **Note:** This is the only place that decoding and encoding of Unicode
+        takes place in Python-Markdown.  (All other code is Unicode-in /
+        Unicode-out.)
 
         Keyword arguments:
 
-        * input: File object or path. Reads from stdin if `None`.
-        * output: File object or path. Writes to stdout if `None`.
-        * encoding: Encoding of input and output files. Defaults to utf-8.
+        * `input`: File object or path. Reads from `stdin` if `None`.
+        * `output`: File object or path. Writes to `stdout` if `None`.
+        * `encoding`: Encoding of input and output files. Defaults to `utf-8`.
 
         """
 
@@ -353,21 +353,21 @@ class Markdown:
 EXPORTED FUNCTIONS
 =============================================================================
 
-Those are the two functions we really mean to export: markdown() and
-markdownFromFile().
+Those are the two functions we really mean to export: `markdown()` and
+`markdownFromFile()`.
 """
 
 
 def markdown(text, **kwargs):
-    """Convert a markdown string to HTML and return HTML as a unicode string.
+    """Convert a markdown string to HTML and return HTML as a Unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
-    basic use case.  It initializes an instance of Markdown, loads the
+    basic use case.  It initializes an instance of `Markdown`, loads the
     necessary extensions and runs the parser on the given text.
 
     Keyword arguments:
 
-    * text: Markdown formatted text as Unicode or ASCII string.
+    * `text`: Markdown formatted text as Unicode or ASCII string.
     * Any arguments accepted by the Markdown class.
 
     Returns: An HTML document as a string.
@@ -380,15 +380,15 @@ def markdown(text, **kwargs):
 def markdownFromFile(**kwargs):
     """Read markdown code from a file and write it to a file or a stream.
 
-    This is a shortcut function which initializes an instance of Markdown,
-    and calls the convertFile method rather than convert.
+    This is a shortcut function which initializes an instance of `Markdown`,
+    and calls the `convertFile` method rather than `convert`.
 
     Keyword arguments:
 
-    * input: a file name or readable object.
-    * output: a file name or writable object.
-    * encoding: Encoding of input and output.
-    * Any arguments accepted by the Markdown class.
+    * `input`: a file name or readable object.
+    * `output`: a file name or writable object.
+    * `encoding`: Encoding of input and output.
+    * Any arguments accepted by the `Markdown` class.
 
     """
     md = Markdown(**kwargs)

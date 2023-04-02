@@ -47,8 +47,8 @@ BLOCK_LEVEL_ELEMENTS = [
 ]
 
 # Placeholders
-STX = '\u0002'  # Use STX ("Start of text") for start-of-placeholder
-ETX = '\u0003'  # Use ETX ("End of text") for end-of-placeholder
+STX = '\u0002'  # Use `STX` ("Start of text") for start-of-placeholder
+ETX = '\u0003'  # Use `ETX` ("End of text") for end-of-placeholder
 INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 INLINE_PLACEHOLDER_RE = re.compile(INLINE_PLACEHOLDER % r'([0-9]+)')
@@ -82,7 +82,7 @@ AUXILIARY GLOBAL FUNCTIONS
 def get_installed_extensions():
     if sys.version_info >= (3, 10):
         from importlib import metadata
-    else:  # <PY310 use backport
+    else:  # `<PY310` use backport
         import importlib_metadata as metadata
     # Only load extension entry_points once.
     return metadata.entry_points(group='markdown.extensions')
@@ -90,7 +90,7 @@ def get_installed_extensions():
 
 def deprecated(message, stacklevel=2):
     """
-    Raise a DeprecationWarning when wrapped function/method is called.
+    Raise a `DeprecationWarning` when wrapped function/method is called.
 
     Usage:
         @deprecated("This method will be removed in version X; use Y instead.")
@@ -111,10 +111,10 @@ def deprecated(message, stacklevel=2):
 
 
 def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
-    """Parses a string representing bool value. If parsing was successful,
-       returns True or False. If preserve_none=True, returns True, False,
-       or None. If parsing was not successful, raises  ValueError, or, if
-       fail_on_errors=False, returns None."""
+    """Parses a string representing boolean value. If parsing was successful,
+       returns True or False. If `preserve_none=True`, returns `True`, `False`,
+       or `None`. If parsing was not successful, raises `ValueError`, or, if
+       `fail_on_errors=False`, returns `None`."""
     if not isinstance(value, str):
         if preserve_none and value is None:
             return value
@@ -179,7 +179,7 @@ class HtmlStash:
     """
 
     def __init__(self):
-        """ Create a HtmlStash. """
+        """ Create an `HtmlStash`. """
         self.html_counter = 0  # for counting inline html segments
         self.rawHtmlBlocks = []
         self.tag_counter = 0
@@ -193,7 +193,7 @@ class HtmlStash:
 
         Keyword arguments:
 
-        * html: an html segment
+        * `html`: an html segment
 
         Returns : a placeholder string
 
@@ -216,7 +216,7 @@ class HtmlStash:
                               'left_index': left_index,
                               'right_index': right_index})
         placeholder = TAG_PLACEHOLDER % str(self.tag_counter)
-        self.tag_counter += 1  # equal to the tag's index in self.tag_data
+        self.tag_counter += 1  # equal to the tag's index in `self.tag_data`
         return placeholder
 
 

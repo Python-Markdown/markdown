@@ -31,15 +31,15 @@ htmlparser = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(htmlparser)
 sys.modules['htmlparser'] = htmlparser
 
-# Monkeypatch HTMLParser to only accept `?>` to close Processing Instructions.
+# Monkeypatch `HTMLParser` to only accept `?>` to close Processing Instructions.
 htmlparser.piclose = re.compile(r'\?>')
-# Monkeypatch HTMLParser to only recognize entity references with a closing semicolon.
+# Monkeypatch `HTMLParser` to only recognize entity references with a closing semicolon.
 htmlparser.entityref = re.compile(r'&([a-zA-Z][-.a-zA-Z0-9]*);')
-# Monkeypatch HTMLParser to no longer support partial entities. We are always feeding a complete block,
-# so the 'incomplete' functionality is unnecessary. As the entityref regex is run right before incomplete,
+# Monkeypatch `HTMLParser` to no longer support partial entities. We are always feeding a complete block,
+# so the 'incomplete' functionality is unnecessary. As the `entityref` regex is run right before incomplete,
 # and the two regex are the same, then incomplete will simply never match and we avoid the logic within.
 htmlparser.incomplete = htmlparser.entityref
-# Monkeypatch HTMLParser to not accept a backtick in a tag name, attribute name, or bare value.
+# Monkeypatch `HTMLParser` to not accept a backtick in a tag name, attribute name, or bare value.
 htmlparser.locatestarttagend_tolerant = re.compile(r"""
   <[a-zA-Z][^`\t\n\r\f />\x00]*       # tag name <= added backtick here
   (?:[\s/]*                           # optional whitespace before attribute name
@@ -84,7 +84,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         """Reset this instance.  Loses all unprocessed data."""
         self.inraw = False
         self.intail = False
-        self.stack = []  # When inraw==True, stack contains a list of tags
+        self.stack = []  # When `inraw==True`, stack contains a list of tags
         self._cache = []
         self.cleandoc = []
         super().reset()
@@ -106,13 +106,13 @@ class HTMLExtractor(htmlparser.HTMLParser):
 
     @property
     def line_offset(self):
-        """Returns char index in self.rawdata for the start of the current line. """
+        """Returns char index in `self.rawdata` for the start of the current line. """
         if self.lineno > 1 and '\n' in self.rawdata:
             m = re.match(r'([^\n]*\n){{{}}}'.format(self.lineno-1), self.rawdata)
             if m:
                 return m.end()
             else:  # pragma: no cover
-                # Value of self.lineno must exceed total number of lines.
+                # Value of `self.lineno` must exceed total number of lines.
                 # Find index of beginning of last line.
                 return self.rawdata.rfind('\n')
         return 0
@@ -182,7 +182,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
                     # Preserve blank line and end of raw block.
                     self._cache.append('\n')
                 else:
-                    # More content exists after endtag.
+                    # More content exists after `endtag`.
                     self.intail = True
                 # Reset stack.
                 self.inraw = False
@@ -263,13 +263,13 @@ class HTMLExtractor(htmlparser.HTMLParser):
         return i + 2
 
     # The rest has been copied from base class in standard lib to address #1036.
-    # As __startag_text is private, all references to it must be in this subclass.
-    # The last few lines of parse_starttag are reversed so that handle_starttag
-    # can override cdata_mode in certain situations (in a code span).
+    # As `__startag_text` is private, all references to it must be in this subclass.
+    # The last few lines of `parse_starttag` are reversed so that `handle_starttag`
+    # can override `cdata_mode` in certain situations (in a code span).
     __starttag_text = None
 
     def get_starttag_text(self):
-        """Return full source of start tag: '<...>'."""
+        """Return full source of start tag: `<...>`."""
         return self.__starttag_text
 
     def parse_starttag(self, i):  # pragma: no cover
@@ -280,7 +280,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         rawdata = self.rawdata
         self.__starttag_text = rawdata[i:endpos]
 
-        # Now parse the data between i+1 and j into a tag and attrs
+        # Now parse the data between `i+1` and `j` into a tag and `attrs`
         attrs = []
         match = htmlparser.tagfind_tolerant.match(rawdata, i+1)
         assert match, 'unexpected call to parse_starttag()'
@@ -313,10 +313,10 @@ class HTMLExtractor(htmlparser.HTMLParser):
             self.handle_data(rawdata[i:endpos])
             return endpos
         if end.endswith('/>'):
-            # XHTML-style empty tag: <span attr="value" />
+            # XHTML-style empty tag: `<span attr="value" />`
             self.handle_startendtag(tag, attrs)
         else:
-            # *** set cdata_mode first so we can override it in handle_starttag (see #1036) ***
+            # *** set `cdata_mode` first so we can override it in `handle_starttag` (see #1036) ***
             if tag in self.CDATA_CONTENT_ELEMENTS:
                 self.set_cdata_mode(tag)
             self.handle_starttag(tag, attrs)
