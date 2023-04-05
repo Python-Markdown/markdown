@@ -79,6 +79,10 @@ matrix:
       context_visible_first: true
       escapes: '\\[\\`]'
       delimiters:
+      # Ignore lines which are inedented at least one level (Markdown code block)
+      # Warning: This could ignore a nested list item
+      - open: '^ {4,}'
+        close: '$'
       # Ignore multiline content between fences (fences can have 3 or more back ticks)
       # ```
       # content
