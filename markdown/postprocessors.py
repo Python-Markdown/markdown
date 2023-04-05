@@ -103,7 +103,7 @@ class RawHtmlPostprocessor(Postprocessor):
         m = self.BLOCK_LEVEL_REGEX.match(html)
         if m:
             if m.group(1)[0] in ('!', '?', '@', '%'):
-                # Comment, php etc...
+                # Comment, PHP etc...
                 return True
             return self.md.is_block_level(m.group(1))
         return False

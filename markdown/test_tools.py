@@ -80,7 +80,7 @@ class TestCase(unittest.TestCase):
         """
 
         # TODO: If/when actual output ends with a newline, then use:
-        # return textwrap.dedent(text.strip('/n'))
+        #     return textwrap.dedent(text.strip('/n'))
         return textwrap.dedent(text).strip()
 
 
@@ -121,7 +121,7 @@ class Kwargs(dict):
 
 
 def _normalize_whitespace(text):
-    """ Normalize whitespace for a string of html using tidylib. """
+    """ Normalize whitespace for a string of html using `tidylib`. """
     output, errors = tidylib.tidy_fragment(text, options={
         'drop_empty_paras': 0,
         'fix_backslash': 0,
@@ -195,15 +195,15 @@ class LegacyTestCase(unittest.TestCase, metaclass=LegacyTestMeta):
     text-based test files and define various behaviors/defaults for those tests.
     The following properties are supported:
 
-    location: A path to the directory of test files. An absolute path is preferred.
-    exclude: A list of tests to exclude. Each test name should comprise the filename
+    `location`: A path to the directory of test files. An absolute path is preferred.
+    `exclude`: A list of tests to exclude. Each test name should comprise the filename
              without an extension.
-    normalize: A boolean value indicating if the HTML should be normalized.
+    `normalize`: A boolean value indicating if the HTML should be normalized.
                Default: `False`.
-    input_ext: A string containing the file extension of input files. Default: `.txt`.
-    ouput_ext: A string containing the file extension of expected output files.
+    `input_ext`: A string containing the file extension of input files. Default: `.txt`.
+    `output_ext`: A string containing the file extension of expected output files.
                Default: `html`.
-    default_kwargs: A `Kwargs` instance which stores the default set of keyword
+    `default_kwargs`: A `Kwargs` instance which stores the default set of keyword
                     arguments for all test files in the directory.
 
     In addition, properties can be defined for each individual set of test files within
@@ -215,6 +215,6 @@ class LegacyTestCase(unittest.TestCase, metaclass=LegacyTestMeta):
 
     When the class instance is created, it will walk the given directory and create
     a separate unitttest for each set of test files using the naming scheme:
-    `test_filename`. One unittest will be run for each set of input and output files.
+    `test_filename`. One `unittest` will be run for each set of input and output files.
     """
     pass

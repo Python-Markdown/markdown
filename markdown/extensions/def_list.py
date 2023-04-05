@@ -92,7 +92,7 @@ class DefListIndentProcessor(ListIndentProcessor):
     LIST_TYPES = ['dl', 'ol', 'ul']
 
     def create_item(self, parent, block):
-        """ Create a new dd or li (depending on parent) and parse the block with it as the parent. """
+        """ Create a new `dd` or `li` (depending on parent) and parse the block with it as the parent. """
 
         dd = etree.SubElement(parent, 'dd')
         self.parser.parseBlocks(dd, [block])
@@ -102,7 +102,7 @@ class DefListExtension(Extension):
     """ Add definition lists to Markdown. """
 
     def extendMarkdown(self, md):
-        """ Add an instance of DefListProcessor to BlockParser. """
+        """ Add an instance of `DefListProcessor` to `BlockParser`. """
         md.parser.blockprocessors.register(DefListIndentProcessor(md.parser), 'defindent', 85)
         md.parser.blockprocessors.register(DefListProcessor(md.parser), 'deflist', 25)
 

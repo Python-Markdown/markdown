@@ -45,5 +45,5 @@ class LegacyEmExtension(Extension):
 
 
 def makeExtension(**kwargs):  # pragma: no cover
-    """ Return an instance of the LegacyEmExtension """
+    """ Return an instance of the `LegacyEmExtension` """
     return LegacyEmExtension(**kwargs)

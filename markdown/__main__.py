@@ -146,6 +146,6 @@ def run():  # pragma: no cover
 
 
 if __name__ == '__main__':  # pragma: no cover
-    # Support running module as a commandline command.
-    # `python -m markdown [options] [args]`.
+    # Support running module as a command line command.
+    #     python -m markdown [options] [args]
     run()

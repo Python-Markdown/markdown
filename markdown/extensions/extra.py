@@ -46,7 +46,7 @@ class ExtraExtension(Extension):
     """ Add various extensions to Markdown class."""
 
     def __init__(self, **kwargs):
-        """ config is a dumb holder which gets passed to actual ext later. """
+        """ `config` is a dumb holder which gets passed to the actual extension later. """
         self.config = kwargs
 
     def extendMarkdown(self, md):

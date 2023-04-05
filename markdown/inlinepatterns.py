@@ -36,11 +36,11 @@ but you can add additional patterns that don't.
 
 Also note that all the regular expressions used by inline must
 capture the whole block.  For this reason, they all start with
-'^(.*)' and end with '(.*)!'.  In case with built-in expression
-Pattern takes care of adding the "^(.*)" and "(.*)!".
+`^(.*)` and end with `(.*)!`.  In case with built-in expression
+Pattern takes care of adding the `^(.*)` and `(.*)!`.
 
 Finally, the order in which regular expressions are applied is very
-important - e.g. if we first replace http://.../ links with <a> tags
+important - e.g. if we first replace `http://.../` links with `<a>` tags
 and _then_ try to replace inline html, we would end up with a mess.
 So, we apply the expressions in the following order:
 
@@ -108,64 +108,64 @@ NOIMG = r'(?<!\!)'
 # `e=f()` or ``e=f("`")``
 BACKTICK_RE = r'(?:(?<!\\)((?:\\{2})+)(?=`+)|(?<!\\)(`+)(.+?)(?<!`)\2(?!`))'
 
-# \<
+# `\<`
 ESCAPE_RE = r'\\(.)'
 
-# *emphasis*
+# `*emphasis*`
 EMPHASIS_RE = r'(\*)([^\*]+)\1'
 
-# **strong**
+# `**strong**`
 STRONG_RE = r'(\*{2})(.+?)\1'
 
-# __smart__strong__
+# `__smart__strong__`
 SMART_STRONG_RE = r'(?<!\w)(_{2})(?!_)(.+?)(?<!_)\1(?!\w)'
 
-# _smart_emphasis_
+# `_smart_emphasis_`
 SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\1(?!\w)'
 
-# __strong _em__
+# `__strong _em__`
 SMART_STRONG_EM_RE = r'(?<!\w)(\_)\1(?!\1)(.+?)(?<!\w)\1(?!\1)(.+?)\1{3}(?!\w)'
 
-# ***strongem*** or ***em*strong**
+# `***strongem***` or `***em*strong**`
 EM_STRONG_RE = r'(\*)\1{2}(.+?)\1(.*?)\1{2}'
 
-# ___strongem___ or ___em_strong__
+# `___strongem___` or `___em_strong__`
 EM_STRONG2_RE = r'(_)\1{2}(.+?)\1(.*?)\1{2}'
 
-# ***strong**em*
+# `***strong**em*`
 STRONG_EM_RE = r'(\*)\1{2}(.+?)\1{2}(.*?)\1'
 
-# ___strong__em_
+# `___strong__em_`
 STRONG_EM2_RE = r'(_)\1{2}(.+?)\1{2}(.*?)\1'
 
-# **strong*em***
+# `**strong*em***`
 STRONG_EM3_RE = r'(\*)\1(?!\1)([^*]+?)\1(?!\1)(.+?)\1{3}'
 
-# [text](url) or [text](<url>) or [text](url "title")
+# `[text](url)` or `[text](<url>)` or `[text](url "title")`
 LINK_RE = NOIMG + r'\['
 
-# ![alttxt](http://x.com/) or ![alttxt](<http://x.com/>)
+# `![alttxt](http://x.com/)` or `![alttxt](<http://x.com/>)`
 IMAGE_LINK_RE = r'\!\['
 
-# [Google][3]
+# `[Google][3]`
 REFERENCE_RE = LINK_RE
 
-# ![alt text][2]
+# `![alt text][2]`
 IMAGE_REFERENCE_RE = IMAGE_LINK_RE
 
-# stand-alone * or _
+# stand-alone `*` or `_`
 NOT_STRONG_RE = r'((^|(?<=\s))(\*{1,3}|_{1,3})(?=\s|$))'
 
-# <http://www.123.com>
+# `<http://www.123.com>`
 AUTOLINK_RE = r'<((?:[Ff]|[Hh][Tt])[Tt][Pp][Ss]?://[^<>]*)>'
 
-# <me@example.com>
+# `<me@example.com>`
 AUTOMAIL_RE = r'<([^<> !]+@[^@<> ]+)>'
 
-# <...>
+# `<...>`
 HTML_RE = r'(<(\/?[a-zA-Z][^<>@ ]*( [^<>]*)?|!--(?:(?!<!--|-->).)*--)>)'
 
-# "&#38;" (decimal) or "&#x26;" (hex) or "&amp;" (named)
+# `&#38;` (decimal) or `&#x26;` (hex) or `&amp;` (named)
 ENTITY_RE = r'(&(?:\#[0-9]+|\#x[0-9a-fA-F]+|[a-zA-Z0-9]+);)'
 
 # two spaces at end of line
@@ -245,7 +245,7 @@ class Pattern:  # pragma: no cover
                 if isinstance(value, str):
                     return value
                 else:
-                    # An etree Element - return text content only
+                    # An `etree` Element - return text content only
                     return ''.join(value.itertext())
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
@@ -270,7 +270,7 @@ class InlineProcessor(Pattern):
         self.pattern = pattern
         self.compiled_re = re.compile(pattern, re.DOTALL | re.UNICODE)
 
-        # Api for Markdown to pass safe_mode into instance
+        # API for Markdown to pass `safe_mode` into instance
         self.safe_mode = False
         self.md = md
 
@@ -710,7 +710,7 @@ class LinkInlineProcessor(InlineProcessor):
                 if c != ' ':
                     last = c
 
-            # We have a scenario: [test](link"notitle)
+            # We have a scenario: `[test](link"notitle)`
             # When we enter a string, we stop tracking bracket resolution in the main counter,
             # but we do keep a backup counter up until we discover where we might resolve all brackets
             # if the title string fails to resolve.
@@ -749,7 +749,7 @@ class LinkInlineProcessor(InlineProcessor):
 
 
 class ImageInlineProcessor(LinkInlineProcessor):
-    """ Return a img element from the given match. """
+    """ Return a `img` element from the given match. """
 
     def handleMatch(self, m, data):
         text, index, handled = self.getText(data, m.end(0))
@@ -786,7 +786,7 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
         if not handled:
             return None, None, None
 
-        # Clean up linebreaks in id
+        # Clean up line breaks in id
         id = self.NEWLINE_CLEANUP_RE.sub(' ', id)
         if id not in self.md.references:  # ignore undefined refs
             return None, m.start(0), end
@@ -831,7 +831,7 @@ class ShortReferenceInlineProcessor(ReferenceInlineProcessor):
 
 
 class ImageReferenceInlineProcessor(ReferenceInlineProcessor):
-    """ Match to a stored reference and return img element. """
+    """ Match to a stored reference and return `img` element. """
     def makeTag(self, href, title, text):
         el = etree.Element("img")
         el.set("src", href)
@@ -842,7 +842,7 @@ class ImageReferenceInlineProcessor(ReferenceInlineProcessor):
 
 
 class ShortImageReferenceInlineProcessor(ImageReferenceInlineProcessor):
-    """ Short form of inage reference: ![ref]. """
+    """ Short form of image reference: `![ref]`. """
     def evalId(self, data, index, text):
         """Evaluate the id from of [ref]  """
 
@@ -850,7 +850,7 @@ class ShortImageReferenceInlineProcessor(ImageReferenceInlineProcessor):
 
 
 class AutolinkInlineProcessor(InlineProcessor):
-    """ Return a link Element given an autolink (`<http://example/com>`). """
+    """ Return a link Element given an auto-link (`<http://example/com>`). """
     def handleMatch(self, m, data):
         el = etree.Element("a")
         el.set('href', self.unescape(m.group(1)))
@@ -860,7 +860,7 @@ class AutolinkInlineProcessor(InlineProcessor):
 
 class AutomailInlineProcessor(InlineProcessor):
     """
-    Return a mailto link Element given an automail link (`<foo@example.com>`).
+    Return a `mailto` link Element given an auto-mail link (`<foo@example.com>`).
     """
     def handleMatch(self, m, data):
         el = etree.Element('a')

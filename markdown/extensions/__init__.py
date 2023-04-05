@@ -25,12 +25,12 @@ from ..util import parseBoolValue
 class Extension:
     """ Base class for extensions to subclass. """
 
-    # Default config -- to be overridden by a subclass
+    # Default configuration -- to be overridden by a subclass
     # Must be of the following format:
     #     {
     #       'key': ['value', 'description']
     #     }
-    # Note that Extension.setConfig will raise a KeyError
+    # Note that `Extension.setConfig` will raise a `KeyError`
     # if a default is not set here.
     config = {}
 
@@ -50,11 +50,11 @@ class Extension:
         return {key: self.getConfig(key) for key in self.config.keys()}
 
     def getConfigInfo(self):
-        """ Return all config descriptions as a list of tuples. """
+        """ Return all `config` descriptions as a list of tuples. """
         return [(key, self.config[key][1]) for key in self.config.keys()]
 
     def setConfig(self, key, value):
-        """ Set a config setting for `key` with the given `value`. """
+        """ Set a `config` setting for `key` with the given `value`. """
         if isinstance(self.config[key][0], bool):
             value = parseBoolValue(value)
         if self.config[key][0] is None:
@@ -62,7 +62,7 @@ class Extension:
         self.config[key][0] = value
 
     def setConfigs(self, items):
-        """ Set multiple config settings given a dict or list of tuples. """
+        """ Set multiple `config` settings given a dict or list of tuples. """
         if hasattr(items, 'items'):
             # it's a dict
             items = items.items()

@@ -1,5 +1,3 @@
-# markdown/serializers.py
-#
 # Add x/html serialization to `Elementree`
 # Taken from ElementTree 1.3 preview with slight modifications
 #

@@ -7,7 +7,7 @@ This extension adds abbreviation handling to Python-Markdown.
 See <https://Python-Markdown.github.io/extensions/abbreviations>
 for documentation.
 
-Oringinal code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/) and
+Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/) and
  [Seemant Kulleen](http://www.kulleen.org/)
 
 All changes Copyright 2008-2014 The Python Markdown Project
@@ -28,7 +28,7 @@ class AbbrExtension(Extension):
     """ Abbreviation Extension for Python-Markdown. """
 
     def extendMarkdown(self, md):
-        """ Insert AbbrPreprocessor before ReferencePreprocessor. """
+        """ Insert `AbbrPreprocessor` before `ReferencePreprocessor`. """
         md.parser.blockprocessors.register(AbbrPreprocessor(md.parser), 'abbr', 16)
 
 
@@ -43,7 +43,7 @@ class AbbrPreprocessor(BlockProcessor):
     def run(self, parent, blocks):
         '''
         Find and remove all Abbreviation references from the text.
-        Each reference is set as a new AbbrPattern in the markdown instance.
+        Each reference is set as a new `AbbrPattern` in the markdown instance.
 
         '''
         block = blocks.pop(0)
