@@ -26,7 +26,7 @@ class TestAttrList(TestCase):
 
     maxDiff = None
 
-    # TODO: Move the rest of the attr_list tests here.
+    # TODO: Move the rest of the `attr_list` tests here.
 
     def test_empty_list(self):
         self.assertMarkdownRenders(

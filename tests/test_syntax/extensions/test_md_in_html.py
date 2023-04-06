@@ -32,7 +32,7 @@ class TestMarkdownInHTMLPostProcessor(TestCase):
 
     def test_stash_to_string(self):
         # There should be no known cases where this actually happens so we need to
-        # forcefully pass an etree Element to the method to ensure proper behavior.
+        # forcefully pass an `etree` `Element` to the method to ensure proper behavior.
         element = Element('div')
         element.text = 'Foo bar.'
         md = Markdown(extensions=['md_in_html'])
@@ -1208,7 +1208,7 @@ class TestMdInHTML(TestCase):
 
 
 def load_tests(loader, tests, pattern):
-    ''' Ensure TestHTMLBlocks doesn't get run twice by excluding it here. '''
+    ''' Ensure `TestHTMLBlocks` doesn't get run twice by excluding it here. '''
     suite = TestSuite()
     for test_class in [TestDefaultwMdInHTML, TestMdInHTML, TestMarkdownInHTMLPostProcessor]:
         tests = loader.loadTestsFromTestCase(test_class)

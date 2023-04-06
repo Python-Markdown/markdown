@@ -35,7 +35,7 @@ __all__ = ['TestCase', 'LegacyTestCase', 'Kwargs']
 
 class TestCase(unittest.TestCase):
     """
-    A unittest.TestCase subclass with helpers for testing Markdown output.
+    A `unittest.TestCase` subclass with helpers for testing Markdown output.
 
     Define `default_kwargs` as a dict of keywords to pass to Markdown for each
     test. The defaults can be overridden on individual tests.
@@ -43,13 +43,13 @@ class TestCase(unittest.TestCase):
     The `assertMarkdownRenders` method accepts the source text, the expected
     output, and any keywords to pass to Markdown. The `default_kwargs` are used
     except where overridden by `kwargs`. The output and expected output are passed
-    to `TestCase.assertMultiLineEqual`. An AssertionError is raised with a diff
+    to `TestCase.assertMultiLineEqual`. An `AssertionError` is raised with a diff
     if the actual output does not equal the expected output.
 
     The `dedent` method is available to dedent triple-quoted strings if
     necessary.
 
-    In all other respects, behaves as unittest.TestCase.
+    In all other respects, behaves as `unittest.TestCase`.
     """
 
     default_kwargs = {}
@@ -214,7 +214,7 @@ class LegacyTestCase(unittest.TestCase, metaclass=LegacyTestMeta):
     test file. The keyword arguments will "update" the `default_kwargs`.
 
     When the class instance is created, it will walk the given directory and create
-    a separate unitttest for each set of test files using the naming scheme:
-    `test_filename`. One `unittest` will be run for each set of input and output files.
+    a separate `Unitttest` for each set of test files using the naming scheme:
+    `test_filename`. One `Unittest` will be run for each set of input and output files.
     """
     pass

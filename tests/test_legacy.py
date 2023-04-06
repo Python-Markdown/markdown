@@ -46,24 +46,24 @@ class TestPhp(LegacyTestCase):
 
     Quotes in attributes: attributes get output in different order
 
-    Inline HTML (Span): Backtick in raw HTML attribute TODO: fixme
+    Inline HTML (Span): Backtick in raw HTML attribute TODO: fix me
 
     Backslash escapes: Weird whitespace issue in output
 
-    Ins & del: Our behavior follows markdown.pl I think PHP is wrong here
+    `Ins` & `del`: Our behavior follows `markdown.pl`. I think PHP is wrong here
 
-    Auto Links: TODO: fix raw HTML so is doesn't match <hr@example.com> as a <hr>.
+    Auto Links: TODO: fix raw HTML so is doesn't match <hr@example.com> as a `<hr>`.
 
-    Empty List Item: We match markdown.pl here. Maybe someday we'll support this
+    Empty List Item: We match `markdown.pl` here. Maybe someday we'll support this
 
     Headers: TODO: fix headers to not require blank line before
 
-    Mixed OLs and ULs: We match markdown.pl here. I think PHP is wrong here
+    Mixed `OL`s and `UL`s: We match `markdown.pl` here. I think PHP is wrong here
 
     Emphasis: We have various minor differences in combined & incorrect em markup.
     Maybe fix a few of them - but most aren't too important
 
-    Code block in a list item: We match markdown.pl - not sure how php gets that output??
+    Code block in a list item: We match `markdown.pl` - not sure how PHP gets that output??
 
     PHP-Specific Bugs: Not sure what to make of the escaping stuff here.
     Why is PHP not removing a backslash?
@@ -87,14 +87,6 @@ class TestPhp(LegacyTestCase):
     ]
 
 
-# class TestPhpExtra(LegacyTestCase):
-#     location = os.path.join(parent_test_dir, 'php/extra')
-#     normalize = True
-#     input_ext = '.text'
-#     output_ext = '.xhtml'
-#     default_kwargs = Kwargs(extensions=['extra'])
-
-
 class TestPl2004(LegacyTestCase):
     location = os.path.join(parent_test_dir, 'pl/Tests_2004')
     normalize = True
@@ -110,11 +102,11 @@ class TestPl2007(LegacyTestCase):
 
     Code Blocks: some weird whitespace issue
 
-    Links, reference style: weird issue with nested brackets TODO: fixme
+    Links, reference style: weird issue with nested brackets TODO: fix me
 
-    Backslash escapes: backticks in raw html attributes TODO: fixme
+    Backslash escapes: backticks in raw html attributes TODO: fix me
 
-    Code Spans: more backticks in raw html attributes TODO: fixme
+    Code Spans: more backticks in raw html attributes TODO: fix me
     """
     location = os.path.join(parent_test_dir, 'pl/Tests_2007')
     normalize = True
