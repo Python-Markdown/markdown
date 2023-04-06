@@ -25,7 +25,8 @@ import xml.etree.ElementTree as etree
 
 class HTMLExtractorExtra(HTMLExtractor):
     """
-    Override `HTMLExtractor` and create `etree` `Elements` for any elements which should have content parsed as Markdown.
+    Override `HTMLExtractor` and create `etree` `Elements` for any elements which should have content parsed as
+    Markdown.
     """
 
     def __init__(self, md, *args, **kwargs):
