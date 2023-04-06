@@ -66,7 +66,7 @@ The following new features have been included in the 3.3 release:
   blocks when the `attr_list` extension is enabled (#816).
 
 * The HTML parser has been completely replaced. The new HTML parser is built on Python's
-  [html.parser.HTMLParser](https://docs.python.org/3/library/html.parser.html), which
+  [`html.parser.HTMLParser`](https://docs.python.org/3/library/html.parser.html), which
   alleviates various bugs and simplify maintenance of the code (#803, #830).
 
 * The [Markdown in HTML](../extensions/md_in_html.md) extension has been rebuilt on the

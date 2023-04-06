@@ -266,7 +266,7 @@ class TestFootnotes(TestCase):
         )
 
     def test_backlink_text(self):
-        """Test backlink configuration."""
+        """Test back-link configuration."""
 
         self.assertMarkdownRenders(
             'paragraph[^1]\n\n[^1]: A Footnote',
@@ -302,7 +302,7 @@ class TestFootnotes(TestCase):
         )
 
     def test_backlink_title(self):
-        """Test backlink title configuration without placeholder."""
+        """Test back-link title configuration without placeholder."""
 
         self.assertMarkdownRenders(
             'paragraph[^1]\n\n[^1]: A Footnote',

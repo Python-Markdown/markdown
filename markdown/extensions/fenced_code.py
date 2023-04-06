@@ -34,7 +34,7 @@ class FencedCodeExtension(Extension):
         super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
-        """ Add FencedBlockPreprocessor to the Markdown instance. """
+        """ Add `FencedBlockPreprocessor` to the Markdown instance. """
         md.registerExtension(self)
 
         md.preprocessors.register(FencedBlockPreprocessor(md, self.getConfigs()), 'fenced_code_block', 25)
@@ -60,7 +60,7 @@ class FencedBlockPreprocessor(Preprocessor):
         self.checked_for_deps = False
         self.codehilite_conf = {}
         self.use_attr_list = False
-        # List of options to convert to bool values
+        # List of options to convert to boolean values
         self.bool_options = [
             'linenums',
             'guess_lang',
@@ -69,7 +69,7 @@ class FencedBlockPreprocessor(Preprocessor):
         ]
 
     def run(self, lines):
-        """ Match and store Fenced Code Blocks in the HtmlStash. """
+        """ Match and store Fenced Code Blocks in the `HtmlStash`. """
 
         # Check for dependent extensions
         if not self.checked_for_deps:
@@ -94,16 +94,16 @@ class FencedBlockPreprocessor(Preprocessor):
                     if m.group('lang'):
                         lang = m.group('lang')
                     if m.group('hl_lines'):
-                        # Support hl_lines outside of attrs for backward-compatibility
+                        # Support `hl_lines` outside of `attrs` for backward-compatibility
                         config['hl_lines'] = parse_hl_lines(m.group('hl_lines'))
 
-                # If config is not empty, then the codehighlite extension
+                # If `config` is not empty, then the `codehighlite` extension
                 # is enabled, so we call it to highlight the code
                 if self.codehilite_conf and self.codehilite_conf['use_pygments'] and config.get('use_pygments', True):
                     local_config = self.codehilite_conf.copy()
                     local_config.update(config)
-                    # Combine classes with cssclass. Ensure cssclass is at end
-                    # as pygments appends a suffix under certain circumstances.
+                    # Combine classes with `cssclass`. Ensure `cssclass` is at end
+                    # as Pygments appends a suffix under certain circumstances.
                     # Ignore ID as Pygments does not offer an option to set it.
                     if classes:
                         local_config['css_class'] = '{} {}'.format(
@@ -128,9 +128,9 @@ class FencedBlockPreprocessor(Preprocessor):
                     if id:
                         id_attr = f' id="{_escape_attrib_html(id)}"'
                     if self.use_attr_list and config and not config.get('use_pygments', False):
-                        # Only assign key/value pairs to code element if attr_list ext is enabled, key/value pairs
-                        # were defined on the code block, and the `use_pygments` key was not set to True. The
-                        # `use_pygments` key could be either set to False or not defined. It is omitted from output.
+                        # Only assign key/value pairs to code element if `attr_list` extension is enabled, key/value
+                        # pairs were defined on the code block, and the `use_pygments` key was not set to `True`. The
+                        # `use_pygments` key could be either set to `False` or not defined. It is omitted from output.
                         kv_pairs = ''.join(
                             f' {k}="{_escape_attrib_html(v)}"' for k, v in config.items() if k != 'use_pygments'
                         )

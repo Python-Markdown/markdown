@@ -22,7 +22,7 @@ import re
 
 
 def build_url(label, base, end):
-    """ Build a url from the label, a base, and an end. """
+    """ Build a URL from the label, a base, and an end. """
     clean_label = re.sub(r'([ ]+_)|(_[ ]+)|([ ]+)', '_', label)
     return '{}{}{}'.format(base, clean_label, end)
 
@@ -69,7 +69,7 @@ class WikiLinksInlineProcessor(InlineProcessor):
         return a, m.start(0), m.end(0)
 
     def _getMeta(self):
-        """ Return meta data or config data. """
+        """ Return meta data or `config` data. """
         base_url = self.config['base_url']
         end_url = self.config['end_url']
         html_class = self.config['html_class']

@@ -48,9 +48,9 @@ SmartyPants license:
    of this software, even if advised of the possibility of such damage.
 
 
-smartypants.py license:
+`smartypants.py` license:
 
-   smartypants.py is a derivative work of SmartyPants.
+   `smartypants.py` is a derivative work of SmartyPants.
    Copyright (c) 2004, 2007 Chad Miller <http://web.chad.org/>
 
    Redistribution and use in source and binary forms, with or without
@@ -95,7 +95,7 @@ openingQuotesBase = (
     r'(\s'               # a  whitespace char
     r'|&nbsp;'           # or a non-breaking space entity
     r'|--'               # or dashes
-    r'|–|—'              # or unicode
+    r'|–|—'              # or Unicode
     r'|&[mn]dash;'       # or named dash entities
     r'|&#8211;|&#8212;'  # or decimal entities
     r')'
@@ -242,7 +242,7 @@ class SmartyExtension(Extension):
             self.educateQuotes(md)
         if configs['smart_angled_quotes']:
             self.educateAngledQuotes(md)
-            # Override HTML_RE from inlinepatterns.py so that it does not
+            # Override `HTML_RE` from `inlinepatterns.py` so that it does not
             # process tags with duplicate closing quotes.
             md.inlinePatterns.register(HtmlInlineProcessor(HTML_STRICT_RE, md), 'html', 90)
         if configs['smart_dashes']:

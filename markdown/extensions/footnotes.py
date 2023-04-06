@@ -74,20 +74,20 @@ class FootnoteExtension(Extension):
         md.registerExtension(self)
         self.parser = md.parser
         self.md = md
-        # Insert a blockprocessor before ReferencePreprocessor
+        # Insert a `blockprocessor` before `ReferencePreprocessor`
         md.parser.blockprocessors.register(FootnoteBlockProcessor(self), 'footnote', 17)
 
-        # Insert an inline pattern before ImageReferencePattern
+        # Insert an inline pattern before `ImageReferencePattern`
         FOOTNOTE_RE = r'\[\^([^\]]*)\]'  # blah blah [^1] blah
         md.inlinePatterns.register(FootnoteInlineProcessor(FOOTNOTE_RE, self), 'footnote', 175)
         # Insert a tree-processor that would actually add the footnote div
-        # This must be before all other treeprocessors (i.e., inline and
-        # codehilite) so they can run on the the contents of the div.
+        # This must be before all other tree-processors (i.e., `inline` and
+        # `codehilite`) so they can run on the the contents of the div.
         md.treeprocessors.register(FootnoteTreeprocessor(self), 'footnote', 50)
 
         # Insert a tree-processor that will run after inline is done.
         # In this tree-processor we want to check our duplicate footnote tracker
-        # And add additional backrefs to the footnote pointing back to the
+        # And add additional `backrefs` to the footnote pointing back to the
         # duplicated references.
         md.treeprocessors.register(FootnotePostTreeprocessor(self), 'footnote-duplicate', 15)
 
@@ -163,7 +163,7 @@ class FootnoteExtension(Extension):
             return self.unique_ref('fnref{}{}'.format(self.get_separator(), id), found)
 
     def makeFootnotesDiv(self, root):
-        """ Return div of footnotes as et Element. """
+        """ Return `div` of footnotes as `etree` Element. """
 
         if not list(self.footnotes.keys()):
             return None
@@ -180,9 +180,9 @@ class FootnoteExtension(Extension):
         for index, id in enumerate(self.footnotes.keys(), start=1):
             li = etree.SubElement(ol, "li")
             li.set("id", self.makeFootnoteId(id))
-            # Parse footnote with surrogate parent as li cannot be used.
-            # List block handlers have special logic to deal with li.
-            # When we are done parsing, we will copy everything over to li.
+            # Parse footnote with surrogate parent as `li` cannot be used.
+            # List block handlers have special logic to deal with `li`.
+            # When we are done parsing, we will copy everything over to `li`.
             self.parser.parseChunk(surrogate_parent, self.footnotes[id])
             for el in list(surrogate_parent):
                 li.append(el)
@@ -296,7 +296,7 @@ class FootnoteBlockProcessor(BlockProcessor):
 
 
 class FootnoteInlineProcessor(InlineProcessor):
-    """ InlinePattern for footnote markers in a document's body text. """
+    """ `InlinePattern` for footnote markers in a document's body text. """
 
     def __init__(self, pattern, footnotes):
         super().__init__(pattern)
@@ -325,7 +325,7 @@ class FootnotePostTreeprocessor(Treeprocessor):
         self.footnotes = footnotes
 
     def add_duplicates(self, li, duplicates):
-        """ Adjust current li and add the duplicates: fnref2, fnref3, etc. """
+        """ Adjust current `li` and add the duplicates: `fnref2`, `fnref3`, etc. """
         for link in li.iter('a'):
             # Find the link that needs to be duplicated.
             if link.attrib.get('class', '') == 'footnote-backref':
@@ -407,5 +407,5 @@ class FootnotePostprocessor(Postprocessor):
 
 
 def makeExtension(**kwargs):  # pragma: no cover
-    """ Return an instance of the FootnoteExtension """
+    """ Return an instance of the `FootnoteExtension` """
     return FootnoteExtension(**kwargs)

@@ -5,7 +5,7 @@ Table of Contents Extension for Python-Markdown
 See <https://Python-Markdown.github.io/extensions/toc>
 for documentation.
 
-Oringinal code Copyright 2008 [Jack Miller](https://codezen.org/)
+Original code Copyright 2008 [Jack Miller](https://codezen.org/)
 
 All changes Copyright 2008-2014 The Python Markdown Project
 
@@ -26,7 +26,7 @@ import xml.etree.ElementTree as etree
 def slugify(value, separator, unicode=False):
     """ Slugify a string, to make it URL friendly. """
     if not unicode:
-        # Replace Extended Latin characters with ASCII, i.e. žlutý → zluty
+        # Replace Extended Latin characters with ASCII, i.e. `žlutý` => `zluty`
         value = unicodedata.normalize('NFKD', value)
         value = value.encode('ascii', 'ignore').decode('ascii')
     value = re.sub(r'[^\w\s-]', '', value).strip().lower()
@@ -179,7 +179,7 @@ class TocTreeprocessor(Treeprocessor):
         ''' Iterator wrapper to get allowed parent and child all at once. '''
 
         # We do not allow the marker inside a header as that
-        # would causes an enless loop of placing a new TOC
+        # would causes an endless loop of placing a new TOC
         # inside previously generated TOC.
         for child in node:
             if not self.header_rgx.match(child.tag) and child.tag not in ['pre', 'code']:
@@ -194,13 +194,13 @@ class TocTreeprocessor(Treeprocessor):
                 continue
 
             # To keep the output from screwing up the
-            # validation by putting a <div> inside of a <p>
-            # we actually replace the <p> in its entirety.
+            # validation by putting a `<div>` inside of a `<p>`
+            # we actually replace the `<p>` in its entirety.
 
-            # The <p> element may contain more than a single text content
-            # (nl2br can introduce a <br>). In this situation, c.text returns
+            # The `<p>` element may contain more than a single text content
+            # (`nl2br` can introduce a `<br>`). In this situation, `c.text` returns
             # the very first content, ignore children contents or tail content.
-            # len(c) == 0 is here to ensure there is only text in the <p>.
+            # `len(c) == 0` is here to ensure there is only text in the `<p>`.
             if c.text and c.text.strip() == self.marker and len(c) == 0:
                 for i in range(len(p)):
                     if p[i] == c:
@@ -214,7 +214,7 @@ class TocTreeprocessor(Treeprocessor):
             level = 6
         elem.tag = 'h%d' % level
 
-    def add_anchor(self, c, elem_id):  # @ReservedAssignment
+    def add_anchor(self, c, elem_id):
         anchor = etree.Element("a")
         anchor.text = c.text
         anchor.attrib["href"] = "#" + elem_id
@@ -368,11 +368,6 @@ class TocExtension(Extension):
         self.md = md
         self.reset()
         tocext = self.TreeProcessorClass(md, self.getConfigs())
-        # Headerid ext is set to '>prettify'. With this set to '_end',
-        # it should always come after headerid ext (and honor ids assigned
-        # by the header id extension) if both are used. Same goes for
-        # attr_list extension. This must come last because we don't want
-        # to redefine ids after toc is created. But we do want toc prettified.
         md.treeprocessors.register(tocext, 'toc', 5)
 
     def reset(self):

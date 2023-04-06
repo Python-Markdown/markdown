@@ -33,7 +33,7 @@ class MetaExtension (Extension):
     """ Meta-Data extension for Python-Markdown. """
 
     def extendMarkdown(self, md):
-        """ Add MetaPreprocessor to Markdown instance. """
+        """ Add `MetaPreprocessor` to Markdown instance. """
         md.registerExtension(self)
         self.md = md
         md.preprocessors.register(MetaPreprocessor(md), 'meta', 27)

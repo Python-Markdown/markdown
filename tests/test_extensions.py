@@ -22,7 +22,7 @@ Python-Markdown Extension Regression Tests
 ==========================================
 
 A collection of regression tests to confirm that the included extensions
-continue to work as advertised. This used to be accomplished by doctests.
+continue to work as advertised. This used to be accomplished by `doctests`.
 """
 
 import unittest
@@ -77,7 +77,7 @@ class TestExtensionClass(unittest.TestCase):
         self.assertEqual(self.ext.getConfigs(), {'foo': 'baz', 'bar': 'baz'})
 
     def testSetConfigWithBadKey(self):
-        # self.ext.setConfig('bad', 'baz) ==> KeyError
+        # `self.ext.setConfig('bad', 'baz)` => `KeyError`
         self.assertRaises(KeyError, self.ext.setConfig, 'bad', 'baz')
 
     def testConfigAsKwargsOnInit(self):
@@ -115,7 +115,7 @@ class TestAbbr(unittest.TestCase):
 
 
 class TestMetaData(unittest.TestCase):
-    """ Test MetaData extension. """
+    """ Test `MetaData` extension. """
 
     def setUp(self):
         self.md = markdown.Markdown(extensions=['meta'])
@@ -196,14 +196,14 @@ The body. This is paragraph one.'''
 
 
 class TestWikiLinks(unittest.TestCase):
-    """ Test Wikilinks Extension. """
+    """ Test `Wikilinks` Extension. """
 
     def setUp(self):
         self.md = markdown.Markdown(extensions=['wikilinks'])
         self.text = "Some text with a [[WikiLink]]."
 
     def testBasicWikilinks(self):
-        """ Test [[wikilinks]]. """
+        """ Test `[[wikilinks]]`. """
 
         self.assertEqual(
             self.md.convert(self.text),
@@ -212,7 +212,7 @@ class TestWikiLinks(unittest.TestCase):
         )
 
     def testWikilinkWhitespace(self):
-        """ Test whitespace in wikilinks. """
+        """ Test whitespace in `wikilinks`. """
         self.assertEqual(
             self.md.convert('[[ foo bar_baz ]]'),
             '<p><a class="wikilink" href="/foo_bar_baz/">foo bar_baz</a></p>'
@@ -257,7 +257,7 @@ class TestWikiLinks(unittest.TestCase):
         )
 
     def testWikilinksMetaData(self):
-        """ test MetaData with Wikilinks Extension. """
+        """ test `MetaData` with `Wikilinks` Extension. """
 
         text = """wiki_base_url: http://example.com/
 wiki_end_url:   .html
@@ -271,7 +271,7 @@ Some text with a [[WikiLink]]."""
             '<a href="http://example.com/WikiLink.html">WikiLink</a>.</p>'
         )
 
-        # MetaData should not carry over to next document:
+        # `MetaData` should not carry over to next document:
         self.assertEqual(
             md.convert("No [[MetaData]] here."),
             '<p>No <a class="wikilink" href="/MetaData/">MetaData</a> '
@@ -548,7 +548,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
         )
 
     def testWithAttrList(self):
-        """ Test TOC with attr_list Extension. """
+        """ Test TOC with `attr_list` Extension. """
         md = markdown.Markdown(extensions=['toc', 'attr_list'])
         text = ('# Header 1\n\n'
                 '## Header 2 { #foo }\n\n'
@@ -640,7 +640,7 @@ class TestSmarty(unittest.TestCase):
                     'ndash': '\u2013',
                     'mdash': '\u2014',
                     'ellipsis': '\u2026',
-                    'left-single-quote': '&sbquo;',  # sb is not a typo!
+                    'left-single-quote': '&sbquo;',  # `sb` is not a typo!
                     'right-single-quote': '&lsquo;',
                     'left-double-quote': '&bdquo;',
                     'right-double-quote': '&ldquo;',

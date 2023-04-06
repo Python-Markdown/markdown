@@ -1611,7 +1611,7 @@ class TestHTMLBlocks(TestCase):
     def test_placeholder_in_source(self):
         # This should never occur, but third party extensions could create weird edge cases.
         md = markdown.Markdown()
-        # Ensure there is an htmlstash so relevant code (nested in `if replacements`) is run.
+        # Ensure there is an `htmlstash` so relevant code (nested in `if replacements`) is run.
         md.htmlStash.store('foo')
         # Run with a placeholder which is not in the stash
         placeholder = md.htmlStash.get_placeholder(md.htmlStash.html_counter + 1)

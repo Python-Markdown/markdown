@@ -1,0 +1,88 @@
+spellchecker: aspell
+
+matrix:
+- name: mkdocs
+  group: docs
+  sources:
+  - site/**/*.html
+  aspell:
+    lang: en
+    d: en_US
+  dictionary:
+    wordlists:
+    - .spell-dict
+    output: build/dictionary/mkdocs.dic
+  pipeline:
+  - pyspelling.filters.html:
+      comments: false
+      attributes:
+      - title
+      - alt
+      ignores:
+      - 'code, pre'
+      captures:
+      - '[role=main] *|*:not(script,style)'
+  - pyspelling.filters.context:
+      context_visible_first: true
+      delimiters:
+      # Ignore possessive endings
+      - open: '(?<=\w)’s(?!\w)'
+        close: '\b'
+  - pyspelling.filters.url:
+
+- name: markdown
+  group: docs
+  sources:
+  - README.md
+  - INSTALL.md
+  - LICENSE.md
+  - CODE_OF_CONDUCT.md
+  aspell:
+    lang: en
+    d: en_US
+    mode: markdown
+  dictionary:
+    wordlists:
+    - .spell-dict
+    output: build/dictionary/markdown.dic
+
+- name: python
+  group: source
+  sources:
+  - '{markdown,tests}/**/*.py'
+  aspell:
+    lang: en
+    d: en_US
+    mode: markdown
+  dictionary:
+    wordlists:
+    - .spell-dict
+    output: build/dictionary/python.dic
+  pipeline:
+  - pyspelling.filters.python:
+      group_comments: true
+  - pyspelling.flow_control.wildcard:
+      allow:
+      - py-comment
+  - pyspelling.filters.context:
+      context_visible_first: true
+      delimiters:
+      # Ignore lint (noqa) and coverage (pragma) as well as shebang (#!)
+      - open: '^(?: *(?:noqa\b|pragma: no cover)|!)'
+        close: '$'
+      # Ignore Python encoding string -*- encoding stuff -*-
+      - open: '^ *-\*-'
+        close: '-\*-$'
+      # Ignore possessive endings
+      - open: '(?<=\w)''s(?!\w)'
+        close: '\b'
+  - pyspelling.filters.context:
+      context_visible_first: true
+      escapes: '\\[\\`]'
+      delimiters:
+      # Ignore lines which are inedented at least one level (Markdown code block)
+      # For some reason indented code blocks are not properly ignored by aspell in markdown mode.
+      # Warning: This could ignore a nested list item
+      - open: '^ {4,}'
+        close: '$'
+  - pyspelling.filters.url:

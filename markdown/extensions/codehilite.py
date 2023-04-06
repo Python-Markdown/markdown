@@ -54,24 +54,24 @@ class CodeHilite:
         html = code.hilite()
 
     Arguments:
-    * src: Source string or any object with a .readline attribute.
+    * `src`: Source string or any object with a `.readline` attribute.
 
-    * lang: String name of Pygments lexer to use for highlighting. Default: `None`.
+    * `lang`: String name of Pygments lexer to use for highlighting. Default: `None`.
 
-    * guess_lang: Auto-detect which lexer to use. Ignored if `lang` is set to a valid
+    * `guess_lang`: Auto-detect which lexer to use. Ignored if `lang` is set to a valid
       value. Default: `True`.
 
-    * use_pygments: Pass code to pygments for code highlighting. If `False`, the code is
+    * `use_pygments`: Pass code to Pygments for code highlighting. If `False`, the code is
       instead wrapped for highlighting by a JavaScript library. Default: `True`.
 
-    * pygments_formatter: The name of a Pygments formatter or a formatter class used for
+    * `pygments_formatter`: The name of a Pygments formatter or a formatter class used for
       highlighting the code blocks. Default: `html`.
 
-    * linenums: An alias to Pygments `linenos` formatter option. Default: `None`.
+    * `linenums`: An alias to Pygments `linenos` formatter option. Default: `None`.
 
-    * css_class: An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
+    * `css_class`: An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
 
-    * lang_prefix: Prefix prepended to the language. Default: "language-".
+    * `lang_prefix`: Prefix prepended to the language. Default: "language-".
 
     Other Options:
     Any other options are accepted and passed on to the lexer and formatter. Therefore,
@@ -85,7 +85,7 @@ class CodeHilite:
 
     Additionally, when Pygments is enabled, the code's language is passed to the
     formatter as an extra option `lang_str`, whose value being `{lang_prefix}{lang}`.
-    This option has no effect to the Pygments's builtin formatters.
+    This option has no effect to the Pygments' builtin formatters.
 
     Advanced Usage:
         code = CodeHilite(
@@ -113,7 +113,7 @@ class CodeHilite:
         if 'cssclass' not in options:
             options['cssclass'] = options.pop('css_class', 'codehilite')
         if 'wrapcode' not in options:
-            # Override pygments default
+            # Override Pygments default
             options['wrapcode'] = True
         # Disallow use of `full` option
         options['full'] = False
@@ -122,10 +122,10 @@ class CodeHilite:
 
     def hilite(self, shebang=True):
         """
-        Pass code to the [Pygments](https://pygments.org/) highliter with
-        optional line numbers. The output should then be styled with css to
+        Pass code to the [Pygments](https://pygments.org/) highlighter with
+        optional line numbers. The output should then be styled with CSS to
         your liking. No styles are applied by default - only styling hooks
-        (i.e.: <span class="k">).
+        (i.e.: `<span class="k">`).
 
         returns : A string of html.
 
@@ -160,7 +160,7 @@ class CodeHilite:
                 formatter = self.pygments_formatter(lang_str=lang_str, **self.options)
             return highlight(self.src, lexer, formatter)
         else:
-            # just escape and build markup usable by JS highlighting libs
+            # just escape and build markup usable by JavaScript highlighting libraries
             txt = self.src.replace('&', '&amp;')
             txt = txt.replace('<', '&lt;')
             txt = txt.replace('>', '&gt;')
@@ -185,11 +185,11 @@ class CodeHilite:
         said line should be removed or left in place. If the shebang line
         contains a path (even a single /) then it is assumed to be a real
         shebang line and left alone. However, if no path is given
-        (e.i.: #!python or :::python) then it is assumed to be a mock shebang
+        (e.i.: `#!python` or `:::python`) then it is assumed to be a mock shebang
         for language identification of a code fragment and removed from the
         code block prior to processing for code highlighting. When a mock
-        shebang (e.i: #!python) is found, line numbering is turned on. When
-        colons are found in place of a shebang (e.i.: :::python), line
+        shebang (e.i: `#!python`) is found, line numbering is turned on. When
+        colons are found in place of a shebang (e.i.: `:::python`), line
         numbering is left in the current state - off by default.
 
         Also parses optional list of highlight lines, like:
@@ -251,7 +251,7 @@ class HiliteTreeprocessor(Treeprocessor):
         return text
 
     def run(self, root):
-        """ Find code blocks and store in htmlStash. """
+        """ Find code blocks and store in `htmlStash`. """
         blocks = root.iter('pre')
         for block in blocks:
             if len(block) == 1 and block[0].tag == 'code':
@@ -263,16 +263,16 @@ class HiliteTreeprocessor(Treeprocessor):
                     **local_config
                 )
                 placeholder = self.md.htmlStash.store(code.hilite())
-                # Clear codeblock in etree instance
+                # Clear code block in `etree` instance
                 block.clear()
-                # Change to p element which will later
+                # Change to `p` element which will later
                 # be removed when inserting raw html
                 block.tag = 'p'
                 block.text = placeholder
 
 
 class CodeHiliteExtension(Extension):
-    """ Add source code highlighting to markdown codeblocks. """
+    """ Add source code highlighting to markdown code blocks. """
 
     def __init__(self, **kwargs):
         # define default configs
@@ -311,14 +311,14 @@ class CodeHiliteExtension(Extension):
                 # manually set unknown keywords.
                 if isinstance(value, str):
                     try:
-                        # Attempt to parse str as a bool value
+                        # Attempt to parse `str` as a boolean value
                         value = parseBoolValue(value, preserve_none=True)
                     except ValueError:
-                        pass  # Assume it's not a bool value. Use as-is.
+                        pass  # Assume it's not a boolean value. Use as-is.
                 self.config[key] = [value, '']
 
     def extendMarkdown(self, md):
-        """ Add HilitePostprocessor to Markdown instance. """
+        """ Add `HilitePostprocessor` to Markdown instance. """
         hiliter = HiliteTreeprocessor(md)
         hiliter.config = self.getConfigs()
         md.treeprocessors.register(hiliter, 'hilite', 30)

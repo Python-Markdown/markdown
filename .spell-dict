@@ -38,6 +38,7 @@ Fortin
 GitHub
 globals
 Gruber
+Gruber's
 GSoC
 hacky
 HeaderId
@@ -59,6 +60,7 @@ Manfed
 markdownFromFile
 Maruku
 md
+merchantability
 metadata
 MkDocs
 multi
@@ -88,6 +90,8 @@ PYTHONPATH
 PyTidyLib
 PyYAML
 rc
+redistribution
+redistributions
 refactor
 refactored
 refactors
@@ -104,6 +108,7 @@ setuptools
 Sergej
 serializer
 serializers
+sexualized
 Shachnev
 sitemap
 slugify
@@ -119,7 +124,7 @@ SuperFences
 svn
 Swartz
 Szakmeister
-Takteyev
+Takhteyev
 Tiago
 toc
 tokenized
@@ -161,3 +166,24 @@ plugins
 configs
 pre
 formatters
+
+dedented
+Setext
+unindented
+monkeypatch
+TODO
+Nko
+Thaana
+Tifinagh
+backport
+Fredrik
+Lundh
+subclass
+tortious
+performantly
+Seemant
+Kulleen
+Serafim
+overridable
+unescaped
+APIs

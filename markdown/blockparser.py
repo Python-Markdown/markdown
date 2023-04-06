@@ -26,7 +26,7 @@ from . import util
 class State(list):
     """ Track the current and nested state of the parser.
 
-    This utility class is used to track the state of the BlockParser and
+    This utility class is used to track the state of the `BlockParser` and
     support multiple levels if nesting. It's just a simple API wrapped around
     a list. Each time a state is set, that state is appended to the end of the
     list. Each time a state is reset, that state is removed from the end of
@@ -58,10 +58,10 @@ class State(list):
 
 
 class BlockParser:
-    """ Parse Markdown blocks into an ElementTree object.
+    """ Parse Markdown blocks into an `ElementTree` object.
 
-    A wrapper class that stitches the various BlockProcessors together,
-    looping through them and creating an ElementTree object.
+    A wrapper class that stitches the various `BlockProcessors` together,
+    looping through them and creating an `ElementTree` object.
     """
 
     def __init__(self, md):
@@ -79,35 +79,35 @@ class BlockParser:
         This should only be called on an entire document, not pieces.
 
         """
-        # Create a ElementTree from the lines
+        # Create an `ElementTree` from the lines
         self.root = etree.Element(self.md.doc_tag)
         self.parseChunk(self.root, '\n'.join(lines))
         return etree.ElementTree(self.root)
 
     def parseChunk(self, parent, text):
-        """ Parse a chunk of markdown text and attach to given etree node.
+        """ Parse a chunk of markdown text and attach to given `etree` node.
 
-        While the ``text`` argument is generally assumed to contain multiple
+        While the `text` argument is generally assumed to contain multiple
         blocks which will be split on blank lines, it could contain only one
         block. Generally, this method would be called by extensions when
         block parsing is required.
 
-        The ``parent`` etree Element passed in is altered in place.
+        The `parent` `etree` Element passed in is altered in place.
         Nothing is returned.
 
         """
         self.parseBlocks(parent, text.split('\n\n'))
 
     def parseBlocks(self, parent, blocks):
-        """ Process blocks of markdown text and attach to given etree node.
+        """ Process blocks of markdown text and attach to given `etree` node.
 
-        Given a list of ``blocks``, each blockprocessor is stepped through
+        Given a list of `blocks`, each `blockprocessor` is stepped through
         until there are no blocks left. While an extension could potentially
         call this method directly, it's generally expected to be used
         internally.
 
         This is a public method as an extension may need to add/alter
-        additional BlockProcessors which call this method to recursively
+        additional `BlockProcessors` which call this method to recursively
         parse a nested block.
 
         """

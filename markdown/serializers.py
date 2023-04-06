@@ -1,6 +1,4 @@
-# markdown/searializers.py
-#
-# Add x/html serialization to Elementree
+# Add x/html serialization to `Elementree`
 # Taken from ElementTree 1.3 preview with slight modifications
 #
 # Copyright (c) 1999-2007 by Fredrik Lundh.  All rights reserved.
@@ -128,7 +126,7 @@ def _serialize_html(write, elem, format):
     else:
         namespace_uri = None
         if isinstance(tag, QName):
-            # QNAME objects store their data as a string: `{uri}tag`
+            # `QNAME` objects store their data as a string: `{uri}tag`
             if tag.text[:1] == "{":
                 namespace_uri, tag = tag.text[1:].split("}", 1)
             else:
@@ -139,10 +137,10 @@ def _serialize_html(write, elem, format):
             items = sorted(items)  # lexical order
             for k, v in items:
                 if isinstance(k, QName):
-                    # Assume a text only QName
+                    # Assume a text only `QName`
                     k = k.text
                 if isinstance(v, QName):
-                    # Assume a text only QName
+                    # Assume a text only `QName`
                     v = v.text
                 else:
                     v = _escape_attrib_html(v)

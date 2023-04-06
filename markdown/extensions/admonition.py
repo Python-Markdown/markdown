@@ -4,7 +4,7 @@ Admonition extension for Python-Markdown
 
 Adds rST-style admonitions. Inspired by [rST][] feature with the same name.
 
-[rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions  # noqa
+[rST]: http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions
 
 See <https://Python-Markdown.github.io/extensions/admonition>
 for documentation.
@@ -82,7 +82,7 @@ class AdmonitionProcessor(BlockProcessor):
                     last_child and last_child.tag in ('ul', 'ol', 'dl')
                 ):
 
-                    # The expectation is that we'll find an <li> or <dt>.
+                    # The expectation is that we'll find an `<li>` or `<dt>`.
                     # We should get its last child as well.
                     sibling = self.lastChild(last_child)
                     last_child = self.lastChild(sibling) if sibling else None
@@ -155,7 +155,7 @@ class AdmonitionProcessor(BlockProcessor):
         klass, title = match.group(1).lower(), match.group(2)
         klass = self.RE_SPACES.sub(' ', klass)
         if title is None:
-            # no title was provided, use the capitalized classname as title
+            # no title was provided, use the capitalized class name as title
             # e.g.: `!!! note` will render
             # `<p class="admonition-title">Note</p>`
             title = klass.split(' ', 1)[0].capitalize()

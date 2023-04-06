@@ -26,7 +26,7 @@ from markdown.extensions.tables import TableExtension
 class TestTableBlocks(TestCase):
 
     def test_empty_cells(self):
-        """Empty cells (nbsp)."""
+        """Empty cells (`nbsp`)."""
 
         text = """
    | Second Header

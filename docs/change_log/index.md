@@ -182,10 +182,10 @@ August 18 2008: Reorganized directory structure. Added a 'docs' directory
 and moved all extensions into a 'markdown-extensions' package.
 Added additional documentation and a few bug fixes. (v2.0-beta)
 
-August 4 2008: Updated included extensions to ElementTree. Added a
+August 4 2008: Updated included extensions to `ElementTree`. Added a
 separate command line script. (v2.0-alpha)
 
-July 2008: Switched from home-grown NanoDOM to ElementTree and
+July 2008: Switched from home-grown `NanoDOM` to `ElementTree` and
 various related bugs (thanks Artem Yunusov).
 
 June 2008: Fixed issues with nested inline patterns and cleaned
@@ -310,7 +310,7 @@ syntax in headers (e.g. links) and got the lists to use p-tags
 correctly (v. 0.8)
 
 Aug. 29, 2005: Added flexible tabs, fixed a few small issues, added
-basic support for footnotes.  Got rid of xml.dom.minidom and added
+basic support for footnotes.  Got rid of `xml.dom.minidom` and added
 pretty-printing. (v. 0.7)
 
 Aug. 13, 2005: Fixed a number of small bugs in order to conform to the

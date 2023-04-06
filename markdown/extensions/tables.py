@@ -225,7 +225,7 @@ class TableExtension(Extension):
         super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
-        """ Add an instance of TableProcessor to BlockParser. """
+        """ Add an instance of `TableProcessor` to `BlockParser`. """
         if '|' not in md.ESCAPED_CHARS:
             md.ESCAPED_CHARS.append('|')
         processor = TableProcessor(md.parser, self.getConfigs())
