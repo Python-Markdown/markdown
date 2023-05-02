@@ -174,6 +174,15 @@ The following options are provided to configure the output:
 * **`permalink_title`**:
     Title attribute of the permanent link. Defaults to `Permanent link`.
 
+* **`permalink_leading`**:
+    Set to `True` if the extension should generate leading permanent links.
+    Default is `False`.
+
+    Leading permanent links are placed at the start of the header tag,
+    before any header content. The default `permalink` behavior (when
+    `permalink_leading` is unset or set to `False`) creates trailing
+    permanent links, which are placed at the end of the header content.
+
 * **`baselevel`**:
     Base level for headers. Defaults to `1`.
 
