@@ -630,6 +630,86 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '<h1 id="toc"><em>[TOC]</em></h1>'          # noqa
         )
 
+    def testPermalink(self):
+        """ Test TOC permalinks. """
+        text = '# Hd 1\n\n## Hd 2'
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(
+                permalink=True, permalink_title="PL")]
+        )
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="hd-1">'
+                'Hd 1'                                            # noqa
+                '<a class="headerlink" href="#hd-1" title="PL">'  # noqa
+                    '&para;'                                      # noqa
+                '</a>'                                            # noqa
+            '</h1>\n'
+            '<h2 id="hd-2">'
+                'Hd 2'                                            # noqa
+                '<a class="headerlink" href="#hd-2" title="PL">'  # noqa
+                    '&para;'                                      # noqa
+                '</a>'                                            # noqa
+            '</h2>'
+        )
+
+    def testPermalinkLeading(self):
+        """ Test TOC permalinks with permalink_leading option. """
+        text = '# Hd 1\n\n## Hd 2'
+        md = markdown.Markdown(extensions=[
+            markdown.extensions.toc.TocExtension(
+                permalink=True, permalink_title="PL", permalink_leading=True)]
+        )
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="hd-1">'
+                '<a class="headerlink" href="#hd-1" title="PL">'  # noqa
+                    '&para;'                                      # noqa
+                '</a>'                                            # noqa
+                'Hd 1'                                            # noqa
+            '</h1>\n'
+            '<h2 id="hd-2">'
+                '<a class="headerlink" href="#hd-2" title="PL">'  # noqa
+                    '&para;'                                      # noqa
+                '</a>'                                            # noqa
+                'Hd 2'                                            # noqa
+            '</h2>'
+        )
+
+    def testInlineMarkupPermalink(self):
+        """ Test TOC permalinks with headers containing markup. """
+        text = '# Code `in` hd'
+        md = markdown.Markdown(
+            extensions=[markdown.extensions.toc.TocExtension(
+                permalink=True, permalink_title="PL")]
+        )
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="code-in-hd">'
+                'Code <code>in</code> hd'                               # noqa
+                '<a class="headerlink" href="#code-in-hd" title="PL">'  # noqa
+                    '&para;'                                            # noqa
+                '</a>'                                                  # noqa
+            '</h1>'
+        )
+
+    def testInlineMarkupPermalinkLeading(self):
+        """ Test TOC permalink_leading with headers containing markup. """
+        text = '# Code `in` hd'
+        md = markdown.Markdown(extensions=[
+            markdown.extensions.toc.TocExtension(
+                permalink=True, permalink_title="PL", permalink_leading=True)]
+        )
+        self.assertEqual(
+            md.convert(text),
+            '<h1 id="code-in-hd">'
+                '<a class="headerlink" href="#code-in-hd" title="PL">'  # noqa
+                    '&para;'                                            # noqa
+                '</a>'                                                  # noqa
+                'Code <code>in</code> hd'                               # noqa
+            '</h1>'
+        )
+
 
 class TestSmarty(unittest.TestCase):
     def setUp(self):
