@@ -631,7 +631,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
         )
 
     def testPermalink(self):
-        """ Test TOC permalinks. """
+        """ Test TOC `permalink` feature. """
         text = '# Hd 1\n\n## Hd 2'
         md = markdown.Markdown(
             extensions=[markdown.extensions.toc.TocExtension(
@@ -654,7 +654,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
         )
 
     def testPermalinkLeading(self):
-        """ Test TOC permalinks with permalink_leading option. """
+        """ Test TOC `permalink` with `permalink_leading` option. """
         text = '# Hd 1\n\n## Hd 2'
         md = markdown.Markdown(extensions=[
             markdown.extensions.toc.TocExtension(
@@ -677,7 +677,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
         )
 
     def testInlineMarkupPermalink(self):
-        """ Test TOC permalinks with headers containing markup. """
+        """ Test TOC `permalink` with headers containing markup. """
         text = '# Code `in` hd'
         md = markdown.Markdown(
             extensions=[markdown.extensions.toc.TocExtension(
@@ -694,7 +694,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
         )
 
     def testInlineMarkupPermalinkLeading(self):
-        """ Test TOC permalink_leading with headers containing markup. """
+        """ Test TOC `permalink_leading` with headers containing markup. """
         text = '# Code `in` hd'
         md = markdown.Markdown(extensions=[
             markdown.extensions.toc.TocExtension(
