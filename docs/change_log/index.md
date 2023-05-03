@@ -5,8 +5,6 @@ Python-Markdown Change Log
 
 *under development*: version 3.5 ([Notes](release-3.5.md))
 
-* Add TOC option `permalink_leading` (#1339)
-
 March 23, 2023: version 3.4.3 (a bug-fix release).
 
 * Restore console script (#1327).
