@@ -153,7 +153,7 @@ def _serialize_html(write, elem, format):
             write(' xmlns="%s"' % (_escape_attrib(namespace_uri)))
         if format == "xhtml" and tag.lower() in HTML_EMPTY:
             write(" />")
-        else:
+        elif text or len(elem) > 0:
             write(">")
             if text:
                 if tag.lower() in ["script", "style"]:
@@ -162,8 +162,13 @@ def _serialize_html(write, elem, format):
                     write(_escape_cdata(text))
             for e in elem:
                 _serialize_html(write, e, format)
-            if tag.lower() not in HTML_EMPTY:
-                write("</" + tag + ">")
+            write("</" + tag + ">")
+        elif tag.lower() in HTML_EMPTY:
+            if format == "xhtml":
+                write(" /")
+            write(">")
+        else:
+            write("></" + tag + ">")
     if elem.tail:
         write(_escape_cdata(elem.tail))
 

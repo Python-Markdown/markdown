@@ -506,6 +506,9 @@ class testSerializers(unittest.TestCase):
         p.text = 'foo <&escaped>'
         p.set('hidden', 'hidden')
         etree.SubElement(el, 'hr')
+
+        param = etree.SubElement(el, 'param')
+        param.text = "Param text"
         non_element = etree.SubElement(el, None)
         non_element.text = 'non-element text'
         script = etree.SubElement(non_element, 'script')
@@ -516,6 +519,7 @@ class testSerializers(unittest.TestCase):
             '<div id="foo&lt;&amp;&quot;&gt;">'
             '<p hidden>foo &lt;&amp;escaped&gt;</p>'
             '<hr>'
+            '<param>Param text</param>'
             'non-element text'
             '<script><&"test\nescaping"></script>'
             '</div>tail text'
@@ -529,6 +533,8 @@ class testSerializers(unittest.TestCase):
         p.text = 'foo<&escaped>'
         p.set('hidden', 'hidden')
         etree.SubElement(el, 'hr')
+        param = etree.SubElement(el, 'param')
+        param.text = "Param text"
         non_element = etree.SubElement(el, None)
         non_element.text = 'non-element text'
         script = etree.SubElement(non_element, 'script')
@@ -539,6 +545,7 @@ class testSerializers(unittest.TestCase):
             '<div id="foo&lt;&amp;&quot;&gt;">'
             '<p hidden="hidden">foo&lt;&amp;escaped&gt;</p>'
             '<hr />'
+            '<param />'
             'non-element text'
             '<script><&"test\nescaping"></script>'
             '</div>tail text'
