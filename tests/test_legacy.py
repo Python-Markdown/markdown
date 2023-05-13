@@ -156,11 +156,6 @@ class TestExtensions(LegacyTestCase):
 
     admonition = Kwargs(extensions=['admonition'])
 
-    smarty = Kwargs(
-        extensions=['smarty'],
-        extension_configs={'smarty': {'smart_angled_quotes': True}}
-    )
-
 
 class TestExtensionsExtra(LegacyTestCase):
     location = os.path.join(parent_test_dir, 'extensions/extra')

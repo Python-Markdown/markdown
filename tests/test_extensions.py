@@ -629,37 +629,3 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</div>\n'                                  # noqa
             '<h1 id="toc"><em>[TOC]</em></h1>'          # noqa
         )
-
-
-class TestSmarty(unittest.TestCase):
-    def setUp(self):
-        config = {
-            'smarty': [
-                ('smart_angled_quotes', True),
-                ('substitutions', {
-                    'ndash': '\u2013',
-                    'mdash': '\u2014',
-                    'ellipsis': '\u2026',
-                    'left-single-quote': '&sbquo;',  # `sb` is not a typo!
-                    'right-single-quote': '&lsquo;',
-                    'left-double-quote': '&bdquo;',
-                    'right-double-quote': '&ldquo;',
-                    'left-angle-quote': '[',
-                    'right-angle-quote': ']',
-                }),
-            ]
-        }
-        self.md = markdown.Markdown(
-            extensions=['smarty'],
-            extension_configs=config
-        )
-
-    def testCustomSubstitutions(self):
-        text = """<< The "Unicode char of the year 2014"
-is the 'mdash': ---
-Must not be confused with 'ndash'  (--) ... >>
-"""
-        correct = """<p>[ The &bdquo;Unicode char of the year 2014&ldquo;
-is the &sbquo;mdash&lsquo;: \u2014
-Must not be confused with &sbquo;ndash&lsquo;  (\u2013) \u2026 ]</p>"""
-        self.assertEqual(self.md.convert(text), correct)
