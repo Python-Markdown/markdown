@@ -22,6 +22,7 @@ nav:
       - Abbreviations: extensions/abbreviations.md
       - Admonition: extensions/admonition.md
       - Attribute Lists: extensions/attr_list.md
+      - Badge: extensions/badge.md
       - CodeHilite: extensions/code_hilite.md
       - Definition Lists: extensions/definition_lists.md
       - Extra: extensions/extra.md

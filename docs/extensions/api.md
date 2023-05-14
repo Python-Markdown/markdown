@@ -386,6 +386,7 @@ Here are some convenience functions and other examples:
 | [`AbbrInlineProcessor`][i6]      | extension | Apply tag to abbreviation registered by preprocessor          |
 | [`WikiLinksInlineProcessor`][i7] | extension | Link `[[article names]]` to wiki given in metadata            |
 | [`FootnoteInlineProcessor`][i8]  | extension | Replaces footnote in text with link to footnote div at bottom |
+| [`BadgeInlineProcessor`][i9]                    | extension | Render each [Badge][] in a new `span`                         |
 
 [i1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
 [i2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
@@ -395,6 +396,7 @@ Here are some convenience functions and other examples:
 [i6]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/abbr.py
 [i7]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/wikilinks.py
 [i8]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
+[i9]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/badge.py
 
 ### Patterns
 

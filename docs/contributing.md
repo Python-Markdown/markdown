@@ -164,7 +164,7 @@ Don't use abbreviations such as 'e.g.' but instead use the long form, such as
 The documentation is built from the [Markdown] source files in the [`docs`
 directory][docs directory] by the [MkDocs] static site generator. In addition to
 the basic Markdown syntax, the following extensions are supported: [extra],
-[admonition], [smarty], [codehilite], and [toc].
+[admonition], [badge], [smarty], [codehilite], and [toc].
 
 There are a few conventions you should follow when working on the
 documentation.
@@ -222,6 +222,15 @@ Python-Markdown's [Admonition Extension]:
 !!! note
 
     This is the content of the note.
+```
+
+#### Tags, Labels and Badges
+
+If you want to classify or call out elements with an inline affordance, use the syntax defined in
+Python-Markdown's [Badge Extension]:
+
+```md
+This is the text next to a Badge {{ note "Alpha" }}
 ```
 
 ### Commit Message Style Guide
