@@ -121,8 +121,6 @@ class TestPl2007(LegacyTestCase):
 
 
 class TestExtensions(LegacyTestCase):
-    maxDiff = None
-
     location = os.path.join(parent_test_dir, 'extensions')
     exclude = ['codehilite']
 
