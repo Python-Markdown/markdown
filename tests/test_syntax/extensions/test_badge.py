@@ -33,7 +33,7 @@ class TestBadge(TestCase):
                 - List
 
                     List {{ note "Badge" }}
-
+                
                 - Paragraph
 
                     Paragraph
