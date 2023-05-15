@@ -45,6 +45,7 @@ class TestBadge(TestCase):
                 <li>
                 <p>List</p>
                 <p>List <span class="badge note"><span class="badge-title">Badge</span></span></p>
+                </li>
                 <li>
                 <p>Paragraph</p>
                 <p>Paragraph</p>
