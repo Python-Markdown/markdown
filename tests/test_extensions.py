@@ -316,7 +316,7 @@ class TestBadge(unittest.TestCase):
         self.md = markdown.Markdown(extensions=['badge'])
 
     def testRE(self):
-        RE = self.md.parser.blockprocessors['badge'].RE
+        RE = self.md.parser.inlinePatterns['badge'].compiled_re
         tests = [
             ('{{ note }}', ('note', None)),
             ('{{ note "Please Note" }}', ('note', 'Please Note')),
