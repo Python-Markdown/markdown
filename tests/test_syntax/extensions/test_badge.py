@@ -33,7 +33,7 @@ class TestBadge(TestCase):
                 - List
 
                     List {{ note "Badge" }}
-                
+
                 - Paragraph
 
                     Paragraph
@@ -93,6 +93,6 @@ class TestBadge(TestCase):
     def test_with_preceding_text(self):
         self.assertMarkdownRenders(
             'foo **foo** {{ note "Badge" }}',
-            '<p>foo<strong>foo</strong><span class="badge note"><span class="badge-title">Badge</span></span></p>',
+            '<p>foo <strong>foo</strong> <span class="badge note"><span class="badge-title">Badge</span></span></p>',
             extensions=['badge']
         )
