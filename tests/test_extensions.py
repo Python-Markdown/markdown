@@ -309,6 +309,7 @@ class TestAdmonition(unittest.TestCase):
         for test, expected in tests:
             self.assertEqual(RE.match(test).groups(), expected)
 
+
 class TestBadge(unittest.TestCase):
     """ Test Badge Extension. """
 

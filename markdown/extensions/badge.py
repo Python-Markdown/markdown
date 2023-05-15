@@ -22,6 +22,7 @@ import re
 
 BADGE_RE = r'\{\{ ?([\w\-]+(?: +[\w\-]+)*)(?: +"(.*?)")? *\}\}'
 
+
 class BadgeExtension(Extension):
     """ Badge extension for Python-Markdown. """
 
@@ -66,6 +67,7 @@ class BadgeInlineProcessor(InlineProcessor):
             # e.g.: `{{ warning "" }}` will *not* render `span` with a title
             title = None
         return klass, title
+
 
 def makeExtension(**kwargs):  # pragma: no cover
     return BadgeExtension(**kwargs)
