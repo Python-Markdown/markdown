@@ -20,7 +20,7 @@ from ..inlinepatterns import InlineProcessor
 import xml.etree.ElementTree as etree
 import re
 
-BADGE_RE = re.compile(r'\{\{ ?([\w\-]+(?: +[\w\-]+)*)(?: +"(.*?)")? *\}\}')
+BADGE_RE = r'\{\{ ?([\w\-]+(?: +[\w\-]+)*)(?: +"(.*?)")? *\}\}'
 
 class BadgeExtension(Extension):
     """ Badge extension for Python-Markdown. """
@@ -29,7 +29,7 @@ class BadgeExtension(Extension):
         """ Add Badge to Markdown instance. """
         md.registerExtension(self)
 
-        md.inlinePatterns.register(BadgeProcessor(BADGE_RE, md), 'badge', 215)
+        md.inlinePatterns.register(BadgeInlineProcessor(BADGE_RE, md), 'badge', 215)
 
 
 class BadgeInlineProcessor(InlineProcessor):
@@ -45,11 +45,6 @@ class BadgeInlineProcessor(InlineProcessor):
     def handleMatch(self, m, data):
         klass, title = self.get_class_and_title(m)
         el = etree.Element(self.tag)
-        el.set("class", klass)
-
-
-        klass, title = self.get_class_and_title(m)
-        el = etree.SubElement(parent, self.tag)
         el.set('class', '{} {}'.format(self.CLASSNAME, klass))
         if title:
             badge = etree.SubElement(el, self.tag)
