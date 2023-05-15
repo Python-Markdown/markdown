@@ -44,12 +44,7 @@ class TestBadge(TestCase):
                 <ul>
                 <li>
                 <p>List</p>
-                <p>
-                List
-                <span class="badge note">
-                <span class="badge-title">Badge</span>
-                </span>
-                </p>
+                <p>List <span class="badge note"><span class="badge-title">Badge</span></span></p>
                 <li>
                 <p>Paragraph</p>
                 <p>Paragraph</p>
