@@ -156,6 +156,8 @@ class TestExtensions(LegacyTestCase):
 
     admonition = Kwargs(extensions=['admonition'])
 
+    badge = Kwargs(extensions=['badge'])
+
     smarty = Kwargs(
         extensions=['smarty'],
         extension_configs={'smarty': {'smart_angled_quotes': True}}
