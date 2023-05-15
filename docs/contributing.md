@@ -226,7 +226,7 @@ Python-Markdown's [Admonition Extension]:
 
 #### Tags, Labels and Badges
 
-If you want to classify or call out elements with an inline affordance, use the syntax defined in
+If you want to classify or call out elements with an inline element, use the syntax defined in
 Python-Markdown's [Badge Extension]:
 
 ```md
