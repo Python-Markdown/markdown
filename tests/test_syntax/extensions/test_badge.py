@@ -24,6 +24,8 @@ from markdown.test_tools import TestCase
 
 class TestBadge(TestCase):
 
+    maxDiff = None
+
     def test_with_lists(self):
         self.assertMarkdownRenders(
             self.dedent(
