@@ -92,20 +92,7 @@ class TestBadge(TestCase):
 
     def test_with_preceding_text(self):
         self.assertMarkdownRenders(
-            self.dedent(
-                '''
-                foo **foo** {{ note "Badge" }}
-                '''
-            ),
-            self.dedent(
-                '''
-                <p>foo
-                <strong>foo</strong>
-                <span class="badge note">
-                <span class="badge-title">Badge</span>
-                </span>
-                </p>
-                '''
-            ),
+            'foo **foo** {{ note "Badge" }}',
+            '<p>foo<strong>foo</strong><span class="badge note"><span class="badge-title">Badge</span></span></p>',
             extensions=['badge']
         )
