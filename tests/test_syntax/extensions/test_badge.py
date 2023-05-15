@@ -81,12 +81,7 @@ class TestBadge(TestCase):
                 <dl>
                 <dt>Term</dt>
                 <dd>
-                <p>
-                Definition
-                <span class="badge note">
-                <span class="badge-title">Badge</span>
-                </span>
-                </p>
+                <p>Definition <span class="badge note"><span class="badge-title">Badge</span></span></p>
                 <p>More text</p>
                 </dd>
                 <dd>
