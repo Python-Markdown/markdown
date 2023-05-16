@@ -164,8 +164,6 @@ def _serialize_html(write, elem, format):
                 _serialize_html(write, e, format)
             write("</" + tag + ">")
         elif tag.lower() in HTML_EMPTY:
-            if format == "xhtml":
-                write(" /")
             write(">")
         else:
             write("></" + tag + ">")
