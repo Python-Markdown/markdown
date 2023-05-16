@@ -111,3 +111,5 @@ The following bug fixes are included in the 3.4 release:
 * Extension entry-points are only loaded if needed (#1216).
 * Added additional checks to the `<pre><code>` handling of
   `PrettifyTreeprocessor` (#1261, #1263).
+* When running in html mode hidden tags with content show
+  up when they have content (#1343)
