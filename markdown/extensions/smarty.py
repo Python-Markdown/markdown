@@ -139,7 +139,7 @@ openingSingleQuotesRegex = r"%s'(?=\w)" % openingQuotesBase
 
 # Single closing quotes:
 closingSingleQuotesRegex = r"(?<=%s)'(?!\s|s\b|\d)" % closeClass
-closingSingleQuotesRegex2 = r"(?<=%s)'(\s|s\b)" % closeClass
+closingSingleQuotesRegex2 = r"'(\s|s\b)"
 
 # All remaining quotes should be opening ones
 remainingSingleQuotesRegex = r"'"
