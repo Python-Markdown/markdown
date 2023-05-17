@@ -64,6 +64,10 @@ class TestSmarty(TestCase):
             '"Ellipsis within quotes..."',
             '<p>&ldquo;Ellipsis within quotes&hellip;&rdquo;</p>'
         )
+        self.assertMarkdownRenders(
+            "*Custer*'s Last Stand",
+            "<p><em>Custer</em>&rsquo;s Last Stand</p>"
+        )
 
     def test_years(self):
         self.assertMarkdownRenders("1440--80's", '<p>1440&ndash;80&rsquo;s</p>')
