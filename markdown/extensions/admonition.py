@@ -76,7 +76,7 @@ class AdmonitionProcessor(BlockProcessor):
             # to be under it, then the content's sibling is in the list.
             last_child = self.lastChild(sibling)
             indent = 0
-            while last_child:
+            while last_child is not None:
                 if (
                     sibling and block.startswith(' ' * self.tab_length * 2) and
                     last_child and last_child.tag in ('ul', 'ol', 'dl')
