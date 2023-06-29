@@ -41,8 +41,9 @@ import re
 
 __all__ = ['to_html_string', 'to_xhtml_string']
 
-HTML_EMPTY = ("area", "base", "basefont", "br", "col", "frame", "hr",
-              "img", "input", "isindex", "link", "meta", "param")
+HTML_EMPTY = ("area", "base", "basefont", "br", "col", "frame",
+              "embed", "hr", "img", "input", "isindex", "link",
+              "meta", "param", "source", "track", "wbr")
 RE_AMP = re.compile(r'&(?!(?:\#[0-9]+|\#x[0-9a-f]+|[0-9a-z]+);)', re.I)
 
 try:
