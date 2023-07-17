@@ -78,14 +78,14 @@ class AdmonitionProcessor(BlockProcessor):
             indent = 0
             while last_child is not None:
                 if (
-                    sibling and block.startswith(' ' * self.tab_length * 2) and
-                    last_child and last_child.tag in ('ul', 'ol', 'dl')
+                    sibling is not None and block.startswith(' ' * self.tab_length * 2) and
+                    last_child is not None and last_child.tag in ('ul', 'ol', 'dl')
                 ):
 
                     # The expectation is that we'll find an `<li>` or `<dt>`.
                     # We should get its last child as well.
                     sibling = self.lastChild(last_child)
-                    last_child = self.lastChild(sibling) if sibling else None
+                    last_child = self.lastChild(sibling) if sibling is not None else None
 
                     # Context has been lost at this point, so we must adjust the
                     # text's indentation level so it will be evaluated correctly
