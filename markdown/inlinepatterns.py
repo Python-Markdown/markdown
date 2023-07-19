@@ -416,7 +416,7 @@ class DoubleTagInlineProcessor(SimpleTagInlineProcessor):
 class HtmlInlineProcessor(InlineProcessor):
     """ Store raw inline html and return a placeholder. """
     def handleMatch(self, m, data):
-        rawhtml = self.unescape(m.group(1))
+        rawhtml = self.backslash_unescape(self.unescape(m.group(1)))
         place_holder = self.md.htmlStash.store(rawhtml)
         return place_holder, m.start(0), m.end(0)
 
@@ -437,6 +437,18 @@ class HtmlInlineProcessor(InlineProcessor):
                     return r'\%s' % value
 
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
+
+    def backslash_unescape(self, text):
+        """ Return text with backslash escapes undone (backslashes are restored). """
+        try:
+            RE = self.md.treeprocessors['unescape'].RE
+        except KeyError:  # pragma: no cover
+            return text
+
+        def _unescape(m):
+            return chr(int(m.group(1)))
+
+        return RE.sub(_unescape, text)
 
 
 class AsteriskProcessor(InlineProcessor):
