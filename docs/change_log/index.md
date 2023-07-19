@@ -6,6 +6,7 @@ Python-Markdown Change Log
 *under development*: version 3.4.4 (a bug-fix release).
 
 * Add a special case for initial 's to smarty extension (#1305).
+* Unescape any backslash escaped inline raw HTML (#1358).
 
 March 23, 2023: version 3.4.3 (a bug-fix release).
 
