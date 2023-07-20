@@ -289,10 +289,10 @@ class TocTreeprocessor(Treeprocessor):
                     toc_tokens.append({
                         'level': int(el.tag[-1]),
                         'id': el.attrib["id"],
-                        'name': stashedHTML2text(
+                        'name': unescape(stashedHTML2text(
                             code_escape(el.attrib.get('data-toc-label', text)),
                             self.md, strip_entities=False
-                        )
+                        ))
                     })
 
                 # Remove the data-toc-label attribute as it is no longer needed
