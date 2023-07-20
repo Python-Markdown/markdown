@@ -442,6 +442,23 @@ class TestTOC(TestCase):
         self.assertMarkdownRenders(
             r'# escaped\_character',
             '<h1 id="escaped_character">escaped_character</h1>',
+            expected_attrs={
+                'toc': (
+                    '<div class="toc">\n'
+                      '<ul>\n'                                                           # noqa
+                        '<li><a href="#escaped_character">escaped_character</a></li>\n'  # noqa
+                      '</ul>\n'                                                          # noqa
+                    '</div>\n'                                                           # noqa
+                ),
+                'toc_tokens': [
+                    {
+                        'level': 1,
+                        'id': 'escaped_character',
+                        'name': 'escaped_character',
+                        'children': []
+                    }
+                ]
+            },
             extensions=['toc']
         )
 
