@@ -224,6 +224,26 @@ Python-Markdown's [Admonition Extension]:
     This is the content of the note.
 ```
 
+#### Release Notes
+
+Any commit/PR which changes the behavior of the Markdown library in any way
+must include an entry in the release notes. If a change only alters the
+documentation or tooling for the project, then an entry in the release notes is
+not necessary. The release notes can be found at `docs/change_log`.
+
+Each release must have an entry in `docs/change_log/index.md` which follows the
+format of the existing entries. A MAJOR release (`X.0.0`) and a MINOR release
+(`X.X.0`) should only include a single in `docs/change_log/index.md` which links
+to a full document outlining all changes included in the release. However, a
+PATCH release (X.X.X) should simply a list of single line entries summarizing
+each change directly in the file `docs/change_log/index.md` (see [Versions](#versions) for an explanation of MAJOR, MINOR, and PATCH releases).
+
+If a change is the first since the last release, then the appropriate entries
+and/or files may need to be created and included in a PR. A PR should not
+alter an entry for an existing version which has already been released, unless
+it is editing an error in the release notes for that version, or is otherwise
+expressly deemed appropriate by the project maintainers.
+
 ### Commit Message Style Guide
 
 Use the present tense ("Add feature" not "Added feature").
