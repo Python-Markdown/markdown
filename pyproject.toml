@@ -52,6 +52,11 @@ testing = [
     'coverage',
     'pyyaml',
 ]
+docs = [
+    'mkdocs>=1.0',
+    'mkdocs-nature',
+    'mdx_gh_links>=0.2'
+]
 
 [project.urls]
 'Homepage' = 'https://Python-Markdown.github.io/'

@@ -245,11 +245,14 @@ documentation or tooling for the project, then an entry in the release notes is
 not necessary. The release notes can be found at `docs/change_log`.
 
 Each release must have an entry in `docs/change_log/index.md` which follows the
-format of the existing entries. A MAJOR release (`X.0.0`) and a MINOR release
-(`X.X.0`) should only include a single in `docs/change_log/index.md` which links
-to a full document outlining all changes included in the release. However, a
-PATCH release (X.X.X) should simply a list of single line entries summarizing
-each change directly in the file `docs/change_log/index.md` (see [Versions](#versions) for an explanation of MAJOR, MINOR, and PATCH releases).
+format of the existing entries. Each entry should include a reference to the
+relevant Issue or PR in the format `#123` (where `123` is the issue number).
+A MAJOR release (`X.0.0`) and a MINOR release (`X.X.0`) should only include a
+single in `docs/change_log/index.md` which links to a full document outlining
+all changes included in the release. However, a PATCH release (X.X.X) should
+simply a list of single line entries summarizing each change directly in the
+file `docs/change_log/index.md` (see [Versions](#versions) for an explanation
+of MAJOR, MINOR, and PATCH releases).
 
 If a change is the first since the last release, then the appropriate entries
 and/or files may need to be created and included in a PR. A PR should not
