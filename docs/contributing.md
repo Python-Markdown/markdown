@@ -56,9 +56,16 @@ library. Keeping new feature requests implemented as third party extensions
 allows us to keep the maintenance overhead of Python-Markdown to a minimum, so
 that the focus can be on continued stability, bug fixes, and documentation.
 
-Closing an issue does not necessarily mean the end of a discussion. If you
-believe your issue has been closed incorrectly, explain why and we'll consider
-if it needs to be reopened.
+If you intend to submit a fix for your bug or provide an implementation of your
+future request, it is not necessary to first open an issue. You can report a
+bug or make a feature request as part of a pull request. Of course, if you want
+to receive feedback on how to implement a bug-fix or feature before submitting
+a solution, then it would be appropriate to open an issue first and ask your
+questions there.
+
+Having your issue closed does not necessarily mean the end of a discussion. If
+you believe your issue has been closed incorrectly, explain why and we'll
+consider if it needs to be reopened.
 
 ## Pull Requests
 
@@ -98,6 +105,12 @@ request. After making a pull request, check the build status in the
 GitHub interface to ensure that all tests are running as expected. If any checks
 fail, you may push additional commits to your branch. GitHub will add those
 commits to the pull request and rerun the checks.
+
+It is generally best not to squash multiple commits and force-push your changes
+to a pull request. Instead, the maintainers would like to be able to follow the
+series of commits along with the discussion about those changes as they
+progress over time. If your pull request is accepted, it will be squashed at
+that time if deemed appropriate.
 
 ## Style Guides
 
