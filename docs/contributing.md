@@ -57,7 +57,7 @@ allows us to keep the maintenance overhead of Python-Markdown to a minimum, so
 that the focus can be on continued stability, bug fixes, and documentation.
 
 If you intend to submit a fix for your bug or provide an implementation of your
-future request, it is not necessary to first open an issue. You can report a
+feature request, it is not necessary to first open an issue. You can report a
 bug or make a feature request as part of a pull request. Of course, if you want
 to receive feedback on how to implement a bug-fix or feature before submitting
 a solution, then it would be appropriate to open an issue first and ask your
