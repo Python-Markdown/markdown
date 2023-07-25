@@ -239,26 +239,31 @@ Python-Markdown's [Admonition Extension]:
 
 #### Release Notes
 
-Any commit/PR which changes the behavior of the Markdown library in any way
-must include an entry in the release notes. If a change only alters the
+Any commit/pull request which changes the behavior of the Markdown library in
+any way must include an entry in the release notes. If a change only alters the
 documentation or tooling for the project, then an entry in the release notes is
 not necessary. The release notes can be found at `docs/change_log`.
 
 Each release must have an entry in `docs/change_log/index.md` which follows the
-format of the existing entries. Each entry should include a reference to the
-relevant Issue or PR in the format `#123` (where `123` is the issue number).
-A MAJOR release (`X.0.0`) and a MINOR release (`X.X.0`) should only include a
-single in `docs/change_log/index.md` which links to a full document outlining
-all changes included in the release. However, a PATCH release (X.X.X) should
-simply a list of single line entries summarizing each change directly in the
-file `docs/change_log/index.md` (see [Versions](#versions) for an explanation
-of MAJOR, MINOR, and PATCH releases).
+format of the existing entries. A MAJOR release (`X.0.0`) and a MINOR release
+(`X.X.0`) should only include a single line in `docs/change_log/index.md` which
+links to a full document outlining all changes included in the release.
+However, a PATCH release (X.X.X) should include a list of single line entries
+summarizing each change directly in the file `docs/change_log/index.md` (see
+[Versions](#versions) for an explanation of MAJOR, MINOR, and PATCH releases).
+The description of each change should include a reference to the relevant
+GitHub issue in the format `#123` (where `123` is the issue number).
+
+Prior to a version being released, the text `*under development*` should be
+used as a placeholder for the release date. That text will be replaced with the
+release date as part of the [release process](#release-process).
 
 If a change is the first since the last release, then the appropriate entries
-and/or files may need to be created and included in a PR. A PR should not
-alter an entry for an existing version which has already been released, unless
-it is editing an error in the release notes for that version, or is otherwise
-expressly deemed appropriate by the project maintainers.
+and/or files may need to be created and included in a pull request. A pull
+request should not alter an entry for an existing version which has already
+been released, unless it is editing an error in the release notes for that
+version, or is otherwise expressly deemed appropriate by the project
+maintainers.
 
 ### Commit Message Style Guide
 

@@ -30,13 +30,13 @@ The Python-Markdown project is developed with the following goals in mind:
 
 !!! Note
 
-    *This is not a Commonmark implementation*; nor is it trying to be!
-    Python-Markdown was developed long before the Commonmark specification was
+    *This is not a CommonMark implementation*; nor is it trying to be!
+    Python-Markdown was developed long before the CommonMark specification was
     released and has always (mostly) followed the [syntax rules][] and behavior
     of the original reference implementation. No accommodations have been made
-    to address the changes which Commonmark has suggested. It is recommended
+    to address the changes which CommonMark has suggested. It is recommended
     that you look elsewhere if you want an implementation which follows the
-    Commonmark specification.
+    CommonMark specification.
 
 Features
 --------
