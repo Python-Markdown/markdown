@@ -321,7 +321,7 @@ working copy into the environment in [Development Mode] after activating the
 virtual environment for the first time:
 
 ```sh
-pip install --editable .
+pip install -e .
 ```
 
 Now any saved changes will immediately be available within the virtual
@@ -333,10 +333,44 @@ You can run the command line script with the following command:
 python -m markdown
 ```
 
+Before building the documentation for the first time, you will need to install
+some optional dependencies with the command:
+
+```sh
+pip install -e .[docs]
+```
+
+To build the documentation and serve it locally on a development server, run:
+
+```sh
+mkdocs serve
+```
+
+Then point your browser at `http://127.0.0.1:8000/`. For a complete list of
+options available, view MkDocs' help with the command:
+
+```sh
+mkdocs --help
+```
+
+Before running tests for the first time, you will need to install some optional
+dependencies with the command:
+
+```sh
+pip install -e .[testing]
+```
+
 And you can directly run the tests with:
 
 ```sh
 python -m unittest discover tests
+```
+
+To get a coverage report after running the tests, use these commands instead:
+
+```sh
+coverage run --source=markdown -m unittest discover tests
+coverage report --show-missing
 ```
 
 !!! note
@@ -345,17 +379,17 @@ python -m unittest discover tests
     library. If you do not have PyTidyLib installed, the tests which depend upon
     it will be skipped. Given the difficulty in installing the HTML Tidy library
     on many systems, you may choose to leave both libraries uninstalled and
-    depend on the Travis server to run those tests when you submit a pull
-    request.
+    depend on the continuous integration server to run those tests when you
+    submit a pull request.
 
 The above setup will only run tests against the code in one version of Python.
 However,  Python-Markdown supports multiple versions of Python. Therefore, a
 [tox] configuration is included in the repository, which includes test
 environments for all supported Python versions, a [Flake8] test environment, and
 a spellchecker for the documentation. While it is generally fine to leave those
-tests for the Travis server to run when a pull request is submitted, for more
-advanced changes, you may want to run those tests locally. To do so, simply
-install tox:
+tests for the continuous integration server to run when a pull request is
+submitted, for more advanced changes, you may want to run those tests locally.
+To do so, simply install tox:
 
 ```sh
 pip install tox
@@ -378,7 +412,7 @@ with no arguments. See help (`tox -h`) for more options.
 
 !!! seealso "See Also"
 
-    Python-Markdown provides [test tools] which simply testing Markdown syntax.
+    Python-Markdown provides [test tools] which simply test Markdown syntax.
     Understanding those tools will often help in understanding why a test may be
     failing.
 
