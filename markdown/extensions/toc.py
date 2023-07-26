@@ -161,8 +161,6 @@ class TocTreeprocessor(Treeprocessor):
         self.slugify = config["slugify"]
         self.sep = config["separator"]
         self.toc_class = config["toc_class"]
-        self.toc_tag = config["toc_tag"]
-        self.title_tag = config["title_tag"]
         self.title_class = config["title_class"]
         self.use_anchors = parseBoolValue(config["anchorlink"])
         self.anchorlink_class = config["anchorlink_class"]
@@ -248,15 +246,13 @@ class TocTreeprocessor(Treeprocessor):
 
     def build_toc_div(self, toc_list):
         """ Return a string div given a toc list. """
-        div = etree.Element(self.toc_tag)
-        if self.toc_class:
-            div.attrib["class"] = self.toc_class
+        div = etree.Element("div")
+        div.attrib["class"] = self.toc_class
 
         # Add title to the div
         if self.title:
-            header = etree.SubElement(div, self.title_tag)
-            if self.title_class:
-                header.attrib["class"] = self.title_class
+            header = etree.SubElement(div, "span")
+            header.attrib["class"] = "toctitle"
             header.text = self.title
 
         def build_etree_ul(toc_list, parent):
@@ -343,15 +339,9 @@ class TocExtension(Extension):
             "title_class": ['toctitle',
                           'CSS class used for the title. '
                           'Defaults to "toctitle"'],
-            "title_tag": ['span',
-                          'HTML tag used for the title. '
-                          'Defaults to "span"'],
             "toc_class": ['toc',
                           'CSS class(es) used for the link. '
                           'Defaults to "toclink"'],
-            "toc_tag": ['div',
-                          'HTML tag used for the toc. '
-                          'Defaults to "div"'],
             "anchorlink": [False,
                            "True if header should be a self link - "
                            "Defaults to False"],

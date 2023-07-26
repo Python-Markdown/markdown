@@ -154,14 +154,8 @@ The following options are provided to configure the output:
 * **`title_class`**:
     CSS class used for the title contained in the Table of Contents. Defaults to `toctitle`.
 
-* **`title_tag`**:
-    HTML tag used for the title contained in the Table of Contents. Defaults to `span`.
-
 * **`toc_class`**:
     CSS class(es) used for the `<div>` containing the Table of Contents. Defaults to `toc`.
-
-* **`toc_tag`**:
-    HTML tag used for the element containing the Table of Contents. Defaults to `div`.
 
 * **`anchorlink`**:
     Set to `True` to cause all headers to link to themselves. Default is `False`.
