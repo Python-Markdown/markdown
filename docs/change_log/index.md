@@ -3,6 +3,8 @@ title: Change Log
 Python-Markdown Change Log
 =========================
 
+*under development*: version 3.5 ([Notes](release-3.5.md))
+
 July 25, 2023: version 3.4.4 (a bug-fix release).
 
 * Add a special case for initial `'s` to smarty extension (#1305).

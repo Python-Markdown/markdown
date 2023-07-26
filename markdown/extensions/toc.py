@@ -160,6 +160,7 @@ class TocTreeprocessor(Treeprocessor):
         self.base_level = int(config["baselevel"]) - 1
         self.slugify = config["slugify"]
         self.sep = config["separator"]
+        self.nested_anchor_ids = parseBoolValue(config["nested_anchor_ids"], False)
         self.toc_class = config["toc_class"]
         self.use_anchors = parseBoolValue(config["anchorlink"])
         self.anchorlink_class = config["anchorlink_class"]
@@ -213,6 +214,7 @@ class TocTreeprocessor(Treeprocessor):
         if level > 6:
             level = 6
         elem.tag = 'h%d' % level
+        return level
 
     def add_anchor(self, c, elem_id):
         anchor = etree.Element("a")
@@ -274,16 +276,38 @@ class TocTreeprocessor(Treeprocessor):
             if "id" in el.attrib:
                 used_ids.add(el.attrib["id"])
 
+        parent_anchor_ids = []
+        prev_anchor_id = None
+        prev_level = None
+
         toc_tokens = []
         for el in doc.iter():
             if isinstance(el.tag, str) and self.header_rgx.match(el.tag):
-                self.set_level(el)
+                level = self.set_level(el)
                 text = get_name(el)
+
+                if self.nested_anchor_ids and prev_level:
+                    # Adjust the list of parent anchor IDs for this element
+                    if level > prev_level:
+                        parent_anchor_ids.append(prev_anchor_id)
+                    elif level < prev_level:
+                        for x in range(0, prev_level - level):
+                            parent_anchor_ids.pop()
 
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
                     innertext = unescape(stashedHTML2text(text, self.md))
-                    el.attrib["id"] = unique(self.slugify(innertext, self.sep), used_ids)
+                    anchor_id = self.slugify(innertext, self.sep)
+
+                    if self.nested_anchor_ids and parent_anchor_ids:
+                        # Combine this element's slug with the ID of the parent element
+                        anchor_id = '-'.join([parent_anchor_ids[-1], anchor_id])
+
+                    el.attrib["id"] = unique(anchor_id, used_ids)
+                    used_ids.add(el.attrib["id"])
+
+                prev_level = level
+                prev_anchor_id = el.attrib["id"]
 
                 if int(el.tag[-1]) >= self.toc_top and int(el.tag[-1]) <= self.toc_bottom:
                     toc_tokens.append({
@@ -352,6 +376,11 @@ class TocExtension(Extension):
                         "Function to generate anchors based on header text - "
                         "Defaults to the headerid ext's slugify function."],
             'separator': ['-', 'Word separator. Defaults to "-".'],
+            "nested_anchor_ids": [False,
+                                  'Set to `True` to set header anchor IDs to a '
+                                  'concatenation of of all of the parent header '
+                                  'anchor IDs which precede it hierarchically. '
+                                  'Defaults to False'],
             "toc_depth": [6,
                           'Define the range of section levels to include in'
                           'the Table of Contents. A single integer (b) defines'

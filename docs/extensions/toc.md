@@ -197,7 +197,7 @@ The following options are provided to configure the output:
 
     Default: `markdown.extensions.toc.slugify`
 
-    In order to use a different algorithm to define the id attributes, define  and
+    In order to use a different algorithm to define the id attributes, define and
     pass in a callable which takes the following two arguments:
 
     * `value`: The string to slugify.
@@ -207,6 +207,48 @@ The following options are provided to configure the output:
 
     An alternate version of the default callable supporting Unicode strings is also
     provided as `markdown.extensions.toc.slugify_unicode`.
+
+* **`nested_anchor_ids`**:
+    Set to `True` to set header anchor IDs to a concatenation of all of the
+    parent header anchor IDs which precede it hierarchically.
+
+    This feature can be useful when linking to specific subsections of the
+    resultant document, as the anchor ID will more be more specific to the
+    header and the headers above it. Unlike the default anchor ID scheme, these
+    more specific links are less likely to break as additions are made to the
+    markdown document.
+
+    Default is `False`.
+
+    For example, consider the following markdown:
+    ```md
+    # Header A
+    ## Header A
+    ## Header B
+    ### Header A
+    # Header B
+    ## Header A
+    ```
+
+    Without the `nested_anchor_ids` setting, the resultant HTML would be:
+    ```html
+    <h1 id="header-a">Header A</h1>
+    <h2 id="header-a_1">Header A</h2>
+    <h2 id="header-b">Header B</h2>
+    <h3 id="header-a_2">Header A</h3>
+    <h1 id="header-b_1">Header B</h1>
+    <h2 id="header-a_3">Header A</h2>
+    ```
+
+    With the `nested_anchor_ids` setting, the resultant HTML would be:
+    ```html
+    <h1 id="header-a">Header A</h1>
+    <h2 id="header-a-header-a">Header A</h2>
+    <h2 id="header-a-header-b">Header B</h2>
+    <h3 id="header-a-header-b-header-a">Header A</h3>
+    <h1 id="header-b">Header B</h1>
+    <h2 id="header-b-header-a">Header A</h2>
+    ```
 
 * **`separator`**:
     Word separator. Character which replaces white space in id. Defaults to "`-`".

@@ -629,3 +629,96 @@ class TestTOC(TestCase):
             ),
             extensions=[TocExtension(toc_class="custom1 custom2")]
         )
+
+    def testNestedAnchorIDsOff(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                # Header A
+                # Header A
+                ## Header A
+                ## Header A
+                ## Header B
+                ## Header C
+                ### Header A
+                # Header B
+                ## Header A
+                '''
+            ),
+            self.dedent(
+                '''
+                <h1 id="header-a">Header A</h1>
+                <h1 id="header-a_1">Header A</h1>
+                <h2 id="header-a_2">Header A</h2>
+                <h2 id="header-a_3">Header A</h2>
+                <h2 id="header-b">Header B</h2>
+                <h2 id="header-c">Header C</h2>
+                <h3 id="header-a_4">Header A</h3>
+                <h1 id="header-b_1">Header B</h1>
+                <h2 id="header-a_5">Header A</h2>
+                '''
+            ),
+            extensions=[TocExtension(nested_anchor_ids=False)]
+        )
+
+    def testNestedAnchorIDsOn(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                # Header A
+                # Header A
+                ## Header A
+                ## Header A
+                ## Header B
+                ## Header C
+                ### Header A
+                # Header B
+                ## Header A
+                '''
+            ),
+            self.dedent(
+                '''
+                <h1 id="header-a">Header A</h1>
+                <h1 id="header-a_1">Header A</h1>
+                <h2 id="header-a_1-header-a">Header A</h2>
+                <h2 id="header-a_1-header-a_1">Header A</h2>
+                <h2 id="header-a_1-header-b">Header B</h2>
+                <h2 id="header-a_1-header-c">Header C</h2>
+                <h3 id="header-a_1-header-c-header-a">Header A</h3>
+                <h1 id="header-b">Header B</h1>
+                <h2 id="header-b-header-a">Header A</h2>
+                '''
+            ),
+            extensions=[TocExtension(nested_anchor_ids=True)]
+        )
+
+    def testNestedAnchorIDsOnWithBaseLevel(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                # Header A
+                # Header A
+                ## Header A
+                ## Header A
+                ## Header B
+                ## Header C
+                ### Header A
+                # Header B
+                ## Header A
+                '''
+            ),
+            self.dedent(
+                '''
+                <h3 id="header-a">Header A</h3>
+                <h3 id="header-a_1">Header A</h3>
+                <h4 id="header-a_1-header-a">Header A</h4>
+                <h4 id="header-a_1-header-a_1">Header A</h4>
+                <h4 id="header-a_1-header-b">Header B</h4>
+                <h4 id="header-a_1-header-c">Header C</h4>
+                <h5 id="header-a_1-header-c-header-a">Header A</h5>
+                <h3 id="header-b">Header B</h3>
+                <h4 id="header-b-header-a">Header A</h4>
+                '''
+            ),
+            extensions=[TocExtension(nested_anchor_ids=True, baselevel=3)]
+        )
