@@ -60,7 +60,7 @@ is indented consistently and any errors are more easily discernible by the autho
     A final paragraph.
 ```
 
-In the output, footnote are represented by superscript text in the places where 
+In the output, footnotes are represented by superscript text in the places where 
 the labels occur. Normally, the superscript text is just the footnote number 
 but this can be configured (see below).
 
