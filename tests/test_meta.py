@@ -16,9 +16,6 @@ class TestVersion(unittest.TestCase):
     def test__version__IsValid(self):
         """Test that __version__ is valid and normalized."""
 
-        try:
-            import packaging.version
-        except ImportError:
-            from pkg_resources.extern import packaging
+        import packaging.version
 
         self.assertEqual(__version__, str(packaging.version.Version(__version__)))
