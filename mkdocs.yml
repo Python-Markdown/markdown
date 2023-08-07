@@ -63,3 +63,6 @@ markdown_extensions:
   - codehilite
   - toc:
       permalink: true
+  - mdx_gh_links:
+      user: Python-Markdown
+      repo: markdown

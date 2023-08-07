@@ -28,3 +28,6 @@ class TestRawHtml(TestCase):
         self.assertMarkdownRenders("<span>e>c</span>", "<p><span>e&gt;c</span></p>")
         self.assertMarkdownRenders("<span>e < c</span>", "<p><span>e &lt; c</span></p>")
         self.assertMarkdownRenders("<span>e > c</span>", "<p><span>e &gt; c</span></p>")
+
+    def test_inline_html_backslashes(self):
+        self.assertMarkdownRenders('<img src="..\\..\\foo.png">', '<p><img src="..\\..\\foo.png"></p>')

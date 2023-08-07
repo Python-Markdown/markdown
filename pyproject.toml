@@ -1,6 +1,6 @@
 [build-system]
 # Minimum requirements for the build system to execute.
-requires = ["setuptools>=61.2", "wheel"]
+requires = ["setuptools>=61.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -51,6 +51,11 @@ classifiers = [
 testing = [
     'coverage',
     'pyyaml',
+]
+docs = [
+    'mkdocs>=1.0',
+    'mkdocs-nature>=0.4',
+    'mdx_gh_links>=0.2'
 ]
 
 [project.urls]
