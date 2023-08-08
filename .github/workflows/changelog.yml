@@ -8,12 +8,13 @@ on:
     # Only run if changes were made in markdown/
     - 'markdown/**'
 
+permissions:
+  pull-requests: write
+
 jobs:
   require_changelog:
 
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     steps:
     - uses: actions/checkout@v2
     - uses: mskelton/changelog-reminder-action@v3
