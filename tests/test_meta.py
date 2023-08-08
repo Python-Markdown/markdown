@@ -18,7 +18,7 @@ class TestVersion(unittest.TestCase):
 
         try:
             import packaging.version
-        except:
+        except ImportError:
             self.skipTest('packaging does not appear to be installed')
 
         self.assertEqual(__version__, str(packaging.version.Version(__version__)))
