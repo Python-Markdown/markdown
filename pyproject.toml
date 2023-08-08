@@ -50,8 +50,7 @@ classifiers = [
 [project.optional-dependencies]
 testing = [
     'coverage',
-    'pyyaml',
-    'packaging'
+    'pyyaml'
 ]
 docs = [
     'mkdocs>=1.0',

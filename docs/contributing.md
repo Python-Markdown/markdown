@@ -423,8 +423,9 @@ Python-Markdown follows [Semantic Versioning] and uses the
 of the `master` branch should always be identified in the `__version_info__`
 tuple defined in [`markdown/__meta__.py`][markdown/__meta__.py]. The contents of
 that tuple will automatically be converted into a normalized version which
-conforms to [PEP 440]. An invalid `__version_info__` tuple will raise an error,
-preventing the library from running and the package from building.
+conforms to [PEP 440]. Each time the version is changed, the continuous
+integration server will run a test to ensure that the current version is in a
+valid normalized format.
 
 ### Version Status
 

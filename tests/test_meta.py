@@ -16,6 +16,9 @@ class TestVersion(unittest.TestCase):
     def test__version__IsValid(self):
         """Test that __version__ is valid and normalized."""
 
-        import packaging.version
+        try:
+            import packaging.version
+        except:
+            self.skipTest('packaging does not appear to be installed')
 
         self.assertEqual(__version__, str(packaging.version.Version(__version__)))
