@@ -1,0 +1,28 @@
+name: changelog
+
+on:
+  pull_request:
+    branches:
+    - '**'
+    path:
+    # Only run if changes were made in markdown/
+    - 'markdown/**'
+
+permissions:
+  pull-requests: write
+
+jobs:
+  validate:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: mskelton/changelog-reminder-action@v3
+      with:
+        # Match any file in the docs/change_log/ dir.
+        changelogRegex: "docs/changelog\.md"
+        message: |
+          @${{ github.actor }}, thank you for your contribution. It appears that you have not added a comment to the
+          change log describing the changes you have made. Doing so will help to ensure your contribution is accepted.
+
+          Please see the [Contributing Guide](https://python-markdown.github.io/contributing/#release-notes) for details.
