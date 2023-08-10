@@ -22,7 +22,7 @@ links to the header, placing them after all other header content.
 
 ### Changed
 
-* Add support for cPython version 3.12 (and pypy 3.10) and drop support for
+* Add support for cPython version 3.12 (and PyPy 3.10) and drop support for
   Python version 3.7 (#1357).
 * Refactor changelog to use the format defined at <https://keepachangelog.com/>.
 
