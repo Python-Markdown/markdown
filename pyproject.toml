@@ -53,8 +53,8 @@ testing = [
     'pyyaml'
 ]
 docs = [
-    'mkdocs>=1.0',
-    'mkdocs-nature>=0.4',
+    'mkdocs>=1.5',
+    'mkdocs-nature>=0.5',
     'mdx_gh_links>=0.2'
 ]
 
