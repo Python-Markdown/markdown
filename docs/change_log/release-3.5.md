@@ -18,3 +18,5 @@ The following new features have been included in the 3.5 release:
       at the start of the header, before any other header content. The
       default behavior for `permalink` is to append permanent links to
       the header, placing them after all other header content.
+
+* Updated the list of empty HTML tags (#1353). This prevents invalid HTML when using certain new tags such as `<source>`.
