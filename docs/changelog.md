@@ -20,6 +20,12 @@ will cause the links to be inserted at the start of the header, before any other
 header content. The default behavior for `permalink` is to append permanent
 links to the header, placing them after all other header content.
 
+### Changed
+
+* Add support for cPython version 3.12 (and pypy 3.10) and drop support for
+  Python version 3.7 (#1357).
+* Refactor changelog to use the format defined at <https://keepachangelog.com/>.
+
 ## [3.4.4] -- 2023-07-25
 
 ### Fixed
