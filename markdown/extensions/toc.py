@@ -252,7 +252,8 @@ class TocTreeprocessor(Treeprocessor):
         # Add title to the div
         if self.title:
             header = etree.SubElement(div, "span")
-            header.attrib["class"] = "toctitle"
+            if self.title_class:
+                header.attrib["class"] = self.title_class
             header.text = self.title
 
         def build_etree_ul(toc_list, parent):
