@@ -168,6 +168,7 @@ class TocTreeprocessor(Treeprocessor):
             self.use_permalinks = config["permalink"]
         self.permalink_class = config["permalink_class"]
         self.permalink_title = config["permalink_title"]
+        self.permalink_leading = parseBoolValue(config["permalink_leading"], False)
         self.header_rgx = re.compile("[Hh][123456]")
         if isinstance(config["toc_depth"], str) and '-' in config["toc_depth"]:
             self.toc_top, self.toc_bottom = [int(x) for x in config["toc_depth"].split('-')]
@@ -235,7 +236,12 @@ class TocTreeprocessor(Treeprocessor):
         permalink.attrib["class"] = self.permalink_class
         if self.permalink_title:
             permalink.attrib["title"] = self.permalink_title
-        c.append(permalink)
+        if self.permalink_leading:
+            permalink.tail = c.text
+            c.text = ""
+            c.insert(0, permalink)
+        else:
+            c.append(permalink)
 
     def build_toc_div(self, toc_list):
         """ Return a string div given a toc list. """
@@ -289,10 +295,10 @@ class TocTreeprocessor(Treeprocessor):
                     toc_tokens.append({
                         'level': int(el.tag[-1]),
                         'id': el.attrib["id"],
-                        'name': stashedHTML2text(
+                        'name': unescape(stashedHTML2text(
                             code_escape(el.attrib.get('data-toc-label', text)),
                             self.md, strip_entities=False
-                        )
+                        ))
                     })
 
                 # Remove the data-toc-label attribute as it is no longer needed
@@ -347,6 +353,10 @@ class TocExtension(Extension):
             "permalink_title": ["Permanent link",
                                 "Title attribute of the permalink - "
                                 "Defaults to 'Permanent link'"],
+            "permalink_leading": [False,
+                                  "True if permalinks should be placed at "
+                                  "the start of the header, rather than the "
+                                  "end - Defaults to False."],
             "baselevel": ['1', 'Base level for headers.'],
             "slugify": [slugify,
                         "Function to generate anchors based on header text - "

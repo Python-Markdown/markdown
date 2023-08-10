@@ -1,0 +1,25 @@
+name: version_check
+
+on:
+  pull_request:
+    branches:
+    - '**'
+    paths:
+    # Only run when these files have been edited.
+    - 'markdown/__meta__.py'
+
+jobs:
+  check_version:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip packaging
+    - name: Run tests
+      run: |
+        python -m unittest tests.test_meta.TestVersion.test__version__IsValid
