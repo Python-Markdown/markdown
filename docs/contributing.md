@@ -244,9 +244,10 @@ any way must include an entry in the changelog. If a change only alters the
 documentation or tooling for the project, then an entry in the changelog is
 not necessary. The current changelog can be found at `docs/changelog.md`.
 
-The current changelog follows the format defined at <https://keepachangelog.com/>.
-The description of each change should include a reference to the relevant
-GitHub issue in the format `#123` (where `123` is the issue number).
+The current changelog follows the format defined at
+[keepachangelog.com](https://keepachangelog.com/en/1.1.0/). The description of
+each change should include a reference to the relevant GitHub issue in the
+format `#123` (where `123` is the issue number).
 
 Edits to the changelog should generally add entries to the `[unreleased]`
 version at the top of the log. A pull request should not alter an entry for a
@@ -581,7 +582,7 @@ label from the same group.
 [tox]: https://tox.readthedocs.io/en/latest/
 [aspell]: http://aspell.net/
 [test tools]: test_tools.md
-[Semantic Versioning]: https://semver.org/
+[Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [markdown/__meta__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__meta__.py#L29
 [PEP 440]: https://www.python.org/dev/peps/pep-0440/
 [PyPI]: https://pypi.org/project/Markdown/
