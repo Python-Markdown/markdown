@@ -1,0 +1,5 @@
+div.body h4, div.body h5, div.body h6 {
+    background-color: transparent;
+    padding-left: 0;
+    font-weight: bold;
+}

@@ -18,7 +18,10 @@ blockquotes
 boolean
 CamelCase
 Chodarev
+changelog
+changelogs
 CLI
+cPython
 CodeHilite
 codehilite
 Cogumbreiro
@@ -49,6 +52,7 @@ implementers
 InlineProcessor
 Jiryu
 JSON
+keepachangelog
 Kjell
 Krech
 kwargs
