@@ -25,6 +25,7 @@ links to the header, placing them after all other header content.
 * Add support for cPython version 3.12 (and PyPy 3.10) and drop support for
   Python version 3.7 (#1357).
 * Refactor changelog to use the format defined at <https://keepachangelog.com/>.
+* Updated the list of empty HTML tags (#1353).
 
 ## [3.4.4] -- 2023-07-25
 
