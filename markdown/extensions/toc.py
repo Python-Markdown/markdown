@@ -161,6 +161,7 @@ class TocTreeprocessor(Treeprocessor):
         self.slugify = config["slugify"]
         self.sep = config["separator"]
         self.toc_class = config["toc_class"]
+        self.title_class = config["title_class"]
         self.use_anchors = parseBoolValue(config["anchorlink"])
         self.anchorlink_class = config["anchorlink_class"]
         self.use_permalinks = parseBoolValue(config["permalink"], False)
@@ -251,7 +252,8 @@ class TocTreeprocessor(Treeprocessor):
         # Add title to the div
         if self.title:
             header = etree.SubElement(div, "span")
-            header.attrib["class"] = "toctitle"
+            if self.title_class:
+                header.attrib["class"] = self.title_class
             header.text = self.title
 
         def build_etree_ul(toc_list, parent):
@@ -335,6 +337,9 @@ class TocExtension(Extension):
             "title": ["",
                       "Title to insert into TOC <div> - "
                       "Defaults to an empty string"],
+            "title_class": ['toctitle',
+                            'CSS class used for the title. '
+                            'Defaults to "toctitle"'],
             "toc_class": ['toc',
                           'CSS class(es) used for the link. '
                           'Defaults to "toclink"'],

@@ -151,6 +151,9 @@ The following options are provided to configure the output:
 * **`title`**:
     Title to insert in the Table of Contents' `<div>`. Defaults to `None`.
 
+* **`title_class`**:
+    CSS class used for the title contained in the Table of Contents. Defaults to `toctitle`.
+
 * **`toc_class`**:
     CSS class(es) used for the `<div>` containing the Table of Contents. Defaults to `toc`.
 

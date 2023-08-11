@@ -629,3 +629,45 @@ class TestTOC(TestCase):
             ),
             extensions=[TocExtension(toc_class="custom1 custom2")]
         )
+
+    def testTOCWithEmptyTitleClass(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+                # Header
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="toc"><span>ToC</span><ul>
+                <li><a href="#header">Header</a></li>
+                </ul>
+                </div>
+                <h1 id="header">Header</h1>
+                '''
+            ),
+            extensions=[TocExtension(title_class="", title='ToC')]
+        )
+
+    def testTOCWithCustomTitleClass(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+                # Header
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="toc"><span class="tocname">ToC</span><ul>
+                <li><a href="#header">Header</a></li>
+                </ul>
+                </div>
+                <h1 id="header">Header</h1>
+                '''
+            ),
+            extensions=[TocExtension(title_class="tocname", title='ToC')]
+        )
