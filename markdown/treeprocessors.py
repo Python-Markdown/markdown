@@ -18,11 +18,13 @@ Copyright 2004 Manfred Stienstra (the original version)
 
 License: BSD (see LICENSE.md for details).
 """
-
+import logging
 import re
 import xml.etree.ElementTree as etree
 from . import util
 from . import inlinepatterns
+
+logger = logging.getLogger('MARKDOWN')
 
 
 def build_treeprocessors(md, **kwargs):
@@ -193,9 +195,9 @@ class InlineProcessor(Treeprocessor):
                     else:
                         parent.text = text
         result = []
-        strartIndex = 0
+        startIndex = 0
         while data:
-            index = data.find(self.__placeholder_prefix, strartIndex)
+            index = data.find(self.__placeholder_prefix, startIndex)
             if index != -1:
                 id, phEndIndex = self.__findPlaceholder(data, index)
 
@@ -203,7 +205,7 @@ class InlineProcessor(Treeprocessor):
                     node = self.stashed_nodes.get(id)
 
                     if index > 0:
-                        text = data[strartIndex:index]
+                        text = data[startIndex:index]
                         linkText(text)
 
                     if not isString(node):  # it's Element
@@ -218,18 +220,18 @@ class InlineProcessor(Treeprocessor):
                                     self.__processElementText(child, child)
                     else:  # it's just a string
                         linkText(node)
-                        strartIndex = phEndIndex
+                        startIndex = phEndIndex
                         continue
 
-                    strartIndex = phEndIndex
+                    startIndex = phEndIndex
                     result.append((node, self.ancestors[:]))
 
                 else:  # wrong placeholder
                     end = index + len(self.__placeholder_prefix)
-                    linkText(data[strartIndex:end])
-                    strartIndex = end
+                    linkText(data[startIndex:end])
+                    startIndex = end
             else:
-                text = data[strartIndex:]
+                text = data[startIndex:]
                 if isinstance(data, util.AtomicString):
                     # We don't want to loose the `AtomicString`
                     text = util.AtomicString(text)
@@ -340,6 +342,7 @@ class InlineProcessor(Treeprocessor):
         Returns: `ElementTree` object with applied inline patterns.
 
         """
+        logger.debug("Running inline treeprocessor")
         self.stashed_nodes = {}
 
         # Ensure a valid parent list, but copy passed in lists
@@ -352,11 +355,14 @@ class InlineProcessor(Treeprocessor):
         while stack:
             currElement, parents = stack.pop()
 
+            logger.debug(f"On element {currElement.tag}")
             self.ancestors = parents
             self.__build_ancestors(currElement, self.ancestors)
 
             insertQueue = []
             for child in currElement:
+                logger.debug(f"On child element {child.tag}")
+                logger.debug(child.text)
                 if child.text and not isinstance(
                     child.text, util.AtomicString
                 ):
@@ -367,6 +373,7 @@ class InlineProcessor(Treeprocessor):
                         self.__handleInline(text), child
                     )
                     for item in lst:
+                        logger.debug(f"On item {item[0].tag}")
                         self.parent_map[item[0]] = child
                     stack += lst
                     insertQueue.append((child, lst))
@@ -381,6 +388,7 @@ class InlineProcessor(Treeprocessor):
                     pos = list(currElement).index(child) + 1
                     tailResult.reverse()
                     for newChild in tailResult:
+                        logger.debug(f"On newChild {newChild[0].tag}")
                         self.parent_map[newChild[0]] = currElement
                         currElement.insert(pos, newChild[0])
                 if len(child):
@@ -388,7 +396,9 @@ class InlineProcessor(Treeprocessor):
                     stack.append((child, self.ancestors[:]))
 
             for element, lst in insertQueue:
+                logger.debug(f"On insertQueue element {element}")
                 for i, obj in enumerate(lst):
+                    logger.debug(f"On element item {obj[0]} [{i}]")
                     newChild = obj[0]
                     element.insert(i, newChild)
         return tree
@@ -413,7 +423,7 @@ class PrettifyTreeprocessor(Treeprocessor):
 
     def run(self, root):
         """ Add line breaks to `ElementTree` root object. """
-
+        logger.debug("Running line break treeprocessor")
         self._prettifyETree(root)
         # Do `<br />`'s separately as they are often in the middle of
         # inline content and missed by `_prettifyETree`.
@@ -445,6 +455,7 @@ class UnescapeTreeprocessor(Treeprocessor):
         return self.RE.sub(self._unescape, text)
 
     def run(self, root):
+        logger.debug("Running UnescapeTreeprocessor")
         """ Loop over all elements and unescape all text. """
         for elem in root.iter():
             # Unescape text content
