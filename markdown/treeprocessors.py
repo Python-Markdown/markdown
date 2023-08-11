@@ -18,11 +18,13 @@ Copyright 2004 Manfred Stienstra (the original version)
 
 License: BSD (see LICENSE.md for details).
 """
-
+import logging
 import re
 import xml.etree.ElementTree as etree
 from . import util
 from . import inlinepatterns
+
+logger = logging.getLogger('MARKDOWN')
 
 
 def build_treeprocessors(md, **kwargs):
@@ -340,6 +342,7 @@ class InlineProcessor(Treeprocessor):
         Returns: `ElementTree` object with applied inline patterns.
 
         """
+        logger.debug("Running inline treeprocessor")
         self.stashed_nodes = {}
 
         # Ensure a valid parent list, but copy passed in lists
@@ -413,7 +416,7 @@ class PrettifyTreeprocessor(Treeprocessor):
 
     def run(self, root):
         """ Add line breaks to `ElementTree` root object. """
-
+        logger.debug("Running line break treeprocessor")
         self._prettifyETree(root)
         # Do `<br />`'s separately as they are often in the middle of
         # inline content and missed by `_prettifyETree`.
@@ -445,6 +448,7 @@ class UnescapeTreeprocessor(Treeprocessor):
         return self.RE.sub(self._unescape, text)
 
     def run(self, root):
+        logger.debug("Running UnescapeTreeprocessor")
         """ Loop over all elements and unescape all text. """
         for elem in root.iter():
             # Unescape text content

@@ -233,7 +233,7 @@ class Markdown:
         5. The output is written to a string.
 
         """
-
+        logger.debug("Converting markdown file to serialzed XHTML or HTML")
         # Fix up the source text
         if not source.strip():
             return ''  # a blank Unicode string
@@ -246,20 +246,23 @@ class Markdown:
             raise
 
         # Split into lines and run the line preprocessors.
+        logger.debug("Split document into lines")
         self.lines = source.split("\n")
         for prep in self.preprocessors:
+            logger.debug(f"Running preprocessor prep for {prep.__module__.__str__()}")
             self.lines = prep.run(self.lines)
 
-        # Parse the high-level elements.
+        logger.debug("Parse the high-level elements of the file")
         root = self.parser.parseDocument(self.lines).getroot()
 
-        # Run the tree-processors
+        logger.debug("Run the tree-processors")
         for treeprocessor in self.treeprocessors:
+            logger.debug(f"Running treeprocessor for {treeprocessor.__module__.__str__()}:{treeprocessor.__class__.__name__}")
             newRoot = treeprocessor.run(root)
             if newRoot is not None:
                 root = newRoot
 
-        # Serialize _properly_.  Strip top-level tags.
+        logger.debug("Serialize _properly_.  Strip top-level tags.")
         output = self.serializer(root)
         if self.stripTopLevelTags:
             try:
@@ -269,14 +272,14 @@ class Markdown:
                 output = output[start:end].strip()
             except ValueError as e:  # pragma: no cover
                 if output.strip().endswith('<%s />' % self.doc_tag):
-                    # We have an empty document
+                    logger.debug("Document is empty")
                     output = ''
                 else:
                     # We have a serious problem
                     raise ValueError('Markdown failed to strip top-level '
                                      'tags. Document=%r' % output.strip()) from e
 
-        # Run the text post-processors
+        logger.debug("Run the text post-processors")
         for pp in self.postprocessors:
             output = pp.run(output)
 
