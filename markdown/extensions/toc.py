@@ -338,8 +338,8 @@ class TocExtension(Extension):
                       "Title to insert into TOC <div> - "
                       "Defaults to an empty string"],
             "title_class": ['toctitle',
-                          'CSS class used for the title. '
-                          'Defaults to "toctitle"'],
+                            'CSS class used for the title. '
+                            'Defaults to "toctitle"'],
             "toc_class": ['toc',
                           'CSS class(es) used for the link. '
                           'Defaults to "toclink"'],
