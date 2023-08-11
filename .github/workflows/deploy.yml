@@ -27,12 +27,25 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_PASSWORD }}
+      - name: Get Changelog Entry
+        if: success()
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          validation_level: warn
+          version: ${{ github.ref_name }}
+          path: ./docs/changelog.md
       - name: Release to GitHub
-        if: success() && startsWith(github.ref, 'refs/tags/')
-        uses: fnkr/github-action-ghr@v1
-        env:
-          GHR_PATH: dist/
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: success()
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.changelog_reader.outputs.version }}
+          name: Release ${{ steps.changelog_reader.outputs.version }}
+          body: ${{ steps.changelog_reader.outputs.changes }}
+          artifacts: dist/**
+          prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
+          draft: ${{ steps.changelog_reader.outputs.status == 'unreleased' }}
+          allowUpdates: true
 
   ghpages:
     runs-on: ubuntu-latest

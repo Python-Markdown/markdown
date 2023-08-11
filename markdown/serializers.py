@@ -34,21 +34,13 @@
 # OF THIS SOFTWARE.
 # --------------------------------------------------------------------
 
-
 from xml.etree.ElementTree import ProcessingInstruction
-from xml.etree.ElementTree import Comment, ElementTree, QName
+from xml.etree.ElementTree import Comment, ElementTree, QName, HTML_EMPTY
 import re
 
 __all__ = ['to_html_string', 'to_xhtml_string']
 
-HTML_EMPTY = ("area", "base", "basefont", "br", "col", "frame", "hr",
-              "img", "input", "isindex", "link", "meta", "param")
 RE_AMP = re.compile(r'&(?!(?:\#[0-9]+|\#x[0-9a-f]+|[0-9a-z]+);)', re.I)
-
-try:
-    HTML_EMPTY = set(HTML_EMPTY)
-except NameError:  # pragma: no cover
-    pass
 
 
 def _raise_serialization_error(text):  # pragma: no cover
