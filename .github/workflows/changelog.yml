@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     # - uses: actions/checkout@v2
-    - uses dangoslen/changelog-enforcer@v3
+    - uses: dangoslen/changelog-enforcer@v3
       with:
         changeLogPath: 'docs/changelog.md'
         missingUpdateErrorMessage: |
