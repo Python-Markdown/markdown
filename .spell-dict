@@ -52,6 +52,7 @@ implementers
 InlineProcessor
 Jiryu
 JSON
+keepachangelog
 Kjell
 Krech
 kwargs
