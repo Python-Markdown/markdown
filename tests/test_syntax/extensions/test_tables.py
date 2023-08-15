@@ -920,3 +920,50 @@ Content Cell  |  
             ),
             extensions=[TableExtension(use_align_attribute=True)]
         )
+
+    def test_large_table(self):
+        num_rows = 20000
+        lots_of_rows_raw = "|test1|test2|test3|\n" * num_rows
+        lots_of_rows_html = (
+            self.dedent(
+                """
+                <tr>
+                <td>test1</td>
+                <td>test2</td>
+                <td>test3</td>
+                </tr>
+                """
+            ) + "\n"
+        ) * num_rows
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <a name="some_link">Some link</a>
+
+                |foo|bar|baz|
+                |---|---|---|
+                """
+            ) + "\n" + lots_of_rows_raw,
+            '<p><a name="some_link">Some link</a></p>\n' + 
+            self.dedent(
+                """
+                <table>
+                <thead>
+                <tr>
+                <th>foo</th>
+                <th>bar</th>
+                <th>baz</th>
+                </tr>
+                </thead>
+                <tbody>
+                """
+            ) + "\n" +
+            lots_of_rows_html + 
+            self.dedent(
+                """
+                </tbody>
+                </table>
+                """
+            ),
+            extensions=[TableExtension()]
+        )
