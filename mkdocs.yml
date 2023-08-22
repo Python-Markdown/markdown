@@ -5,6 +5,7 @@ site_author: "The Python-Markdown Project"
 copyright: "Copyright &copy; 2010-2023"
 
 use_directory_urls: true
+watch: [markdown]
 
 theme:
   name: nature
@@ -14,6 +15,7 @@ theme:
 
 extra_css:
   - custom.css
+  - mkdocstrings.css
 
 nav:
   - Python-Markdown: index.md
@@ -21,6 +23,7 @@ nav:
   - Library Reference: reference.md
   - Command Line: cli.md
   - Extensions: extensions/index.md
+  - API Reference: reference/
   - Officially Supported Extensions:
       - Abbreviations: extensions/abbreviations.md
       - Admonition: extensions/admonition.md
@@ -59,3 +62,35 @@ markdown_extensions:
   - mdx_gh_links:
       user: Python-Markdown
       repo: markdown
+
+plugins:
+- gen-files:
+    scripts:
+    - scripts/gen_ref_nav.py
+- literate-nav:
+    nav_file: SUMMARY.md
+- section-index
+- mkdocstrings:
+    handlers:
+      python:
+        import:
+        - https://docs.python.org/3/objects.inv
+        options:
+          annotations_path: brief
+          docstring_options:
+            ignore_init_summary: true
+          docstring_style: google
+          docstring_section_style: list
+          filters: ["!^_"]
+          heading_level: 1
+          inherited_members: true
+          merge_init_into_class: true
+          separate_signature: true
+          show_root_heading: true
+          show_object_full_path: true
+          show_signature_annotations: true
+          show_source: false
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
+          signature_crossrefs: true
+          summary: true

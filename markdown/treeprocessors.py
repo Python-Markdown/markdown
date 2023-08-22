@@ -19,8 +19,11 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+from __future__ import annotations
+
 import re
 import xml.etree.ElementTree as etree
+from typing import TYPE_CHECKING, Sequence
 from . import util
 from . import inlinepatterns
 
@@ -83,16 +86,16 @@ class InlineProcessor(Treeprocessor):
         hash = util.INLINE_PLACEHOLDER % id
         return hash, id
 
-    def __findPlaceholder(self, data, index):
+    def __findPlaceholder(self, data: str, index: int) -> tuple[str | None, int]:
         """
-        Extract id from data string, start from index
+        Extract id from data string, start from index.
 
-        Keyword arguments:
+        Arguments:
+            data: String.
+            index: Index, from which we start search.
 
-        * `data`: string
-        * `index`: index, from which we start search
-
-        Returns: placeholder id and string index, after the found placeholder.
+        Returns:
+            Placeholder id and string index, after the found placeholder.
 
         """
         m = self.__placeholder_re.search(data, index)
@@ -102,22 +105,21 @@ class InlineProcessor(Treeprocessor):
             return None, index + 1
 
     def __stashNode(self, node, type):
-        """ Add node to stash """
+        """ Add node to stash. """
         placeholder, id = self.__makePlaceholder(type)
         self.stashed_nodes[id] = node
         return placeholder
 
-    def __handleInline(self, data, patternIndex=0):
+    def __handleInline(self, data: str, patternIndex: int = 0) -> str:
         """
-        Process string with inline patterns and replace it
-        with placeholders
+        Process string with inline patterns and replace it with placeholders.
 
-        Keyword arguments:
+        Arguments:
+            data: A line of Markdown text.
+            patternIndex: The index of the `inlinePattern` to start with.
 
-        * `data`: A line of Markdown text
-        * `patternIndex`: The index of the `inlinePattern` to start with
-
-        Returns: String with placeholders.
+        Returns:
+            String with placeholders.
 
         """
         if not isinstance(data, util.AtomicString):
@@ -131,18 +133,15 @@ class InlineProcessor(Treeprocessor):
                     patternIndex += 1
         return data
 
-    def __processElementText(self, node, subnode, isText=True):
+    def __processElementText(self, node: etree.Element, subnode: etree.Element, isText: bool = True):
         """
         Process placeholders in `Element.text` or `Element.tail`
         of Elements popped from `self.stashed_nodes`.
 
-        Keywords arguments:
-
-        * `node`: parent node
-        * `subnode`: processing node
-        * `isText`: boolean variable, True - it's text, False - it's a tail
-
-        Returns: None
+        Arguments:
+            node: Parent node.
+            subnode: Processing node.
+            isText: Boolean variable, True - it's text, False - it's a tail.
 
         """
         if isText:
@@ -163,16 +162,17 @@ class InlineProcessor(Treeprocessor):
         for newChild in childResult:
             node.insert(pos, newChild[0])
 
-    def __processPlaceholders(self, data, parent, isText=True):
+    def __processPlaceholders(self, data: str, parent: etree.Element, isText: bool = True) -> list[etree.ElementTree]:
         """
         Process string with placeholders and generate `ElementTree` tree.
 
-        Keyword arguments:
+        Arguments:
+            data: String with placeholders instead of `ElementTree` elements.
+            parent: Element, which contains processing inline data.
+            isText: Boolean variable, True - it's text, False - it's a tail.
 
-        * `data`: string with placeholders instead of `ElementTree` elements.
-        * `parent`: Element, which contains processing inline data
-
-        Returns: list with `ElementTree` elements with applied inline patterns.
+        Returns:
+            List with `ElementTree` elements with applied inline patterns.
 
         """
         def linkText(text):
@@ -238,19 +238,19 @@ class InlineProcessor(Treeprocessor):
 
         return result
 
-    def __applyPattern(self, pattern, data, patternIndex, startIndex=0):
+    def __applyPattern(self, pattern: str, data: srt, patternIndex: int, startIndex: int = 0) -> tuple[str, bool, int]:
         """
         Check if the line fits the pattern, create the necessary
         elements, add it to `stashed_nodes`.
 
-        Keyword arguments:
+        Arguments:
+            data: The text to be processed.
+            pattern: The pattern to be checked.
+            patternIndex: Index of current pattern.
+            startIndex: String index, from which we start searching.
 
-        * `data`: the text to be processed
-        * `pattern`: the pattern to be checked
-        * `patternIndex`: index of current pattern
-        * `startIndex`: string index, from which we start searching
-
-        Returns: String with placeholders instead of `ElementTree` elements.
+        Returns:
+            String with placeholders instead of `ElementTree` elements.
 
         """
         new_style = isinstance(pattern, inlinepatterns.InlineProcessor)
@@ -322,7 +322,7 @@ class InlineProcessor(Treeprocessor):
         ancestors.reverse()
         parents.extend(ancestors)
 
-    def run(self, tree, ancestors=None):
+    def run(self, tree: etree.ElementTree, ancestors: Sequence[str] | None = None) -> etree.ElementTree:
         """Apply inline patterns to a parsed Markdown tree.
 
         Iterate over `ElementTree`, find elements with inline tag, apply inline
@@ -333,11 +333,11 @@ class InlineProcessor(Treeprocessor):
             node.text = markdown.AtomicString("This will not be processed.")
 
         Arguments:
+            tree: `ElementTree` object, representing Markdown tree.
+            ancestors: List of parent tag names that precede the tree node (if needed).
 
-        * `tree`: `ElementTree` object, representing Markdown tree.
-        * `ancestors`: List of parent tag names that precede the tree node (if needed).
-
-        Returns: `ElementTree` object with applied inline patterns.
+        Returns:
+            An element tree object with applied inline patterns.
 
         """
         self.stashed_nodes = {}

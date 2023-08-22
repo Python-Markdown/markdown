@@ -19,10 +19,13 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+from __future__ import annotations
+
 import codecs
 import sys
 import logging
 import importlib
+from typing import Any, TextIO
 from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
@@ -54,17 +57,16 @@ class Markdown:
         Creates a new Markdown instance.
 
         Keyword arguments:
-
-        * `extensions`: A list of extensions.
-            If an item is an instance of a subclass of `markdown.extension.Extension`, the  instance will be used
-            as-is. If an item is of type string, first an entry point will be loaded. If that fails, the string is
-            assumed to use Python dot notation (`path.to.module:ClassName`) to load a `markdown.Extension` subclass. If
-            no class is specified, then a `makeExtension` function is called within the specified module.
-        * `extension_configs`: Configuration settings for extensions.
-        * `output_format`: Format of output. Supported formats are:
-            * `xhtml`: Outputs XHTML style tags. Default.
-            * `html`: Outputs HTML style tags.
-        * `tab_length`: Length of tabs in the source. Default: 4
+            extensions (list[str | Extension]): A list of extensions.
+                If an item is an instance of a subclass of `markdown.extension.Extension`, the instance will be used
+                as-is. If an item is of type string, first an entry point will be loaded. If that fails, the string is
+                assumed to use Python dot notation (`path.to.module:ClassName`) to load a `markdown.Extension` subclass.
+                If no class is specified, then a `makeExtension` function is called within the specified module.
+            extension_configs (dict[str, dict[str, Any]]): Configuration settings for extensions.
+            output_format (str): Format of output. Supported formats are:
+                * `xhtml`: Outputs XHTML style tags. Default.
+                * `html`: Outputs HTML style tags.
+            tab_length (int): Length of tabs in the source. Default: 4
 
         """
 
@@ -97,15 +99,13 @@ class Markdown:
         self.postprocessors = build_postprocessors(self)
         return self
 
-    def registerExtensions(self, extensions, configs):
+    def registerExtensions(self, extensions: list[str | Extension], configs: dict[str, dict[str, Any]]) -> Markdown:
         """
         Register extensions with this instance of Markdown.
 
-        Keyword arguments:
-
-        * `extensions`: A list of extensions, which can either
-           be strings or objects.
-        * `configs`: A dictionary mapping extension names to `configs` options.
+        Arguments:
+            extensions: A list of extensions, which can either be strings or objects.
+            configs: A dictionary mapping extension names to `configs` options.
 
         """
         for ext in extensions:
@@ -212,13 +212,12 @@ class Markdown:
         # Some ElementTree tags are not strings, so return False.
         return False
 
-    def convert(self, source):
+    def convert(self, source: str):
         """
         Convert markdown to serialized XHTML or HTML.
 
-        Keyword arguments:
-
-        * `source`: Source text as a Unicode string.
+        Arguments:
+            source: Source text as a Unicode string.
 
         Markdown processing takes place in five steps:
 
@@ -282,7 +281,7 @@ class Markdown:
 
         return output.strip()
 
-    def convertFile(self, input=None, output=None, encoding=None):
+    def convertFile(self, input: str | TextIO | None = None, output: str | TextIO | None = None, encoding: str | None = None):
         """Converts a markdown file and returns the HTML as a Unicode string.
 
         Decodes the file using the provided encoding (defaults to `utf-8`),
@@ -295,11 +294,10 @@ class Markdown:
         takes place in Python-Markdown.  (All other code is Unicode-in /
         Unicode-out.)
 
-        Keyword arguments:
-
-        * `input`: File object or path. Reads from `stdin` if `None`.
-        * `output`: File object or path. Writes to `stdout` if `None`.
-        * `encoding`: Encoding of input and output files. Defaults to `utf-8`.
+        Arguments:
+            input: File object or path. Reads from `stdin` if `None`.
+            output: File object or path. Writes to `stdout` if `None`.
+            encoding: Encoding of input and output files. Defaults to `utf-8`.
 
         """
 
@@ -358,7 +356,7 @@ Those are the two functions we really mean to export: `markdown()` and
 """
 
 
-def markdown(text, **kwargs):
+def markdown(text, **kwargs) -> str:
     """Convert a markdown string to HTML and return HTML as a Unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
@@ -366,11 +364,11 @@ def markdown(text, **kwargs):
     necessary extensions and runs the parser on the given text.
 
     Keyword arguments:
+        text (str): Markdown formatted text as Unicode or ASCII string.
+        **other (Any): Any arguments accepted by the Markdown class.
 
-    * `text`: Markdown formatted text as Unicode or ASCII string.
-    * Any arguments accepted by the Markdown class.
-
-    Returns: An HTML document as a string.
+    Returns:
+        An HTML document as a string.
 
     """
     md = Markdown(**kwargs)
@@ -384,11 +382,10 @@ def markdownFromFile(**kwargs):
     and calls the `convertFile` method rather than `convert`.
 
     Keyword arguments:
-
-    * `input`: a file name or readable object.
-    * `output`: a file name or writable object.
-    * `encoding`: Encoding of input and output.
-    * Any arguments accepted by the `Markdown` class.
+        input (str | TextIO): A file name or readable object.
+        output (str | TextIO): A file name or writable object.
+        encoding (str): Encoding of input and output.
+        **other (Any): Any arguments accepted by the `Markdown` class.
 
     """
     md = Markdown(**kwargs)

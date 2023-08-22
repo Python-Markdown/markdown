@@ -255,10 +255,11 @@ class FootnoteBlockProcessor(BlockProcessor):
         blocks.insert(0, block)
         return False
 
-    def detectTabbed(self, blocks):
+    def detectTabbed(self, blocks) -> list[str]:
         """ Find indented text and remove indent before further processing.
 
-        Returns: a list of blocks with indentation removed.
+        Returns:
+            A list of blocks with indentation removed.
         """
         fn_blocks = []
         while blocks:

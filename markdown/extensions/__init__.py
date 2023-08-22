@@ -19,8 +19,13 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from ..util import parseBoolValue
 
+if TYPE_CHECKING:
+    from markdown import Markdown
 
 class Extension:
     """ Base class for extensions to subclass. """
@@ -69,15 +74,14 @@ class Extension:
         for key, value in items:
             self.setConfig(key, value)
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown):
         """
         Add the various processors and patterns to the Markdown Instance.
 
         This method must be overridden by every extension.
 
-        Keyword arguments:
-
-        * md: The Markdown instance.
+        Arguments:
+            md: The Markdown instance.
 
         """
         raise NotImplementedError(

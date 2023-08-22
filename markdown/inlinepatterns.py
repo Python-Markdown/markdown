@@ -60,14 +60,20 @@ So, we apply the expressions in the following order:
 * finally we apply strong and emphasis
 """
 
+from __future__ import annotations
+
 from . import util
 from collections import namedtuple
+from typing import TYPE_CHECKING, Match
 import re
 import xml.etree.ElementTree as etree
 try:  # pragma: no cover
     from html import entities
 except ImportError:  # pragma: no cover
     import htmlentitydefs as entities
+
+if TYPE_CHECKING:
+    from markdown import Markdown
 
 
 def build_inlinepatterns(md, **kwargs):
@@ -196,13 +202,12 @@ class Pattern:  # pragma: no cover
 
     ANCESTOR_EXCLUDES = tuple()
 
-    def __init__(self, pattern, md=None):
+    def __init__(self, pattern: str, md: Markdown | None = None):
         """
         Create an instant of an inline pattern.
 
-        Keyword arguments:
-
-        * pattern: A regular expression that matches a pattern
+        Arguments:
+            pattern: A regular expression that matches a pattern.
 
         """
         self.pattern = pattern
@@ -215,14 +220,13 @@ class Pattern:  # pragma: no cover
         """ Return a compiled regular expression. """
         return self.compiled_re
 
-    def handleMatch(self, m):
+    def handleMatch(self, m: Match):
         """Return a ElementTree element from the given match.
 
         Subclasses should override this method.
 
-        Keyword arguments:
-
-        * m: A re match object containing a match of the pattern.
+        Arguments:
+            m: A match object containing a match of the pattern.
 
         """
         pass  # pragma: no cover
@@ -258,13 +262,12 @@ class InlineProcessor(Pattern):
     efficient and flexible search approach.
     """
 
-    def __init__(self, pattern, md=None):
+    def __init__(self, pattern: str, md: Markdown | None = None):
         """
         Create an instant of an inline pattern.
 
-        Keyword arguments:
-
-        * pattern: A regular expression that matches a pattern
+        Arguments:
+            pattern: A regular expression that matches a pattern.
 
         """
         self.pattern = pattern
@@ -274,7 +277,7 @@ class InlineProcessor(Pattern):
         self.safe_mode = False
         self.md = md
 
-    def handleMatch(self, m, data):
+    def handleMatch(self, m: Match, data: str) -> tuple[etree.ElementTree | str | None, int | None, int | None]:
         """Return a ElementTree element from the given match and the
         start and end index of the matched text.
 
@@ -283,16 +286,14 @@ class InlineProcessor(Pattern):
 
         Subclasses should override this method.
 
-        Keyword arguments:
-
-        * m: A re match object containing a match of the pattern.
-        * data: The buffer current under analysis
+        Arguments:
+            m: A re match object containing a match of the pattern.
+            data: The buffer current under analysis.
 
         Returns:
-
-        * el: The ElementTree element, text or None.
-        * start: The start of the region that has been matched or None.
-        * end: The end of the region that has been matched or None.
+            el: The ElementTree element, text or None.
+            start: The start of the region that has been matched or None.
+            end: The end of the region that has been matched or None.
 
         """
         pass  # pragma: no cover
@@ -809,9 +810,9 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
 
     def evalId(self, data, index, text):
         """
-        Evaluate the id portion of [ref][id].
+        Evaluate the id portion of `[ref][id]`.
 
-        If [ref][] use [ref].
+        If `[ref][]` use `[ref]`.
         """
         m = self.RE_LINK.match(data, pos=index)
         if not m:

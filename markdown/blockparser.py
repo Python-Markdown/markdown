@@ -19,8 +19,14 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+from __future__ import annotations
+
 import xml.etree.ElementTree as etree
+from typing import TYPE_CHECKING, Sequence
 from . import util
+
+if TYPE_CHECKING:
+    from markdown import Markdown
 
 
 class State(list):
@@ -62,14 +68,21 @@ class BlockParser:
 
     A wrapper class that stitches the various `BlockProcessors` together,
     looping through them and creating an `ElementTree` object.
+
     """
 
-    def __init__(self, md):
+    def __init__(self, md: Markdown):
+        """ Initialize the block parser.
+        
+        Arguments:
+            md: A Markdown instance.
+
+        """
         self.blockprocessors = util.Registry()
         self.state = State()
         self.md = md
 
-    def parseDocument(self, lines):
+    def parseDocument(self, lines: Sequence[str]) -> etree.ElementTree:
         """ Parse a markdown document into an ElementTree.
 
         Given a list of lines, an ElementTree object (not just a parent
@@ -78,13 +91,18 @@ class BlockParser:
 
         This should only be called on an entire document, not pieces.
 
+        Arguments:
+            lines: A list of lines (strings).
+
+        Returns:
+            An element tree.
         """
         # Create an `ElementTree` from the lines
         self.root = etree.Element(self.md.doc_tag)
         self.parseChunk(self.root, '\n'.join(lines))
         return etree.ElementTree(self.root)
 
-    def parseChunk(self, parent, text):
+    def parseChunk(self, parent: etree.Element, text: str):
         """ Parse a chunk of markdown text and attach to given `etree` node.
 
         While the `text` argument is generally assumed to contain multiple
@@ -95,10 +113,14 @@ class BlockParser:
         The `parent` `etree` Element passed in is altered in place.
         Nothing is returned.
 
+        Arguments:
+            parent: The parent element.
+            text: The text to parse.
+
         """
         self.parseBlocks(parent, text.split('\n\n'))
 
-    def parseBlocks(self, parent, blocks):
+    def parseBlocks(self, parent: etree.Element, blocks: Sequence[str]):
         """ Process blocks of markdown text and attach to given `etree` node.
 
         Given a list of `blocks`, each `blockprocessor` is stepped through
@@ -109,6 +131,10 @@ class BlockParser:
         This is a public method as an extension may need to add/alter
         additional `BlockProcessors` which call this method to recursively
         parse a nested block.
+
+        Arguments:
+            parent: The parent element.
+            blocks: The blocks of text to parse.
 
         """
         while blocks:

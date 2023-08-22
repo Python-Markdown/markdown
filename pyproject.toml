@@ -55,7 +55,11 @@ testing = [
 docs = [
     'mkdocs>=1.5',
     'mkdocs-nature>=0.5',
-    'mdx_gh_links>=0.2'
+    'mdx_gh_links>=0.2',
+    "mkdocstrings[python]",
+    "mkdocs-gen-files",
+    "mkdocs-section-index",
+    "mkdocs-literate-nav",
 ]
 
 [project.urls]

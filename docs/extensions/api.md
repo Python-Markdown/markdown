@@ -845,7 +845,7 @@ assert someitem in registry
 
 :   Add an item to the registry with the given name and priority.
 
-    Parameters:
+    Arguments:
 
     * `item`: The item being registered.
     * `name`: A string used to reference the item.

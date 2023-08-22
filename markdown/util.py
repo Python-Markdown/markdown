@@ -19,12 +19,15 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+from __future__ import annotations
+
 import re
 import sys
 import warnings
 from collections import namedtuple
 from functools import wraps, lru_cache
 from itertools import count
+from typing import Any
 
 
 """
@@ -185,17 +188,17 @@ class HtmlStash:
         self.tag_counter = 0
         self.tag_data = []  # list of dictionaries in the order tags appear
 
-    def store(self, html):
+    def store(self, html: str) -> str:
         """
         Saves an HTML segment for later reinsertion.  Returns a
         placeholder string that needs to be inserted into the
         document.
 
         Keyword arguments:
+            html: An html segment.
 
-        * `html`: an html segment
-
-        Returns : a placeholder string
+        Returns:
+            A placeholder string.
 
         """
         self.rawHtmlBlocks.append(html)
@@ -310,15 +313,14 @@ class Registry:
             )
         raise ValueError('No item named "{}" exists.'.format(name))
 
-    def register(self, item, name, priority):
+    def register(self, item: Any, name: str, priority: int):
         """
         Add an item to the registry with the given name and priority.
 
-        Parameters:
-
-        * `item`: The item being registered.
-        * `name`: A string used to reference the item.
-        * `priority`: An integer or float used to sort against all items.
+        Arguments:
+            item: The item being registered.
+            name: A string used to reference the item.
+            priority: An integer or float used to sort against all items.
 
         If an item is registered with a "name" which already exists, the
         existing item is replaced with the new item. Treat carefully as the

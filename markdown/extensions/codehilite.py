@@ -54,24 +54,19 @@ class CodeHilite:
         html = code.hilite()
 
     Arguments:
-    * `src`: Source string or any object with a `.readline` attribute.
+        src: Source string or any object with a `.readline` attribute.
 
-    * `lang`: String name of Pygments lexer to use for highlighting. Default: `None`.
-
-    * `guess_lang`: Auto-detect which lexer to use. Ignored if `lang` is set to a valid
-      value. Default: `True`.
-
-    * `use_pygments`: Pass code to Pygments for code highlighting. If `False`, the code is
-      instead wrapped for highlighting by a JavaScript library. Default: `True`.
-
-    * `pygments_formatter`: The name of a Pygments formatter or a formatter class used for
-      highlighting the code blocks. Default: `html`.
-
-    * `linenums`: An alias to Pygments `linenos` formatter option. Default: `None`.
-
-    * `css_class`: An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
-
-    * `lang_prefix`: Prefix prepended to the language. Default: "language-".
+    Keyword arguments:
+        lang (str): String name of Pygments lexer to use for highlighting. Default: `None`.
+        guess_lang (bool): Auto-detect which lexer to use.
+            Ignored if `lang` is set to a valid value. Default: `True`.
+        use_pygments (bool): Pass code to Pygments for code highlighting. If `False`, the code is
+            instead wrapped for highlighting by a JavaScript library. Default: `True`.
+        pygments_formatter (str): The name of a Pygments formatter or a formatter class used for
+            highlighting the code blocks. Default: `html`.
+        linenums (bool): An alias to Pygments `linenos` formatter option. Default: `None`.
+        css_class (str): An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
+        lang_prefix (str): Prefix prepended to the language. Default: "language-".
 
     Other Options:
     Any other options are accepted and passed on to the lexer and formatter. Therefore,
@@ -100,7 +95,7 @@ class CodeHilite:
 
     """
 
-    def __init__(self, src, **options):
+    def __init__(self, src: str, **options):
         self.src = src
         self.lang = options.pop('lang', None)
         self.guess_lang = options.pop('guess_lang', True)
