@@ -29,3 +29,24 @@ a.autorefs-external:hover::after {
 .doc-heading .codehilite {
   background: unset;
 }
+
+/* Customize symbol names. */
+code.doc-symbol-attribute::after {
+  content: "Attr";
+}
+
+code.doc-symbol-function::after {
+  content: "Func";
+}
+
+code.doc-symbol-method::after {
+  content: "Method";
+}
+
+code.doc-symbol-class::after {
+  content: "Class";
+}
+
+code.doc-symbol-module::after {
+  content: "Module";
+}

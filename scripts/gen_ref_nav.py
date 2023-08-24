@@ -12,7 +12,23 @@ per_module_options = {
     "markdown": {"summary": {"attributes": True, "functions": True, "classes": True}}
 }
 
-for path in sorted(Path("markdown").rglob("*.py")):
+modules = [
+    Path("markdown", "__init__.py"),
+    Path("markdown", "core.py"),
+    Path("markdown", "preprocessors.py"),
+    Path("markdown", "blockparser.py"),
+    Path("markdown", "blockprocessors.py"),
+    Path("markdown", "treeprocessors.py"),
+    Path("markdown", "inlinepatterns.py"),
+    Path("markdown", "postprocessors.py"),
+    Path("markdown", "serializers.py"),
+    Path("markdown", "util.py"),
+    Path("markdown", "htmlparser.py"),
+    Path("markdown", "test_tools.py"),
+    *sorted(Path("markdown", "extensions").rglob("*.py")),
+]
+
+for path in modules:
     module_path = path.with_suffix("")
     doc_path = path.with_suffix(".md")
     full_doc_path = Path("reference", doc_path)

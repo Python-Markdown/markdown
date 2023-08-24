@@ -88,7 +88,7 @@ plugins:
           separate_signature: false
           show_root_heading: true
           show_object_full_path: true
-          show_signature_annotations: false
+          show_signature_annotations: true
           show_source: false
           show_symbol_type_heading: true
           show_symbol_type_toc: true
