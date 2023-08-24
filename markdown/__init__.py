@@ -17,6 +17,20 @@ Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 Copyright 2004 Manfred Stienstra (the original version)
 
 License: BSD (see LICENSE.md for details).
+
+Modules:
+    core: Core functionality.
+    preprocessors: Pre-processors.
+    blockparser: Core Markdown block parser.
+    blockprocessors: Block processors.
+    treeprocessors: Tree processors.
+    inlinepatterns: Inline patterns.
+    postprocessors: Post-processors.
+    serializers: Serializers.
+    util: Utility functions.
+    htmlparser: HTML parser.
+    test_tools: Testing utilities.
+    extensions: Markdown extensions.
 """
 
 from .core import Markdown, markdown, markdownFromFile

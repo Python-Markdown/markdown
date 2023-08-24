@@ -85,12 +85,12 @@ plugins:
           heading_level: 1
           inherited_members: true
           merge_init_into_class: true
-          separate_signature: true
+          separate_signature: false
           show_root_heading: true
           show_object_full_path: true
           show_signature_annotations: true
           show_source: false
           show_symbol_type_heading: true
           show_symbol_type_toc: true
-          signature_crossrefs: true
+          signature_crossrefs: false
           summary: true
