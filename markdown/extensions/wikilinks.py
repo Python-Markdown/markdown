@@ -1,10 +1,10 @@
-'''
+"""
 WikiLinks Extension for Python-Markdown
 ======================================
 
 Converts [[WikiLinks]] to relative links.
 
-See <https://Python-Markdown.github.io/extensions/wikilinks>
+See https://Python-Markdown.github.io/extensions/wikilinks
 for documentation.
 
 Original code Copyright [Waylan Limberg](http://achinghead.com/).
@@ -13,7 +13,7 @@ All changes Copyright The Python Markdown Project
 
 License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
-'''
+"""
 
 from . import Extension
 from ..inlinepatterns import InlineProcessor

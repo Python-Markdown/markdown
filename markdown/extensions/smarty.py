@@ -1,11 +1,11 @@
-'''
+"""
 Smarty extension for Python-Markdown
 ====================================
 
 Adds conversion of ASCII dashes, quotes and ellipses to their HTML
 entity equivalents.
 
-See <https://Python-Markdown.github.io/extensions/smarty>
+See https://Python-Markdown.github.io/extensions/smarty
 for documentation.
 
 Author: 2013, Dmitry Shachnev <mitya57@gmail.com>
@@ -77,7 +77,7 @@ SmartyPants license:
    (including negligence or otherwise) arising in any way out of the use
    of this software, even if advised of the possibility of such damage.
 
-'''
+"""
 
 
 from . import Extension

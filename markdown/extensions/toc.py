@@ -2,7 +2,7 @@
 Table of Contents Extension for Python-Markdown
 ===============================================
 
-See <https://Python-Markdown.github.io/extensions/toc>
+See https://Python-Markdown.github.io/extensions/toc
 for documentation.
 
 Original code Copyright 2008 [Jack Miller](https://codezen.org/)
@@ -178,7 +178,7 @@ class TocTreeprocessor(Treeprocessor):
             self.toc_bottom = int(config["toc_depth"])
 
     def iterparent(self, node):
-        ''' Iterator wrapper to get allowed parent and child all at once. '''
+        """ Iterator wrapper to get allowed parent and child all at once. """
 
         # We do not allow the marker inside a header as that
         # would causes an endless loop of placing a new TOC
@@ -189,7 +189,7 @@ class TocTreeprocessor(Treeprocessor):
                 yield from self.iterparent(child)
 
     def replace_marker(self, root, elem):
-        ''' Replace marker with elem. '''
+        """ Replace marker with elem. """
         for (p, c) in self.iterparent(root):
             text = ''.join(c.itertext()).strip()
             if not text:
@@ -210,7 +210,7 @@ class TocTreeprocessor(Treeprocessor):
                         break
 
     def set_level(self, elem):
-        ''' Adjust header level according to base level. '''
+        """ Adjust header level according to base level. """
         level = int(elem.tag[-1]) + self.base_level
         if level > 6:
             level = 6

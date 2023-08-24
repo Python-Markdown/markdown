@@ -6,7 +6,7 @@ Adds attribute list syntax. Inspired by
 [Maruku](http://maruku.rubyforge.org/proposal.html#attribute_lists)'s
 feature of the same name.
 
-See <https://Python-Markdown.github.io/extensions/attr_list>
+See https://Python-Markdown.github.io/extensions/attr_list
 for documentation.
 
 Original code Copyright 2011 [Waylan Limberg](http://achinghead.com/).

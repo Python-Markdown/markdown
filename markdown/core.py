@@ -1,23 +1,21 @@
-"""
-Python Markdown
+# Python Markdown
 
-A Python implementation of John Gruber's Markdown.
+# A Python implementation of John Gruber's Markdown.
 
-Documentation: https://python-markdown.github.io/
-GitHub: https://github.com/Python-Markdown/markdown/
-PyPI: https://pypi.org/project/Markdown/
+# Documentation: https://python-markdown.github.io/
+# GitHub: https://github.com/Python-Markdown/markdown/
+# PyPI: https://pypi.org/project/Markdown/
 
-Started by Manfred Stienstra (http://www.dwerg.net/).
-Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
-Currently maintained by Waylan Limberg (https://github.com/waylan),
-Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
+# Started by Manfred Stienstra (http://www.dwerg.net/).
+# Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
+# Currently maintained by Waylan Limberg (https://github.com/waylan),
+# Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
 
-Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
-Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
-Copyright 2004 Manfred Stienstra (the original version)
+# Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+# Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
+# Copyright 2004 Manfred Stienstra (the original version)
 
-License: BSD (see LICENSE.md for details).
-"""
+# License: BSD (see LICENSE.md for details).
 
 from __future__ import annotations
 
@@ -356,16 +354,18 @@ Those are the two functions we really mean to export: `markdown()` and
 """
 
 
-def markdown(text, **kwargs) -> str:
+def markdown(text: str, **kwargs: Any) -> str:
     """Convert a markdown string to HTML and return HTML as a Unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
     basic use case.  It initializes an instance of `Markdown`, loads the
     necessary extensions and runs the parser on the given text.
 
+    Arguments:
+        text: Markdown formatted text as Unicode or ASCII string.
+
     Keyword arguments:
-        text (str): Markdown formatted text as Unicode or ASCII string.
-        **other (Any): Any arguments accepted by the Markdown class.
+        **kwargs: Any arguments accepted by the Markdown class.
 
     Returns:
         An HTML document as a string.
@@ -375,7 +375,7 @@ def markdown(text, **kwargs) -> str:
     return md.convert(text)
 
 
-def markdownFromFile(**kwargs):
+def markdownFromFile(**kwargs: Any):
     """Read markdown code from a file and write it to a file or a stream.
 
     This is a shortcut function which initializes an instance of `Markdown`,
@@ -385,7 +385,9 @@ def markdownFromFile(**kwargs):
         input (str | TextIO): A file name or readable object.
         output (str | TextIO): A file name or writable object.
         encoding (str): Encoding of input and output.
-        **other (Any): Any arguments accepted by the `Markdown` class.
+
+    Arguments:
+        **kwargs: Any arguments accepted by the `Markdown` class.
 
     """
     md = Markdown(**kwargs)

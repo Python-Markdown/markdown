@@ -1,7 +1,6 @@
 /* Indentation. */
 div.doc-contents:not(.first) {
   padding-left: 25px;
-  border-left: .05rem solid #d0d0d0;
 }
 
 /* Mark external links as such. */

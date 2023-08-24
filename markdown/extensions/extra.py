@@ -20,7 +20,7 @@ under a different name. You could also edit the `extensions` global
 variable defined below, but be aware that such changes may be lost
 when you upgrade to any future version of Python-Markdown.
 
-See <https://Python-Markdown.github.io/extensions/extra>
+See https://Python-Markdown.github.io/extensions/extra
 for documentation.
 
 Copyright The Python Markdown Project

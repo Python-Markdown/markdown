@@ -1208,7 +1208,7 @@ class TestMdInHTML(TestCase):
 
 
 def load_tests(loader, tests, pattern):
-    ''' Ensure `TestHTMLBlocks` doesn't get run twice by excluding it here. '''
+    """ Ensure `TestHTMLBlocks` doesn't get run twice by excluding it here. """
     suite = TestSuite()
     for test_class in [TestDefaultwMdInHTML, TestMdInHTML, TestMarkdownInHTMLPostProcessor]:
         tests = loader.loadTestsFromTestCase(test_class)

@@ -1,4 +1,4 @@
-'''
+"""
 Legacy Em Extension for Python-Markdown
 =======================================
 
@@ -8,7 +8,7 @@ Copyright 2015-2018 The Python Markdown Project
 
 License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
-'''
+"""
 
 from . import Extension
 from ..inlinepatterns import UnderscoreProcessor, EmStrongItem, EM_STRONG2_RE, STRONG_EM2_RE

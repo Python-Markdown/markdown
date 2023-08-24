@@ -23,7 +23,6 @@ nav:
   - Library Reference: reference.md
   - Command Line: cli.md
   - Extensions: extensions/index.md
-  - API Reference: reference/
   - Officially Supported Extensions:
       - Abbreviations: extensions/abbreviations.md
       - Admonition: extensions/admonition.md
@@ -45,6 +44,7 @@ nav:
       - WikiLinks: extensions/wikilinks.md
   - Extension API: extensions/api.md
   - Test Tools: test_tools.md
+  - API Reference: reference/
   - Contributing to Python-Markdown: contributing.md
   - Changelog: changelog.md
   - Authors: authors.md

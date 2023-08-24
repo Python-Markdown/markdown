@@ -5,7 +5,7 @@
 A Python-Markdown extension to treat newlines as hard breaks; like
 GitHub-flavored Markdown does.
 
-See <https://Python-Markdown.github.io/extensions/nl2br>
+See https://Python-Markdown.github.io/extensions/nl2br
 for documentation.
 
 Original code Copyright 2011 [Brian Neal](https://deathofagremmie.com/)

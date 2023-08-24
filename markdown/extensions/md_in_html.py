@@ -5,7 +5,7 @@ Python-Markdown Markdown in HTML Extension
 An implementation of [PHP Markdown Extra](http://michelf.com/projects/php-markdown/extra/)'s
 parsing of Markdown syntax in raw HTML.
 
-See <https://Python-Markdown.github.io/extensions/raw_html>
+See https://Python-Markdown.github.io/extensions/raw_html
 for documentation.
 
 Copyright The Python Markdown Project

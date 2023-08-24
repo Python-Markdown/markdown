@@ -4,11 +4,10 @@ Fenced Code Extension for Python Markdown
 
 This extension adds Fenced Code Blocks to Python-Markdown.
 
-See <https://Python-Markdown.github.io/extensions/fenced_code_blocks>
+See https://Python-Markdown.github.io/extensions/fenced_code_blocks
 for documentation.
 
 Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
-
 
 All changes Copyright 2008-2014 The Python Markdown Project
 
