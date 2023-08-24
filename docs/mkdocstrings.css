@@ -24,3 +24,8 @@ a.external:hover::after,
 a.autorefs-external:hover::after {
   background-color: #e32e00;
 }
+
+/* Cancel codehilite background in headings. */
+.doc-heading .codehilite {
+  background: unset;
+}
