@@ -69,7 +69,7 @@ class AdmonitionProcessor(BlockProcessor):
 
         sibling = self.lastChild(parent)
 
-        if sibling is None or sibling.get('class', '').find(self.CLASSNAME) == -1:
+        if sibling is None or sibling.tag != 'div' or sibling.get('class', '').find(self.CLASSNAME) == -1:
             sibling = None
         else:
             # If the last child is a list and the content is sufficiently indented

@@ -243,3 +243,23 @@ class TestAdmonition(TestCase):
             ),
             extensions=['admonition']
         )
+
+    def test_admonition_first_indented(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                !!! danger "This is not"
+                        one long admonition title
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition danger">
+                <p class="admonition-title">This is not</p>
+                <pre><code>one long admonition title
+                </code></pre>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
