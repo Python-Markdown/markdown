@@ -28,12 +28,10 @@ links to the header, placing them after all other header content.
 * Update the list of empty HTML tags (#1353).
 * Add customizable TOC title class to TOC extension (#1293).
 
-## [3.4.5] -- ????-??-??
-
 ### Fixed
 
 * Fix a corner case in admonitions where if an indented code block was provided
-  as the first block, the output would be malformed.
+  as the first block, the output would be malformed (#1329).
 
 ## [3.4.4] -- 2023-07-25
 
