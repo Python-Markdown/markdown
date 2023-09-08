@@ -11,7 +11,7 @@
 # Currently maintained by Waylan Limberg (https://github.com/waylan),
 # Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
 
-# Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+# Copyright 2007-2023 The Python Markdown Project (v. 1.7 and later)
 # Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 # Copyright 2004 Manfred Stienstra (the original version)
 
@@ -26,6 +26,8 @@ that they need to implement a "run" method. However, they are run after core
 processing.
 
 """
+
+from __future__ import annotations
 
 from collections import OrderedDict
 from . import util

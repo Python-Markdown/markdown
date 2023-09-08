@@ -79,6 +79,7 @@ SmartyPants license:
 
 """
 
+from __future__ import annotations
 
 from . import Extension
 from ..inlinepatterns import HtmlInlineProcessor, HTML_RE

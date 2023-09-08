@@ -11,7 +11,7 @@
 # Currently maintained by Waylan Limberg (https://github.com/waylan),
 # Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
 
-# Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+# Copyright 2007-2023 The Python Markdown Project (v. 1.7 and later)
 # Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 # Copyright 2004 Manfred Stienstra (the original version)
 
@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import re
 import xml.etree.ElementTree as etree
-from typing import TYPE_CHECKING, Sequence
+from typing import Sequence
 from . import util
 from . import inlinepatterns
 
@@ -236,7 +236,7 @@ class InlineProcessor(Treeprocessor):
 
         return result
 
-    def __applyPattern(self, pattern: str, data: srt, patternIndex: int, startIndex: int = 0) -> tuple[str, bool, int]:
+    def __applyPattern(self, pattern: str, data: str, patternIndex: int, startIndex: int = 0) -> tuple[str, bool, int]:
         """
         Check if the line fits the pattern, create the necessary
         elements, add it to `stashed_nodes`.

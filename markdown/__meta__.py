@@ -11,7 +11,7 @@
 # Currently maintained by Waylan Limberg (https://github.com/waylan),
 # Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
 
-# Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+# Copyright 2007-2023 The Python Markdown Project (v. 1.7 and later)
 # Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 # Copyright 2004 Manfred Stienstra (the original version)
 
@@ -24,6 +24,10 @@
 #     (1, 2, 0, 'beta', 2) => "1.2b2"
 #     (1, 2, 0, 'rc', 4) => "1.2rc4"
 #     (1, 2, 0, 'final', 0) => "1.2"
+
+from __future__ import annotations
+
+
 __version_info__ = (3, 4, 4, 'final', 0)
 
 

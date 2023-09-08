@@ -11,7 +11,7 @@
 # Currently maintained by Waylan Limberg (https://github.com/waylan),
 # Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
 
-# Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+# Copyright 2007-2023 The Python Markdown Project (v. 1.7 and later)
 # Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 # Copyright 2004 Manfred Stienstra (the original version)
 
@@ -30,6 +30,8 @@ backward compatibility. New documents should be authored using `attr_lists`. How
 numerous documents exist which have been using the old attribute format for many
 years. This extension can be used to continue to render those documents correctly.
 """
+
+from __future__ import annotations
 
 import re
 from markdown.treeprocessors import Treeprocessor, isString

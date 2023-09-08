@@ -29,6 +29,8 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
+from __future__ import annotations
+
 from . import Extension
 
 extensions = [

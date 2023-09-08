@@ -25,11 +25,6 @@ a.autorefs-external:hover::after {
   background-color: #e32e00;
 }
 
-/* Cancel codehilite background in headings. */
-.doc-heading .codehilite {
-  background: unset;
-}
-
 /* Customize symbol names. */
 code.doc-symbol-attribute::after {
   content: "Attr";

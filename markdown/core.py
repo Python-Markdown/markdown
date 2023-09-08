@@ -11,7 +11,7 @@
 # Currently maintained by Waylan Limberg (https://github.com/waylan),
 # Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
 
-# Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+# Copyright 2007-2023 The Python Markdown Project (v. 1.7 and later)
 # Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 # Copyright 2004 Manfred Stienstra (the original version)
 
@@ -56,12 +56,15 @@ class Markdown:
 
         Keyword arguments:
             extensions (list[str | Extension]): A list of extensions.
-                If an item is an instance of a subclass of `markdown.extension.Extension`, the instance will be used
-                as-is. If an item is of type string, first an entry point will be loaded. If that fails, the string is
-                assumed to use Python dot notation (`path.to.module:ClassName`) to load a `markdown.Extension` subclass.
+                If an item is an instance of a subclass of `markdown.extension.Extension`,
+                the instance will be used as-is.
+                If an item is of type string, first an entry point will be loaded.
+                If that fails, the string is assumed to use Python dot notation (`path.to.module:ClassName`)
+                to load a `markdown.Extension` subclass.
                 If no class is specified, then a `makeExtension` function is called within the specified module.
             extension_configs (dict[str, dict[str, Any]]): Configuration settings for extensions.
             output_format (str): Format of output. Supported formats are:
+
                 * `xhtml`: Outputs XHTML style tags. Default.
                 * `html`: Outputs HTML style tags.
             tab_length (int): Length of tabs in the source. Default: 4
@@ -279,7 +282,12 @@ class Markdown:
 
         return output.strip()
 
-    def convertFile(self, input: str | TextIO | None = None, output: str | TextIO | None = None, encoding: str | None = None):
+    def convertFile(
+        self,
+        input: str | TextIO | None = None,
+        output: str | TextIO | None = None,
+        encoding: str | None = None,
+    ):
         """Converts a markdown file and returns the HTML as a Unicode string.
 
         Decodes the file using the provided encoding (defaults to `utf-8`),

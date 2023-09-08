@@ -14,6 +14,7 @@ All changes Copyright 2008-2014 The Python Markdown Project
 License: [BSD](https://opensource.org/licenses/bsd-license.php)
 """
 
+from __future__ import annotations
 
 from textwrap import dedent
 from . import Extension

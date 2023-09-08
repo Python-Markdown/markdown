@@ -34,6 +34,8 @@
 # OF THIS SOFTWARE.
 # --------------------------------------------------------------------
 
+from __future__ import annotations
+
 from xml.etree.ElementTree import ProcessingInstruction
 from xml.etree.ElementTree import Comment, ElementTree, QName, HTML_EMPTY
 import re
