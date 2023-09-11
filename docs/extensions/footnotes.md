@@ -34,7 +34,7 @@ A footnote label must start with a caret `^` and may contain any inline text
 (including spaces) between a set of square brackets `[]`. Only the first
 caret has any special meaning.
 
-A footnote content must start with the label followed by a colon and at least
+Footnote content must start with the label followed by a colon and at least
 one space. The label used to define the content must exactly match the label used
 in the body (including capitalization and white space). The content would then
 follow the label either on the same line or on the next line. The content may
@@ -59,6 +59,13 @@ is indented consistently and any errors are more easily discernible by the autho
 
     A final paragraph.
 ```
+
+In the output, footnotes are represented by superscript text in the places where 
+the labels occur. Normally, the superscript text is just the footnote number 
+but this can be configured (see below).
+
+Footnotes are numbered in the order of the footnote content, not the occurrence of 
+the labels in the document text.
 
 Usage
 -----
