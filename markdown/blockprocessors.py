@@ -18,7 +18,7 @@
 # License: BSD (see LICENSE.md for details).
 
 """
-CORE MARKDOWN BLOCKPARSER
+CORE MARKDOWN BLOCK PARSER
 ===========================================================================
 
 This parser handles basic parsing of Markdown blocks.  It doesn't concern
@@ -27,7 +27,7 @@ catches blocks, lists, quotes, etc.
 
 The `BlockParser` is made up of a bunch of `BlockProcessors`, each handling a
 different type of block. Extensions may add/replace/remove `BlockProcessors`
-as they need to alter how markdown blocks are parsed.
+as they need to alter how Markdown blocks are parsed.
 """
 
 from __future__ import annotations
@@ -103,7 +103,7 @@ class BlockProcessor:
                 lines[i] = lines[i][self.tab_length*level:]
         return '\n'.join(lines)
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: list[str]):
         """ Test for block type. Must be overridden by subclasses.
 
         As the parser loops through processors, it will call the `test`
@@ -115,35 +115,32 @@ class BlockProcessor:
         depending on the parent of the block (i.e. inside a list), the parent
         `etree` element is also provided and may be used as part of the test.
 
-        Keywords:
-
-        * ``parent``: An `etree` element which will be the parent of the block.
-        * ``block``: A block of text from the source which has been split at
-            blank lines.
+        Keyword arguments:
+            parent: An `etree` element which will be the parent of the block.
+            block: A block of text from the source which has been split at blank lines.
         """
         pass  # pragma: no cover
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]):
         """ Run processor. Must be overridden by subclasses.
 
         When the parser determines the appropriate type of a block, the parser
-        will call the corresponding processor's ``run`` method. This method
+        will call the corresponding processor's `run` method. This method
         should parse the individual lines of the block and append them to
         the `etree`.
 
-        Note that both the ``parent`` and ``etree`` keywords are pointers
+        Note that both the `parent` and `etree` keywords are pointers
         to instances of the objects which should be edited in place. Each
         processor must make changes to the existing objects as there is no
         mechanism to return new/different objects to replace them.
 
         This means that this method should be adding `SubElements` or adding text
-        to the parent, and should remove (``pop``) or add (``insert``) items to
+        to the parent, and should remove (`pop`) or add (`insert`) items to
         the list of blocks.
 
-        Keywords:
-
-        * ``parent``: An `etree` element which is the parent of the current block.
-        * ``blocks``: A list of all remaining blocks of the document.
+        Keyword arguments:
+            parent: An `etree` element which is the parent of the current block.
+            blocks: A list of all remaining blocks of the document.
         """
         pass  # pragma: no cover
 
@@ -194,7 +191,7 @@ class ListIndentProcessor(BlockProcessor):
             # The sibling is a `li`. Use it as parent.
             self.parser.parseBlocks(sibling, [block])
         elif len(sibling) and sibling[-1].tag in self.ITEM_TYPES:
-            # The parent is a list (``ol`` or ``ul``) which has children.
+            # The parent is a list (`ol` or `ul`) which has children.
             # Assume the last child `li` is the parent of this block.
             if sibling[-1].text:
                 # If the parent `li` has text, that text needs to be moved to a `p`
@@ -215,7 +212,7 @@ class ListIndentProcessor(BlockProcessor):
         self.parser.parseBlocks(li, [block])
 
     def get_level(self, parent, block):
-        """ Get level of indent based on list level. """
+        """ Get level of indentation based on list level. """
         # Get indent level
         m = self.INDENT_RE.match(block)
         if m:
@@ -290,7 +287,7 @@ class BlockQuoteProcessor(BlockProcessor):
             before = block[:m.start()]  # Lines before blockquote
             # Pass lines before blockquote in recursively for parsing first.
             self.parser.parseBlocks(parent, [before])
-            # Remove ``> `` from beginning of each line.
+            # Remove `> ` from beginning of each line.
             block = '\n'.join(
                 [self.clean(line) for line in block[m.start():].split('\n')]
             )
@@ -308,7 +305,7 @@ class BlockQuoteProcessor(BlockProcessor):
         self.parser.state.reset()
 
     def clean(self, line):
-        """ Remove ``>`` from beginning of a line. """
+        """ Remove `>` from beginning of a line. """
         m = self.RE.match(line)
         if line.strip() == ">":
             return ""
@@ -333,7 +330,7 @@ class OListProcessor(BlockProcessor):
 
     def __init__(self, parser):
         super().__init__(parser)
-        # Detect an item (``1. item``). ``group(1)`` contains contents of item.
+        # Detect an item (`1. item`). `group(1)` contains contents of item.
         self.RE = re.compile(r'^[ ]{0,%d}\d+\.[ ]+(.*)' % (self.tab_length - 1))
         # Detect items on secondary lines. they can be of either list type.
         self.CHILD_RE = re.compile(r'^[ ]{0,%d}((\d+\.)|[*+-])[ ]+(.*)' %
@@ -438,7 +435,7 @@ class UListProcessor(OListProcessor):
 
     def __init__(self, parser):
         super().__init__(parser)
-        # Detect an item (``1. item``). ``group(1)`` contains contents of item.
+        # Detect an item (`1. item`). `group(1)` contains contents of item.
         self.RE = re.compile(r'^[ ]{0,%d}[*+-][ ]+(.*)' % (self.tab_length - 1))
 
 
@@ -484,7 +481,7 @@ class SetextHeaderProcessor(BlockProcessor):
 
     def run(self, parent, blocks):
         lines = blocks.pop(0).split('\n')
-        # Determine level. ``=`` is 1 and ``-`` is 2.
+        # Determine level. `=` is 1 and `-` is 2.
         if lines[1].startswith('='):
             level = 1
         else:

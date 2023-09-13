@@ -42,7 +42,8 @@ for path in modules:
     elif parts[-1].startswith("_"):
         continue
 
-    nav[tuple(parts)] = doc_path.as_posix()
+    nav_parts = [f"<code>{part}</code>" for part in parts]
+    nav[nav_parts] = doc_path.as_posix()
 
     with mkdocs_gen_files.open(full_doc_path, "w") as fd:
         ident = ".".join(parts)

@@ -34,8 +34,8 @@ except ImportError:  # pragma: no cover
 def parse_hl_lines(expr):
     """Support our syntax for emphasizing certain lines of code.
 
-    expr should be like '1 2' to emphasize lines 1 and 2 of a code block.
-    Returns a list of ints, the line numbers to emphasize.
+    `expr` should be like '1 2' to emphasize lines 1 and 2 of a code block.
+    Returns a list of integers, the line numbers to emphasize.
     """
     if not expr:
         return []
@@ -52,6 +52,7 @@ class CodeHilite:
     Determine language of source code, and pass it on to the Pygments highlighter.
 
     Usage:
+
         code = CodeHilite(src=some_code, lang='python')
         html = code.hilite()
 
@@ -85,6 +86,7 @@ class CodeHilite:
     This option has no effect to the Pygments' builtin formatters.
 
     Advanced Usage:
+
         code = CodeHilite(
             src = some_code,
             lang = 'php',

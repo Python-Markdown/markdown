@@ -111,7 +111,7 @@ The actual regular expressions for patterns
 
 NOIMG = r'(?<!\!)'
 
-# `e=f()` or ``e=f("`")``
+# `e=f()` or `e=f("`")`
 BACKTICK_RE = r'(?:(?<!\\)((?:\\{2})+)(?=`+)|(?<!\\)(`+)(.+?)(?<!`)\2(?!`))'
 
 # `\<`

@@ -32,7 +32,7 @@ __version_info__ = (3, 4, 4, 'final', 0)
 
 
 def _get_version(version_info):
-    " Returns a PEP 440-compliant version number from version_info. "
+    " Returns a PEP 440-compliant version number from `version_info`. "
     assert len(version_info) == 5
     assert version_info[3] in ('dev', 'alpha', 'beta', 'rc', 'final')
 

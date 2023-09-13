@@ -81,11 +81,11 @@ class BlockParser:
         self.md = md
 
     def parseDocument(self, lines: Sequence[str]) -> etree.ElementTree:
-        """ Parse a markdown document into an ElementTree.
+        """ Parse a Markdown document into an `ElementTree`.
 
-        Given a list of lines, an ElementTree object (not just a parent
-        Element) is created and the root element is passed to the parser
-        as the parent. The ElementTree object is returned.
+        Given a list of lines, an `ElementTree` object (not just a parent
+        `Element`) is created and the root element is passed to the parser
+        as the parent. The `ElementTree` object is returned.
 
         This should only be called on an entire document, not pieces.
 
@@ -101,7 +101,7 @@ class BlockParser:
         return etree.ElementTree(self.root)
 
     def parseChunk(self, parent: etree.Element, text: str):
-        """ Parse a chunk of markdown text and attach to given `etree` node.
+        """ Parse a chunk of Markdown text and attach to given `etree` node.
 
         While the `text` argument is generally assumed to contain multiple
         blocks which will be split on blank lines, it could contain only one
@@ -119,7 +119,7 @@ class BlockParser:
         self.parseBlocks(parent, text.split('\n\n'))
 
     def parseBlocks(self, parent: etree.Element, blocks: Sequence[str]):
-        """ Process blocks of markdown text and attach to given `etree` node.
+        """ Process blocks of Markdown text and attach to given `etree` node.
 
         Given a list of `blocks`, each `blockprocessor` is stepped through
         until there are no blocks left. While an extension could potentially
