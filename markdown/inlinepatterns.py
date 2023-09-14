@@ -72,7 +72,7 @@ try:  # pragma: no cover
 except ImportError:  # pragma: no cover
     import htmlentitydefs as entities
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
 
 

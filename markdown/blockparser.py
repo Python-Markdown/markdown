@@ -23,7 +23,7 @@ import xml.etree.ElementTree as etree
 from typing import TYPE_CHECKING, Sequence
 from . import util
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
 
 
