@@ -41,7 +41,7 @@ logger = logging.getLogger('MARKDOWN')
 
 
 class Markdown:
-    """Convert Markdown to HTML."""
+    """A parser which converts Markdown to HTML."""
 
     doc_tag = "div"     # Element used to wrap document - later removed
 
@@ -54,14 +54,16 @@ class Markdown:
         """
         Creates a new Markdown instance.
 
-        Keyword arguments:
-            extensions (list[str | Extension]): A list of extensions.
+        Keyword Arguments:
+            extensions (list[Extension | str]): A list of extensions.
+
                 If an item is an instance of a subclass of `markdown.extension.Extension`,
                 the instance will be used as-is.
-                If an item is of type string, first an entry point will be loaded.
+                If an item is of type `str`, first an entry point of that name will be loaded.
                 If that fails, the string is assumed to use Python dot notation (`path.to.module:ClassName`)
-                to load a `markdown.Extension` subclass.
-                If no class is specified, then a `makeExtension` function is called within the specified module.
+                which points to a `markdown.Extension` subclass.
+                If no class is specified (`path.to.module`), then a `makeExtension` function is called within
+                the specified module.
             extension_configs (dict[str, dict[str, Any]]): Configuration settings for extensions.
             output_format (str): Format of output. Supported formats are:
 
@@ -91,8 +93,22 @@ class Markdown:
         self.set_output_format(kwargs.get('output_format', 'xhtml'))
         self.reset()
 
-    def build_parser(self):
-        """ Build the parser from the various parts. """
+    def build_parser(self) -> Markdown:
+        """
+        Build the parser from the various parts.
+
+        Assigns a value to each of the following attributes on the class instance:
+
+        * `Markdown.preprocessors` (`markdown.util.Registry`)
+        * `Markdown.parser` (`markdown.blockparser.BlockParser`)
+        * `Markdown.inlinePatterns` (`markdown.util.Registry`)
+        * `Markdown.treeprocessors` (`markdown.util.Registry`)
+        * `Markdown.postprocessors` (`markdown.util.Registry`)
+
+        This method could be redefined in a subclass to build a custom parser which is made up of a different
+        combination of processors and patterns.
+
+        """
         self.preprocessors = build_preprocessors(self)
         self.parser = build_block_parser(self)
         self.inlinePatterns = build_inlinepatterns(self)
@@ -100,9 +116,9 @@ class Markdown:
         self.postprocessors = build_postprocessors(self)
         return self
 
-    def registerExtensions(self, extensions: list[str | Extension], configs: dict[str, dict[str, Any]]) -> Markdown:
+    def registerExtensions(self, extensions: list[Extension | str], configs: dict[str, dict[str, Any]]) -> Markdown:
         """
-        Register extensions with this instance of Markdown.
+        Load a list of extensions with this instance of the `Markdown` class.
 
         Arguments:
             extensions: A list of extensions, which can either be strings or objects.
@@ -127,9 +143,16 @@ class Markdown:
                 )
         return self
 
-    def build_extension(self, ext_name, configs):
+    def build_extension(self, ext_name: str, configs: dict[str, Any]) -> Extension:
         """
-        Build extension from a string name, then return an instance.
+        Build extension from a string name, then return an instance using the given `configs`.
+
+        Arguments:
+            ext_name: Name of extension as a string.
+            configs: Configuration settings for extension.
+
+        Returns:
+            An instance of the extension with the given configuration settings.
 
         First attempt to load an entry point. The string name must be registered as an entry point in the
         `markdown.extensions` group which points to a subclass of the `markdown.extensions.Extension` class.
@@ -173,14 +196,27 @@ class Markdown:
                 e.args = (message,) + e.args[1:]
                 raise
 
-    def registerExtension(self, extension):
-        """ This gets called by the extension """
+    def registerExtension(self, extension: Extension) -> Markdown:
+        """
+        Register an extension as having a resettable state.
+
+        Arguments:
+            extension: An instance of the extension to register.
+
+        This should get called once by an extension during setup. A "registered" extension's
+        `reset` method is called by `Markdown.reset()`. Not all extensions have or need a
+        resettable state, and so it should not be assumed that all extensions are "registered."
+
+        """
         self.registeredExtensions.append(extension)
         return self
 
-    def reset(self):
+    def reset(self) -> Markdown:
         """
-        Resets all state variables so that we can start with a new text.
+        Resets all state variables to prepare the parser instance for new input.
+
+        Called once upon creation of a class instance. Should be called manually between calls
+        to `Markdown.convert`.
         """
         self.htmlStash.reset()
         self.references.clear()
@@ -191,8 +227,14 @@ class Markdown:
 
         return self
 
-    def set_output_format(self, format):
-        """ Set the output format for the class instance. """
+    def set_output_format(self, format: str) -> Markdown:
+        """
+        Set the output format for the class instance.
+
+        Arguments:
+            format (str): Must be a known value in `Markdown.output_formats`.
+
+        """
         self.output_format = format.lower().rstrip('145')  # ignore number
         try:
             self.serializer = self.output_formats[self.output_format]
@@ -206,19 +248,30 @@ class Markdown:
             raise
         return self
 
-    def is_block_level(self, tag):
-        """Check if the tag is a block level HTML tag."""
+    # Note: the `tag` argument is not type annotated as ElementTree uses many various objects as tags.
+    # As there is no standardization in ElementTree, the type of a given tag is unpredictable.
+    def is_block_level(self, tag) -> bool:
+        """
+        Check if the given tag is a block level HTML tag.
+
+        Returns `True` for any string listed in `Markdown.block_level_elements`. A `tag` which is
+        not a string always returns `False`.
+
+        """
         if isinstance(tag, str):
             return tag.lower().rstrip('/') in self.block_level_elements
         # Some ElementTree tags are not strings, so return False.
         return False
 
-    def convert(self, source: str):
+    def convert(self, source: str) -> str:
         """
-        Convert markdown to serialized XHTML or HTML.
+        Convert a Markdown string to a string in the specified output format.
 
         Arguments:
-            source: Source text as a Unicode string.
+            source: Markdown formatted text as Unicode or ASCII string.
+
+        Returns:
+            A string in the specified output format.
 
         Markdown processing takes place in five steps:
 
@@ -287,8 +340,9 @@ class Markdown:
         input: str | TextIO | None = None,
         output: str | TextIO | None = None,
         encoding: str | None = None,
-    ):
-        """Converts a markdown file and returns the HTML as a Unicode string.
+    ) -> Markdown:
+        """
+        Converts a Markdown file and returns the HTML as a Unicode string.
 
         Decodes the file using the provided encoding (defaults to `utf-8`),
         passes the file content to markdown, and outputs the html to either
@@ -363,7 +417,8 @@ Those are the two functions we really mean to export: `markdown()` and
 
 
 def markdown(text: str, **kwargs: Any) -> str:
-    """Convert a markdown string to HTML and return HTML as a Unicode string.
+    """
+    Convert a markdown string to HTML and return HTML as a Unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
     basic use case.  It initializes an instance of `Markdown`, loads the
@@ -376,7 +431,7 @@ def markdown(text: str, **kwargs: Any) -> str:
         **kwargs: Any arguments accepted by the Markdown class.
 
     Returns:
-        An HTML document as a string.
+        A string in the specified output format.
 
     """
     md = Markdown(**kwargs)
@@ -384,7 +439,8 @@ def markdown(text: str, **kwargs: Any) -> str:
 
 
 def markdownFromFile(**kwargs: Any):
-    """Read markdown code from a file and write it to a file or a stream.
+    """
+    Read Markdown text from a file and write output to a file or a stream.
 
     This is a shortcut function which initializes an instance of `Markdown`,
     and calls the `convertFile` method rather than `convert`.
@@ -393,8 +449,6 @@ def markdownFromFile(**kwargs: Any):
         input (str | TextIO): A file name or readable object.
         output (str | TextIO): A file name or writable object.
         encoding (str): Encoding of input and output.
-
-    Arguments:
         **kwargs: Any arguments accepted by the `Markdown` class.
 
     """
