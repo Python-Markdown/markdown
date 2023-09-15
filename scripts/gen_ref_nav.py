@@ -14,7 +14,6 @@ per_module_options = {
 
 modules = [
     Path("markdown", "__init__.py"),
-    Path("markdown", "core.py"),
     Path("markdown", "preprocessors.py"),
     Path("markdown", "blockparser.py"),
     Path("markdown", "blockprocessors.py"),
