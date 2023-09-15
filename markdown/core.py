@@ -58,12 +58,9 @@ class Markdown:
             extensions (list[Extension | str]): A list of extensions.
 
                 If an item is an instance of a subclass of `markdown.extension.Extension`,
-                the instance will be used as-is.
-                If an item is of type `str`, first an entry point of that name will be loaded.
-                If that fails, the string is assumed to use Python dot notation (`path.to.module:ClassName`)
-                which points to a `markdown.Extension` subclass.
-                If no class is specified (`path.to.module`), then a `makeExtension` function is called within
-                the specified module.
+                the instance will be used as-is. If an item is of type `str`, it is passed
+                to `Markdown.build_extension` with its corresponding `extension_configs` and
+                the returned instance  of `markdown.extension.Extension` is used.
             extension_configs (dict[str, dict[str, Any]]): Configuration settings for extensions.
             output_format (str): Format of output. Supported formats are:
 
@@ -118,11 +115,16 @@ class Markdown:
 
     def registerExtensions(self, extensions: list[Extension | str], configs: dict[str, dict[str, Any]]) -> Markdown:
         """
-        Load a list of extensions with this instance of the `Markdown` class.
+        Load a list of extensions into an instance of the `Markdown` class.
 
         Arguments:
-            extensions: A list of extensions, which can either be strings or objects.
-            configs: A dictionary mapping extension names to `configs` options.
+            extensions (list[Extension | str]): A list of extensions.
+
+                If an item is an instance of a subclass of `markdown.extension.Extension`,
+                the instance will be used as-is. If an item is of type `str`, it is passed
+                to `Markdown.build_extension` with its corresponding `configs` and the
+                returned instance  of `markdown.extension.Extension` is used.
+            configs (dict[str, dict[str, Any]]): Configuration settings for extensions.
 
         """
         for ext in extensions:
