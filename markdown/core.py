@@ -41,7 +41,29 @@ logger = logging.getLogger('MARKDOWN')
 
 
 class Markdown:
-    """A parser which converts Markdown to HTML."""
+    """
+    A parser which converts Markdown to HTML.
+
+    Attributes:
+        Markdown.tab_length (int): The number of spaces which correspond to a single tab. Default: `4`
+        Markdown.ESCAPED_CHARS (list[str]): List of characters which get the backslash escape treatment.
+        Markdown.block_level_elements (list[str]): List of HTML tags which get treated as block-level elements.
+        Markdown.registeredExtensions (list[Extension]): List of extensions which have called
+            [`markdown.Markdown.registerExtension`][].
+        Markdown.doc_tag (str): Element used to wrap document. Default: `div`.
+        Markdown.stripTopLevelTags (bool): Indicates whether the `doc_tag` should be removed. Default: 'True'.
+        Markdown.references: A list of references found in a parsed document.
+        Markdown.htmlStash (util.HtmlStash): The instance of the `HtmlStash` used by an instance of this class.
+        Markdown.output_formats (dict[str, Callable[xml.etree.ElementTree.Element]]): A `dict` of known output
+             formats and their respective serializers. Each serializer must be a callable which accepts an
+            [`Element`][xml.etree.ElementTree.Element] and returns a `str`.
+        Markdown.preprocessors (util.Registry): A collection of [`preprocessors`][markdown.preprocessors].
+        Markdown.parser (blockparser.BlockParser): A collection of [`blockprocessors`][markdown.blockprocessors].
+        Markdown.inlinePatterns (util.Registry): A collection of [`inlinepatterns`][markdown.inlinepatterns].
+        Markdown.treeprocessors (util.Registry): A collection of [`treeprocessors`][markdown.treeprocessors].
+        Markdown.postprocessors (util.Registry): A collection of [`postprocessors`][markdown.postprocessors].
+
+    """
 
     doc_tag = "div"     # Element used to wrap document - later removed
 
@@ -67,7 +89,7 @@ class Markdown:
 
                 * `xhtml`: Outputs XHTML style tags. Default.
                 * `html`: Outputs HTML style tags.
-            tab_length (int): Length of tabs in the source. Default: 4
+            tab_length (int): Length of tabs in the source. Default: `4`
 
         """
 
@@ -79,7 +101,7 @@ class Markdown:
         self.block_level_elements = BLOCK_LEVEL_ELEMENTS.copy()
 
         self.registeredExtensions = []
-        self.docType = ""
+        self.docType = ""  # TODO: Maybe delete this. It does not appear to be used anymore.
         self.stripTopLevelTags = True
 
         self.build_parser()
@@ -97,11 +119,16 @@ class Markdown:
 
         Assigns a value to each of the following attributes on the class instance:
 
-        * `Markdown.preprocessors` ([`markdown.util.Registry`][])
-        * `Markdown.parser` ([`markdown.blockparser.BlockParser`][])
-        * `Markdown.inlinePatterns` ([`markdown.util.Registry`][])
-        * `Markdown.treeprocessors` ([`markdown.util.Registry`][])
-        * `Markdown.postprocessors` ([`markdown.util.Registry`][])
+        * **`Markdown.preprocessors`** ([`Registry`][markdown.util.Registry]) -- A collection of
+          [`preprocessors`][markdown.preprocessors].
+        * **`Markdown.parser`** ([`BlockParser`][markdown.blockparser.BlockParser]) -- A collection of
+          [`blockprocessors`][markdown.blockprocessors].
+        * **`Markdown.inlinePatterns`** ([`Registry`][markdown.util.Registry]) -- A collection of
+          [`inlinepatterns`][markdown.inlinepatterns].
+        * **`Markdown.treeprocessors`** ([`Registry`][markdown.util.Registry]) -- A collection of
+          [`treeprocessors`][markdown.treeprocessors].
+        * **`Markdown.postprocessors`** ([`Registry`][markdown.util.Registry]) -- A collection of
+          [`postprocessors`][markdown.postprocessors].
 
         This method could be redefined in a subclass to build a custom parser which is made up of a different
         combination of processors and patterns.
@@ -285,8 +312,8 @@ class Markdown:
            [`ElementTree`][xml.etree.ElementTree.ElementTree] object. One such `treeprocessor`
            ([`markdown.treeprocessors.InlineProcessor`][]) runs [`inlinepatterns`][markdown.inlinepatterns]
            against the [`ElementTree`][xml.etree.ElementTree.ElementTree] object, parsing inline markup.
-        4. Some post-processors are run against the text after the [`ElementTree`][xml.etree.ElementTree.ElementTree]
-           object has been serialized into text.
+        4. Some [`postprocessors`][markdown.postprocessors] are run against the text after the
+           [`ElementTree`][xml.etree.ElementTree.ElementTree] object has been serialized into text.
         5. The output is returned as a string.
 
         """
