@@ -57,10 +57,10 @@ class Markdown:
         Keyword Arguments:
             extensions (list[Extension | str]): A list of extensions.
 
-                If an item is an instance of a subclass of `markdown.extension.Extension`,
+                If an item is an instance of a subclass of [`markdown.extensions.Extension`][],
                 the instance will be used as-is. If an item is of type `str`, it is passed
-                to `Markdown.build_extension` with its corresponding `extension_configs` and
-                the returned instance  of `markdown.extension.Extension` is used.
+                to [`build_extension`][markdown.Markdown.build_extension] with its corresponding `extension_configs` and
+                the returned instance  of [`markdown.extensions.Extension`][] is used.
             extension_configs (dict[str, dict[str, Any]]): Configuration settings for extensions.
             output_format (str): Format of output. Supported formats are:
 
@@ -96,11 +96,11 @@ class Markdown:
 
         Assigns a value to each of the following attributes on the class instance:
 
-        * `Markdown.preprocessors` (`markdown.util.Registry`)
-        * `Markdown.parser` (`markdown.blockparser.BlockParser`)
-        * `Markdown.inlinePatterns` (`markdown.util.Registry`)
-        * `Markdown.treeprocessors` (`markdown.util.Registry`)
-        * `Markdown.postprocessors` (`markdown.util.Registry`)
+        * `Markdown.preprocessors` ([`markdown.util.Registry`][])
+        * `Markdown.parser` ([`markdown.blockparser.BlockParser`][])
+        * `Markdown.inlinePatterns` ([`markdown.util.Registry`][])
+        * `Markdown.treeprocessors` ([`markdown.util.Registry`][])
+        * `Markdown.postprocessors` ([`markdown.util.Registry`][])
 
         This method could be redefined in a subclass to build a custom parser which is made up of a different
         combination of processors and patterns.
@@ -120,10 +120,10 @@ class Markdown:
         Arguments:
             extensions (list[Extension | str]): A list of extensions.
 
-                If an item is an instance of a subclass of `markdown.extension.Extension`,
+                If an item is an instance of a subclass of [`markdown.extensions.Extension`][],
                 the instance will be used as-is. If an item is of type `str`, it is passed
-                to `Markdown.build_extension` with its corresponding `configs` and the
-                returned instance  of `markdown.extension.Extension` is used.
+                to [`build_extension`][markdown.Markdown.build_extension] with its corresponding `configs` and the
+                returned instance  of [`markdown.extensions.Extension`][] is used.
             configs (dict[str, dict[str, Any]]): Configuration settings for extensions.
 
         """
@@ -157,12 +157,12 @@ class Markdown:
             An instance of the extension with the given configuration settings.
 
         First attempt to load an entry point. The string name must be registered as an entry point in the
-        `markdown.extensions` group which points to a subclass of the `markdown.extensions.Extension` class.
+        `markdown.extensions` group which points to a subclass of the [`markdown.extensions.Extension`][] class.
         If multiple distributions have registered the same name, the first one found is returned.
 
         If no entry point is found, assume dot notation (`path.to.module:ClassName`). Load the specified class and
         return an instance. If no class is specified, import the module and call a `makeExtension` function and return
-        the `Extension` instance returned by that function.
+        the [`markdown.extensions.Extension`][] instance returned by that function.
         """
         configs = dict(configs)
 
@@ -206,7 +206,7 @@ class Markdown:
             extension: An instance of the extension to register.
 
         This should get called once by an extension during setup. A "registered" extension's
-        `reset` method is called by `Markdown.reset()`. Not all extensions have or need a
+        `reset` method is called by [`Markdown.reset()`][markdown.Markdown.reset]. Not all extensions have or need a
         resettable state, and so it should not be assumed that all extensions are "registered."
 
         """
@@ -218,7 +218,7 @@ class Markdown:
         Resets all state variables to prepare the parser instance for new input.
 
         Called once upon creation of a class instance. Should be called manually between calls
-        to `Markdown.convert`.
+        to [`Markdown.convert`][markdown.Markdown.convert].
         """
         self.htmlStash.reset()
         self.references.clear()
@@ -275,17 +275,18 @@ class Markdown:
         Returns:
             A string in the specified output format.
 
-        Markdown processing takes place in five steps:
+        Markdown parsing takes place in five steps:
 
-        1. A bunch of `preprocessors` munge the input text.
-        2. `BlockParser()` parses the high-level structural elements of the
-           pre-processed text into an `ElementTree`.
-        3. A bunch of `treeprocessors` are run against the `ElementTree`. One
-           such `treeprocessor` runs `InlinePatterns` against the `ElementTree`,
-           detecting inline markup.
-        4. Some post-processors are run against the text after the `ElementTree`
-           has been serialized into text.
-        5. The output is written to a string.
+        1. A bunch of [`preprocessors`][markdown.preprocessors] munge the input text.
+        2. A [`BlockParser`][markdown.blockparser.BlockParser] parses the high-level structural elements of the
+           pre-processed text into an [`ElementTree`][xml.etree.ElementTree.ElementTree] object.
+        3. A bunch of [`treeprocessors`][markdown.treeprocessors] are run against the
+           [`ElementTree`][xml.etree.ElementTree.ElementTree] object. One such `treeprocessor`
+           ([`markdown.treeprocessors.InlineProcessor`][]) runs [`inlinepatterns`][markdown.inlinepatterns]
+           against the [`ElementTree`][xml.etree.ElementTree.ElementTree] object, parsing inline markup.
+        4. Some post-processors are run against the text after the [`ElementTree`][xml.etree.ElementTree.ElementTree]
+           object has been serialized into text.
+        5. The output is returned as a string.
 
         """
 
@@ -347,10 +348,11 @@ class Markdown:
         Converts a Markdown file and returns the HTML as a Unicode string.
 
         Decodes the file using the provided encoding (defaults to `utf-8`),
-        passes the file content to markdown, and outputs the html to either
+        passes the file content to markdown, and outputs the HTML to either
         the provided stream or the file with provided name, using the same
-        encoding as the source file. The `xmlcharrefreplace` error handler is
-        used when encoding the output.
+        encoding as the source file. The
+        [`xmlcharrefreplace`](https://docs.python.org/3/library/codecs.html#error-handlers)
+        error handler is used when encoding the output.
 
         **Note:** This is the only place that decoding and encoding of Unicode
         takes place in Python-Markdown.  (All other code is Unicode-in /
@@ -422,8 +424,8 @@ def markdown(text: str, **kwargs: Any) -> str:
     """
     Convert a markdown string to HTML and return HTML as a Unicode string.
 
-    This is a shortcut function for `Markdown` class to cover the most
-    basic use case.  It initializes an instance of `Markdown`, loads the
+    This is a shortcut function for [`Markdown`][markdown.Markdown] class to cover the most
+    basic use case.  It initializes an instance of [`Markdown`][markdown.Markdown], loads the
     necessary extensions and runs the parser on the given text.
 
     Arguments:
@@ -444,8 +446,9 @@ def markdownFromFile(**kwargs: Any):
     """
     Read Markdown text from a file and write output to a file or a stream.
 
-    This is a shortcut function which initializes an instance of `Markdown`,
-    and calls the `convertFile` method rather than `convert`.
+    This is a shortcut function which initializes an instance of [`Markdown`][markdown.Markdown],
+    and calls the [`convertFile`][markdown.Markdown.convertFile] method rather than
+    [`convert`][markdown.Markdown.convert].
 
     Keyword arguments:
         input (str | TextIO): A file name or readable object.
