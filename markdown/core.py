@@ -234,7 +234,7 @@ class Markdown:
         Set the output format for the class instance.
 
         Arguments:
-            format (str): Must be a known value in `Markdown.output_formats`.
+            format: Must be a known value in `Markdown.output_formats`.
 
         """
         self.output_format = format.lower().rstrip('145')  # ignore number
