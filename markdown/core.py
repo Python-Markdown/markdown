@@ -52,7 +52,8 @@ class Markdown:
             [`markdown.Markdown.registerExtension`][].
         Markdown.doc_tag (str): Element used to wrap document. Default: `div`.
         Markdown.stripTopLevelTags (bool): Indicates whether the `doc_tag` should be removed. Default: 'True'.
-        Markdown.references: A list of references found in a parsed document.
+        Markdown.references (dict[str, tuple[str, str]]): A `dict` of link references found in a parsed document
+             where the key is the reference name and the value is a tuple of the URL and title.
         Markdown.htmlStash (util.HtmlStash): The instance of the `HtmlStash` used by an instance of this class.
         Markdown.output_formats (dict[str, Callable[xml.etree.ElementTree.Element]]): A `dict` of known output
              formats and their respective serializers. Each serializer must be a callable which accepts an
