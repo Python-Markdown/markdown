@@ -59,8 +59,9 @@ class Markdown:
 
                 If an item is an instance of a subclass of [`markdown.extensions.Extension`][],
                 the instance will be used as-is. If an item is of type `str`, it is passed
-                to [`build_extension`][markdown.Markdown.build_extension] with its corresponding `extension_configs` and
-                the returned instance  of [`markdown.extensions.Extension`][] is used.
+                to [`build_extension`][markdown.Markdown.build_extension] with its corresponding
+                `extension_configs` and the returned instance  of [`markdown.extensions.Extension`][]
+                is used.
             extension_configs (dict[str, dict[str, Any]]): Configuration settings for extensions.
             output_format (str): Format of output. Supported formats are:
 

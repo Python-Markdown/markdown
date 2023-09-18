@@ -18,9 +18,9 @@
 # License: BSD (see LICENSE.md for details).
 
 """
-Python-Markdown provides two public functions ([`markdown.markdown`][] and [`markdown.markdownFromFile`][]) both of which wrap
-the public class [`markdown.Markdown`][]. All submodules support these public functions and class and/or provide extension
-support.
+Python-Markdown provides two public functions ([`markdown.markdown`][] and [`markdown.markdownFromFile`][])
+both of which wrap the public class [`markdown.Markdown`][]. All submodules support these public functions
+and class and/or provide extension support.
 
 Modules:
     core: Core functionality.
