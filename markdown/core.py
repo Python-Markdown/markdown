@@ -49,7 +49,7 @@ class Markdown:
         Markdown.ESCAPED_CHARS (list[str]): List of characters which get the backslash escape treatment.
         Markdown.block_level_elements (list[str]): List of HTML tags which get treated as block-level elements.
         Markdown.registeredExtensions (list[Extension]): List of extensions which have called
-            [`markdown.Markdown.registerExtension`][].
+            [`markdown.Markdown.registerExtension`][] during setup.
         Markdown.doc_tag (str): Element used to wrap document. Default: `div`.
         Markdown.stripTopLevelTags (bool): Indicates whether the `doc_tag` should be removed. Default: 'True'.
         Markdown.references (dict[str, tuple[str, str]]): A `dict` of link references found in a parsed document
@@ -58,6 +58,8 @@ class Markdown:
         Markdown.output_formats (dict[str, Callable[xml.etree.ElementTree.Element]]): A `dict` of known output
              formats and their respective serializers. Each serializer must be a callable which accepts an
             [`Element`][xml.etree.ElementTree.Element] and returns a `str`.
+        Markdown.output_format (str): The output format for this instance of the class. Must correspond to one of
+             the keys in `Markdown.output_formats`. Default: `xhtml`.
         Markdown.preprocessors (util.Registry): A collection of [`preprocessors`][markdown.preprocessors].
         Markdown.parser (blockparser.BlockParser): A collection of [`blockprocessors`][markdown.blockprocessors].
         Markdown.inlinePatterns (util.Registry): A collection of [`inlinepatterns`][markdown.inlinepatterns].
