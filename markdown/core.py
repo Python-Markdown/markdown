@@ -55,11 +55,15 @@ class Markdown:
         Markdown.references (dict[str, tuple[str, str]]): A `dict` of link references found in a parsed document
              where the key is the reference name and the value is a tuple of the URL and title.
         Markdown.htmlStash (util.HtmlStash): The instance of the `HtmlStash` used by an instance of this class.
-        Markdown.output_formats (dict[str, Callable[xml.etree.ElementTree.Element]]): A `dict` of known output
-             formats and their respective serializers. Each serializer must be a callable which accepts an
+        Markdown.output_formats (dict[str, Callable[xml.etree.ElementTree.Element]]): A mapping of known output
+             formats by name and their respective serializers. Each serializer must be a callable which accepts an
             [`Element`][xml.etree.ElementTree.Element] and returns a `str`.
-        Markdown.output_format (str): The output format for this instance of the class. Must correspond to one of
-             the keys in `Markdown.output_formats`. Default: `xhtml`.
+        Markdown.output_format (str): The output format chosen for this instance of the class. It is set by
+            [`set_output_format`][markdown.Markdown.set_output_format] and must match one of the keys in
+            `output_formats`. Default: `xhtml`.
+        Markdown.serializer (Callable[xml.etree.ElementTree.Element]): The serializer chosen for this instance of the
+            class. It is set by [`set_output_format`][markdown.Markdown.set_output_format] and corresponds to the
+            chosen `output_format`.
         Markdown.preprocessors (util.Registry): A collection of [`preprocessors`][markdown.preprocessors].
         Markdown.parser (blockparser.BlockParser): A collection of [`blockprocessors`][markdown.blockprocessors].
         Markdown.inlinePatterns (util.Registry): A collection of [`inlinepatterns`][markdown.inlinepatterns].
