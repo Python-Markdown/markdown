@@ -25,6 +25,17 @@ a.autorefs-external:hover::after {
   background-color: #e32e00;
 }
 
+/* Customize custom links. */
+a.autorefs code {
+  background-color: #ecf0f3;
+  font-weight: normal;
+  color: #005B81;
+}
+
+a.autorefs:hover code {
+  color: #E32E00;
+}
+
 /* Customize symbol names. */
 code.doc-symbol-attribute::after {
   content: "Attr";
