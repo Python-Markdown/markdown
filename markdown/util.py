@@ -169,7 +169,16 @@ class AtomicString(str):
 
 
 class Processor:
-    def __init__(self, md=None):
+    """ The base class for all processors.
+
+    Attributes:
+        Processor.md: The `Markdown` instance passed in an initialization.
+
+    Arguments:
+        md: The `Markdown` instance this processor is a part of.
+
+    """
+    def __init__(self, md: Markdown=None):
         self.md = md
 
 

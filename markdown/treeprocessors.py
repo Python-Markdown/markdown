@@ -17,6 +17,13 @@
 
 # License: BSD (see LICENSE.md for details).
 
+"""
+Tree processors manipulate the tree created by block processors. They can even create an entirely
+new `ElementTree` object. This is an excellent place for creating summaries, adding collected
+references, or last minute adjustments.
+
+"""
+
 from __future__ import annotations
 
 import re
@@ -26,7 +33,7 @@ from . import util
 from . import inlinepatterns
 
 
-def build_treeprocessors(md, **kwargs):
+def build_treeprocessors(md: Markdown, **kwargs: Any) -> util.Registry:
     """ Build the default  `treeprocessors` for Markdown. """
     treeprocessors = util.Registry()
     treeprocessors.register(InlineProcessor(md), 'inline', 20)
@@ -35,8 +42,8 @@ def build_treeprocessors(md, **kwargs):
     return treeprocessors
 
 
-def isString(s):
-    """ Check if it's string """
+def isString(s: Any) -> bool:
+    """ Return `True` if object is a string but not an  [`AtomicString`][markdown.util.AtomicString]. """
     if not isinstance(s, util.AtomicString):
         return isinstance(s, str)
     return False
@@ -47,17 +54,16 @@ class Treeprocessor(util.Processor):
     `Treeprocessor`s are run on the `ElementTree` object before serialization.
 
     Each `Treeprocessor` implements a `run` method that takes a pointer to an
-    `ElementTree`, modifies it as necessary and returns an `ElementTree`
-    object.
+    `Element` and modifies it as necessary.
 
     `Treeprocessors` must extend `markdown.Treeprocessor`.
 
     """
-    def run(self, root):
+    def run(self, root: etree.Element) -> etree.Element | None:
         """
         Subclasses of `Treeprocessor` should implement a `run` method, which
-        takes a root `ElementTree`. This method can return another `ElementTree`
-        object, and the existing root `ElementTree `will be replaced, or it can
+        takes a root `Element`. This method can return another `Element`
+        object, and the existing root `Element` will be replaced, or it can
         modify the current tree and return `None`.
         """
         pass  # pragma: no cover
@@ -320,18 +326,18 @@ class InlineProcessor(Treeprocessor):
         ancestors.reverse()
         parents.extend(ancestors)
 
-    def run(self, tree: etree.ElementTree, ancestors: Sequence[str] | None = None) -> etree.ElementTree:
+    def run(self, tree: etree.Element, ancestors: Sequence[str] | None = None) -> etree.Element:
         """Apply inline patterns to a parsed Markdown tree.
 
-        Iterate over `ElementTree`, find elements with inline tag, apply inline
-        patterns and append newly created Elements to tree.  If you don't
-        want to process your data with inline patterns, instead of normal
-        string, use subclass `AtomicString`:
+        Iterate over `Element`, find elements with inline tag, apply inline
+        patterns and append newly created Elements to tree.  To avoid further
+        processing of string with inline patterns, instead of normal string,
+        use subclass [`AtomicString`][markdown.util.AtomicString]:
 
-            node.text = markdown.AtomicString("This will not be processed.")
+            node.text = markdown.util.AtomicString("This will not be processed.")
 
         Arguments:
-            tree: `ElementTree` object, representing Markdown tree.
+            tree: `Element` object, representing Markdown tree.
             ancestors: List of parent tag names that precede the tree node (if needed).
 
         Returns:
@@ -409,8 +415,8 @@ class PrettifyTreeprocessor(Treeprocessor):
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
 
-    def run(self, root):
-        """ Add line breaks to `ElementTree` root object. """
+    def run(self, root: etree.Element) -> None:
+        """ Add line breaks to `Element` object and its children. """
 
         self._prettifyETree(root)
         # Do `<br />`'s separately as they are often in the middle of

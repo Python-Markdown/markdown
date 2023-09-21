@@ -283,11 +283,11 @@ class Markdown:
             raise
         return self
 
-    # Note: the `tag` argument is not type annotated as ElementTree uses many various objects as tags.
+    # Note: the `tag` argument is type annotated `Any` as ElementTree uses many various objects as tags.
     # As there is no standardization in ElementTree, the type of a given tag is unpredictable.
-    def is_block_level(self, tag) -> bool:
+    def is_block_level(self, tag: Any) -> bool:
         """
-        Check if the given tag is a block level HTML tag.
+        Check if the given `tag` is a block level HTML tag.
 
         Returns `True` for any string listed in `Markdown.block_level_elements`. A `tag` which is
         not a string always returns `False`.

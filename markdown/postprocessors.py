@@ -18,12 +18,11 @@
 # License: BSD (see LICENSE.md for details).
 
 """
-POST-PROCESSORS
-=============================================================================
 
-Markdown also allows post-processors, which are similar to preprocessors in
-that they need to implement a "run" method. However, they are run after core
-processing.
+Post-processors run on the text of the entire document after is has been serialized into a string.
+Postprocessors should be used to work with the text just before output. Usually, they are used add
+back sections that were extracted in a preprocessor, fix up outgoing encodings, or wrap the whole
+document.
 
 """
 
@@ -34,7 +33,7 @@ from . import util
 import re
 
 
-def build_postprocessors(md, **kwargs):
+def build_postprocessors(md: Markdown, **kwargs: Any) -> util.Registry:
     """ Build the default postprocessors for Markdown. """
     postprocessors = util.Registry()
     postprocessors.register(RawHtmlPostprocessor(md), 'raw_html', 30)
@@ -46,16 +45,16 @@ class Postprocessor(util.Processor):
     """
     Postprocessors are run after the ElementTree it converted back into text.
 
-    Each Postprocessor implements a "run" method that takes a pointer to a
+    Each Postprocessor implements a `run` method that takes a pointer to a
     text string, modifies it as necessary and returns a text string.
 
-    Postprocessors must extend markdown.Postprocessor.
+    Postprocessors must extend `Postprocessor`.
 
     """
 
-    def run(self, text):
+    def run(self, text: str) -> str:
         """
-        Subclasses of Postprocessor should implement a `run` method, which
+        Subclasses of `Postprocessor` should implement a `run` method, which
         takes the html document as a single text string and returns a
         (possibly modified) string.
 
@@ -68,7 +67,7 @@ class RawHtmlPostprocessor(Postprocessor):
 
     BLOCK_LEVEL_REGEX = re.compile(r'^\<\/?([^ >]+)')
 
-    def run(self, text):
+    def run(self, text: str):
         """ Iterate over html stash and restore html. """
         replacements = OrderedDict()
         for i in range(self.md.htmlStash.html_counter):
@@ -101,7 +100,8 @@ class RawHtmlPostprocessor(Postprocessor):
         else:
             return self.run(processed_text)
 
-    def isblocklevel(self, html):
+    def isblocklevel(self, html: str) -> bool:
+        """ Check is block of HTML is block-level. """
         m = self.BLOCK_LEVEL_REGEX.match(html)
         if m:
             if m.group(1)[0] in ('!', '?', '@', '%'):
@@ -110,7 +110,7 @@ class RawHtmlPostprocessor(Postprocessor):
             return self.md.is_block_level(m.group(1))
         return False
 
-    def stash_to_string(self, text):
+    def stash_to_string(self, text: str) -> str:
         """ Convert a stashed object to a string. """
         return str(text)
 
@@ -128,7 +128,14 @@ class AndSubstitutePostprocessor(Postprocessor):
     "use 'treeprocessors.UnescapeTreeprocessor' instead."
 )
 class UnescapePostprocessor(Postprocessor):
-    """ Restore escaped chars """
+    """
+    Restore escaped chars.
+
+    !!! warning "Deprecated"
+
+        This class is deprecated and will be removed in the future; use
+        [`UnescapeTreeprocessor`][markdown.treeprocessors.UnescapeTreeprocessor] instead.
+    """
 
     RE = re.compile(r'{}(\d+){}'.format(util.STX, util.ETX))
 
