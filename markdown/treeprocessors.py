@@ -28,7 +28,7 @@ from __future__ import annotations
 
 import re
 import xml.etree.ElementTree as etree
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Sequence, Any
 from . import util
 from . import inlinepatterns
 

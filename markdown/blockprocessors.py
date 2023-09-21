@@ -29,7 +29,7 @@ from __future__ import annotations
 import logging
 import re
 import xml.etree.ElementTree as etree
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Tuple, Any
 from . import util
 from .blockparser import BlockParser
 
