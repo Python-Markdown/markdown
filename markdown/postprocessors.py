@@ -29,8 +29,12 @@ document.
 from __future__ import annotations
 
 from collections import OrderedDict
+from typing import TYPE_CHECKING, Any
 from . import util
 import re
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 
 def build_postprocessors(md: Markdown, **kwargs: Any) -> util.Registry:

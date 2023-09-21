@@ -30,7 +30,10 @@ import warnings
 from collections import namedtuple
 from functools import wraps, lru_cache
 from itertools import count
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 
 """
@@ -54,7 +57,7 @@ BLOCK_LEVEL_ELEMENTS = [
 """
 List of HTML tags which get treated as block-level elements. Same as the `block_level_elements`
 attribute of the [`Markdown`][markdown.Markdown] class. Generally one should use the
-attribute on the class. This remains for compatability with older extensions.
+attribute on the class. This remains for compatibility with older extensions.
 """
 
 # Placeholders
@@ -91,9 +94,8 @@ RTL_BIDI_RANGES = (
 # =============================================================================
 
 
-
 @lru_cache(maxsize=None)
-def get_installed_extensions() -> metadata.entry_points:
+def get_installed_extensions():
     """ Return all entry_points in the `markdown.extensions` group. """
     if sys.version_info >= (3, 10):
         from importlib import metadata
@@ -128,7 +130,7 @@ def deprecated(message, stacklevel=2):
     return wrapper
 
 
-def parseBoolValue(value: str, fail_on_errors: bool=True, preserve_none: bool=False) -> bool | None:
+def parseBoolValue(value: str, fail_on_errors: bool = True, preserve_none: bool = False) -> bool | None:
     """Parses a string representing a boolean value. If parsing was successful,
        returns `True` or `False`. If `preserve_none=True`, returns `True`, `False`,
        or `None`. If parsing was not successful, raises `ValueError`, or, if
@@ -178,7 +180,6 @@ def nearing_recursion_limit():
 # =============================================================================
 
 
-
 class AtomicString(str):
     """A string which should not be further processed."""
     pass
@@ -194,7 +195,7 @@ class Processor:
         md: The `Markdown` instance this processor is a part of.
 
     """
-    def __init__(self, md: Markdown=None):
+    def __init__(self, md: Markdown = None):
         self.md = md
 
 

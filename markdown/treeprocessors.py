@@ -28,9 +28,12 @@ from __future__ import annotations
 
 import re
 import xml.etree.ElementTree as etree
-from typing import Sequence
+from typing import TYPE_CHECKING, Sequence
 from . import util
 from . import inlinepatterns
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 
 def build_treeprocessors(md: Markdown, **kwargs: Any) -> util.Registry:

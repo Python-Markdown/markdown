@@ -30,7 +30,7 @@ as they need to alter how Markdown blocks are parsed.
 from __future__ import annotations
 
 import xml.etree.ElementTree as etree
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Sequence, Any
 from . import util
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -55,7 +55,7 @@ class State(list):
 
     """
 
-    def set(self, state:Any):
+    def set(self, state: Any):
         """ Set a new state. """
         self.append(state)
 
@@ -63,7 +63,7 @@ class State(list):
         """ Step back one step in nested state. """
         self.pop()
 
-    def isstate(self, state:Any) -> bool:
+    def isstate(self, state: Any) -> bool:
         """ Test that top (current) level is of given state. """
         if len(self):
             return self[-1] == state

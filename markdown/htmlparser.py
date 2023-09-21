@@ -18,7 +18,7 @@
 # License: BSD (see LICENSE.md for details).
 
 """
-This module imports a copy of [`html.parser.HTMLParser`][] and modifies it heavly through monkeypathes.
+This module imports a copy of [`html.parser.HTMLParser`][] and modifies it heavily through monkey-patches.
 A copy is imported rather than the module being directly imported as this ensures that the user can import
 and  use the unmodified library for their own needs.
 """

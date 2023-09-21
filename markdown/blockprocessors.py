@@ -29,8 +29,12 @@ from __future__ import annotations
 import logging
 import re
 import xml.etree.ElementTree as etree
+from typing import TYPE_CHECKING, Tuple
 from . import util
 from .blockparser import BlockParser
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 logger = logging.getLogger('MARKDOWN')
 
@@ -78,7 +82,7 @@ class BlockProcessor:
         else:
             return None
 
-    def detab(self, text: str, length: int=None) -> str:
+    def detab(self, text: str, length: int = None) -> str:
         """ Remove a tab from the front of each line of the given text. """
         if length is None:
             length = self.tab_length
@@ -93,7 +97,7 @@ class BlockProcessor:
                 break
         return '\n'.join(newtext), '\n'.join(lines[len(newtext):])
 
-    def looseDetab(self, text: str, level: int=1) -> str:
+    def looseDetab(self, text: str, level: int = 1) -> str:
         """ Remove a tab from front of lines but allowing dedented lines. """
         lines = text.split('\n')
         for i in range(len(lines)):
@@ -136,7 +140,7 @@ class BlockProcessor:
         to the parent, and should remove (`pop`) or add (`insert`) items to
         the list of blocks.
 
-        If `False` is retured, this will have the same effect as returning `False`
+        If `False` is returned, this will have the same effect as returning `False`
         from the `test` method.
 
         Keyword arguments:
@@ -332,7 +336,7 @@ class OListProcessor(BlockProcessor):
         OListProcessor.STARTSWITH (str): The integer (as a string ) with which the list starts.
             For example, if a list is initialized as `3. Item`, then the `ol` tag will be
             assigned an HTML attribute of `starts="3"`. Default: `"1"`.
-        OListProcessor.LAZY_OL (bool): Ignore STARTSWITH is `True`. Default: `True`.
+        OListProcessor.LAZY_OL (bool): Ignore `STARTSWITH` if `True`. Default: `True`.
         OListProcessor.SIBLING_TAGS (list[str]): Markdown does not require the type of a new list
             item match the previous list item type. This is the list of types which can be mixed.
             Default: `['ol', 'ul']`.
@@ -455,10 +459,6 @@ class UListProcessor(OListProcessor):
 
     Attributes:
         UListProcessor.TAG (str): The tag used for the the wrapping element. Default: `ul`.
-        UListProcessor.STARTSWITH (str): The integer (as a string ) with which the list starts.
-            For example, if a list is initialized as `3. Item`, then the `ol` tag will be
-            assigned an HTML attribute of `starts="3"`. Default: `"1"`.
-        UListProcessor.LAZY_OL (bool): Ignore STARTSWITH is `True`. Default: `True`.
         UListProcessor.SIBLING_TAGS (list[str]): Markdown does not require the type of a new list
             item match the previous list item type. This is the list of types which can be mixed.
             Default: `['ol', 'ul']`.

@@ -25,9 +25,13 @@ processing that the parser may otherwise choke on.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
 from . import util
 from .htmlparser import HTMLExtractor
 import re
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 
 def build_preprocessors(md: Markdown, **kwargs: Any) -> util.Registry:
@@ -75,7 +79,8 @@ class HtmlBlockPreprocessor(Preprocessor):
     """
     Remove html blocks from the text and store them for later retrieval.
 
-    The raw HTML is stored in the [`htmlStash`][markdown.util.HtmlStash] of the [`Markdown`][markdown.Markdown] instance.
+    The raw HTML is stored in the [`htmlStash`][markdown.util.HtmlStash] of the
+    [`Markdown`][markdown.Markdown] instance.
     """
 
     def run(self, lines: list[str]) -> list[str]:

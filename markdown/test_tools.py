@@ -17,7 +17,7 @@
 
 # License: BSD (see LICENSE.md for details).
 
-""" A collection of tools for testing the Markdown codebase and extensions. """
+""" A collection of tools for testing the Markdown code base and extensions. """
 
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ class TestCase(unittest.TestCase):
     """
     A [`unittest.TestCase`][] subclass with helpers for testing Markdown output.
 
-    Define `default_kwargs` as a dict of keywords to pass to Markdown for each
+    Define `default_kwargs` as a `dict` of keywords to pass to Markdown for each
     test. The defaults can be overridden on individual tests.
 
     The `assertMarkdownRenders` method accepts the source text, the expected
@@ -60,7 +60,7 @@ class TestCase(unittest.TestCase):
         """
         Test that source Markdown text renders to expected output with given keywords.
 
-        `expected_attrs` accepts a dict. Each key should be the name of an attribute
+        `expected_attrs` accepts a `dict`. Each key should be the name of an attribute
         on the `Markdown` instance and the value should be the expected value after
         the source text is parsed by Markdown. After the expected output is tested,
         the expected value for each attribute is compared against the actual
@@ -100,7 +100,7 @@ class recursionlimit:
         # test code here
     ```
 
-    See https://stackoverflow.com/a/50120316/866026
+    See <https://stackoverflow.com/a/50120316/866026>.
     """
 
     def __init__(self, limit):
@@ -120,12 +120,12 @@ class recursionlimit:
 
 
 class Kwargs(dict):
-    """ A dict like class for holding keyword arguments. """
+    """ A `dict` like class for holding keyword arguments. """
     pass
 
 
 def _normalize_whitespace(text):
-    """ Normalize whitespace for a string of html using `tidylib`. """
+    """ Normalize whitespace for a string of HTML using `tidylib`. """
     output, errors = tidylib.tidy_fragment(text, options={
         'drop_empty_paras': 0,
         'fix_backslash': 0,
