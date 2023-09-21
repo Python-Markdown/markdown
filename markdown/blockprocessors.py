@@ -18,16 +18,10 @@
 # License: BSD (see LICENSE.md for details).
 
 """
-CORE MARKDOWN BLOCK PARSER
-===========================================================================
-
-This parser handles basic parsing of Markdown blocks.  It doesn't concern
-itself with inline elements such as **bold** or *italics*, but rather just
-catches blocks, lists, quotes, etc.
-
-The `BlockParser` is made up of a bunch of `BlockProcessors`, each handling a
-different type of block. Extensions may add/replace/remove `BlockProcessors`
-as they need to alter how Markdown blocks are parsed.
+A block processor parses blocks of text and adds new elements to the ElementTree. Blocks of text,
+separated from other text by blank lines, may have a different syntax and produce a differently
+structured tree than other Markdown. Block processors excel at handling code formatting, equation
+layouts, tables, etc.
 """
 
 from __future__ import annotations
@@ -41,7 +35,7 @@ from .blockparser import BlockParser
 logger = logging.getLogger('MARKDOWN')
 
 
-def build_block_parser(md, **kwargs):
+def build_block_parser(md: Markdown, **kwargs: Any) -> util.Registry:
     """ Build the default block parser used by Markdown. """
     parser = BlockParser(md)
     parser.blockprocessors.register(EmptyBlockProcessor(parser), 'empty', 100)
@@ -67,20 +61,24 @@ class BlockProcessor:
     whether the current block should be processed by this processor. If the
     test passes, the parser will call the processors `run` method.
 
+    Attributes:
+        BlockProcessor.parser (BlockParser): The `BlockParser` instance this is attached to.
+        BlockProcessor.tab_length (int): The tab length set on the `Markdown` instance.
+
     """
 
-    def __init__(self, parser):
+    def __init__(self, parser: BlockParser):
         self.parser = parser
         self.tab_length = parser.md.tab_length
 
-    def lastChild(self, parent):
+    def lastChild(self, parent: etree.Element) -> etree.Element | None:
         """ Return the last child of an `etree` element. """
         if len(parent):
             return parent[-1]
         else:
             return None
 
-    def detab(self, text, length=None):
+    def detab(self, text: str, length: int=None) -> str:
         """ Remove a tab from the front of each line of the given text. """
         if length is None:
             length = self.tab_length
@@ -95,7 +93,7 @@ class BlockProcessor:
                 break
         return '\n'.join(newtext), '\n'.join(lines[len(newtext):])
 
-    def looseDetab(self, text, level=1):
+    def looseDetab(self, text: str, level: int=1) -> str:
         """ Remove a tab from front of lines but allowing dedented lines. """
         lines = text.split('\n')
         for i in range(len(lines)):
@@ -103,7 +101,7 @@ class BlockProcessor:
                 lines[i] = lines[i][self.tab_length*level:]
         return '\n'.join(lines)
 
-    def test(self, parent: etree.Element, block: list[str]):
+    def test(self, parent: etree.Element, block: list[str]) -> bool:
         """ Test for block type. Must be overridden by subclasses.
 
         As the parser loops through processors, it will call the `test`
@@ -121,7 +119,7 @@ class BlockProcessor:
         """
         pass  # pragma: no cover
 
-    def run(self, parent: etree.Element, blocks: list[str]):
+    def run(self, parent: etree.Element, blocks: list[str]) -> bool | None:
         """ Run processor. Must be overridden by subclasses.
 
         When the parser determines the appropriate type of a block, the parser
@@ -138,6 +136,9 @@ class BlockProcessor:
         to the parent, and should remove (`pop`) or add (`insert`) items to
         the list of blocks.
 
+        If `False` is retured, this will have the same effect as returning `False`
+        from the `test` method.
+
         Keyword arguments:
             parent: An `etree` element which is the parent of the current block.
             blocks: A list of all remaining blocks of the document.
@@ -148,11 +149,17 @@ class BlockProcessor:
 class ListIndentProcessor(BlockProcessor):
     """ Process children of list items.
 
-    Example:
+    Example
+
         * a list item
             process this part
 
             or this part
+
+    Attributes:
+        ListIndentProcessor.ITEM_TYPES (list[str]): List of tags used for list items. Default: `['li']`.
+        ListIndentProcessor.LIST_TYPES (list[str]): Types of lists this processor can operate on.
+            Default: `['ul', 'ol']`.
 
     """
 
@@ -206,12 +213,12 @@ class ListIndentProcessor(BlockProcessor):
             self.create_item(sibling, block)
         self.parser.state.reset()
 
-    def create_item(self, parent, block):
+    def create_item(self, parent: etree.Element, block: str):
         """ Create a new `li` and parse the block with it as the parent. """
         li = etree.SubElement(parent, 'li')
         self.parser.parseBlocks(li, [block])
 
-    def get_level(self, parent, block):
+    def get_level(self, parent: etree.Element, block: str) -> Tuple[int, etree.Element]:
         """ Get level of indentation based on list level. """
         # Get indent level
         m = self.INDENT_RE.match(block)
@@ -274,6 +281,7 @@ class CodeBlockProcessor(BlockProcessor):
 
 
 class BlockQuoteProcessor(BlockProcessor):
+    """ Process blockquotes. """
 
     RE = re.compile(r'(^|\n)[ ]{0,3}>[ ]?(.*)')
 
@@ -304,7 +312,7 @@ class BlockQuoteProcessor(BlockProcessor):
         self.parser.parseChunk(quote, block)
         self.parser.state.reset()
 
-    def clean(self, line):
+    def clean(self, line: str) -> str:
         """ Remove `>` from beginning of a line. """
         m = self.RE.match(line)
         if line.strip() == ">":
@@ -316,7 +324,20 @@ class BlockQuoteProcessor(BlockProcessor):
 
 
 class OListProcessor(BlockProcessor):
-    """ Process ordered list blocks. """
+    """
+    Process ordered list blocks.
+
+    Attributes:
+        OListProcessor.TAG (str): The tag used for the the wrapping element. Default: `ol`.
+        OListProcessor.STARTSWITH (str): The integer (as a string ) with which the list starts.
+            For example, if a list is initialized as `3. Item`, then the `ol` tag will be
+            assigned an HTML attribute of `starts="3"`. Default: `"1"`.
+        OListProcessor.LAZY_OL (bool): Ignore STARTSWITH is `True`. Default: `True`.
+        OListProcessor.SIBLING_TAGS (list[str]): Markdown does not require the type of a new list
+            item match the previous list item type. This is the list of types which can be mixed.
+            Default: `['ol', 'ul']`.
+
+    """
 
     TAG = 'ol'
     # The integer (python string) with which the lists starts (default=1)
@@ -401,7 +422,7 @@ class OListProcessor(BlockProcessor):
                 self.parser.parseBlocks(li, [item])
         self.parser.state.reset()
 
-    def get_items(self, block):
+    def get_items(self, block: str) -> list[str]:
         """ Break a block into list items. """
         items = []
         for line in block.split('\n'):
@@ -429,7 +450,20 @@ class OListProcessor(BlockProcessor):
 
 
 class UListProcessor(OListProcessor):
-    """ Process unordered list blocks. """
+    """
+    Process unordered list blocks.
+
+    Attributes:
+        UListProcessor.TAG (str): The tag used for the the wrapping element. Default: `ul`.
+        UListProcessor.STARTSWITH (str): The integer (as a string ) with which the list starts.
+            For example, if a list is initialized as `3. Item`, then the `ol` tag will be
+            assigned an HTML attribute of `starts="3"`. Default: `"1"`.
+        UListProcessor.LAZY_OL (bool): Ignore STARTSWITH is `True`. Default: `True`.
+        UListProcessor.SIBLING_TAGS (list[str]): Markdown does not require the type of a new list
+            item match the previous list item type. This is the list of types which can be mixed.
+            Default: `['ol', 'ul']`.
+
+    """
 
     TAG = 'ul'
 

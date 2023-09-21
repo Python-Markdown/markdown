@@ -17,6 +17,16 @@
 
 # License: BSD (see LICENSE.md for details).
 
+"""
+The block parser handles basic parsing of Markdown blocks.  It doesn't concern
+itself with inline elements such as `**bold**` or `*italics*`, but rather just
+catches blocks, lists, quotes, etc.
+
+The `BlockParser` is made up of a bunch of `BlockProcessors`, each handling a
+different type of block. Extensions may add/replace/remove `BlockProcessors`
+as they need to alter how Markdown blocks are parsed.
+"""
+
 from __future__ import annotations
 
 import xml.etree.ElementTree as etree
@@ -45,7 +55,7 @@ class State(list):
 
     """
 
-    def set(self, state):
+    def set(self, state:Any):
         """ Set a new state. """
         self.append(state)
 
@@ -53,7 +63,7 @@ class State(list):
         """ Step back one step in nested state. """
         self.pop()
 
-    def isstate(self, state):
+    def isstate(self, state:Any) -> bool:
         """ Test that top (current) level is of given state. """
         if len(self):
             return self[-1] == state
@@ -74,6 +84,12 @@ class BlockParser:
 
         Arguments:
             md: A Markdown instance.
+
+        Attributes:
+            BlockParser.md (Markdown): A Markdown instance.
+            BlockParser.state (State): Tracks the nesting level of current location in document being parsed.
+            BlockParser.blockprocessors (util.Registry): A collection of
+                [`blockprocessors`][markdown.blockprocessors].
 
         """
         self.blockprocessors = util.Registry()
