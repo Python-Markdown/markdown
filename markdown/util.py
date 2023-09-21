@@ -17,6 +17,11 @@
 
 # License: BSD (see LICENSE.md for details).
 
+"""
+This module contains various contacts, classes and functions which get referenced and used
+throughout the code base.
+"""
+
 from __future__ import annotations
 
 import re
@@ -46,23 +51,32 @@ BLOCK_LEVEL_ELEMENTS = [
     'math', 'map', 'noscript', 'output', 'object', 'option', 'progress', 'script',
     'style', 'summary', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'video'
 ]
+"""
+List of HTML tags which get treated as block-level elements. Same as the `block_level_elements`
+attribute of the [`Markdown`][markdown.Markdown] class. Generally one should use the
+attribute on the class. This remains for compatability with older extensions.
+"""
 
 # Placeholders
 STX = '\u0002'  # Use `STX` ("Start of text") for start-of-placeholder
 ETX = '\u0003'  # Use `ETX` ("End of text") for end-of-placeholder
 INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
+""" Placeholder template for stashed inline text. """
 INLINE_PLACEHOLDER_RE = re.compile(INLINE_PLACEHOLDER % r'([0-9]+)')
+""" Regular Expression which matches inline placeholders. """
 AMP_SUBSTITUTE = STX+"amp"+ETX
+""" Placeholder template for HTML entities. """
 HTML_PLACEHOLDER = STX + "wzxhzdk:%s" + ETX
+""" Placeholder template for raw HTML. """
 HTML_PLACEHOLDER_RE = re.compile(HTML_PLACEHOLDER % r'([0-9]+)')
+""" Regular expression which matches HTML placeholders. """
 TAG_PLACEHOLDER = STX + "hzzhzkh:%s" + ETX
+""" Placeholder template for tags. """
 
 
-"""
-Constants you probably do not need to change
------------------------------------------------------------------------------
-"""
+# Constants you probably do not need to change
+# -----------------------------------------------------------------------------
 
 RTL_BIDI_RANGES = (
     ('\u0590', '\u07FF'),
@@ -73,14 +87,14 @@ RTL_BIDI_RANGES = (
 )
 
 
-"""
-AUXILIARY GLOBAL FUNCTIONS
-=============================================================================
-"""
+# AUXILIARY GLOBAL FUNCTIONS
+# =============================================================================
+
 
 
 @lru_cache(maxsize=None)
-def get_installed_extensions():
+def get_installed_extensions() -> metadata.entry_points:
+    """ Return all entry_points in the `markdown.extensions` group. """
     if sys.version_info >= (3, 10):
         from importlib import metadata
     else:  # `<PY310` use backport
@@ -91,12 +105,15 @@ def get_installed_extensions():
 
 def deprecated(message, stacklevel=2):
     """
-    Raise a `DeprecationWarning` when wrapped function/method is called.
+    Raise a [`DeprecationWarning`][] when wrapped function/method is called.
 
     Usage:
-        @deprecated("This method will be removed in version X; use Y instead.")
-        def some_method()"
-            pass
+
+    ```python
+    @deprecated("This method will be removed in version X; use Y instead.")
+    def some_method():
+        pass
+    ```
     """
     def wrapper(func):
         @wraps(func)
@@ -111,9 +128,9 @@ def deprecated(message, stacklevel=2):
     return wrapper
 
 
-def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
-    """Parses a string representing boolean value. If parsing was successful,
-       returns True or False. If `preserve_none=True`, returns `True`, `False`,
+def parseBoolValue(value: str, fail_on_errors: bool=True, preserve_none: bool=False) -> bool | None:
+    """Parses a string representing a boolean value. If parsing was successful,
+       returns `True` or `False`. If `preserve_none=True`, returns `True`, `False`,
        or `None`. If parsing was not successful, raises `ValueError`, or, if
        `fail_on_errors=False`, returns `None`."""
     if not isinstance(value, str):
@@ -130,8 +147,8 @@ def parseBoolValue(value, fail_on_errors=True, preserve_none=False):
         raise ValueError('Cannot parse bool value: %r' % value)
 
 
-def code_escape(text):
-    """Escape code."""
+def code_escape(text: str) -> str:
+    """HTML escape a string of code."""
     if "&" in text:
         text = text.replace("&", "&amp;")
     if "<" in text:
@@ -157,10 +174,9 @@ def nearing_recursion_limit():
     return sys.getrecursionlimit() - _get_stack_depth() < 100
 
 
-"""
-MISC AUXILIARY CLASSES
-=============================================================================
-"""
+# MISC AUXILIARY CLASSES
+# =============================================================================
+
 
 
 class AtomicString(str):
@@ -214,13 +230,14 @@ class HtmlStash:
         return placeholder
 
     def reset(self):
+        """ Clear the stash. """
         self.html_counter = 0
         self.rawHtmlBlocks = []
 
     def get_placeholder(self, key):
         return HTML_PLACEHOLDER % key
 
-    def store_tag(self, tag, attrs, left_index, right_index):
+    def store_tag(self, tag, attrs, left_index, right_index) -> str:
         """Store tag data and return a placeholder."""
         self.tag_data.append({'tag': tag, 'attrs': attrs,
                               'left_index': left_index,
@@ -309,7 +326,7 @@ class Registry:
     def __repr__(self):
         return '<{}({})>'.format(self.__class__.__name__, list(self))
 
-    def get_index_for_name(self, name):
+    def get_index_for_name(self, name) -> int:
         """
         Return the index of the given name.
         """
@@ -346,7 +363,7 @@ class Registry:
         """
         Remove an item from the registry.
 
-        Set `strict=False` to fail silently.
+        Set `strict=False` to fail silently. Otherwise a [`ValueError`][] is raised for an unknown `name`.
         """
         try:
             index = self.get_index_for_name(name)
