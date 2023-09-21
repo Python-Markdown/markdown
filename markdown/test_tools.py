@@ -17,6 +17,8 @@
 
 # License: BSD (see LICENSE.md for details).
 
+""" A collection of tools for testing the Markdown codebase and extensions. """
+
 from __future__ import annotations
 
 import os
@@ -35,7 +37,7 @@ __all__ = ['TestCase', 'LegacyTestCase', 'Kwargs']
 
 class TestCase(unittest.TestCase):
     """
-    A `unittest.TestCase` subclass with helpers for testing Markdown output.
+    A [`unittest.TestCase`][] subclass with helpers for testing Markdown output.
 
     Define `default_kwargs` as a dict of keywords to pass to Markdown for each
     test. The defaults can be overridden on individual tests.
@@ -93,8 +95,10 @@ class recursionlimit:
 
     Example usage:
 
-        with recursionlimit(20):
-            # test code here
+    ``` python
+    with recursionlimit(20):
+        # test code here
+    ```
 
     See https://stackoverflow.com/a/50120316/866026
     """
@@ -189,22 +193,20 @@ class LegacyTestMeta(type):
 
 class LegacyTestCase(unittest.TestCase, metaclass=LegacyTestMeta):
     """
-    A `unittest.TestCase` subclass for running Markdown's legacy file-based tests.
+    A [`unittest.TestCase`][] subclass for running Markdown's legacy file-based tests.
 
     A subclass should define various properties which point to a directory of
     text-based test files and define various behaviors/defaults for those tests.
     The following properties are supported:
 
-    `location`: A path to the directory of test files. An absolute path is preferred.
-    `exclude`: A list of tests to exclude. Each test name should comprise the filename
-             without an extension.
-    `normalize`: A boolean value indicating if the HTML should be normalized.
-               Default: `False`.
-    `input_ext`: A string containing the file extension of input files. Default: `.txt`.
-    `output_ext`: A string containing the file extension of expected output files.
-               Default: `html`.
-    `default_kwargs`: A `Kwargs` instance which stores the default set of keyword
-                    arguments for all test files in the directory.
+    Attributes:
+        location (str): A path to the directory of test files. An absolute path is preferred.
+        exclude (list[str]): A list of tests to exclude. Each test name should comprise the filename
+            without an extension.
+        normalize (bool): A boolean value indicating if the HTML should be normalized. Default: `False`.
+        input_ext (str): A string containing the file extension of input files. Default: `.txt`.
+        output_ext (str): A string containing the file extension of expected output files. Default: `html`.
+        default_kwargs (Kwargs[str, Any]): The default set of keyword arguments for all test files in the directory.
 
     In addition, properties can be defined for each individual set of test files within
     the directory. The property should be given the name of the file without the file
