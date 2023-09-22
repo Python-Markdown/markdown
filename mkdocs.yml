@@ -82,8 +82,10 @@ plugins:
           docstring_style: google
           docstring_section_style: list
           filters: ["!^_"]
+          group_by_category: false
           heading_level: 1
           inherited_members: true
+          members_order: source
           merge_init_into_class: true
           separate_signature: false
           show_root_heading: true
