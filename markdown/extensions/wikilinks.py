@@ -59,13 +59,12 @@ class WikiLinksInlineProcessor(InlineProcessor):
             base_url, end_url, html_class = self._getMeta()
             label = m.group(1).strip()
             alt_label = m.group(2).strip()
-            if alt_label == '':
-                url = self.config['build_url'](label, base_url, end_url)
-            else:
-                url = self.config['build_url'](label, base_url, end_url)
-                label = alt_label
+            url = self.config['build_url'](label, base_url, end_url)
             a = etree.Element('a')
-            a.text = label
+            if alt_label:
+                a.text = alt_label
+            else:
+                a.text = label
             a.set('href', url)
             if html_class:
                 a.set('class', html_class)
