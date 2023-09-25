@@ -36,6 +36,23 @@ a.autorefs:hover code {
   color: #E32E00;
 }
 
+/* Customize labels. */
+.doc-label {
+  border-radius: 15px;
+  padding: 2px 8px;
+  background-color: #ddd;
+}
+
+.doc-label code {
+  color: #444;
+}
+
+/* No shadows in any code. */
+
+code {
+  text-shadow: none;
+}
+
 /* Customize symbol names. */
 code.doc-symbol-attribute::after {
   content: "Attr";
