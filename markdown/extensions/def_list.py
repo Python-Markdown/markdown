@@ -1,18 +1,22 @@
-"""
-Definition List Extension for Python-Markdown
-=============================================
+# Definition List Extension for Python-Markdown
+# =============================================
 
+# Adds parsing of Definition Lists to Python-Markdown.
+
+# See https://Python-Markdown.github.io/extensions/definition_lists
+# for documentation.
+
+# Original code Copyright 2008 [Waylan Limberg](http://achinghead.com)
+
+# All changes Copyright 2008-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 Adds parsing of Definition Lists to Python-Markdown.
 
-See https://Python-Markdown.github.io/extensions/definition_lists
-for documentation.
-
-Original code Copyright 2008 [Waylan Limberg](http://achinghead.com)
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See the [documentation]( https://Python-Markdown.github.io/extensions/definition_lists)
+for details.
 """
 
 from __future__ import annotations

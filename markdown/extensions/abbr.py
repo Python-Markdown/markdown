@@ -1,19 +1,23 @@
-"""
-Abbreviation Extension for Python-Markdown
-==========================================
+# Abbreviation Extension for Python-Markdown
+# ==========================================
 
+# This extension adds abbreviation handling to Python-Markdown.
+
+# See https://Python-Markdown.github.io/extensions/abbreviations
+# for documentation.
+
+# Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/)
+# and [Seemant Kulleen](http://www.kulleen.org/)
+
+# All changes Copyright 2008-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 This extension adds abbreviation handling to Python-Markdown.
 
-See https://Python-Markdown.github.io/extensions/abbreviations
-for documentation.
-
-Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/)
-and [Seemant Kulleen](http://www.kulleen.org/)
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See the [documentation](https://Python-Markdown.github.io/extensions/abbreviations)
+for details.
 """
 
 from __future__ import annotations

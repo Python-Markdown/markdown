@@ -1,18 +1,22 @@
+# WikiLinks Extension for Python-Markdown
+# ======================================
+
+# Converts [[WikiLinks]] to relative links.
+
+# See https://Python-Markdown.github.io/extensions/wikilinks
+# for documentation.
+
+# Original code Copyright [Waylan Limberg](http://achinghead.com/).
+
+# All changes Copyright The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
 """
-WikiLinks Extension for Python-Markdown
-======================================
+Converts `[[WikiLinks]]` to relative links.
 
-Converts [[WikiLinks]] to relative links.
-
-See https://Python-Markdown.github.io/extensions/wikilinks
-for documentation.
-
-Original code Copyright [Waylan Limberg](http://achinghead.com/).
-
-All changes Copyright The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See the [documentation](https://Python-Markdown.github.io/extensions/wikilinks)
+for details.
 """
 
 from __future__ import annotations
@@ -30,6 +34,7 @@ def build_url(label, base, end):
 
 
 class WikiLinkExtension(Extension):
+    """ Add inline processor to Markdown. """
 
     def __init__(self, **kwargs):
         self.config = {
@@ -52,6 +57,8 @@ class WikiLinkExtension(Extension):
 
 
 class WikiLinksInlineProcessor(InlineProcessor):
+    """ Build link from wikilink. """
+
     def __init__(self, pattern, config):
         super().__init__(pattern)
         self.config = config

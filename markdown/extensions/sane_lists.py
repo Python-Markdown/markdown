@@ -1,18 +1,22 @@
-"""
-Sane List Extension for Python-Markdown
-=======================================
+# Sane List Extension for Python-Markdown
+# =======================================
 
+# Modify the behavior of Lists in Python-Markdown to act in a sane manor.
+
+# See https://Python-Markdown.github.io/extensions/sane_lists
+# for documentation.
+
+# Original code Copyright 2011 [Waylan Limberg](http://achinghead.com)
+
+# All changes Copyright 2011-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 Modify the behavior of Lists in Python-Markdown to act in a sane manor.
 
-See https://Python-Markdown.github.io/extensions/sane_lists
-for documentation.
-
-Original code Copyright 2011 [Waylan Limberg](http://achinghead.com)
-
-All changes Copyright 2011-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See [documentation](https://Python-Markdown.github.io/extensions/sane_lists)
+for details.
 """
 
 from __future__ import annotations
@@ -23,6 +27,7 @@ import re
 
 
 class SaneOListProcessor(OListProcessor):
+    """ Override `SIBLING_TAGS` to not include `ul` and set `LAZY_OL` to `False`. """
 
     SIBLING_TAGS = ['ol']
     LAZY_OL = False
@@ -34,6 +39,7 @@ class SaneOListProcessor(OListProcessor):
 
 
 class SaneUListProcessor(UListProcessor):
+    """ Override `SIBLING_TAGS` to not include `ol`. """
 
     SIBLING_TAGS = ['ul']
 

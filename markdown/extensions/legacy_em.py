@@ -1,13 +1,14 @@
+# Legacy Em Extension for Python-Markdown
+# =======================================
+
+# This extension provides legacy behavior for _connected_words_.
+
+# Copyright 2015-2018 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
 """
-Legacy Em Extension for Python-Markdown
-=======================================
-
 This extension provides legacy behavior for _connected_words_.
-
-Copyright 2015-2018 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
 """
 
 from __future__ import annotations

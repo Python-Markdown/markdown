@@ -1,18 +1,22 @@
-"""
-CodeHilite Extension for Python-Markdown
-========================================
+# CodeHilite Extension for Python-Markdown
+# ========================================
 
+# Adds code/syntax highlighting to standard Python-Markdown code blocks.
+
+# See https://Python-Markdown.github.io/extensions/code_hilite
+# for documentation.
+
+# Original code Copyright 2006-2008 [Waylan Limberg](http://achinghead.com/).
+
+# All changes Copyright 2008-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 Adds code/syntax highlighting to standard Python-Markdown code blocks.
 
-See https://Python-Markdown.github.io/extensions/code_hilite
-for documentation.
-
-Original code Copyright 2006-2008 [Waylan Limberg](http://achinghead.com/).
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See the [documentation](https://Python-Markdown.github.io/extensions/code_hilite)
+for details.
 """
 
 from __future__ import annotations
@@ -31,7 +35,7 @@ except ImportError:  # pragma: no cover
     pygments = False
 
 
-def parse_hl_lines(expr):
+def parse_hl_lines(expr: str) -> list[int]:
     """Support our syntax for emphasizing certain lines of code.
 
     `expr` should be like '1 2' to emphasize lines 1 and 2 of a code block.
@@ -53,8 +57,10 @@ class CodeHilite:
 
     Usage:
 
-        code = CodeHilite(src=some_code, lang='python')
-        html = code.hilite()
+    ```python
+    code = CodeHilite(src=some_code, lang='python')
+    html = code.hilite()
+    ```
 
     Arguments:
         src: Source string or any object with a `.readline` attribute.
@@ -72,14 +78,15 @@ class CodeHilite:
         lang_prefix (str): Prefix prepended to the language. Default: "language-".
 
     Other Options:
+
     Any other options are accepted and passed on to the lexer and formatter. Therefore,
     valid options include any options which are accepted by the `html` formatter or
     whichever lexer the code's language uses. Note that most lexers do not have any
     options. However, a few have very useful options, such as PHP's `startinline` option.
     Any invalid options are ignored without error.
 
-    Formatter options: https://pygments.org/docs/formatters/#HtmlFormatter
-    Lexer Options: https://pygments.org/docs/lexers/
+    * **Formatter options**: <https://pygments.org/docs/formatters/#HtmlFormatter>
+    * **Lexer Options**: <https://pygments.org/docs/lexers/>
 
     Additionally, when Pygments is enabled, the code's language is passed to the
     formatter as an extra option `lang_str`, whose value being `{lang_prefix}{lang}`.
@@ -87,15 +94,17 @@ class CodeHilite:
 
     Advanced Usage:
 
-        code = CodeHilite(
-            src = some_code,
-            lang = 'php',
-            startinline = True,      # Lexer option. Snippet does not start with `<?php`.
-            linenostart = 42,        # Formatter option. Snippet starts on line 42.
-            hl_lines = [45, 49, 50], # Formatter option. Highlight lines 45, 49, and 50.
-            linenos = 'inline'       # Formatter option. Avoid alignment problems.
-        )
-        html = code.hilite()
+    ```python
+    code = CodeHilite(
+        src = some_code,
+        lang = 'php',
+        startinline = True,      # Lexer option. Snippet does not start with `<?php`.
+        linenostart = 42,        # Formatter option. Snippet starts on line 42.
+        hl_lines = [45, 49, 50], # Formatter option. Highlight lines 45, 49, and 50.
+        linenos = 'inline'       # Formatter option. Avoid alignment problems.
+    )
+    html = code.hilite()
+    ```
 
     """
 
@@ -119,7 +128,7 @@ class CodeHilite:
 
         self.options = options
 
-    def hilite(self, shebang=True):
+    def hilite(self, shebang=True) -> str:
         """
         Pass code to the [Pygments](https://pygments.org/) highlighter with
         optional line numbers. The output should then be styled with CSS to

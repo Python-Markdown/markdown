@@ -18,9 +18,6 @@
 # License: BSD (see LICENSE.md for details).
 
 """
-Legacy Attributes Extension
-===========================
-
 An extension to Python Markdown which implements legacy attributes.
 
 Prior to Python-Markdown version 3.0, the Markdown class had an `enable_attributes`
@@ -62,6 +59,7 @@ class LegacyAttrs(Treeprocessor):
 
 class LegacyAttrExtension(Extension):
     def extendMarkdown(self, md):
+        """ Add `LegacyAttrs` to Markdown instance. """
         md.treeprocessors.register(LegacyAttrs(md), 'legacyattrs', 15)
 
 

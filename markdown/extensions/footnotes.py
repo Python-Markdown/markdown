@@ -1,16 +1,20 @@
-"""
-Footnotes Extension for Python-Markdown
-=======================================
+# Footnotes Extension for Python-Markdown
+# =======================================
 
+# Adds footnote handling to Python-Markdown.
+
+# See https://Python-Markdown.github.io/extensions/footnotes
+# for documentation.
+
+# Copyright The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 Adds footnote handling to Python-Markdown.
 
-See https://Python-Markdown.github.io/extensions/footnotes
-for documentation.
-
-Copyright The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See the [documentation](https://Python-Markdown.github.io/extensions/footnotes)
+for details.
 """
 
 from __future__ import annotations
@@ -299,7 +303,7 @@ class FootnoteBlockProcessor(BlockProcessor):
 
 
 class FootnoteInlineProcessor(InlineProcessor):
-    """ `InlinePattern` for footnote markers in a document's body text. """
+    """ `InlineProcessor` for footnote markers in a document's body text. """
 
     def __init__(self, pattern, footnotes):
         super().__init__(pattern)

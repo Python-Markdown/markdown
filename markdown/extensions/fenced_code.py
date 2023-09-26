@@ -1,17 +1,22 @@
-"""
-Fenced Code Extension for Python Markdown
-=========================================
+# Fenced Code Extension for Python Markdown
+# =========================================
 
+# This extension adds Fenced Code Blocks to Python-Markdown.
+
+# See https://Python-Markdown.github.io/extensions/fenced_code_blocks
+# for documentation.
+
+# Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
+
+# All changes Copyright 2008-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 This extension adds Fenced Code Blocks to Python-Markdown.
 
-See https://Python-Markdown.github.io/extensions/fenced_code_blocks
-for documentation.
-
-Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
+See the [documentation](https://Python-Markdown.github.io/extensions/fenced_code_blocks)
+for details.
 """
 
 from __future__ import annotations
@@ -41,6 +46,8 @@ class FencedCodeExtension(Extension):
 
 
 class FencedBlockPreprocessor(Preprocessor):
+    """ Find and extract fenced code blocks. """
+
     FENCED_BLOCK_RE = re.compile(
         dedent(r'''
             (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence

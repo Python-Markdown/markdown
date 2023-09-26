@@ -357,7 +357,7 @@ class SimpleTagPattern(Pattern):  # pragma: no cover
     of a Pattern.
 
     """
-    def __init__(self, pattern, tag):
+    def __init__(self, pattern: str, tag: str):
         """
         Create an instant of an simple tag pattern.
 
@@ -381,7 +381,7 @@ class SimpleTagInlineProcessor(InlineProcessor):
     of a Pattern.
 
     """
-    def __init__(self, pattern, tag):
+    def __init__(self, pattern: str, tag: str):
         """
         Create an instant of an simple tag processor.
 

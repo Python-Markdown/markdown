@@ -1,16 +1,20 @@
+# Table of Contents Extension for Python-Markdown
+# ===============================================
+
+# See https://Python-Markdown.github.io/extensions/toc
+# for documentation.
+
+# Original code Copyright 2008 [Jack Miller](https://codezen.org/)
+
+# All changes Copyright 2008-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
 """
-Table of Contents Extension for Python-Markdown
-===============================================
+Add table of contents support to Python-Markdown.
 
-See https://Python-Markdown.github.io/extensions/toc
-for documentation.
-
-Original code Copyright 2008 [Jack Miller](https://codezen.org/)
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See the [documentation](https://Python-Markdown.github.io/extensions/toc)
+for details.
 """
 
 from __future__ import annotations
@@ -92,14 +96,16 @@ def unescape(text):
 
 def nest_toc_tokens(toc_list):
     """Given an unsorted list with errors and skips, return a nested one.
-    [{'level': 1}, {'level': 2}]
-    =>
-    [{'level': 1, 'children': [{'level': 2, 'children': []}]}]
+
+        [{'level': 1}, {'level': 2}]
+        =>
+        [{'level': 1, 'children': [{'level': 2, 'children': []}]}]
 
     A wrong list is also converted:
-    [{'level': 2}, {'level': 1}]
-    =>
-    [{'level': 2, 'children': []}, {'level': 1, 'children': []}]
+
+        [{'level': 2}, {'level': 1}]
+        =>
+        [{'level': 2, 'children': []}, {'level': 1, 'children': []}]
     """
 
     ordered_list = []
@@ -154,6 +160,8 @@ def nest_toc_tokens(toc_list):
 
 
 class TocTreeprocessor(Treeprocessor):
+    """ Step through document and build TOC. """
+
     def __init__(self, md, config):
         super().__init__(md)
 
