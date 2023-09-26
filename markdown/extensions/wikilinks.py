@@ -57,7 +57,7 @@ class WikiLinkExtension(Extension):
 
 
 class WikiLinksInlineProcessor(InlineProcessor):
-    """ Build link from wikilink. """
+    """ Build link from `wikilink`. """
 
     def __init__(self, pattern, config):
         super().__init__(pattern)

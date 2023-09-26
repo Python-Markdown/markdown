@@ -47,9 +47,9 @@
 #    of this software, even if advised of the possibility of such damage.
 
 
-# smartypants.py license:
+# `smartypants.py` license:
 
-#    smartypants.py is a derivative work of SmartyPants.
+#    `smartypants.py` is a derivative work of SmartyPants.
 #    Copyright (c) 2004, 2007 Chad Miller <http://web.chad.org/>
 
 #    Redistribution and use in source and binary forms, with or without

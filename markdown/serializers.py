@@ -36,7 +36,7 @@
 
 """
 Python-Markdown provides two serializers which render [`ElementTree.Element`][xml.etree.ElementTree.Element]
-objects to a string of HTML. Both functions wrap the same underliying code with only a few minor
+objects to a string of HTML. Both functions wrap the same underlying code with only a few minor
 differences as outlined below:
 
 1. Empty (self-closing) tags are rendered as `<tag>` for HTML and as `<tag />` for XHTML.

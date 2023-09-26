@@ -1,4 +1,4 @@
-# NL2BR Extension
+# `NL2BR` Extension
 # ===============
 
 # A Python-Markdown extension to treat newlines as hard breaks; like

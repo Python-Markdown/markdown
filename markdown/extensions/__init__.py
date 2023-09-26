@@ -75,7 +75,7 @@ class Extension:
 
     def getConfigs(self) -> dict[str, Any]:
         """
-        Return all config options.
+        Return all configuration options.
 
         Returns:
             All configuration options.

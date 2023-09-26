@@ -61,7 +61,7 @@ from __future__ import annotations
 
 from . import util
 from collections import namedtuple
-from typing import TYPE_CHECKING, Match
+from typing import TYPE_CHECKING, Match, Any
 import re
 import xml.etree.ElementTree as etree
 try:  # pragma: no cover
@@ -201,12 +201,12 @@ class Pattern:  # pragma: no cover
 
     All the regular expressions used by `Pattern` subclasses must capture the whole block.  For this
     reason, they all start with `^(.*)` and end with `(.*)!`.  When passing a regular expression on
-    class inititialiation, the `^(.*)` and `(.*)!` are added automatically and the regular expression
-    is precompiled.
+    class initialization, the `^(.*)` and `(.*)!` are added automatically and the regular expression
+    is pre-compiled.
 
     It is strongly suggested that the newer style [`markdown.inlinepatterns.InlineProcessor`][] that
     use a more efficient and flexible search approach be used instead. However, the older style
-    `Pattern` remains for backward compatability with many existing third-party extensions.
+    `Pattern` remains for backward compatibility with many existing third-party extensions.
 
     Attributes:
         ANCESTOR_EXCLUDES (tuple[str]): A collection of elements which are undesirable ancestors.
