@@ -27,7 +27,7 @@ options for their extension and attach the various processors and patterns which
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Tuple
+from typing import TYPE_CHECKING, Any
 from ..util import parseBoolValue
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -82,7 +82,7 @@ class Extension:
         """
         return {key: self.getConfig(key) for key in self.config.keys()}
 
-    def getConfigInfo(self) -> list[Tuple[str, str]]:
+    def getConfigInfo(self) -> list[tuple[str, str]]:
         """
         Return descriptions of all configuration options.
 
@@ -112,7 +112,7 @@ class Extension:
             value = parseBoolValue(value, preserve_none=True)
         self.config[key][0] = value
 
-    def setConfigs(self, items: dict[str, Any] | list[Tuple[str, Any]]):
+    def setConfigs(self, items: dict[str, Any] | list[tuple[str, Any]]):
         """
         Loop through a collection of configuration options, passing each to
         [`setConfig`][markdown.extensions.Extension.setConfig].

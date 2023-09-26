@@ -15,7 +15,7 @@
 """
 Adds parsing of Definition Lists to Python-Markdown.
 
-See the [documentation]( https://Python-Markdown.github.io/extensions/definition_lists)
+See the [documentation](https://Python-Markdown.github.io/extensions/definition_lists)
 for details.
 """
 

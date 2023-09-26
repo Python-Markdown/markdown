@@ -24,7 +24,7 @@ for details.
 """
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING
 
 from . import Extension
 from ..treeprocessors import Treeprocessor
@@ -65,7 +65,7 @@ _scanner = re.Scanner([
 ])
 
 
-def get_attrs(str: str) -> list[Tuple[str, str]]:
+def get_attrs(str: str) -> list[tuple[str, str]]:
     """ Parse attribute list and return a list of attribute tuples. """
     return _scanner.scan(str)[0]
 

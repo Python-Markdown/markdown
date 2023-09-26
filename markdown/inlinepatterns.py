@@ -61,7 +61,7 @@ from __future__ import annotations
 
 from . import util
 from collections import namedtuple
-from typing import TYPE_CHECKING, Tuple, Match
+from typing import TYPE_CHECKING, Match
 import re
 import xml.etree.ElementTree as etree
 try:  # pragma: no cover
@@ -209,7 +209,7 @@ class Pattern:  # pragma: no cover
     `Pattern` remains for backward compatability with many existing third-party extensions.
 
     Attributes:
-        ANCESTOR_EXCLUDES (Tuple[str]): A collection of elements which are undesirable ancestors.
+        ANCESTOR_EXCLUDES (tuple[str]): A collection of elements which are undesirable ancestors.
             The processor will be skipped if it would cause the content to be a descendant of one
             of the listed tag names.
         md (Markdown | None): The instance of the `Markdown` class this matter is assigned to.
@@ -283,7 +283,7 @@ class InlineProcessor(Pattern):
     efficient and flexible search approach.
 
     Attributes:
-        ANCESTOR_EXCLUDES (Tuple[str]): A collection of elements which are undesirable ancestors.
+        ANCESTOR_EXCLUDES (tuple[str]): A collection of elements which are undesirable ancestors.
             The processor will be skipped if it would cause the content to be a descendant of one
             of the listed tag names.
         md (Markdown | None): The instance of the `Markdown` class this matter is assigned to.

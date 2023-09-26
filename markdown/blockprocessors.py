@@ -29,7 +29,7 @@ from __future__ import annotations
 import logging
 import re
 import xml.etree.ElementTree as etree
-from typing import TYPE_CHECKING, Tuple, Any
+from typing import TYPE_CHECKING, Any
 from . import util
 from .blockparser import BlockParser
 
@@ -222,7 +222,7 @@ class ListIndentProcessor(BlockProcessor):
         li = etree.SubElement(parent, 'li')
         self.parser.parseBlocks(li, [block])
 
-    def get_level(self, parent: etree.Element, block: str) -> Tuple[int, etree.Element]:
+    def get_level(self, parent: etree.Element, block: str) -> tuple[int, etree.Element]:
         """ Get level of indentation based on list level. """
         # Get indent level
         m = self.INDENT_RE.match(block)
