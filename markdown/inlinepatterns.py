@@ -18,53 +18,50 @@
 # License: BSD (see LICENSE.md for details).
 
 """
-INLINE PATTERNS
-=============================================================================
+In version 3.0, a new, more flexible inline processor was added, [`markdown.inlinepatterns.InlineProcessor`][].   The
+original inline patterns, which inherit from [`markdown.inlinepatterns.Pattern`][] or one of its children are still
+supported, though users are encouraged to migrate.
 
-Inline patterns such as *emphasis* are handled by means of auxiliary
-objects, one per pattern.  Pattern objects must be instances of classes
-that extend markdown.Pattern.  Each pattern object uses a single regular
-expression and needs support the following methods:
+The new `InlineProcessor` provides two major enhancements to `Patterns`:
 
-    pattern.getCompiledRegExp() # returns a regular expression
+1. Inline Processors no longer need to match the entire block, so regular expressions no longer need to start with
+   `r'^(.*?)'` and end with `r'(.*?)%'`. This runs faster. The returned [match object][] will only contain what is
+   explicitly matched in the pattern, and extension pattern groups now start with `m.group(1)`.
 
-    pattern.handleMatch(m) # takes a match object and returns
-                           # an ElementTree element or just plain text
+2.  The `handleMatch` method now takes an additional input called `data`, which is the entire block under analysis,
+    not just what is matched with the specified pattern. The method now returns the element *and* the indexes relative
+    to `data` that the return element is replacing (usually `m.start(0)` and `m.end(0)`).  If the boundaries are
+    returned as `None`, it is assumed that the match did not take place, and nothing will be altered in `data`.
 
-All of python markdown's built-in patterns subclass from Pattern,
-but you can add additional patterns that don't.
+    This allows handling of more complex constructs than regular expressions can handle, e.g., matching nested
+    brackets, and explicit control of the span "consumed" by the processor.
 
-Also note that all the regular expressions used by inline must
-capture the whole block.  For this reason, they all start with
-`^(.*)` and end with `(.*)!`.  In case with built-in expression
-Pattern takes care of adding the `^(.*)` and `(.*)!`.
-
-Finally, the order in which regular expressions are applied is very
+The order in which processors and/or patterns are applied is very
 important - e.g. if we first replace `http://.../` links with `<a>` tags
 and _then_ try to replace inline html, we would end up with a mess.
 So, we apply the expressions in the following order:
 
 * escape and backticks have to go before everything else, so
-  that we can preempt any markdown patterns by escaping them.
+  that we can preempt any markdown patterns by escaping them;
 
-* then we handle auto-links (must be done before inline html)
+* then we handle auto-links (must be done before inline html);
 
 * then we handle inline HTML.  At this point we will simply
   replace all inline HTML strings with a placeholder and add
-  the actual HTML to a hash.
+  the actual HTML to a hash;
 
-* then inline images (must be done before links)
+* then inline images (must be done before links);
 
-* then bracketed links, first regular then reference-style
+* then bracketed links, first regular then reference-style;
 
-* finally we apply strong and emphasis
+* finally we apply strong and emphasis.
 """
 
 from __future__ import annotations
 
 from . import util
 from collections import namedtuple
-from typing import TYPE_CHECKING, Match
+from typing import TYPE_CHECKING, Tuple, Match
 import re
 import xml.etree.ElementTree as etree
 try:  # pragma: no cover
@@ -76,7 +73,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
 
 
-def build_inlinepatterns(md, **kwargs):
+def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry:
     """ Build the default set of inline patterns for Markdown. """
     inlinePatterns = util.Registry()
     inlinePatterns.register(BacktickInlineProcessor(BACKTICK_RE), 'backtick', 190)
@@ -104,10 +101,8 @@ def build_inlinepatterns(md, **kwargs):
     return inlinePatterns
 
 
-"""
-The actual regular expressions for patterns
------------------------------------------------------------------------------
-"""
+# The actual regular expressions for patterns
+# -----------------------------------------------------------------------------
 
 NOIMG = r'(?<!\!)'
 
@@ -178,7 +173,7 @@ ENTITY_RE = r'(&(?:\#[0-9]+|\#x[0-9a-fA-F]+|[a-zA-Z0-9]+);)'
 LINE_BREAK_RE = r'  \n'
 
 
-def dequote(string):
+def dequote(string: str) -> str:
     """Remove quotes from around a string."""
     if ((string.startswith('"') and string.endswith('"')) or
        (string.startswith("'") and string.endswith("'"))):
@@ -191,14 +186,35 @@ class EmStrongItem(namedtuple('EmStrongItem', ['pattern', 'builder', 'tags'])):
     """Emphasis/strong pattern item."""
 
 
-"""
-The pattern classes
------------------------------------------------------------------------------
-"""
+# The pattern classes
+# -----------------------------------------------------------------------------
 
 
 class Pattern:  # pragma: no cover
-    """Base class that inline patterns subclass. """
+    """
+    Base class that inline patterns subclass.
+
+    Inline patterns are handled by means of `Pattern` subclasses, one per regular expression.
+    Each pattern object uses a single regular expression and must support the following methods:
+    [`getCompiledRegExp`][markdown.inlinepatterns.Pattern.getCompiledRegExp] and
+    [`handleMatch`][markdown.inlinepatterns.Pattern.handleMatch].
+
+    All the regular expressions used by `Pattern` subclasses must capture the whole block.  For this
+    reason, they all start with `^(.*)` and end with `(.*)!`.  When passing a regular expression on
+    class inititialiation, the `^(.*)` and `(.*)!` are added automatically and the regular expression
+    is precompiled.
+
+    It is strongly suggested that the newer style [`markdown.inlinepatterns.InlineProcessor`][] that
+    use a more efficient and flexible search approach be used instead. However, the older style
+    `Pattern` remains for backward compatability with many existing third-party extensions.
+
+    Attributes:
+        ANCESTOR_EXCLUDES (Tuple[str]): A collection of elements which are undesirable ancestors.
+            The processor will be skipped if it would cause the content to be a descendant of one
+            of the listed tag names.
+        md (Markdown | None): The instance of the `Markdown` class this matter is assigned to.
+
+    """
 
     ANCESTOR_EXCLUDES = tuple()
 
@@ -208,6 +224,9 @@ class Pattern:  # pragma: no cover
 
         Arguments:
             pattern: A regular expression that matches a pattern.
+            md: An optional pointer to the instance of `markdown.Markdown` and is available as
+                `self.md` on the class instance.
+
 
         """
         self.pattern = pattern
@@ -216,11 +235,11 @@ class Pattern:  # pragma: no cover
 
         self.md = md
 
-    def getCompiledRegExp(self):
+    def getCompiledRegExp(self) -> re.Pattern:
         """ Return a compiled regular expression. """
         return self.compiled_re
 
-    def handleMatch(self, m: Match):
+    def handleMatch(self, m: Match) -> etree.Element:
         """Return a ElementTree element from the given match.
 
         Subclasses should override this method.
@@ -228,14 +247,16 @@ class Pattern:  # pragma: no cover
         Arguments:
             m: A match object containing a match of the pattern.
 
+        Returns: An ElementTree Element object.
+
         """
         pass  # pragma: no cover
 
-    def type(self):
+    def type(self) -> str:
         """ Return class name, to define pattern type """
         return self.__class__.__name__
 
-    def unescape(self, text):
+    def unescape(self, text: str) -> str:
         """ Return unescaped text given text with an inline placeholder. """
         try:
             stash = self.md.treeprocessors['inline'].stashed_nodes
@@ -256,18 +277,26 @@ class Pattern:  # pragma: no cover
 
 class InlineProcessor(Pattern):
     """
-    Base class that inline patterns subclass.
+    Base class that inline processors subclass.
 
     This is the newer style inline processor that uses a more
     efficient and flexible search approach.
+
+    Attributes:
+        ANCESTOR_EXCLUDES (Tuple[str]): A collection of elements which are undesirable ancestors.
+            The processor will be skipped if it would cause the content to be a descendant of one
+            of the listed tag names.
+        md (Markdown | None): The instance of the `Markdown` class this matter is assigned to.
     """
 
     def __init__(self, pattern: str, md: Markdown | None = None):
         """
-        Create an instant of an inline pattern.
+        Create an instant of an inline processor.
 
         Arguments:
             pattern: A regular expression that matches a pattern.
+            md: An optional pointer to the instance of `markdown.Markdown` and is available as
+                `self.md` on the class instance.
 
         """
         self.pattern = pattern
@@ -277,7 +306,7 @@ class InlineProcessor(Pattern):
         self.safe_mode = False
         self.md = md
 
-    def handleMatch(self, m: Match, data: str) -> tuple[etree.ElementTree | str | None, int | None, int | None]:
+    def handleMatch(self, m: Match, data: str) -> tuple[etree.Element | str | None, int | None, int | None]:
         """Return a ElementTree element from the given match and the
         start and end index of the matched text.
 
@@ -288,7 +317,7 @@ class InlineProcessor(Pattern):
 
         Arguments:
             m: A re match object containing a match of the pattern.
-            data: The buffer current under analysis.
+            data: The buffer currently under analysis.
 
         Returns:
             el: The ElementTree element, text or None.
@@ -329,6 +358,14 @@ class SimpleTagPattern(Pattern):  # pragma: no cover
 
     """
     def __init__(self, pattern, tag):
+        """
+        Create an instant of an simple tag pattern.
+
+        Arguments:
+            pattern: A regular expression that matches a pattern.
+            tag: Tag of element.
+
+        """
         Pattern.__init__(self, pattern)
         self.tag = tag
 
@@ -345,6 +382,14 @@ class SimpleTagInlineProcessor(InlineProcessor):
 
     """
     def __init__(self, pattern, tag):
+        """
+        Create an instant of an simple tag processor.
+
+        Arguments:
+            pattern: A regular expression that matches a pattern.
+            tag: Tag of element.
+
+        """
         InlineProcessor.__init__(self, pattern)
         self.tag = tag
 
@@ -367,7 +412,7 @@ class SubstituteTagInlineProcessor(SimpleTagInlineProcessor):
 
 
 class BacktickInlineProcessor(InlineProcessor):
-    """ Return a `<code>` element containing the matching text. """
+    """ Return a `<code>` element containing the escaped matching text. """
     def __init__(self, pattern):
         InlineProcessor.__init__(self, pattern)
         self.ESCAPED_BSLASH = '{}{}{}'.format(util.STX, ord('\\'), util.ETX)
