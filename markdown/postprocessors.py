@@ -135,10 +135,10 @@ class UnescapePostprocessor(Postprocessor):
     """
     Restore escaped chars.
 
-    !!! warning "Deprecated"
-
+    Warning: Deprecated
         This class is deprecated and will be removed in the future; use
         [`UnescapeTreeprocessor`][markdown.treeprocessors.UnescapeTreeprocessor] instead.
+
     """
 
     RE = re.compile(r'{}(\d+){}'.format(util.STX, util.ETX))
