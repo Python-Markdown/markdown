@@ -30,7 +30,7 @@ from . import Extension
 from ..treeprocessors import Treeprocessor
 import re
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from xml.etree.ElementTree import Element
 
 
