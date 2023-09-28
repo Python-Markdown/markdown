@@ -50,6 +50,9 @@ for path in modules:
         if ident in per_module_options:
             yaml_options = yaml.dump({"options": per_module_options[ident]})
             fd.write(f"\n{textwrap.indent(yaml_options, prefix='    ')}")
+        elif ident.startswith("markdown.extensions."):
+            yaml_options = yaml.dump({"options": {"inherited_members": False}})
+            fd.write(f"\n{textwrap.indent(yaml_options, prefix='    ')}")
 
     mkdocs_gen_files.set_edit_path(full_doc_path, ".." / path)
 
