@@ -82,6 +82,8 @@ plugins:
             ignore_init_summary: true
           docstring_style: google
           docstring_section_style: list
+          extensions:
+          - scripts/griffe_deprecated.py
           filters: ["!^_"]
           group_by_category: false
           heading_level: 1
