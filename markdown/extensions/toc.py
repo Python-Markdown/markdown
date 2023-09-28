@@ -385,10 +385,12 @@ class TocExtension(Extension):
                           'in between ("2-5"), define the top (t) and the'
                           'bottom (b) (<ht>..<hb>). Defaults to `6` (bottom).'],
         }
+        """ Default configuration options. """
 
         super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
+        """ Add TOC treeprocessor to Markdown. """
         md.registerExtension(self)
         self.md = md
         self.reset()

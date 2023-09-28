@@ -311,6 +311,7 @@ class CodeHiliteExtension(Extension):
                                    'Default: "html"',
                                    ],
             }
+        """ Default configuration options. """
 
         for key, value in kwargs.items():
             if key in self.config:

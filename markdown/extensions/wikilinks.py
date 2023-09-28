@@ -43,7 +43,7 @@ class WikiLinkExtension(Extension):
             'html_class': ['wikilink', 'CSS hook. Leave blank for none.'],
             'build_url': [build_url, 'Callable formats URL from label.'],
         }
-
+        """ Default configuration options. """
         super().__init__(**kwargs)
 
     def extendMarkdown(self, md):

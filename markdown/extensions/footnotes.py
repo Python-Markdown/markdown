@@ -66,6 +66,7 @@ class FootnoteExtension(Extension):
                 [":",
                  "Footnote separator."]
         }
+        """ Default configuration options. """
         super().__init__(**kwargs)
 
         # In multiple invocations, emit links that don't get tangled.

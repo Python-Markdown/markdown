@@ -181,6 +181,7 @@ class SmartyExtension(Extension):
             'smart_ellipses': [True, 'Educate ellipses'],
             'substitutions': [{}, 'Overwrite default substitutions'],
         }
+        """ Default configuration options. """
         super().__init__(**kwargs)
         self.substitutions = dict(substitutions)
         self.substitutions.update(self.getConfig('substitutions', default={}))

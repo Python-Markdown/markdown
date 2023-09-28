@@ -36,6 +36,7 @@ class FencedCodeExtension(Extension):
         self.config = {
             'lang_prefix': ['language-', 'Prefix prepended to the language. Default: "language-"']
         }
+        """ Default configuration options. """
         super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
@@ -151,7 +152,7 @@ class FencedBlockPreprocessor(Preprocessor):
         return text.split("\n")
 
     def handle_attrs(self, attrs):
-        """ Return tuple: (id, [list, of, classes], {configs}) """
+        """ Return tuple: `(id, [list, of, classes], {configs})` """
         id = ''
         classes = []
         configs = {}

@@ -227,6 +227,7 @@ class TableExtension(Extension):
         self.config = {
             'use_align_attribute': [False, 'True to use align attribute instead of style.'],
         }
+        """ Default configuration options. """
 
         super().__init__(**kwargs)
 

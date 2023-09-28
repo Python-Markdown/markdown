@@ -95,7 +95,9 @@ class DefListIndentProcessor(ListIndentProcessor):
 
     # Definition lists need to be aware of all list types
     ITEM_TYPES = ['dd', 'li']
+    """ Include `dd` in list item types. """
     LIST_TYPES = ['dl', 'ol', 'ul']
+    """ Include `dl` is list types. """
 
     def create_item(self, parent, block):
         """ Create a new `dd` or `li` (depending on parent) and parse the block with it as the parent. """

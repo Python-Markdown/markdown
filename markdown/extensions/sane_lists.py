@@ -30,7 +30,9 @@ class SaneOListProcessor(OListProcessor):
     """ Override `SIBLING_TAGS` to not include `ul` and set `LAZY_OL` to `False`. """
 
     SIBLING_TAGS = ['ol']
+    """ Exclude `ul` from list of siblings. """
     LAZY_OL = False
+    """ Disable lazy list behavior. """
 
     def __init__(self, parser):
         super().__init__(parser)
@@ -42,6 +44,7 @@ class SaneUListProcessor(UListProcessor):
     """ Override `SIBLING_TAGS` to not include `ol`. """
 
     SIBLING_TAGS = ['ul']
+    """ Exclude `ol` from list of siblings. """
 
     def __init__(self, parser):
         super().__init__(parser)
