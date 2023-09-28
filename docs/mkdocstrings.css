@@ -47,6 +47,11 @@ a.autorefs:hover code {
   color: #444;
 }
 
+.doc-label-deprecated {
+  background-color: #ffe4e4;
+  border: 1px solid #f66;
+}
+
 /* No shadows in any code. */
 
 code {

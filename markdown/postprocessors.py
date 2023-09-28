@@ -128,18 +128,11 @@ class AndSubstitutePostprocessor(Postprocessor):
 
 
 @util.deprecated(
-    "This class will be removed in the future; "
-    "use 'treeprocessors.UnescapeTreeprocessor' instead."
+    "This class is deprecated and will be removed in the future; "
+    "use [`UnescapeTreeprocessor`][markdown.treeprocessors.UnescapeTreeprocessor] instead."
 )
 class UnescapePostprocessor(Postprocessor):
-    """
-    Restore escaped chars.
-
-    Warning: Deprecated
-        This class is deprecated and will be removed in the future; use
-        [`UnescapeTreeprocessor`][markdown.treeprocessors.UnescapeTreeprocessor] instead.
-
-    """
+    """ Restore escaped chars. """
 
     RE = re.compile(r'{}(\d+){}'.format(util.STX, util.ETX))
 
