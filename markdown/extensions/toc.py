@@ -390,7 +390,7 @@ class TocExtension(Extension):
         super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
-        """ Add TOC treeprocessor to Markdown. """
+        """ Add TOC tree processor to Markdown. """
         md.registerExtension(self)
         self.md = md
         self.reset()
