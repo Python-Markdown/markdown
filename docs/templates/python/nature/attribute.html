@@ -7,7 +7,7 @@
 {% endblock heading %}
 
 {% block signature scoped %}
-  {% filter format_attribute(attribute, config.line_length, crossrefs=config.signature_crossrefs) %}
-    {{ attribute.name }}
+  {%+ filter highlight(language="python", inline=False) %}
+{{ attribute.source }}
   {% endfilter %}
 {% endblock signature %}
