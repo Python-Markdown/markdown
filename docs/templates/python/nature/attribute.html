@@ -9,6 +9,7 @@
 {% block contents scoped %}
   {{ super() }}
   {% if attribute.value %}
+  <p>Defined Value:</p>
   {%+ filter highlight(language="python", inline=False) %}
 {{ attribute.source }}
   {% endfilter %}
