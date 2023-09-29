@@ -2,12 +2,15 @@
 
 {% block heading scoped %}
   {%+ filter highlight(language="python", inline=True) %}
-    {{ attribute_name }}
+    {{ attribute_name }}{% if attribute.annotation %}: {{ attribute.annotation }}{% endif %}
   {% endfilter %}
 {% endblock heading %}
 
-{% block signature scoped %}
+{% block contents scoped %}
+  {{ super() }}
+  {% if attribute.value %}
   {%+ filter highlight(language="python", inline=False) %}
 {{ attribute.source }}
   {% endfilter %}
-{% endblock signature %}
+  {% endif %}
+{% endblock contents %}

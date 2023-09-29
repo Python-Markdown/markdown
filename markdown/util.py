@@ -42,7 +42,7 @@ Constants you might want to modify
 """
 
 
-BLOCK_LEVEL_ELEMENTS = [
+BLOCK_LEVEL_ELEMENTS: list[str] = [
     # Elements which are invalid to wrap in a `<p>` tag.
     # See https://w3c.github.io/html/grouping-content.html#the-p-element
     'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
