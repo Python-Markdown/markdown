@@ -285,32 +285,31 @@ class CodeHiliteExtension(Extension):
     def __init__(self, **kwargs):
         # define default configs
         self.config = {
-            'linenums': [None,
-                         "Use lines numbers. True|table|inline=yes, False=no, None=auto"],
-            'guess_lang': [True,
-                           "Automatic language detection - Default: True"],
-            'css_class': ["codehilite",
-                          "Set class name for wrapper <div> - "
-                          "Default: codehilite"],
-            'pygments_style': ['default',
-                               'Pygments HTML Formatter Style '
-                               '(Colorscheme) - Default: default'],
-            'noclasses': [False,
-                          'Use inline styles instead of CSS classes - '
-                          'Default false'],
-            'use_pygments': [True,
-                             'Use Pygments to Highlight code blocks. '
-                             'Disable if using a JavaScript library. '
-                             'Default: True'],
-            'lang_prefix': [
-                'language-',
-                'Prefix prepended to the language when use_pygments is false. Default: "language-"'
-            ],
-            'pygments_formatter': ['html',
-                                   'Use a specific formatter for Pygments highlighting.'
-                                   'Default: "html"',
-                                   ],
-            }
+            'linenums': (
+                None, "Use lines numbers. True|table|inline=yes, False=no, None=auto. Default: `None`."
+            ),
+            'guess_lang': (
+                True, "Automatic language detection - Default: `True`."
+            ),
+            'css_class': (
+                "codehilite", "Set class name for wrapper <div> - Default: `codehilite`."
+            ),
+            'pygments_style': (
+                'default', 'Pygments HTML Formatter Style (Colorscheme). Default: `default`.'
+            ),
+            'noclasses': (
+                False, 'Use inline styles instead of CSS classes - Default `False`.'
+            ),
+            'use_pygments': (
+                True, 'Highlight code blocks with pygments. Disable if using a JavaScript library. Default: `True`.'
+            ),
+            'lang_prefix': (
+                'language-', 'Prefix prepended to the language when `use_pygments` is false. Default: `language-`.'
+            ),
+            'pygments_formatter': (
+                'html', 'Use a specific formatter for Pygments highlighting. Default: `html`.'
+            ),
+        }
         """ Default configuration options. """
 
         for key, value in kwargs.items():

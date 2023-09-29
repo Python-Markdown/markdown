@@ -208,15 +208,13 @@ class Pattern:  # pragma: no cover
     use a more efficient and flexible search approach be used instead. However, the older style
     `Pattern` remains for backward compatibility with many existing third-party extensions.
 
-    Attributes:
-        ANCESTOR_EXCLUDES (tuple[str]): A collection of elements which are undesirable ancestors.
-            The processor will be skipped if it would cause the content to be a descendant of one
-            of the listed tag names.
-        md (Markdown | None): The instance of the `Markdown` class this matter is assigned to.
-
     """
 
     ANCESTOR_EXCLUDES = tuple()
+    """
+    A collection of elements which are undesirable ancestors. The processor will be skipped if it
+    would cause the content to be a descendant of one of the listed tag names.
+    """
 
     def __init__(self, pattern: str, md: Markdown | None = None):
         """
@@ -282,11 +280,6 @@ class InlineProcessor(Pattern):
     This is the newer style inline processor that uses a more
     efficient and flexible search approach.
 
-    Attributes:
-        ANCESTOR_EXCLUDES (tuple[str]): A collection of elements which are undesirable ancestors.
-            The processor will be skipped if it would cause the content to be a descendant of one
-            of the listed tag names.
-        md (Markdown | None): The instance of the `Markdown` class this matter is assigned to.
     """
 
     def __init__(self, pattern: str, md: Markdown | None = None):
@@ -368,6 +361,7 @@ class SimpleTagPattern(Pattern):  # pragma: no cover
         """
         Pattern.__init__(self, pattern)
         self.tag = tag
+        """ The tag of the rendered element. """
 
     def handleMatch(self, m):
         el = etree.Element(self.tag)
@@ -392,6 +386,7 @@ class SimpleTagInlineProcessor(InlineProcessor):
         """
         InlineProcessor.__init__(self, pattern)
         self.tag = tag
+        """ The tag of the rendered element. """
 
     def handleMatch(self, m, data):  # pragma: no cover
         el = etree.Element(self.tag)
@@ -417,6 +412,7 @@ class BacktickInlineProcessor(InlineProcessor):
         InlineProcessor.__init__(self, pattern)
         self.ESCAPED_BSLASH = '{}{}{}'.format(util.STX, ord('\\'), util.ETX)
         self.tag = 'code'
+        """ The tag of the rendered element. """
 
     def handleMatch(self, m, data):
         if m.group(3):

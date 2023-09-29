@@ -37,7 +37,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class Extension:
     """ Base class for extensions to subclass. """
 
-    config = {}
+    config: dict[str, tuple[Any, str]] = {}
     """
     Default configuration for an extension.
 
@@ -45,7 +45,7 @@ class Extension:
 
     ``` python
     config = {
-        'key': ['value', 'description']
+        'key': ('value', 'description')
     }
     ```
 

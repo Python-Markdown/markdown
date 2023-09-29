@@ -45,7 +45,7 @@ class Markdown:
     A parser which converts Markdown to HTML.
 
     Attributes:
-        Markdown.tab_length (int): The number of spaces which correspond to a single tab. Default: `4`
+        Markdown.tab_length (int): The number of spaces which correspond to a single tab. Default: `4`.
         Markdown.ESCAPED_CHARS (list[str]): List of characters which get the backslash escape treatment.
         Markdown.block_level_elements (list[str]): List of HTML tags which get treated as block-level elements.
             See [`markdown.util.BLOCK_LEVEL_ELEMENTS`][] for the full list of elements.
@@ -73,10 +73,14 @@ class Markdown:
 
     doc_tag = "div"     # Element used to wrap document - later removed
 
-    output_formats = {
+    output_formats: dict[str, Callable[xml.etree.ElementTree.Element]] = {
         'html':   to_html_string,
         'xhtml':  to_xhtml_string,
     }
+    """
+    A mapping of known output formats by name and their respective serializers. Each serializer must be a
+    callable which accepts an [`Element`][xml.etree.ElementTree.Element] and returns a `str`.
+    """
 
     def __init__(self, **kwargs):
         """
@@ -99,21 +103,23 @@ class Markdown:
 
         """
 
-        self.tab_length = kwargs.get('tab_length', 4)
+        self.tab_length: int = kwargs.get('tab_length', 4)
 
-        self.ESCAPED_CHARS = ['\\', '`', '*', '_', '{', '}', '[', ']',
-                              '(', ')', '>', '#', '+', '-', '.', '!']
+        self.ESCAPED_CHARS: list[str] = [
+            '\\', '`', '*', '_', '{', '}', '[', ']', '(', ')', '>', '#', '+', '-', '.', '!'
+        ]
+        """ List of characters which get the backslash escape treatment. """
 
-        self.block_level_elements = BLOCK_LEVEL_ELEMENTS.copy()
+        self.block_level_elements: list[str] = BLOCK_LEVEL_ELEMENTS.copy()
 
-        self.registeredExtensions = []
+        self.registeredExtensions: list[Extension] = []
         self.docType = ""  # TODO: Maybe delete this. It does not appear to be used anymore.
-        self.stripTopLevelTags = True
+        self.stripTopLevelTags: bool = True
 
         self.build_parser()
 
-        self.references = {}
-        self.htmlStash = util.HtmlStash()
+        self.references: dict[str, tuple[str, str]] = {}
+        self.htmlStash: util.HtmlStash = util.HtmlStash()
         self.registerExtensions(extensions=kwargs.get('extensions', []),
                                 configs=kwargs.get('extension_configs', {}))
         self.set_output_format(kwargs.get('output_format', 'xhtml'))

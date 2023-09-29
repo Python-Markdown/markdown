@@ -42,29 +42,26 @@ class FootnoteExtension(Extension):
         """ Setup configs. """
 
         self.config = {
-            'PLACE_MARKER':
-                ["///Footnotes Go Here///",
-                 "The text string that marks where the footnotes go"],
-            'UNIQUE_IDS':
-                [False,
-                 "Avoid name collisions across "
-                 "multiple calls to reset()."],
-            "BACKLINK_TEXT":
-                ["&#8617;",
-                 "The text string that links from the footnote "
-                 "to the reader's place."],
-            "SUPERSCRIPT_TEXT":
-                ["{}",
-                 "The text string that links from the reader's place "
-                 "to the footnote."],
-            "BACKLINK_TITLE":
-                ["Jump back to footnote %d in the text",
-                 "The text string used for the title HTML attribute "
-                 "of the backlink. %d will be replaced by the "
-                 "footnote number."],
-            "SEPARATOR":
-                [":",
-                 "Footnote separator."]
+            'PLACE_MARKER': (
+                '///Footnotes Go Here///', 'The text string that marks where the footnotes go'
+            ),
+            'UNIQUE_IDS': (
+                False, 'Avoid name collisions across multiple calls to `reset()`.'
+            ),
+            'BACKLINK_TEXT': (
+                '&#8617;', "The text string that links from the footnote to the reader's place."
+            ),
+            'SUPERSCRIPT_TEXT': (
+                '{}', "The text string that links from the reader's place to the footnote."
+            ),
+            'BACKLINK_TITLE': (
+                'Jump back to footnote %d in the text',
+                'The text string used for the title HTML attribute of the backlink. '
+                '%d will be replaced by the footnote number.'
+            ),
+            'SEPARATOR': (
+                ':', 'Footnote separator.'
+            )
         }
         """ Default configuration options. """
         super().__init__(**kwargs)

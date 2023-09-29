@@ -54,7 +54,8 @@ class TestCase(unittest.TestCase):
     In all other respects, behaves as `unittest.TestCase`.
     """
 
-    default_kwargs = {}
+    default_kwargs: dict[str, Any] = {}
+    """ Default options to pass to Markdown for each test. """
 
     def assertMarkdownRenders(self, source, expected, expected_attrs=None, **kwargs):
         """

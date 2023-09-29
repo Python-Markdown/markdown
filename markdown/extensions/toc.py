@@ -341,49 +341,51 @@ class TocExtension(Extension):
 
     def __init__(self, **kwargs):
         self.config = {
-            "marker": ['[TOC]',
-                       'Text to find and replace with Table of Contents - '
-                       'Set to an empty string to disable. Defaults to "[TOC]"'],
-            "title": ["",
-                      "Title to insert into TOC <div> - "
-                      "Defaults to an empty string"],
-            "title_class": ['toctitle',
-                            'CSS class used for the title. '
-                            'Defaults to "toctitle"'],
-            "toc_class": ['toc',
-                          'CSS class(es) used for the link. '
-                          'Defaults to "toclink"'],
-            "anchorlink": [False,
-                           "True if header should be a self link - "
-                           "Defaults to False"],
-            "anchorlink_class": ['toclink',
-                                 'CSS class(es) used for the link. '
-                                 'Defaults to "toclink"'],
-            "permalink": [0,
-                          "True or link text if a Sphinx-style permalink should "
-                          "be added - Defaults to False"],
-            "permalink_class": ['headerlink',
-                                'CSS class(es) used for the link. '
-                                'Defaults to "headerlink"'],
-            "permalink_title": ["Permanent link",
-                                "Title attribute of the permalink - "
-                                "Defaults to 'Permanent link'"],
-            "permalink_leading": [False,
-                                  "True if permalinks should be placed at "
-                                  "the start of the header, rather than the "
-                                  "end - Defaults to False."],
-            "baselevel": ['1', 'Base level for headers.'],
-            "slugify": [slugify,
-                        "Function to generate anchors based on header text - "
-                        "Defaults to the headerid ext's slugify function."],
-            'separator': ['-', 'Word separator. Defaults to "-".'],
-            "toc_depth": [6,
-                          'Define the range of section levels to include in'
-                          'the Table of Contents. A single integer (b) defines'
-                          'the bottom section level (<h1>..<hb>) only.'
-                          'A string consisting of two digits separated by a hyphen'
-                          'in between ("2-5"), define the top (t) and the'
-                          'bottom (b) (<ht>..<hb>). Defaults to `6` (bottom).'],
+            'marker': (
+                '[TOC]',
+                'Text to find and replace with Table of Contents. Set to an empty string to disable. '
+                'Default: `[TOC]`.'
+            ),
+            'title': (
+                '', 'Title to insert into TOC `<div>`. Default: an empty string.'
+            ),
+            'title_class': (
+                'toctitle', 'CSS class used for the title. Default: `toctitle`.'
+            ),
+            'toc_class': (
+                'toc', 'CSS class(es) used for the link. Default: `toclink`.'
+            ),
+            'anchorlink': (
+                False, 'True if header should be a self link. Default: `False`.'
+            ),
+            'anchorlink_class': (
+                'toclink', 'CSS class(es) used for the link. Defaults: `toclink`.'
+            ),
+            'permalink': (
+                0, 'True or link text if a Sphinx-style permalink should be added. Default: `False`.'
+            ),
+            'permalink_class': (
+                'headerlink', 'CSS class(es) used for the link. Default: `headerlink`.'
+            ),
+            'permalink_title': (
+                'Permanent link', 'Title attribute of the permalink. Default: `Permanent link`.'
+            ),
+            'permalink_leading': (
+                False,
+                'True if permalinks should be placed at start of the header, rather than end. Default: False.'
+            ),
+            'baselevel': ('1', 'Base level for headers. Default: `1`.'),
+            'slugify': (
+                slugify, 'Function to generate anchors based on header text. Default: `slugify`.'
+            ),
+            'separator': ('-', 'Word separator. Default: `-`.'),
+            'toc_depth': (
+                6,
+                'Define the range of section levels to include in the Table of Contents. A single integer '
+                '(b) defines the bottom section level (<h1>..<hb>) only. A string consisting of two digits '
+                'separated by a hyphen in between (`2-5`) defines the top (t) and the bottom (b) (<ht>..<hb>). '
+                'Default: `6` (bottom).'
+            ),
         }
         """ Default configuration options. """
 

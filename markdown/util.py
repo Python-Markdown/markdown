@@ -61,9 +61,12 @@ attribute on the class. This remains for compatibility with older extensions.
 """
 
 # Placeholders
-STX = '\u0002'  # Use `STX` ("Start of text") for start-of-placeholder
-ETX = '\u0003'  # Use `ETX` ("End of text") for end-of-placeholder
+STX = '\u0002'
+""" "Start of Text" marker for placeholder templates. """
+ETX = '\u0003'
+""" "End of Text" marker for placeholder templates. """
 INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
+""" Prefix for inline placeholder template. """
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 """ Placeholder template for stashed inline text. """
 INLINE_PLACEHOLDER_RE = re.compile(INLINE_PLACEHOLDER % r'([0-9]+)')

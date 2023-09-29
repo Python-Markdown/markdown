@@ -160,15 +160,12 @@ class ListIndentProcessor(BlockProcessor):
 
             or this part
 
-    Attributes:
-        ListIndentProcessor.ITEM_TYPES (list[str]): List of tags used for list items. Default: `['li']`.
-        ListIndentProcessor.LIST_TYPES (list[str]): Types of lists this processor can operate on.
-            Default: `['ul', 'ol']`.
-
     """
 
     ITEM_TYPES = ['li']
+    """ List of tags used for list items. """
     LIST_TYPES = ['ul', 'ol']
+    """ Types of lists this processor can operate on. """
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -328,30 +325,22 @@ class BlockQuoteProcessor(BlockProcessor):
 
 
 class OListProcessor(BlockProcessor):
+    """ Process ordered list blocks. """
+
+    TAG: str = 'ol'
+    """ The tag used for the the wrapping element. """
+    STARTSWITH: int = '1'
     """
-    Process ordered list blocks.
-
-    Attributes:
-        OListProcessor.TAG (str): The tag used for the the wrapping element. Default: `ol`.
-        OListProcessor.STARTSWITH (str): The integer (as a string ) with which the list starts.
-            For example, if a list is initialized as `3. Item`, then the `ol` tag will be
-            assigned an HTML attribute of `starts="3"`. Default: `"1"`.
-        OListProcessor.LAZY_OL (bool): Ignore `STARTSWITH` if `True`. Default: `True`.
-        OListProcessor.SIBLING_TAGS (list[str]): Markdown does not require the type of a new list
-            item match the previous list item type. This is the list of types which can be mixed.
-            Default: `['ol', 'ul']`.
-
+    The integer (as a string ) with which the list starts. For example, if a list is initialized as
+    `3. Item`, then the `ol` tag will be assigned an HTML attribute of `starts="3"`. Default: `"1"`.
     """
-
-    TAG = 'ol'
-    # The integer (python string) with which the lists starts (default=1)
-    # Example: If list is initialized as: `3. Item`
-    # The `ol` tag will get `starts="3"` attribute
-    STARTSWITH = '1'
-    # Lazy `ol` - ignore `startswith`
-    LAZY_OL = True
-    # List of allowed sibling tags.
-    SIBLING_TAGS = ['ol', 'ul']
+    LAZY_OL: bool = True
+    """ Ignore `STARTSWITH` if `True`. """
+    SIBLING_TAGS: list[str] = ['ol', 'ul']
+    """
+    Markdown does not require the type of a new list item match the previous list item type.
+    This is the list of types which can be mixed.
+    """
 
     def __init__(self, parser):
         super().__init__(parser)
@@ -454,18 +443,10 @@ class OListProcessor(BlockProcessor):
 
 
 class UListProcessor(OListProcessor):
-    """
-    Process unordered list blocks.
+    """ Process unordered list blocks. """
 
-    Attributes:
-        UListProcessor.TAG (str): The tag used for the the wrapping element. Default: `ul`.
-        UListProcessor.SIBLING_TAGS (list[str]): Markdown does not require the type of a new list
-            item match the previous list item type. This is the list of types which can be mixed.
-            Default: `['ol', 'ul']`.
-
-    """
-
-    TAG = 'ul'
+    TAG: str = 'ul'
+    """ The tag used for the the wrapping element. """
 
     def __init__(self, parser):
         super().__init__(parser)
