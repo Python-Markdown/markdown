@@ -25,6 +25,7 @@ import os
 import sys
 import unittest
 import textwrap
+from typing import Any
 from . import markdown, Markdown, util
 
 try:

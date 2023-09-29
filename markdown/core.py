@@ -23,7 +23,7 @@ import codecs
 import sys
 import logging
 import importlib
-from typing import Any, TextIO
+from typing import Any, TextIO, Callable
 from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
@@ -33,6 +33,9 @@ from .postprocessors import build_postprocessors
 from .extensions import Extension
 from .serializers import to_html_string, to_xhtml_string
 from .util import BLOCK_LEVEL_ELEMENTS
+
+if TYPE_CHECKING:  # pragma: no cover
+    from xml.etree.ElementTree import Element
 
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
@@ -73,7 +76,7 @@ class Markdown:
 
     doc_tag = "div"     # Element used to wrap document - later removed
 
-    output_formats: dict[str, Callable[xml.etree.ElementTree.Element]] = {
+    output_formats: dict[str, Callable[Element]] = {
         'html':   to_html_string,
         'xhtml':  to_xhtml_string,
     }
