@@ -1,7 +1,9 @@
 {% extends "_base/attribute.html" %}
 
 {% block heading scoped %}
-  <span class="doc doc-object-name doc-attribute-name">{{ attribute_name }}</span>
+  {%+ filter highlight(language="python", inline=True) %}
+    {{ attribute_name }}
+  {% endfilter %}
 {% endblock heading %}
 
 {% block signature scoped %}
