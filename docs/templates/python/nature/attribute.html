@@ -1,0 +1,11 @@
+{% extends "_base/attribute.html" %}
+
+{% block heading scoped %}
+  <span class="doc doc-object-name doc-attribute-name">{{ attribute_name }}</span>
+{% endblock heading %}
+
+{% block signature scoped %}
+  {% filter format_attribute(attribute, config.line_length, crossrefs=config.signature_crossrefs) %}
+    {{ attribute.name }}
+  {% endfilter %}
+{% endblock signature %}
