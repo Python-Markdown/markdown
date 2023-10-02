@@ -285,30 +285,30 @@ class CodeHiliteExtension(Extension):
     def __init__(self, **kwargs):
         # define default configs
         self.config = {
-            'linenums': (
+            'linenums': [
                 None, "Use lines numbers. True|table|inline=yes, False=no, None=auto. Default: `None`."
-            ),
-            'guess_lang': (
+            ],
+            'guess_lang': [
                 True, "Automatic language detection - Default: `True`."
-            ),
-            'css_class': (
+            ],
+            'css_class': [
                 "codehilite", "Set class name for wrapper <div> - Default: `codehilite`."
-            ),
-            'pygments_style': (
+            ],
+            'pygments_style': [
                 'default', 'Pygments HTML Formatter Style (Colorscheme). Default: `default`.'
-            ),
-            'noclasses': (
+            ],
+            'noclasses': [
                 False, 'Use inline styles instead of CSS classes - Default `False`.'
-            ),
-            'use_pygments': (
+            ],
+            'use_pygments': [
                 True, 'Highlight code blocks with pygments. Disable if using a JavaScript library. Default: `True`.'
-            ),
-            'lang_prefix': (
+            ],
+            'lang_prefix': [
                 'language-', 'Prefix prepended to the language when `use_pygments` is false. Default: `language-`.'
-            ),
-            'pygments_formatter': (
+            ],
+            'pygments_formatter': [
                 'html', 'Use a specific formatter for Pygments highlighting. Default: `html`.'
-            ),
+            ],
         }
         """ Default configuration options. """
 

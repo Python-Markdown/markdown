@@ -23,7 +23,7 @@ import codecs
 import sys
 import logging
 import importlib
-from typing import Any, TextIO, Callable
+from typing import TYPE_CHECKING, Any, TextIO, Callable
 from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
