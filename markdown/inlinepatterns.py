@@ -105,72 +105,73 @@ def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry:
 # -----------------------------------------------------------------------------
 
 NOIMG = r'(?<!\!)'
+""" Match not an image. Partial regular expression which matches if not preceded by `!`. """
 
-# `e=f()` or `e=f("`")`
 BACKTICK_RE = r'(?:(?<!\\)((?:\\{2})+)(?=`+)|(?<!\\)(`+)(.+?)(?<!`)\2(?!`))'
+""" Match backtick quoted string (`` `e=f()` `` or ``` ``e=f("`")`` ```). """
 
-# `\<`
 ESCAPE_RE = r'\\(.)'
+""" Match a backslash escaped character (`\\<` or `\\*`). """
 
-# `*emphasis*`
 EMPHASIS_RE = r'(\*)([^\*]+)\1'
+""" Match emphasis with an asterisk (`*emphasis*`). """
 
-# `**strong**`
 STRONG_RE = r'(\*{2})(.+?)\1'
+""" Match strong with an asterisk (`**strong**`). """
 
-# `__smart__strong__`
 SMART_STRONG_RE = r'(?<!\w)(_{2})(?!_)(.+?)(?<!_)\1(?!\w)'
+""" Match strong with underscore while ignoring middle word underscores (`__smart__strong__`). """
 
-# `_smart_emphasis_`
 SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\1(?!\w)'
+""" Match emphasis with underscore while ignoring middle word underscores (`_smart_emphasis_`). """
 
-# `__strong _em__`
 SMART_STRONG_EM_RE = r'(?<!\w)(\_)\1(?!\1)(.+?)(?<!\w)\1(?!\1)(.+?)\1{3}(?!\w)'
+""" Match strong emphasis with underscores (`__strong _em__`). """
 
-# `***strongem***` or `***em*strong**`
 EM_STRONG_RE = r'(\*)\1{2}(.+?)\1(.*?)\1{2}'
+""" Match emphasis strong with asterisk (`***strongem***` or `***em*strong**`). """
 
-# `___strongem___` or `___em_strong__`
 EM_STRONG2_RE = r'(_)\1{2}(.+?)\1(.*?)\1{2}'
+""" Match emphasis strong with underscores (`___emstrong___` or `___em_strong__`). """
 
-# `***strong**em*`
 STRONG_EM_RE = r'(\*)\1{2}(.+?)\1{2}(.*?)\1'
+""" Match strong emphasis with asterisk (`***strong**em*`). """
 
-# `___strong__em_`
 STRONG_EM2_RE = r'(_)\1{2}(.+?)\1{2}(.*?)\1'
+""" Match strong emphasis with underscores (`___strong__em_`). """
 
-# `**strong*em***`
 STRONG_EM3_RE = r'(\*)\1(?!\1)([^*]+?)\1(?!\1)(.+?)\1{3}'
+""" Match strong emphasis with asterisk (`**strong*em***`). """
 
-# `[text](url)` or `[text](<url>)` or `[text](url "title")`
 LINK_RE = NOIMG + r'\['
+""" Match start of in-line link (`[text](url)` or `[text](<url>)` or `[text](url "title")`). """
 
-# `![alttxt](http://x.com/)` or `![alttxt](<http://x.com/>)`
 IMAGE_LINK_RE = r'\!\['
+""" Match start of in-line image link (`![alttxt](url)` or `![alttxt](<url>)`). """
 
-# `[Google][3]`
 REFERENCE_RE = LINK_RE
+""" Match start of reference link (`[Label][3]`). """
 
-# `![alt text][2]`
 IMAGE_REFERENCE_RE = IMAGE_LINK_RE
+""" Match start of image reference (`![alt text][2]`). """
 
-# stand-alone `*` or `_`
 NOT_STRONG_RE = r'((^|(?<=\s))(\*{1,3}|_{1,3})(?=\s|$))'
+""" Match a stand-alone `*` or `_`. """
 
-# `<http://www.123.com>`
 AUTOLINK_RE = r'<((?:[Ff]|[Hh][Tt])[Tt][Pp][Ss]?://[^<>]*)>'
+""" Match an automatic link (`<http://www.example.com>`). """
 
-# `<me@example.com>`
 AUTOMAIL_RE = r'<([^<> !]+@[^@<> ]+)>'
+""" Match an automatic email link (`<me@example.com>`). """
 
-# `<...>`
 HTML_RE = r'(<(\/?[a-zA-Z][^<>@ ]*( [^<>]*)?|!--(?:(?!<!--|-->).)*--)>)'
+""" Match an HTML tag (`<...>`). """
 
-# `&#38;` (decimal) or `&#x26;` (hex) or `&amp;` (named)
 ENTITY_RE = r'(&(?:\#[0-9]+|\#x[0-9a-fA-F]+|[a-zA-Z0-9]+);)'
+""" Match an HTML entity (`&#38;` (decimal) or `&#x26;` (hex) or `&amp;` (named)). """
 
-# two spaces at end of line
 LINE_BREAK_RE = r'  \n'
+""" Match two spaces at end of line. """
 
 
 def dequote(string: str) -> str:
