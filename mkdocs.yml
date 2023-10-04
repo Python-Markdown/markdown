@@ -83,7 +83,14 @@ plugins:
           docstring_style: google
           docstring_section_style: list
           extensions:
-          - scripts/griffe_deprecated.py
+          - scripts/griffe_extensions.py:DeprecatedExtension
+          - scripts/griffe_extensions.py:PriorityTableExtension:
+              paths:
+                - markdown.preprocessors.build_preprocessors
+                - markdown.blockprocessors.build_block_parser
+                - markdown.treeprocessors.build_treeprocessors
+                - markdown.inlinepatterns.build_inlinepatterns
+                - markdown.postprocessors.build_postprocessors
           filters: ["!^_"]
           group_by_category: false
           heading_level: 1
