@@ -108,17 +108,19 @@ class TableProcessor(BlockProcessor):
         """Build an empty row."""
         tr = etree.SubElement(parent, 'tr')
         if self.config['set_css_classes']:
-            tr.set('class', 'row-1')
+            tr.set('class', 'row-1 row-odd')
         count = len(align)
-        while count:
-            etree.SubElement(tr, 'td')
-            count -= 1
+        for i in range(count):
+            td = etree.SubElement(tr, 'td')
+            if self.config['set_css_classes']:
+                col_parity = 'col-even' if ((i+1) % 2) == 0 else 'col-odd'
+                td.set('class', f'col-{i+1} {col_parity}')
 
     def _build_row(self, row, parent, align, rownumber):
         """ Given a row of text, build table cells. """
         tr = etree.SubElement(parent, 'tr')
         if self.config['set_css_classes'] and rownumber:
-            row_parity = 'row-odd' if (rownumber % 2) == 0 else 'row-even'
+            row_parity = 'row-even' if (rownumber % 2) == 0 else 'row-odd'
             tr.set('class', f'row-{rownumber} {row_parity}')
 
         tag = 'td'
@@ -139,7 +141,7 @@ class TableProcessor(BlockProcessor):
                 else:
                     c.set('style', f'text-align: {a};')
             if self.config['set_css_classes'] and tag == 'td':
-                col_parity = 'col-odd' if ((i+1) % 2) == 0 else 'col-even'
+                col_parity = 'col-even' if ((i+1) % 2) == 0 else 'col-odd'
                 c.set('class', f'col-{i+1} {col_parity}')
 
     def _split_row(self, row):
