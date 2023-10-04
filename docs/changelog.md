@@ -20,6 +20,10 @@ will cause the links to be inserted at the start of the header, before any other
 header content. The default behavior for `permalink` is to append permanent
 links to the header, placing them after all other header content.
 
+#### Add `set_css_classes` configuration option to the table extension 
+
+A new boolean option `set_css_classes` adds css classes to the table generation. These classes include row and columns counts and parity and will allow for more granular table styling.
+
 ### Changed
 
 * Add support for cPython version 3.12 (and PyPy 3.10) and drop support for
