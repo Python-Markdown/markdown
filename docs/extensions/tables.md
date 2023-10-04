@@ -72,14 +72,16 @@ The following options are provided to change the default behavior:
     Default: `'False'`
 
 CSS classes added: 
-* **`tr`**
-    `row-#`
-    `row-even`
-    `row-odd`
-* **`td`**
-    `col-#`
-    `col-even`
-    `col-odd`
+* **`tr`** : `row-#`, `row-even`, `row-odd`
+* **`td`** : `col-#`, `col-even`, `col-odd`
+
+This will allow some CSS stying, for example: 
+```css
+.col-1 {
+    background-color:blue;
+    color:white;
+}
+```
 
 
 A trivial example:
