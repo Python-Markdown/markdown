@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 from typing import TYPE_CHECKING
+import textwrap
 
 from griffe import Docstring, Extension
 from griffe.docstrings.dataclasses import DocstringSectionAdmonition, DocstringSectionText
@@ -80,12 +81,17 @@ class PriorityTableExtension(Extension):
                         # Pattern is a variable
                         value = self.linked_obj(_args[0].args[0].id, func.path.rsplit('.', 1)[0])
                     cls = f'{cls}({value})'
-                data.append(f'<code>{cls}</code> | {name} | {priority}')
+                data.append(f'<code>{cls}</code> | `{name}` | {priority}')
 
-        table = "\n".join(data)
+        table = '\n'.join(data)
+        body = (
+            "Return a [`Registry`][markdown.util.Registry] instance which contains the following collection "
+            "of classes with their assigned names and priorities.\n\n"
+            f"{table}"
+        )
 
         # Add to docstring.
         if not func.docstring:
             func.docstring = Docstring("", parent=func)
         sections = func.docstring.parsed
-        sections.append(DocstringSectionText(table, title="Priority Table"))
+        sections.append(DocstringSectionText(body, title="Priority Table"))
