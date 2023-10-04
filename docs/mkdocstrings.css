@@ -58,6 +58,12 @@ code {
   text-shadow: none;
 }
 
+/* Code spans in tables. */
+
+table code {
+  background-color: transparent !important;
+}
+
 /* Customize symbol names. */
 code.doc-symbol-attribute::after {
   content: "Attr";

@@ -51,7 +51,7 @@ class PriorityTableExtension(Extension):
 
     def linked_obj(self, value: str, path: str) -> str:
         """ Wrap object name in reference link. """
-        return f'[{value}][{path}.{value}]'
+        return f'[`{value}`][{path}.{value}]'
 
     def on_function_instance(self, node: ast.AST | ObjectNode, func: Function) -> None:  # noqa: ARG002
         """Add table to specified function docstrings."""
@@ -81,7 +81,7 @@ class PriorityTableExtension(Extension):
                         # Pattern is a variable
                         value = self.linked_obj(_args[0].args[0].id, func.path.rsplit('.', 1)[0])
                     cls = f'{cls}({value})'
-                data.append(f'<code>{cls}</code> | `{name}` | {priority}')
+                data.append(f'{cls} | `{name}` | `{priority}`')
 
         table = '\n'.join(data)
         body = (
