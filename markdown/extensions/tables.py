@@ -95,26 +95,32 @@ class TableProcessor(BlockProcessor):
         # Build table
         table = etree.SubElement(parent, 'table')
         thead = etree.SubElement(table, 'thead')
-        self._build_row(header, thead, align)
+        self._build_row(header, thead, align, None)
         tbody = etree.SubElement(table, 'tbody')
         if len(rows) == 0:
             # Handle empty table
             self._build_empty_row(tbody, align)
         else:
-            for row in rows:
-                self._build_row(row.strip(' '), tbody, align)
+            for rownumber, row in enumerate(rows, 1):
+                self._build_row(row.strip(' '), tbody, align, rownumber)
 
     def _build_empty_row(self, parent, align):
         """Build an empty row."""
         tr = etree.SubElement(parent, 'tr')
+        if self.config['set_css_classes']:
+            tr.set('class', 'row-1')
         count = len(align)
         while count:
             etree.SubElement(tr, 'td')
             count -= 1
 
-    def _build_row(self, row, parent, align):
+    def _build_row(self, row, parent, align, rownumber):
         """ Given a row of text, build table cells. """
         tr = etree.SubElement(parent, 'tr')
+        if self.config['set_css_classes'] and rownumber:
+            row_parity = 'row-odd' if (rownumber % 2) == 0 else 'row-even'
+            tr.set('class', f'row-{rownumber} {row_parity}')
+
         tag = 'td'
         if parent.tag == 'thead':
             tag = 'th'
@@ -132,6 +138,9 @@ class TableProcessor(BlockProcessor):
                     c.set('align', a)
                 else:
                     c.set('style', f'text-align: {a};')
+            if self.config['set_css_classes'] and tag == 'td':
+                col_parity = 'col-odd' if ((i+1) % 2) == 0 else 'col-even'
+                c.set('class', f'col-{i+1} {col_parity}')
 
     def _split_row(self, row):
         """ split a row of text into list of cells. """
@@ -220,6 +229,7 @@ class TableExtension(Extension):
     def __init__(self, **kwargs):
         self.config = {
             'use_align_attribute': [False, 'True to use align attribute instead of style.'],
+            'set_css_classes':     [False, 'True to add css classes to table tags.'],
         }
 
         super().__init__(**kwargs)

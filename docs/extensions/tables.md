@@ -67,6 +67,20 @@ The following options are provided to change the default behavior:
 
     Default: `'False'`
 
+* **`set_css_classes`**: Set to `True` to inject css classes for tr and td tags. 
+
+    Default: `'False'`
+
+CSS classes added: 
+* tr
+-- row-#
+-- row-even
+-- row-odd
+* td
+-- col-#
+-- col-even
+-- col-odd
+
 
 A trivial example:
 
@@ -85,3 +99,8 @@ attribute.
 ...                 extensions=[TableExtension(use_align_attribute=True)]
 ... )
 ```
+
+
+
+
+
