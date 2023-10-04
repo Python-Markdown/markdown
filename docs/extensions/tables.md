@@ -73,13 +73,13 @@ The following options are provided to change the default behavior:
 
 CSS classes added: 
 * tr
--- row-#
--- row-even
--- row-odd
+- row-#
+- row-even
+- row-odd
 * td
--- col-#
--- col-even
--- col-odd
+- col-#
+- col-even
+- col-odd
 
 
 A trivial example:
