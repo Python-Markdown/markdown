@@ -75,7 +75,7 @@ CSS classes added:
 * **`tr`** : `row-#`, `row-even`, `row-odd`
 * **`td`** : `col-#`, `col-even`, `col-odd`
 
-This will allow some CSS stying, for example: 
+This will allow some CSS styling, for example: 
 ```css
 .col-1 {
     background-color:blue;
