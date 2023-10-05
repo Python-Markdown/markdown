@@ -85,8 +85,8 @@ class PriorityTableExtension(Extension):
 
         table = '\n'.join(data)
         body = (
-            "Return a [`Registry`][markdown.util.Registry] instance which contains the following collection "
-            "of classes with their assigned names and priorities.\n\n"
+            f"Return a [`{func.returns.canonical_name}`][{func.returns.canonical_path}] instance which contains "
+            "the following collection of classes with their assigned names and priorities.\n\n"
             f"{table}"
         )
 

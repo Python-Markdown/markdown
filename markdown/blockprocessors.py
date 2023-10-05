@@ -39,7 +39,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger('MARKDOWN')
 
 
-def build_block_parser(md: Markdown, **kwargs: Any) -> util.Registry:
+def build_block_parser(md: Markdown, **kwargs: Any) -> BlockParser:
     """ Build the default block parser used by Markdown. """
     parser = BlockParser(md)
     parser.blockprocessors.register(EmptyBlockProcessor(parser), 'empty', 100)
