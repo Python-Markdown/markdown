@@ -26,7 +26,7 @@ jobs:
 
           Please see the [Contributing Guide](https://python-markdown.github.io/contributing/#changelog) for details.
     - name: Validate Changelog
-      if: success()
+      # if: success()
       id: changelog_reader
       uses: mindsers/changelog-reader-action@v2
       with:
