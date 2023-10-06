@@ -32,7 +32,6 @@ jobs:
         id: changelog_reader
         uses: mindsers/changelog-reader-action@v2
         with:
-          validation_level: warn
           version: ${{ github.ref_name }}
           path: ./docs/changelog.md
       - name: Release to GitHub
