@@ -31,7 +31,7 @@ jobs:
           - tox-env: py311
             python-version: '3.11'
           - tox-env: py312
-            python-version: '3.12.0-rc.1'
+            python-version: '3.12'
           - tox-env: pypy38
             python-version: pypy-3.8
           - tox-env: pypy39
