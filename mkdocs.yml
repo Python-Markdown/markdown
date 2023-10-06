@@ -106,3 +106,7 @@ plugins:
           show_symbol_type_toc: true
           signature_crossrefs: false
           summary: true
+          source:
+            repo: https://github.com/Python-Markdown/markdown
+            tag: !!python/name:markdown.__version__
+            title: "View source code on GitHub."

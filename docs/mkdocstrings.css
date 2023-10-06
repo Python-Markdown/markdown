@@ -40,7 +40,8 @@ a.autorefs:hover code {
 .doc-label {
   border-radius: 15px;
   padding: 2px 8px;
-  background-color: #ddd;
+  background-color: #f2f2f3;
+  text-wrap: nowrap;
 }
 
 .doc-label code {
@@ -62,6 +63,24 @@ code {
 
 table code {
   background-color: transparent !important;
+}
+
+/* Style source links */
+a.doc-source-link {
+  position: relative;
+  float: right;
+  border: 1px #005B81 solid;
+  margin: 0 5px;
+  padding: 0 5px;
+  font-weight: normal;
+  text-shadow: none;
+  background-color: #f2f2f3;
+  font-size: 1rem;
+}
+
+a.doc-source-link:hover {
+  text-decoration: none;
+  border-color: #E32E00;
 }
 
 /* Customize symbol names. */
