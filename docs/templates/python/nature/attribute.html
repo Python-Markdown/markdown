@@ -1,0 +1,18 @@
+{% extends "_base/attribute.html" %}
+
+{% block heading scoped %}
+  <a class="doc-source-link" href="{{ config.source.repo }}/tree/{{ config.source.tag }}/{{ attribute.filepath }}#L{{ attribute.lineno }}{% if attribute.endlineno > attribute.lineno %}-L{{ attribute.endlineno }}{% endif %}" title='View source code on GitHub'>&lsaquo;&rsaquo;</a>
+  {%+ filter highlight(language="python", inline=True) %}
+    {{ attribute_name }}{% if attribute.annotation %}: {{ attribute.annotation }}{% endif %}
+  {% endfilter %}
+{% endblock heading %}
+
+{% block contents scoped %}
+  {{ super() }}
+  {% if attribute.value %}
+  <p>Defined Value:</p>
+  {%+ filter highlight(language="python", inline=False) %}
+{{ attribute.source }}
+  {% endfilter %}
+  {% endif %}
+{% endblock contents %}

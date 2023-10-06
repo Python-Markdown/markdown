@@ -1,14 +1,17 @@
-'''
-Legacy Em Extension for Python-Markdown
-=======================================
+# Legacy Em Extension for Python-Markdown
+# =======================================
 
+# This extension provides legacy behavior for _connected_words_.
+
+# Copyright 2015-2018 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 This extension provides legacy behavior for _connected_words_.
+"""
 
-Copyright 2015-2018 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
-'''
+from __future__ import annotations
 
 from . import Extension
 from ..inlinepatterns import UnderscoreProcessor, EmStrongItem, EM_STRONG2_RE, STRONG_EM2_RE

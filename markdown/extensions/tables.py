@@ -1,19 +1,25 @@
-"""
-Tables Extension for Python-Markdown
-====================================
+# Tables Extension for Python-Markdown
+# ====================================
 
+# Added parsing of tables to Python-Markdown.
+
+# See https://Python-Markdown.github.io/extensions/tables
+# for documentation.
+
+# Original code Copyright 2009 [Waylan Limberg](http://achinghead.com)
+
+# All changes Copyright 2008-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 Added parsing of tables to Python-Markdown.
 
-See <https://Python-Markdown.github.io/extensions/tables>
-for documentation.
-
-Original code Copyright 2009 [Waylan Limberg](http://achinghead.com)
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See the [documentation](https://Python-Markdown.github.io/extensions/tables)
+for details.
 """
+
+from __future__ import annotations
 
 from . import Extension
 from ..blockprocessors import BlockProcessor
@@ -221,6 +227,7 @@ class TableExtension(Extension):
         self.config = {
             'use_align_attribute': [False, 'True to use align attribute instead of style.'],
         }
+        """ Default configuration options. """
 
         super().__init__(**kwargs)
 

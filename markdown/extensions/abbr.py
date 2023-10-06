@@ -1,20 +1,26 @@
-'''
-Abbreviation Extension for Python-Markdown
-==========================================
+# Abbreviation Extension for Python-Markdown
+# ==========================================
 
+# This extension adds abbreviation handling to Python-Markdown.
+
+# See https://Python-Markdown.github.io/extensions/abbreviations
+# for documentation.
+
+# Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/)
+# and [Seemant Kulleen](http://www.kulleen.org/)
+
+# All changes Copyright 2008-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 This extension adds abbreviation handling to Python-Markdown.
 
-See <https://Python-Markdown.github.io/extensions/abbreviations>
-for documentation.
+See the [documentation](https://Python-Markdown.github.io/extensions/abbreviations)
+for details.
+"""
 
-Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/) and
- [Seemant Kulleen](http://www.kulleen.org/)
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
-'''
+from __future__ import annotations
 
 from . import Extension
 from ..blockprocessors import BlockProcessor
@@ -41,11 +47,11 @@ class AbbrPreprocessor(BlockProcessor):
         return True
 
     def run(self, parent, blocks):
-        '''
+        """
         Find and remove all Abbreviation references from the text.
         Each reference is set as a new `AbbrPattern` in the markdown instance.
 
-        '''
+        """
         block = blocks.pop(0)
         m = self.RE.search(block)
         if m:
@@ -66,7 +72,7 @@ class AbbrPreprocessor(BlockProcessor):
         return False
 
     def _generate_pattern(self, text):
-        '''
+        """
         Given a string, returns an regex pattern to match that string.
 
         'HTML' -> r'(?P<abbr>[H][T][M][L])'
@@ -74,7 +80,7 @@ class AbbrPreprocessor(BlockProcessor):
         Note: we force each char as a literal match (in brackets) as we don't
         know what they will be beforehand.
 
-        '''
+        """
         chars = list(text)
         for i in range(len(chars)):
             chars[i] = r'[%s]' % chars[i]

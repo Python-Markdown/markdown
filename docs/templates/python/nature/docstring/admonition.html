@@ -1,0 +1,5 @@
+{{ log.debug("Rendering admonition") }}
+<div class="admonition {{ section.value.kind }}">
+  <p class="admonition-title">{{ section.title|convert_markdown(heading_level, html_id, strip_paragraph=True) }}</p>
+  {{ section.value.contents|convert_markdown(heading_level, html_id) }}
+</div>

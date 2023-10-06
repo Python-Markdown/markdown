@@ -1,19 +1,25 @@
-"""
-Definition List Extension for Python-Markdown
-=============================================
+# Definition List Extension for Python-Markdown
+# =============================================
 
+# Adds parsing of Definition Lists to Python-Markdown.
+
+# See https://Python-Markdown.github.io/extensions/definition_lists
+# for documentation.
+
+# Original code Copyright 2008 [Waylan Limberg](http://achinghead.com)
+
+# All changes Copyright 2008-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 Adds parsing of Definition Lists to Python-Markdown.
 
-See <https://Python-Markdown.github.io/extensions/definition_lists>
-for documentation.
-
-Original code Copyright 2008 [Waylan Limberg](http://achinghead.com)
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See the [documentation](https://Python-Markdown.github.io/extensions/definition_lists)
+for details.
 """
+
+from __future__ import annotations
 
 from . import Extension
 from ..blockprocessors import BlockProcessor, ListIndentProcessor
@@ -89,7 +95,9 @@ class DefListIndentProcessor(ListIndentProcessor):
 
     # Definition lists need to be aware of all list types
     ITEM_TYPES = ['dd', 'li']
+    """ Include `dd` in list item types. """
     LIST_TYPES = ['dl', 'ol', 'ul']
+    """ Include `dl` is list types. """
 
     def create_item(self, parent, block):
         """ Create a new `dd` or `li` (depending on parent) and parse the block with it as the parent. """

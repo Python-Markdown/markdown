@@ -1,17 +1,23 @@
-"""
-Footnotes Extension for Python-Markdown
-=======================================
+# Footnotes Extension for Python-Markdown
+# =======================================
 
+# Adds footnote handling to Python-Markdown.
+
+# See https://Python-Markdown.github.io/extensions/footnotes
+# for documentation.
+
+# Copyright The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 Adds footnote handling to Python-Markdown.
 
-See <https://Python-Markdown.github.io/extensions/footnotes>
-for documentation.
-
-Copyright The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See the [documentation](https://Python-Markdown.github.io/extensions/footnotes)
+for details.
 """
+
+from __future__ import annotations
 
 from . import Extension
 from ..blockprocessors import BlockProcessor
@@ -36,30 +42,28 @@ class FootnoteExtension(Extension):
         """ Setup configs. """
 
         self.config = {
-            'PLACE_MARKER':
-                ["///Footnotes Go Here///",
-                 "The text string that marks where the footnotes go"],
-            'UNIQUE_IDS':
-                [False,
-                 "Avoid name collisions across "
-                 "multiple calls to reset()."],
-            "BACKLINK_TEXT":
-                ["&#8617;",
-                 "The text string that links from the footnote "
-                 "to the reader's place."],
-            "SUPERSCRIPT_TEXT":
-                ["{}",
-                 "The text string that links from the reader's place "
-                 "to the footnote."],
-            "BACKLINK_TITLE":
-                ["Jump back to footnote %d in the text",
-                 "The text string used for the title HTML attribute "
-                 "of the backlink. %d will be replaced by the "
-                 "footnote number."],
-            "SEPARATOR":
-                [":",
-                 "Footnote separator."]
+            'PLACE_MARKER': [
+                '///Footnotes Go Here///', 'The text string that marks where the footnotes go'
+            ],
+            'UNIQUE_IDS': [
+                False, 'Avoid name collisions across multiple calls to `reset()`.'
+            ],
+            'BACKLINK_TEXT': [
+                '&#8617;', "The text string that links from the footnote to the reader's place."
+            ],
+            'SUPERSCRIPT_TEXT': [
+                '{}', "The text string that links from the reader's place to the footnote."
+            ],
+            'BACKLINK_TITLE': [
+                'Jump back to footnote %d in the text',
+                'The text string used for the title HTML attribute of the backlink. '
+                '%d will be replaced by the footnote number.'
+            ],
+            'SEPARATOR': [
+                ':', 'Footnote separator.'
+            ]
         }
+        """ Default configuration options. """
         super().__init__(**kwargs)
 
         # In multiple invocations, emit links that don't get tangled.
@@ -255,10 +259,11 @@ class FootnoteBlockProcessor(BlockProcessor):
         blocks.insert(0, block)
         return False
 
-    def detectTabbed(self, blocks):
+    def detectTabbed(self, blocks) -> list[str]:
         """ Find indented text and remove indent before further processing.
 
-        Returns: a list of blocks with indentation removed.
+        Returns:
+            A list of blocks with indentation removed.
         """
         fn_blocks = []
         while blocks:
@@ -296,7 +301,7 @@ class FootnoteBlockProcessor(BlockProcessor):
 
 
 class FootnoteInlineProcessor(InlineProcessor):
-    """ `InlinePattern` for footnote markers in a document's body text. """
+    """ `InlineProcessor` for footnote markers in a document's body text. """
 
     def __init__(self, pattern, footnotes):
         super().__init__(pattern)

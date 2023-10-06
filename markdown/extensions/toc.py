@@ -1,17 +1,23 @@
+# Table of Contents Extension for Python-Markdown
+# ===============================================
+
+# See https://Python-Markdown.github.io/extensions/toc
+# for documentation.
+
+# Original code Copyright 2008 [Jack Miller](https://codezen.org/)
+
+# All changes Copyright 2008-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
 """
-Table of Contents Extension for Python-Markdown
-===============================================
+Add table of contents support to Python-Markdown.
 
-See <https://Python-Markdown.github.io/extensions/toc>
-for documentation.
-
-Original code Copyright 2008 [Jack Miller](https://codezen.org/)
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See the [documentation](https://Python-Markdown.github.io/extensions/toc)
+for details.
 """
+
+from __future__ import annotations
 
 from . import Extension
 from ..treeprocessors import Treeprocessor
@@ -90,14 +96,16 @@ def unescape(text):
 
 def nest_toc_tokens(toc_list):
     """Given an unsorted list with errors and skips, return a nested one.
-    [{'level': 1}, {'level': 2}]
-    =>
-    [{'level': 1, 'children': [{'level': 2, 'children': []}]}]
+
+        [{'level': 1}, {'level': 2}]
+        =>
+        [{'level': 1, 'children': [{'level': 2, 'children': []}]}]
 
     A wrong list is also converted:
-    [{'level': 2}, {'level': 1}]
-    =>
-    [{'level': 2, 'children': []}, {'level': 1, 'children': []}]
+
+        [{'level': 2}, {'level': 1}]
+        =>
+        [{'level': 2, 'children': []}, {'level': 1, 'children': []}]
     """
 
     ordered_list = []
@@ -152,6 +160,8 @@ def nest_toc_tokens(toc_list):
 
 
 class TocTreeprocessor(Treeprocessor):
+    """ Step through document and build TOC. """
+
     def __init__(self, md, config):
         super().__init__(md)
 
@@ -178,7 +188,7 @@ class TocTreeprocessor(Treeprocessor):
             self.toc_bottom = int(config["toc_depth"])
 
     def iterparent(self, node):
-        ''' Iterator wrapper to get allowed parent and child all at once. '''
+        """ Iterator wrapper to get allowed parent and child all at once. """
 
         # We do not allow the marker inside a header as that
         # would causes an endless loop of placing a new TOC
@@ -189,7 +199,7 @@ class TocTreeprocessor(Treeprocessor):
                 yield from self.iterparent(child)
 
     def replace_marker(self, root, elem):
-        ''' Replace marker with elem. '''
+        """ Replace marker with elem. """
         for (p, c) in self.iterparent(root):
             text = ''.join(c.itertext()).strip()
             if not text:
@@ -210,7 +220,7 @@ class TocTreeprocessor(Treeprocessor):
                         break
 
     def set_level(self, elem):
-        ''' Adjust header level according to base level. '''
+        """ Adjust header level according to base level. """
         level = int(elem.tag[-1]) + self.base_level
         if level > 6:
             level = 6
@@ -331,54 +341,58 @@ class TocExtension(Extension):
 
     def __init__(self, **kwargs):
         self.config = {
-            "marker": ['[TOC]',
-                       'Text to find and replace with Table of Contents - '
-                       'Set to an empty string to disable. Defaults to "[TOC]"'],
-            "title": ["",
-                      "Title to insert into TOC <div> - "
-                      "Defaults to an empty string"],
-            "title_class": ['toctitle',
-                            'CSS class used for the title. '
-                            'Defaults to "toctitle"'],
-            "toc_class": ['toc',
-                          'CSS class(es) used for the link. '
-                          'Defaults to "toclink"'],
-            "anchorlink": [False,
-                           "True if header should be a self link - "
-                           "Defaults to False"],
-            "anchorlink_class": ['toclink',
-                                 'CSS class(es) used for the link. '
-                                 'Defaults to "toclink"'],
-            "permalink": [0,
-                          "True or link text if a Sphinx-style permalink should "
-                          "be added - Defaults to False"],
-            "permalink_class": ['headerlink',
-                                'CSS class(es) used for the link. '
-                                'Defaults to "headerlink"'],
-            "permalink_title": ["Permanent link",
-                                "Title attribute of the permalink - "
-                                "Defaults to 'Permanent link'"],
-            "permalink_leading": [False,
-                                  "True if permalinks should be placed at "
-                                  "the start of the header, rather than the "
-                                  "end - Defaults to False."],
-            "baselevel": ['1', 'Base level for headers.'],
-            "slugify": [slugify,
-                        "Function to generate anchors based on header text - "
-                        "Defaults to the headerid ext's slugify function."],
-            'separator': ['-', 'Word separator. Defaults to "-".'],
-            "toc_depth": [6,
-                          'Define the range of section levels to include in'
-                          'the Table of Contents. A single integer (b) defines'
-                          'the bottom section level (<h1>..<hb>) only.'
-                          'A string consisting of two digits separated by a hyphen'
-                          'in between ("2-5"), define the top (t) and the'
-                          'bottom (b) (<ht>..<hb>). Defaults to `6` (bottom).'],
+            'marker': [
+                '[TOC]',
+                'Text to find and replace with Table of Contents. Set to an empty string to disable. '
+                'Default: `[TOC]`.'
+            ],
+            'title': [
+                '', 'Title to insert into TOC `<div>`. Default: an empty string.'
+            ],
+            'title_class': [
+                'toctitle', 'CSS class used for the title. Default: `toctitle`.'
+            ],
+            'toc_class': [
+                'toc', 'CSS class(es) used for the link. Default: `toclink`.'
+            ],
+            'anchorlink': [
+                False, 'True if header should be a self link. Default: `False`.'
+            ],
+            'anchorlink_class': [
+                'toclink', 'CSS class(es) used for the link. Defaults: `toclink`.'
+            ],
+            'permalink': [
+                0, 'True or link text if a Sphinx-style permalink should be added. Default: `False`.'
+            ],
+            'permalink_class': [
+                'headerlink', 'CSS class(es) used for the link. Default: `headerlink`.'
+            ],
+            'permalink_title': [
+                'Permanent link', 'Title attribute of the permalink. Default: `Permanent link`.'
+            ],
+            'permalink_leading': [
+                False,
+                'True if permalinks should be placed at start of the header, rather than end. Default: False.'
+            ],
+            'baselevel': ['1', 'Base level for headers. Default: `1`.'],
+            'slugify': [
+                slugify, 'Function to generate anchors based on header text. Default: `slugify`.'
+            ],
+            'separator': ['-', 'Word separator. Default: `-`.'],
+            'toc_depth': [
+                6,
+                'Define the range of section levels to include in the Table of Contents. A single integer '
+                '(b) defines the bottom section level (<h1>..<hb>) only. A string consisting of two digits '
+                'separated by a hyphen in between (`2-5`) defines the top (t) and the bottom (b) (<ht>..<hb>). '
+                'Default: `6` (bottom).'
+            ],
         }
+        """ Default configuration options. """
 
         super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
+        """ Add TOC tree processor to Markdown. """
         md.registerExtension(self)
         self.md = md
         self.reset()

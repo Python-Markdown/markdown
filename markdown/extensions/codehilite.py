@@ -1,19 +1,25 @@
-"""
-CodeHilite Extension for Python-Markdown
-========================================
+# CodeHilite Extension for Python-Markdown
+# ========================================
 
+# Adds code/syntax highlighting to standard Python-Markdown code blocks.
+
+# See https://Python-Markdown.github.io/extensions/code_hilite
+# for documentation.
+
+# Original code Copyright 2006-2008 [Waylan Limberg](http://achinghead.com/).
+
+# All changes Copyright 2008-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 Adds code/syntax highlighting to standard Python-Markdown code blocks.
 
-See <https://Python-Markdown.github.io/extensions/code_hilite>
-for documentation.
-
-Original code Copyright 2006-2008 [Waylan Limberg](http://achinghead.com/).
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-
+See the [documentation](https://Python-Markdown.github.io/extensions/code_hilite)
+for details.
 """
+
+from __future__ import annotations
 
 from . import Extension
 from ..treeprocessors import Treeprocessor
@@ -29,11 +35,11 @@ except ImportError:  # pragma: no cover
     pygments = False
 
 
-def parse_hl_lines(expr):
+def parse_hl_lines(expr: str) -> list[int]:
     """Support our syntax for emphasizing certain lines of code.
 
-    expr should be like '1 2' to emphasize lines 1 and 2 of a code block.
-    Returns a list of ints, the line numbers to emphasize.
+    `expr` should be like '1 2' to emphasize lines 1 and 2 of a code block.
+    Returns a list of integers, the line numbers to emphasize.
     """
     if not expr:
         return []
@@ -50,57 +56,59 @@ class CodeHilite:
     Determine language of source code, and pass it on to the Pygments highlighter.
 
     Usage:
-        code = CodeHilite(src=some_code, lang='python')
-        html = code.hilite()
+
+    ```python
+    code = CodeHilite(src=some_code, lang='python')
+    html = code.hilite()
+    ```
 
     Arguments:
-    * `src`: Source string or any object with a `.readline` attribute.
+        src: Source string or any object with a `.readline` attribute.
 
-    * `lang`: String name of Pygments lexer to use for highlighting. Default: `None`.
-
-    * `guess_lang`: Auto-detect which lexer to use. Ignored if `lang` is set to a valid
-      value. Default: `True`.
-
-    * `use_pygments`: Pass code to Pygments for code highlighting. If `False`, the code is
-      instead wrapped for highlighting by a JavaScript library. Default: `True`.
-
-    * `pygments_formatter`: The name of a Pygments formatter or a formatter class used for
-      highlighting the code blocks. Default: `html`.
-
-    * `linenums`: An alias to Pygments `linenos` formatter option. Default: `None`.
-
-    * `css_class`: An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
-
-    * `lang_prefix`: Prefix prepended to the language. Default: "language-".
+    Keyword arguments:
+        lang (str): String name of Pygments lexer to use for highlighting. Default: `None`.
+        guess_lang (bool): Auto-detect which lexer to use.
+            Ignored if `lang` is set to a valid value. Default: `True`.
+        use_pygments (bool): Pass code to Pygments for code highlighting. If `False`, the code is
+            instead wrapped for highlighting by a JavaScript library. Default: `True`.
+        pygments_formatter (str): The name of a Pygments formatter or a formatter class used for
+            highlighting the code blocks. Default: `html`.
+        linenums (bool): An alias to Pygments `linenos` formatter option. Default: `None`.
+        css_class (str): An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
+        lang_prefix (str): Prefix prepended to the language. Default: "language-".
 
     Other Options:
+
     Any other options are accepted and passed on to the lexer and formatter. Therefore,
     valid options include any options which are accepted by the `html` formatter or
     whichever lexer the code's language uses. Note that most lexers do not have any
     options. However, a few have very useful options, such as PHP's `startinline` option.
     Any invalid options are ignored without error.
 
-    Formatter options: https://pygments.org/docs/formatters/#HtmlFormatter
-    Lexer Options: https://pygments.org/docs/lexers/
+    * **Formatter options**: <https://pygments.org/docs/formatters/#HtmlFormatter>
+    * **Lexer Options**: <https://pygments.org/docs/lexers/>
 
     Additionally, when Pygments is enabled, the code's language is passed to the
     formatter as an extra option `lang_str`, whose value being `{lang_prefix}{lang}`.
     This option has no effect to the Pygments' builtin formatters.
 
     Advanced Usage:
-        code = CodeHilite(
-            src = some_code,
-            lang = 'php',
-            startinline = True,      # Lexer option. Snippet does not start with `<?php`.
-            linenostart = 42,        # Formatter option. Snippet starts on line 42.
-            hl_lines = [45, 49, 50], # Formatter option. Highlight lines 45, 49, and 50.
-            linenos = 'inline'       # Formatter option. Avoid alignment problems.
-        )
-        html = code.hilite()
+
+    ```python
+    code = CodeHilite(
+        src = some_code,
+        lang = 'php',
+        startinline = True,      # Lexer option. Snippet does not start with `<?php`.
+        linenostart = 42,        # Formatter option. Snippet starts on line 42.
+        hl_lines = [45, 49, 50], # Formatter option. Highlight lines 45, 49, and 50.
+        linenos = 'inline'       # Formatter option. Avoid alignment problems.
+    )
+    html = code.hilite()
+    ```
 
     """
 
-    def __init__(self, src, **options):
+    def __init__(self, src: str, **options):
         self.src = src
         self.lang = options.pop('lang', None)
         self.guess_lang = options.pop('guess_lang', True)
@@ -120,7 +128,7 @@ class CodeHilite:
 
         self.options = options
 
-    def hilite(self, shebang=True):
+    def hilite(self, shebang=True) -> str:
         """
         Pass code to the [Pygments](https://pygments.org/) highlighter with
         optional line numbers. The output should then be styled with CSS to
@@ -277,32 +285,32 @@ class CodeHiliteExtension(Extension):
     def __init__(self, **kwargs):
         # define default configs
         self.config = {
-            'linenums': [None,
-                         "Use lines numbers. True|table|inline=yes, False=no, None=auto"],
-            'guess_lang': [True,
-                           "Automatic language detection - Default: True"],
-            'css_class': ["codehilite",
-                          "Set class name for wrapper <div> - "
-                          "Default: codehilite"],
-            'pygments_style': ['default',
-                               'Pygments HTML Formatter Style '
-                               '(Colorscheme) - Default: default'],
-            'noclasses': [False,
-                          'Use inline styles instead of CSS classes - '
-                          'Default false'],
-            'use_pygments': [True,
-                             'Use Pygments to Highlight code blocks. '
-                             'Disable if using a JavaScript library. '
-                             'Default: True'],
-            'lang_prefix': [
-                'language-',
-                'Prefix prepended to the language when use_pygments is false. Default: "language-"'
+            'linenums': [
+                None, "Use lines numbers. True|table|inline=yes, False=no, None=auto. Default: `None`."
             ],
-            'pygments_formatter': ['html',
-                                   'Use a specific formatter for Pygments highlighting.'
-                                   'Default: "html"',
-                                   ],
-            }
+            'guess_lang': [
+                True, "Automatic language detection - Default: `True`."
+            ],
+            'css_class': [
+                "codehilite", "Set class name for wrapper <div> - Default: `codehilite`."
+            ],
+            'pygments_style': [
+                'default', 'Pygments HTML Formatter Style (Colorscheme). Default: `default`.'
+            ],
+            'noclasses': [
+                False, 'Use inline styles instead of CSS classes - Default `False`.'
+            ],
+            'use_pygments': [
+                True, 'Highlight code blocks with pygments. Disable if using a JavaScript library. Default: `True`.'
+            ],
+            'lang_prefix': [
+                'language-', 'Prefix prepended to the language when `use_pygments` is false. Default: `language-`.'
+            ],
+            'pygments_formatter': [
+                'html', 'Use a specific formatter for Pygments highlighting. Default: `html`.'
+            ],
+        }
+        """ Default configuration options. """
 
         for key, value in kwargs.items():
             if key in self.config:

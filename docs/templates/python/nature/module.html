@@ -1,0 +1,6 @@
+{% extends "_base/module.html" %}
+
+{% block heading scoped %}
+  <a class="doc-source-link" href="{{ config.source.repo }}/tree/{{ config.source.tag }}/{{ module.filepath }}" title="{{ config.source.title }}">&lsaquo;&rsaquo;</a>
+  {{ super() }}
+{% endblock heading %}

@@ -1,23 +1,29 @@
+# Python Markdown
+
+# A Python implementation of John Gruber's Markdown.
+
+# Documentation: https://python-markdown.github.io/
+# GitHub: https://github.com/Python-Markdown/markdown/
+# PyPI: https://pypi.org/project/Markdown/
+
+# Started by Manfred Stienstra (http://www.dwerg.net/).
+# Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
+# Currently maintained by Waylan Limberg (https://github.com/waylan),
+# Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
+
+# Copyright 2007-2023 The Python Markdown Project (v. 1.7 and later)
+# Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
+# Copyright 2004 Manfred Stienstra (the original version)
+
+# License: BSD (see LICENSE.md for details).
+
 """
-Python Markdown
-
-A Python implementation of John Gruber's Markdown.
-
-Documentation: https://python-markdown.github.io/
-GitHub: https://github.com/Python-Markdown/markdown/
-PyPI: https://pypi.org/project/Markdown/
-
-Started by Manfred Stienstra (http://www.dwerg.net/).
-Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
-Currently maintained by Waylan Limberg (https://github.com/waylan),
-Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
-
-Copyright 2007-2020 The Python Markdown Project (v. 1.7 and later)
-Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
-Copyright 2004 Manfred Stienstra (the original version)
-
-License: BSD (see LICENSE.md for details).
+This module imports a copy of [`html.parser.HTMLParser`][] and modifies it heavily through monkey-patches.
+A copy is imported rather than the module being directly imported as this ensures that the user can import
+and  use the unmodified library for their own needs.
 """
+
+from __future__ import annotations
 
 import re
 import importlib.util
@@ -65,8 +71,9 @@ class HTMLExtractor(htmlparser.HTMLParser):
     """
     Extract raw HTML from text.
 
-    The raw HTML is stored in the `htmlStash` of the Markdown instance passed
-    to `md` and the remaining text is stored in `cleandoc` as a list of strings.
+    The raw HTML is stored in the [`htmlStash`][markdown.util.HtmlStash] of the
+    [`Markdown`][markdown.Markdown] instance passed to `md` and the remaining text
+    is stored in `cleandoc` as a list of strings.
     """
 
     def __init__(self, md, *args, **kwargs):
@@ -105,7 +112,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             self._cache = []
 
     @property
-    def line_offset(self):
+    def line_offset(self) -> int:
         """Returns char index in `self.rawdata` for the start of the current line. """
         if self.lineno > 1 and '\n' in self.rawdata:
             m = re.match(r'([^\n]*\n){{{}}}'.format(self.lineno-1), self.rawdata)
@@ -117,7 +124,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
                 return self.rawdata.rfind('\n')
         return 0
 
-    def at_line_start(self):
+    def at_line_start(self) -> bool:
         """
         Returns True if current position is at start of line.
 
@@ -130,7 +137,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         # Confirm up to first 3 chars are whitespace
         return self.rawdata[self.line_offset:self.line_offset + self.offset].strip() == ''
 
-    def get_endtag_text(self, tag):
+    def get_endtag_text(self, tag: str) -> str:
         """
         Returns the text of the end tag.
 
@@ -145,7 +152,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             # Failed to extract from raw data. Assume well formed and lowercase.
             return '</{}>'.format(tag)
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag: str, attrs: dict[str, str]):
         # Handle tags that should always be empty and do not specify a closing tag
         if tag in self.empty_tags:
             self.handle_startendtag(tag, attrs)
@@ -166,7 +173,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
                 # This is presumably a standalone tag in a code span (see #1036).
                 self.clear_cdata_mode()
 
-    def handle_endtag(self, tag):
+    def handle_endtag(self, tag: str):
         text = self.get_endtag_text(tag)
 
         if self.inraw:
@@ -193,7 +200,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(text)
 
-    def handle_data(self, data):
+    def handle_data(self, data: str):
         if self.intail and '\n' in data:
             self.intail = False
         if self.inraw:
@@ -201,7 +208,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(data)
 
-    def handle_empty_tag(self, data, is_block):
+    def handle_empty_tag(self, data: str, is_block: bool):
         """ Handle empty tags (`<data>`). """
         if self.inraw or self.intail:
             # Append this to the existing raw block
@@ -224,29 +231,29 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(data)
 
-    def handle_startendtag(self, tag, attrs):
+    def handle_startendtag(self, tag: str, attrs: dict[str, str]):
         self.handle_empty_tag(self.get_starttag_text(), is_block=self.md.is_block_level(tag))
 
-    def handle_charref(self, name):
+    def handle_charref(self, name: str):
         self.handle_empty_tag('&#{};'.format(name), is_block=False)
 
-    def handle_entityref(self, name):
+    def handle_entityref(self, name: str):
         self.handle_empty_tag('&{};'.format(name), is_block=False)
 
-    def handle_comment(self, data):
+    def handle_comment(self, data: str):
         self.handle_empty_tag('<!--{}-->'.format(data), is_block=True)
 
-    def handle_decl(self, data):
+    def handle_decl(self, data: str):
         self.handle_empty_tag('<!{}>'.format(data), is_block=True)
 
-    def handle_pi(self, data):
+    def handle_pi(self, data: str):
         self.handle_empty_tag('<?{}?>'.format(data), is_block=True)
 
-    def unknown_decl(self, data):
+    def unknown_decl(self, data: str):
         end = ']]>' if data.startswith('CDATA[') else ']>'
         self.handle_empty_tag('<![{}{}'.format(data, end), is_block=True)
 
-    def parse_pi(self, i):
+    def parse_pi(self, i: int) -> int:
         if self.at_line_start() or self.intail:
             return super().parse_pi(i)
         # This is not the beginning of a raw block so treat as plain data
@@ -254,7 +261,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.handle_data('<?')
         return i + 2
 
-    def parse_html_declaration(self, i):
+    def parse_html_declaration(self, i: int) -> int:
         if self.at_line_start() or self.intail:
             return super().parse_html_declaration(i)
         # This is not the beginning of a raw block so treat as plain data
@@ -268,11 +275,11 @@ class HTMLExtractor(htmlparser.HTMLParser):
     # can override `cdata_mode` in certain situations (in a code span).
     __starttag_text = None
 
-    def get_starttag_text(self):
+    def get_starttag_text(self) -> str:
         """Return full source of start tag: `<...>`."""
         return self.__starttag_text
 
-    def parse_starttag(self, i):  # pragma: no cover
+    def parse_starttag(self, i: int) -> int:  # pragma: no cover
         self.__starttag_text = None
         endpos = self.check_for_whole_start_tag(i)
         if endpos < 0:

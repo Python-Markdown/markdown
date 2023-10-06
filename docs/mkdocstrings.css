@@ -1,0 +1,105 @@
+/* Indentation. */
+div.doc-contents:not(.first) {
+  padding-left: 25px;
+}
+
+/* Mark external links as such. */
+a.external::after,
+a.autorefs-external::after {
+  /* https://primer.style/octicons/arrow-up-right-24 */
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.25 15.5a.75.75 0 00.75-.75v-9a.75.75 0 00-.75-.75h-9a.75.75 0 000 1.5h7.19L6.22 16.72a.75.75 0 101.06 1.06L17.5 7.56v7.19c0 .414.336.75.75.75z"></path></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.25 15.5a.75.75 0 00.75-.75v-9a.75.75 0 00-.75-.75h-9a.75.75 0 000 1.5h7.19L6.22 16.72a.75.75 0 101.06 1.06L17.5 7.56v7.19c0 .414.336.75.75.75z"></path></svg>');
+  content: ' ';
+
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+
+  height: 1em;
+  width: 1em;
+  background-color: #005b81;
+}
+
+a.external:hover::after,
+a.autorefs-external:hover::after {
+  background-color: #e32e00;
+}
+
+/* Customize custom links. */
+a.autorefs code {
+  background-color: #ecf0f3;
+  font-weight: normal;
+  color: #005B81;
+}
+
+a.autorefs:hover code {
+  color: #E32E00;
+}
+
+/* Customize labels. */
+.doc-label {
+  border-radius: 15px;
+  padding: 2px 8px;
+  background-color: #f2f2f3;
+  text-wrap: nowrap;
+}
+
+.doc-label code {
+  color: #444;
+}
+
+.doc-label-deprecated {
+  background-color: #ffe4e4;
+  border: 1px solid #f66;
+}
+
+/* No shadows in any code. */
+
+code {
+  text-shadow: none;
+}
+
+/* Code spans in tables. */
+
+table code {
+  background-color: transparent !important;
+}
+
+/* Style source links */
+a.doc-source-link {
+  position: relative;
+  float: right;
+  border: 1px #005B81 solid;
+  margin: 0 5px;
+  padding: 0 5px;
+  font-weight: normal;
+  text-shadow: none;
+  background-color: #f2f2f3;
+  font-size: 1rem;
+}
+
+a.doc-source-link:hover {
+  text-decoration: none;
+  border-color: #E32E00;
+}
+
+/* Customize symbol names. */
+code.doc-symbol-attribute::after {
+  content: "Attr";
+}
+
+code.doc-symbol-function::after {
+  content: "Func";
+}
+
+code.doc-symbol-method::after {
+  content: "Method";
+}
+
+code.doc-symbol-class::after {
+  content: "Class";
+}
+
+code.doc-symbol-module::after {
+  content: "Module";
+}

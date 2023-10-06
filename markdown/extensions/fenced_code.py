@@ -1,20 +1,25 @@
-"""
-Fenced Code Extension for Python Markdown
-=========================================
+# Fenced Code Extension for Python Markdown
+# =========================================
 
+# This extension adds Fenced Code Blocks to Python-Markdown.
+
+# See https://Python-Markdown.github.io/extensions/fenced_code_blocks
+# for documentation.
+
+# Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
+
+# All changes Copyright 2008-2014 The Python Markdown Project
+
+# License: [BSD](https://opensource.org/licenses/bsd-license.php)
+
+"""
 This extension adds Fenced Code Blocks to Python-Markdown.
 
-See <https://Python-Markdown.github.io/extensions/fenced_code_blocks>
-for documentation.
-
-Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
-
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
+See the [documentation](https://Python-Markdown.github.io/extensions/fenced_code_blocks)
+for details.
 """
 
+from __future__ import annotations
 
 from textwrap import dedent
 from . import Extension
@@ -31,6 +36,7 @@ class FencedCodeExtension(Extension):
         self.config = {
             'lang_prefix': ['language-', 'Prefix prepended to the language. Default: "language-"']
         }
+        """ Default configuration options. """
         super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
@@ -41,6 +47,8 @@ class FencedCodeExtension(Extension):
 
 
 class FencedBlockPreprocessor(Preprocessor):
+    """ Find and extract fenced code blocks. """
+
     FENCED_BLOCK_RE = re.compile(
         dedent(r'''
             (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
@@ -144,7 +152,7 @@ class FencedBlockPreprocessor(Preprocessor):
         return text.split("\n")
 
     def handle_attrs(self, attrs):
-        """ Return tuple: (id, [list, of, classes], {configs}) """
+        """ Return tuple: `(id, [list, of, classes], {configs})` """
         id = ''
         classes = []
         configs = {}
