@@ -31,4 +31,4 @@ jobs:
       uses: mindsers/changelog-reader-action@v2
       with:
         validation_level: error
-        path: ./docs/changelog.md
+        path: docs/changelog.md
