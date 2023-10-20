@@ -83,6 +83,9 @@ class HTMLExtractor(htmlparser.HTMLParser):
         # Block tags that should contain no content (self closing)
         self.empty_tags = set(['hr'])
 
+        self.lineno_start_cache = [0]
+
+
         # This calls self.reset
         super().__init__(*args, **kwargs)
         self.md = md
@@ -94,6 +97,8 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.stack = []  # When `inraw==True`, stack contains a list of tags
         self._cache = []
         self.cleandoc = []
+        self.lineno_start_cache = [0]
+
         super().reset()
 
     def close(self):
@@ -114,6 +119,15 @@ class HTMLExtractor(htmlparser.HTMLParser):
     @property
     def line_offset(self) -> int:
         """Returns char index in `self.rawdata` for the start of the current line. """
+        for ii in range(len(self.lineno_start_cache)-1, self.lineno-1):
+            last_line_start_pos = self.lineno_start_cache[ii]
+            lf_pos = self.rawdata.find('\n', last_line_start_pos)
+            if lf_pos == -1:
+                # No more newlines found. Use end of rawdata.
+                lf_pos = len(self.rawdata)
+            self.lineno_start_cache.append(lf_pos+1)
+
+        return self.lineno_start_cache[self.lineno-1]
         if self.lineno > 1 and '\n' in self.rawdata:
             m = re.match(r'([^\n]*\n){{{}}}'.format(self.lineno-1), self.rawdata)
             if m:
