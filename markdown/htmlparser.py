@@ -128,15 +128,6 @@ class HTMLExtractor(htmlparser.HTMLParser):
             self.lineno_start_cache.append(lf_pos+1)
 
         return self.lineno_start_cache[self.lineno-1]
-        if self.lineno > 1 and '\n' in self.rawdata:
-            m = re.match(r'([^\n]*\n){{{}}}'.format(self.lineno-1), self.rawdata)
-            if m:
-                return m.end()
-            else:  # pragma: no cover
-                # Value of `self.lineno` must exceed total number of lines.
-                # Find index of beginning of last line.
-                return self.rawdata.rfind('\n')
-        return 0
 
     def at_line_start(self) -> bool:
         """
