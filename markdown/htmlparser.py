@@ -85,7 +85,6 @@ class HTMLExtractor(htmlparser.HTMLParser):
 
         self.lineno_start_cache = [0]
 
-
         # This calls self.reset
         super().__init__(*args, **kwargs)
         self.md = md
