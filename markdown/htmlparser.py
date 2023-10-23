@@ -122,7 +122,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             last_line_start_pos = self.lineno_start_cache[ii]
             lf_pos = self.rawdata.find('\n', last_line_start_pos)
             if lf_pos == -1:
-                # No more newlines found. Use end of rawdata.
+                # No more newlines found. Use end of raw data as start of line beyond end.
                 lf_pos = len(self.rawdata)
             self.lineno_start_cache.append(lf_pos+1)
 
