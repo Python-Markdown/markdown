@@ -146,7 +146,7 @@ class AttrListTreeprocessor(Treeprocessor):
                         self.assign_attrs(elem, m.group(1))
                         elem.tail = elem.tail[m.end():]
 
-    def assign_attrs(self, elem: Element, attrs: dict[str, str]):
+    def assign_attrs(self, elem: Element, attrs: str) -> None:
         """ Assign `attrs` to element. """
         for k, v in get_attrs(attrs):
             if k == '.':

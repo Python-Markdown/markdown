@@ -71,7 +71,7 @@ def get_name(el):
     return ''.join(text).strip()
 
 
-def stashedHTML2text(text, md, strip_entities=True):
+def stashedHTML2text(text, md, strip_entities: bool = True):
     """ Extract raw HTML from stash, reduce to plain text and swap with placeholder. """
     def _html_sub(m):
         """ Substitute raw html with plain text. """
@@ -198,7 +198,7 @@ class TocTreeprocessor(Treeprocessor):
                 yield node, child
                 yield from self.iterparent(child)
 
-    def replace_marker(self, root, elem):
+    def replace_marker(self, root, elem) -> None:
         """ Replace marker with elem. """
         for (p, c) in self.iterparent(root):
             text = ''.join(c.itertext()).strip()
@@ -219,14 +219,14 @@ class TocTreeprocessor(Treeprocessor):
                         p[i] = elem
                         break
 
-    def set_level(self, elem):
+    def set_level(self, elem) -> None:
         """ Adjust header level according to base level. """
         level = int(elem.tag[-1]) + self.base_level
         if level > 6:
             level = 6
         elem.tag = 'h%d' % level
 
-    def add_anchor(self, c, elem_id):
+    def add_anchor(self, c, elem_id) -> None:
         anchor = etree.Element("a")
         anchor.text = c.text
         anchor.attrib["href"] = "#" + elem_id
@@ -238,7 +238,7 @@ class TocTreeprocessor(Treeprocessor):
             c.remove(c[0])
         c.append(anchor)
 
-    def add_permalink(self, c, elem_id):
+    def add_permalink(self, c, elem_id) -> None:
         permalink = etree.Element("a")
         permalink.text = ("%spara;" % AMP_SUBSTITUTE
                           if self.use_permalinks is True
@@ -399,7 +399,7 @@ class TocExtension(Extension):
         tocext = self.TreeProcessorClass(md, self.getConfigs())
         md.treeprocessors.register(tocext, 'toc', 5)
 
-    def reset(self):
+    def reset(self) -> None:
         self.md.toc = ''
         self.md.toc_tokens = []
 

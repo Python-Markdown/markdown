@@ -23,7 +23,7 @@ import codecs
 import sys
 import logging
 import importlib
-from typing import TYPE_CHECKING, Any, TextIO, Callable
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Mapping, Sequence, TextIO
 from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
@@ -76,7 +76,7 @@ class Markdown:
 
     doc_tag = "div"     # Element used to wrap document - later removed
 
-    output_formats: dict[str, Callable[Element]] = {
+    output_formats: ClassVar[dict[str, Callable[[Element], str]]] = {
         'html':   to_html_string,
         'xhtml':  to_xhtml_string,
     }
@@ -156,7 +156,11 @@ class Markdown:
         self.postprocessors = build_postprocessors(self)
         return self
 
-    def registerExtensions(self, extensions: list[Extension | str], configs: dict[str, dict[str, Any]]) -> Markdown:
+    def registerExtensions(
+        self,
+        extensions: Sequence[Extension | str],
+        configs: Mapping[str, Mapping[str, Any]]
+    ) -> Markdown:
         """
         Load a list of extensions into an instance of the `Markdown` class.
 
@@ -188,7 +192,7 @@ class Markdown:
                 )
         return self
 
-    def build_extension(self, ext_name: str, configs: dict[str, Any]) -> Extension:
+    def build_extension(self, ext_name: str, configs: Mapping[str, Any]) -> Extension:
         """
         Build extension from a string name, then return an instance using the given `configs`.
 

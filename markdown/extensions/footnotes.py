@@ -98,14 +98,14 @@ class FootnoteExtension(Extension):
         # Insert a postprocessor after amp_substitute processor
         md.postprocessors.register(FootnotePostprocessor(self), 'footnote', 25)
 
-    def reset(self):
+    def reset(self) -> None:
         """ Clear footnotes on reset, and prepare for distinct document. """
-        self.footnotes = OrderedDict()
+        self.footnotes: OrderedDict[str, str] = OrderedDict()
         self.unique_prefix += 1
         self.found_refs = {}
         self.used_refs = set()
 
-    def unique_ref(self, reference, found=False):
+    def unique_ref(self, reference, found: bool = False):
         """ Get a unique reference if there are duplicates. """
         if not found:
             return reference
@@ -144,7 +144,7 @@ class FootnoteExtension(Extension):
         res = finder(root)
         return res
 
-    def setFootnote(self, id, text):
+    def setFootnote(self, id, text) -> None:
         """ Store a footnote for later retrieval. """
         self.footnotes[id] = text
 
@@ -159,7 +159,7 @@ class FootnoteExtension(Extension):
         else:
             return 'fn{}{}'.format(self.get_separator(), id)
 
-    def makeFootnoteRefId(self, id, found=False):
+    def makeFootnoteRefId(self, id, found: bool = False):
         """ Return footnote back-link id. """
         if self.getConfig("UNIQUE_IDS"):
             return self.unique_ref('fnref%s%d-%s' % (self.get_separator(), self.unique_prefix, id), found)
@@ -329,7 +329,7 @@ class FootnotePostTreeprocessor(Treeprocessor):
     def __init__(self, footnotes):
         self.footnotes = footnotes
 
-    def add_duplicates(self, li, duplicates):
+    def add_duplicates(self, li, duplicates) -> None:
         """ Adjust current `li` and add the duplicates: `fnref2`, `fnref3`, etc. """
         for link in li.iter('a'):
             # Find the link that needs to be duplicated.
@@ -355,7 +355,7 @@ class FootnotePostTreeprocessor(Treeprocessor):
         link_id = '{}ref{}{}'.format(fn, self.footnotes.get_separator(), rest)
         return self.footnotes.found_refs.get(link_id, 0)
 
-    def handle_duplicates(self, parent):
+    def handle_duplicates(self, parent) -> None:
         """ Find duplicate footnotes and format and add the duplicates. """
         for li in list(parent):
             # Check number of duplicates footnotes and insert

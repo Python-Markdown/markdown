@@ -41,8 +41,7 @@ The new `InlineProcessor` provides two major enhancements to `Patterns`:
 from __future__ import annotations
 
 from . import util
-from collections import namedtuple
-from typing import TYPE_CHECKING, Match, Any
+from typing import TYPE_CHECKING, Any, Collection, NamedTuple
 import re
 import xml.etree.ElementTree as etree
 try:  # pragma: no cover
@@ -54,7 +53,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
 
 
-def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry:
+def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry[InlineProcessor]:
     """
     Build the default set of inline patterns for Markdown.
 
@@ -181,8 +180,11 @@ def dequote(string: str) -> str:
         return string
 
 
-class EmStrongItem(namedtuple('EmStrongItem', ['pattern', 'builder', 'tags'])):
+class EmStrongItem(NamedTuple):
     """Emphasis/strong pattern item."""
+    pattern: re.Pattern[str]
+    builder: str
+    tags: str
 
 
 # The pattern classes
@@ -209,7 +211,7 @@ class Pattern:  # pragma: no cover
 
     """
 
-    ANCESTOR_EXCLUDES = tuple()
+    ANCESTOR_EXCLUDES: Collection[str] = tuple()
     """
     A collection of elements which are undesirable ancestors. The processor will be skipped if it
     would cause the content to be a descendant of one of the listed tag names.
@@ -236,7 +238,7 @@ class Pattern:  # pragma: no cover
         """ Return a compiled regular expression. """
         return self.compiled_re
 
-    def handleMatch(self, m: Match) -> etree.Element:
+    def handleMatch(self, m: re.Match[str]) -> etree.Element | str:
         """Return a ElementTree element from the given match.
 
         Subclasses should override this method.
@@ -298,7 +300,7 @@ class InlineProcessor(Pattern):
         self.safe_mode = False
         self.md = md
 
-    def handleMatch(self, m: Match, data: str) -> tuple[etree.Element | str | None, int | None, int | None]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | str | None, int | None, int | None]:
         """Return a ElementTree element from the given match and the
         start and end index of the matched text.
 
@@ -322,14 +324,14 @@ class InlineProcessor(Pattern):
 
 class SimpleTextPattern(Pattern):  # pragma: no cover
     """ Return a simple text of `group(2)` of a Pattern. """
-    def handleMatch(self, m: Match) -> str:
+    def handleMatch(self, m: re.Match[str]) -> str:
         """ Return string content of `group(2)` of a matching pattern. """
         return m.group(2)
 
 
 class SimpleTextInlineProcessor(InlineProcessor):
     """ Return a simple text of `group(1)` of a Pattern. """
-    def handleMatch(self, m: Match, data: str) -> tuple[str, int, int]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[str, int, int]:
         """ Return string content of `group(1)` of a matching pattern. """
         return m.group(1), m.start(0), m.end(0)
 
@@ -337,7 +339,7 @@ class SimpleTextInlineProcessor(InlineProcessor):
 class EscapeInlineProcessor(InlineProcessor):
     """ Return an escaped character. """
 
-    def handleMatch(self, m: Match, data: str) -> tuple[str | None, int, int]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[str | None, int, int]:
         """
         If the character matched by `group(1)` of a pattern is in [`ESCAPED_CHARS`][markdown.Markdown.ESCAPED_CHARS]
         then return the integer representing the character's Unicode code point (as returned by [`ord`][]) wrapped
@@ -372,7 +374,7 @@ class SimpleTagPattern(Pattern):  # pragma: no cover
         self.tag = tag
         """ The tag of the rendered element. """
 
-    def handleMatch(self, m: Match) -> etree.Element:
+    def handleMatch(self, m: re.Match[str]) -> etree.Element:
         """
         Return [`Element`][xml.etree.ElementTree.Element] of type `tag` with the string in `group(3)` of a
         matching pattern as the Element's text.
@@ -401,7 +403,7 @@ class SimpleTagInlineProcessor(InlineProcessor):
         self.tag = tag
         """ The tag of the rendered element. """
 
-    def handleMatch(self, m: Match, data: str) -> tuple[etree.Element, int, int]:  # pragma: no cover
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element, int, int]:  # pragma: no cover
         """
         Return [`Element`][xml.etree.ElementTree.Element] of type `tag` with the string in `group(2)` of a
         matching pattern as the Element's text.
@@ -413,14 +415,14 @@ class SimpleTagInlineProcessor(InlineProcessor):
 
 class SubstituteTagPattern(SimpleTagPattern):  # pragma: no cover
     """ Return an element of type `tag` with no children. """
-    def handleMatch(self, m: Match) -> etree.Element:
+    def handleMatch(self, m: re.Match[str]) -> etree.Element:
         """ Return empty [`Element`][xml.etree.ElementTree.Element] of type `tag`. """
         return etree.Element(self.tag)
 
 
 class SubstituteTagInlineProcessor(SimpleTagInlineProcessor):
     """ Return an element of type `tag` with no children. """
-    def handleMatch(self,  m: Match, data: str) -> tuple[etree.Element, int, int]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element, int, int]:
         """ Return empty [`Element`][xml.etree.ElementTree.Element] of type `tag`. """
         return etree.Element(self.tag), m.start(0), m.end(0)
 
@@ -433,7 +435,7 @@ class BacktickInlineProcessor(InlineProcessor):
         self.tag = 'code'
         """ The tag of the rendered element. """
 
-    def handleMatch(self, m: Match, data: str) -> tuple[etree.Element | str, int, int]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | str, int, int]:
         """
         If the match contains `group(3)` of a pattern, then return a `code`
         [`Element`][xml.etree.ElementTree.Element] which contains HTML escaped text (with
@@ -456,7 +458,7 @@ class DoubleTagPattern(SimpleTagPattern):  # pragma: no cover
     Useful for strong emphasis etc.
 
     """
-    def handleMatch(self, m: Match) -> etree.Element:
+    def handleMatch(self, m: re.Match[str]) -> etree.Element:
         """
         Return [`Element`][xml.etree.ElementTree.Element] in following format:
         `<tag1><tag2>group(3)</tag2>group(4)</tag2>` where `group(4)` is optional.
@@ -477,7 +479,7 @@ class DoubleTagInlineProcessor(SimpleTagInlineProcessor):
     Useful for strong emphasis etc.
 
     """
-    def handleMatch(self, m: Match, data: str) -> tuple[etree.Element, int, int]:  # pragma: no cover
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element, int, int]:  # pragma: no cover
         """
         Return [`Element`][xml.etree.ElementTree.Element] in following format:
         `<tag1><tag2>group(2)</tag2>group(3)</tag2>` where `group(3)` is optional.
@@ -494,7 +496,7 @@ class DoubleTagInlineProcessor(SimpleTagInlineProcessor):
 
 class HtmlInlineProcessor(InlineProcessor):
     """ Store raw inline html and return a placeholder. """
-    def handleMatch(self, m: Match, data: str) -> tuple[str, int, int]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[str, int, int]:
         """ Store the text of `group(1)` of a pattern and return a placeholder string. """
         rawhtml = self.backslash_unescape(self.unescape(m.group(1)))
         place_holder = self.md.htmlStash.store(rawhtml)
@@ -577,7 +579,7 @@ class AsteriskProcessor(InlineProcessor):
         self.parse_sub_patterns(text, el2, None, idx)
         return el1
 
-    def parse_sub_patterns(self, data, parent, last, idx):
+    def parse_sub_patterns(self, data, parent, last, idx) -> None:
         """
         Parses sub patterns.
 
@@ -651,7 +653,7 @@ class AsteriskProcessor(InlineProcessor):
         else:
             return self.build_single(m, tags, index)
 
-    def handleMatch(self, m: Match, data: str) -> tuple[etree.Element, int, int]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | None, int | None, int | None]:
         """Parse patterns."""
 
         el = None
@@ -686,7 +688,7 @@ class LinkInlineProcessor(InlineProcessor):
     RE_LINK = re.compile(r'''\(\s*(?:(<[^<>]*>)\s*(?:('[^']*'|"[^"]*")\s*)?\))?''', re.DOTALL | re.UNICODE)
     RE_TITLE_CLEAN = re.compile(r'\s')
 
-    def handleMatch(self, m: Match, data: str) -> tuple[etree.Element | None, int | None, int | None]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | None, int | None, int | None]:
         """ Return an `a` [`Element`][xml.etree.ElementTree.Element] or `(None, None, None)`. """
         text, index, handled = self.getText(data, m.end(0))
 
@@ -846,7 +848,7 @@ class LinkInlineProcessor(InlineProcessor):
 class ImageInlineProcessor(LinkInlineProcessor):
     """ Return a `img` element from the given match. """
 
-    def handleMatch(self, m: Match, data: str) -> tuple[etree.Element | None, int | None, int | None]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | None, int | None, int | None]:
         """ Return an `img` [`Element`][xml.etree.ElementTree.Element] or `(None, None, None)`. """
         text, index, handled = self.getText(data, m.end(0))
         if not handled:
@@ -873,7 +875,7 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
 
     RE_LINK = re.compile(r'\s?\[([^\]]*)\]', re.DOTALL | re.UNICODE)
 
-    def handleMatch(self, m: Match, data: str) -> tuple[etree.Element | None, int | None, int | None]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | None, int | None, int | None]:
         """
         Return [`Element`][xml.etree.ElementTree.Element] returned by `makeTag` method or `(None, None, None)`.
 
@@ -953,7 +955,7 @@ class ShortImageReferenceInlineProcessor(ImageReferenceInlineProcessor):
 
 class AutolinkInlineProcessor(InlineProcessor):
     """ Return a link Element given an auto-link (`<http://example/com>`). """
-    def handleMatch(self, m: Match, data: str) -> tuple[etree.Element, int, int]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element, int, int]:
         """ Return an `a` [`Element`][xml.etree.ElementTree.Element] of `group(1)`. """
         el = etree.Element("a")
         el.set('href', self.unescape(m.group(1)))
@@ -965,7 +967,7 @@ class AutomailInlineProcessor(InlineProcessor):
     """
     Return a `mailto` link Element given an auto-mail link (`<foo@example.com>`).
     """
-    def handleMatch(self, m: Match, data: str) -> tuple[etree.Element, int, int]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element, int, int]:
         """ Return an [`Element`][xml.etree.ElementTree.Element] containing a `mailto` link  of `group(1)`. """
         el = etree.Element('a')
         email = self.unescape(m.group(1))

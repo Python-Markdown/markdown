@@ -152,7 +152,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             # Failed to extract from raw data. Assume well formed and lowercase.
             return '</{}>'.format(tag)
 
-    def handle_starttag(self, tag: str, attrs: dict[str, str]):
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str]]):
         # Handle tags that should always be empty and do not specify a closing tag
         if tag in self.empty_tags:
             self.handle_startendtag(tag, attrs)
@@ -231,7 +231,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(data)
 
-    def handle_startendtag(self, tag: str, attrs: dict[str, str]):
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str]]):
         self.handle_empty_tag(self.get_starttag_text(), is_block=self.md.is_block_level(tag))
 
     def handle_charref(self, name: str):
@@ -273,7 +273,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
     # As `__startag_text` is private, all references to it must be in this subclass.
     # The last few lines of `parse_starttag` are reversed so that `handle_starttag`
     # can override `cdata_mode` in certain situations (in a code span).
-    __starttag_text = None
+    __starttag_text: str | None = None
 
     def get_starttag_text(self) -> str:
         """Return full source of start tag: `<...>`."""

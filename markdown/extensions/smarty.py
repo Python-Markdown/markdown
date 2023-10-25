@@ -193,7 +193,7 @@ class SmartyExtension(Extension):
             name = 'smarty-%s-%d' % (serie, ind)
             self.inlinePatterns.register(pattern, name, priority-ind)
 
-    def educateDashes(self, md):
+    def educateDashes(self, md) -> None:
         emDashesPattern = SubstituteTextPattern(
             r'(?<!-)---(?!-)', (self.substitutions['mdash'],), md
         )
@@ -203,13 +203,13 @@ class SmartyExtension(Extension):
         self.inlinePatterns.register(emDashesPattern, 'smarty-em-dashes', 50)
         self.inlinePatterns.register(enDashesPattern, 'smarty-en-dashes', 45)
 
-    def educateEllipses(self, md):
+    def educateEllipses(self, md) -> None:
         ellipsesPattern = SubstituteTextPattern(
             r'(?<!\.)\.{3}(?!\.)', (self.substitutions['ellipsis'],), md
         )
         self.inlinePatterns.register(ellipsesPattern, 'smarty-ellipses', 10)
 
-    def educateAngledQuotes(self, md):
+    def educateAngledQuotes(self, md) -> None:
         leftAngledQuotePattern = SubstituteTextPattern(
             r'\<\<', (self.substitutions['left-angle-quote'],), md
         )
@@ -219,7 +219,7 @@ class SmartyExtension(Extension):
         self.inlinePatterns.register(leftAngledQuotePattern, 'smarty-left-angle-quotes', 40)
         self.inlinePatterns.register(rightAngledQuotePattern, 'smarty-right-angle-quotes', 35)
 
-    def educateQuotes(self, md):
+    def educateQuotes(self, md) -> None:
         lsquo = self.substitutions['left-single-quote']
         rsquo = self.substitutions['right-single-quote']
         ldquo = self.substitutions['left-double-quote']
@@ -243,7 +243,7 @@ class SmartyExtension(Extension):
 
     def extendMarkdown(self, md):
         configs = self.getConfigs()
-        self.inlinePatterns = Registry()
+        self.inlinePatterns: Registry[HtmlInlineProcessor] = Registry()
         if configs['smart_ellipses']:
             self.educateEllipses(md)
         if configs['smart_quotes']:

@@ -82,7 +82,7 @@ class BlockProcessor:
         else:
             return None
 
-    def detab(self, text: str, length: int = None) -> str:
+    def detab(self, text: str, length: int | None = None) -> tuple[str, str]:
         """ Remove a tab from the front of each line of the given text. """
         if length is None:
             length = self.tab_length
@@ -105,7 +105,7 @@ class BlockProcessor:
                 lines[i] = lines[i][self.tab_length*level:]
         return '\n'.join(lines)
 
-    def test(self, parent: etree.Element, block: list[str]) -> bool:
+    def test(self, parent: etree.Element, block: str) -> bool:
         """ Test for block type. Must be overridden by subclasses.
 
         As the parser loops through processors, it will call the `test`
@@ -214,7 +214,7 @@ class ListIndentProcessor(BlockProcessor):
             self.create_item(sibling, block)
         self.parser.state.reset()
 
-    def create_item(self, parent: etree.Element, block: str):
+    def create_item(self, parent: etree.Element, block: str) -> None:
         """ Create a new `li` and parse the block with it as the parent. """
         li = etree.SubElement(parent, 'li')
         self.parser.parseBlocks(li, [block])
@@ -329,7 +329,7 @@ class OListProcessor(BlockProcessor):
 
     TAG: str = 'ol'
     """ The tag used for the the wrapping element. """
-    STARTSWITH: int = '1'
+    STARTSWITH: str = '1'
     """
     The integer (as a string ) with which the list starts. For example, if a list is initialized as
     `3. Item`, then the `ol` tag will be assigned an HTML attribute of `starts="3"`. Default: `"1"`.
@@ -342,7 +342,7 @@ class OListProcessor(BlockProcessor):
     This is the list of types which can be mixed.
     """
 
-    def __init__(self, parser):
+    def __init__(self, parser: BlockParser):
         super().__init__(parser)
         # Detect an item (`1. item`). `group(1)` contains contents of item.
         self.RE = re.compile(r'^[ ]{0,%d}\d+\.[ ]+(.*)' % (self.tab_length - 1))
@@ -448,7 +448,7 @@ class UListProcessor(OListProcessor):
     TAG: str = 'ul'
     """ The tag used for the the wrapping element. """
 
-    def __init__(self, parser):
+    def __init__(self, parser: BlockParser):
         super().__init__(parser)
         # Detect an item (`1. item`). `group(1)` contains contents of item.
         self.RE = re.compile(r'^[ ]{0,%d}[*+-][ ]+(.*)' % (self.tab_length - 1))
