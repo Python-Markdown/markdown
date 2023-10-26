@@ -82,14 +82,13 @@ class WikiLinksInlineProcessor(InlineProcessor):
         base_url = self.config['base_url']
         end_url = self.config['end_url']
         html_class = self.config['html_class']
-        meta = getattr(self.md, 'Meta', None)
-        if meta is not None:
-            if 'wiki_base_url' in meta:
-                base_url = meta['wiki_base_url'][0]
-            if 'wiki_end_url' in meta:
-                end_url = meta['wiki_end_url'][0]
-            if 'wiki_html_class' in meta:
-                html_class = meta['wiki_html_class'][0]
+        if hasattr(self.md, 'Meta'):
+            if 'wiki_base_url' in self.md.Meta:
+                base_url = self.md.Meta['wiki_base_url'][0]
+            if 'wiki_end_url' in self.md.Meta:
+                end_url = self.md.Meta['wiki_end_url'][0]
+            if 'wiki_html_class' in self.md.Meta:
+                html_class = self.md.Meta['wiki_html_class'][0]
         return base_url, end_url, html_class
 
 
