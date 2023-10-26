@@ -317,11 +317,11 @@ class Registry(Generic[_T]):
         return iter([self._data[k] for k, p in self._priority])
 
     @overload
-    def __getitem__(self, key: str | int) -> _T:
+    def __getitem__(self, key: str | int) -> _T:  # pragma: no cover
         ...
 
     @overload
-    def __getitem__(self, key: slice) -> Registry[_T]:
+    def __getitem__(self, key: slice) -> Registry[_T]:  # pragma: no cover
         ...
 
     def __getitem__(self, key: str | int | slice) -> _T | Registry[_T]:
