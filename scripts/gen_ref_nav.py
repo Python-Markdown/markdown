@@ -12,22 +12,25 @@ per_module_options = {
     "markdown": {"summary": {"attributes": True, "functions": True, "classes": True}}
 }
 
+base_path = Path(__file__).resolve().parent.parent
+
 modules = [
-    Path("markdown", "__init__.py"),
-    Path("markdown", "preprocessors.py"),
-    Path("markdown", "blockparser.py"),
-    Path("markdown", "blockprocessors.py"),
-    Path("markdown", "treeprocessors.py"),
-    Path("markdown", "inlinepatterns.py"),
-    Path("markdown", "postprocessors.py"),
-    Path("markdown", "serializers.py"),
-    Path("markdown", "util.py"),
-    Path("markdown", "htmlparser.py"),
-    Path("markdown", "test_tools.py"),
-    *sorted(Path("markdown", "extensions").rglob("*.py")),
+    base_path.joinpath("markdown", "__init__.py"),
+    base_path.joinpath("markdown", "preprocessors.py"),
+    base_path.joinpath("markdown", "blockparser.py"),
+    base_path.joinpath("markdown", "blockprocessors.py"),
+    base_path.joinpath("markdown", "treeprocessors.py"),
+    base_path.joinpath("markdown", "inlinepatterns.py"),
+    base_path.joinpath("markdown", "postprocessors.py"),
+    base_path.joinpath("markdown", "serializers.py"),
+    base_path.joinpath("markdown", "util.py"),
+    base_path.joinpath("markdown", "htmlparser.py"),
+    base_path.joinpath("markdown", "test_tools.py"),
+    *sorted(base_path.joinpath("markdown", "extensions").rglob("*.py")),
 ]
 
-for path in modules:
+for src_path in modules:
+    path = src_path.relative_to(base_path)
     module_path = path.with_suffix("")
     doc_path = path.with_suffix(".md")
     full_doc_path = Path("reference", doc_path)

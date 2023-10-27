@@ -5,7 +5,7 @@ site_author: "The Python-Markdown Project"
 copyright: "Copyright &copy; 2010-2023"
 
 use_directory_urls: true
-watch: [markdown]
+watch: [markdown, scripts]
 
 theme:
   name: nature
