@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Fix a performance problem with HTML extraction where large HTML input could trigger quadratic line counting behavior (PR#1392).
+* Improve and expand type annotations in the code base (#1394)
 
 ## [3.5] -- 2023-10-06
 

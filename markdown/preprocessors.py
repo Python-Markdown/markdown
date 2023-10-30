@@ -34,7 +34,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
 
 
-def build_preprocessors(md: Markdown, **kwargs: Any) -> util.Registry:
+def build_preprocessors(md: Markdown, **kwargs: Any) -> util.Registry[Preprocessor]:
     """ Build and return the default set of preprocessors used by Markdown. """
     preprocessors = util.Registry()
     preprocessors.register(NormalizeWhitespace(md), 'normalize_whitespace', 30)

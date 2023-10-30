@@ -27,13 +27,14 @@ from __future__ import annotations
 import re
 import sys
 import warnings
-from collections import namedtuple
 from functools import wraps, lru_cache
 from itertools import count
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Generic, Iterator, NamedTuple, TypeVar, overload
 
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
+
+_T = TypeVar('_T')
 
 
 """
@@ -108,7 +109,7 @@ def get_installed_extensions():
     return metadata.entry_points(group='markdown.extensions')
 
 
-def deprecated(message, stacklevel=2):
+def deprecated(message: str, stacklevel: int = 2):
     """
     Raise a [`DeprecationWarning`][] when wrapped function/method is called.
 
@@ -133,7 +134,7 @@ def deprecated(message, stacklevel=2):
     return wrapper
 
 
-def parseBoolValue(value: str, fail_on_errors: bool = True, preserve_none: bool = False) -> bool | None:
+def parseBoolValue(value: str | None, fail_on_errors: bool = True, preserve_none: bool = False) -> bool | None:
     """Parses a string representing a boolean value. If parsing was successful,
        returns `True` or `False`. If `preserve_none=True`, returns `True`, `False`,
        or `None`. If parsing was not successful, raises `ValueError`, or, if
@@ -174,7 +175,7 @@ def _get_stack_depth(size=2):
             return size
 
 
-def nearing_recursion_limit():
+def nearing_recursion_limit() -> bool:
     """Return true if current stack depth is within 100 of maximum limit."""
     return sys.getrecursionlimit() - _get_stack_depth() < 100
 
@@ -198,7 +199,7 @@ class Processor:
         md: The `Markdown` instance this processor is a part of.
 
     """
-    def __init__(self, md: Markdown = None):
+    def __init__(self, md: Markdown | None = None):
         self.md = md
 
 
@@ -233,15 +234,15 @@ class HtmlStash:
         self.html_counter += 1
         return placeholder
 
-    def reset(self):
+    def reset(self) -> None:
         """ Clear the stash. """
         self.html_counter = 0
         self.rawHtmlBlocks = []
 
-    def get_placeholder(self, key):
+    def get_placeholder(self, key: int) -> str:
         return HTML_PLACEHOLDER % key
 
-    def store_tag(self, tag, attrs, left_index, right_index) -> str:
+    def store_tag(self, tag: str, attrs: list, left_index: int, right_index: int) -> str:
         """Store tag data and return a placeholder."""
         self.tag_data.append({'tag': tag, 'attrs': attrs,
                               'left_index': left_index,
@@ -254,10 +255,12 @@ class HtmlStash:
 # Used internally by `Registry` for each item in its sorted list.
 # Provides an easier to read API when editing the code later.
 # For example, `item.name` is more clear than `item[0]`.
-_PriorityItem = namedtuple('PriorityItem', ['name', 'priority'])
+class _PriorityItem(NamedTuple):
+    name: str
+    priority: float
 
 
-class Registry:
+class Registry(Generic[_T]):
     """
     A priority sorted registry.
 
@@ -298,25 +301,33 @@ class Registry:
     """
 
     def __init__(self):
-        self._data = {}
+        self._data: dict[str, _T] = {}
         self._priority = []
         self._is_sorted = False
 
-    def __contains__(self, item):
+    def __contains__(self, item: str | _T) -> bool:
         if isinstance(item, str):
             # Check if an item exists by this name.
             return item in self._data.keys()
         # Check if this instance exists.
         return item in self._data.values()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[_T]:
         self._sort()
         return iter([self._data[k] for k, p in self._priority])
 
-    def __getitem__(self, key):
+    @overload
+    def __getitem__(self, key: str | int) -> _T:  # pragma: no cover
+        ...
+
+    @overload
+    def __getitem__(self, key: slice) -> Registry[_T]:  # pragma: no cover
+        ...
+
+    def __getitem__(self, key: str | int | slice) -> _T | Registry[_T]:
         self._sort()
         if isinstance(key, slice):
-            data = Registry()
+            data: Registry[_T] = Registry()
             for k, p in self._priority[key]:
                 data.register(self._data[k], k, p)
             return data
@@ -324,13 +335,13 @@ class Registry:
             return self._data[self._priority[key].name]
         return self._data[key]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._priority)
 
     def __repr__(self):
         return '<{}({})>'.format(self.__class__.__name__, list(self))
 
-    def get_index_for_name(self, name) -> int:
+    def get_index_for_name(self, name: str) -> int:
         """
         Return the index of the given name.
         """
@@ -341,7 +352,7 @@ class Registry:
             )
         raise ValueError('No item named "{}" exists.'.format(name))
 
-    def register(self, item: Any, name: str, priority: int):
+    def register(self, item: _T, name: str, priority: float) -> None:
         """
         Add an item to the registry with the given name and priority.
 
@@ -363,7 +374,7 @@ class Registry:
         self._data[name] = item
         self._priority.append(_PriorityItem(name, priority))
 
-    def deregister(self, name, strict=True):
+    def deregister(self, name: str, strict: bool = True) -> None:
         """
         Remove an item from the registry.
 

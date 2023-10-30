@@ -30,11 +30,12 @@ as they need to alter how Markdown blocks are parsed.
 from __future__ import annotations
 
 import xml.etree.ElementTree as etree
-from typing import TYPE_CHECKING, Sequence, Any
+from typing import TYPE_CHECKING, Iterable, Any
 from . import util
 
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
+    from .blockprocessors import BlockProcessor
 
 
 class State(list):
@@ -59,7 +60,7 @@ class State(list):
         """ Set a new state. """
         self.append(state)
 
-    def reset(self):
+    def reset(self) -> None:
         """ Step back one step in nested state. """
         self.pop()
 
@@ -92,11 +93,11 @@ class BlockParser:
                 [`blockprocessors`][markdown.blockprocessors].
 
         """
-        self.blockprocessors = util.Registry()
+        self.blockprocessors: util.Registry[BlockProcessor] = util.Registry()
         self.state = State()
         self.md = md
 
-    def parseDocument(self, lines: Sequence[str]) -> etree.ElementTree:
+    def parseDocument(self, lines: Iterable[str]) -> etree.ElementTree:
         """ Parse a Markdown document into an `ElementTree`.
 
         Given a list of lines, an `ElementTree` object (not just a parent
@@ -116,7 +117,7 @@ class BlockParser:
         self.parseChunk(self.root, '\n'.join(lines))
         return etree.ElementTree(self.root)
 
-    def parseChunk(self, parent: etree.Element, text: str):
+    def parseChunk(self, parent: etree.Element, text: str) -> None:
         """ Parse a chunk of Markdown text and attach to given `etree` node.
 
         While the `text` argument is generally assumed to contain multiple
@@ -134,7 +135,7 @@ class BlockParser:
         """
         self.parseBlocks(parent, text.split('\n\n'))
 
-    def parseBlocks(self, parent: etree.Element, blocks: Sequence[str]):
+    def parseBlocks(self, parent: etree.Element, blocks: list[str]) -> None:
         """ Process blocks of Markdown text and attach to given `etree` node.
 
         Given a list of `blocks`, each `blockprocessor` is stepped through

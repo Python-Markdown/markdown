@@ -37,7 +37,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
 
 
-def build_postprocessors(md: Markdown, **kwargs: Any) -> util.Registry:
+def build_postprocessors(md: Markdown, **kwargs: Any) -> util.Registry[Postprocessor]:
     """ Build the default postprocessors for Markdown. """
     postprocessors = util.Registry()
     postprocessors.register(RawHtmlPostprocessor(md), 'raw_html', 30)

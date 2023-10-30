@@ -28,7 +28,7 @@ from __future__ import annotations
 
 import re
 import xml.etree.ElementTree as etree
-from typing import TYPE_CHECKING, Sequence, Any
+from typing import TYPE_CHECKING, Any
 from . import util
 from . import inlinepatterns
 
@@ -36,7 +36,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
 
 
-def build_treeprocessors(md: Markdown, **kwargs: Any) -> util.Registry:
+def build_treeprocessors(md: Markdown, **kwargs: Any) -> util.Registry[Treeprocessor]:
     """ Build the default  `treeprocessors` for Markdown. """
     treeprocessors = util.Registry()
     treeprocessors.register(InlineProcessor(md), 'inline', 20)
@@ -87,7 +87,7 @@ class InlineProcessor(Treeprocessor):
         self.inlinePatterns = md.inlinePatterns
         self.ancestors = []
 
-    def __makePlaceholder(self, type):
+    def __makePlaceholder(self, type) -> tuple[str, str]:
         """ Generate a placeholder """
         id = "%04d" % len(self.stashed_nodes)
         hash = util.INLINE_PLACEHOLDER % id
@@ -111,7 +111,7 @@ class InlineProcessor(Treeprocessor):
         else:
             return None, index + 1
 
-    def __stashNode(self, node, type):
+    def __stashNode(self, node, type) -> str:
         """ Add node to stash. """
         placeholder, id = self.__makePlaceholder(type)
         self.stashed_nodes[id] = node
@@ -169,7 +169,12 @@ class InlineProcessor(Treeprocessor):
         for newChild in childResult:
             node.insert(pos, newChild[0])
 
-    def __processPlaceholders(self, data: str, parent: etree.Element, isText: bool = True) -> list[etree.ElementTree]:
+    def __processPlaceholders(
+        self,
+        data: str,
+        parent: etree.Element,
+        isText: bool = True
+    ) -> list[tuple[etree.Element, Any]]:
         """
         Process string with placeholders and generate `ElementTree` tree.
 
@@ -245,7 +250,13 @@ class InlineProcessor(Treeprocessor):
 
         return result
 
-    def __applyPattern(self, pattern: str, data: str, patternIndex: int, startIndex: int = 0) -> tuple[str, bool, int]:
+    def __applyPattern(
+        self,
+        pattern: inlinepatterns.Pattern,
+        data: str,
+        patternIndex: int,
+        startIndex: int = 0
+    ) -> tuple[str, bool, int]:
         """
         Check if the line fits the pattern, create the necessary
         elements, add it to `stashed_nodes`.
@@ -329,7 +340,7 @@ class InlineProcessor(Treeprocessor):
         ancestors.reverse()
         parents.extend(ancestors)
 
-    def run(self, tree: etree.Element, ancestors: Sequence[str] | None = None) -> etree.Element:
+    def run(self, tree: etree.Element, ancestors: list[str] | None = None) -> etree.Element:
         """Apply inline patterns to a parsed Markdown tree.
 
         Iterate over `Element`, find elements with inline tag, apply inline
@@ -347,7 +358,7 @@ class InlineProcessor(Treeprocessor):
             An element tree object with applied inline patterns.
 
         """
-        self.stashed_nodes = {}
+        self.stashed_nodes: dict[str, etree.Element] = {}
 
         # Ensure a valid parent list, but copy passed in lists
         # to ensure we don't have the user accidentally change it on us.
@@ -448,7 +459,7 @@ class UnescapeTreeprocessor(Treeprocessor):
     def _unescape(self, m):
         return chr(int(m.group(1)))
 
-    def unescape(self, text):
+    def unescape(self, text: str) -> str:
         return self.RE.sub(self._unescape, text)
 
     def run(self, root):
