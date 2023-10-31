@@ -28,12 +28,16 @@ from ..inlinepatterns import InlineProcessor
 from ..util import AtomicString
 import re
 import xml.etree.ElementTree as etree
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 
 class AbbrExtension(Extension):
     """ Abbreviation Extension for Python-Markdown. """
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         """ Insert `AbbrPreprocessor` before `ReferencePreprocessor`. """
         md.parser.blockprocessors.register(AbbrPreprocessor(md.parser), 'abbr', 16)
 
@@ -43,10 +47,10 @@ class AbbrPreprocessor(BlockProcessor):
 
     RE = re.compile(r'^[*]\[(?P<abbr>[^\]]*)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return True
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> bool:
         """
         Find and remove all Abbreviation references from the text.
         Each reference is set as a new `AbbrPattern` in the markdown instance.
@@ -71,7 +75,7 @@ class AbbrPreprocessor(BlockProcessor):
         blocks.insert(0, block)
         return False
 
-    def _generate_pattern(self, text):
+    def _generate_pattern(self, text: str) -> str:
         """
         Given a string, returns an regex pattern to match that string.
 
@@ -90,11 +94,11 @@ class AbbrPreprocessor(BlockProcessor):
 class AbbrInlineProcessor(InlineProcessor):
     """ Abbreviation inline pattern. """
 
-    def __init__(self, pattern, title):
+    def __init__(self, pattern: str, title: str):
         super().__init__(pattern)
         self.title = title
 
-    def handleMatch(self, m, data):
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element, int, int]:
         abbr = etree.Element('abbr')
         abbr.text = AtomicString(m.group('abbr'))
         abbr.set('title', self.title)

@@ -26,7 +26,7 @@ import warnings
 import markdown
 import logging
 from logging import DEBUG, WARNING, CRITICAL
-from typing import Any, Callable, IO
+from typing import Any, Callable, IO, Mapping
 
 yaml_load: Callable[[IO], Any]
 try:
@@ -46,7 +46,7 @@ except ImportError:  # pragma: no cover
 logger = logging.getLogger('MARKDOWN')
 
 
-def parse_options(args=None, values=None):
+def parse_options(args=None, values=None) -> tuple[Mapping[str, Any], bool]:
     """
     Define and parse `optparse` options for command-line usage.
     """

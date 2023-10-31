@@ -53,7 +53,7 @@ class Extension:
     if a default is not set for each option.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """ Initiate Extension and set up configs. """
         self.setConfigs(kwargs)
 
@@ -112,7 +112,7 @@ class Extension:
             value = parseBoolValue(value, preserve_none=True)
         self.config[key][0] = value
 
-    def setConfigs(self, items: Mapping[str, Any] | Iterable[tuple[str, Any]]):
+    def setConfigs(self, items: Mapping[str, Any] | Iterable[tuple[str, Any]]) -> None:
         """
         Loop through a collection of configuration options, passing each to
         [`setConfig`][markdown.extensions.Extension.setConfig].

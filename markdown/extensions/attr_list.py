@@ -89,7 +89,7 @@ class AttrListTreeprocessor(Treeprocessor):
 
     md: Markdown
 
-    def run(self, doc: Element):
+    def run(self, doc: Element) -> None:
         for elem in doc.iter():
             if self.md.is_block_level(elem.tag):
                 # Block level: check for `attrs` on last line of text
@@ -173,7 +173,7 @@ class AttrListTreeprocessor(Treeprocessor):
 
 class AttrListExtension(Extension):
     """ Attribute List extension for Python-Markdown """
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         md.treeprocessors.register(AttrListTreeprocessor(md), 'attr_list', 8)
         md.registerExtension(self)
 

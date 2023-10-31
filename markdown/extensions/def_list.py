@@ -25,6 +25,10 @@ from . import Extension
 from ..blockprocessors import BlockProcessor, ListIndentProcessor
 import xml.etree.ElementTree as etree
 import re
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 
 class DefListProcessor(BlockProcessor):
@@ -33,13 +37,14 @@ class DefListProcessor(BlockProcessor):
     RE = re.compile(r'(^|\n)[ ]{0,3}:[ ]{1,3}(.*?)(\n|$)')
     NO_INDENT_RE = re.compile(r'^[ ]{0,3}[^ :]')
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return bool(self.RE.search(block))
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> bool | None:
 
         raw_block = blocks.pop(0)
         m = self.RE.search(raw_block)
+        assert m is not None
         terms = [term.strip() for term in
                  raw_block[:m.start()].split('\n') if term.strip()]
         block = raw_block[m.end():]
@@ -53,20 +58,21 @@ class DefListProcessor(BlockProcessor):
         else:
             d = m.group(2)
         sibling = self.lastChild(parent)
-        if not terms and sibling is None:
-            # This is not a definition item. Most likely a paragraph that
-            # starts with a colon at the beginning of a document or list.
-            blocks.insert(0, raw_block)
-            return False
-        if not terms and sibling.tag == 'p':
-            # The previous paragraph contains the terms
-            state = 'looselist'
-            terms = sibling.text.split('\n')
-            parent.remove(sibling)
-            # Acquire new sibling
-            sibling = self.lastChild(parent)
-        else:
-            state = 'list'
+        state = 'list'
+        if not terms:
+            if sibling is None:
+                # This is not a definition item. Most likely a paragraph that
+                # starts with a colon at the beginning of a document or list.
+                blocks.insert(0, raw_block)
+                return False
+            if sibling.tag == 'p':
+                # The previous paragraph contains the terms
+                state = 'looselist'
+                assert sibling.text is not None
+                terms = sibling.text.split('\n')
+                parent.remove(sibling)
+                # Acquire new sibling
+                sibling = self.lastChild(parent)
 
         if sibling is not None and sibling.tag == 'dl':
             # This is another item on an existing list
@@ -88,6 +94,7 @@ class DefListProcessor(BlockProcessor):
 
         if theRest:
             blocks.insert(0, theRest)
+        return None
 
 
 class DefListIndentProcessor(ListIndentProcessor):
@@ -99,7 +106,7 @@ class DefListIndentProcessor(ListIndentProcessor):
     LIST_TYPES = ['dl', 'ol', 'ul']
     """ Include `dl` is list types. """
 
-    def create_item(self, parent, block):
+    def create_item(self, parent: etree.Element, block: str):
         """ Create a new `dd` or `li` (depending on parent) and parse the block with it as the parent. """
 
         dd = etree.SubElement(parent, 'dd')
@@ -109,7 +116,7 @@ class DefListIndentProcessor(ListIndentProcessor):
 class DefListExtension(Extension):
     """ Add definition lists to Markdown. """
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         """ Add an instance of `DefListProcessor` to `BlockParser`. """
         md.parser.blockprocessors.register(DefListIndentProcessor(md.parser), 'defindent', 85)
         md.parser.blockprocessors.register(DefListProcessor(md.parser), 'deflist', 25)

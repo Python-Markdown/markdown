@@ -28,7 +28,10 @@ from __future__ import annotations
 import re
 import importlib.util
 import sys
-from typing import Any
+from typing import TYPE_CHECKING, Any, Sequence
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 
 # Import a copy of the html.parser lib as `htmlparser` so we can monkeypatch it.
@@ -79,7 +82,9 @@ class HTMLExtractor(htmlparser.HTMLParser):
     is stored in `cleandoc` as a list of strings.
     """
 
-    def __init__(self, md, *args, **kwargs):
+    md: Markdown
+
+    def __init__(self, md: Markdown, *args, **kwargs):
         if 'convert_charrefs' not in kwargs:
             kwargs['convert_charrefs'] = False
 
@@ -92,18 +97,18 @@ class HTMLExtractor(htmlparser.HTMLParser):
         super().__init__(*args, **kwargs)
         self.md = md
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset this instance.  Loses all unprocessed data."""
         self.inraw = False
         self.intail = False
-        self.stack = []  # When `inraw==True`, stack contains a list of tags
-        self._cache = []
-        self.cleandoc = []
+        self.stack: list[str] = []  # When `inraw==True`, stack contains a list of tags
+        self._cache: list[str] = []
+        self.cleandoc: list[str] = []
         self.lineno_start_cache = [0]
 
         super().reset()
 
-    def close(self):
+    def close(self) -> None:
         """Handle any buffered data."""
         super().close()
         if len(self.rawdata):
@@ -159,7 +164,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             # Failed to extract from raw data. Assume well formed and lowercase.
             return '</{}>'.format(tag)
 
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str]]):
+    def handle_starttag(self, tag: str, attrs: Sequence[tuple[str, str]]) -> None:
         # Handle tags that should always be empty and do not specify a closing tag
         if tag in self.empty_tags:
             self.handle_startendtag(tag, attrs)
@@ -180,7 +185,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
                 # This is presumably a standalone tag in a code span (see #1036).
                 self.clear_cdata_mode()
 
-    def handle_endtag(self, tag: str):
+    def handle_endtag(self, tag: str) -> None:
         text = self.get_endtag_text(tag)
 
         if self.inraw:
@@ -207,7 +212,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(text)
 
-    def handle_data(self, data: str):
+    def handle_data(self, data: str) -> None:
         if self.intail and '\n' in data:
             self.intail = False
         if self.inraw:
@@ -215,7 +220,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(data)
 
-    def handle_empty_tag(self, data: str, is_block: bool):
+    def handle_empty_tag(self, data: str, is_block: bool) -> None:
         """ Handle empty tags (`<data>`). """
         if self.inraw or self.intail:
             # Append this to the existing raw block
@@ -238,25 +243,25 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(data)
 
-    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str]]):
+    def handle_startendtag(self, tag: str, attrs: Sequence[tuple[str, str]]) -> None:
         self.handle_empty_tag(self.get_starttag_text(), is_block=self.md.is_block_level(tag))
 
-    def handle_charref(self, name: str):
+    def handle_charref(self, name: str) -> None:
         self.handle_empty_tag('&#{};'.format(name), is_block=False)
 
-    def handle_entityref(self, name: str):
+    def handle_entityref(self, name: str) -> None:
         self.handle_empty_tag('&{};'.format(name), is_block=False)
 
-    def handle_comment(self, data: str):
+    def handle_comment(self, data: str) -> None:
         self.handle_empty_tag('<!--{}-->'.format(data), is_block=True)
 
-    def handle_decl(self, data: str):
+    def handle_decl(self, data: str) -> None:
         self.handle_empty_tag('<!{}>'.format(data), is_block=True)
 
-    def handle_pi(self, data: str):
+    def handle_pi(self, data: str) -> None:
         self.handle_empty_tag('<?{}?>'.format(data), is_block=True)
 
-    def unknown_decl(self, data: str):
+    def unknown_decl(self, data: str) -> None:
         end = ']]>' if data.startswith('CDATA[') else ']>'
         self.handle_empty_tag('<![{}{}'.format(data, end), is_block=True)
 

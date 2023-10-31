@@ -29,17 +29,21 @@ from .attr_list import get_attrs, AttrListExtension
 from ..util import parseBoolValue
 from ..serializers import _escape_attrib_html
 import re
+from typing import TYPE_CHECKING, Any, Iterable
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 
 class FencedCodeExtension(Extension):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         self.config = {
             'lang_prefix': ['language-', 'Prefix prepended to the language. Default: "language-"']
         }
         """ Default configuration options. """
         super().__init__(**kwargs)
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         """ Add `FencedBlockPreprocessor` to the Markdown instance. """
         md.registerExtension(self)
 
@@ -48,6 +52,8 @@ class FencedCodeExtension(Extension):
 
 class FencedBlockPreprocessor(Preprocessor):
     """ Find and extract fenced code blocks. """
+
+    md: Markdown
 
     FENCED_BLOCK_RE = re.compile(
         dedent(r'''
@@ -62,11 +68,11 @@ class FencedBlockPreprocessor(Preprocessor):
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
 
-    def __init__(self, md, config):
+    def __init__(self, md: Markdown, config: dict[str, Any]):
         super().__init__(md)
         self.config = config
         self.checked_for_deps = False
-        self.codehilite_conf = {}
+        self.codehilite_conf: dict[str, Any] = {}
         self.use_attr_list = False
         # List of options to convert to boolean values
         self.bool_options = [
@@ -76,7 +82,7 @@ class FencedBlockPreprocessor(Preprocessor):
             'use_pygments'
         ]
 
-    def run(self, lines):
+    def run(self, lines: list[str]) -> list[str]:
         """ Match and store Fenced Code Blocks in the `HtmlStash`. """
 
         # Check for dependent extensions
@@ -93,12 +99,13 @@ class FencedBlockPreprocessor(Preprocessor):
         while 1:
             m = self.FENCED_BLOCK_RE.search(text)
             if m:
-                lang, id, classes, config = None, '', [], {}
+                lang = None
                 if m.group('attrs'):
                     id, classes, config = self.handle_attrs(get_attrs(m.group('attrs')))
                     if len(classes):
                         lang = classes.pop(0)
                 else:
+                    id, classes, config = '', [], {}
                     if m.group('lang'):
                         lang = m.group('lang')
                     if m.group('hl_lines'):
@@ -151,11 +158,11 @@ class FencedBlockPreprocessor(Preprocessor):
                 break
         return text.split("\n")
 
-    def handle_attrs(self, attrs):
+    def handle_attrs(self, attrs: Iterable[tuple[str, str]]) -> tuple[str, list[str], dict[str, Any]]:
         """ Return tuple: `(id, [list, of, classes], {configs})` """
         id = ''
         classes = []
-        configs = {}
+        configs: dict[str, Any] = {}
         for k, v in attrs:
             if k == 'id':
                 id = v
@@ -169,7 +176,7 @@ class FencedBlockPreprocessor(Preprocessor):
                 configs[k] = v
         return id, classes, configs
 
-    def _escape(self, txt):
+    def _escape(self, txt: str) -> str:
         """ basic html escaping """
         txt = txt.replace('&', '&amp;')
         txt = txt.replace('<', '&lt;')

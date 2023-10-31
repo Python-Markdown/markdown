@@ -53,7 +53,7 @@ extensions = [
 class ExtraExtension(Extension):
     """ Add various extensions to Markdown class."""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """ `config` is a dumb holder which gets passed to the actual extension later. """
         self.config = kwargs
 

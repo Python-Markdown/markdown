@@ -73,17 +73,18 @@ class RawHtmlPostprocessor(Postprocessor):
 
     md: Markdown
 
-    def run(self, text: str):
+    def run(self, text: str) -> str:
         """ Iterate over html stash and restore html. """
         replacements = OrderedDict()
         for i in range(self.md.htmlStash.html_counter):
-            html = self.stash_to_string(self.md.htmlStash.rawHtmlBlocks[i])
+            raw: str = self.md.htmlStash.rawHtmlBlocks[i]  # type: ignore[assignment]
+            html = self.stash_to_string(raw)
             if self.isblocklevel(html):
                 replacements["<p>{}</p>".format(
                     self.md.htmlStash.get_placeholder(i))] = html
             replacements[self.md.htmlStash.get_placeholder(i)] = html
 
-        def substitute_match(m):
+        def substitute_match(m: re.Match[str]) -> str:
             key = m.group(0)
 
             if key not in replacements:
@@ -124,7 +125,7 @@ class RawHtmlPostprocessor(Postprocessor):
 class AndSubstitutePostprocessor(Postprocessor):
     """ Restore valid entities """
 
-    def run(self, text):
+    def run(self, text: str) -> str:
         text = text.replace(util.AMP_SUBSTITUTE, "&")
         return text
 
@@ -138,8 +139,8 @@ class UnescapePostprocessor(Postprocessor):
 
     RE = re.compile(r'{}(\d+){}'.format(util.STX, util.ETX))
 
-    def unescape(self, m):
+    def unescape(self, m: re.Match[str]) -> str:
         return chr(int(m.group(1)))
 
-    def run(self, text):
+    def run(self, text: str) -> str:
         return self.RE.sub(self.unescape, text)

@@ -85,6 +85,8 @@ class HtmlBlockPreprocessor(Preprocessor):
     [`Markdown`][markdown.Markdown] instance.
     """
 
+    md: Markdown
+
     def run(self, lines: list[str]) -> list[str]:
         source = '\n'.join(lines)
         parser = HTMLExtractor(self.md)

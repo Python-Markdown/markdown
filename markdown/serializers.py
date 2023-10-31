@@ -48,19 +48,20 @@ from __future__ import annotations
 from xml.etree.ElementTree import ProcessingInstruction, Comment, ElementTree, Element, QName
 from xml.etree.ElementTree import HTML_EMPTY  # type: ignore[attr-defined]
 import re
+from typing import Callable, Iterable, Literal, NoReturn
 
 __all__ = ['to_html_string', 'to_xhtml_string']
 
 RE_AMP = re.compile(r'&(?!(?:\#[0-9]+|\#x[0-9a-f]+|[0-9a-z]+);)', re.I)
 
 
-def _raise_serialization_error(text):  # pragma: no cover
+def _raise_serialization_error(text: str) -> NoReturn:  # pragma: no cover
     raise TypeError(
         "cannot serialize {!r} (type {})".format(text, type(text).__name__)
         )
 
 
-def _escape_cdata(text):
+def _escape_cdata(text) -> str:
     # escape character data
     try:
         # it's worth avoiding do-nothing calls for strings that are
@@ -78,7 +79,7 @@ def _escape_cdata(text):
         _raise_serialization_error(text)
 
 
-def _escape_attrib(text):
+def _escape_attrib(text: str) -> str:
     # escape attribute value
     try:
         if "&" in text:
@@ -97,7 +98,7 @@ def _escape_attrib(text):
         _raise_serialization_error(text)
 
 
-def _escape_attrib_html(text):
+def _escape_attrib_html(text: str) -> str:
     # escape attribute value
     try:
         if "&" in text:
@@ -114,7 +115,7 @@ def _escape_attrib_html(text):
         _raise_serialization_error(text)
 
 
-def _serialize_html(write, elem, format):
+def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal["html", "xhtml"]) -> None:
     tag = elem.tag
     text = elem.text
     if tag is Comment:
@@ -122,7 +123,7 @@ def _serialize_html(write, elem, format):
     elif tag is ProcessingInstruction:
         write("<?%s?>" % _escape_cdata(text))
     elif tag is None:
-        if text:
+        if text:  # type: ignore[unreachable]
             write(_escape_cdata(text))
         for e in elem:
             _serialize_html(write, e, format)
@@ -135,7 +136,7 @@ def _serialize_html(write, elem, format):
             else:
                 raise ValueError('QName objects must define a tag.')
         write("<" + tag)
-        items = elem.items()
+        items: Iterable[tuple[str, str]] = elem.items()
         if items:
             items = sorted(items)  # lexical order
             for k, v in items:
@@ -171,9 +172,9 @@ def _serialize_html(write, elem, format):
         write(_escape_cdata(elem.tail))
 
 
-def _write_html(root, format="html"):
+def _write_html(root: Element, format: Literal["html", "xhtml"] = "html") -> str:
     assert root is not None
-    data = []
+    data: list[str] = []
     write = data.append
     _serialize_html(write, root, format)
     return "".join(data)

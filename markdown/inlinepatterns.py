@@ -253,15 +253,16 @@ class _BasePattern:
         except KeyError:  # pragma: no cover
             return text
 
-        def get_stash(m):
+        def get_stash(m: re.Match[str]) -> str:
             id = m.group(1)
             if id in stash:
-                value = stash.get(id)
+                value = stash[id]
                 if isinstance(value, str):
                     return value
                 else:
                     # An `etree` Element - return text content only
                     return ''.join(value.itertext())
+            return ''
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
 
@@ -443,7 +444,7 @@ class SubstituteTagInlineProcessor(SimpleTagInlineProcessor):
 
 class BacktickInlineProcessor(InlineProcessor):
     """ Return a `<code>` element containing the escaped matching text. """
-    def __init__(self, pattern):
+    def __init__(self, pattern: str):
         InlineProcessor.__init__(self, pattern)
         self.ESCAPED_BSLASH = '{}{}{}'.format(util.STX, ord('\\'), util.ETX)
         self.tag = 'code'
@@ -519,32 +520,38 @@ class HtmlInlineProcessor(InlineProcessor):
         place_holder = self.md.htmlStash.store(rawhtml)
         return place_holder, m.start(0), m.end(0)
 
-    def unescape(self, text):
+    def unescape(self, text: str) -> str:
         """ Return unescaped text given text with an inline placeholder. """
         try:
-            stash = self.md.treeprocessors['inline'].stashed_nodes
+            inlineprocessor: treeprocessors.InlineProcessor
+            inlineprocessor = self.md.treeprocessors['inline']  # type: ignore[assignment]
+            stash = inlineprocessor.stashed_nodes
         except KeyError:  # pragma: no cover
             return text
 
-        def get_stash(m):
+        def get_stash(m: re.Match[str]) -> str:
             id = m.group(1)
             value = stash.get(id)
             if value is not None:
                 try:
+                    assert isinstance(value, etree.Element)
                     return self.md.serializer(value)
                 except Exception:
                     return r'\%s' % value
+            return ''
 
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
 
-    def backslash_unescape(self, text):
+    def backslash_unescape(self, text: str) -> str:
         """ Return text with backslash escapes undone (backslashes are restored). """
         try:
-            RE = self.md.treeprocessors['unescape'].RE
+            unescape_processor: treeprocessors.UnescapeTreeprocessor
+            unescape_processor = self.md.treeprocessors['unescape']  # type: ignore[assignment]
+            RE = unescape_processor.RE
         except KeyError:  # pragma: no cover
             return text
 
-        def _unescape(m):
+        def _unescape(m: re.Match[str]) -> str:
             return chr(int(m.group(1)))
 
         return RE.sub(_unescape, text)
@@ -562,14 +569,14 @@ class AsteriskProcessor(InlineProcessor):
     ]
     """ The various strong and emphasis patterns handled by this processor. """
 
-    def build_single(self, m, tag, idx):
+    def build_single(self, m: re.Match[str], tag: str, idx: int) -> etree.Element:
         """Return single tag."""
         el1 = etree.Element(tag)
         text = m.group(2)
         self.parse_sub_patterns(text, el1, None, idx)
         return el1
 
-    def build_double(self, m, tags, idx):
+    def build_double(self, m: re.Match[str], tags: str, idx: int) -> etree.Element:
         """Return double tag."""
 
         tag1, tag2 = tags.split(",")
@@ -583,7 +590,7 @@ class AsteriskProcessor(InlineProcessor):
             self.parse_sub_patterns(text, el1, el2, idx)
         return el1
 
-    def build_double2(self, m, tags, idx):
+    def build_double2(self, m: re.Match[str], tags: str, idx: int) -> etree.Element:
         """Return double tags (variant 2): `<strong>text <em>text</em></strong>`."""
 
         tag1, tag2 = tags.split(",")
@@ -596,22 +603,19 @@ class AsteriskProcessor(InlineProcessor):
         self.parse_sub_patterns(text, el2, None, idx)
         return el1
 
-    def parse_sub_patterns(self, data, parent, last, idx) -> None:
+    def parse_sub_patterns(
+        self, data: str, parent: etree.Element, last: etree.Element | None, idx: int
+    ) -> None:
         """
         Parses sub patterns.
 
-        `data` (`str`):
-            text to evaluate.
+        `data`: text to evaluate.
 
-        `parent` (`etree.Element`):
-            Parent to attach text and sub elements to.
+        `parent`: Parent to attach text and sub elements to.
 
-        `last` (`etree.Element`):
-            Last appended child to parent. Can also be None if parent has no children.
+        `last`: Last appended child to parent. Can also be None if parent has no children.
 
-        `idx` (`int`):
-            Current pattern index that was used to evaluate the parent.
-
+        `idx`: Current pattern index that was used to evaluate the parent.
         """
 
         offset = 0
@@ -660,7 +664,7 @@ class AsteriskProcessor(InlineProcessor):
             else:
                 parent.text = text
 
-    def build_element(self, m, builder, tags, index):
+    def build_element(self, m: re.Match[str], builder: str, tags: str, index: int) -> etree.Element:
         """Element builder."""
 
         if builder == 'double2':
@@ -726,11 +730,11 @@ class LinkInlineProcessor(InlineProcessor):
 
         return el, m.start(0), index
 
-    def getLink(self, data, index):
+    def getLink(self, data: str, index: int) -> tuple[str, str | None, int, bool]:
         """Parse data between `()` of `[Text]()` allowing recursive `()`. """
 
         href = ''
-        title = None
+        title: str | None = None
         handled = False
 
         m = self.RE_LINK.match(data, pos=index)
@@ -750,7 +754,7 @@ class LinkInlineProcessor(InlineProcessor):
             last_bracket = -1
 
             # Primary (first found) quote tracking.
-            quote = None
+            quote: str | None = None
             start_quote = -1
             exit_quote = -1
             ignore_matches = False
@@ -842,7 +846,7 @@ class LinkInlineProcessor(InlineProcessor):
 
         return href, title, index, handled
 
-    def getText(self, data, index):
+    def getText(self, data: str, index: int) -> tuple[str, int, bool]:
         """Parse the content between `[]` of the start of an image or link
         resolving nested square brackets.
 
@@ -906,6 +910,7 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
         id, end, handled = self.evalId(data, index, text)
         if not handled:
             return None, None, None
+        assert id is not None
 
         # Clean up line breaks in id
         id = self.NEWLINE_CLEANUP_RE.sub(' ', id)
@@ -916,7 +921,7 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
 
         return self.makeTag(href, title, text), m.start(0), end
 
-    def evalId(self, data, index, text):
+    def evalId(self, data: str, index: int, text: str) -> tuple[str | None, int, bool]:
         """
         Evaluate the id portion of `[ref][id]`.
 
@@ -946,7 +951,7 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
 
 class ShortReferenceInlineProcessor(ReferenceInlineProcessor):
     """Short form of reference: `[google]`. """
-    def evalId(self, data, index, text):
+    def evalId(self, data: str, index: int, text: str) -> tuple[str, int, bool]:
         """Evaluate the id of `[ref]`.  """
 
         return text.lower(), index, True
@@ -966,7 +971,7 @@ class ImageReferenceInlineProcessor(ReferenceInlineProcessor):
 
 class ShortImageReferenceInlineProcessor(ImageReferenceInlineProcessor):
     """ Short form of image reference: `![ref]`. """
-    def evalId(self, data, index, text):
+    def evalId(self, data: str, index: int, text: str) -> tuple[str, int, bool]:
         """Evaluate the id of `[ref]`.  """
 
         return text.lower(), index, True
@@ -993,7 +998,7 @@ class AutomailInlineProcessor(InlineProcessor):
         if email.startswith("mailto:"):
             email = email[len("mailto:"):]
 
-        def codepoint2name(code):
+        def codepoint2name(code: int) -> str:
             """Return entity definition by code, or the code if not defined."""
             entity = entities.codepoint2name.get(code)
             if entity:

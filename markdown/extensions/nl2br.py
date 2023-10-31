@@ -25,13 +25,17 @@ from __future__ import annotations
 
 from . import Extension
 from ..inlinepatterns import SubstituteTagInlineProcessor
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 BR_RE = r'\n'
 
 
 class Nl2BrExtension(Extension):
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         """ Add a `SubstituteTagInlineProcessor` to Markdown. """
         br_tag = SubstituteTagInlineProcessor(BR_RE, 'br')
         md.inlinePatterns.register(br_tag, 'nl', 5)

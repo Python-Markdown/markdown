@@ -24,7 +24,11 @@ from __future__ import annotations
 from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import parseBoolValue
-from typing import Callable
+from typing import TYPE_CHECKING, Callable, Any
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
+    import xml.etree.ElementTree as etree
 
 try:  # pragma: no cover
     from pygments import highlight
@@ -129,7 +133,7 @@ class CodeHilite:
 
         self.options = options
 
-    def hilite(self, shebang=True) -> str:
+    def hilite(self, shebang: bool = True) -> str:
         """
         Pass code to the [Pygments](https://pygments.org/) highlighter with
         optional line numbers. The output should then be styled with CSS to
@@ -188,7 +192,7 @@ class CodeHilite:
                 txt
             )
 
-    def _parseHeader(self):
+    def _parseHeader(self) -> None:
         """
         Determines language of a code block from shebang line and whether the
         said line should be removed or left in place. If the shebang line
@@ -250,7 +254,10 @@ class CodeHilite:
 class HiliteTreeprocessor(Treeprocessor):
     """ Highlight source code in code blocks. """
 
-    def code_unescape(self, text):
+    config: dict[str, Any]
+    md: Markdown
+
+    def code_unescape(self, text: str) -> str:
         """Unescape code."""
         text = text.replace("&lt;", "<")
         text = text.replace("&gt;", ">")
@@ -259,14 +266,16 @@ class HiliteTreeprocessor(Treeprocessor):
         text = text.replace("&amp;", "&")
         return text
 
-    def run(self, root):
+    def run(self, root: etree.Element) -> None:
         """ Find code blocks and store in `htmlStash`. """
         blocks = root.iter('pre')
         for block in blocks:
             if len(block) == 1 and block[0].tag == 'code':
                 local_config = self.config.copy()
+                text = block[0].text
+                assert text is not None
                 code = CodeHilite(
-                    self.code_unescape(block[0].text),
+                    self.code_unescape(text),
                     tab_length=self.md.tab_length,
                     style=local_config.pop('pygments_style', 'default'),
                     **local_config
@@ -283,7 +292,7 @@ class HiliteTreeprocessor(Treeprocessor):
 class CodeHiliteExtension(Extension):
     """ Add source code highlighting to markdown code blocks. """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         # define default configs
         self.config = {
             'linenums': [
@@ -326,7 +335,7 @@ class CodeHiliteExtension(Extension):
                         pass  # Assume it's not a boolean value. Use as-is.
                 self.config[key] = [value, '']
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         """ Add `HilitePostprocessor` to Markdown instance. """
         hiliter = HiliteTreeprocessor(md)
         hiliter.config = self.getConfigs()

@@ -16,6 +16,10 @@ from __future__ import annotations
 from . import Extension
 from ..inlinepatterns import UnderscoreProcessor, EmStrongItem, EM_STRONG2_RE, STRONG_EM2_RE
 import re
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 # _emphasis_
 EMPHASIS_RE = r'(_)([^_]+)\1'
@@ -42,7 +46,7 @@ class LegacyUnderscoreProcessor(UnderscoreProcessor):
 class LegacyEmExtension(Extension):
     """ Add legacy_em extension to Markdown class."""
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         """ Modify inline patterns. """
         md.inlinePatterns.register(LegacyUnderscoreProcessor(r'_'), 'em_strong2', 50)
 

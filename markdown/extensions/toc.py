@@ -27,9 +27,14 @@ import re
 import html
 import unicodedata
 import xml.etree.ElementTree as etree
+from typing import TYPE_CHECKING, Any, Iterator, MutableSet, TypedDict
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
+    from .. import treeprocessors
 
 
-def slugify(value, separator, unicode=False):
+def slugify(value: str, separator: str, unicode: bool = False) -> str:
     """ Slugify a string, to make it URL friendly. """
     if not unicode:
         # Replace Extended Latin characters with ASCII, i.e. `žlutý` => `zluty`
@@ -39,7 +44,7 @@ def slugify(value, separator, unicode=False):
     return re.sub(r'[{}\s]+'.format(separator), separator, value)
 
 
-def slugify_unicode(value, separator):
+def slugify_unicode(value: str, separator: str) -> str:
     """ Slugify a string, to make it URL friendly while preserving Unicode characters. """
     return slugify(value, separator, unicode=True)
 
@@ -47,7 +52,7 @@ def slugify_unicode(value, separator):
 IDCOUNT_RE = re.compile(r'^(.*)_([0-9]+)$')
 
 
-def unique(id, ids):
+def unique(id: str, ids: MutableSet[str]) -> str:
     """ Ensure id is unique in set of ids. Append '_1', '_2'... if not """
     while id in ids or not id:
         m = IDCOUNT_RE.match(id)
@@ -59,7 +64,7 @@ def unique(id, ids):
     return id
 
 
-def get_name(el):
+def get_name(el: etree.Element) -> str:
     """Get title name."""
 
     text = []
@@ -71,14 +76,15 @@ def get_name(el):
     return ''.join(text).strip()
 
 
-def stashedHTML2text(text, md, strip_entities: bool = True):
+def stashedHTML2text(text: str, md: Markdown, strip_entities: bool = True) -> str:
     """ Extract raw HTML from stash, reduce to plain text and swap with placeholder. """
-    def _html_sub(m):
+    def _html_sub(m: re.Match[str]) -> str:
         """ Substitute raw html with plain text. """
         try:
             raw = md.htmlStash.rawHtmlBlocks[int(m.group(1))]
         except (IndexError, TypeError):  # pragma: no cover
             return m.group(0)
+        assert isinstance(raw, str)
         # Strip out tags and/or entities - leaving text
         res = re.sub(r'(<[^>]+>)', '', raw)
         if strip_entities:
@@ -88,13 +94,23 @@ def stashedHTML2text(text, md, strip_entities: bool = True):
     return HTML_PLACEHOLDER_RE.sub(_html_sub, text)
 
 
-def unescape(text):
+def unescape(text: str) -> str:
     """ Unescape escaped text. """
     c = UnescapeTreeprocessor()
     return c.unescape(text)
 
 
-def nest_toc_tokens(toc_list):
+if TYPE_CHECKING:
+    class FlatTocToken(TypedDict):
+        level: int
+        id: str
+        name: str
+
+    class TocToken(FlatTocToken):
+        children: list[TocToken]
+
+
+def nest_toc_tokens(toc_list: list[FlatTocToken]) -> list[TocToken]:
     """Given an unsorted list with errors and skips, return a nested one.
 
         [{'level': 1}, {'level': 2}]
@@ -111,15 +127,15 @@ def nest_toc_tokens(toc_list):
     ordered_list = []
     if len(toc_list):
         # Initialize everything by processing the first entry
-        last = toc_list.pop(0)
+        last: TocToken = toc_list.pop(0)  # type: ignore[assignment]
         last['children'] = []
         levels = [last['level']]
         ordered_list.append(last)
-        parents = []
+        parents: list[TocToken] = []
 
         # Walk the rest nesting the entries properly
         while toc_list:
-            t = toc_list.pop(0)
+            t: TocToken = toc_list.pop(0)  # type: ignore[assignment]
             current_level = t['level']
             t['children'] = []
 
@@ -162,24 +178,28 @@ def nest_toc_tokens(toc_list):
 class TocTreeprocessor(Treeprocessor):
     """ Step through document and build TOC. """
 
-    def __init__(self, md, config):
+    md: Markdown
+
+    def __init__(self, md: Markdown, config: dict[str, Any]):
         super().__init__(md)
 
-        self.marker = config["marker"]
-        self.title = config["title"]
+        self.marker: str = config["marker"]
+        self.title: str = config["title"]
         self.base_level = int(config["baselevel"]) - 1
         self.slugify = config["slugify"]
         self.sep = config["separator"]
         self.toc_class = config["toc_class"]
-        self.title_class = config["title_class"]
-        self.use_anchors = parseBoolValue(config["anchorlink"])
-        self.anchorlink_class = config["anchorlink_class"]
-        self.use_permalinks = parseBoolValue(config["permalink"], False)
-        if self.use_permalinks is None:
+        self.title_class: str = config["title_class"]
+        self.use_anchors: bool = parseBoolValue(config["anchorlink"])
+        self.anchorlink_class: str = config["anchorlink_class"]
+        use_permalinks = parseBoolValue(config["permalink"], False)
+        if use_permalinks is None:
             self.use_permalinks = config["permalink"]
-        self.permalink_class = config["permalink_class"]
-        self.permalink_title = config["permalink_title"]
-        self.permalink_leading = parseBoolValue(config["permalink_leading"], False)
+        else:
+            self.use_permalinks = use_permalinks
+        self.permalink_class: str = config["permalink_class"]
+        self.permalink_title: str = config["permalink_title"]
+        self.permalink_leading: bool | None = parseBoolValue(config["permalink_leading"], False)
         self.header_rgx = re.compile("[Hh][123456]")
         if isinstance(config["toc_depth"], str) and '-' in config["toc_depth"]:
             self.toc_top, self.toc_bottom = [int(x) for x in config["toc_depth"].split('-')]
@@ -187,7 +207,7 @@ class TocTreeprocessor(Treeprocessor):
             self.toc_top = 1
             self.toc_bottom = int(config["toc_depth"])
 
-    def iterparent(self, node):
+    def iterparent(self, node: etree.Element) -> Iterator[tuple[etree.Element, etree.Element]]:
         """ Iterator wrapper to get allowed parent and child all at once. """
 
         # We do not allow the marker inside a header as that
@@ -198,7 +218,7 @@ class TocTreeprocessor(Treeprocessor):
                 yield node, child
                 yield from self.iterparent(child)
 
-    def replace_marker(self, root, elem) -> None:
+    def replace_marker(self, root: etree.Element, elem: etree.Element) -> None:
         """ Replace marker with elem. """
         for (p, c) in self.iterparent(root):
             text = ''.join(c.itertext()).strip()
@@ -219,14 +239,14 @@ class TocTreeprocessor(Treeprocessor):
                         p[i] = elem
                         break
 
-    def set_level(self, elem) -> None:
+    def set_level(self, elem: etree.Element) -> None:
         """ Adjust header level according to base level. """
         level = int(elem.tag[-1]) + self.base_level
         if level > 6:
             level = 6
         elem.tag = 'h%d' % level
 
-    def add_anchor(self, c, elem_id) -> None:
+    def add_anchor(self, c: etree.Element, elem_id: str) -> None:
         anchor = etree.Element("a")
         anchor.text = c.text
         anchor.attrib["href"] = "#" + elem_id
@@ -238,7 +258,7 @@ class TocTreeprocessor(Treeprocessor):
             c.remove(c[0])
         c.append(anchor)
 
-    def add_permalink(self, c, elem_id) -> None:
+    def add_permalink(self, c: etree.Element, elem_id: str) -> None:
         permalink = etree.Element("a")
         permalink.text = ("%spara;" % AMP_SUBSTITUTE
                           if self.use_permalinks is True
@@ -254,7 +274,7 @@ class TocTreeprocessor(Treeprocessor):
         else:
             c.append(permalink)
 
-    def build_toc_div(self, toc_list):
+    def build_toc_div(self, toc_list: list[TocToken]) -> etree.Element:
         """ Return a string div given a toc list. """
         div = etree.Element("div")
         div.attrib["class"] = self.toc_class
@@ -266,7 +286,7 @@ class TocTreeprocessor(Treeprocessor):
                 header.attrib["class"] = self.title_class
             header.text = self.title
 
-        def build_etree_ul(toc_list, parent):
+        def build_etree_ul(toc_list: list[TocToken], parent: etree.Element) -> etree.Element:
             ul = etree.SubElement(parent, "ul")
             for item in toc_list:
                 # List item link, to be inserted into the toc div
@@ -281,18 +301,20 @@ class TocTreeprocessor(Treeprocessor):
         build_etree_ul(toc_list, div)
 
         if 'prettify' in self.md.treeprocessors:
-            self.md.treeprocessors['prettify'].run(div)
+            prettify_processor: treeprocessors.PrettifyTreeprocessor
+            prettify_processor = self.md.treeprocessors['prettify']  # type: ignore[assignment]
+            prettify_processor.run(div)
 
         return div
 
-    def run(self, doc):
+    def run(self, doc: etree.Element) -> None:
         # Get a list of id attributes
         used_ids = set()
         for el in doc.iter():
             if "id" in el.attrib:
                 used_ids.add(el.attrib["id"])
 
-        toc_tokens = []
+        flat_toc_tokens: list[FlatTocToken] = []
         for el in doc.iter():
             if isinstance(el.tag, str) and self.header_rgx.match(el.tag):
                 self.set_level(el)
@@ -304,7 +326,7 @@ class TocTreeprocessor(Treeprocessor):
                     el.attrib["id"] = unique(self.slugify(innertext, self.sep), used_ids)
 
                 if int(el.tag[-1]) >= self.toc_top and int(el.tag[-1]) <= self.toc_bottom:
-                    toc_tokens.append({
+                    flat_toc_tokens.append({
                         'level': int(el.tag[-1]),
                         'id': el.attrib["id"],
                         'name': unescape(stashedHTML2text(
@@ -322,7 +344,7 @@ class TocTreeprocessor(Treeprocessor):
                 if self.use_permalinks not in [False, None]:
                     self.add_permalink(el, el.attrib["id"])
 
-        toc_tokens = nest_toc_tokens(toc_tokens)
+        toc_tokens = nest_toc_tokens(flat_toc_tokens)
         div = self.build_toc_div(toc_tokens)
         if self.marker:
             self.replace_marker(doc, div)
@@ -339,7 +361,7 @@ class TocExtension(Extension):
 
     TreeProcessorClass = TocTreeprocessor
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         self.config = {
             'marker': [
                 '[TOC]',
@@ -391,7 +413,7 @@ class TocExtension(Extension):
 
         super().__init__(**kwargs)
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         """ Add TOC tree processor to Markdown. """
         md.registerExtension(self)
         self.md = md

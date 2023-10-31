@@ -36,6 +36,7 @@ from .util import BLOCK_LEVEL_ELEMENTS
 
 if TYPE_CHECKING:  # pragma: no cover
     from xml.etree.ElementTree import Element
+    from markdown.extensions.toc import TocToken
 
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
@@ -84,6 +85,10 @@ class Markdown:
     A mapping of known output formats by name and their respective serializers. Each serializer must be a
     callable which accepts an [`Element`][xml.etree.ElementTree.Element] and returns a `str`.
     """
+
+    toc_tokens: list[TocToken]
+    toc: str
+    Meta: dict[str, Any]
 
     def __init__(self, **kwargs: Any):
         """
@@ -159,7 +164,7 @@ class Markdown:
     def registerExtensions(
         self,
         extensions: Sequence[Extension | str],
-        configs: Mapping[str, Mapping[str, Any]]
+        configs: Mapping[str, dict[str, Any]]
     ) -> Markdown:
         """
         Load a list of extensions into an instance of the `Markdown` class.
@@ -489,7 +494,7 @@ def markdownFromFile(
     output: str | BinaryIO | None = None,
     encoding: str | None = None,
     **kwargs: Any
-):
+) -> None:
     """
     Read Markdown text from a file and write output to a file or a stream.
 

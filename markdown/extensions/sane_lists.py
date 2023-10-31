@@ -24,6 +24,11 @@ from __future__ import annotations
 from . import Extension
 from ..blockprocessors import OListProcessor, UListProcessor
 import re
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
+    from .. import blockparser
 
 
 class SaneOListProcessor(OListProcessor):
@@ -34,7 +39,7 @@ class SaneOListProcessor(OListProcessor):
     LAZY_OL = False
     """ Disable lazy list behavior. """
 
-    def __init__(self, parser):
+    def __init__(self, parser: blockparser.BlockParser):
         super().__init__(parser)
         self.CHILD_RE = re.compile(r'^[ ]{0,%d}((\d+\.))[ ]+(.*)' %
                                    (self.tab_length - 1))
@@ -46,7 +51,7 @@ class SaneUListProcessor(UListProcessor):
     SIBLING_TAGS = ['ul']
     """ Exclude `ol` from list of siblings. """
 
-    def __init__(self, parser):
+    def __init__(self, parser: blockparser.BlockParser):
         super().__init__(parser)
         self.CHILD_RE = re.compile(r'^[ ]{0,%d}(([*+-]))[ ]+(.*)' %
                                    (self.tab_length - 1))
@@ -55,7 +60,7 @@ class SaneUListProcessor(UListProcessor):
 class SaneListExtension(Extension):
     """ Add sane lists to Markdown. """
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         """ Override existing Processors. """
         md.parser.blockprocessors.register(SaneOListProcessor(md.parser), 'olist', 40)
         md.parser.blockprocessors.register(SaneUListProcessor(md.parser), 'ulist', 30)

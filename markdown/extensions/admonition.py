@@ -30,12 +30,17 @@ from . import Extension
 from ..blockprocessors import BlockProcessor
 import xml.etree.ElementTree as etree
 import re
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
+    from markdown import blockparser
 
 
 class AdmonitionExtension(Extension):
     """ Admonition extension for Python-Markdown. """
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         """ Add Admonition to Markdown instance. """
         md.registerExtension(self)
 
@@ -49,15 +54,15 @@ class AdmonitionProcessor(BlockProcessor):
     RE = re.compile(r'(?:^|\n)!!! ?([\w\-]+(?: +[\w\-]+)*)(?: +"(.*?)")? *(?:\n|$)')
     RE_SPACES = re.compile('  +')
 
-    def __init__(self, parser):
+    def __init__(self, parser: blockparser.BlockParser):
         """Initialization."""
 
         super().__init__(parser)
 
-        self.current_sibling = None
-        self.content_indention = 0
+        self.current_sibling: etree.Element | None = None
+        self.content_indent = 0
 
-    def parse_content(self, parent, block):
+    def parse_content(self, parent: etree.Element, block: str) -> tuple[etree.Element | None, str, str]:
         """Get sibling admonition.
 
         Retrieve the appropriate sibling element. This can get tricky when
@@ -70,11 +75,11 @@ class AdmonitionProcessor(BlockProcessor):
 
         # We already acquired the block via test
         if self.current_sibling is not None:
-            sibling = self.current_sibling
+            prev_sibling = self.current_sibling
             block, the_rest = self.detab(block, self.content_indent)
             self.current_sibling = None
             self.content_indent = 0
-            return sibling, block, the_rest
+            return prev_sibling, block, the_rest
 
         sibling = self.lastChild(parent)
 
@@ -115,14 +120,14 @@ class AdmonitionProcessor(BlockProcessor):
 
         return sibling, block, the_rest
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
 
         if self.RE.search(block):
             return True
         else:
             return self.parse_content(parent, block)[0] is not None
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> None:
         block = blocks.pop(0)
         m = self.RE.search(block)
 
@@ -143,6 +148,7 @@ class AdmonitionProcessor(BlockProcessor):
                 p.text = title
                 p.set('class', self.CLASSNAME_TITLE)
         else:
+            assert sibling is not None
             # Sibling is a list item, but we need to wrap it's content should be wrapped in <p>
             if sibling.tag in ('li', 'dd') and sibling.text:
                 text = sibling.text
@@ -160,7 +166,7 @@ class AdmonitionProcessor(BlockProcessor):
             # list for future processing.
             blocks.insert(0, theRest)
 
-    def get_class_and_title(self, match):
+    def get_class_and_title(self, match: re.Match[str]) -> tuple[str, str | None]:
         klass, title = match.group(1).lower(), match.group(2)
         klass = self.RE_SPACES.sub(' ', klass)
         if title is None:

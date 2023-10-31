@@ -88,7 +88,7 @@ class InlineProcessor(Treeprocessor):
         self.inlinePatterns = md.inlinePatterns
         self.ancestors: list[str] = []
 
-    def __makePlaceholder(self, type) -> tuple[str, str]:
+    def __makePlaceholder(self, type: str) -> tuple[str, str]:
         """ Generate a placeholder """
         id = "%04d" % len(self.stashed_nodes)
         hash = util.INLINE_PLACEHOLDER % id
@@ -112,7 +112,7 @@ class InlineProcessor(Treeprocessor):
         else:
             return None, index + 1
 
-    def __stashNode(self, node, type) -> str:
+    def __stashNode(self, node: etree.Element | str, type: str) -> str:
         """ Add node to stash. """
         placeholder, id = self.__makePlaceholder(type)
         self.stashed_nodes[id] = node
@@ -141,7 +141,7 @@ class InlineProcessor(Treeprocessor):
                     patternIndex += 1
         return data
 
-    def __processElementText(self, node: etree.Element, subnode: etree.Element, isText: bool = True):
+    def __processElementText(self, node: etree.Element, subnode: etree.Element, isText: bool = True) -> None:
         """
         Process placeholders in `Element.text` or `Element.tail`
         of Elements popped from `self.stashed_nodes`.
@@ -188,7 +188,7 @@ class InlineProcessor(Treeprocessor):
             List with `ElementTree` elements with applied inline patterns.
 
         """
-        def linkText(text: str | None):
+        def linkText(text: str | None) -> None:
             if text:
                 if result:
                     if result[-1][0].tail:
@@ -205,7 +205,7 @@ class InlineProcessor(Treeprocessor):
                         parent.text += text
                     else:
                         parent.text = text
-        result = []
+        result: list[tuple[etree.Element, list[str]]] = []
         strartIndex = 0
         while data:
             index = data.find(self.__placeholder_prefix, strartIndex)
@@ -219,7 +219,7 @@ class InlineProcessor(Treeprocessor):
                         text = data[strartIndex:index]
                         linkText(text)
 
-                    if not isString(node):  # it's Element
+                    if not isinstance(node, str):  # it's Element
                         for child in [node] + list(node):
                             if child.tail:
                                 if child.tail.strip():
@@ -362,7 +362,7 @@ class InlineProcessor(Treeprocessor):
             An element tree object with applied inline patterns.
 
         """
-        self.stashed_nodes: dict[str, etree.Element] = {}
+        self.stashed_nodes: dict[str, etree.Element | str] = {}
 
         # Ensure a valid parent list, but copy passed in lists
         # to ensure we don't have the user accidentally change it on us.
@@ -419,7 +419,9 @@ class InlineProcessor(Treeprocessor):
 class PrettifyTreeprocessor(Treeprocessor):
     """ Add line breaks to the html document. """
 
-    def _prettifyETree(self, elem):
+    md: Markdown
+
+    def _prettifyETree(self, elem: etree.Element) -> None:
         """ Recursively add line breaks to `ElementTree` children. """
 
         i = "\n"
@@ -460,13 +462,13 @@ class UnescapeTreeprocessor(Treeprocessor):
 
     RE = re.compile(r'{}(\d+){}'.format(util.STX, util.ETX))
 
-    def _unescape(self, m):
+    def _unescape(self, m: re.Match[str]) -> str:
         return chr(int(m.group(1)))
 
     def unescape(self, text: str) -> str:
         return self.RE.sub(self._unescape, text)
 
-    def run(self, root):
+    def run(self, root: etree.Element) -> None:
         """ Loop over all elements and unescape all text. """
         for elem in root.iter():
             # Unescape text content

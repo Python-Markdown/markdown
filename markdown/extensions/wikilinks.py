@@ -25,9 +25,13 @@ from . import Extension
 from ..inlinepatterns import InlineProcessor
 import xml.etree.ElementTree as etree
 import re
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 
-def build_url(label, base, end):
+def build_url(label: str, base: str, end: str) -> str:
     """ Build a URL from the label, a base, and an end. """
     clean_label = re.sub(r'([ ]+_)|(_[ ]+)|([ ]+)', '_', label)
     return '{}{}{}'.format(base, clean_label, end)
@@ -36,7 +40,7 @@ def build_url(label, base, end):
 class WikiLinkExtension(Extension):
     """ Add inline processor to Markdown. """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         self.config = {
             'base_url': ['/', 'String to append to beginning or URL.'],
             'end_url': ['/', 'String to append to end of URL.'],
@@ -46,7 +50,7 @@ class WikiLinkExtension(Extension):
         """ Default configuration options. """
         super().__init__(**kwargs)
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         self.md = md
 
         # append to end of inline patterns
@@ -59,11 +63,14 @@ class WikiLinkExtension(Extension):
 class WikiLinksInlineProcessor(InlineProcessor):
     """ Build link from `wikilink`. """
 
-    def __init__(self, pattern, config):
+    md: Markdown
+
+    def __init__(self, pattern: str, config: dict[str, Any]):
         super().__init__(pattern)
         self.config = config
 
-    def handleMatch(self, m, data):
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | str, int, int]:
+        a: etree.Element | str
         if m.group(1).strip():
             base_url, end_url, html_class = self._getMeta()
             label = m.group(1).strip()
@@ -77,7 +84,7 @@ class WikiLinksInlineProcessor(InlineProcessor):
             a = ''
         return a, m.start(0), m.end(0)
 
-    def _getMeta(self):
+    def _getMeta(self) -> tuple[str, str, str]:
         """ Return meta data or `config` data. """
         base_url = self.config['base_url']
         end_url = self.config['end_url']

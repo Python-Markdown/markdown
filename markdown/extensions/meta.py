@@ -25,6 +25,10 @@ from . import Extension
 from ..preprocessors import Preprocessor
 import re
 import logging
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 log = logging.getLogger('MARKDOWN')
 
@@ -38,7 +42,7 @@ END_RE = re.compile(r'^(-{3}|\.{3})(\s.*)?')
 class MetaExtension (Extension):
     """ Meta-Data extension for Python-Markdown. """
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown) -> None:
         """ Add `MetaPreprocessor` to Markdown instance. """
         md.registerExtension(self)
         self.md = md
@@ -51,9 +55,11 @@ class MetaExtension (Extension):
 class MetaPreprocessor(Preprocessor):
     """ Get Meta-Data. """
 
-    def run(self, lines):
+    md: Markdown
+
+    def run(self, lines: list[str]) -> list[str]:
         """ Parse Meta-Data and store in Markdown.Meta. """
-        meta = {}
+        meta: dict[str, Any] = {}
         key = None
         if lines and BEGIN_RE.match(lines[0]):
             lines.pop(0)
