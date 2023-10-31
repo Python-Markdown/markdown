@@ -44,7 +44,7 @@ class MetaExtension (Extension):
         self.md = md
         md.preprocessors.register(MetaPreprocessor(md), 'meta', 27)
 
-    def reset(self):
+    def reset(self) -> None:
         self.md.Meta = {}
 
 

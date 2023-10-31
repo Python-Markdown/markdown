@@ -27,7 +27,7 @@ options for their extension and attach the various processors and patterns which
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Mapping, Sequence
 from ..util import parseBoolValue
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -37,7 +37,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class Extension:
     """ Base class for extensions to subclass. """
 
-    config: dict[str, list[Any, str]] = {}
+    config: Mapping[str, list] = {}
     """
     Default configuration for an extension.
 
@@ -91,7 +91,7 @@ class Extension:
         """
         return [(key, self.config[key][1]) for key in self.config.keys()]
 
-    def setConfig(self, key: str, value: Any):
+    def setConfig(self, key: str, value: Any) -> None:
         """
         Set a configuration option.
 
@@ -112,7 +112,7 @@ class Extension:
             value = parseBoolValue(value, preserve_none=True)
         self.config[key][0] = value
 
-    def setConfigs(self, items: dict[str, Any] | list[tuple[str, Any]]):
+    def setConfigs(self, items: Mapping[str, Any] | Sequence[tuple[str, Any]]):
         """
         Loop through a collection of configuration options, passing each to
         [`setConfig`][markdown.extensions.Extension.setConfig].
@@ -129,7 +129,7 @@ class Extension:
         for key, value in items:
             self.setConfig(key, value)
 
-    def extendMarkdown(self, md: Markdown):
+    def extendMarkdown(self, md: Markdown) -> None:
         """
         Add the various processors and patterns to the Markdown Instance.
 

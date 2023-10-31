@@ -83,6 +83,8 @@ class HTMLExtractor(htmlparser.HTMLParser):
         # Block tags that should contain no content (self closing)
         self.empty_tags = set(['hr'])
 
+        self.lineno_start_cache = [0]
+
         # This calls self.reset
         super().__init__(*args, **kwargs)
         self.md = md
@@ -94,6 +96,8 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.stack = []  # When `inraw==True`, stack contains a list of tags
         self._cache = []
         self.cleandoc = []
+        self.lineno_start_cache = [0]
+
         super().reset()
 
     def close(self):
@@ -114,15 +118,15 @@ class HTMLExtractor(htmlparser.HTMLParser):
     @property
     def line_offset(self) -> int:
         """Returns char index in `self.rawdata` for the start of the current line. """
-        if self.lineno > 1 and '\n' in self.rawdata:
-            m = re.match(r'([^\n]*\n){{{}}}'.format(self.lineno-1), self.rawdata)
-            if m:
-                return m.end()
-            else:  # pragma: no cover
-                # Value of `self.lineno` must exceed total number of lines.
-                # Find index of beginning of last line.
-                return self.rawdata.rfind('\n')
-        return 0
+        for ii in range(len(self.lineno_start_cache)-1, self.lineno-1):
+            last_line_start_pos = self.lineno_start_cache[ii]
+            lf_pos = self.rawdata.find('\n', last_line_start_pos)
+            if lf_pos == -1:
+                # No more newlines found. Use end of raw data as start of line beyond end.
+                lf_pos = len(self.rawdata)
+            self.lineno_start_cache.append(lf_pos+1)
+
+        return self.lineno_start_cache[self.lineno-1]
 
     def at_line_start(self) -> bool:
         """
@@ -152,7 +156,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             # Failed to extract from raw data. Assume well formed and lowercase.
             return '</{}>'.format(tag)
 
-    def handle_starttag(self, tag: str, attrs: dict[str, str]):
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str]]):
         # Handle tags that should always be empty and do not specify a closing tag
         if tag in self.empty_tags:
             self.handle_startendtag(tag, attrs)
@@ -231,7 +235,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(data)
 
-    def handle_startendtag(self, tag: str, attrs: dict[str, str]):
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str]]):
         self.handle_empty_tag(self.get_starttag_text(), is_block=self.md.is_block_level(tag))
 
     def handle_charref(self, name: str):
@@ -273,7 +277,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
     # As `__startag_text` is private, all references to it must be in this subclass.
     # The last few lines of `parse_starttag` are reversed so that `handle_starttag`
     # can override `cdata_mode` in certain situations (in a code span).
-    __starttag_text = None
+    __starttag_text: str | None = None
 
     def get_starttag_text(self) -> str:
         """Return full source of start tag: `<...>`."""
