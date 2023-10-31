@@ -22,9 +22,18 @@ jobs:
           python -m mkdocs build --clean --verbose
       - name: Publish
         if: success()
-        uses: peaceiris/actions-gh-pages@v3
+        # uses: peaceiris/actions-gh-pages@v3
+        # with:
+        #   deploy_key: ${{ secrets.PAGES_DEPLOY_KEY }}
+        #   external_repository: Python-Markdown/Python-Markdown.github.io
+        #   publish_branch: master
+        #   publish_dir: ./site
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.PAGES_DEPLOY_KEY }}
         with:
-          deploy_key: ${{ secrets.PAGES_DEPLOY_KEY }}
-          external_repository: Python-Markdown/Python-Markdown.github.io
-          publish_branch: master
-          publish_dir: ./site
+          source-directory: 'site'
+          destination-github-username: 'Python-Markdown'
+          destination-repository-name: 'Python-Markdown.github.io'
+          user-name: ${{ github.actor }}
+          target-branch: master
