@@ -8,12 +8,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). See the [Contributing Guide](contributing.md) for details.
 
-## [unreleased]
+## [3.5.1] -- 2023-10-31
 
 ### Fixed
 
-* Fix a performance problem with HTML extraction where large HTML input could trigger quadratic line counting behavior (PR#1392).
-* Improve and expand type annotations in the code base (#1394)
+* Fix a performance problem with HTML extraction where large HTML input could
+  trigger quadratic line counting behavior (#1392).
+* Improve and expand type annotations in the code base (#1394).
 
 ## [3.5] -- 2023-10-06
 
