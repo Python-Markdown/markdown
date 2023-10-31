@@ -51,20 +51,15 @@ links to the header, placing them after all other header content.
 
 ## [3.4.2] -- 2023-03-22
 
-### Added
-
-* Officially support Python 3.11.
-
 ### Fixed
-
+* Officially support Python 3.11.
 * Improve standalone * and _ parsing (#1300).
 * Consider `<html>` HTML tag a block-level element (#1309).
-
-### Infrastructure
-
 * Switch from `setup.py` to `pyproject.toml`.
 
 ## [3.4.1] -- 2022-07-15
+
+### Fixed
 
 * Fix an import issue with `importlib.util` (#1274).
 
