@@ -5,8 +5,9 @@ on:
     branches:
     - '**'
     path:
-    # Only run if changes were made in markdown/
+    # Only run if changes were made in markdown/ or the changelog
     - 'markdown/**'
+    - 'docs/changelog.md'
 
 # permissions:
 #   pull-requests: write
