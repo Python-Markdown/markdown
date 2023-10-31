@@ -187,10 +187,6 @@ valid parameter and will raise an error if provided.
 
 ## [3.3.5] -- 2021-11-16
 
-### Added
-
-* Support Python 3.10 (#1124).
-
 ### Fixed
 
 * Make the `slugify_unicode` function not remove diacritical marks (#1118).
@@ -199,6 +195,7 @@ valid parameter and will raise an error if provided.
 * Don't process shebangs in fenced code blocks when using CodeHilite (#1156).
 * Improve email address validation for Automatic Links (#1165).
 * Ensure `<summary>` tags are parsed correctly (#1079).
+* Support Python 3.10 (#1124).
 
 ## [3.3.4] -- 2021-02-24
 
