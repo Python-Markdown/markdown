@@ -17,17 +17,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    # - name: Ensure Changelog Entry Made
-    #   uses: dangoslen/changelog-enforcer@v3
-    #   with:
-    #     changeLogPath: 'docs/changelog.md'
-    #     missingUpdateErrorMessage: |
-    #       @${{ github.actor }}, thank you for your contribution. It appears that you have not added a comment to the
-    #       changelog describing the changes you have made. Doing so will help to ensure your contribution is accepted.
+    - name: Ensure Changelog Entry Made
+      uses: dangoslen/changelog-enforcer@v3
+      with:
+        changeLogPath: 'docs/changelog.md'
+        missingUpdateErrorMessage: |
+          @${{ github.actor }}, thank you for your contribution. It appears that you have not added a comment to the
+          changelog describing the changes you have made. Doing so will help to ensure your contribution is accepted.
 
-    #       Please see the [Contributing Guide](https://python-markdown.github.io/contributing/#changelog) for details.
+          Please see the [Contributing Guide](https://python-markdown.github.io/contributing/#changelog) for details.
     - name: Validate Changelog
-      # if: success()
+      if: success()
       id: changelog_reader
       uses: mindsers/changelog-reader-action@v2
       with:
