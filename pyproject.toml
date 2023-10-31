@@ -95,6 +95,9 @@ legacy_em = 'markdown.extensions.legacy_em:LegacyEmExtension'
 [tool.setuptools]
 packages = ['markdown', 'markdown.extensions']
 
+[tool.setuptools.package-data]
+"markdown" = ["py.typed"]
+
 [tool.setuptools.dynamic]
 version = {attr = 'markdown.__meta__.__version__'}
 
