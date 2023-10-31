@@ -97,3 +97,7 @@ packages = ['markdown', 'markdown.extensions']
 
 [tool.setuptools.dynamic]
 version = {attr = 'markdown.__meta__.__version__'}
+
+[tool.mypy]
+warn_unreachable = true
+show_error_codes = true

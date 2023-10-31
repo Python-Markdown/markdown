@@ -23,7 +23,7 @@ import codecs
 import sys
 import logging
 import importlib
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Mapping, Sequence, TextIO
+from typing import TYPE_CHECKING, Any, BinaryIO, Callable, ClassVar, Mapping, Sequence
 from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
@@ -85,7 +85,7 @@ class Markdown:
     callable which accepts an [`Element`][xml.etree.ElementTree.Element] and returns a `str`.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """
         Creates a new Markdown instance.
 
@@ -183,7 +183,7 @@ class Markdown:
                     'Successfully loaded extension "%s.%s".'
                     % (ext.__class__.__module__, ext.__class__.__name__)
                 )
-            elif ext is not None:
+            elif ext is not None:  # type: ignore[unreachable]
                 raise TypeError(
                     'Extension "{}.{}" must be of type: "{}.{}"'.format(
                         ext.__class__.__module__, ext.__class__.__name__,
@@ -387,8 +387,8 @@ class Markdown:
 
     def convertFile(
         self,
-        input: str | TextIO | None = None,
-        output: str | TextIO | None = None,
+        input: str | BinaryIO | None = None,
+        output: str | BinaryIO | None = None,
         encoding: str | None = None,
     ) -> Markdown:
         """
@@ -417,15 +417,13 @@ class Markdown:
         # Read the source
         if input:
             if isinstance(input, str):
-                input_file = codecs.open(input, mode="r", encoding=encoding)
+                with codecs.open(input, mode="r", encoding=encoding) as input_file:
+                    text = input_file.read()
             else:
-                input_file = codecs.getreader(encoding)(input)
-            text = input_file.read()
-            input_file.close()
+                with codecs.getreader(encoding)(input) as input_file:
+                    text = input_file.read()
         else:
             text = sys.stdin.read()
-            if not isinstance(text, str):  # pragma: no cover
-                text = text.decode(encoding)
 
         text = text.lstrip('\ufeff')  # remove the byte-order mark
 
@@ -442,18 +440,14 @@ class Markdown:
                 output_file.close()
             else:
                 writer = codecs.getwriter(encoding)
-                output_file = writer(output, errors="xmlcharrefreplace")
-                output_file.write(html)
+                output_writer = writer(output, errors="xmlcharrefreplace")
+                output_writer.write(html)
                 # Don't close here. User may want to write more.
         else:
             # Encode manually and write bytes to stdout.
-            html = html.encode(encoding, "xmlcharrefreplace")
-            try:
-                # Write bytes directly to buffer (Python 3).
-                sys.stdout.buffer.write(html)
-            except AttributeError:  # pragma: no cover
-                # Probably Python 2, which works with bytes by default.
-                sys.stdout.write(html)
+            html_bytes = html.encode(encoding, "xmlcharrefreplace")
+            # Write bytes directly to buffer (Python 3).
+            sys.stdout.buffer.write(html_bytes)
 
         return self
 
@@ -489,7 +483,13 @@ def markdown(text: str, **kwargs: Any) -> str:
     return md.convert(text)
 
 
-def markdownFromFile(**kwargs: Any):
+def markdownFromFile(
+    *,
+    input: str | BinaryIO | None = None,
+    output: str | BinaryIO | None = None,
+    encoding: str | None = None,
+    **kwargs: Any
+):
     """
     Read Markdown text from a file and write output to a file or a stream.
 
@@ -498,13 +498,11 @@ def markdownFromFile(**kwargs: Any):
     [`convert`][markdown.Markdown.convert].
 
     Keyword arguments:
-        input (str | TextIO): A file name or readable object.
-        output (str | TextIO): A file name or writable object.
-        encoding (str): Encoding of input and output.
+        input: A file name or readable object.
+        output: A file name or writable object.
+        encoding: Encoding of input and output.
         **kwargs: Any arguments accepted by the `Markdown` class.
 
     """
     md = Markdown(**kwargs)
-    md.convertFile(kwargs.get('input', None),
-                   kwargs.get('output', None),
-                   kwargs.get('encoding', None))
+    md.convertFile(input, output, encoding)

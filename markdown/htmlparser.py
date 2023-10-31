@@ -28,12 +28,15 @@ from __future__ import annotations
 import re
 import importlib.util
 import sys
+from typing import Any
 
 
 # Import a copy of the html.parser lib as `htmlparser` so we can monkeypatch it.
 # Users can still do `from html import parser` and get the default behavior.
 spec = importlib.util.find_spec('html.parser')
-htmlparser = importlib.util.module_from_spec(spec)
+assert spec is not None
+htmlparser: Any = importlib.util.module_from_spec(spec)
+assert spec.loader is not None
 spec.loader.exec_module(htmlparser)
 sys.modules['htmlparser'] = htmlparser
 
@@ -281,6 +284,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
 
     def get_starttag_text(self) -> str:
         """Return full source of start tag: `<...>`."""
+        assert self.__starttag_text is not None
         return self.__starttag_text
 
     def parse_starttag(self, i: int) -> int:  # pragma: no cover

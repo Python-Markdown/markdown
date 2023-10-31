@@ -44,13 +44,11 @@ from . import util
 from typing import TYPE_CHECKING, Any, Collection, NamedTuple
 import re
 import xml.etree.ElementTree as etree
-try:  # pragma: no cover
-    from html import entities
-except ImportError:  # pragma: no cover
-    import htmlentitydefs as entities
+from html import entities
 
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
+    from . import treeprocessors
 
 
 def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry[InlineProcessor]:
@@ -72,7 +70,7 @@ def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry[InlinePro
     * finally we apply strong, emphasis, etc.
 
     """
-    inlinePatterns = util.Registry()
+    inlinePatterns: util.Registry[InlineProcessor] = util.Registry()
     inlinePatterns.register(BacktickInlineProcessor(BACKTICK_RE), 'backtick', 190)
     inlinePatterns.register(EscapeInlineProcessor(ESCAPE_RE, md), 'escape', 180)
     inlinePatterns.register(ReferenceInlineProcessor(REFERENCE_RE, md), 'reference', 170)
@@ -191,7 +189,7 @@ class EmStrongItem(NamedTuple):
 # -----------------------------------------------------------------------------
 
 
-class Pattern:  # pragma: no cover
+class _BasePattern:
     """
     Base class that inline patterns subclass.
 
@@ -217,6 +215,9 @@ class Pattern:  # pragma: no cover
     would cause the content to be a descendant of one of the listed tag names.
     """
 
+    compiled_re: re.Pattern[str]
+    md: Markdown | None
+
     def __init__(self, pattern: str, md: Markdown | None = None):
         """
         Create an instant of an inline pattern.
@@ -238,27 +239,17 @@ class Pattern:  # pragma: no cover
         """ Return a compiled regular expression. """
         return self.compiled_re
 
-    def handleMatch(self, m: re.Match[str]) -> etree.Element | str:
-        """Return a ElementTree element from the given match.
-
-        Subclasses should override this method.
-
-        Arguments:
-            m: A match object containing a match of the pattern.
-
-        Returns: An ElementTree Element object.
-
-        """
-        pass  # pragma: no cover
-
     def type(self) -> str:
         """ Return class name, to define pattern type """
         return self.__class__.__name__
 
     def unescape(self, text: str) -> str:
         """ Return unescaped text given text with an inline placeholder. """
+        assert self.md is not None
         try:
-            stash = self.md.treeprocessors['inline'].stashed_nodes
+            inlineprocessor: treeprocessors.InlineProcessor
+            inlineprocessor = self.md.treeprocessors['inline']  # type: ignore[assignment]
+            stash = inlineprocessor.stashed_nodes
         except KeyError:  # pragma: no cover
             return text
 
@@ -272,6 +263,27 @@ class Pattern:  # pragma: no cover
                     # An `etree` Element - return text content only
                     return ''.join(value.itertext())
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
+
+
+class LegacyPattern(_BasePattern):
+    def handleMatch(self, m: re.Match[str]) -> etree.Element | str:
+        """Return a ElementTree element from the given match.
+
+        Subclasses should override this method.
+
+        Arguments:
+            m: A match object containing a match of the pattern.
+
+        Returns: An ElementTree Element object.
+
+        """
+        raise NotImplementedError()  # pragma: no cover
+
+
+if TYPE_CHECKING:  # pragma: no cover
+    Pattern = _BasePattern
+else:
+    Pattern = LegacyPattern
 
 
 class InlineProcessor(Pattern):
@@ -319,7 +331,7 @@ class InlineProcessor(Pattern):
             end: The end of the region that has been matched or None.
 
         """
-        pass  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
 
 class SimpleTextPattern(Pattern):  # pragma: no cover
@@ -338,6 +350,8 @@ class SimpleTextInlineProcessor(InlineProcessor):
 
 class EscapeInlineProcessor(InlineProcessor):
     """ Return an escaped character. """
+
+    md: Markdown
 
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[str | None, int, int]:
         """
@@ -496,6 +510,9 @@ class DoubleTagInlineProcessor(SimpleTagInlineProcessor):
 
 class HtmlInlineProcessor(InlineProcessor):
     """ Store raw inline html and return a placeholder. """
+
+    md: Markdown
+
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[str, int, int]:
         """ Store the text of `group(1)` of a pattern and return a placeholder string. """
         rawhtml = self.backslash_unescape(self.unescape(m.group(1)))
@@ -874,6 +891,8 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
     NEWLINE_CLEANUP_RE = re.compile(r'\s+', re.MULTILINE)
 
     RE_LINK = re.compile(r'\s?\[([^\]]*)\]', re.DOTALL | re.UNICODE)
+
+    md: Markdown
 
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | None, int | None, int | None]:
         """

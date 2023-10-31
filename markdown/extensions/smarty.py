@@ -90,7 +90,11 @@ from . import Extension
 from ..inlinepatterns import HtmlInlineProcessor, HTML_RE
 from ..treeprocessors import InlineProcessor
 from ..util import Registry
+from markdown import Markdown
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:  # pragma: no cover
+    from .. import inlinepatterns
 
 # Constants for quote education.
 punctClass = r"""[!"#\$\%'()*+,-.\/:;<=>?\@\[\\\]\^_`{|}~]"""
@@ -241,9 +245,9 @@ class SmartyExtension(Extension):
         )
         self._addPatterns(md, patterns, 'quotes', 30)
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown):
         configs = self.getConfigs()
-        self.inlinePatterns: Registry[HtmlInlineProcessor] = Registry()
+        self.inlinePatterns: Registry[inlinepatterns.InlineProcessor] = Registry()
         if configs['smart_ellipses']:
             self.educateEllipses(md)
         if configs['smart_quotes']:

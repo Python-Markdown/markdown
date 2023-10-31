@@ -39,7 +39,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 def build_postprocessors(md: Markdown, **kwargs: Any) -> util.Registry[Postprocessor]:
     """ Build the default postprocessors for Markdown. """
-    postprocessors = util.Registry()
+    postprocessors: util.Registry[Postprocessor] = util.Registry()
     postprocessors.register(RawHtmlPostprocessor(md), 'raw_html', 30)
     postprocessors.register(AndSubstitutePostprocessor(), 'amp_substitute', 20)
     return postprocessors
@@ -63,13 +63,15 @@ class Postprocessor(util.Processor):
         (possibly modified) string.
 
         """
-        pass  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
 
 class RawHtmlPostprocessor(Postprocessor):
     """ Restore raw html to the document. """
 
     BLOCK_LEVEL_REGEX = re.compile(r'^\<\/?([^ >]+)')
+
+    md: Markdown
 
     def run(self, text: str):
         """ Iterate over html stash and restore html. """

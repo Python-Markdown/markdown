@@ -36,7 +36,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 def build_preprocessors(md: Markdown, **kwargs: Any) -> util.Registry[Preprocessor]:
     """ Build and return the default set of preprocessors used by Markdown. """
-    preprocessors = util.Registry()
+    preprocessors: util.Registry[Preprocessor] = util.Registry()
     preprocessors.register(NormalizeWhitespace(md), 'normalize_whitespace', 30)
     preprocessors.register(HtmlBlockPreprocessor(md), 'html_block', 20)
     return preprocessors
@@ -60,11 +60,13 @@ class Preprocessor(util.Processor):
         the (possibly modified) list of lines.
 
         """
-        pass  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
 
 class NormalizeWhitespace(Preprocessor):
     """ Normalize whitespace for consistent parsing. """
+
+    md: Markdown
 
     def run(self, lines: list[str]) -> list[str]:
         source = '\n'.join(lines)

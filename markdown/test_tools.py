@@ -29,7 +29,7 @@ from typing import Any
 from . import markdown, Markdown, util
 
 try:
-    import tidylib
+    import tidylib  # type: ignore
 except ImportError:
     tidylib = None
 

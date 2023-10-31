@@ -34,18 +34,19 @@ from . import inlinepatterns
 
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
+    from typing import TypeGuard
 
 
 def build_treeprocessors(md: Markdown, **kwargs: Any) -> util.Registry[Treeprocessor]:
     """ Build the default  `treeprocessors` for Markdown. """
-    treeprocessors = util.Registry()
+    treeprocessors: util.Registry[Treeprocessor] = util.Registry()
     treeprocessors.register(InlineProcessor(md), 'inline', 20)
     treeprocessors.register(PrettifyTreeprocessor(md), 'prettify', 10)
     treeprocessors.register(UnescapeTreeprocessor(md), 'unescape', 0)
     return treeprocessors
 
 
-def isString(s: Any) -> bool:
+def isString(s: object) -> TypeGuard[str]:
     """ Return `True` if object is a string but not an  [`AtomicString`][markdown.util.AtomicString]. """
     if not isinstance(s, util.AtomicString):
         return isinstance(s, str)
@@ -69,7 +70,7 @@ class Treeprocessor(util.Processor):
         object, and the existing root `Element` will be replaced, or it can
         modify the current tree and return `None`.
         """
-        pass  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
 
 class InlineProcessor(Treeprocessor):
@@ -77,7 +78,7 @@ class InlineProcessor(Treeprocessor):
     A `Treeprocessor` that traverses a tree, applying inline patterns.
     """
 
-    def __init__(self, md):
+    def __init__(self, md: Markdown):
         self.__placeholder_prefix = util.INLINE_PLACEHOLDER_PREFIX
         self.__placeholder_suffix = util.ETX
         self.__placeholder_length = 4 + len(self.__placeholder_prefix) \
@@ -85,7 +86,7 @@ class InlineProcessor(Treeprocessor):
         self.__placeholder_re = util.INLINE_PLACEHOLDER_RE
         self.md = md
         self.inlinePatterns = md.inlinePatterns
-        self.ancestors = []
+        self.ancestors: list[str] = []
 
     def __makePlaceholder(self, type) -> tuple[str, str]:
         """ Generate a placeholder """
@@ -171,10 +172,10 @@ class InlineProcessor(Treeprocessor):
 
     def __processPlaceholders(
         self,
-        data: str,
+        data: str | None,
         parent: etree.Element,
         isText: bool = True
-    ) -> list[tuple[etree.Element, Any]]:
+    ) -> list[tuple[etree.Element, list[str]]]:
         """
         Process string with placeholders and generate `ElementTree` tree.
 
@@ -187,7 +188,7 @@ class InlineProcessor(Treeprocessor):
             List with `ElementTree` elements with applied inline patterns.
 
         """
-        def linkText(text):
+        def linkText(text: str | None):
             if text:
                 if result:
                     if result[-1][0].tail:
@@ -212,7 +213,7 @@ class InlineProcessor(Treeprocessor):
                 id, phEndIndex = self.__findPlaceholder(data, index)
 
                 if id in self.stashed_nodes:
-                    node = self.stashed_nodes.get(id)
+                    node = self.stashed_nodes[id]
 
                     if index > 0:
                         text = data[strartIndex:index]
@@ -252,7 +253,7 @@ class InlineProcessor(Treeprocessor):
 
     def __applyPattern(
         self,
-        pattern: inlinepatterns.Pattern,
+        pattern: inlinepatterns.InlineProcessor | inlinepatterns.LegacyPattern,
         data: str,
         patternIndex: int,
         startIndex: int = 0
@@ -271,7 +272,12 @@ class InlineProcessor(Treeprocessor):
             String with placeholders instead of `ElementTree` elements.
 
         """
-        new_style = isinstance(pattern, inlinepatterns.InlineProcessor)
+        if isinstance(pattern, inlinepatterns.InlineProcessor):
+            new_style = True
+            new_pattern = pattern
+        else:
+            new_style = False
+            legacy_pattern = pattern
 
         for exclude in pattern.ANCESTOR_EXCLUDES:
             if exclude.lower() in self.ancestors:
@@ -282,29 +288,27 @@ class InlineProcessor(Treeprocessor):
             # Since `handleMatch` may reject our first match,
             # we iterate over the buffer looking for matches
             # until we can't find any more.
-            for match in pattern.getCompiledRegExp().finditer(data, startIndex):
-                node, start, end = pattern.handleMatch(match, data)
-                if start is None or end is None:
-                    startIndex += match.end(0)
-                    match = None
-                    continue
-                break
+            for try_match in new_pattern.getCompiledRegExp().finditer(data, startIndex):
+                try_node, try_start, try_end = new_pattern.handleMatch(try_match, data)
+                if try_start is not None and try_end is not None:
+                    match, node, start, end = try_match, try_node, try_start, try_end
+                    break
         else:  # pragma: no cover
-            match = pattern.getCompiledRegExp().match(data[startIndex:])
+            match = legacy_pattern.getCompiledRegExp().match(data[startIndex:])
             leftData = data[:startIndex]
 
         if not match:
             return data, False, 0
 
         if not new_style:  # pragma: no cover
-            node = pattern.handleMatch(match)
+            node = legacy_pattern.handleMatch(match)
             start = match.start(0)
             end = match.end(0)
 
         if node is None:
             return data, True, end
 
-        if not isString(node):
+        if not isinstance(node, str):
             if not isinstance(node.text, util.AtomicString):
                 # We need to process current node too
                 for child in [node] + list(node):
@@ -330,7 +334,7 @@ class InlineProcessor(Treeprocessor):
                                      match.group(1),
                                      placeholder, match.groups()[-1]), True, 0
 
-    def __build_ancestors(self, parent, parents):
+    def __build_ancestors(self, parent: etree.Element | None, parents: list[str]) -> None:
         """Build the ancestor list."""
         ancestors = []
         while parent is not None:
@@ -373,7 +377,7 @@ class InlineProcessor(Treeprocessor):
             self.ancestors = parents
             self.__build_ancestors(currElement, self.ancestors)
 
-            insertQueue = []
+            insertQueue: list[tuple[etree.Element, list[tuple[etree.Element, list[str]]]]] = []
             for child in currElement:
                 if child.text and not isinstance(
                     child.text, util.AtomicString
@@ -398,9 +402,9 @@ class InlineProcessor(Treeprocessor):
                         child.tail = dumby.tail
                     pos = list(currElement).index(child) + 1
                     tailResult.reverse()
-                    for newChild in tailResult:
-                        self.parent_map[newChild[0]] = currElement
-                        currElement.insert(pos, newChild[0])
+                    for subChild in tailResult:
+                        self.parent_map[subChild[0]] = currElement
+                        currElement.insert(pos, subChild[0])
                 if len(child):
                     self.parent_map[child] = currElement
                     stack.append((child, self.ancestors[:]))

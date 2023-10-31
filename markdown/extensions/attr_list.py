@@ -32,6 +32,7 @@ import re
 
 if TYPE_CHECKING:  # pragma: no cover
     from xml.etree.ElementTree import Element
+    from markdown import Markdown
 
 
 def _handle_double_quote(s, t):
@@ -56,7 +57,7 @@ def _handle_word(s, t):
     return t, t
 
 
-_scanner = re.Scanner([
+_scanner = re.Scanner([  # type: ignore[attr-defined]
     (r'[^ =]+=".*?"', _handle_double_quote),
     (r"[^ =]+='.*?'", _handle_single_quote),
     (r'[^ =]+=[^ =]+', _handle_key_value),
@@ -86,6 +87,8 @@ class AttrListTreeprocessor(Treeprocessor):
                          r'\uf900-\ufdcf\ufdf0-\ufffd'
                          r'\:\-\.0-9\u00b7\u0300-\u036f\u203f-\u2040]+')
 
+    md: Markdown
+
     def run(self, doc: Element):
         for elem in doc.iter():
             if self.md.is_block_level(elem.tag):
@@ -102,18 +105,18 @@ class AttrListTreeprocessor(Treeprocessor):
                         if child.tag in ['ul', 'ol']:
                             pos = i
                             break
-                    if pos is None and elem[-1].tail:
+                    if pos is None and (tail := elem[-1].tail):
                         # use tail of last child. no `ul` or `ol`.
-                        m = RE.search(elem[-1].tail)
+                        m = RE.search(tail)
                         if m:
                             self.assign_attrs(elem, m.group(1))
-                            elem[-1].tail = elem[-1].tail[:m.start()]
-                    elif pos is not None and pos > 0 and elem[pos-1].tail:
+                            elem[-1].tail = tail[:m.start()]
+                    elif pos is not None and pos > 0 and (tail := elem[pos-1].tail):
                         # use tail of last child before `ul` or `ol`
-                        m = RE.search(elem[pos-1].tail)
+                        m = RE.search(tail)
                         if m:
                             self.assign_attrs(elem, m.group(1))
-                            elem[pos-1].tail = elem[pos-1].tail[:m.start()]
+                            elem[pos-1].tail = tail[:m.start()]
                     elif elem.text:
                         # use text. `ul` is first child.
                         m = RE.search(elem.text)

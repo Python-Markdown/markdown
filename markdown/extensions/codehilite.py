@@ -24,6 +24,7 @@ from __future__ import annotations
 from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import parseBoolValue
+from typing import Callable
 
 try:  # pragma: no cover
     from pygments import highlight
@@ -110,11 +111,11 @@ class CodeHilite:
 
     def __init__(self, src: str, **options):
         self.src = src
-        self.lang = options.pop('lang', None)
-        self.guess_lang = options.pop('guess_lang', True)
-        self.use_pygments = options.pop('use_pygments', True)
-        self.lang_prefix = options.pop('lang_prefix', 'language-')
-        self.pygments_formatter = options.pop('pygments_formatter', 'html')
+        self.lang: str | None = options.pop('lang', None)
+        self.guess_lang: bool = options.pop('guess_lang', True)
+        self.use_pygments: bool = options.pop('use_pygments', True)
+        self.lang_prefix: str = options.pop('lang_prefix', 'language-')
+        self.pygments_formatter: str | Callable = options.pop('pygments_formatter', 'html')
 
         if 'linenos' not in options:
             options['linenos'] = options.pop('linenums', None)
@@ -146,7 +147,7 @@ class CodeHilite:
 
         if pygments and self.use_pygments:
             try:
-                lexer = get_lexer_by_name(self.lang, **self.options)
+                lexer = get_lexer_by_name(self.lang or '', **self.options)
             except ValueError:
                 try:
                     if self.guess_lang:
@@ -157,7 +158,7 @@ class CodeHilite:
                     lexer = get_lexer_by_name('text', **self.options)
             if not self.lang:
                 # Use the guessed lexer's language instead
-                self.lang = lexer.aliases[0]
+                self.lang = lexer.aliases[0]  # type: ignore[attr-defined]
             lang_str = f'{self.lang_prefix}{self.lang}'
             if isinstance(self.pygments_formatter, str):
                 try:

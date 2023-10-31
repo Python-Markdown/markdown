@@ -121,7 +121,7 @@ class BlockProcessor:
             parent: An `etree` element which will be the parent of the block.
             block: A block of text from the source which has been split at blank lines.
         """
-        pass  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
     def run(self, parent: etree.Element, blocks: list[str]) -> bool | None:
         """ Run processor. Must be overridden by subclasses.
@@ -147,7 +147,7 @@ class BlockProcessor:
             parent: An `etree` element which is the parent of the current block.
             blocks: A list of all remaining blocks of the document.
         """
-        pass  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
 
 class ListIndentProcessor(BlockProcessor):
@@ -417,7 +417,7 @@ class OListProcessor(BlockProcessor):
 
     def get_items(self, block: str) -> list[str]:
         """ Break a block into list items. """
-        items = []
+        items: list[str] = []
         for line in block.split('\n'):
             m = self.CHILD_RE.match(line)
             if m:
@@ -426,7 +426,9 @@ class OListProcessor(BlockProcessor):
                 if not items and self.TAG == 'ol':
                     # Detect the integer value of first list item
                     INTEGER_RE = re.compile(r'(\d+)')
-                    self.STARTSWITH = INTEGER_RE.match(m.group(1)).group()
+                    int_match = INTEGER_RE.match(m.group(1))
+                    assert int_match is not None
+                    self.STARTSWITH = int_match.group()
                 # Append to the list
                 items.append(m.group(3))
             elif self.INDENT_RE.match(line):
