@@ -58,20 +58,15 @@ links to the header, placing them after all other header content.
 
 ## [3.4.2] -- 2023-03-22
 
-### Added
-
-* Officially support Python 3.11.
-
 ### Fixed
-
+* Officially support Python 3.11.
 * Improve standalone * and _ parsing (#1300).
 * Consider `<html>` HTML tag a block-level element (#1309).
-
-### Infrastructure
-
 * Switch from `setup.py` to `pyproject.toml`.
 
 ## [3.4.1] -- 2022-07-15
+
+### Fixed
 
 * Fix an import issue with `importlib.util` (#1274).
 
@@ -194,10 +189,6 @@ valid parameter and will raise an error if provided.
 
 ## [3.3.5] -- 2021-11-16
 
-### Added
-
-* Support Python 3.10 (#1124).
-
 ### Fixed
 
 * Make the `slugify_unicode` function not remove diacritical marks (#1118).
@@ -206,6 +197,7 @@ valid parameter and will raise an error if provided.
 * Don't process shebangs in fenced code blocks when using CodeHilite (#1156).
 * Improve email address validation for Automatic Links (#1165).
 * Ensure `<summary>` tags are parsed correctly (#1079).
+* Support Python 3.10 (#1124).
 
 ## [3.3.4] -- 2021-02-24
 
