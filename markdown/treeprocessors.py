@@ -34,7 +34,6 @@ from . import inlinepatterns
 
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
-    from typing import TypeGuard
 
 
 def build_treeprocessors(md: Markdown, **kwargs: Any) -> util.Registry[Treeprocessor]:
@@ -46,7 +45,7 @@ def build_treeprocessors(md: Markdown, **kwargs: Any) -> util.Registry[Treeproce
     return treeprocessors
 
 
-def isString(s: object) -> TypeGuard[str]:
+def isString(s: object) -> bool:
     """ Return `True` if object is a string but not an  [`AtomicString`][markdown.util.AtomicString]. """
     if not isinstance(s, util.AtomicString):
         return isinstance(s, str)

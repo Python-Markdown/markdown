@@ -88,7 +88,6 @@ class DefListProcessor(BlockProcessor):
 
         if theRest:
             blocks.insert(0, theRest)
-        return None
 
 
 class DefListIndentProcessor(ListIndentProcessor):

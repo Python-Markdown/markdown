@@ -135,16 +135,6 @@ def deprecated(message: str, stacklevel: int = 2):
     return wrapper
 
 
-@overload
-def parseBoolValue(value: str) -> bool:
-    ...  # pragma: no cover
-
-
-@overload
-def parseBoolValue(value: str | None, fail_on_errors: bool = True, preserve_none: bool = False) -> bool | None:
-    ...  # pragma: no cover
-
-
 def parseBoolValue(value: str | None, fail_on_errors: bool = True, preserve_none: bool = False) -> bool | None:
     """Parses a string representing a boolean value. If parsing was successful,
        returns `True` or `False`. If `preserve_none=True`, returns `True`, `False`,
@@ -162,7 +152,6 @@ def parseBoolValue(value: str | None, fail_on_errors: bool = True, preserve_none
         return False
     elif fail_on_errors:
         raise ValueError('Cannot parse bool value: %r' % value)
-    return None
 
 
 def code_escape(text: str) -> str:
@@ -337,12 +326,12 @@ class Registry(Generic[_T]):
         return iter([self._data[k] for k, p in self._priority])
 
     @overload
-    def __getitem__(self, key: str | int) -> _T:
-        ...  # pragma: no cover
+    def __getitem__(self, key: str | int) -> _T:  # pragma: no cover
+        ...
 
     @overload
-    def __getitem__(self, key: slice) -> Registry[_T]:
-        ...  # pragma: no cover
+    def __getitem__(self, key: slice) -> Registry[_T]:  # pragma: no cover
+        ...
 
     def __getitem__(self, key: str | int | slice) -> _T | Registry[_T]:
         self._sort()
