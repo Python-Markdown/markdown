@@ -86,7 +86,7 @@ class AttrListTreeprocessor(Treeprocessor):
                          r'\uf900-\ufdcf\ufdf0-\ufffd'
                          r'\:\-\.0-9\u00b7\u0300-\u036f\u203f-\u2040]+')
 
-    def run(self, doc: Element):
+    def run(self, doc: Element) -> None:
         for elem in doc.iter():
             if self.md.is_block_level(elem.tag):
                 # Block level: check for `attrs` on last line of text

@@ -24,6 +24,11 @@ from __future__ import annotations
 from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import parseBoolValue
+from typing import TYPE_CHECKING, Callable, Any
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
+    import xml.etree.ElementTree as etree
 
 try:  # pragma: no cover
     from pygments import highlight
@@ -110,11 +115,11 @@ class CodeHilite:
 
     def __init__(self, src: str, **options):
         self.src = src
-        self.lang = options.pop('lang', None)
-        self.guess_lang = options.pop('guess_lang', True)
-        self.use_pygments = options.pop('use_pygments', True)
-        self.lang_prefix = options.pop('lang_prefix', 'language-')
-        self.pygments_formatter = options.pop('pygments_formatter', 'html')
+        self.lang: str | None = options.pop('lang', None)
+        self.guess_lang: bool = options.pop('guess_lang', True)
+        self.use_pygments: bool = options.pop('use_pygments', True)
+        self.lang_prefix: str = options.pop('lang_prefix', 'language-')
+        self.pygments_formatter: str | Callable = options.pop('pygments_formatter', 'html')
 
         if 'linenos' not in options:
             options['linenos'] = options.pop('linenums', None)
@@ -128,7 +133,7 @@ class CodeHilite:
 
         self.options = options
 
-    def hilite(self, shebang=True) -> str:
+    def hilite(self, shebang: bool = True) -> str:
         """
         Pass code to the [Pygments](https://pygments.org/) highlighter with
         optional line numbers. The output should then be styled with CSS to
@@ -187,7 +192,7 @@ class CodeHilite:
                 txt
             )
 
-    def _parseHeader(self):
+    def _parseHeader(self) -> None:
         """
         Determines language of a code block from shebang line and whether the
         said line should be removed or left in place. If the shebang line
@@ -249,7 +254,10 @@ class CodeHilite:
 class HiliteTreeprocessor(Treeprocessor):
     """ Highlight source code in code blocks. """
 
-    def code_unescape(self, text):
+    config: dict[str, Any]
+    md: Markdown
+
+    def code_unescape(self, text: str) -> str:
         """Unescape code."""
         text = text.replace("&lt;", "<")
         text = text.replace("&gt;", ">")
@@ -258,7 +266,7 @@ class HiliteTreeprocessor(Treeprocessor):
         text = text.replace("&amp;", "&")
         return text
 
-    def run(self, root):
+    def run(self, root: etree.Element) -> None:
         """ Find code blocks and store in `htmlStash`. """
         blocks = root.iter('pre')
         for block in blocks:

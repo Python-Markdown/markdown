@@ -29,10 +29,11 @@ import sys
 import warnings
 from functools import wraps, lru_cache
 from itertools import count
-from typing import TYPE_CHECKING, Generic, Iterator, NamedTuple, TypeVar, overload
+from typing import TYPE_CHECKING, Generic, Iterator, NamedTuple, TypeVar, TypedDict, overload
 
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
+    import xml.etree.ElementTree as etree
 
 _T = TypeVar('_T')
 
@@ -134,6 +135,16 @@ def deprecated(message: str, stacklevel: int = 2):
     return wrapper
 
 
+@overload
+def parseBoolValue(value: str) -> bool:
+    ...  # pragma: no cover
+
+
+@overload
+def parseBoolValue(value: str | None, fail_on_errors: bool = True, preserve_none: bool = False) -> bool | None:
+    ...  # pragma: no cover
+
+
 def parseBoolValue(value: str | None, fail_on_errors: bool = True, preserve_none: bool = False) -> bool | None:
     """Parses a string representing a boolean value. If parsing was successful,
        returns `True` or `False`. If `preserve_none=True`, returns `True`, `False`,
@@ -151,6 +162,7 @@ def parseBoolValue(value: str | None, fail_on_errors: bool = True, preserve_none
         return False
     elif fail_on_errors:
         raise ValueError('Cannot parse bool value: %r' % value)
+    return None
 
 
 def code_escape(text: str) -> str:
@@ -164,7 +176,7 @@ def code_escape(text: str) -> str:
     return text
 
 
-def _get_stack_depth(size=2):
+def _get_stack_depth(size: int = 2) -> int:
     """Get current stack depth, performantly.
     """
     frame = sys._getframe(size)
@@ -203,6 +215,14 @@ class Processor:
         self.md = md
 
 
+if TYPE_CHECKING:  # pragma: no cover
+    class TagData(TypedDict):
+        tag: str
+        attrs: dict[str, str]
+        left_index: int
+        right_index: int
+
+
 class HtmlStash:
     """
     This class is used for stashing HTML objects that we extract
@@ -212,11 +232,11 @@ class HtmlStash:
     def __init__(self):
         """ Create an `HtmlStash`. """
         self.html_counter = 0  # for counting inline html segments
-        self.rawHtmlBlocks = []
+        self.rawHtmlBlocks: list[str | etree.Element] = []
         self.tag_counter = 0
-        self.tag_data = []  # list of dictionaries in the order tags appear
+        self.tag_data: list[TagData] = []  # list of dictionaries in the order tags appear
 
-    def store(self, html: str) -> str:
+    def store(self, html: str | etree.Element) -> str:
         """
         Saves an HTML segment for later reinsertion.  Returns a
         placeholder string that needs to be inserted into the
@@ -242,7 +262,7 @@ class HtmlStash:
     def get_placeholder(self, key: int) -> str:
         return HTML_PLACEHOLDER % key
 
-    def store_tag(self, tag: str, attrs: list, left_index: int, right_index: int) -> str:
+    def store_tag(self, tag: str, attrs: dict[str, str], left_index: int, right_index: int) -> str:
         """Store tag data and return a placeholder."""
         self.tag_data.append({'tag': tag, 'attrs': attrs,
                               'left_index': left_index,
@@ -300,9 +320,9 @@ class Registry(Generic[_T]):
     an item using that item's assigned "name".
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._data: dict[str, _T] = {}
-        self._priority = []
+        self._priority: list[_PriorityItem] = []
         self._is_sorted = False
 
     def __contains__(self, item: str | _T) -> bool:
@@ -317,12 +337,12 @@ class Registry(Generic[_T]):
         return iter([self._data[k] for k, p in self._priority])
 
     @overload
-    def __getitem__(self, key: str | int) -> _T:  # pragma: no cover
-        ...
+    def __getitem__(self, key: str | int) -> _T:
+        ...  # pragma: no cover
 
     @overload
-    def __getitem__(self, key: slice) -> Registry[_T]:  # pragma: no cover
-        ...
+    def __getitem__(self, key: slice) -> Registry[_T]:
+        ...  # pragma: no cover
 
     def __getitem__(self, key: str | int | slice) -> _T | Registry[_T]:
         self._sort()
@@ -388,7 +408,7 @@ class Registry(Generic[_T]):
             if strict:
                 raise
 
-    def _sort(self):
+    def _sort(self) -> None:
         """
         Sort the registry by priority from highest to lowest.
 

@@ -25,6 +25,7 @@ from . import Extension
 from ..preprocessors import Preprocessor
 import re
 import logging
+from typing import Any
 
 log = logging.getLogger('MARKDOWN')
 
@@ -51,9 +52,9 @@ class MetaExtension (Extension):
 class MetaPreprocessor(Preprocessor):
     """ Get Meta-Data. """
 
-    def run(self, lines):
+    def run(self, lines: list[str]) -> list[str]:
         """ Parse Meta-Data and store in Markdown.Meta. """
-        meta = {}
+        meta: dict[str, Any] = {}
         key = None
         if lines and BEGIN_RE.match(lines[0]):
             lines.pop(0)
