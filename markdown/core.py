@@ -446,7 +446,6 @@ class Markdown:
         else:
             # Encode manually and write bytes to stdout.
             html = html.encode(encoding, "xmlcharrefreplace")
-            # Write bytes directly to buffer (Python 3).
             sys.stdout.buffer.write(html)
 
         return self
