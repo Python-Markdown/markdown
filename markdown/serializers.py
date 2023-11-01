@@ -48,7 +48,7 @@ from __future__ import annotations
 from xml.etree.ElementTree import ProcessingInstruction
 from xml.etree.ElementTree import Comment, ElementTree, Element, QName, HTML_EMPTY
 import re
-from typing import Callable, Iterable, Literal, NoReturn
+from typing import Callable, Literal, NoReturn
 
 __all__ = ['to_html_string', 'to_xhtml_string']
 
@@ -136,7 +136,7 @@ def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal
             else:
                 raise ValueError('QName objects must define a tag.')
         write("<" + tag)
-        items: Iterable[tuple[str, str]] = elem.items()
+        items = elem.items()
         if items:
             items = sorted(items)  # lexical order
             for k, v in items:

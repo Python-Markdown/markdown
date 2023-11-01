@@ -159,7 +159,7 @@ class FencedBlockPreprocessor(Preprocessor):
         """ Return tuple: `(id, [list, of, classes], {configs})` """
         id = ''
         classes = []
-        configs: dict[str, Any] = {}
+        configs = {}
         for k, v in attrs:
             if k == 'id':
                 id = v

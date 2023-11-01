@@ -27,7 +27,6 @@ from ..util import parseBoolValue
 from typing import TYPE_CHECKING, Callable, Any
 
 if TYPE_CHECKING:  # pragma: no cover
-    from markdown import Markdown
     import xml.etree.ElementTree as etree
 
 try:  # pragma: no cover
@@ -255,7 +254,6 @@ class HiliteTreeprocessor(Treeprocessor):
     """ Highlight source code in code blocks. """
 
     config: dict[str, Any]
-    md: Markdown
 
     def code_unescape(self, text: str) -> str:
         """Unescape code."""
