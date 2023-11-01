@@ -309,7 +309,7 @@ class Registry(Generic[_T]):
     an item using that item's assigned "name".
     """
 
-    def __init__(self) -> None:
+    def __init__(self):
         self._data: dict[str, _T] = {}
         self._priority: list[_PriorityItem] = []
         self._is_sorted = False

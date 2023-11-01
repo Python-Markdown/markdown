@@ -198,7 +198,7 @@ class SmartyExtension(Extension):
         patterns: Sequence[tuple[str, Sequence[int | str | etree.Element]]],
         serie: str,
         priority: int,
-    ) -> None:
+    ):
         for ind, pattern in enumerate(patterns):
             pattern += (md,)
             pattern = SubstituteTextPattern(*pattern)

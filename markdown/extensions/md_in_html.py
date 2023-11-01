@@ -56,14 +56,14 @@ class HTMLExtractorExtra(HTMLExtractor):
         self.block_tags = set(self.block_level_tags) - (self.span_tags | self.raw_tags | self.empty_tags)
         self.span_and_blocks_tags = self.block_tags | self.span_tags
 
-    def reset(self) -> None:
+    def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
         self.mdstack: list[str] = []  # When markdown=1, stack contains a list of tags
         self.treebuilder = etree.TreeBuilder()
         self.mdstate: list[Literal['block', 'span', 'off', None]] = []
         super().reset()
 
-    def close(self) -> None:
+    def close(self):
         """Handle any buffered data."""
         super().close()
         # Handle any unclosed tags.
@@ -98,7 +98,7 @@ class HTMLExtractorExtra(HTMLExtractor):
         else:  # pragma: no cover
             return None
 
-    def handle_starttag(self, tag: str, attrs) -> None:
+    def handle_starttag(self, tag, attrs):
         # Handle tags that should always be empty and do not specify a closing tag
         if tag in self.empty_tags and (self.at_line_start() or self.intail):
             attrs = {key: value if value is not None else key for key, value in attrs}
@@ -142,7 +142,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                     # This is presumably a standalone tag in a code span (see #1036).
                     self.clear_cdata_mode()
 
-    def handle_endtag(self, tag: str) -> None:
+    def handle_endtag(self, tag):
         if tag in self.block_level_tags:
             if self.inraw:
                 super().handle_endtag(tag)
@@ -189,7 +189,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                 else:
                     self.handle_data(text)
 
-    def handle_startendtag(self, tag: str, attrs) -> None:
+    def handle_startendtag(self, tag, attrs):
         if tag in self.empty_tags:
             attrs = {key: value if value is not None else key for key, value in attrs}
             if "markdown" in attrs:
@@ -202,7 +202,7 @@ class HTMLExtractorExtra(HTMLExtractor):
             data = self.get_starttag_text()
         self.handle_empty_tag(data, is_block=self.md.is_block_level(tag))
 
-    def handle_data(self, data: str) -> None:
+    def handle_data(self, data):
         if self.intail and '\n' in data:
             self.intail = False
         if self.inraw or not self.mdstack:
@@ -210,7 +210,7 @@ class HTMLExtractorExtra(HTMLExtractor):
         else:
             self.treebuilder.data(data)
 
-    def handle_empty_tag(self, data: str, is_block: bool) -> None:
+    def handle_empty_tag(self, data, is_block):
         if self.inraw or not self.mdstack:
             super().handle_empty_tag(data, is_block)
         else:

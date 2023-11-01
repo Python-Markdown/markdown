@@ -93,7 +93,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         super().__init__(*args, **kwargs)
         self.md = md
 
-    def reset(self) -> None:
+    def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
         self.inraw = False
         self.intail = False
@@ -104,7 +104,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
 
         super().reset()
 
-    def close(self) -> None:
+    def close(self):
         """Handle any buffered data."""
         super().close()
         if len(self.rawdata):
@@ -160,7 +160,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             # Failed to extract from raw data. Assume well formed and lowercase.
             return '</{}>'.format(tag)
 
-    def handle_starttag(self, tag: str, attrs: Sequence[tuple[str, str]]) -> None:
+    def handle_starttag(self, tag: str, attrs: Sequence[tuple[str, str]]):
         # Handle tags that should always be empty and do not specify a closing tag
         if tag in self.empty_tags:
             self.handle_startendtag(tag, attrs)
@@ -181,7 +181,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
                 # This is presumably a standalone tag in a code span (see #1036).
                 self.clear_cdata_mode()
 
-    def handle_endtag(self, tag: str) -> None:
+    def handle_endtag(self, tag: str):
         text = self.get_endtag_text(tag)
 
         if self.inraw:
@@ -208,7 +208,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(text)
 
-    def handle_data(self, data: str) -> None:
+    def handle_data(self, data: str):
         if self.intail and '\n' in data:
             self.intail = False
         if self.inraw:
@@ -216,7 +216,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(data)
 
-    def handle_empty_tag(self, data: str, is_block: bool) -> None:
+    def handle_empty_tag(self, data: str, is_block: bool):
         """ Handle empty tags (`<data>`). """
         if self.inraw or self.intail:
             # Append this to the existing raw block
@@ -239,25 +239,25 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(data)
 
-    def handle_startendtag(self, tag: str, attrs) -> None:
+    def handle_startendtag(self, tag: str, attrs):
         self.handle_empty_tag(self.get_starttag_text(), is_block=self.md.is_block_level(tag))
 
-    def handle_charref(self, name: str) -> None:
+    def handle_charref(self, name: str):
         self.handle_empty_tag('&#{};'.format(name), is_block=False)
 
-    def handle_entityref(self, name: str) -> None:
+    def handle_entityref(self, name: str):
         self.handle_empty_tag('&{};'.format(name), is_block=False)
 
-    def handle_comment(self, data: str) -> None:
+    def handle_comment(self, data: str):
         self.handle_empty_tag('<!--{}-->'.format(data), is_block=True)
 
-    def handle_decl(self, data: str) -> None:
+    def handle_decl(self, data: str):
         self.handle_empty_tag('<!{}>'.format(data), is_block=True)
 
-    def handle_pi(self, data: str) -> None:
+    def handle_pi(self, data: str):
         self.handle_empty_tag('<?{}?>'.format(data), is_block=True)
 
-    def unknown_decl(self, data: str) -> None:
+    def unknown_decl(self, data: str):
         end = ']]>' if data.startswith('CDATA[') else ']>'
         self.handle_empty_tag('<![{}{}'.format(data, end), is_block=True)
 
