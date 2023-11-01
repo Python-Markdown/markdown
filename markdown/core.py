@@ -23,7 +23,7 @@ import codecs
 import sys
 import logging
 import importlib
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Mapping, Sequence, TextIO
+from typing import TYPE_CHECKING, Any, BinaryIO, Callable, ClassVar, Mapping, Sequence
 from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
@@ -387,8 +387,8 @@ class Markdown:
 
     def convertFile(
         self,
-        input: str | TextIO | None = None,
-        output: str | TextIO | None = None,
+        input: str | BinaryIO | None = None,
+        output: str | BinaryIO | None = None,
         encoding: str | None = None,
     ) -> Markdown:
         """
@@ -424,8 +424,6 @@ class Markdown:
             input_file.close()
         else:
             text = sys.stdin.read()
-            if not isinstance(text, str):  # pragma: no cover
-                text = text.decode(encoding)
 
         text = text.lstrip('\ufeff')  # remove the byte-order mark
 
@@ -448,12 +446,8 @@ class Markdown:
         else:
             # Encode manually and write bytes to stdout.
             html = html.encode(encoding, "xmlcharrefreplace")
-            try:
-                # Write bytes directly to buffer (Python 3).
-                sys.stdout.buffer.write(html)
-            except AttributeError:  # pragma: no cover
-                # Probably Python 2, which works with bytes by default.
-                sys.stdout.write(html)
+            # Write bytes directly to buffer (Python 3).
+            sys.stdout.buffer.write(html)
 
         return self
 

@@ -33,7 +33,7 @@ from markdown.__main__ import parse_options
 from logging import DEBUG, WARNING, CRITICAL
 import yaml
 import tempfile
-from io import BytesIO
+from io import BytesIO, StringIO, TextIOWrapper
 import xml.etree.ElementTree as etree
 from xml.etree.ElementTree import ProcessingInstruction
 
@@ -80,8 +80,8 @@ class TestConvertFile(unittest.TestCase):
 
     def setUp(self):
         self.saved = sys.stdin, sys.stdout
-        sys.stdin = BytesIO(bytes('foo', encoding='utf-8'))
-        sys.stdout = BytesIO()
+        sys.stdin = StringIO('foo')
+        sys.stdout = TextIOWrapper(BytesIO())
 
     def tearDown(self):
         sys.stdin, sys.stdout = self.saved
@@ -111,7 +111,7 @@ class TestConvertFile(unittest.TestCase):
     def testStdinStdout(self):
         markdown.markdownFromFile()
         sys.stdout.seek(0)
-        self.assertEqual(sys.stdout.read().decode('utf-8'), '<p>foo</p>')
+        self.assertEqual(sys.stdout.read(), '<p>foo</p>')
 
 
 class TestBlockParser(unittest.TestCase):
