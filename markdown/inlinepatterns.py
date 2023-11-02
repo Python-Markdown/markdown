@@ -244,7 +244,6 @@ class _BasePattern:
 
     def unescape(self, text: str) -> str:
         """ Return unescaped text given text with an inline placeholder. """
-        assert self.md is not None
         try:
             stash = self.md.treeprocessors['inline'].stashed_nodes  # type: ignore[attr-defined]
         except KeyError:  # pragma: no cover
