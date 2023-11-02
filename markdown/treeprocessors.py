@@ -218,7 +218,7 @@ class InlineProcessor(Treeprocessor):
                         text = data[strartIndex:index]
                         linkText(text)
 
-                    if not isString(node):  # it's Element
+                    if not isinstance(node, str):  # it's Element
                         for child in [node] + list(node):
                             if child.tail:
                                 if child.tail.strip():
@@ -304,7 +304,7 @@ class InlineProcessor(Treeprocessor):
         if node is None:
             return data, True, end
 
-        if not isString(node):
+        if not isinstance(node, str):
             if not isinstance(node.text, util.AtomicString):
                 # We need to process current node too
                 for child in [node] + list(node):
