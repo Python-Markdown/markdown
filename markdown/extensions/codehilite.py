@@ -161,7 +161,7 @@ class CodeHilite:
                     lexer = get_lexer_by_name('text', **self.options)
             if not self.lang:
                 # Use the guessed lexer's language instead
-                self.lang = lexer.aliases[0]
+                self.lang = lexer.aliases[0]  # type: ignore[attr-defined]
             lang_str = f'{self.lang_prefix}{self.lang}'
             if isinstance(self.pygments_formatter, str):
                 try:

@@ -80,7 +80,7 @@ def stashedHTML2text(text: str, md: Markdown, strip_entities: bool = True) -> st
     def _html_sub(m: re.Match[str]) -> str:
         """ Substitute raw html with plain text. """
         try:
-            raw = md.htmlStash.rawHtmlBlocks[int(m.group(1))]
+            raw: str = md.htmlStash.rawHtmlBlocks[int(m.group(1))]
         except (IndexError, TypeError):  # pragma: no cover
             return m.group(0)
         # Strip out tags and/or entities - leaving text
@@ -335,8 +335,8 @@ class TocTreeprocessor(Treeprocessor):
         toc = self.md.serializer(div)
         for pp in self.md.postprocessors:
             toc = pp.run(toc)
-        self.md.toc_tokens = toc_tokens
-        self.md.toc = toc
+        self.md.toc_tokens = toc_tokens  # type: ignore[attr-defined]
+        self.md.toc = toc  # type: ignore[attr-defined]
 
 
 class TocExtension(Extension):

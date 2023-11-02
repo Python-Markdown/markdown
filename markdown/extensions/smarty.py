@@ -179,7 +179,7 @@ class SubstituteTextPattern(HtmlInlineProcessor):
 
 class SmartyExtension(Extension):
     """ Add Smarty to Markdown. """
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         self.config = {
             'smart_quotes': [True, 'Educate quotes'],
             'smart_angled_quotes': [False, 'Educate angled quotes'],
@@ -199,9 +199,8 @@ class SmartyExtension(Extension):
         serie: str,
         priority: int,
     ):
-        for ind, pattern in enumerate(patterns):
-            pattern += (md,)
-            pattern = SubstituteTextPattern(*pattern)
+        for ind, pattern_args in enumerate(patterns):
+            pattern = SubstituteTextPattern(*pattern_args, md)
             name = 'smarty-%s-%d' % (serie, ind)
             self.inlinePatterns.register(pattern, name, priority-ind)
 
@@ -253,7 +252,7 @@ class SmartyExtension(Extension):
         )
         self._addPatterns(md, patterns, 'quotes', 30)
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: Markdown):
         configs = self.getConfigs()
         self.inlinePatterns: Registry[inlinepatterns.InlineProcessor] = Registry()
         if configs['smart_ellipses']:

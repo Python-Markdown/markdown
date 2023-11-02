@@ -28,7 +28,7 @@ from __future__ import annotations
 import re
 import importlib.util
 import sys
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
@@ -37,7 +37,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # Import a copy of the html.parser lib as `htmlparser` so we can monkeypatch it.
 # Users can still do `from html import parser` and get the default behavior.
 spec = importlib.util.find_spec('html.parser')
-htmlparser = importlib.util.module_from_spec(spec)
+htmlparser: Any = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(htmlparser)
 sys.modules['htmlparser'] = htmlparser
 
@@ -93,7 +93,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         super().__init__(*args, **kwargs)
         self.md = md
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset this instance.  Loses all unprocessed data."""
         self.inraw = False
         self.intail = False

@@ -75,7 +75,8 @@ class RawHtmlPostprocessor(Postprocessor):
         """ Iterate over html stash and restore html. """
         replacements = OrderedDict()
         for i in range(self.md.htmlStash.html_counter):
-            html = self.stash_to_string(self.md.htmlStash.rawHtmlBlocks[i])
+            raw: str = self.md.htmlStash.rawHtmlBlocks[i]
+            html = self.stash_to_string(raw)
             if self.isblocklevel(html):
                 replacements["<p>{}</p>".format(
                     self.md.htmlStash.get_placeholder(i))] = html

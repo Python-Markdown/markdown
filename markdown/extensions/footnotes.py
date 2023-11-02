@@ -38,7 +38,7 @@ RE_REF_ID = re.compile(r'(fnref)(\d+)')
 class FootnoteExtension(Extension):
     """ Footnote Extension. """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """ Setup configs. """
 
         self.config = {
@@ -290,7 +290,7 @@ class FootnoteBlockProcessor(BlockProcessor):
                 break
         return fn_blocks
 
-    def detab(self, block: str) -> str:
+    def detab(self, block: str) -> str:  # type: ignore[override]
         """ Remove one level of indent from a block.
 
         Preserve lazily indented blocks by only removing indent from indented lines.

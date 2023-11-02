@@ -45,8 +45,8 @@ differences as outlined below:
 
 from __future__ import annotations
 
-from xml.etree.ElementTree import ProcessingInstruction
-from xml.etree.ElementTree import Comment, ElementTree, Element, QName, HTML_EMPTY
+from xml.etree.ElementTree import ProcessingInstruction, Comment, ElementTree, Element, QName
+from xml.etree.ElementTree import HTML_EMPTY  # type: ignore[attr-defined]
 import re
 from typing import Callable, Literal, NoReturn
 

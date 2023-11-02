@@ -94,7 +94,7 @@ class AbbrInlineProcessor(InlineProcessor):
         super().__init__(pattern)
         self.title = title
 
-    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element, int, int]:
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element, int, int]:  # type: ignore[override]
         abbr = etree.Element('abbr')
         abbr.text = AtomicString(m.group('abbr'))
         abbr.set('title', self.title)

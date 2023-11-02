@@ -65,6 +65,7 @@ class WikiLinksInlineProcessor(InlineProcessor):
         self.config = config
 
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | str, int, int]:
+        a: etree.Element | str
         if m.group(1).strip():
             base_url, end_url, html_class = self._getMeta()
             label = m.group(1).strip()

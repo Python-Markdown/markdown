@@ -218,7 +218,7 @@ class InlineProcessor(Treeprocessor):
                         text = data[strartIndex:index]
                         linkText(text)
 
-                    if not isString(node):  # it's Element
+                    if not isinstance(node, str):  # it's Element
                         for child in [node] + list(node):
                             if child.tail:
                                 if child.tail.strip():
@@ -252,7 +252,7 @@ class InlineProcessor(Treeprocessor):
 
     def __applyPattern(
         self,
-        pattern: inlinepatterns.Pattern,
+        pattern: inlinepatterns.InlineProcessor | inlinepatterns.LegacyPattern,
         data: str,
         patternIndex: int,
         startIndex: int = 0
@@ -271,7 +271,12 @@ class InlineProcessor(Treeprocessor):
             String with placeholders instead of `ElementTree` elements.
 
         """
-        new_style = isinstance(pattern, inlinepatterns.InlineProcessor)
+        if isinstance(pattern, inlinepatterns.InlineProcessor):
+            new_style = True
+            new_pattern = pattern
+        else:
+            new_style = False
+            legacy_pattern = pattern
 
         for exclude in pattern.ANCESTOR_EXCLUDES:
             if exclude.lower() in self.ancestors:
@@ -282,29 +287,29 @@ class InlineProcessor(Treeprocessor):
             # Since `handleMatch` may reject our first match,
             # we iterate over the buffer looking for matches
             # until we can't find any more.
-            for match in pattern.getCompiledRegExp().finditer(data, startIndex):
-                node, start, end = pattern.handleMatch(match, data)
+            for match in new_pattern.getCompiledRegExp().finditer(data, startIndex):
+                node, start, end = new_pattern.handleMatch(match, data)
                 if start is None or end is None:
                     startIndex += match.end(0)
                     match = None
                     continue
                 break
         else:  # pragma: no cover
-            match = pattern.getCompiledRegExp().match(data[startIndex:])
+            match = legacy_pattern.getCompiledRegExp().match(data[startIndex:])
             leftData = data[:startIndex]
 
         if not match:
             return data, False, 0
 
         if not new_style:  # pragma: no cover
-            node = pattern.handleMatch(match)
+            node = legacy_pattern.handleMatch(match)
             start = match.start(0)
             end = match.end(0)
 
         if node is None:
             return data, True, end
 
-        if not isString(node):
+        if not isinstance(node, str):
             if not isinstance(node.text, util.AtomicString):
                 # We need to process current node too
                 for child in [node] + list(node):
@@ -398,9 +403,9 @@ class InlineProcessor(Treeprocessor):
                         child.tail = dumby.tail
                     pos = list(currElement).index(child) + 1
                     tailResult.reverse()
-                    for newChild in tailResult:
-                        self.parent_map[newChild[0]] = currElement
-                        currElement.insert(pos, newChild[0])
+                    for subChild in tailResult:
+                        self.parent_map[subChild[0]] = currElement
+                        currElement.insert(pos, subChild[0])
                 if len(child):
                     self.parent_map[child] = currElement
                     stack.append((child, self.ancestors[:]))

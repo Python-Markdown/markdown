@@ -85,7 +85,7 @@ class Markdown:
     callable which accepts an [`Element`][xml.etree.ElementTree.Element] and returns a `str`.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """
         Creates a new Markdown instance.
 
@@ -445,8 +445,8 @@ class Markdown:
                 # Don't close here. User may want to write more.
         else:
             # Encode manually and write bytes to stdout.
-            html = html.encode(encoding, "xmlcharrefreplace")
-            sys.stdout.buffer.write(html)
+            html_bytes = html.encode(encoding, "xmlcharrefreplace")
+            sys.stdout.buffer.write(html_bytes)
 
         return self
 

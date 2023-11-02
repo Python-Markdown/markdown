@@ -175,7 +175,7 @@ class ListIndentProcessor(BlockProcessor):
         return block.startswith(' '*self.tab_length) and \
             not self.parser.state.isstate('detabbed') and \
             (parent.tag in self.ITEM_TYPES or
-                (len(parent) and parent[-1] is not None and
+                (len(parent) > 0 and parent[-1] is not None and
                     (parent[-1].tag in self.LIST_TYPES)))
 
     def run(self, parent: etree.Element, blocks: list[str]) -> None:

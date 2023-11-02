@@ -47,10 +47,11 @@ import xml.etree.ElementTree as etree
 try:  # pragma: no cover
     from html import entities
 except ImportError:  # pragma: no cover
-    import htmlentitydefs as entities
+    import htmlentitydefs as entities  # type: ignore
 
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
+    from . import treeprocessors
 
 
 def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry[InlineProcessor]:
@@ -191,7 +192,7 @@ class EmStrongItem(NamedTuple):
 # -----------------------------------------------------------------------------
 
 
-class Pattern:  # pragma: no cover
+class _BasePattern:
     """
     Base class that inline patterns subclass.
 
@@ -241,6 +242,32 @@ class Pattern:  # pragma: no cover
         """ Return a compiled regular expression. """
         return self.compiled_re
 
+    def type(self) -> str:
+        """ Return class name, to define pattern type """
+        return self.__class__.__name__
+
+    def unescape(self, text: str) -> str:
+        """ Return unescaped text given text with an inline placeholder. """
+        assert self.md is not None
+        try:
+            inlineprocessor: treeprocessors.InlineProcessor = self.md.treeprocessors['inline']
+            stash = inlineprocessor.stashed_nodes
+        except KeyError:  # pragma: no cover
+            return text
+
+        def get_stash(m: re.Match[str]) -> str:
+            id = m.group(1)
+            if id in stash:
+                value = stash.get(id)
+                if isinstance(value, str):
+                    return value
+                else:
+                    # An `etree` Element - return text content only
+                    return ''.join(value.itertext())
+        return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
+
+
+class LegacyPattern(_BasePattern):
     def handleMatch(self, m: re.Match[str]) -> etree.Element | str:
         """Return a ElementTree element from the given match.
 
@@ -254,27 +281,11 @@ class Pattern:  # pragma: no cover
         """
         pass  # pragma: no cover
 
-    def type(self) -> str:
-        """ Return class name, to define pattern type """
-        return self.__class__.__name__
 
-    def unescape(self, text: str) -> str:
-        """ Return unescaped text given text with an inline placeholder. """
-        try:
-            stash = self.md.treeprocessors['inline'].stashed_nodes
-        except KeyError:  # pragma: no cover
-            return text
-
-        def get_stash(m):
-            id = m.group(1)
-            if id in stash:
-                value = stash.get(id)
-                if isinstance(value, str):
-                    return value
-                else:
-                    # An `etree` Element - return text content only
-                    return ''.join(value.itertext())
-        return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
+if TYPE_CHECKING:  # pragma: no cover
+    Pattern = _BasePattern
+else:
+    Pattern = LegacyPattern
 
 
 class InlineProcessor(Pattern):
@@ -508,13 +519,14 @@ class HtmlInlineProcessor(InlineProcessor):
     def unescape(self, text: str) -> str:
         """ Return unescaped text given text with an inline placeholder. """
         try:
-            stash = self.md.treeprocessors['inline'].stashed_nodes
+            inline_processor: treeprocessors.InlineProcessor = self.md.treeprocessors['inline']
+            stash = inline_processor.stashed_nodes
         except KeyError:  # pragma: no cover
             return text
 
         def get_stash(m: re.Match[str]) -> str:
             id = m.group(1)
-            value = stash.get(id)
+            value: etree.Element | None = stash.get(id)
             if value is not None:
                 try:
                     return self.md.serializer(value)
@@ -526,7 +538,8 @@ class HtmlInlineProcessor(InlineProcessor):
     def backslash_unescape(self, text: str) -> str:
         """ Return text with backslash escapes undone (backslashes are restored). """
         try:
-            RE = self.md.treeprocessors['unescape'].RE
+            unescape_processor: treeprocessors.UnescapeTreeprocessor = self.md.treeprocessors['unescape']
+            RE = unescape_processor.RE
         except KeyError:  # pragma: no cover
             return text
 

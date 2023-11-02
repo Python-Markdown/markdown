@@ -56,7 +56,7 @@ def _handle_word(s, t):
     return t, t
 
 
-_scanner = re.Scanner([
+_scanner = re.Scanner([  # type: ignore[attr-defined]
     (r'[^ =]+=".*?"', _handle_double_quote),
     (r"[^ =]+='.*?'", _handle_single_quote),
     (r'[^ =]+=[^ =]+', _handle_key_value),
