@@ -48,7 +48,6 @@ from html import entities
 
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
-    from . import treeprocessors
 
 
 def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry[InlineProcessor]:
@@ -247,8 +246,7 @@ class _BasePattern:
         """ Return unescaped text given text with an inline placeholder. """
         assert self.md is not None
         try:
-            inlineprocessor: treeprocessors.InlineProcessor = self.md.treeprocessors['inline']
-            stash = inlineprocessor.stashed_nodes
+            stash = self.md.treeprocessors['inline'].stashed_nodes  # type: ignore[attr-defined]
         except KeyError:  # pragma: no cover
             return text
 
@@ -516,8 +514,7 @@ class HtmlInlineProcessor(InlineProcessor):
     def unescape(self, text: str) -> str:
         """ Return unescaped text given text with an inline placeholder. """
         try:
-            inline_processor: treeprocessors.InlineProcessor = self.md.treeprocessors['inline']
-            stash = inline_processor.stashed_nodes
+            stash = self.md.treeprocessors['inline'].stashed_nodes  # type: ignore[attr-defined]
         except KeyError:  # pragma: no cover
             return text
 
@@ -535,8 +532,7 @@ class HtmlInlineProcessor(InlineProcessor):
     def backslash_unescape(self, text: str) -> str:
         """ Return text with backslash escapes undone (backslashes are restored). """
         try:
-            unescape_processor: treeprocessors.UnescapeTreeprocessor = self.md.treeprocessors['unescape']
-            RE = unescape_processor.RE
+            RE = self.md.treeprocessors['unescape'].RE  # type: ignore[attr-defined]
         except KeyError:  # pragma: no cover
             return text
 
