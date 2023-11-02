@@ -25,6 +25,11 @@ from . import Extension
 from ..blockprocessors import BlockProcessor
 import xml.etree.ElementTree as etree
 import re
+from typing import TYPE_CHECKING, Any, Sequence
+
+if TYPE_CHECKING:  # pragma: no cover
+    from .. import blockparser
+
 PIPE_NONE = 0
 PIPE_LEFT = 1
 PIPE_RIGHT = 2
@@ -36,14 +41,14 @@ class TableProcessor(BlockProcessor):
     RE_CODE_PIPES = re.compile(r'(?:(\\\\)|(\\`+)|(`+)|(\\\|)|(\|))')
     RE_END_BORDER = re.compile(r'(?<!\\)(?:\\\\)*\|$')
 
-    def __init__(self, parser, config):
-        self.border = False
-        self.separator = ''
+    def __init__(self, parser: blockparser.BlockParser, config: dict[str, Any]):
+        self.border: bool | int = False
+        self.separator: Sequence[str] = ''
         self.config = config
 
         super().__init__(parser)
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         """
         Ensure first two rows (column header and separator row) are valid table rows.
 
@@ -79,14 +84,14 @@ class TableProcessor(BlockProcessor):
 
         return is_table
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> None:
         """ Parse a table block and build table. """
         block = blocks.pop(0).split('\n')
         header = block[0].strip(' ')
         rows = [] if len(block) < 3 else block[2:]
 
         # Get alignment of columns
-        align = []
+        align: list[str | None] = []
         for c in self.separator:
             c = c.strip(' ')
             if c.startswith(':') and c.endswith(':'):
@@ -110,7 +115,7 @@ class TableProcessor(BlockProcessor):
             for row in rows:
                 self._build_row(row.strip(' '), tbody, align)
 
-    def _build_empty_row(self, parent, align):
+    def _build_empty_row(self, parent: etree.Element, align: Sequence[str | None]) -> None:
         """Build an empty row."""
         tr = etree.SubElement(parent, 'tr')
         count = len(align)
@@ -118,7 +123,7 @@ class TableProcessor(BlockProcessor):
             etree.SubElement(tr, 'td')
             count -= 1
 
-    def _build_row(self, row, parent, align):
+    def _build_row(self, row: str, parent: etree.Element, align: Sequence[str | None]) -> None:
         """ Given a row of text, build table cells. """
         tr = etree.SubElement(parent, 'tr')
         tag = 'td'
@@ -139,7 +144,7 @@ class TableProcessor(BlockProcessor):
                 else:
                     c.set('style', f'text-align: {a};')
 
-    def _split_row(self, row):
+    def _split_row(self, row: str) -> list[str]:
         """ split a row of text into list of cells. """
         if self.border:
             if row.startswith('|'):
@@ -147,7 +152,7 @@ class TableProcessor(BlockProcessor):
             row = self.RE_END_BORDER.sub('', row)
         return self._split(row)
 
-    def _split(self, row):
+    def _split(self, row: str) -> list[str]:
         """ split a row of text with some code into a list of cells. """
         elements = []
         pipes = []

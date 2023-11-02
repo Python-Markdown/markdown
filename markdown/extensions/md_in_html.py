@@ -28,6 +28,10 @@ from ..postprocessors import RawHtmlPostprocessor
 from .. import util
 from ..htmlparser import HTMLExtractor, blank_line_re
 import xml.etree.ElementTree as etree
+from typing import TYPE_CHECKING, Literal, Mapping
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 
 class HTMLExtractorExtra(HTMLExtractor):
@@ -36,7 +40,7 @@ class HTMLExtractorExtra(HTMLExtractor):
     Markdown.
     """
 
-    def __init__(self, md, *args, **kwargs):
+    def __init__(self, md: Markdown, *args, **kwargs):
         # All block-level tags.
         self.block_level_tags = set(md.block_level_elements.copy())
         # Block-level tags in which the content only gets span level parsing
@@ -54,9 +58,9 @@ class HTMLExtractorExtra(HTMLExtractor):
 
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
-        self.mdstack = []  # When markdown=1, stack contains a list of tags
+        self.mdstack: list[str] = []  # When markdown=1, stack contains a list of tags
         self.treebuilder = etree.TreeBuilder()
-        self.mdstate = []  # one of 'block', 'span', 'off', or None
+        self.mdstate: list[Literal['block', 'span', 'off', None]] = []
         super().reset()
 
     def close(self):
@@ -67,13 +71,13 @@ class HTMLExtractorExtra(HTMLExtractor):
             # Close the outermost parent. `handle_endtag` will close all unclosed children.
             self.handle_endtag(self.mdstack[0])
 
-    def get_element(self):
+    def get_element(self) -> etree.Element:
         """ Return element from `treebuilder` and reset `treebuilder` for later use. """
         element = self.treebuilder.close()
         self.treebuilder = etree.TreeBuilder()
         return element
 
-    def get_state(self, tag, attrs):
+    def get_state(self, tag, attrs: Mapping[str, str]) -> Literal['block', 'span', 'off', None]:
         """ Return state from tag and `markdown` attribute. One of 'block', 'span', or 'off'. """
         md_attr = attrs.get('markdown', '0')
         if md_attr == 'markdown':
@@ -215,7 +219,7 @@ class HTMLExtractorExtra(HTMLExtractor):
             else:
                 self.handle_data(self.md.htmlStash.store(data))
 
-    def parse_pi(self, i):
+    def parse_pi(self, i: int) -> int:
         if self.at_line_start() or self.intail or self.mdstack:
             # The same override exists in `HTMLExtractor` without the check
             # for `mdstack`. Therefore, use parent of `HTMLExtractor` instead.
@@ -225,7 +229,7 @@ class HTMLExtractorExtra(HTMLExtractor):
         self.handle_data('<?')
         return i + 2
 
-    def parse_html_declaration(self, i):
+    def parse_html_declaration(self, i: int) -> int:
         if self.at_line_start() or self.intail or self.mdstack:
             # The same override exists in `HTMLExtractor` without the check
             # for `mdstack`. Therefore, use parent of `HTMLExtractor` instead.
@@ -239,7 +243,7 @@ class HTMLExtractorExtra(HTMLExtractor):
 class HtmlBlockPreprocessor(Preprocessor):
     """Remove html blocks from the text and store them for later retrieval."""
 
-    def run(self, lines):
+    def run(self, lines: list[str]) -> list[str]:
         source = '\n'.join(lines)
         parser = HTMLExtractorExtra(self.md)
         parser.feed(source)
@@ -250,11 +254,11 @@ class HtmlBlockPreprocessor(Preprocessor):
 class MarkdownInHtmlProcessor(BlockProcessor):
     """Process Markdown Inside HTML Blocks which have been stored in the `HtmlStash`."""
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         # Always return True. `run` will return `False` it not a valid match.
         return True
 
-    def parse_element_content(self, element):
+    def parse_element_content(self, element: etree.Element) -> None:
         """
         Recursively parse the text content of an `etree` Element as Markdown.
 
@@ -324,7 +328,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
                 if child.tail:
                     child.tail = util.AtomicString(child.tail)
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> bool:
         m = util.HTML_PLACEHOLDER_RE.match(blocks[0])
         if m:
             index = int(m.group(1))
@@ -344,7 +348,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
 
 
 class MarkdownInHTMLPostprocessor(RawHtmlPostprocessor):
-    def stash_to_string(self, text):
+    def stash_to_string(self, text: str | etree.Element) -> str:
         """ Override default to handle any `etree` elements still in the stash. """
         if isinstance(text, etree.Element):
             return self.md.serializer(text)

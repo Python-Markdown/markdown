@@ -171,14 +171,14 @@ class ListIndentProcessor(BlockProcessor):
         super().__init__(*args)
         self.INDENT_RE = re.compile(r'^(([ ]{%s})+)' % self.tab_length)
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return block.startswith(' '*self.tab_length) and \
             not self.parser.state.isstate('detabbed') and \
             (parent.tag in self.ITEM_TYPES or
                 (len(parent) and parent[-1] is not None and
                     (parent[-1].tag in self.LIST_TYPES)))
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> None:
         block = blocks.pop(0)
         level, sibling = self.get_level(parent, block)
         block = self.looseDetab(block, level)
@@ -251,10 +251,10 @@ class ListIndentProcessor(BlockProcessor):
 class CodeBlockProcessor(BlockProcessor):
     """ Process code blocks. """
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return block.startswith(' '*self.tab_length)
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> None:
         sibling = self.lastChild(parent)
         block = blocks.pop(0)
         theRest = ''
@@ -286,10 +286,10 @@ class BlockQuoteProcessor(BlockProcessor):
 
     RE = re.compile(r'(^|\n)[ ]{0,3}>[ ]?(.*)')
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return bool(self.RE.search(block)) and not util.nearing_recursion_limit()
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> None:
         block = blocks.pop(0)
         m = self.RE.search(block)
         if m:
@@ -353,10 +353,10 @@ class OListProcessor(BlockProcessor):
         self.INDENT_RE = re.compile(r'^[ ]{%d,%d}((\d+\.)|[*+-])[ ]+.*' %
                                     (self.tab_length, self.tab_length * 2 - 1))
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return bool(self.RE.match(block))
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> None:
         # Check for multiple items in one block.
         items = self.get_items(blocks.pop(0))
         sibling = self.lastChild(parent)
@@ -460,10 +460,10 @@ class HashHeaderProcessor(BlockProcessor):
     # Detect a header at start of any line in block
     RE = re.compile(r'(?:^|\n)(?P<level>#{1,6})(?P<header>(?:\\.|[^\\])*?)#*(?:\n|$)')
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return bool(self.RE.search(block))
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> None:
         block = blocks.pop(0)
         m = self.RE.search(block)
         if m:
@@ -491,10 +491,10 @@ class SetextHeaderProcessor(BlockProcessor):
     # Detect Setext-style header. Must be first 2 lines of block.
     RE = re.compile(r'^.*?\n[=-]+[ ]*(\n|$)', re.MULTILINE)
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return bool(self.RE.match(block))
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> None:
         lines = blocks.pop(0).split('\n')
         # Determine level. `=` is 1 and `-` is 2.
         if lines[1].startswith('='):
@@ -517,7 +517,7 @@ class HRProcessor(BlockProcessor):
     # Detect hr on any line of a block.
     SEARCH_RE = re.compile(RE, re.MULTILINE)
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         m = self.SEARCH_RE.search(block)
         if m:
             # Save match object on class instance so we can use it later.
@@ -525,7 +525,7 @@ class HRProcessor(BlockProcessor):
             return True
         return False
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> None:
         block = blocks.pop(0)
         match = self.match
         # Check for lines in block before `hr`.
@@ -545,10 +545,10 @@ class HRProcessor(BlockProcessor):
 class EmptyBlockProcessor(BlockProcessor):
     """ Process blocks that are empty or start with an empty line. """
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return not block or block.startswith('\n')
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> None:
         block = blocks.pop(0)
         filler = '\n\n'
         if block:
@@ -575,10 +575,10 @@ class ReferenceProcessor(BlockProcessor):
         r'^[ ]{0,3}\[([^\[\]]*)\]:[ ]*\n?[ ]*([^\s]+)[ ]*(?:\n[ ]*)?((["\'])(.*)\4[ ]*|\((.*)\)[ ]*)?$', re.MULTILINE
     )
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return True
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> bool:
         block = blocks.pop(0)
         m = self.RE.search(block)
         if m:
@@ -601,10 +601,10 @@ class ReferenceProcessor(BlockProcessor):
 class ParagraphProcessor(BlockProcessor):
     """ Process Paragraph blocks. """
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return True
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> None:
         block = blocks.pop(0)
         if block.strip():
             # Not a blank block. Add to parent, otherwise throw it away.

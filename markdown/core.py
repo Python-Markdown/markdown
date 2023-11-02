@@ -159,7 +159,7 @@ class Markdown:
     def registerExtensions(
         self,
         extensions: Sequence[Extension | str],
-        configs: Mapping[str, Mapping[str, Any]]
+        configs: Mapping[str, dict[str, Any]]
     ) -> Markdown:
         """
         Load a list of extensions into an instance of the `Markdown` class.
@@ -491,8 +491,8 @@ def markdownFromFile(**kwargs: Any):
     [`convert`][markdown.Markdown.convert].
 
     Keyword arguments:
-        input (str | TextIO): A file name or readable object.
-        output (str | TextIO): A file name or writable object.
+        input (str | BinaryIO): A file name or readable object.
+        output (str | BinaryIO): A file name or writable object.
         encoding (str): Encoding of input and output.
         **kwargs: Any arguments accepted by the `Markdown` class.
 

@@ -28,6 +28,10 @@ from __future__ import annotations
 import re
 import importlib.util
 import sys
+from typing import TYPE_CHECKING, Sequence
+
+if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
 
 
 # Import a copy of the html.parser lib as `htmlparser` so we can monkeypatch it.
@@ -76,7 +80,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
     is stored in `cleandoc` as a list of strings.
     """
 
-    def __init__(self, md, *args, **kwargs):
+    def __init__(self, md: Markdown, *args, **kwargs):
         if 'convert_charrefs' not in kwargs:
             kwargs['convert_charrefs'] = False
 
@@ -93,9 +97,9 @@ class HTMLExtractor(htmlparser.HTMLParser):
         """Reset this instance.  Loses all unprocessed data."""
         self.inraw = False
         self.intail = False
-        self.stack = []  # When `inraw==True`, stack contains a list of tags
-        self._cache = []
-        self.cleandoc = []
+        self.stack: list[str] = []  # When `inraw==True`, stack contains a list of tags
+        self._cache: list[str] = []
+        self.cleandoc: list[str] = []
         self.lineno_start_cache = [0]
 
         super().reset()
@@ -156,7 +160,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             # Failed to extract from raw data. Assume well formed and lowercase.
             return '</{}>'.format(tag)
 
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str]]):
+    def handle_starttag(self, tag: str, attrs: Sequence[tuple[str, str]]):
         # Handle tags that should always be empty and do not specify a closing tag
         if tag in self.empty_tags:
             self.handle_startendtag(tag, attrs)
@@ -235,7 +239,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             self.cleandoc.append(data)
 
-    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str]]):
+    def handle_startendtag(self, tag: str, attrs):
         self.handle_empty_tag(self.get_starttag_text(), is_block=self.md.is_block_level(tag))
 
     def handle_charref(self, name: str):

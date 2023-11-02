@@ -33,13 +33,17 @@ from __future__ import annotations
 import re
 from markdown.treeprocessors import Treeprocessor, isString
 from markdown.extensions import Extension
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    import xml.etree.ElementTree as etree
 
 
 ATTR_RE = re.compile(r'\{@([^\}]*)=([^\}]*)}')  # {@id=123}
 
 
 class LegacyAttrs(Treeprocessor):
-    def run(self, doc):
+    def run(self, doc: etree.Element) -> None:
         """Find and set values of attributes ({@key=value}). """
         for el in doc.iter():
             alt = el.get('alt', None)
@@ -50,9 +54,9 @@ class LegacyAttrs(Treeprocessor):
             if el.tail and isString(el.tail):
                 el.tail = self.handleAttributes(el, el.tail)
 
-    def handleAttributes(self, el, txt):
+    def handleAttributes(self, el: etree.Element, txt: str) -> str:
         """ Set attributes and return text without definitions. """
-        def attributeCallback(match):
+        def attributeCallback(match: re.Match[str]):
             el.set(match.group(1), match.group(2).replace('\n', ' '))
         return ATTR_RE.sub(attributeCallback, txt)
 

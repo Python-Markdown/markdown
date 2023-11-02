@@ -33,10 +33,10 @@ class DefListProcessor(BlockProcessor):
     RE = re.compile(r'(^|\n)[ ]{0,3}:[ ]{1,3}(.*?)(\n|$)')
     NO_INDENT_RE = re.compile(r'^[ ]{0,3}[^ :]')
 
-    def test(self, parent, block):
+    def test(self, parent: etree.Element, block: str) -> bool:
         return bool(self.RE.search(block))
 
-    def run(self, parent, blocks):
+    def run(self, parent: etree.Element, blocks: list[str]) -> bool | None:
 
         raw_block = blocks.pop(0)
         m = self.RE.search(raw_block)
@@ -99,7 +99,7 @@ class DefListIndentProcessor(ListIndentProcessor):
     LIST_TYPES = ['dl', 'ol', 'ul']
     """ Include `dl` is list types. """
 
-    def create_item(self, parent, block):
+    def create_item(self, parent: etree.Element, block: str) -> None:
         """ Create a new `dd` or `li` (depending on parent) and parse the block with it as the parent. """
 
         dd = etree.SubElement(parent, 'dd')
