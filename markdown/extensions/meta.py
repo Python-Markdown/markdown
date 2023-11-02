@@ -49,7 +49,7 @@ class MetaExtension (Extension):
         md.preprocessors.register(MetaPreprocessor(md), 'meta', 27)
 
     def reset(self) -> None:
-        self.md.Meta = {}
+        self.md.Meta = {}  # type: ignore[attr-defined]
 
 
 class MetaPreprocessor(Preprocessor):
@@ -83,7 +83,7 @@ class MetaPreprocessor(Preprocessor):
                 else:
                     lines.insert(0, line)
                     break  # no meta data - done
-        self.md.Meta = meta
+        self.md.Meta = meta  # type: ignore[attr-defined]
         return lines
 
 

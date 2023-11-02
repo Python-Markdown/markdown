@@ -353,8 +353,8 @@ class TocTreeprocessor(Treeprocessor):
         toc = self.md.serializer(div)
         for pp in self.md.postprocessors:
             toc = pp.run(toc)
-        self.md.toc_tokens = toc_tokens
-        self.md.toc = toc
+        self.md.toc_tokens = toc_tokens  # type: ignore[attr-defined]
+        self.md.toc = toc  # type: ignore[attr-defined]
 
 
 class TocExtension(Extension):
@@ -422,8 +422,8 @@ class TocExtension(Extension):
         md.treeprocessors.register(tocext, 'toc', 5)
 
     def reset(self) -> None:
-        self.md.toc = ''
-        self.md.toc_tokens = []
+        self.md.toc = ''  # type: ignore[attr-defined]
+        self.md.toc_tokens = []  # type: ignore[attr-defined]
 
 
 def makeExtension(**kwargs):  # pragma: no cover

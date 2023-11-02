@@ -36,7 +36,6 @@ from .util import BLOCK_LEVEL_ELEMENTS
 
 if TYPE_CHECKING:  # pragma: no cover
     from xml.etree.ElementTree import Element
-    from markdown.extensions.toc import TocToken
 
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
@@ -85,10 +84,6 @@ class Markdown:
     A mapping of known output formats by name and their respective serializers. Each serializer must be a
     callable which accepts an [`Element`][xml.etree.ElementTree.Element] and returns a `str`.
     """
-
-    toc_tokens: list[TocToken]
-    toc: str
-    Meta: dict[str, Any]
 
     def __init__(self, **kwargs: Any):
         """
