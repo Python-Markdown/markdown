@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Fix type annotations for `convertFile` - it accepts only bytes-based buffers.
   Also remove legacy checks from Python 2 (#1400)
+* Remove legacy import needed only in Python 2 (#1403)
 * Improve and expand type annotations in the code base (#1401).
 
 ## [3.5.1] -- 2023-10-31
