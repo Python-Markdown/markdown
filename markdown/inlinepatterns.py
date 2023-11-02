@@ -44,10 +44,7 @@ from . import util
 from typing import TYPE_CHECKING, Any, Collection, NamedTuple
 import re
 import xml.etree.ElementTree as etree
-try:  # pragma: no cover
-    from html import entities
-except ImportError:  # pragma: no cover
-    import htmlentitydefs as entities  # type: ignore
+from html import entities
 
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
