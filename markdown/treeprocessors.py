@@ -274,8 +274,8 @@ class InlineProcessor(Treeprocessor):
         if isinstance(pattern, inlinepatterns.InlineProcessor):
             new_style = True
             new_pattern = pattern
-        else:
-            new_style = False  # pragma: no cover
+        else:  # pragma: no cover
+            new_style = False
             legacy_pattern = pattern
 
         for exclude in pattern.ANCESTOR_EXCLUDES:
