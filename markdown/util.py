@@ -341,11 +341,11 @@ class Registry(Generic[_T]):
 
     @overload
     def __getitem__(self, key: str | int) -> _T:  # pragma: no cover
-        ...  # pragma: no cover
+        ...
 
     @overload
     def __getitem__(self, key: slice) -> Registry[_T]:  # pragma: no cover
-        ...  # pragma: no cover
+        ...
 
     def __getitem__(self, key: str | int | slice) -> _T | Registry[_T]:
         self._sort()
