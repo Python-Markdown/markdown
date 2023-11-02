@@ -59,7 +59,7 @@ class AdmonitionProcessor(BlockProcessor):
         super().__init__(parser)
 
         self.current_sibling: etree.Element | None = None
-        self.content_indention = 0
+        self.content_indent = 0
 
     def parse_content(self, parent: etree.Element, block: str) -> tuple[etree.Element | None, str, str]:
         """Get sibling admonition.
