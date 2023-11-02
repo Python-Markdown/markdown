@@ -21,7 +21,9 @@ License: BSD (see LICENSE.md for details).
 
 from markdown.test_tools import TestCase
 from markdown.extensions.codehilite import CodeHiliteExtension, CodeHilite
+from markdown import extensions, treeprocessors
 import os
+import xml.etree.ElementTree as etree
 
 try:
     import pygments  # noqa
@@ -762,3 +764,22 @@ class TestCodeHiliteExtension(TestCase):
                 )
             ]
         )
+
+    def testDoesntCrashWithEmptyCodeTag(self):
+        expected = '<h1>Hello</h1>\n<pre><code></code></pre>'
+        self.assertMarkdownRenders(
+            '# Hello',
+            expected,
+            extensions=[CodeHiliteExtension(), _ExtensionThatAddsAnEmptyCodeTag()]
+        )
+
+
+class _ExtensionThatAddsAnEmptyCodeTag(extensions.Extension):
+    def extendMarkdown(self, md):
+        md.treeprocessors.register(_AddCodeTagTreeprocessor(), 'add-code-tag', 40)
+
+
+class _AddCodeTagTreeprocessor(treeprocessors.Treeprocessor):
+    def run(self, root: etree.Element):
+        pre = etree.SubElement(root, 'pre')
+        etree.SubElement(pre, 'code')

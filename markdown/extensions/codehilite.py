@@ -270,8 +270,11 @@ class HiliteTreeprocessor(Treeprocessor):
         for block in blocks:
             if len(block) == 1 and block[0].tag == 'code':
                 local_config = self.config.copy()
+                text = block[0].text
+                if text is None:
+                    continue
                 code = CodeHilite(
-                    self.code_unescape(block[0].text),
+                    self.code_unescape(text),
                     tab_length=self.md.tab_length,
                     style=local_config.pop('pygments_style', 'default'),
                     **local_config
