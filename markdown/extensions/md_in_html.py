@@ -98,7 +98,7 @@ class HTMLExtractorExtra(HTMLExtractor):
         else:  # pragma: no cover
             return None
 
-    def handle_starttag(self, tag, attrs: Sequence[tuple[str, str]]) -> None:
+    def handle_starttag(self, tag: str, attrs: Sequence[tuple[str, str]]) -> None:
         # Handle tags that should always be empty and do not specify a closing tag
         if tag in self.empty_tags and (self.at_line_start() or self.intail):
             attrs_dict = {key: value if value is not None else key for key, value in attrs}

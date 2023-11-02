@@ -218,7 +218,7 @@ class Processor:
         self.md = md
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     class TagData(TypedDict):
         tag: str
         attrs: dict[str, str]

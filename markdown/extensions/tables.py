@@ -29,7 +29,7 @@ from typing import TYPE_CHECKING, Any, Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
-    from .. import blockprocessors
+    from .. import blockparser
 
 PIPE_NONE = 0
 PIPE_LEFT = 1
@@ -42,7 +42,7 @@ class TableProcessor(BlockProcessor):
     RE_CODE_PIPES = re.compile(r'(?:(\\\\)|(\\`+)|(`+)|(\\\|)|(\|))')
     RE_END_BORDER = re.compile(r'(?<!\\)(?:\\\\)*\|$')
 
-    def __init__(self, parser: blockprocessors.BlockParser, config: dict[str, Any]):
+    def __init__(self, parser: blockparser.BlockParser, config: dict[str, Any]):
         self.border: bool | int = False
         self.separator: Sequence[str] = ''
         self.config = config

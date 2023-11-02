@@ -86,16 +86,16 @@ for details.
 
 from __future__ import annotations
 
-import re
 from . import Extension
 from ..inlinepatterns import HtmlInlineProcessor, HTML_RE
 from ..treeprocessors import InlineProcessor
 from ..util import Registry
-from markdown import Markdown
 from typing import TYPE_CHECKING, Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
+    from markdown import Markdown
     from .. import inlinepatterns
+    import re
     import xml.etree.ElementTree as etree
 
 # Constants for quote education.
