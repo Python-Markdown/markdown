@@ -40,6 +40,10 @@ class HTMLExtractorExtra(HTMLExtractor):
     Markdown.
     """
 
+    mdstack: list[str] = []  # When markdown=1, stack contains a list of tags
+    treebuilder: etree.TreeBuilder
+    mdstate: list[Literal['block', 'span', 'off', None]]
+
     def __init__(self, md: Markdown, *args, **kwargs):
         # All block-level tags.
         self.block_level_tags = set(md.block_level_elements.copy())
@@ -56,11 +60,11 @@ class HTMLExtractorExtra(HTMLExtractor):
         self.block_tags = set(self.block_level_tags) - (self.span_tags | self.raw_tags | self.empty_tags)
         self.span_and_blocks_tags = self.block_tags | self.span_tags
 
-    def reset(self) -> None:
+    def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
-        self.mdstack: list[str] = []  # When markdown=1, stack contains a list of tags
+        self.mdstack = []  # When markdown=1, stack contains a list of tags
         self.treebuilder = etree.TreeBuilder()
-        self.mdstate: list[Literal['block', 'span', 'off', None]] = []
+        self.mdstate = []
         super().reset()
 
     def close(self):

@@ -80,6 +80,9 @@ class HTMLExtractor(htmlparser.HTMLParser):
     is stored in `cleandoc` as a list of strings.
     """
 
+    stack: list[str]
+    cleandoc: list[str]
+
     def __init__(self, md: Markdown, *args, **kwargs):
         if 'convert_charrefs' not in kwargs:
             kwargs['convert_charrefs'] = False
@@ -93,13 +96,13 @@ class HTMLExtractor(htmlparser.HTMLParser):
         super().__init__(*args, **kwargs)
         self.md = md
 
-    def reset(self) -> None:
+    def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
         self.inraw = False
         self.intail = False
-        self.stack: list[str] = []  # When `inraw==True`, stack contains a list of tags
-        self._cache: list[str] = []
-        self.cleandoc: list[str] = []
+        self.stack = []  # When `inraw==True`, stack contains a list of tags
+        self._cache = []
+        self.cleandoc = []
         self.lineno_start_cache = [0]
 
         super().reset()

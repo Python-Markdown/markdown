@@ -218,12 +218,17 @@ class HtmlStash:
     in the beginning and replace with place-holders.
     """
 
-    def __init__(self) -> None:
+    html_counter: int
+    rawHtmlBlocks: list[str | etree.Element]
+    tag_counter: int
+    tag_data: list[TagData]
+
+    def __init__(self):
         """ Create an `HtmlStash`. """
         self.html_counter = 0  # for counting inline html segments
-        self.rawHtmlBlocks: list[str | etree.Element] = []
+        self.rawHtmlBlocks = []
         self.tag_counter = 0
-        self.tag_data: list[TagData] = []  # list of dictionaries in the order tags appear
+        self.tag_data = []  # list of dictionaries in the order tags appear
 
     def store(self, html: str | etree.Element) -> str:
         """
@@ -309,9 +314,9 @@ class Registry(Generic[_T]):
     an item using that item's assigned "name".
     """
 
-    def __init__(self) -> None:
-        self._data: dict[str, _T] = {}
-        self._priority: list[_PriorityItem] = []
+    def __init__(self):
+        self._data = {}
+        self._priority = []
         self._is_sorted = False
 
     def __contains__(self, item: str | _T) -> bool:

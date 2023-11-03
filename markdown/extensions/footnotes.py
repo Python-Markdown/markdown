@@ -38,7 +38,10 @@ RE_REF_ID = re.compile(r'(fnref)(\d+)')
 class FootnoteExtension(Extension):
     """ Footnote Extension. """
 
-    def __init__(self, **kwargs) -> None:
+    found_refs: dict[str, int]
+    used_refs: set[str]
+
+    def __init__(self, **kwargs):
         """ Setup configs. """
 
         self.config = {
@@ -68,8 +71,8 @@ class FootnoteExtension(Extension):
 
         # In multiple invocations, emit links that don't get tangled.
         self.unique_prefix = 0
-        self.found_refs: dict[str, int] = {}
-        self.used_refs: set[str] = set()
+        self.found_refs = {}
+        self.used_refs = set()
 
         self.reset()
 

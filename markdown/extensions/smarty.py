@@ -179,7 +179,10 @@ class SubstituteTextPattern(HtmlInlineProcessor):
 
 class SmartyExtension(Extension):
     """ Add Smarty to Markdown. """
-    def __init__(self, **kwargs) -> None:
+
+    substitutions: dict[str, str]
+
+    def __init__(self, **kwargs):
         self.config = {
             'smart_quotes': [True, 'Educate quotes'],
             'smart_angled_quotes': [False, 'Educate angled quotes'],
@@ -189,7 +192,7 @@ class SmartyExtension(Extension):
         }
         """ Default configuration options. """
         super().__init__(**kwargs)
-        self.substitutions: dict[str, str] = dict(substitutions)
+        self.substitutions = dict(substitutions)
         self.substitutions.update(self.getConfig('substitutions', default={}))
 
     def _addPatterns(

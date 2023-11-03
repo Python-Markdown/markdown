@@ -85,7 +85,15 @@ class Markdown:
     callable which accepts an [`Element`][xml.etree.ElementTree.Element] and returns a `str`.
     """
 
-    def __init__(self, **kwargs) -> None:
+    tab_length: int
+    ESCAPED_CHARS: list[str]
+    block_level_elements: list[str]
+    registeredExtensions: list[Extension]
+    stripTopLevelTags: bool
+    references: dict[str, tuple[str, str]]
+    htmlStash: util.HtmlStash
+
+    def __init__(self, **kwargs):
         """
         Creates a new Markdown instance.
 
@@ -106,23 +114,23 @@ class Markdown:
 
         """
 
-        self.tab_length: int = kwargs.get('tab_length', 4)
+        self.tab_length = kwargs.get('tab_length', 4)
 
-        self.ESCAPED_CHARS: list[str] = [
+        self.ESCAPED_CHARS = [
             '\\', '`', '*', '_', '{', '}', '[', ']', '(', ')', '>', '#', '+', '-', '.', '!'
         ]
         """ List of characters which get the backslash escape treatment. """
 
-        self.block_level_elements: list[str] = BLOCK_LEVEL_ELEMENTS.copy()
+        self.block_level_elements = BLOCK_LEVEL_ELEMENTS.copy()
 
-        self.registeredExtensions: list[Extension] = []
+        self.registeredExtensions = []
         self.docType = ""  # TODO: Maybe delete this. It does not appear to be used anymore.
-        self.stripTopLevelTags: bool = True
+        self.stripTopLevelTags = True
 
         self.build_parser()
 
-        self.references: dict[str, tuple[str, str]] = {}
-        self.htmlStash: util.HtmlStash = util.HtmlStash()
+        self.references = {}
+        self.htmlStash = util.HtmlStash()
         self.registerExtensions(extensions=kwargs.get('extensions', []),
                                 configs=kwargs.get('extension_configs', {}))
         self.set_output_format(kwargs.get('output_format', 'xhtml'))
