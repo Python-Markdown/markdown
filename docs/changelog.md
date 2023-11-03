@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fix typo that left the attribute `AdmonitionProcessor.content_indent` unset
   (#1404)
 * Fix edge-case crash in `InlineProcessor` with `AtomicString` (#1406).
+* Fix edge-case crash in `codehilite` with an empty `code` tag (#1405).
 * Improve and expand type annotations in the code base (#1401).
 
 ## [3.5.1] -- 2023-10-31
