@@ -30,6 +30,7 @@ import os
 import markdown
 import warnings
 from markdown.__main__ import parse_options
+from markdown import inlinepatterns
 from logging import DEBUG, WARNING, CRITICAL
 import yaml
 import tempfile
@@ -664,8 +665,8 @@ class testAtomicString(unittest.TestCase):
     """ Test that `AtomicStrings` are honored (not parsed). """
 
     def setUp(self):
-        md = markdown.Markdown()
-        self.inlineprocessor = md.treeprocessors['inline']
+        self.md = markdown.Markdown()
+        self.inlineprocessor = self.md.treeprocessors['inline']
 
     def testString(self):
         """ Test that a regular string is parsed. """
@@ -709,6 +710,26 @@ class testAtomicString(unittest.TestCase):
             '<div><p>*some* <span>*more* <span>*text* <span>*here*</span> '
             '*to*</span> *test*</span> *with*</p></div>'
         )
+
+    def testInlineProcessorDoesntCrashWithWrongAtomicString(self):
+        """ Test that an `AtomicString` returned from a Pattern doesn't cause a crash. """
+        tree = etree.Element('div')
+        p = etree.SubElement(tree, 'p')
+        p.text = 'a marker c'
+        self.md.inlinePatterns.register(
+            _InlineProcessorThatReturnsAtomicString(r'marker', self.md), 'test', 100
+        )
+        new = self.inlineprocessor.run(tree)
+        self.assertEqual(
+            markdown.serializers.to_html_string(new),
+            '<div><p>a &lt;b&gt;atomic&lt;/b&gt; c</p></div>'
+        )
+
+
+class _InlineProcessorThatReturnsAtomicString(inlinepatterns.InlineProcessor):
+    """ Return a simple text of `group(1)` of a Pattern. """
+    def handleMatch(self, m, data):
+        return markdown.util.AtomicString('<b>atomic</b>'), m.start(0), m.end(0)
 
 
 class TestConfigParsing(unittest.TestCase):
