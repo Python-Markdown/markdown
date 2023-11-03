@@ -271,38 +271,35 @@ class InlineProcessor(Treeprocessor):
             String with placeholders instead of `ElementTree` elements.
 
         """
-        if isinstance(pattern, inlinepatterns.InlineProcessor):
-            new_style = True
-            new_pattern = pattern
-        else:  # pragma: no cover
-            new_style = False
-            legacy_pattern = pattern
+        new_style = isinstance(pattern, inlinepatterns.InlineProcessor)
 
         for exclude in pattern.ANCESTOR_EXCLUDES:
             if exclude.lower() in self.ancestors:
                 return data, False, 0
 
+        start: int | None
+        end: int | None
         if new_style:
             match = None
             # Since `handleMatch` may reject our first match,
             # we iterate over the buffer looking for matches
             # until we can't find any more.
-            for match in new_pattern.getCompiledRegExp().finditer(data, startIndex):
-                node, start, end = new_pattern.handleMatch(match, data)
+            for match in pattern.getCompiledRegExp().finditer(data, startIndex):
+                node, start, end = pattern.handleMatch(match, data)  # type: ignore
                 if start is None or end is None:
                     startIndex += match.end(0)
                     match = None
                     continue
                 break
         else:  # pragma: no cover
-            match = legacy_pattern.getCompiledRegExp().match(data[startIndex:])
+            match = pattern.getCompiledRegExp().match(data[startIndex:])
             leftData = data[:startIndex]
 
         if not match:
             return data, False, 0
 
         if not new_style:  # pragma: no cover
-            node = legacy_pattern.handleMatch(match)
+            node = pattern.handleMatch(match)  # type: ignore
             start = match.start(0)
             end = match.end(0)
 

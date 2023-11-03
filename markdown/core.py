@@ -453,8 +453,8 @@ class Markdown:
                 # Don't close here. User may want to write more.
         else:
             # Encode manually and write bytes to stdout.
-            html_bytes = html.encode(encoding, "xmlcharrefreplace")
-            sys.stdout.buffer.write(html_bytes)
+            html = html.encode(encoding, "xmlcharrefreplace")
+            sys.stdout.buffer.write(html)  # type: ignore
 
         return self
 
