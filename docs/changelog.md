@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Remove legacy import needed only in Python 2 (#1403)
 * Fix typo that left the attribute `AdmonitionProcessor.content_indent` unset
   (#1404)
+* Fix edge-case crash in `InlineProcessor` with `AtomicString` (#1406).
 * Fix edge-case crash in `codehilite` with an empty `code` tag (#1405).
 * Improve and expand type annotations in the code base (#1401).
 
