@@ -1,0 +1,20 @@
+name: changelog-validator
+
+on:
+  pull_request:
+    paths:
+    # Only run if changes were made to the changelog
+    - 'docs/changelog.md'
+
+jobs:
+  validate:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Validate Changelog
+      id: changelog_reader
+      uses: mindsers/changelog-reader-action@v2
+      with:
+        validation_level: error
+        path: docs/changelog.md

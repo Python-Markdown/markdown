@@ -1,23 +1,16 @@
-name: changelog
+name: changelog-enforcer
 
 on:
   pull_request:
-    branches:
-    - '**'
-    path:
-    # Only run if changes were made in markdown/ or the changelog
+    paths:
+    # Only run if changes were made in markdown/
     - 'markdown/**'
-    - 'docs/changelog.md'
-
-# permissions:
-#   pull-requests: write
 
 jobs:
-  validate:
+  check-for-entry:
 
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
     - name: Ensure Changelog Entry Made
       uses: dangoslen/changelog-enforcer@v3
       with:
@@ -27,10 +20,3 @@ jobs:
           changelog describing the changes you have made. Doing so will help to ensure your contribution is accepted.
 
           Please see the [Contributing Guide](https://python-markdown.github.io/contributing/#changelog) for details.
-    - name: Validate Changelog
-      if: success()
-      id: changelog_reader
-      uses: mindsers/changelog-reader-action@v2
-      with:
-        validation_level: error
-        path: docs/changelog.md
