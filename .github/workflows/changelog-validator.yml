@@ -2,8 +2,6 @@ name: changelog-validator
 
 on:
   pull_request:
-    branches:
-    - '**'
     path:
     # Only run if changes were made to the changelog
     - 'docs/changelog.md'

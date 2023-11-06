@@ -2,14 +2,12 @@ name: changelog-enforcer
 
 on:
   pull_request:
-    branches:
-    - '**'
     path:
     # Only run if changes were made in markdown/
     - 'markdown/**'
 
 jobs:
-  validate:
+  check-required:
 
     runs-on: ubuntu-latest
     steps:
