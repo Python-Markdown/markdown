@@ -49,7 +49,16 @@ jobs:
   ghpages:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Source Repo
+        uses: actions/checkout@v4
+        with:
+          path: md
+      - name: Checkout Target Repo
+        uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.PAGES_DEPLOY_KEY  }}
+          repository: Python-Markdown/Python-Markdown.github.io
+          path: target
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -60,15 +69,11 @@ jobs:
           python -m pip install .[docs]
       - name: Build
         run: |
+          cd md
           python -m mkdocs build --clean --verbose
       - name: Publish
         if: success()
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          SSH_DEPLOY_KEY: ${{ secrets.PAGES_DEPLOY_KEY }}
-        with:
-          source-directory: 'site'
-          destination-github-username: 'Python-Markdown'
-          destination-repository-name: 'Python-Markdown.github.io'
-          user-name: ${{ github.actor }}
-          target-branch: master
+        run: |
+          cd target
+          git config user.email waylan.limberg@icloud.com
+          python -m ghp-import --push --no-jekyll --branch=master ../md/site
