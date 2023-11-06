@@ -65,6 +65,7 @@ jobs:
           python-version: 3.11
       - name: Install dependencies
         run: |
+          cd md
           python -m pip install --upgrade pip setuptools
           python -m pip install .[docs]
       - name: Build
