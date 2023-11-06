@@ -77,4 +77,4 @@ jobs:
         run: |
           cd target
           git config user.email waylan.limberg@icloud.com
-          python -m ghp-import --push --no-jekyll --branch=master ../md/site
+          ghp-import --push --no-jekyll --branch=master ../md/site
