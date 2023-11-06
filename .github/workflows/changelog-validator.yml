@@ -2,7 +2,7 @@ name: changelog-validator
 
 on:
   pull_request:
-    path:
+    paths:
     # Only run if changes were made to the changelog
     - 'docs/changelog.md'
 
