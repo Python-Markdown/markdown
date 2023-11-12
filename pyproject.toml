@@ -54,7 +54,7 @@ testing = [
 ]
 docs = [
     'mkdocs>=1.5',
-    'mkdocs-nature>=0.6',
+    'mkdocs-material>=9.0',
     'mdx_gh_links>=0.2',
     "mkdocstrings[python]",
     "mkdocs-gen-files",

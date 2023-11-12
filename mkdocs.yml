@@ -8,10 +8,42 @@ use_directory_urls: true
 watch: [markdown, scripts]
 
 theme:
-  name: nature
-  icon: py.png
+  name: material
+  icon:
+    previous: fontawesome/solid/angle-left
+    next: fontawesome/solid/angle-right
+  logo: python.svg
+  favicon: favicon.ico
   release: !!python/name:markdown.__version__
+  repo_url: https://github.com/Python-Markdown/markdown
+  repo_name: Python-Markdown/markdown
   issue_tracker: https://github.com/Python-Markdown/markdown/issues
+  icon:
+    repo: fontawesome/brands/git-alt
+  features:
+    - navigation.footer
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: green
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: green
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Python-Markdown/markdown
+      name: GitHub
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/Markdown/
+      name: PyPI
 
 extra_css:
   - custom.css
