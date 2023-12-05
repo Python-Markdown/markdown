@@ -48,7 +48,7 @@ of the distribution or the project website at <https://Python-Markdown.github.io
 [installation]: https://python-markdown.github.io/install/
 [usage]: https://python-markdown.github.io/reference/
 
-See the change log at <https://Python-Markdown.github.io/change_log>.
+See the change log at <https://python-markdown.github.io/changelog/>.
 
 Support
 -------
