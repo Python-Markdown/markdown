@@ -277,6 +277,15 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.handle_data('<!')
         return i + 2
 
+    def parse_bogus_comment(self, i: int, report: int = 0) -> int:
+        # Override the default behavior so that bogus comments get passed
+        # through unaltered by setting `report` to `0` (see #1425).
+        pos = super().parse_bogus_comment(i, report)
+        if pos == -1:  # pragma: no cover
+            return -1
+        self.handle_empty_tag(self.rawdata[i:pos], is_block=False)
+        return pos
+
     # The rest has been copied from base class in standard lib to address #1036.
     # As `__startag_text` is private, all references to it must be in this subclass.
     # The last few lines of `parse_starttag` are reversed so that `handle_starttag`

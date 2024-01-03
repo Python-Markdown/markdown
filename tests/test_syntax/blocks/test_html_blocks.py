@@ -782,16 +782,16 @@ class TestHTMLBlocks(TestCase):
             '<!-- *foo* -->'
         )
 
-    # Note: this is a change in behavior for Python-Markdown, which does *not* match the reference
-    # implementation. However, it does match the HTML5 spec. Declarations must start with either
-    # `<!DOCTYPE` or `<![`. Anything else that starts with `<!` is a comment. According to the
-    # HTML5 spec, a comment without the hyphens is a "bogus comment", but a comment nonetheless.
-    # See https://www.w3.org/TR/html52/syntax.html#markup-declaration-open-state.
-    # If we wanted to change this behavior, we could override `HTMLParser.parse_bogus_comment()`.
     def test_bogus_comment(self):
         self.assertMarkdownRenders(
-            '<!*foo*>',
-            '<!--*foo*-->'
+            '<!invalid>',
+            '<p>&lt;!invalid&gt;</p>'
+        )
+
+    def test_bogus_comment_endtag(self):
+        self.assertMarkdownRenders(
+            '</#invalid>',
+            '<p>&lt;/#invalid&gt;</p>'
         )
 
     def test_raw_multiline_comment(self):
