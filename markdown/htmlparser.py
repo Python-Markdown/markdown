@@ -281,7 +281,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         # Override the default behavior so that bogus comments get passed
         # through unaltered by setting `report` to `0` (see #1425).
         pos = super().parse_bogus_comment(i, report)
-        if pos == -1:
+        if pos == -1:  # pragma: no cover
             return -1
         self.handle_empty_tag(self.rawdata[i:pos], is_block=False)
         return pos
