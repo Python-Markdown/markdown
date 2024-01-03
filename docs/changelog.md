@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fix edge-case crash in `InlineProcessor` with `AtomicString` (#1406).
 * Fix edge-case crash in `codehilite` with an empty `code` tag (#1405).
 * Improve and expand type annotations in the code base (#1401).
+* Fix handling of bogus comments (#1425).
 
 ## [3.5.1] -- 2023-10-31
 
