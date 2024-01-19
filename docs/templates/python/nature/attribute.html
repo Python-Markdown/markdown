@@ -2,6 +2,7 @@
 
 {% block heading scoped %}
   <a class="doc-source-link" href="{{ config.source.repo }}/tree/{{ config.source.tag }}/{{ attribute.filepath }}#L{{ attribute.lineno }}{% if attribute.endlineno > attribute.lineno %}-L{{ attribute.endlineno }}{% endif %}" title='View source code on GitHub'>&lsaquo;&rsaquo;</a>
+  {% if config.show_symbol_type_heading %}<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>{% endif %}
   {%+ filter highlight(language="python", inline=True) %}
     {{ attribute_name }}{% if attribute.annotation %}: {{ attribute.annotation }}{% endif %}
   {% endfilter %}
