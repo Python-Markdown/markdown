@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Include `scripts/*.py` in the generated source tarballs (#1430).
+* Ensure lines after heading in loose list are properly detabbed (#1443).
 
 ## [3.5.2] -- 2024-01-10
 
