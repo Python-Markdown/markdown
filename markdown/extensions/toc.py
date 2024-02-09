@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import parseBoolValue, AMP_SUBSTITUTE
+from ..util import parseBoolValue, AMP_SUBSTITUTE, deprecated, HTML_PLACEHOLDER_RE, AtomicString
 from ..treeprocessors import UnescapeTreeprocessor
 from ..serializers import RE_AMP
 import re
@@ -67,7 +67,38 @@ def unique(id: str, ids: MutableSet[str]) -> str:
     return id
 
 
-def md_unescape(text: str) -> str:
+@deprecated('Use `render_inner_html` and `striptags` instead.')
+def get_name(el: etree.Element) -> str:
+    """Get title name."""
+
+    text = []
+    for c in el.itertext():
+        if isinstance(c, AtomicString):
+            text.append(html.unescape(c))
+        else:
+            text.append(c)
+    return ''.join(text).strip()
+
+
+@deprecated('Use `run_postprocessors`, `render_inner_html` and/or `striptags` instead.')
+def stashedHTML2text(text: str, md: Markdown, strip_entities: bool = True) -> str:
+    """ Extract raw HTML from stash, reduce to plain text and swap with placeholder. """
+    def _html_sub(m: re.Match[str]) -> str:
+        """ Substitute raw html with plain text. """
+        try:
+            raw = md.htmlStash.rawHtmlBlocks[int(m.group(1))]
+        except (IndexError, TypeError):  # pragma: no cover
+            return m.group(0)
+        # Strip out tags and/or entities - leaving text
+        res = re.sub(r'(<[^>]+>)', '', raw)
+        if strip_entities:
+            res = re.sub(r'(&[\#a-zA-Z0-9]+;)', '', res)
+        return res
+
+    return HTML_PLACEHOLDER_RE.sub(_html_sub, text)
+
+
+def unescape(text: str) -> str:
     """ Unescape Markdown backslash escaped text. """
     c = UnescapeTreeprocessor()
     return c.unescape(text)
@@ -109,7 +140,7 @@ def run_postprocessors(text: str, md: Markdown) -> str:
 def render_inner_html(el: etree.Element, md: Markdown) -> str:
     """ Fully render inner html of an `etree` element as a string. """
     # The `UnescapeTreeprocessor` runs after `toc` extension so run here.
-    text = md_unescape(md.serializer(el))
+    text = unescape(md.serializer(el))
 
     # strip parent tag
     start = text.index('>') + 1
@@ -352,7 +383,7 @@ class TocTreeprocessor(Treeprocessor):
                     el.attrib["id"] = unique(self.slugify(text, self.sep), used_ids)
 
                 if 'data-toc-label' in el.attrib:
-                    text = md_unescape(el.attrib['data-toc-label'])
+                    text = unescape(el.attrib['data-toc-label'])
                     text = run_postprocessors(text, self.md)
                     text = strip_tags(text)
                     text = escape_cdata(text)
