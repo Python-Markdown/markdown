@@ -28,7 +28,6 @@ import re
 import html
 import unicodedata
 from copy import deepcopy
-from html import unescape as html_unescape
 import xml.etree.ElementTree as etree
 from typing import TYPE_CHECKING, Any, Iterator, MutableSet
 
@@ -39,7 +38,7 @@ if TYPE_CHECKING:  # pragma: no cover
 def slugify(value: str, separator: str, unicode: bool = False) -> str:
     """ Slugify a string, to make it URL friendly. """
     # First convert HTML entities to Unicode characters
-    value = html_unescape(value)
+    value = html.unescape(value)
     if not unicode:
         # Replace Extended Latin characters with ASCII, i.e. `žlutý` => `zluty`
         value = unicodedata.normalize('NFKD', value)
@@ -108,8 +107,8 @@ def run_postprocessors(text: str, md: Markdown) -> str:
 
 
 def render_inner_html(el: etree.Element, md: Markdown) -> str:
-    """ Fully render inner html of an etree element as a string. """
-    # The UnescapeTreeprocessor runs after TOC so run here.
+    """ Fully render inner html of an `etree` element as a string. """
+    # The `UnescapeTreeprocessor` runs after `toc` extension so run here.
     text = md_unescape(md.serializer(el))
 
     # strip parent tag
@@ -121,7 +120,7 @@ def render_inner_html(el: etree.Element, md: Markdown) -> str:
 
 
 def copy_element(el: etree.Element, exclude_fnrefs=True) -> etree.Element:
-    """ Return a deep copy of an etree element, optionally with footnote references removed. """
+    """ Return a deep copy of an `etree` element, optionally with footnote references removed. """
     el = deepcopy(el)
     # Remove footnote references, which look like this: `<sup id="fnref:1">...</sup>`.
     if exclude_fnrefs:
@@ -345,8 +344,8 @@ class TocTreeprocessor(Treeprocessor):
         for el in doc.iter():
             if isinstance(el.tag, str) and self.header_rgx.match(el.tag):
                 self.set_level(el)
-                html = render_inner_html(copy_element(el), self.md)
-                text = strip_tags(html)
+                innerhtml = render_inner_html(copy_element(el), self.md)
+                text = strip_tags(innerhtml)
 
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
@@ -365,7 +364,7 @@ class TocTreeprocessor(Treeprocessor):
                         'level': int(el.tag[-1]),
                         'id': el.attrib["id"],
                         'name': text,
-                        'html': html
+                        'html': innerhtml
                     })
 
                 if self.use_anchors:

@@ -697,20 +697,25 @@ class TestTOC(TestCase):
                 [^1]: footnote
                 '''
             ),
-            self.dedent(
-                '''
-                <h1 id="header-1">Header 1<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h1>
-                <h1 id="header-2">Header<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> 2</h1>
-                <h1 id="header-subelement-3">Header <em>subelement</em><sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup> 3</h1>
-                <div class="footnote">
-                <hr />
-                <ol>
-                <li id="fn:1">
-                <p>footnote&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-                </li>
-                </ol>
-                </div>
-                '''
+            (
+                '<h1 id="header-1">Header 1<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h1>\n'
+                '<h1 id="header-2">Header<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> 2</h1>\n'
+                '<h1 id="header-subelement-3">'
+                'Header <em>subelement</em><sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup> 3'
+                '</h1>\n'
+                '<div class="footnote">\n'
+                '<hr />\n'
+                '<ol>\n'
+                '<li id="fn:1">\n'
+                '<p>'
+                'footnote&#160;'
+                '<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a>'
+                '<a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a>'
+                '<a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a>'
+                '</p>\n'
+                '</li>\n'
+                '</ol>\n'
+                '</div>'
             ),
             expected_attrs={
                 'toc': (
