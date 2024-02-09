@@ -420,9 +420,9 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</div>\n'
         )
         self.assertEqual(self.md.toc_tokens, [
-            {'level': 1, 'id': 'header', 'name': 'Header', 'children': []},
-            {'level': 1, 'id': 'header_1', 'name': 'Header', 'children': []},
-            {'level': 1, 'id': 'header_2', 'name': 'Header', 'children': []},
+            {'level': 1, 'id': 'header', 'name': 'Header', 'html': 'Header', 'children': []},
+            {'level': 1, 'id': 'header_1', 'name': 'Header', 'html': 'Header', 'children': []},
+            {'level': 1, 'id': 'header_2', 'name': 'Header', 'html': 'Header', 'children': []},
         ])
 
     def testHtmlEntities(self):
@@ -441,7 +441,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</div>\n'
         )
         self.assertEqual(self.md.toc_tokens, [
-            {'level': 1, 'id': 'foo-bar', 'name': 'Foo &amp; bar', 'children': []},
+            {'level': 1, 'id': 'foo-bar', 'name': 'Foo &amp; bar', 'html': 'Foo &amp; bar', 'children': []},
         ])
 
     def testHtmlSpecialChars(self):
@@ -460,7 +460,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</div>\n'
         )
         self.assertEqual(self.md.toc_tokens, [
-            {'level': 1, 'id': 'foo-bar', 'name': 'Foo &gt; &amp; bar', 'children': []},
+            {'level': 1, 'id': 'foo-bar', 'name': 'Foo &gt; &amp; bar', 'html': 'Foo &gt; &amp; bar', 'children': []},
         ])
 
     def testRawHtml(self):
@@ -479,7 +479,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</div>\n'
         )
         self.assertEqual(self.md.toc_tokens, [
-            {'level': 1, 'id': 'foo-bar-baz', 'name': 'Foo Bar Baz.', 'children': []},
+            {'level': 1, 'id': 'foo-bar-baz', 'name': 'Foo Bar Baz.', 'html': 'Foo <b>Bar</b> Baz.', 'children': []},
         ])
 
     def testBaseLevel(self):
@@ -508,9 +508,9 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</div>\n'
         )
         self.assertEqual(md.toc_tokens, [
-            {'level': 5, 'id': 'some-header', 'name': 'Some Header', 'children': [
-                {'level': 6, 'id': 'next-level', 'name': 'Next Level', 'children': []},
-                {'level': 6, 'id': 'too-high', 'name': 'Too High', 'children': []},
+            {'level': 5, 'id': 'some-header', 'name': 'Some Header', 'html': 'Some Header', 'children': [
+                {'level': 6, 'id': 'next-level', 'name': 'Next Level', 'html': 'Next Level', 'children': []},
+                {'level': 6, 'id': 'too-high', 'name': 'Too High', 'html': 'Too High', 'children': []},
             ]},
         ])
 
@@ -532,9 +532,13 @@ class TestTOC(TestCaseWithAssertStartsWith):
               '</ul>\n'                                    # noqa
             '</div>\n'
         )
-        self.assertEqual(self.md.toc_tokens, [
-            {'level': 1, 'id': 'some-header-with-markup', 'name': 'Some Header with markup.', 'children': []},
-        ])
+        self.assertEqual(self.md.toc_tokens, [{
+            'level': 1,
+            'id': 'some-header-with-markup',
+            'name': 'Some Header with markup.',
+            'html': 'Some <em>Header</em> with <a href="http://example.com">markup</a>.',
+            'children': []
+        }])
 
     def testTitle(self):
         """ Test TOC Title. """
@@ -549,6 +553,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
 
     def testWithAttrList(self):
         """ Test TOC with `attr_list` Extension. """
+        self.maxDiff = None
         md = markdown.Markdown(extensions=['toc', 'attr_list'])
         text = ('# Header 1\n\n'
                 '## Header 2 { #foo }\n\n'
@@ -580,12 +585,12 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</div>\n'
         )
         self.assertEqual(md.toc_tokens, [
-            {'level': 1, 'id': 'header-1', 'name': 'Header 1', 'children': [
-                {'level': 2, 'id': 'foo', 'name': 'Header 2', 'children': []},
-                {'level': 2, 'id': 'header-3', 'name': 'Foo Bar', 'children': []}
+            {'level': 1, 'id': 'header-1', 'name': 'Header 1', 'html': 'Header 1', 'children': [
+                {'level': 2, 'id': 'foo', 'name': 'Header 2', 'html': 'Header 2', 'children': []},
+                {'level': 2, 'id': 'header-3', 'name': 'Foo Bar', 'html': 'Header 3', 'children': []}
             ]},
-            {'level': 1, 'id': 'header-4', 'name': 'Foo &gt; Baz', 'children': []},
-            {'level': 1, 'id': 'header-5', 'name': 'Foo Quux', 'children': []},
+            {'level': 1, 'id': 'header-4', 'name': 'Foo &gt; Baz', 'html': 'Header 4', 'children': []},
+            {'level': 1, 'id': 'header-5', 'name': 'Foo Quux', 'html': 'Header 5', 'children': []},
         ])
 
     def testUniqueFunc(self):

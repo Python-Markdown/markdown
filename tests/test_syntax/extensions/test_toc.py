@@ -140,11 +140,13 @@ class TestTOC(TestCase):
                         'level': 3,
                         'id': 'header-3',
                         'name': 'Header 3',
+                        'html': 'Header 3',
                         'children': [
                             {
                                 'level': 4,
                                 'id': 'header-4',
                                 'name': 'Header 4',
+                                'html': 'Header 4',
                                 'children': []
                             }
                         ]
@@ -189,11 +191,13 @@ class TestTOC(TestCase):
                         'level': 1,
                         'id': 'header-1',
                         'name': 'Header 1',
+                        'html': 'Header 1',
                         'children': [
                             {
                                 'level': 2,
                                 'id': 'header-2',
                                 'name': 'Header 2',
+                                'html': 'Header 2',
                                 'children': []
                             }
                         ]
@@ -245,11 +249,13 @@ class TestTOC(TestCase):
                         'level': 3,
                         'id': 'header-3',
                         'name': 'Header 3',
+                        'html': 'Header 3',
                         'children': [
                             {
                                 'level': 4,
                                 'id': 'header-4',
                                 'name': 'Header 4',
+                                'html': 'Header 4',
                                 'children': []
                             }
                         ]
@@ -301,11 +307,13 @@ class TestTOC(TestCase):
                         'level': 3,
                         'id': 'header-3',
                         'name': 'Header 3',
+                        'html': 'Header 3',
                         'children': [
                             {
                                 'level': 4,
                                 'id': 'header-4',
                                 'name': 'Header 4',
+                                'html': 'Header 4',
                                 'children': []
                             }
                         ]
@@ -353,11 +361,13 @@ class TestTOC(TestCase):
                         'level': 4,
                         'id': 'second-level',
                         'name': 'Second Level',
+                        'html': 'Second Level',
                         'children': [
                             {
                                 'level': 5,
                                 'id': 'third-level',
                                 'name': 'Third Level',
+                                'html': 'Third Level',
                                 'children': []
                             }
                         ]
@@ -402,11 +412,13 @@ class TestTOC(TestCase):
                         'level': 2,
                         'id': 'some-header',
                         'name': 'Some Header',
+                        'html': 'Some Header',
                         'children': [
                             {
                                 'level': 3,
                                 'id': 'next-level',
                                 'name': 'Next Level',
+                                'html': 'Next Level',
                                 'children': []
                             }
                         ]
@@ -455,6 +467,7 @@ class TestTOC(TestCase):
                         'level': 1,
                         'id': 'escaped_character',
                         'name': 'escaped_character',
+                        'html': 'escaped_character',
                         'children': []
                     }
                 ]
@@ -670,4 +683,68 @@ class TestTOC(TestCase):
                 '''
             ),
             extensions=[TocExtension(title_class="tocname", title='ToC')]
+        )
+
+    def testHeadingRemoveFootnoteRef(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                # Header 1[^1]
+                # Header[^1] 2
+                # Header *subelement*[^1] 3
+
+                [^1]: footnote
+                '''
+            ),
+            self.dedent(
+                '''
+                <h1 id="header-1">Header 1<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h1>
+                <h1 id="header-2">Header<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> 2</h1>
+                <h1 id="header-subelement-3">Header <em>subelement</em><sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup> 3</h1>
+                <div class="footnote">
+                <hr />
+                <ol>
+                <li id="fn:1">
+                <p>footnote&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+                </li>
+                </ol>
+                </div>
+                '''
+            ),
+            expected_attrs={
+                'toc': (
+                    '<div class="toc">\n'
+                      '<ul>\n'                                                               # noqa
+                        '<li><a href="#header-1">Header 1</a></li>\n'                        # noqa
+                        '<li><a href="#header-2">Header 2</a></li>\n'                        # noqa
+                        '<li><a href="#header-subelement-3">Header subelement 3</a></li>\n'  # noqa
+                      '</ul>\n'                                                              # noqa
+                    '</div>\n'                                                               # noqa
+                ),
+                'toc_tokens': [
+                    {
+                        'level': 1,
+                        'id': 'header-1',
+                        'name': 'Header 1',
+                        'html': 'Header 1',
+                        'children': []
+                    },
+                    {
+                        'level': 1,
+                        'id': 'header-2',
+                        'name': 'Header 2',
+                        'html': 'Header 2',
+                        'children': []
+                    },
+                    {
+                        'level': 1,
+                        'id': 'header-subelement-3',
+                        'name': 'Header subelement 3',
+                        'html': 'Header <em>subelement</em> 3',
+                        'children': []
+                    }
+                ]
+            },
+            extensions=[TocExtension(), 'footnotes']
         )
