@@ -20,7 +20,7 @@ License: BSD (see LICENSE.md for details).
 """
 
 from markdown.test_tools import TestCase
-from markdown.extensions.toc import TocExtension
+from markdown.extensions.toc import TocExtension, strip_tags
 from markdown.extensions.nl2br import Nl2BrExtension
 
 
@@ -857,4 +857,73 @@ class TestTOC(TestCase):
                 ]
             },
             extensions=[TocExtension(), 'footnotes']
+        )
+
+
+class testStripTags(TestCase):
+
+    def testStripElement(self):
+        self.assertEqual(
+            strip_tags('foo <em>bar</em>'),
+            'foo bar'
+        )
+
+    def testStripOpenElement(self):
+        self.assertEqual(
+            strip_tags('foo <em>bar'),
+            'foo bar'
+        )
+
+    def testStripEmptyElement(self):
+        self.assertEqual(
+            strip_tags('foo <br />bar'),
+            'foo bar'
+        )
+
+    def testDontStripOpenBracket(self):
+        self.assertEqual(
+            strip_tags('foo < bar'),
+            'foo < bar'
+        )
+
+    def testDontStripCloseBracket(self):
+        self.assertEqual(
+            strip_tags('foo > bar'),
+            'foo > bar'
+        )
+
+    def testStripCollapseWhitespace(self):
+        self.assertEqual(
+            strip_tags('foo <em>\tbar\t</em>'),
+            'foo bar'
+        )
+
+    def testStripElementWithNewlines(self):
+        self.assertEqual(
+            strip_tags('foo <meta content="tag\nwith\nnewlines"> bar'),
+            'foo bar'
+        )
+
+    def testStripComment(self):
+        self.assertEqual(
+            strip_tags('foo <!-- comment --> bar'),
+            'foo bar'
+        )
+
+    def testStripCommentWithInnerTags(self):
+        self.assertEqual(
+            strip_tags('foo <!-- comment with <em> --> bar'),
+            'foo bar'
+        )
+
+    def testStripCommentInElement(self):
+        self.assertEqual(
+            strip_tags('<em>foo <!-- comment --> bar<em>'),
+            'foo bar'
+        )
+
+    def testDontStripHTMLEntities(self):
+        self.assertEqual(
+            strip_tags('foo &lt; &amp; &lt; bar'),
+            'foo &lt; &amp; &lt; bar'
         )
