@@ -475,7 +475,6 @@ class TestTOC(TestCase):
             extensions=['toc']
         )
 
-
     def testAutoLinkEmail(self):
         self.assertMarkdownRenders(
             '## <foo@example.org>',
