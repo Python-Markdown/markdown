@@ -551,48 +551,6 @@ class TestTOC(TestCaseWithAssertStartsWith):
             md.toc
         )
 
-    def testWithAttrList(self):
-        """ Test TOC with `attr_list` Extension. """
-        self.maxDiff = None
-        md = markdown.Markdown(extensions=['toc', 'attr_list'])
-        text = ('# Header 1\n\n'
-                '## Header 2 { #foo }\n\n'
-                '## Header 3 { data-toc-label="Foo Bar" }\n\n'
-                '# Header 4 { data-toc-label="Foo > Baz" }\n\n'
-                '# Header 5 { data-toc-label="Foo <b>Quux</b>" }')
-
-        self.assertEqual(
-            md.convert(text),
-            '<h1 id="header-1">Header 1</h1>\n'
-            '<h2 id="foo">Header 2</h2>\n'
-            '<h2 id="header-3">Header 3</h2>\n'
-            '<h1 id="header-4">Header 4</h1>\n'
-            '<h1 id="header-5">Header 5</h1>'
-        )
-        self.assertEqual(
-            md.toc,
-            '<div class="toc">\n'
-              '<ul>\n'                                             # noqa
-                '<li><a href="#header-1">Header 1</a>'             # noqa
-                  '<ul>\n'                                         # noqa
-                    '<li><a href="#foo">Header 2</a></li>\n'       # noqa
-                    '<li><a href="#header-3">Foo Bar</a></li>\n'   # noqa
-                  '</ul>\n'                                        # noqa
-                '</li>\n'                                          # noqa
-                '<li><a href="#header-4">Foo &gt; Baz</a></li>\n'  # noqa
-                '<li><a href="#header-5">Foo Quux</a></li>\n'      # noqa
-              '</ul>\n'                                            # noqa
-            '</div>\n'
-        )
-        self.assertEqual(md.toc_tokens, [
-            {'level': 1, 'id': 'header-1', 'name': 'Header 1', 'html': 'Header 1', 'children': [
-                {'level': 2, 'id': 'foo', 'name': 'Header 2', 'html': 'Header 2', 'children': []},
-                {'level': 2, 'id': 'header-3', 'name': 'Foo Bar', 'html': 'Header 3', 'children': []}
-            ]},
-            {'level': 1, 'id': 'header-4', 'name': 'Foo &gt; Baz', 'html': 'Header 4', 'children': []},
-            {'level': 1, 'id': 'header-5', 'name': 'Foo Quux', 'html': 'Header 5', 'children': []},
-        ])
-
     def testUniqueFunc(self):
         """ Test 'unique' function. """
         from markdown.extensions.toc import unique

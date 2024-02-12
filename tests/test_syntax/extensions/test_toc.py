@@ -708,6 +708,88 @@ class TestTOC(TestCase):
             extensions=[TocExtension(title_class="tocname", title='ToC')]
         )
 
+    def testTocWithAttrList(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                # Header 1
+
+                ## Header 2 { #foo }
+
+                ## Header 3 { data-toc-label="Foo Bar" }
+
+                # Header 4 { data-toc-label="Foo > &amp; < Baz" }
+
+                # Header 5 { data-toc-label="Foo <b>Quux</b>" }
+                '''
+            ),
+            self.dedent(
+                '''
+                <h1 id="header-1">Header 1</h1>
+                <h2 id="foo">Header 2</h2>
+                <h2 id="header-3">Header 3</h2>
+                <h1 id="header-4">Header 4</h1>
+                <h1 id="header-5">Header 5</h1>
+                '''
+            ),
+            expected_attrs={
+                'toc': (
+                    '<div class="toc">\n'
+                      '<ul>\n'                                                        # noqa
+                        '<li><a href="#header-1">Header 1</a>'                        # noqa
+                          '<ul>\n'                                                    # noqa
+                            '<li><a href="#foo">Header 2</a></li>\n'                  # noqa
+                            '<li><a href="#header-3">Foo Bar</a></li>\n'              # noqa
+                          '</ul>\n'                                                   # noqa
+                        '</li>\n'                                                     # noqa
+                        '<li><a href="#header-4">Foo &gt; &amp; &lt; Baz</a></li>\n'  # noqa
+                        '<li><a href="#header-5">Foo Quux</a></li>\n'                 # noqa
+                      '</ul>\n'                                                       # noqa
+                    '</div>\n'
+                ),
+                'toc_tokens': [
+                    {
+                        'level': 1,
+                        'id': 'header-1',
+                        'name': 'Header 1',
+                        'html': 'Header 1',
+                        'children': [
+                            {
+                                'level': 2,
+                                'id': 'foo',
+                                'name': 'Header 2',
+                                'html': 'Header 2',
+                                'children': []
+                            },
+                            {
+                                'level': 2,
+                                'id': 'header-3',
+                                'name': 'Foo Bar',
+                                'html': 'Header 3',
+                                'children': []
+                            }
+                        ]
+                    },
+                    {
+                        'level': 1,
+                        'id': 'header-4',
+                        'name': 'Foo &gt; &amp; &lt; Baz',
+                        'html': 'Header 4',
+                        'children': []
+                    },
+                    {
+                        'level': 1,
+                        'id': 'header-5',
+                        'name': 'Foo Quux',
+                        'html': 'Header 5',
+                        'children': []
+                    },
+                ]
+            },
+            extensions=[TocExtension(), 'attr_list']
+        )
+
     def testHeadingRemoveFootnoteRef(self):
 
         self.assertMarkdownRenders(
