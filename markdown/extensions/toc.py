@@ -37,8 +37,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
 def slugify(value: str, separator: str, unicode: bool = False) -> str:
     """ Slugify a string, to make it URL friendly. """
-    # First convert HTML entities to Unicode characters
-    value = html.unescape(value)
     if not unicode:
         # Replace Extended Latin characters with ASCII, i.e. `žlutý` => `zluty`
         value = unicodedata.normalize('NFKD', value)
@@ -380,7 +378,7 @@ class TocTreeprocessor(Treeprocessor):
 
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
-                    el.attrib["id"] = unique(self.slugify(text, self.sep), used_ids)
+                    el.attrib["id"] = unique(self.slugify(html.unescape(text), self.sep), used_ids)
 
                 if 'data-toc-label' in el.attrib:
                     text = unescape(el.attrib['data-toc-label'])
