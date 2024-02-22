@@ -374,17 +374,17 @@ class TocTreeprocessor(Treeprocessor):
             if isinstance(el.tag, str) and self.header_rgx.match(el.tag):
                 self.set_level(el)
                 innerhtml = render_inner_html(copy_element(el), self.md)
-                text = strip_tags(innerhtml)
+                name = strip_tags(innerhtml)
 
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
-                    el.attrib["id"] = unique(self.slugify(html.unescape(text), self.sep), used_ids)
+                    el.attrib["id"] = unique(self.slugify(html.unescape(name), self.sep), used_ids)
 
+                data_toc_label = ''
                 if 'data-toc-label' in el.attrib:
-                    text = unescape(el.attrib['data-toc-label'])
-                    text = run_postprocessors(text, self.md)
-                    text = strip_tags(text)
-                    text = escape_cdata(text)
+                    data_toc_label = run_postprocessors(unescape(el.attrib['data-toc-label']), self.md)
+                    # Overwrite name with sanitized value of `data-toc-label`.
+                    name = escape_cdata(strip_tags(data_toc_label))
                     # Remove the data-toc-label attribute as it is no longer needed
                     del el.attrib['data-toc-label']
 
@@ -392,8 +392,9 @@ class TocTreeprocessor(Treeprocessor):
                     toc_tokens.append({
                         'level': int(el.tag[-1]),
                         'id': el.attrib["id"],
-                        'name': text,
-                        'html': innerhtml
+                        'name': name,
+                        'html': innerhtml,
+                        'data-toc-label': data_toc_label
                     })
 
                 if self.use_anchors:

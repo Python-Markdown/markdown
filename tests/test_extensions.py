@@ -420,9 +420,30 @@ class TestTOC(TestCaseWithAssertStartsWith):
             '</div>\n'
         )
         self.assertEqual(self.md.toc_tokens, [
-            {'level': 1, 'id': 'header', 'name': 'Header', 'html': 'Header', 'children': []},
-            {'level': 1, 'id': 'header_1', 'name': 'Header', 'html': 'Header', 'children': []},
-            {'level': 1, 'id': 'header_2', 'name': 'Header', 'html': 'Header', 'children': []},
+            {
+                'level': 1,
+                'id': 'header',
+                'name': 'Header',
+                'html': 'Header',
+                'data-toc-label': '',
+                'children': []
+            },
+            {
+                'level': 1,
+                'id': 'header_1',
+                'name': 'Header',
+                'html': 'Header',
+                'data-toc-label': '',
+                'children': []
+            },
+            {
+                'level': 1,
+                'id': 'header_2',
+                'name': 'Header',
+                'html': 'Header',
+                'data-toc-label': '',
+                'children': []
+            },
         ])
 
     def testHtmlEntities(self):
@@ -440,9 +461,14 @@ class TestTOC(TestCaseWithAssertStartsWith):
               '</ul>\n'                                            # noqa
             '</div>\n'
         )
-        self.assertEqual(self.md.toc_tokens, [
-            {'level': 1, 'id': 'foo-bar', 'name': 'Foo &amp; bar', 'html': 'Foo &amp; bar', 'children': []},
-        ])
+        self.assertEqual(self.md.toc_tokens, [{
+            'level': 1,
+            'id': 'foo-bar',
+            'name': 'Foo &amp; bar',
+            'html': 'Foo &amp; bar',
+            'data-toc-label': '',
+            'children': []
+        }])
 
     def testHtmlSpecialChars(self):
         """ Test Headers with HTML special characters. """
@@ -459,9 +485,14 @@ class TestTOC(TestCaseWithAssertStartsWith):
               '</ul>\n'                                                 # noqa
             '</div>\n'
         )
-        self.assertEqual(self.md.toc_tokens, [
-            {'level': 1, 'id': 'foo-bar', 'name': 'Foo &gt; &amp; bar', 'html': 'Foo &gt; &amp; bar', 'children': []},
-        ])
+        self.assertEqual(self.md.toc_tokens, [{
+            'level': 1,
+            'id': 'foo-bar',
+            'name': 'Foo &gt; &amp; bar',
+            'html': 'Foo &gt; &amp; bar',
+            'data-toc-label': '',
+            'children': []
+        }])
 
     def testRawHtml(self):
         """ Test Headers with raw HTML. """
@@ -478,9 +509,14 @@ class TestTOC(TestCaseWithAssertStartsWith):
               '</ul>\n'                                               # noqa
             '</div>\n'
         )
-        self.assertEqual(self.md.toc_tokens, [
-            {'level': 1, 'id': 'foo-bar-baz', 'name': 'Foo Bar Baz.', 'html': 'Foo <b>Bar</b> Baz.', 'children': []},
-        ])
+        self.assertEqual(self.md.toc_tokens, [{
+            'level': 1,
+            'id': 'foo-bar-baz',
+            'name': 'Foo Bar Baz.',
+            'html': 'Foo <b>Bar</b> Baz.',
+            'data-toc-label': '',
+            'children': []
+        }])
 
     def testBaseLevel(self):
         """ Test Header Base Level. """
@@ -507,12 +543,31 @@ class TestTOC(TestCaseWithAssertStartsWith):
               '</ul>\n'                                                # noqa
             '</div>\n'
         )
-        self.assertEqual(md.toc_tokens, [
-            {'level': 5, 'id': 'some-header', 'name': 'Some Header', 'html': 'Some Header', 'children': [
-                {'level': 6, 'id': 'next-level', 'name': 'Next Level', 'html': 'Next Level', 'children': []},
-                {'level': 6, 'id': 'too-high', 'name': 'Too High', 'html': 'Too High', 'children': []},
-            ]},
-        ])
+        self.assertEqual(md.toc_tokens, [{
+            'level': 5,
+            'id': 'some-header',
+            'name': 'Some Header',
+            'html': 'Some Header',
+            'data-toc-label': '',
+            'children': [
+                {
+                    'level': 6,
+                    'id': 'next-level',
+                    'name': 'Next Level',
+                    'html': 'Next Level',
+                    'data-toc-label': '',
+                    'children': []
+                },
+                {
+                    'level': 6,
+                    'id': 'too-high',
+                    'name': 'Too High',
+                    'html': 'Too High',
+                    'data-toc-label': '',
+                    'children': []
+                }
+            ]
+        }])
 
     def testHeaderInlineMarkup(self):
         """ Test Headers with inline markup. """
@@ -537,6 +592,7 @@ class TestTOC(TestCaseWithAssertStartsWith):
             'id': 'some-header-with-markup',
             'name': 'Some Header with markup.',
             'html': 'Some <em>Header</em> with <a href="http://example.com">markup</a>.',
+            'data-toc-label': '',
             'children': []
         }])
 

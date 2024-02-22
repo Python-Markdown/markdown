@@ -141,12 +141,14 @@ class TestTOC(TestCase):
                         'id': 'header-3',
                         'name': 'Header 3',
                         'html': 'Header 3',
+                        'data-toc-label': '',
                         'children': [
                             {
                                 'level': 4,
                                 'id': 'header-4',
                                 'name': 'Header 4',
                                 'html': 'Header 4',
+                                'data-toc-label': '',
                                 'children': []
                             }
                         ]
@@ -192,12 +194,14 @@ class TestTOC(TestCase):
                         'id': 'header-1',
                         'name': 'Header 1',
                         'html': 'Header 1',
+                        'data-toc-label': '',
                         'children': [
                             {
                                 'level': 2,
                                 'id': 'header-2',
                                 'name': 'Header 2',
                                 'html': 'Header 2',
+                                'data-toc-label': '',
                                 'children': []
                             }
                         ]
@@ -250,12 +254,14 @@ class TestTOC(TestCase):
                         'id': 'header-3',
                         'name': 'Header 3',
                         'html': 'Header 3',
+                        'data-toc-label': '',
                         'children': [
                             {
                                 'level': 4,
                                 'id': 'header-4',
                                 'name': 'Header 4',
                                 'html': 'Header 4',
+                                'data-toc-label': '',
                                 'children': []
                             }
                         ]
@@ -308,12 +314,14 @@ class TestTOC(TestCase):
                         'id': 'header-3',
                         'name': 'Header 3',
                         'html': 'Header 3',
+                        'data-toc-label': '',
                         'children': [
                             {
                                 'level': 4,
                                 'id': 'header-4',
                                 'name': 'Header 4',
                                 'html': 'Header 4',
+                                'data-toc-label': '',
                                 'children': []
                             }
                         ]
@@ -362,12 +370,14 @@ class TestTOC(TestCase):
                         'id': 'second-level',
                         'name': 'Second Level',
                         'html': 'Second Level',
+                        'data-toc-label': '',
                         'children': [
                             {
                                 'level': 5,
                                 'id': 'third-level',
                                 'name': 'Third Level',
                                 'html': 'Third Level',
+                                'data-toc-label': '',
                                 'children': []
                             }
                         ]
@@ -413,12 +423,14 @@ class TestTOC(TestCase):
                         'id': 'some-header',
                         'name': 'Some Header',
                         'html': 'Some Header',
+                        'data-toc-label': '',
                         'children': [
                             {
                                 'level': 3,
                                 'id': 'next-level',
                                 'name': 'Next Level',
                                 'html': 'Next Level',
+                                'data-toc-label': '',
                                 'children': []
                             }
                         ]
@@ -468,6 +480,7 @@ class TestTOC(TestCase):
                         'id': 'escaped_character',
                         'name': 'escaped_character',
                         'html': 'escaped_character',
+                        'data-toc-label': '',
                         'children': []
                     }
                 ]
@@ -491,6 +504,7 @@ class TestTOC(TestCase):
                         'html': '<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#102;&#111;&#111;&#64;&#101;'
                                 '&#120;&#97;&#109;&#112;&#108;&#101;&#46;&#111;&#114;&#103;">&#102;&#111;&#111;'
                                 '&#64;&#101;&#120;&#97;&#109;&#112;&#108;&#101;&#46;&#111;&#114;&#103;</a>',
+                        'data-toc-label': '',
                         'children': []
                     }
                 ]
@@ -754,12 +768,14 @@ class TestTOC(TestCase):
                         'id': 'header-1',
                         'name': 'Header 1',
                         'html': 'Header 1',
+                        'data-toc-label': '',
                         'children': [
                             {
                                 'level': 2,
                                 'id': 'foo',
                                 'name': 'Header 2',
                                 'html': 'Header 2',
+                                'data-toc-label': '',
                                 'children': []
                             },
                             {
@@ -767,6 +783,7 @@ class TestTOC(TestCase):
                                 'id': 'header-3',
                                 'name': 'Foo Bar',
                                 'html': 'Header 3',
+                                'data-toc-label': 'Foo Bar',
                                 'children': []
                             }
                         ]
@@ -776,6 +793,7 @@ class TestTOC(TestCase):
                         'id': 'header-4',
                         'name': 'Foo &gt; &amp; &lt; Baz',
                         'html': 'Header 4',
+                        'data-toc-label': 'Foo > &amp; < Baz',
                         'children': []
                     },
                     {
@@ -783,6 +801,7 @@ class TestTOC(TestCase):
                         'id': 'header-5',
                         'name': 'Foo Quux',
                         'html': 'Header 5',
+                        'data-toc-label': 'Foo <b>Quux</b>',
                         'children': []
                     },
                 ]
@@ -846,6 +865,7 @@ class TestTOC(TestCase):
                         'id': 'header-1',
                         'name': 'Header 1',
                         'html': 'Header 1',
+                        'data-toc-label': '',
                         'children': []
                     },
                     {
@@ -853,6 +873,7 @@ class TestTOC(TestCase):
                         'id': 'header-2',
                         'name': 'Header 2',
                         'html': 'Header 2',
+                        'data-toc-label': '',
                         'children': []
                     },
                     {
@@ -860,6 +881,7 @@ class TestTOC(TestCase):
                         'id': 'header-subelement-3',
                         'name': 'Header subelement 3',
                         'html': 'Header <em>subelement</em> 3',
+                        'data-toc-label': '',
                         'children': []
                     },
                     {
@@ -867,6 +889,7 @@ class TestTOC(TestCase):
                         'id': 'header-double-4',
                         'name': 'Header double 4',
                         'html': 'Header double 4',
+                        'data-toc-label': '',
                         'children': []
                     }
                 ]
