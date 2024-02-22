@@ -798,6 +798,7 @@ class TestTOC(TestCase):
                 # Header 1[^1]
                 # Header[^1] 2
                 # Header *subelement*[^1] 3
+                # Header[^1] double[^1] 4
 
                 [^1]: footnote
                 '''
@@ -808,6 +809,7 @@ class TestTOC(TestCase):
                 '<h1 id="header-subelement-3">'
                 'Header <em>subelement</em><sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup> 3'
                 '</h1>\n'
+                '<h1 id="header-double-4">Header<sup id="fnref4:1"><a class="footnote-ref" href="#fn:1">1</a></sup> double<sup id="fnref5:1"><a class="footnote-ref" href="#fn:1">1</a></sup> 4</h1>\n'
                 '<div class="footnote">\n'
                 '<hr />\n'
                 '<ol>\n'
@@ -817,6 +819,8 @@ class TestTOC(TestCase):
                 '<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a>'
                 '<a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a>'
                 '<a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a>'
+                '<a class="footnote-backref" href="#fnref4:1" title="Jump back to footnote 1 in the text">&#8617;</a>'
+                '<a class="footnote-backref" href="#fnref5:1" title="Jump back to footnote 1 in the text">&#8617;</a>'
                 '</p>\n'
                 '</li>\n'
                 '</ol>\n'
@@ -829,6 +833,7 @@ class TestTOC(TestCase):
                         '<li><a href="#header-1">Header 1</a></li>\n'                        # noqa
                         '<li><a href="#header-2">Header 2</a></li>\n'                        # noqa
                         '<li><a href="#header-subelement-3">Header subelement 3</a></li>\n'  # noqa
+                        '<li><a href="#header-double-4">Header double 4</a></li>\n'          # noqa
                       '</ul>\n'                                                              # noqa
                     '</div>\n'                                                               # noqa
                 ),
@@ -852,6 +857,13 @@ class TestTOC(TestCase):
                         'id': 'header-subelement-3',
                         'name': 'Header subelement 3',
                         'html': 'Header <em>subelement</em> 3',
+                        'children': []
+                    },
+                    {
+                        'level': 1,
+                        'id': 'header-double-4',
+                        'name': 'Header double 4',
+                        'html': 'Header double 4',
                         'children': []
                     }
                 ]
