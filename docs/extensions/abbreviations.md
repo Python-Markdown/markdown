@@ -37,7 +37,7 @@ is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
 ```
 
 The following three characters are not permitted in an abbreviation. Any
-abbreviation defninitiosn which include one will not be recognized as an
+abbreviation definitions which include one will not be recognized as an
 abbreviation definition.
 
 1. carrot (`^`)
