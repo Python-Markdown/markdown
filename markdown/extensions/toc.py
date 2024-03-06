@@ -148,27 +148,27 @@ def render_inner_html(el: etree.Element, md: Markdown) -> str:
     return run_postprocessors(text, md)
 
 
-def copy_element(el: etree.Element, exclude_fnrefs=True) -> etree.Element:
-    """ Return a deep copy of an `etree` element, optionally with footnote references removed. """
-    el = deepcopy(el)
+def remove_fnrefs(root: etree.Element) -> etree.Element:
+    """ Remove footnote references from a copy of the element, if any are present. """
     # Remove footnote references, which look like this: `<sup id="fnref:1">...</sup>`.
-    if exclude_fnrefs:
-        for sup in el.findall('sup'):
-            id = sup.get('id', '')
-            if id.startswith('fnref'):
-                # We have a footnote reference. Remove it.
-                parent = el.find(f'.//sup[@id="{id}"]..')
-                if sup.tail:
-                    # Preserve the tail text
-                    siblings = list(parent)
-                    pos = siblings.index(sup)
-                    if pos == 0:
-                        parent.text = f'{parent.text or ""}{sup.tail}'
-                    else:
-                        sibling = siblings[pos - 1]
-                        sibling.tail = f'{sibling.tail or ""}{sup.tail}'
-                parent.remove(sup)
-    return el
+    # If there are no `sup` elements, then nothing to do.
+    if next(root.iter('sup'), None) is None:
+        return root
+    root = deepcopy(root)
+    # Find parent elements that contain `sup` elements.
+    for parent in root.findall('.//sup/..'):
+        carry_text = ""
+        for child in reversed(parent):  # Reversed for the ability to mutate during iteration.
+            # Remove matching footnote references but carry any `tail` text to preceding elements.
+            if child.tag == 'sup' and child.get('id', '').startswith('fnref'):
+                carry_text = f'{child.tail or ""}{carry_text}'
+                parent.remove(child)
+            elif carry_text:
+                child.tail = f'{child.tail or ""}{carry_text}'
+                carry_text = ""
+        if carry_text:
+            parent.text = f'{parent.text or ""}{carry_text}'
+    return root
 
 
 def nest_toc_tokens(toc_list):
@@ -373,7 +373,7 @@ class TocTreeprocessor(Treeprocessor):
         for el in doc.iter():
             if isinstance(el.tag, str) and self.header_rgx.match(el.tag):
                 self.set_level(el)
-                innerhtml = render_inner_html(copy_element(el), self.md)
+                innerhtml = render_inner_html(remove_fnrefs(el), self.md)
                 name = strip_tags(innerhtml)
 
                 # Do not override pre-existing ids
