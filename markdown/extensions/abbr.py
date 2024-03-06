@@ -41,7 +41,7 @@ class AbbrExtension(Extension):
 class AbbrPreprocessor(BlockProcessor):
     """ Abbreviation Preprocessor - parse text for abbr references. """
 
-    RE = re.compile(r'^[*]\[(?P<abbr>[^\]]*)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
+    RE = re.compile(r'^[*]\[(?P<abbr>[^\]\^\\]*)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
 
     def test(self, parent: etree.Element, block: str) -> bool:
         return True
@@ -73,18 +73,15 @@ class AbbrPreprocessor(BlockProcessor):
 
     def _generate_pattern(self, text: str) -> str:
         """
-        Given a string, returns an regex pattern to match that string.
+        Given a string, returns a regex pattern to match that string.
 
-        'HTML' -> r'(?P<abbr>[H][T][M][L])'
+        'HTML' -> r'(?P<abbr>\b[H][T][M][L]\b)'
 
-        Note: we force each char as a literal match (in brackets) as we don't
-        know what they will be beforehand.
+        Note: we force each char as a literal match via a character set (in brackets)
+        as we don't know what they will be beforehand.
 
         """
-        chars = list(text)
-        for i in range(len(chars)):
-            chars[i] = r'[%s]' % chars[i]
-        return r'(?P<abbr>\b%s\b)' % (r''.join(chars))
+        return f"(?P<abbr>\\b{ ''.join(f'[{ c }]' for c in text) }\\b)"
 
 
 class AbbrInlineProcessor(InlineProcessor):
