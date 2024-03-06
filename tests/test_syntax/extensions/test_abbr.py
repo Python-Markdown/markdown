@@ -95,6 +95,25 @@ class TestAbbr(TestCase):
             )
         )
 
+    def test_abbr_nested(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [ABBR](/foo)
+
+                _ABBR_
+
+                *[ABBR]: Abbreviation
+                """
+            ),
+            self.dedent(
+                """
+                <p><a href="/foo"><abbr title="Abbreviation">ABBR</abbr></a></p>
+                <p><em><abbr title="Abbreviation">ABBR</abbr></em></p>
+                """
+            )
+        )
+
     def test_abbr_no_blank_Lines(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -237,6 +256,48 @@ class TestAbbr(TestCase):
             self.dedent(
                 """
                 <p><abbr title="'Abbreviation'">ABBR</abbr></p>
+                """
+            )
+        )
+
+    def test_abbr_ignore_special_chars(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                r"""
+                [^] [\\] [\]] []]
+
+                *[^]: Not an abbreviation
+
+                *[\\]: Not an abbreviation
+
+                *[\]]: Not an abbreviation
+
+                *[]]: Not an abbreviation
+                """
+            ),
+            self.dedent(
+                r"""
+                <p>[^] [\] []] []]</p>
+                <p>*[^]: Not an abbreviation</p>
+                <p>*[\]: Not an abbreviation</p>
+                <p>*[]]: Not an abbreviation</p>
+                <p>*[]]: Not an abbreviation</p>
+                """
+            )
+        )
+
+    def test_abbr_hyphen(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR-abbr
+
+                *[ABBR-abbr]: Abbreviation
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR-abbr</abbr></p>
                 """
             )
         )
