@@ -85,35 +85,6 @@ class TestExtensionClass(unittest.TestCase):
         self.assertEqual(ext.getConfigs(), {'foo': 'baz', 'bar': 'blah'})
 
 
-class TestAbbr(unittest.TestCase):
-    """ Test abbr extension. """
-
-    def setUp(self):
-        self.md = markdown.Markdown(extensions=['abbr'])
-
-    def testSimpleAbbr(self):
-        """ Test Abbreviations. """
-        text = 'Some text with an ABBR and a REF. Ignore REFERENCE and ref.' + \
-               '\n\n*[ABBR]: Abbreviation\n' + \
-               '*[REF]: Abbreviation Reference'
-        self.assertEqual(
-            self.md.convert(text),
-            '<p>Some text with an <abbr title="Abbreviation">ABBR</abbr> '
-            'and a <abbr title="Abbreviation Reference">REF</abbr>. Ignore '
-            'REFERENCE and ref.</p>'
-        )
-
-    def testNestedAbbr(self):
-        """ Test Nested Abbreviations. """
-        text = '[ABBR](/foo) and _ABBR_\n\n' + \
-               '*[ABBR]: Abbreviation'
-        self.assertEqual(
-            self.md.convert(text),
-            '<p><a href="/foo"><abbr title="Abbreviation">ABBR</abbr></a> '
-            'and <em><abbr title="Abbreviation">ABBR</abbr></em></p>'
-        )
-
-
 class TestMetaData(unittest.TestCase):
     """ Test `MetaData` extension. """
 
