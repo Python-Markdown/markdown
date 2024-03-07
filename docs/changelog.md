@@ -10,6 +10,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Changed
+
+#### Refactor TOC Sanitation
+
+* All postprocessors are run on heading content.
+* Footnote references are stripped from heading content. Fixes #660.
+* A more robust `striptags` is provided to convert headings to plain text.
+  Unlike, markupsafe's implementation, HTML entities are not unescaped.
+* The plain text `name`, rich `html` and unescaped raw `data-toc-label` are
+  saved to `toc_tokens`, allowing users to access the full rich text content of
+  the headings directly from `toc_tokens`.
+* `data-toc-label` is sanitized separate from heading content.
+* A `html.unescape` call is made just prior to calling `slugify` so that
+  `slugify` only operates on Unicode characters. Note that `html.unescape` is
+  not run on the `name` or `html`.
+* The `get_name` and `stashedHTML2text` functions defined in the `toc` extension
+  are both **deprecated**. Instead, use some combination of `run_postprocessors`,
+  `render_inner_html` and `striptags`.
+
 ### Fixed
 
 * Include `scripts/*.py` in the generated source tarballs (#1430).
