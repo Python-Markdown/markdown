@@ -36,13 +36,9 @@ will be rendered as:
 is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
 ```
 
-The following three characters are not permitted in an abbreviation. Any
-abbreviation definitions which include one will not be recognized as an
-abbreviation definition.
-
-1. carrot (`^`)
-2. backslash (`\`)
-3. left square bracket (`]`)
+The backslash (`\`) and left square bracket (`]`) are not permitted in an
+abbreviation. Any abbreviation definitions which include one will not be
+recognized as an abbreviation definition.
 
 Usage
 -----

@@ -24,6 +24,7 @@ from markdown.test_tools import TestCase
 
 
 class TestAbbr(TestCase):
+    maxDiff = None
 
     default_kwargs = {'extensions': ['abbr']}
 
@@ -264,24 +265,21 @@ class TestAbbr(TestCase):
         self.assertMarkdownRenders(
             self.dedent(
                 r"""
-                [^] [\\] [\]] []]
+                \\foo bar\]bar baz]baz
 
-                *[^]: Not an abbreviation
+                *[\\foo]: Not an abbreviation
 
-                *[\\]: Not an abbreviation
+                *[bar\]bar]: Not an abbreviation
 
-                *[\]]: Not an abbreviation
-
-                *[]]: Not an abbreviation
+                *[baz]baz]: Not an abbreviation
                 """
             ),
             self.dedent(
                 r"""
-                <p>[^] [\] []] []]</p>
-                <p>*[^]: Not an abbreviation</p>
-                <p>*[\]: Not an abbreviation</p>
-                <p>*[]]: Not an abbreviation</p>
-                <p>*[]]: Not an abbreviation</p>
+                <p>\foo bar]bar baz]baz</p>
+                <p>*[\foo]: Not an abbreviation</p>
+                <p>*[bar]bar]: Not an abbreviation</p>
+                <p>*[baz]baz]: Not an abbreviation</p>
                 """
             )
         )
@@ -298,6 +296,22 @@ class TestAbbr(TestCase):
             self.dedent(
                 """
                 <p><abbr title="Abbreviation">ABBR-abbr</abbr></p>
+                """
+            )
+        )
+
+    def test_abbr_carrot(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR^abbr
+
+                *[ABBR^abbr]: Abbreviation
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR^abbr</abbr></p>
                 """
             )
         )
