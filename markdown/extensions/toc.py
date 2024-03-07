@@ -6,7 +6,7 @@
 
 # Original code Copyright 2008 [Jack Miller](https://codezen.org/)
 
-# All changes Copyright 2008-2014 The Python Markdown Project
+# All changes Copyright 2008-2024 The Python Markdown Project
 
 # License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
