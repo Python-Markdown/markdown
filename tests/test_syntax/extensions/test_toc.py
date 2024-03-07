@@ -96,17 +96,17 @@ class TestTOC(TestCase):
                 ## Header 2
                 '''
             ),
-                '<div class="toc">\n'
-                  '<ul>\n'                                             # noqa
-                    '<li><a href="#header-1">Header 1</a>'             # noqa
-                      '<ul>\n'                                         # noqa
-                        '<li><a href="#header-2">Header 2</a></li>\n'  # noqa
-                      '</ul>\n'                                        # noqa
-                    '</li>\n'                                          # noqa
-                  '</ul>\n'                                            # noqa
-                '</div>\n'
-                '<h1 id="header-1">Header 1</h1>\n'
-                '<h2 id="header-2">Header 2</h2>',
+            '<div class="toc">\n'
+              '<ul>\n'                                             # noqa
+                '<li><a href="#header-1">Header 1</a>'             # noqa
+                  '<ul>\n'                                         # noqa
+                    '<li><a href="#header-2">Header 2</a></li>\n'  # noqa
+                  '</ul>\n'                                        # noqa
+                '</li>\n'                                          # noqa
+              '</ul>\n'                                            # noqa
+            '</div>\n'
+            '<h1 id="header-1">Header 1</h1>\n'
+            '<h2 id="header-2">Header 2</h2>',
             extensions=[TocExtension(marker='{{marker}}')]
         )
 
@@ -514,7 +514,6 @@ class TestTOC(TestCase):
             '</h1>',
             extensions=[TocExtension(permalink=True, permalink_title="PL", permalink_leading=True)]
         )
-
 
     def testAnchorLink(self):
         self.assertMarkdownRenders(
