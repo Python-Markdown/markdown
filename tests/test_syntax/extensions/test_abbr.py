@@ -261,25 +261,19 @@ class TestAbbr(TestCase):
             )
         )
 
-    def test_abbr_ignore_special_chars(self):
+    def test_abbr_ignore_backslash(self):
         self.assertMarkdownRenders(
             self.dedent(
                 r"""
-                \\foo bar\]bar baz]baz
+                \\foo
 
                 *[\\foo]: Not an abbreviation
-
-                *[bar\]bar]: Not an abbreviation
-
-                *[baz]baz]: Not an abbreviation
                 """
             ),
             self.dedent(
                 r"""
-                <p>\foo bar]bar baz]baz</p>
+                <p>\foo</p>
                 <p>*[\foo]: Not an abbreviation</p>
-                <p>*[bar]bar]: Not an abbreviation</p>
-                <p>*[baz]baz]: Not an abbreviation</p>
                 """
             )
         )
@@ -312,6 +306,22 @@ class TestAbbr(TestCase):
             self.dedent(
                 """
                 <p><abbr title="Abbreviation">ABBR^abbr</abbr></p>
+                """
+            )
+        )
+
+    def test_abbr_bracket(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR]abbr
+
+                *[ABBR]abbr]: Abbreviation
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR]abbr</abbr></p>
                 """
             )
         )

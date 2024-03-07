@@ -36,9 +36,9 @@ will be rendered as:
 is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
 ```
 
-The backslash (`\`) and left square bracket (`]`) are not permitted in an
-abbreviation. Any abbreviation definitions which include one will not be
-recognized as an abbreviation definition.
+The backslash (`\`) is not permitted in an abbreviation. Any abbreviation
+definitions which include one or more backslashes will not be recognized as an
+abbreviation definition.
 
 Usage
 -----

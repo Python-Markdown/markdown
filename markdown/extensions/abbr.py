@@ -41,7 +41,7 @@ class AbbrExtension(Extension):
 class AbbrPreprocessor(BlockProcessor):
     """ Abbreviation Preprocessor - parse text for abbr references. """
 
-    RE = re.compile(r'^[*]\[(?P<abbr>[^\]\\]*)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
+    RE = re.compile(r'^[*]\[(?P<abbr>[^\\]*?)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
 
     def test(self, parent: etree.Element, block: str) -> bool:
         return True
