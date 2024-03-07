@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * All postprocessors are run on heading content.
 * Footnote references are stripped from heading content. Fixes #660.
 * A more robust `striptags` is provided to convert headings to plain text.
-  Unlike, markupsafe's implementation, HTML entities are not unescaped.
+  Unlike, the `markupsafe` implementation, HTML entities are not unescaped.
 * The plain text `name`, rich `html` and unescaped raw `data-toc-label` are
   saved to `toc_tokens`, allowing users to access the full rich text content of
   the headings directly from `toc_tokens`.
