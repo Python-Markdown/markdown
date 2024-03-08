@@ -78,7 +78,7 @@ def get_attrs_and_remainder(attrs_string: str) -> tuple[list[tuple[str, str]], s
     return attrs, remainder
 
 
-def get_attrs(str: str) -> list[tuple[str, str]]:
+def get_attrs(str: str) -> list[tuple[str, str]]:  # pragma: no cover
     """ Soft-deprecated. Prefer `get_attrs_and_remainder`. """
     return get_attrs_and_remainder(str)[0]
 
