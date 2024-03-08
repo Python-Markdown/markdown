@@ -92,13 +92,3 @@ This should not cause a *crash*{ foo=a=b }
 
 Attr_lists do not contain *newlines*{ foo=bar
 key=value }
-
-# Attrs {data-test="{}"}
-
-attr_list values can have curly *braces*{ data-test='{hi{}' foo="bar" }
-
-## attr_list curly needs to be at the end {.foo} hi
-
-## attr_list curly needs to be at the end {.foo test="{" } }
-
-*Multiple*{.a} } *items*{.b} inline
