@@ -24,6 +24,7 @@ from markdown.test_tools import TestCase
 
 
 class TestAbbr(TestCase):
+    maxDiff = None
 
     default_kwargs = {'extensions': ['abbr']}
 
@@ -260,28 +261,19 @@ class TestAbbr(TestCase):
             )
         )
 
-    def test_abbr_ignore_special_chars(self):
+    def test_abbr_ignore_backslash(self):
         self.assertMarkdownRenders(
             self.dedent(
                 r"""
-                [^] [\\] [\]] []]
+                \\foo
 
-                *[^]: Not an abbreviation
-
-                *[\\]: Not an abbreviation
-
-                *[\]]: Not an abbreviation
-
-                *[]]: Not an abbreviation
+                *[\\foo]: Not an abbreviation
                 """
             ),
             self.dedent(
                 r"""
-                <p>[^] [\] []] []]</p>
-                <p>*[^]: Not an abbreviation</p>
-                <p>*[\]: Not an abbreviation</p>
-                <p>*[]]: Not an abbreviation</p>
-                <p>*[]]: Not an abbreviation</p>
+                <p>\foo</p>
+                <p>*[\foo]: Not an abbreviation</p>
                 """
             )
         )
@@ -298,6 +290,38 @@ class TestAbbr(TestCase):
             self.dedent(
                 """
                 <p><abbr title="Abbreviation">ABBR-abbr</abbr></p>
+                """
+            )
+        )
+
+    def test_abbr_carrot(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR^abbr
+
+                *[ABBR^abbr]: Abbreviation
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR^abbr</abbr></p>
+                """
+            )
+        )
+
+    def test_abbr_bracket(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR]abbr
+
+                *[ABBR]abbr]: Abbreviation
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR]abbr</abbr></p>
                 """
             )
         )
