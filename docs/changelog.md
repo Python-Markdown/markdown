@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Ensure lines after heading in loose list are properly detabbed (#1443).
 * Give smarty tree processor higher priority than toc (#1440).
 * Permit carrots (`^`) and square brackets (`]`) but explicitly exclude
-  backslashs (`\`) from abbreviations (#1444).
+  backslashes (`\`) from abbreviations (#1444).
 
 ## [3.5.2] -- 2024-01-10
 
