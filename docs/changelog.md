@@ -34,8 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Include `scripts/*.py` in the generated source tarballs (#1430).
 * Ensure lines after heading in loose list are properly detabbed (#1443).
 * Give smarty tree processor higher priority than toc (#1440).
-* Permit carrots (`^`) and square brackets (`]`) but explicitly exclude
+* Permit carets (`^`) and square brackets (`]`) but explicitly exclude
   backslashes (`\`) from abbreviations (#1444).
+* In attribute lists (`attr_list`, `fenced_code`), quoted attribute values are
+  now allowed to contain curly braces (`}`) (#1414).
 
 ## [3.5.2] -- 2024-01-10
 

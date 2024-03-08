@@ -72,7 +72,7 @@ def get_attrs_and_remainder(attrs_string: str) -> tuple[list[tuple[str, str]], s
     should mean that the input does not match the intended attr_list syntax.
     """
     attrs, remainder = _scanner.scan(attrs_string)
-    # To keep historic behavior, discard all un-parseable text prior to '}'.
+    # To keep historic behavior, discard all un-parsable text prior to '}'.
     index = remainder.find('}')
     remainder = remainder[index:] if index != -1 else ''
     return attrs, remainder
