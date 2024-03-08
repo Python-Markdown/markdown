@@ -69,10 +69,10 @@ def get_attrs_and_remainder(attrs_string: str) -> tuple[list[tuple[str, str]], s
     """ Parse attribute list and return a list of attribute tuples.
 
     Additionally, return any text that remained after a curly brace. In typical cases, its presence
-    should mean that the input does not match the intended attr_list syntax.
+    should mean that the input does not match the intended attribute list syntax.
     """
     attrs, remainder = _scanner.scan(attrs_string)
-    # To keep historic behavior, discard all un-parsable text prior to '}'.
+    # To keep historic behavior, discard all unparsable text prior to '}'.
     index = remainder.find('}')
     remainder = remainder[index:] if index != -1 else ''
     return attrs, remainder
