@@ -80,6 +80,8 @@ the following object at `md.toc_tokens`:
         'level': 1,
         'id': 'header-1',
         'name': 'Header 1',
+        'html': 'Header 1',
+        'data-toc-label': '',
         'children': [
             {'level': 2, 'id': 'header-2', 'name': 'Header 2', 'children':[]}
         ]
@@ -90,6 +92,11 @@ the following object at `md.toc_tokens`:
 Note that the `level` refers to the `hn` level. In other words, `<h1>` is level
 `1` and `<h2>` is level `2`, etc. Be aware that improperly nested levels in the
 input may result in odd nesting of the output.
+
+`name` is the sanitized value which would also be used as a label for the HTML
+version of the Table of Contents. `html` contains the fully rendered HTML
+content of the heading and has not been sanitized in any way. This may be used
+with your own custom sanitation to create custom table of contents.
 
 ### Custom Labels
 
@@ -130,6 +137,10 @@ the HTML header element. Also note that the ID was manually defined in the
 attribute list to provide a cleaner URL when linking to the header. If the ID is
 not manually defined, it is always derived from the text of the header, never
 from the `data-toc-label` attribute.
+
+The value of the `data-toc-label` attribute is sanitized and stripped of any HTML
+tags. However, `toc_tokens` will contain the raw content under
+`data-toc-label`.
 
 Usage
 -----

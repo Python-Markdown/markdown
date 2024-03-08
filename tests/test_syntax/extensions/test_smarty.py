@@ -198,3 +198,28 @@ class TestSmartyCustomSubstitutions(TestCase):
             'Must not be confused with &sbquo;ndash&lsquo;  (\u2013) \u2026 ]</p>'
         )
         self.assertMarkdownRenders(text, html)
+
+
+class TestSmartyAndToc(TestCase):
+
+    default_kwargs = {
+        'extensions': ['smarty', 'toc'],
+    }
+
+    def test_smarty_and_toc(self):
+        self.assertMarkdownRenders(
+            '# *Foo* --- `bar`',
+            '<h1 id="foo-bar"><em>Foo</em> &mdash; <code>bar</code></h1>',
+            expected_attrs={
+                'toc_tokens': [
+                    {
+                        'level': 1,
+                        'id': 'foo-bar',
+                        'name': 'Foo &mdash; bar',
+                        'html': '<em>Foo</em> &mdash; <code>bar</code>',
+                        'data-toc-label': '',
+                        'children': [],
+                    },
+                ],
+            },
+        )

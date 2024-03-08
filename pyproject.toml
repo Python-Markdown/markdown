@@ -67,7 +67,7 @@ docs = [
 'Documentation' = 'https://Python-Markdown.github.io/'
 'Repository' = 'https://github.com/Python-Markdown/markdown'
 'Issue Tracker' = 'https://github.com/Python-Markdown/markdown/issues'
-'Changelog' = 'https://github.com/Python-Markdown/markdown/blob/master/docs/change_log/index.md'
+'Changelog' = 'https://python-markdown.github.io/changelog/'
 
 [project.scripts]
 markdown_py = 'markdown.__main__:run'

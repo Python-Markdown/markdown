@@ -24,6 +24,7 @@ from markdown.test_tools import TestCase
 
 
 class TestAbbr(TestCase):
+    maxDiff = None
 
     default_kwargs = {'extensions': ['abbr']}
 
@@ -91,6 +92,25 @@ class TestAbbr(TestCase):
             self.dedent(
                 """
                 <p><abbr title="The override">ABBR</abbr></p>
+                """
+            )
+        )
+
+    def test_abbr_nested(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [ABBR](/foo)
+
+                _ABBR_
+
+                *[ABBR]: Abbreviation
+                """
+            ),
+            self.dedent(
+                """
+                <p><a href="/foo"><abbr title="Abbreviation">ABBR</abbr></a></p>
+                <p><em><abbr title="Abbreviation">ABBR</abbr></em></p>
                 """
             )
         )
@@ -237,6 +257,71 @@ class TestAbbr(TestCase):
             self.dedent(
                 """
                 <p><abbr title="'Abbreviation'">ABBR</abbr></p>
+                """
+            )
+        )
+
+    def test_abbr_ignore_backslash(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                r"""
+                \\foo
+
+                *[\\foo]: Not an abbreviation
+                """
+            ),
+            self.dedent(
+                r"""
+                <p>\foo</p>
+                <p>*[\foo]: Not an abbreviation</p>
+                """
+            )
+        )
+
+    def test_abbr_hyphen(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR-abbr
+
+                *[ABBR-abbr]: Abbreviation
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR-abbr</abbr></p>
+                """
+            )
+        )
+
+    def test_abbr_carrot(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR^abbr
+
+                *[ABBR^abbr]: Abbreviation
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR^abbr</abbr></p>
+                """
+            )
+        )
+
+    def test_abbr_bracket(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR]abbr
+
+                *[ABBR]abbr]: Abbreviation
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR]abbr</abbr></p>
                 """
             )
         )

@@ -64,6 +64,7 @@ markdown_extensions:
       repo: markdown
 
 plugins:
+- search
 - gen-files:
     scripts:
     - scripts/gen_ref_nav.py
@@ -103,7 +104,7 @@ plugins:
           show_signature_annotations: true
           show_source: false
           show_symbol_type_heading: true
-          show_symbol_type_toc: true
+          show_symbol_type_toc: false
           signature_crossrefs: false
           summary: true
           source:

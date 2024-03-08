@@ -9,3 +9,4 @@ include MANIFEST
 include *-requirements.txt
 include mkdocs.yml
 include tox.ini
+include scripts/*.py
