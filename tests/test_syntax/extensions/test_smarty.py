@@ -216,6 +216,8 @@ class TestSmartyAndToc(TestCase):
                         'level': 1,
                         'id': 'foo-bar',
                         'name': 'Foo &mdash; bar',
+                        'html': '<em>Foo</em> &mdash; <code>bar</code>',
+                        'data-toc-label': '',
                         'children': [],
                     },
                 ],
