@@ -394,6 +394,24 @@ class TestFencedCode(TestCase):
             extensions=['fenced_code', 'attr_list']
         )
 
+    def testFencedCodeCurlyInAttrs(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { data-test="{}" }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code data-test="{}"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
 
 class TestFencedCodeWithCodehilite(TestCase):
 
