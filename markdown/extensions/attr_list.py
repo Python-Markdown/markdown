@@ -164,7 +164,7 @@ class AttrListTreeprocessor(Treeprocessor):
 
         If the `attrs_string` has an extra closing curly brace, the remaining text is returned.
 
-        The `strict` argument controls whether to still assign attrs if there is a remaining `}`.
+        The `strict` argument controls whether to still assign `attrs` if there is a remaining `}`.
         """
         attrs, remainder = get_attrs_and_remainder(attrs_string)
         if strict and remainder:
@@ -186,8 +186,8 @@ class AttrListTreeprocessor(Treeprocessor):
 
     def sanitize_name(self, name: str) -> str:
         """
-        Sanitize name as 'an XML Name, minus the ":"'.
-        See https://www.w3.org/TR/REC-xml-names/#NT-NCName
+        Sanitize name as 'an XML Name, minus the `:`.'
+        See <https://www.w3.org/TR/REC-xml-names/#NT-NCName>.
         """
         return self.NAME_RE.sub('_', name)
 
