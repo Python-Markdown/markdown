@@ -8,26 +8,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). See the [Contributing Guide](contributing.md) for details.
 
-## [unreleased]
+## [3.6] -- 2024-03-14
 
 ### Changed
 
 #### Refactor TOC Sanitation
 
-* All postprocessors are run on heading content.
-* Footnote references are stripped from heading content. Fixes #660.
+* All postprocessors are now run on heading content.
+* Footnote references are now stripped from heading content. Fixes #660.
 * A more robust `striptags` is provided to convert headings to plain text.
   Unlike, the `markupsafe` implementation, HTML entities are not unescaped.
-* The plain text `name`, rich `html` and unescaped raw `data-toc-label` are
+* The plain text `name`, rich `html`, and unescaped raw `data-toc-label` are
   saved to `toc_tokens`, allowing users to access the full rich text content of
   the headings directly from `toc_tokens`.
-* `data-toc-label` is sanitized separate from heading content.
-* A `html.unescape` call is made just prior to calling `slugify` so that
+* The value of `data-toc-label` is sanitized separate from heading content
+  before being written to `name`. This fixes a bug which allowed markup through
+  in certain circumstances. To access the raw unsanitized data, retrieve the
+  value from `token['data-toc-label']` directly.
+* An `html.unescape` call is made just prior to calling `slugify` so that
   `slugify` only operates on Unicode characters. Note that `html.unescape` is
-  not run on the `name` or `html`.
-* The `get_name` and `stashedHTML2text` functions defined in the `toc` extension
-  are both **deprecated**. Instead, use some combination of `run_postprocessors`,
-  `render_inner_html` and `striptags`.
+  not run on `name`, `html`, or `data-toc-label`.
+* The functions `get_name` and `stashedHTML2text` defined in the `toc` extension
+  are both **deprecated**. Instead, third party extensions should use some
+  combination of the new functions `run_postprocessors`, `render_inner_html` and
+  `striptags`.
 
 ### Fixed
 
