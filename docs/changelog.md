@@ -18,6 +18,8 @@ A new `AbbrTreeprocessor` has been introduced, which replaces the now deprecated
 `AbbrInlineProcessor`. Abbreviation processing now happens after Attribute Lists,
 avoiding a conflict between the two extensions (#1460).
 
+A call to `Markdown.reset()` now clears all previously defined abbreviations.
+
 ### Fixed
 
 * Fixed links to source code on GitHub from the documentation (#1453).

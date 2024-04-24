@@ -39,19 +39,28 @@ if TYPE_CHECKING:  # pragma: no cover
 class AbbrExtension(Extension):
     """ Abbreviation Extension for Python-Markdown. """
 
+    def __init__(self, **kwargs):
+        """ Initiate Extension and set up configs. """
+        super().__init__(**kwargs)
+        self.abbrs = {}
+
+    def reset(self):
+        """ Clear all previously defined abbreviations. """
+        self.abbrs.clear()
+
     def extendMarkdown(self, md):
         """ Insert `AbbrTreeprocessor` and `AbbrBlockprocessor`. """
-        treeprocessor = AbbrTreeprocessor(md)
-        md.treeprocessors.register(treeprocessor, 'abbr', 7)
-        md.parser.blockprocessors.register(AbbrBlockprocessor(md.parser, treeprocessor.abbrs), 'abbr', 16)
+        md.registerExtension(self)
+        md.treeprocessors.register(AbbrTreeprocessor(md, self.abbrs), 'abbr', 7)
+        md.parser.blockprocessors.register(AbbrBlockprocessor(md.parser, self.abbrs), 'abbr', 16)
 
 
 class AbbrTreeprocessor(Treeprocessor):
     """ Replace abbreviation text with `<abbr>` elements. """
 
-    def __init__(self, md: Markdown | None = None):
-        self.abbrs = {}
-        self.RE = None
+    def __init__(self, md: Markdown | None = None, abbrs: dict | None = None):
+        self.abbrs: dict = abbrs if abbrs is not None else {}
+        self.RE: re.RegexObject | None = None
         super().__init__(md)
 
     def iter_element(self, el: etree.Element, parent: etree.Element | None = None) -> None:
@@ -80,7 +89,7 @@ class AbbrTreeprocessor(Treeprocessor):
     def run(self, root: etree.Element) -> etree.Element | None:
         ''' Step through tree to find known abbreviations. '''
         if not self.abbrs:
-            # No abbrs defined. Skip running processor.
+            # No abbreviations defined. Skip running processor.
             return
         # Build and compile regex
         self.RE = re.compile(f"\\b(?:{ '|'.join(re.escape(key) for key in self.abbrs.keys()) })\\b")
@@ -90,12 +99,12 @@ class AbbrTreeprocessor(Treeprocessor):
 
 
 class AbbrBlockprocessor(BlockProcessor):
-    """ Abbreviation Blockprocessor - parse text for abbr references. """
+    """ Parse text for abbreviation references. """
 
     RE = re.compile(r'^[*]\[(?P<abbr>[^\\]*?)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
 
     def __init__(self, parser: BlockParser, abbrs: dict):
-        self.abbrs = abbrs
+        self.abbrs: dict = abbrs
         super().__init__(parser)
 
     def test(self, parent: etree.Element, block: str) -> bool:

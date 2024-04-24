@@ -21,6 +21,8 @@ License: BSD (see LICENSE.md for details).
 """
 
 from markdown.test_tools import TestCase
+from markdown import Markdown
+from markdown.extensions.abbr import AbbrExtension
 
 
 class TestAbbr(TestCase):
@@ -378,5 +380,17 @@ class TestAbbr(TestCase):
                 <p><img alt="Image with abbr in title" src="abbr.png" title="Image with abbr in title" /></p>
                 """
             ),
-            extensions = ['abbr', 'attr_list']
+            extensions=['abbr', 'attr_list']
         )
+
+    def test_abbr_reset(self):
+        ext = AbbrExtension()
+        md = Markdown(extensions=[ext])
+        md.convert('*[abbr]: Abbreviation Definition')
+        self.assertEqual(ext.abbrs, {'abbr': 'Abbreviation Definition'})
+        md.convert('*[ABBR]: Capitalised Abbreviation')
+        self.assertEqual(ext.abbrs, {'abbr': 'Abbreviation Definition', 'ABBR': 'Capitalised Abbreviation'})
+        md.reset()
+        self.assertEqual(ext.abbrs, {})
+        md.convert('*[foo]: Foo Definition')
+        self.assertEqual(ext.abbrs, {'foo': 'Foo Definition'})
