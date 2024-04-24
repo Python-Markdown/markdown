@@ -134,6 +134,9 @@ class AbbrBlockprocessor(BlockProcessor):
         return False
 
 
+AbbrPreprocessor = deprecated("This class has been renamed to `AbbrBlockprocessor`.")(AbbrBlockprocessor)
+
+
 @deprecated("This class will be removed in the future; use `AbbrTreeprocessor` instead.")
 class AbbrInlineProcessor(InlineProcessor):
     """ Abbreviation inline pattern. """
