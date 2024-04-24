@@ -60,7 +60,7 @@ class TestAbbr(TestCase):
             )
         )
 
-    def test_abbr_multiple(self):
+    def test_abbr_multiple_in_text(self):
         self.assertMarkdownRenders(
             self.dedent(
                 """
@@ -75,6 +75,44 @@ class TestAbbr(TestCase):
                 """
                 <p>The <abbr title="Hyper Text Markup Language">HTML</abbr> specification
                 is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
+                """
+            )
+        )
+
+    def test_abbr_multiple_in_tail(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                *The* HTML specification
+                is maintained by the W3C.
+
+                *[HTML]: Hyper Text Markup Language
+                *[W3C]:  World Wide Web Consortium
+                """
+            ),
+            self.dedent(
+                """
+                <p><em>The</em> <abbr title="Hyper Text Markup Language">HTML</abbr> specification
+                is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
+                """
+            )
+        )
+
+    def test_abbr_multiple_nested(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                The *HTML* specification
+                is maintained by the *W3C*.
+
+                *[HTML]: Hyper Text Markup Language
+                *[W3C]:  World Wide Web Consortium
+                """
+            ),
+            self.dedent(
+                """
+                <p>The <em><abbr title="Hyper Text Markup Language">HTML</abbr></em> specification
+                is maintained by the <em><abbr title="World Wide Web Consortium">W3C</abbr></em>.</p>
                 """
             )
         )
@@ -324,4 +362,21 @@ class TestAbbr(TestCase):
                 <p><abbr title="Abbreviation">ABBR]abbr</abbr></p>
                 """
             )
+        )
+
+    def test_abbr_with_attr_list(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                *[abbr]: Abbreviation Definition
+
+                ![Image with abbr in title](abbr.png){title="Image with abbr in title"}
+                """
+            ),
+            self.dedent(
+                """
+                <p><img alt="Image with abbr in title" src="abbr.png" title="Image with abbr in title" /></p>
+                """
+            ),
+            extensions = ['abbr', 'attr_list']
         )
