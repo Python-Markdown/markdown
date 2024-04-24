@@ -27,8 +27,13 @@ from ..blockprocessors import BlockProcessor
 from ..inlinepatterns import InlineProcessor
 from ..treeprocessors import Treeprocessor
 from ..util import AtomicString, deprecated
+from typing import TYPE_CHECKING
 import re
 import xml.etree.ElementTree as etree
+
+if TYPE_CHECKING:  # pragma: no cover
+    from .. import Markdown
+    from ..blockparsers import BlockParser
 
 
 class AbbrExtension(Extension):
@@ -42,15 +47,15 @@ class AbbrExtension(Extension):
 
 
 class AbbrTreeprocessor(Treeprocessor):
-    """ Replace abbr text with `<abbr>` elements. """
+    """ Replace abbreviation text with `<abbr>` elements. """
 
-    def __init__(self, md: Markdown | None=None):
+    def __init__(self, md: Markdown | None = None):
         self.abbrs = {}
         self.RE = None
         super().__init__(md)
 
-    def iter_element(self, el, parent=None):
-        ''' Resursively iterate over elements, run regex on text and wrap matches in `abbr` tags. '''
+    def iter_element(self, el: etree.Element, parent: etree.Element | None = None) -> None:
+        ''' Recursively iterate over elements, run regex on text and wrap matches in `abbr` tags. '''
         for child in reversed(el):
             self.iter_element(child, el)
         if text := el.text:
@@ -89,7 +94,7 @@ class AbbrBlockprocessor(BlockProcessor):
 
     RE = re.compile(r'^[*]\[(?P<abbr>[^\\]*?)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
 
-    def __init__(self, parser, abbrs):
+    def __init__(self, parser: BlockParser, abbrs: dict):
         self.abbrs = abbrs
         super().__init__(parser)
 
@@ -98,8 +103,8 @@ class AbbrBlockprocessor(BlockProcessor):
 
     def run(self, parent: etree.Element, blocks: list[str]) -> bool:
         """
-        Find and remove all Abbreviation references from the text.
-        Each reference is added to the abbrs collection.
+        Find and remove all abbreviation references from the text.
+        Each reference is added to the abbreviation collection.
 
         """
         block = blocks.pop(0)
