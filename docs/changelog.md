@@ -18,7 +18,8 @@ A new `AbbrTreeprocessor` has been introduced, which replaces the now deprecated
 `AbbrInlineProcessor`. Abbreviation processing now happens after Attribute Lists,
 avoiding a conflict between the two extensions (#1460).
 
-The `AbbrPreprocessor` class has been renamed to `AbbrBlockprocessor`, which better reflects what it is. `AbbrPreprocessor` has been deprecated.
+The `AbbrPreprocessor` class has been renamed to `AbbrBlockprocessor`, which
+better reflects what it is. `AbbrPreprocessor` has been deprecated.
 
 A call to `Markdown.reset()` now clears all previously defined abbreviations.
 
