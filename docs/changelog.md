@@ -10,6 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Changed
+
+#### Refactor `abbr` Extension
+
+A new `AbbrTreeprocessor` has been introduced, which replaces the now deprecated
+`AbbrInlineProcessor`. Abbreviation processing now happens after Attribute Lists,
+avoiding a conflict between the two extensions (#1460).
+
+The `AbbrPreprocessor` class has been renamed to `AbbrBlockprocessor`, which
+better reflects what it is. `AbbrPreprocessor` has been deprecated.
+
+A call to `Markdown.reset()` now clears all previously defined abbreviations.
+
 ### Fixed
 
 * Fixed links to source code on GitHub from the documentation (#1453).
