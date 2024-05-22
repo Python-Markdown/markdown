@@ -23,6 +23,10 @@ better reflects what it is. `AbbrPreprocessor` has been deprecated.
 
 A call to `Markdown.reset()` now clears all previously defined abbreviations.
 
+Abbreviations are now sorted by length before executing `AbbrTreeprocessor`
+to ensure that multi-word abbreviations are implemented even if an abbreviation
+exists for one of those component words.
+
 ### Fixed
 
 * Fixed links to source code on GitHub from the documentation (#1453).

@@ -383,6 +383,24 @@ class TestAbbr(TestCase):
             extensions=['abbr', 'attr_list']
         )
 
+    def test_abbr_superset_vs_subset(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                abbr, SS, and abbr-SS should have different definitions.
+                
+                *[abbr]: Abbreviation Definition
+                *[abbr-SS]: Abbreviation Superset Definition
+                *[SS]: Superset Definition
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation Definition">abbr</abbr>, <abbr title="Superset Definition">SS</abbr>, and <abbr title="Abbreviation Superset Definition">abbr-SS</abbr> should have different definitions.</p>
+                """
+            )
+        )
+
     def test_abbr_reset(self):
         ext = AbbrExtension()
         md = Markdown(extensions=[ext])

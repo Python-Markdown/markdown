@@ -92,7 +92,9 @@ class AbbrTreeprocessor(Treeprocessor):
             # No abbreviations defined. Skip running processor.
             return
         # Build and compile regex
-        self.RE = re.compile(f"\\b(?:{ '|'.join(re.escape(key) for key in self.abbrs) })\\b")
+        abbr_list = list(self.abbrs.keys())
+        abbr_list.sort(key=len, reverse=True)
+        self.RE = re.compile(f"\\b(?:{ '|'.join(re.escape(key) for key in abbr_list) })\\b")
         # Step through tree and modify on matches
         self.iter_element(root)
 
