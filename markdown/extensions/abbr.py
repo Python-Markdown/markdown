@@ -23,6 +23,7 @@ for details.
 from __future__ import annotations
 
 from . import Extension
+from ..util import parseBoolValue
 from ..blockprocessors import BlockProcessor
 from ..inlinepatterns import InlineProcessor
 from ..treeprocessors import Treeprocessor
@@ -41,6 +42,14 @@ class AbbrExtension(Extension):
 
     def __init__(self, **kwargs):
         """ Initiate Extension and set up configs. """
+        self.config = {
+            'use_last_abbr': [
+                True,
+                'True to use the last instance of an abbreviation, rather than the first instance.'
+                'Default: `True`.'
+            ],
+        }
+        """ Default configuration options. """
         super().__init__(**kwargs)
         self.abbrs = {}
 
@@ -52,7 +61,7 @@ class AbbrExtension(Extension):
         """ Insert `AbbrTreeprocessor` and `AbbrBlockprocessor`. """
         md.registerExtension(self)
         md.treeprocessors.register(AbbrTreeprocessor(md, self.abbrs), 'abbr', 7)
-        md.parser.blockprocessors.register(AbbrBlockprocessor(md.parser, self.abbrs), 'abbr', 16)
+        md.parser.blockprocessors.register(AbbrBlockprocessor(md.parser, self.abbrs, self.getConfigs()), 'abbr', 16)
 
 
 class AbbrTreeprocessor(Treeprocessor):
@@ -69,11 +78,12 @@ class AbbrTreeprocessor(Treeprocessor):
             self.iter_element(child, el)
         if text := el.text:
             for m in reversed(list(self.RE.finditer(text))):
-                abbr = etree.Element('abbr', {'title': self.abbrs[m.group(0)]})
-                abbr.text = AtomicString(m.group(0))
-                abbr.tail = text[m.end():]
-                el.insert(0, abbr)
-                text = text[:m.start()]
+                if self.abbrs[m.group(0)]:
+                    abbr = etree.Element('abbr', {'title': self.abbrs[m.group(0)]})
+                    abbr.text = AtomicString(m.group(0))
+                    abbr.tail = text[m.end():]
+                    el.insert(0, abbr)
+                    text = text[:m.start()]
             el.text = text
         if parent and el.tail:
             tail = el.tail
@@ -104,8 +114,9 @@ class AbbrBlockprocessor(BlockProcessor):
 
     RE = re.compile(r'^[*]\[(?P<abbr>[^\\]*?)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
 
-    def __init__(self, parser: BlockParser, abbrs: dict):
+    def __init__(self, parser: BlockParser, abbrs: dict, config: dict[str, Any]):
         self.abbrs: dict = abbrs
+        self.use_last_abbr: bool = parseBoolValue(config["use_last_abbr"])
         super().__init__(parser)
 
     def test(self, parent: etree.Element, block: str) -> bool:
@@ -122,7 +133,8 @@ class AbbrBlockprocessor(BlockProcessor):
         if m:
             abbr = m.group('abbr').strip()
             title = m.group('title').strip()
-            self.abbrs[abbr] = title
+            if self.use_last_abbr or abbr not in self.abbrs:
+                self.abbrs[abbr] = title
             if block[m.end():].strip():
                 # Add any content after match back to blocks as separate block
                 blocks.insert(0, block[m.end():].lstrip('\n'))

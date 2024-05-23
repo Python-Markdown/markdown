@@ -133,7 +133,26 @@ class TestAbbr(TestCase):
                 """
                 <p><abbr title="The override">ABBR</abbr></p>
                 """
-            )
+            ),
+            extensions=[AbbrExtension(use_last_abbr=True)]
+        )
+
+    def test_abbr_override_Ignored(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR
+
+                *[ABBR]: Abbreviation
+                *[ABBR]: Override Ignored
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR</abbr></p>
+                """
+            ),
+            extensions=[AbbrExtension(use_last_abbr=False)]
         )
 
     def test_abbr_nested(self):
@@ -397,6 +416,26 @@ class TestAbbr(TestCase):
             self.dedent(
                 """
                 <p><abbr title="Abbreviation Definition">abbr</abbr>, <abbr title="Superset Definition">SS</abbr>, and <abbr title="Abbreviation Superset Definition">abbr-SS</abbr> should have different definitions.</p>
+                """
+            )
+        )
+
+    def test_abbr_empty(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                *[abbr]: Abbreviation Definition
+
+                abbr
+
+                *[abbr]:
+
+                Testing document text.
+                """
+            ),
+            self.dedent(
+                """
+                <p>abbr</p>\n<p>Testing document text.</p>
                 """
             )
         )

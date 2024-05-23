@@ -1,5 +1,10 @@
 title: Abbreviations Extension
 
+ABBR
+
+*[ABBR]: Abbreviation
+*[ABBR]: Override Ignored
+
 Abbreviations
 =============
 
