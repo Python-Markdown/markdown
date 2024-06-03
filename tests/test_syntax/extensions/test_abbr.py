@@ -20,10 +20,12 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+import os
+from tempfile import mkstemp
+import atexit
 from markdown.test_tools import TestCase
 from markdown import Markdown
 from markdown.extensions.abbr import AbbrExtension
-
 
 class TestAbbr(TestCase):
     maxDiff = None
@@ -154,6 +156,40 @@ class TestAbbr(TestCase):
             ),
             extensions=[AbbrExtension(use_last_abbr=False)]
         )
+
+    def test_abbr_glossary(self):
+        # Create temporary glossary file and set a trigger to guarantee it is deleted even if this test fails
+        temp_file, glossary_file = mkstemp(suffix='.md')
+        os.close(temp_file)
+        cleanup_trigger = atexit.register(os.remove, glossary_file)
+
+        with open(glossary_file, 'w', encoding='utf-8') as temp_file:
+            temp_file.writelines([
+                "*[ABBR]: Abbreviation\n",
+                "*[abbr]: Abbreviation\n",
+                "*[HTML]: Hyper Text Markup Language\n",
+                "*[W3C]:  World Wide Web Consortium\n"
+            ])
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR abbr
+                
+                HTML W3C
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR</abbr> <abbr title="Abbreviation">abbr</abbr></p>
+                <p><abbr title="Hyper Text Markup Language">HTML</abbr> <abbr title="World Wide Web Consortium">W3C</abbr></p>
+                """
+            ),
+            extensions=[AbbrExtension(glossary=glossary_file)]
+        )
+        # cleanup
+        os.remove(glossary_file)
+        atexit.unregister(cleanup_trigger)
 
     def test_abbr_nested(self):
         self.assertMarkdownRenders(

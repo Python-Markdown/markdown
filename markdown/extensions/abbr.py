@@ -22,6 +22,7 @@ for details.
 
 from __future__ import annotations
 
+import codecs
 from . import Extension
 from ..util import parseBoolValue
 from ..blockprocessors import BlockProcessor
@@ -48,17 +49,46 @@ class AbbrExtension(Extension):
                 'True to use the last instance of an abbreviation, rather than the first instance.'
                 'Default: `True`.'
             ],
+            'glossary': [
+                '',
+                'Path to the Markdown file containing abbreviations to be applied to every page.'
+                "Default: `''`"
+            ],
         }
         """ Default configuration options. """
         super().__init__(**kwargs)
         self.abbrs = {}
+        self.glossary = {}
 
     def reset(self):
         """ Clear all previously defined abbreviations. """
         self.abbrs.clear()
+        if (self.glossary):
+            self.abbrs.update(self.glossary)
+
+    def load_glossary(self, md: Markdown, filename: str):
+        if filename and isinstance(filename, str):
+            input_file = codecs.open(filename, mode="r", encoding='utf-8')
+            text = input_file.read()
+            input_file.close()
+            text = text.lstrip('\ufeff')  # remove the byte-order mark
+            try:
+                text = str(text)
+            except UnicodeDecodeError as e:  # pragma: no cover
+                # Customize error message while maintaining original traceback
+                e.reason += '. -- Note: Markdown only accepts Unicode input!'
+                raise
+            lines = text.split("\n")
+
+            bp = AbbrBlockprocessor(md.parser, self.glossary, self.getConfigs())
+            for line in lines:
+                    bp.run(None, [line])
 
     def extendMarkdown(self, md):
         """ Insert `AbbrTreeprocessor` and `AbbrBlockprocessor`. """
+        if (self.config['glossary'][0]):
+            self.load_glossary(md, self.config['glossary'][0])
+        self.abbrs.update(self.glossary)
         md.registerExtension(self)
         md.treeprocessors.register(AbbrTreeprocessor(md, self.abbrs), 'abbr', 7)
         md.parser.blockprocessors.register(AbbrBlockprocessor(md.parser, self.abbrs, self.getConfigs()), 'abbr', 16)
@@ -85,7 +115,7 @@ class AbbrTreeprocessor(Treeprocessor):
                     el.insert(0, abbr)
                     text = text[:m.start()]
             el.text = text
-        if parent and el.tail:
+        if parent is not None and el.tail:
             tail = el.tail
             index = list(parent).index(el) + 1
             for m in reversed(list(self.RE.finditer(tail))):

@@ -27,16 +27,18 @@ Abbreviations are now sorted by length before executing `AbbrTreeprocessor`
 to ensure that multi-word abbreviations are implemented even if an abbreviation
 exists for one of those component words. (#1465)
 
-Added an optional `use_last_abbr` configuration option to the abbreviations
-extension. Default (`True`) maintains the existing behavior. `False` causes
-the extension to only use the first instance of an abbreviation, rather than
-the last.
-
 Empty abbreviations are now skipped by `AbbrTreeprocessor`. This avoids applying
 abbr tags to text without a title value. This also allows disabling an
 abbreviation, which may be useful for documents that uses two terms with
 identical abbreviations.
 
+Added an optional `glossary` configuration option to the abbreviations extension.
+This provides a simple and efficient way to apply abbreviations to every page.
+
+Added an optional `use_last_abbr` configuration option to the abbreviations
+extension. Default (`True`) maintains the existing behavior. `False` causes
+the extension to only use the first instance of an abbreviation, rather than
+the last. 
 
 
 ### Fixed
