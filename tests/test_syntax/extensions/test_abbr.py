@@ -21,11 +21,10 @@ License: BSD (see LICENSE.md for details).
 """
 
 import os
-from tempfile import mkstemp
-import atexit
 from markdown.test_tools import TestCase
 from markdown import Markdown
 from markdown.extensions.abbr import AbbrExtension
+
 
 class TestAbbr(TestCase):
     maxDiff = None
@@ -121,55 +120,51 @@ class TestAbbr(TestCase):
             )
         )
 
-    def test_abbr_override(self):
-        self.assertMarkdownRenders(
-            self.dedent(
-                """
-                ABBR
-
-                *[ABBR]: Ignored
-                *[ABBR]: The override
-                """
-            ),
-            self.dedent(
-                """
-                <p><abbr title="The override">ABBR</abbr></p>
-                """
-            ),
-            extensions=[AbbrExtension(use_last_abbr=True)]
-        )
-
-    def test_abbr_override_Ignored(self):
-        self.assertMarkdownRenders(
-            self.dedent(
-                """
-                ABBR
-
-                *[ABBR]: Abbreviation
-                *[ABBR]: Override Ignored
-                """
-            ),
-            self.dedent(
-                """
-                <p><abbr title="Abbreviation">ABBR</abbr></p>
-                """
-            ),
-            extensions=[AbbrExtension(use_last_abbr=False)]
-        )
-
     def test_abbr_glossary(self):
-        # Create temporary glossary file and set a trigger to guarantee it is deleted even if this test fails
-        temp_file, glossary_file = mkstemp(suffix='.md')
-        os.close(temp_file)
-        cleanup_trigger = atexit.register(os.remove, glossary_file)
 
-        with open(glossary_file, 'w', encoding='utf-8') as temp_file:
-            temp_file.writelines([
-                "*[ABBR]: Abbreviation\n",
-                "*[abbr]: Abbreviation\n",
-                "*[HTML]: Hyper Text Markup Language\n",
-                "*[W3C]:  World Wide Web Consortium\n"
-            ])
+        glossary = {
+            "ABBR" : "Abbreviation",
+            "abbr" : "Abbreviation",
+            "HTML" : "Hyper Text Markup Language",
+            "W3C" : "World Wide Web Consortium"
+        }
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR
+                abbr
+
+                HTML
+                W3C
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR</abbr>
+                <abbr title="Abbreviation">abbr</abbr></p>
+                <p><abbr title="Hyper Text Markup Language">HTML</abbr>
+                <abbr title="World Wide Web Consortium">W3C</abbr></p>
+                """
+            ),
+            extensions=[AbbrExtension(glossary=glossary)]
+        )
+
+    def test_abbr_glossary_2(self):
+
+        glossary = {
+            "ABBR" : "Abbreviation",
+            "abbr" : "Abbreviation",
+            "HTML" : "Hyper Text Markup Language",
+            "W3C" : "World Wide Web Consortium"
+        }
+
+        glossary_2 = {
+            "ABBR" : "New Abbreviation"
+        }
+
+        abbr_ext = AbbrExtension(glossary=glossary)
+        abbr_ext.load_glossary(glossary_2)
 
         self.assertMarkdownRenders(
             self.dedent(
@@ -181,15 +176,12 @@ class TestAbbr(TestCase):
             ),
             self.dedent(
                 """
-                <p><abbr title="Abbreviation">ABBR</abbr> <abbr title="Abbreviation">abbr</abbr></p>
+                <p><abbr title="New Abbreviation">ABBR</abbr> <abbr title="Abbreviation">abbr</abbr></p>
                 <p><abbr title="Hyper Text Markup Language">HTML</abbr> <abbr title="World Wide Web Consortium">W3C</abbr></p>
                 """
             ),
-            extensions=[AbbrExtension(glossary=glossary_file)]
+            extensions=[abbr_ext]
         )
-        # cleanup
-        os.remove(glossary_file)
-        atexit.unregister(cleanup_trigger)
 
     def test_abbr_nested(self):
         self.assertMarkdownRenders(
@@ -443,7 +435,7 @@ class TestAbbr(TestCase):
             self.dedent(
                 """
                 abbr, SS, and abbr-SS should have different definitions.
-                
+
                 *[abbr]: Abbreviation Definition
                 *[abbr-SS]: Abbreviation Superset Definition
                 *[SS]: Superset Definition
@@ -451,7 +443,10 @@ class TestAbbr(TestCase):
             ),
             self.dedent(
                 """
-                <p><abbr title="Abbreviation Definition">abbr</abbr>, <abbr title="Superset Definition">SS</abbr>, and <abbr title="Abbreviation Superset Definition">abbr-SS</abbr> should have different definitions.</p>
+                <p><abbr title="Abbreviation Definition">abbr</abbr>, """
+                + """<abbr title="Superset Definition">SS</abbr>, """
+                + """and <abbr title="Abbreviation Superset Definition">abbr-SS</abbr> """
+                + """should have different definitions.</p>
                 """
             )
         )
@@ -487,3 +482,7 @@ class TestAbbr(TestCase):
         self.assertEqual(ext.abbrs, {})
         md.convert('*[foo]: Foo Definition')
         self.assertEqual(ext.abbrs, {'foo': 'Foo Definition'})
+
+import unittest
+if __name__ == '__main__':
+    unittest.main()

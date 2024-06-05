@@ -22,7 +22,6 @@ for details.
 
 from __future__ import annotations
 
-import codecs
 from . import Extension
 from ..util import parseBoolValue
 from ..blockprocessors import BlockProcessor
@@ -44,15 +43,10 @@ class AbbrExtension(Extension):
     def __init__(self, **kwargs):
         """ Initiate Extension and set up configs. """
         self.config = {
-            'use_last_abbr': [
-                True,
-                'True to use the last instance of an abbreviation, rather than the first instance.'
-                'Default: `True`.'
-            ],
             'glossary': [
-                '',
-                'Path to the Markdown file containing abbreviations to be applied to every page.'
-                "Default: `''`"
+                {},
+                'A dictionary where the `key` is the abbreviation and the `value` is the definition.'
+                "Default: `{}`"
             ],
         }
         """ Default configuration options. """
@@ -66,28 +60,19 @@ class AbbrExtension(Extension):
         if (self.glossary):
             self.abbrs.update(self.glossary)
 
-    def load_glossary(self, md: Markdown, filename: str):
-        if filename and isinstance(filename, str):
-            input_file = codecs.open(filename, mode="r", encoding='utf-8')
-            text = input_file.read()
-            input_file.close()
-            text = text.lstrip('\ufeff')  # remove the byte-order mark
-            try:
-                text = str(text)
-            except UnicodeDecodeError as e:  # pragma: no cover
-                # Customize error message while maintaining original traceback
-                e.reason += '. -- Note: Markdown only accepts Unicode input!'
-                raise
-            lines = text.split("\n")
+    def reset_glossary(self):
+        """ Clear all abbreviations from the glossary. """
+        self.glossary.clear()
 
-            bp = AbbrBlockprocessor(md.parser, self.glossary, self.getConfigs())
-            for line in lines:
-                    bp.run(None, [line])
+    def load_glossary(self, dictionary : dict[str, str]):
+        """Adds `dictionary` to our glossary. Any abbreviations that already exist will be overwritten."""
+        if dictionary:
+            self.glossary = {**dictionary, **self.glossary}
 
     def extendMarkdown(self, md):
         """ Insert `AbbrTreeprocessor` and `AbbrBlockprocessor`. """
         if (self.config['glossary'][0]):
-            self.load_glossary(md, self.config['glossary'][0])
+            self.load_glossary(self.config['glossary'][0])
         self.abbrs.update(self.glossary)
         md.registerExtension(self)
         md.treeprocessors.register(AbbrTreeprocessor(md, self.abbrs), 'abbr', 7)
@@ -144,9 +129,8 @@ class AbbrBlockprocessor(BlockProcessor):
 
     RE = re.compile(r'^[*]\[(?P<abbr>[^\\]*?)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
 
-    def __init__(self, parser: BlockParser, abbrs: dict, config: dict[str, Any]):
+    def __init__(self, parser: BlockParser, abbrs: dict, config: dict):
         self.abbrs: dict = abbrs
-        self.use_last_abbr: bool = parseBoolValue(config["use_last_abbr"])
         super().__init__(parser)
 
     def test(self, parent: etree.Element, block: str) -> bool:
@@ -163,8 +147,7 @@ class AbbrBlockprocessor(BlockProcessor):
         if m:
             abbr = m.group('abbr').strip()
             title = m.group('title').strip()
-            if self.use_last_abbr or abbr not in self.abbrs:
-                self.abbrs[abbr] = title
+            self.abbrs[abbr] = title
             if block[m.end():].strip():
                 # Add any content after match back to blocks as separate block
                 blocks.insert(0, block[m.end():].lstrip('\n'))
