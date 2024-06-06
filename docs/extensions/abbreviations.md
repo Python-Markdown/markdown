@@ -53,18 +53,8 @@ of the extension.
 
 The following options are provided to configure the output:
 
-* **`use_last_abbr`**:
-    `True` to use the last instance of an abbreviation, rather than the first instance.
-
-    This is useful when auto-appending glossary files to pages while still wanting the page's
-    abbreviations to take precedence. Not recommended for use with the `glossary` option.
-
 * **`glossary`**:
-    Path to a Markdown file containing abbreviations to be applied to every page.
-
-    The abbreviations from this file will be the default abbreviations applied to every page with
-    abbreviations defined on the page taking precedence (unless also using `use_last_abbr`). The
-    glossary syntax should use the same Markdown syntax described on this page.
+    A dictionary where the `key` is the abbreviation and the `value` is the definition.
 
 A trivial example:
 

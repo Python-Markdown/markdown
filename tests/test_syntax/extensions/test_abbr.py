@@ -20,7 +20,6 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-import os
 from markdown.test_tools import TestCase
 from markdown import Markdown
 from markdown.extensions.abbr import AbbrExtension
@@ -120,13 +119,30 @@ class TestAbbr(TestCase):
             )
         )
 
+    def test_abbr_override(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR
+
+                *[ABBR]: Ignored
+                *[ABBR]: The override
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="The override">ABBR</abbr></p>
+                """
+            )
+        )
+
     def test_abbr_glossary(self):
 
         glossary = {
-            "ABBR" : "Abbreviation",
-            "abbr" : "Abbreviation",
-            "HTML" : "Hyper Text Markup Language",
-            "W3C" : "World Wide Web Consortium"
+            "ABBR": "Abbreviation",
+            "abbr": "Abbreviation",
+            "HTML": "Hyper Text Markup Language",
+            "W3C": "World Wide Web Consortium"
         }
 
         self.assertMarkdownRenders(
@@ -153,14 +169,14 @@ class TestAbbr(TestCase):
     def test_abbr_glossary_2(self):
 
         glossary = {
-            "ABBR" : "Abbreviation",
-            "abbr" : "Abbreviation",
-            "HTML" : "Hyper Text Markup Language",
-            "W3C" : "World Wide Web Consortium"
+            "ABBR": "Abbreviation",
+            "abbr": "Abbreviation",
+            "HTML": "Hyper Text Markup Language",
+            "W3C": "World Wide Web Consortium"
         }
 
         glossary_2 = {
-            "ABBR" : "New Abbreviation"
+            "ABBR": "New Abbreviation"
         }
 
         abbr_ext = AbbrExtension(glossary=glossary)
@@ -169,15 +185,15 @@ class TestAbbr(TestCase):
         self.assertMarkdownRenders(
             self.dedent(
                 """
-                ABBR abbr
-                
-                HTML W3C
+                ABBR abbr HTML W3C
                 """
             ),
             self.dedent(
                 """
-                <p><abbr title="New Abbreviation">ABBR</abbr> <abbr title="Abbreviation">abbr</abbr></p>
-                <p><abbr title="Hyper Text Markup Language">HTML</abbr> <abbr title="World Wide Web Consortium">W3C</abbr></p>
+                <p><abbr title="New Abbreviation">ABBR</abbr> """
+                + """<abbr title="Abbreviation">abbr</abbr> """
+                + """<abbr title="Hyper Text Markup Language">HTML</abbr> """
+                + """<abbr title="World Wide Web Consortium">W3C</abbr></p>
                 """
             ),
             extensions=[abbr_ext]
@@ -482,7 +498,3 @@ class TestAbbr(TestCase):
         self.assertEqual(ext.abbrs, {})
         md.convert('*[foo]: Foo Definition')
         self.assertEqual(ext.abbrs, {'foo': 'Foo Definition'})
-
-import unittest
-if __name__ == '__main__':
-    unittest.main()

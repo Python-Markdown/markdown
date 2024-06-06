@@ -23,7 +23,6 @@ for details.
 from __future__ import annotations
 
 from . import Extension
-from ..util import parseBoolValue
 from ..blockprocessors import BlockProcessor
 from ..inlinepatterns import InlineProcessor
 from ..treeprocessors import Treeprocessor
@@ -64,7 +63,7 @@ class AbbrExtension(Extension):
         """ Clear all abbreviations from the glossary. """
         self.glossary.clear()
 
-    def load_glossary(self, dictionary : dict[str, str]):
+    def load_glossary(self, dictionary: dict[str, str]):
         """Adds `dictionary` to our glossary. Any abbreviations that already exist will be overwritten."""
         if dictionary:
             self.glossary = {**dictionary, **self.glossary}
@@ -76,7 +75,7 @@ class AbbrExtension(Extension):
         self.abbrs.update(self.glossary)
         md.registerExtension(self)
         md.treeprocessors.register(AbbrTreeprocessor(md, self.abbrs), 'abbr', 7)
-        md.parser.blockprocessors.register(AbbrBlockprocessor(md.parser, self.abbrs, self.getConfigs()), 'abbr', 16)
+        md.parser.blockprocessors.register(AbbrBlockprocessor(md.parser, self.abbrs), 'abbr', 16)
 
 
 class AbbrTreeprocessor(Treeprocessor):
@@ -129,7 +128,7 @@ class AbbrBlockprocessor(BlockProcessor):
 
     RE = re.compile(r'^[*]\[(?P<abbr>[^\\]*?)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
 
-    def __init__(self, parser: BlockParser, abbrs: dict, config: dict):
+    def __init__(self, parser: BlockParser, abbrs: dict):
         self.abbrs: dict = abbrs
         super().__init__(parser)
 
