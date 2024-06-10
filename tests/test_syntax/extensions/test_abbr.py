@@ -478,6 +478,8 @@ class TestAbbr(TestCase):
 
                 *[]: Empty
 
+                *[ ]: Empty
+
                 *[abbr]:
 
                 *[ABBR]:
@@ -489,6 +491,7 @@ class TestAbbr(TestCase):
                 """
                 <p><abbr title="Abbreviation Definition">abbr</abbr></p>\n"""
                 + """<p>*[]: Empty</p>\n"""
+                + """<p>*[ ]: Empty</p>\n"""
                 + """<p>*[<abbr title="Abbreviation Definition">abbr</abbr>]:</p>\n"""
                 + """<p>*[ABBR]:</p>\n"""
                 + """<p>Testing document text.</p>
