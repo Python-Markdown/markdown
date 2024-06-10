@@ -27,14 +27,15 @@ Abbreviations are now sorted by length before executing `AbbrTreeprocessor`
 to ensure that multi-word abbreviations are implemented even if an abbreviation
 exists for one of those component words. (#1465)
 
-Empty abbreviations are now skipped by `AbbrTreeprocessor`. This avoids applying
-abbr tags to text without a title value. This also allows disabling an
-abbreviation, which may be useful for documents that uses two terms with
-identical abbreviations.
+Abbreviations without a definition are now ignored. This avoids applying
+abbr tags to text without a title value.
 
 Added an optional `glossary` configuration option to the abbreviations extension.
 This provides a simple and efficient way to apply a dictionary of abbreviations
 to every page.
+
+Abbreviations can now be disabled by setting their definition to `""` or `''`.
+This can be useful when using the `glossary` option.
 
 
 ### Fixed

@@ -1,10 +1,5 @@
 title: Abbreviations Extension
 
-ABBR
-
-*[ABBR]: Abbreviation
-*[ABBR]: Override Ignored
-
 Abbreviations
 =============
 
@@ -60,4 +55,16 @@ A trivial example:
 
 ```python
 markdown.markdown(some_text, extensions=['abbr'])
+```
+
+Disabling Abbreviations
+-----------------------
+
+When using the `glossary` option, there may be times when you need to turn off
+a specific abbreviation. To do this, set the abbreviation to `''` or `""`.
+
+```md
+The HTML abbreviation is disabled on this page.
+
+*[HTML]: ''
 ```

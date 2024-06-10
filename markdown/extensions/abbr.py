@@ -146,14 +146,18 @@ class AbbrBlockprocessor(BlockProcessor):
         if m:
             abbr = m.group('abbr').strip()
             title = m.group('title').strip()
-            self.abbrs[abbr] = title
-            if block[m.end():].strip():
-                # Add any content after match back to blocks as separate block
-                blocks.insert(0, block[m.end():].lstrip('\n'))
-            if block[:m.start()].strip():
-                # Add any content before match back to blocks as separate block
-                blocks.insert(0, block[:m.start()].rstrip('\n'))
-            return True
+            if title and abbr:
+                if title == "''" or title == '""':
+                    self.abbrs.pop(abbr)
+                else:
+                    self.abbrs[abbr] = title
+                if block[m.end():].strip():
+                    # Add any content after match back to blocks as separate block
+                    blocks.insert(0, block[m.end():].lstrip('\n'))
+                if block[:m.start()].strip():
+                    # Add any content before match back to blocks as separate block
+                    blocks.insert(0, block[:m.start()].rstrip('\n'))
+                return True
         # No match. Restore block.
         blocks.insert(0, block)
         return False

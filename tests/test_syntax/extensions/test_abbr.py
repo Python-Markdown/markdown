@@ -471,18 +471,47 @@ class TestAbbr(TestCase):
         self.assertMarkdownRenders(
             self.dedent(
                 """
-                *[abbr]: Abbreviation Definition
+                *[abbr]:
+                Abbreviation Definition
 
                 abbr
 
+                *[]: Empty
+
                 *[abbr]:
+
+                *[ABBR]:
 
                 Testing document text.
                 """
             ),
             self.dedent(
                 """
-                <p>abbr</p>\n<p>Testing document text.</p>
+                <p><abbr title="Abbreviation Definition">abbr</abbr></p>\n"""
+                + """<p>*[]: Empty</p>\n"""
+                + """<p>*[<abbr title="Abbreviation Definition">abbr</abbr>]:</p>\n"""
+                + """<p>*[ABBR]:</p>\n"""
+                + """<p>Testing document text.</p>
+                """
+            )
+        )
+
+    def test_abbr_clear(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                *[abbr]: Abbreviation Definition
+                *[ABBR]: Abbreviation Definition
+
+                abbr ABBR
+
+                *[abbr]: ""
+                *[ABBR]: ''
+                """
+            ),
+            self.dedent(
+                """
+                <p>abbr ABBR</p>
                 """
             )
         )
