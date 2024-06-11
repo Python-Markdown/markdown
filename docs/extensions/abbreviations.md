@@ -46,10 +46,25 @@ Usage
 See [Extensions](index.md) for general extension usage. Use `abbr` as the name
 of the extension.
 
-This extension does not accept any special configuration options.
+The following options are provided to configure the output:
+
+* **`glossary`**:
+    A dictionary where the `key` is the abbreviation and the `value` is the definition.
 
 A trivial example:
 
 ```python
 markdown.markdown(some_text, extensions=['abbr'])
+```
+
+Disabling Abbreviations
+-----------------------
+
+When using the `glossary` option, there may be times when you need to turn off
+a specific abbreviation. To do this, set the abbreviation to `''` or `""`.
+
+```md
+The HTML abbreviation is disabled on this page.
+
+*[HTML]: ''
 ```

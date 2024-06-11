@@ -136,6 +136,69 @@ class TestAbbr(TestCase):
             )
         )
 
+    def test_abbr_glossary(self):
+
+        glossary = {
+            "ABBR": "Abbreviation",
+            "abbr": "Abbreviation",
+            "HTML": "Hyper Text Markup Language",
+            "W3C": "World Wide Web Consortium"
+        }
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR
+                abbr
+
+                HTML
+                W3C
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation">ABBR</abbr>
+                <abbr title="Abbreviation">abbr</abbr></p>
+                <p><abbr title="Hyper Text Markup Language">HTML</abbr>
+                <abbr title="World Wide Web Consortium">W3C</abbr></p>
+                """
+            ),
+            extensions=[AbbrExtension(glossary=glossary)]
+        )
+
+    def test_abbr_glossary_2(self):
+
+        glossary = {
+            "ABBR": "Abbreviation",
+            "abbr": "Abbreviation",
+            "HTML": "Hyper Text Markup Language",
+            "W3C": "World Wide Web Consortium"
+        }
+
+        glossary_2 = {
+            "ABBR": "New Abbreviation"
+        }
+
+        abbr_ext = AbbrExtension(glossary=glossary)
+        abbr_ext.load_glossary(glossary_2)
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ABBR abbr HTML W3C
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="New Abbreviation">ABBR</abbr> """
+                + """<abbr title="Abbreviation">abbr</abbr> """
+                + """<abbr title="Hyper Text Markup Language">HTML</abbr> """
+                + """<abbr title="World Wide Web Consortium">W3C</abbr></p>
+                """
+            ),
+            extensions=[abbr_ext]
+        )
+
     def test_abbr_nested(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -381,6 +444,79 @@ class TestAbbr(TestCase):
                 """
             ),
             extensions=['abbr', 'attr_list']
+        )
+
+    def test_abbr_superset_vs_subset(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                abbr, SS, and abbr-SS should have different definitions.
+
+                *[abbr]: Abbreviation Definition
+                *[abbr-SS]: Abbreviation Superset Definition
+                *[SS]: Superset Definition
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation Definition">abbr</abbr>, """
+                + """<abbr title="Superset Definition">SS</abbr>, """
+                + """and <abbr title="Abbreviation Superset Definition">abbr-SS</abbr> """
+                + """should have different definitions.</p>
+                """
+            )
+        )
+
+    def test_abbr_empty(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                *[abbr]:
+                Abbreviation Definition
+
+                abbr
+
+                *[]: Empty
+
+                *[ ]: Empty
+
+                *[abbr]:
+
+                *[ABBR]:
+
+                Testing document text.
+                """
+            ),
+            self.dedent(
+                """
+                <p><abbr title="Abbreviation Definition">abbr</abbr></p>\n"""
+                + """<p>*[]: Empty</p>\n"""
+                + """<p>*[ ]: Empty</p>\n"""
+                + """<p>*[<abbr title="Abbreviation Definition">abbr</abbr>]:</p>\n"""
+                + """<p>*[ABBR]:</p>\n"""
+                + """<p>Testing document text.</p>
+                """
+            )
+        )
+
+    def test_abbr_clear(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                *[abbr]: Abbreviation Definition
+                *[ABBR]: Abbreviation Definition
+
+                abbr ABBR
+
+                *[abbr]: ""
+                *[ABBR]: ''
+                """
+            ),
+            self.dedent(
+                """
+                <p>abbr ABBR</p>
+                """
+            )
         )
 
     def test_abbr_reset(self):

@@ -23,6 +23,21 @@ better reflects what it is. `AbbrPreprocessor` has been deprecated.
 
 A call to `Markdown.reset()` now clears all previously defined abbreviations.
 
+Abbreviations are now sorted by length before executing `AbbrTreeprocessor`
+to ensure that multi-word abbreviations are implemented even if an abbreviation
+exists for one of those component words. (#1465)
+
+Abbreviations without a definition are now ignored. This avoids applying
+abbr tags to text without a title value.
+
+Added an optional `glossary` configuration option to the abbreviations extension.
+This provides a simple and efficient way to apply a dictionary of abbreviations
+to every page.
+
+Abbreviations can now be disabled by setting their definition to `""` or `''`.
+This can be useful when using the `glossary` option.
+
+
 ### Fixed
 
 * Fixed links to source code on GitHub from the documentation (#1453).
