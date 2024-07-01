@@ -84,9 +84,11 @@ __extensions__{: #extensions }
 
     To configure an officially supported extension, import its class and provide
     options when instantiating the extension. For example:
+    
         :::python
         from markdown.extensions.codehilite import CodeHiliteExtension
-        extensions = [CodeHiliteExtension(linenums=True)]
+        markdown.markdown(text, extensions=[CodeHiliteExtension(linenums=True)])
+
 
     If an extension name is provided as a string, the string must either be the
     registered entry point of any installed extension or the importable path
