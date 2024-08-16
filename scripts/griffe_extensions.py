@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import ast
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 import textwrap
 
-from griffe import Docstring, Extension
-from griffe.docstrings.dataclasses import DocstringSectionAdmonition, DocstringSectionText
+from griffe import Docstring, Extension, DocstringSectionAdmonition, DocstringSectionText, Visitor, Inspector
 
 if TYPE_CHECKING:
     from griffe import Class, Function, ObjectNode
@@ -29,13 +28,13 @@ class DeprecatedExtension(Extension):
         sections = obj.docstring.parsed
         sections.insert(0, DocstringSectionAdmonition(kind="warning", text=message, title="Deprecated"))
 
-    def on_class_instance(self, node: ast.AST | ObjectNode, cls: Class) -> None:  # noqa: ARG002
+    def on_class_instance(self, node: ast.AST | ObjectNode, cls: Class, agent: Visitor | Inspector, **kwargs: Any) -> None:  # noqa: ARG002
         """Add section to docstrings of deprecated classes."""
         if message := _deprecated(cls):
             self._insert_message(cls, message)
             cls.labels.add("deprecated")
 
-    def on_function_instance(self, node: ast.AST | ObjectNode, func: Function) -> None:  # noqa: ARG002
+    def on_function_instance(self, node: ast.AST | ObjectNode, func: Function, agent: Visitor | Inspector, **kwargs: Any) -> None:  # noqa: ARG002
         """Add section to docstrings of deprecated functions."""
         if message := _deprecated(func):
             self._insert_message(func, message)
@@ -53,7 +52,7 @@ class PriorityTableExtension(Extension):
         """ Wrap object name in reference link. """
         return f'[`{value}`][{path}.{value}]'
 
-    def on_function_instance(self, node: ast.AST | ObjectNode, func: Function) -> None:  # noqa: ARG002
+    def on_function_instance(self, node: ast.AST | ObjectNode, func: Function, agent: Visitor | Inspector, **kwargs: Any) -> None:  # noqa: ARG002
         """Add table to specified function docstrings."""
         if self.paths and func.path not in self.paths:
             return  # skip objects that were not selected
