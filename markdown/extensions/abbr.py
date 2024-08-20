@@ -33,7 +33,7 @@ import xml.etree.ElementTree as etree
 
 if TYPE_CHECKING:  # pragma: no cover
     from .. import Markdown
-    from ..blockparsers import BlockParser
+    from ..blockparser import BlockParser
 
 
 class AbbrExtension(Extension):
