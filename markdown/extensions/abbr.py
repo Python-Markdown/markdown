@@ -86,6 +86,13 @@ class AbbrTreeprocessor(Treeprocessor):
         self.RE: re.RegexObject | None = None
         super().__init__(md)
 
+    def create_element(self, title: str, text: str, tail: str) -> etree.Element:
+        ''' Create an `abbr` element. '''
+        abbr = etree.Element('abbr', {'title': title})
+        abbr.text = AtomicString(text)
+        abbr.tail = tail
+        return abbr
+
     def iter_element(self, el: etree.Element, parent: etree.Element | None = None) -> None:
         ''' Recursively iterate over elements, run regex on text and wrap matches in `abbr` tags. '''
         for child in reversed(el):
@@ -93,9 +100,7 @@ class AbbrTreeprocessor(Treeprocessor):
         if text := el.text:
             for m in reversed(list(self.RE.finditer(text))):
                 if self.abbrs[m.group(0)]:
-                    abbr = etree.Element('abbr', {'title': self.abbrs[m.group(0)]})
-                    abbr.text = AtomicString(m.group(0))
-                    abbr.tail = text[m.end():]
+                    abbr = self.create_element(self.abbrs[m.group(0)], m.group(0), text[m.end():])
                     el.insert(0, abbr)
                     text = text[:m.start()]
             el.text = text
@@ -103,9 +108,7 @@ class AbbrTreeprocessor(Treeprocessor):
             tail = el.tail
             index = list(parent).index(el) + 1
             for m in reversed(list(self.RE.finditer(tail))):
-                abbr = etree.Element('abbr', {'title': self.abbrs[m.group(0)]})
-                abbr.text = AtomicString(m.group(0))
-                abbr.tail = tail[m.end():]
+                abbr = self.create_element(self.abbrs[m.group(0)], m.group(0), tail[m.end():])
                 parent.insert(index, abbr)
                 tail = tail[:m.start()]
             el.tail = tail
