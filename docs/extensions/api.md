@@ -270,7 +270,7 @@ Additional tree processors in the Markdown source tree include:
 ### Inline Processors {: #inlineprocessors }
 
 Inline processors, previously called inline patterns, are used to add formatting, such as `**emphasis**`, by replacing
-a matched pattern with a new element tree node. It is an excellent for adding new syntax for inline tags.  Inline
+a matched pattern with a new element tree node. It is an excellent place for adding new syntax for inline tags.  Inline
 processor code is often quite short.
 
 Inline processors inherit from `InlineProcessor`, are initialized, and implement `handleMatch`:
