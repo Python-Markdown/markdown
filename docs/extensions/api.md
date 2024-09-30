@@ -270,7 +270,7 @@ Additional tree processors in the Markdown source tree include:
 ### Inline Processors {: #inlineprocessors }
 
 Inline processors, previously called inline patterns, are used to add formatting, such as `**emphasis**`, by replacing
-a matched pattern with a new element tree node. It is an excellent for adding new syntax for inline tags.  Inline
+a matched pattern with a new element tree node. It is an excellent place for adding new syntax for inline tags.  Inline
 processor code is often quite short.
 
 Inline processors inherit from `InlineProcessor`, are initialized, and implement `handleMatch`:
@@ -286,7 +286,7 @@ Inline processors inherit from `InlineProcessor`, are initialized, and implement
     * `data` is a single, multi-line, Unicode string containing the entire block of text around the pattern.  A block
       is text set apart by blank lines.
     * Returns either `(None, None, None)`, indicating the provided match was rejected or `(el, start, end)`, if the
-      match was successfully processed.  On success, `el` is the element being added the tree, `start` and `end` are
+      match was successfully processed.  On success, `el` is the element being added to the tree, `start` and `end` are
       indexes in `data` that were "consumed" by the pattern.  The "consumed" span will be replaced by a placeholder.
       The same inline processor may be called several times on the same block.
 
@@ -295,7 +295,7 @@ The processor will be skipped if it would cause the content to be a descendant o
 
 ##### Convenience Classes
 
-Convenience subclasses of `InlineProcessor` are provide for common operations:
+Convenience subclasses of `InlineProcessor` are provided for common operations:
 
 * [`SimpleTextInlineProcessor`][i1] returns the text of `group(1)` of the match.
 * [`SubstituteTagInlineProcessor`][i4] is initialized as `SubstituteTagInlineProcessor(pattern, tag)`. It returns a
@@ -468,7 +468,7 @@ emphasis = EmphasisPattern(MYPATTERN)
 ### Postprocessors {: #postprocessors }
 
 Postprocessors munge the document after the ElementTree has been serialized into a string. Postprocessors should be
-used to work with the text just before output.  Usually, they are used add back sections that were extracted in a
+used to work with the text just before output.  Usually, they are used to add back sections that were extracted in a
 preprocessor, fix up outgoing encodings, or wrap the whole document.
 
 Postprocessors inherit from `markdown.postprocessors.Postprocessor` and implement a `run` method which takes a single
@@ -577,7 +577,7 @@ be passed to the processor from [extendMarkdown](#extendmarkdown) and will be av
 
 Once you have the various pieces of your extension built, you need to tell Markdown about them and ensure that they
 are run in the proper sequence. Markdown accepts an `Extension` instance for each extension. Therefore, you will need
-to define a class that extends `markdown.extensions.Extension` and over-rides the `extendMarkdown` method. Within this
+to define a class that extends `markdown.extensions.Extension` and overrides the `extendMarkdown` method. Within this
 class you will manage configuration options for your extension and attach the various processors and patterns to the
 Markdown instance.
 
@@ -678,7 +678,7 @@ class MyExtension(markdown.extensions.Extension):
         super(MyExtension, self).__init__(**kwargs)
 ```
 
-When implemented this way the configuration parameters can be over-ridden at run time (thus the call to `super`). For
+When implemented this way the configuration parameters can be overridden at run time (thus the call to `super`). For
 example:
 
 ```python
