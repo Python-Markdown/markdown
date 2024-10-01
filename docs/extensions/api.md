@@ -801,7 +801,7 @@ When `markdown.Markdown` is passed the "name" of your extension as a dot notatio
 (for example `path.to.module`), it will import the module and call the `makeExtension` function to initiate your
 extension.
 
-## Registries
+## Registries { #registry }
 
 The `markdown.util.Registry` class is a priority sorted registry which Markdown uses internally to determine the
 processing order of its various processors and patterns.
@@ -884,3 +884,4 @@ assert someitem in registry
 [setuptools]: https://packaging.python.org/key_projects/#setuptools
 [Entry points]: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins
 [Packaging and Distributing Projects]: https://packaging.python.org/tutorials/distributing-packages/
+[Inline Patterns]: #inline-patterns

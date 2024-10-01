@@ -103,7 +103,7 @@ Backwards-incompatible Changes
   a string to the extension name will be deprecated in Python-Markdown
   version 2.6 and will raise a **`PendingDeprecationWarning`** in 2.5. The
   [`extension_configs`](../reference.md#extension_configs) keyword should
-  be used instead. See the [documentation](../reference.md#extension-configs)
+  be used instead. See the [documentation](../reference.md#extension_configs)
   for a full explanation of the current behavior.
 
 What's New in Python-Markdown 2.5

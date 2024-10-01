@@ -13,7 +13,7 @@ enabled, the content of a raw HTML block-level element can be parsed as Markdown
 on the opening tag. The `markdown` attribute will be stripped from the output, while all other attributes will be
 preserved.
 
-The `markdown` attribute can be assigned one of three values: [`"1"`](#1), [`"block"`](#block), or [`"span"`](#span).
+The `markdown` attribute can be assigned one of three values: [`"1"`](#markdown1), [`"block"`](#block), or [`"span"`](#span).
 
 !!! note
 
@@ -21,7 +21,7 @@ The `markdown` attribute can be assigned one of three values: [`"1"`](#1), [`"bl
     according to the HTML specification. Whereas the `"span"` and `"block"` values assigned to the `markdown`
     attribute refer to the Markdown parser's behavior.
 
-### `markdown="1"` { #1 }
+### `markdown="1"` { #markdown1 }
 
 When the `markdown` attribute is set to `"1"`, then the parser will use the default behavior for that specific tag.
 
