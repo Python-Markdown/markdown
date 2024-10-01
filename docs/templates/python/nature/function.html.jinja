@@ -1,4 +1,4 @@
-{% extends "_base/function.html" %}
+{% extends "_base/function.html.jinja" %}
 
 {% block heading scoped %}
   <a class="doc-source-link" href="{{ config.source.repo }}/tree/{{ config.source.tag }}/{{ function.relative_filepath }}#L{{ function.lineno }}{% if function.endlineno > function.lineno %}-L{{ function.endlineno }}{% endif %}" title="{{ config.source.title }}">&lsaquo;&rsaquo;</a>

@@ -1,4 +1,4 @@
-{% extends "_base/class.html" %}
+{% extends "_base/class.html.jinja" %}
 
 {% block heading scoped %}
   <a class="doc-source-link" href="{{ config.source.repo }}/tree/{{ config.source.tag }}/{{ class.relative_filepath }}#L{{ class.lineno }}" title="{{ config.source.title }}">&lsaquo;&rsaquo;</a>
