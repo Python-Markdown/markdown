@@ -137,7 +137,7 @@ The previously documented method of appending the extension configuration
 options as a string to the extension name is deprecated and will raise a
 **`DeprecationWarning`** in version 2.6 and an error in 2.7. The
 [`extension_configs`](../reference.md#extension_configs) keyword should be used
-instead. See the [documentation](../reference.md#extension-configs) for a full
+instead. See the [documentation](../reference.md#extension_configs) for a full
 explanation of the current behavior.
 
 ### HeaderId Extension Pending Deprecation
@@ -214,7 +214,7 @@ Note the call to `super` to get the benefits of configuration handling from the
 parent class. See the [documentation][config] for more information.
 
 [config]: ../extensions/api.md#configsettings
-[mext]: ../extensions/api.md#makeextension
+[mext]: ../extensions/api.md#dot_notation
 
 ## What's New in Python-Markdown 2.6
 

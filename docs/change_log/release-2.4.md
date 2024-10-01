@@ -50,7 +50,7 @@ What's New in Python-Markdown 2.4
   Blocks] section for details. Thanks to [ryneeverett] for implementing this
   feature.
 
-[Markdown Inside HTML Blocks]: ../extensions/extra.md#nested-markdown-inside-html-blocks
+[Markdown Inside HTML Blocks]: ../extensions/md_in_html.md
 [ryneeverett]: https://github.com/ryneeverett
 
 * The code blocks now support emphasizing some of the code lines. To use this
