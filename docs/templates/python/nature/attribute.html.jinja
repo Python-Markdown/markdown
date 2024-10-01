@@ -1,4 +1,4 @@
-{% extends "_base/attribute.html" %}
+{% extends "_base/attribute.html.jinja" %}
 
 {% block heading scoped %}
   <a class="doc-source-link" href="{{ config.source.repo }}/tree/{{ config.source.tag }}/{{ attribute.relative_filepath }}#L{{ attribute.lineno }}{% if attribute.endlineno > attribute.lineno %}-L{{ attribute.endlineno }}{% endif %}" title='View source code on GitHub'>&lsaquo;&rsaquo;</a>
