@@ -52,6 +52,12 @@ nav:
 not_in_nav: |
   change_log/
 
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
 markdown_extensions:
   - extra
   - admonition
