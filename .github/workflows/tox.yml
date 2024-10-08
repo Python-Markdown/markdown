@@ -22,8 +22,6 @@ jobs:
       matrix:
         tox-env: [py39, py310, py311, py312, py313, pypy38, pypy39, pypy310, pygments]
         include:
-          - tox-env: py38
-            python-version: '3.8'
           - tox-env: py39
             python-version: '3.9'
           - tox-env: py310
