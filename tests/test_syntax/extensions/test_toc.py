@@ -974,6 +974,32 @@ class TestTOC(TestCase):
             extensions=['toc']
         )
 
+    def test_escaped_char_in_attr_list(self):
+        self.assertMarkdownRenders(
+            r'# `*Foo*` { id="\*Foo\*" }',
+            '<h1 id="*Foo*"><code>*Foo*</code></h1>',
+            expected_attrs={
+                'toc': (
+                    '<div class="toc">\n'
+                      '<ul>\n'                                                           # noqa
+                        '<li><a href="#*Foo*">*Foo*</a></li>\n'                          # noqa
+                      '</ul>\n'                                                          # noqa
+                    '</div>\n'                                                           # noqa
+                ),
+                'toc_tokens': [
+                    {
+                        'level': 1,
+                        'id': '*Foo*',
+                        'name': '*Foo*',
+                        'html': '<code>*Foo*</code>',
+                        'data-toc-label': '',
+                        'children': []
+                    }
+                ]
+            },
+            extensions=['toc', 'attr_list']
+        )
+
     def testAutoLinkEmail(self):
         self.assertMarkdownRenders(
             '## <foo@example.org>',

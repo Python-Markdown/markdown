@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * DRY fix in `abbr` extension by introducing method `create_element` (#1483).
 
+### Fixed
+
+* Backslash Unescape IDs set via `attr_list` on `toc` (#1493).
+
 ## [3.7] -- 2024-08-16
 
 ### Changed
