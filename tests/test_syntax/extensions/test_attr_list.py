@@ -72,6 +72,12 @@ class TestAttrList(TestCase):
             '<h1 foo="&quot;bar">Heading</h1>'
         )
 
+    def test_backslash_escape_value(self):
+        self.assertMarkdownRenders(
+            '# `*Foo*` { id="\\*Foo\\*" }',
+            '<h1 id="*Foo*"><code>*Foo*</code></h1>'
+        )
+
     def test_table_td(self):
         self.assertMarkdownRenders(
             self.dedent(
