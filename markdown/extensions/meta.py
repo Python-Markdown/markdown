@@ -21,17 +21,18 @@ for details.
 
 from __future__ import annotations
 
-from . import Extension
-from ..preprocessors import Preprocessor
-import re
 import logging
+import re
 from typing import Any
+
+from ..preprocessors import Preprocessor
+from . import Extension
 
 log = logging.getLogger('MARKDOWN')
 
 # Global Vars
 META_RE = re.compile(r'^[ ]{0,3}(?P<key>[A-Za-z0-9_-]+):\s*(?P<value>.*)')
-META_MORE_RE = re.compile(r'^[ ]{4,}(?P<value>.*)')
+META_MORE_RE = re.compile(r'^[ ]{2,}(?P<value>.*)')
 BEGIN_RE = re.compile(r'^-{3}(\s.*)?')
 END_RE = re.compile(r'^(-{3}|\.{3})(\s.*)?')
 

@@ -26,6 +26,7 @@ continue to work as advertised. This used to be accomplished by `doctests`.
 """
 
 import unittest
+
 import markdown
 
 
@@ -79,6 +80,23 @@ class TestMetaData(unittest.TestCase):
 
     def setUp(self):
         self.md = markdown.Markdown(extensions=['meta'])
+
+    def test_yaml_indented_two_spaces(self):
+        """Yaml but a list indented two spaces"""
+
+        text = '''---
+Author: John Doe
+Tags:
+  - hello
+  - world
+---
+Paragraph'''
+        text = self.md.convert(text)
+        self.assertEqual(text, "<p>Paragraph</p>")
+        self.assertEqual(self.md.Meta, {
+            'author': ['John Doe'],
+            'tags': ['', '- hello', '- world']
+        })
 
     def testBasicMetaData(self):
         """ Test basic metadata. """
