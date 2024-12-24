@@ -15,7 +15,8 @@
 # License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
- Adds attribute list syntax. Inspired by
+Adds attribute list syntax to Python-Markdown.
+Inspired by
 [Maruku](http://maruku.rubyforge.org/proposal.html#attribute_lists)'s
 feature of the same name.
 

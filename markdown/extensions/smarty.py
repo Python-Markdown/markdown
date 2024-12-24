@@ -77,8 +77,7 @@
 #    of this software, even if advised of the possibility of such damage.
 
 """
-Adds conversion of ASCII dashes, quotes and ellipses to their HTML
-entity equivalents.
+Convert ASCII dashes, quotes and ellipses to their HTML entity equivalents.
 
 See the [documentation](https://Python-Markdown.github.io/extensions/smarty)
 for details.
