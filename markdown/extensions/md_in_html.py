@@ -12,8 +12,8 @@
 # License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
-An implementation of [PHP Markdown Extra](http://michelf.com/projects/php-markdown/extra/)'s
-parsing of Markdown syntax in raw HTML.
+Parse Markdown syntax within raw HTML.
+Based on the implementation in [PHP Markdown Extra](http://michelf.com/projects/php-markdown/extra/).
 
 See the [documentation](https://Python-Markdown.github.io/extensions/raw_html)
 for details.
