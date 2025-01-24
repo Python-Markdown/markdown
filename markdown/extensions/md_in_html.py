@@ -179,8 +179,9 @@ class HTMLExtractorExtra(HTMLExtractor):
                             child.tail = None
                             state = child.attrib.get('markdown', 'off')
 
-                            # If the tail is just a new line, omit it.
-                            tail = '' if tail == '\n' else '\n' + tail
+                            # Add a newline to tail if it is not just a trailing newline
+                            if tail != '\n':
+                                tail = '\n' + tail
 
                             # Process the block nested under the span appropriately
                             if state in ('span', 'block'):
