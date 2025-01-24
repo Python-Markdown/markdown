@@ -188,9 +188,14 @@ class HTMLExtractorExtra(HTMLExtractor):
                                 current.text = f'{text}\n{self.md.htmlStash.store(child)}{tail}'
                                 last.append(child)
                             else:
+                                # Non-Markdown HTML will not be recursively parsed for Markdown,
+                                # so we can just remove markers and leave them unflattened.
+                                # Additionally, we don't need to append to our list for further
+                                # processing.
                                 child.attrib.pop('markdown')
                                 [c.attrib.pop('markdown', None) for c in child.iter()]
                                 current.text = f'{text}\n{self.md.htmlStash.store(child)}{tail}'
+                        # Target the child elements that have been expanded.
                         current = last.pop(0) if last else None
 
                     self.cleandoc.append(self.md.htmlStash.store(element))
@@ -322,8 +327,9 @@ class MarkdownInHtmlProcessor(BlockProcessor):
                 el = self.parser.md.htmlStash.rawHtmlBlocks[index]
                 end = m.start()
 
-                # Cut out the placeholder and and insert the processed element back in.
                 if isinstance(el, etree.Element):
+                    # Replace the placeholder with the element and process it.
+                    # Content after the placeholder should be attached to the tail.
                     if child is None:
                         element.text = block[start:end]
                     else:
