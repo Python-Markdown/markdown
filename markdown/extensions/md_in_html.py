@@ -174,8 +174,8 @@ class HTMLExtractorExtra(HTMLExtractor):
                     while current is not None:
                         for child in list(current):
                             current.remove(child)
-                            text = current.text if current.text is not None else  ''
-                            tail = child.tail if child.tail is not None else  ''
+                            text = current.text if current.text is not None else ''
+                            tail = child.tail if child.tail is not None else ''
                             child.tail = None
                             state = child.attrib.get('markdown', 'off')
 
@@ -183,7 +183,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                             if tail == '\n':
                                 tail = ''
 
-                            # Process the block nested under the spac appropriately
+                            # Process the block nested under the span appropriately
                             if state in ('span', 'block'):
                                 current.text = text + '\n' + self.md.htmlStash.store(child) + '\n' + tail
                                 last.append(child)
@@ -339,7 +339,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
                     if child is None:
                         element.text = block[start:end]
                     else:
-                        child.tail = (child.tail if child.tail is not None else '')+ block[start:end]
+                        child.tail = (child.tail if child.tail is not None else '') + block[start:end]
                 start = end
 
             # Insert anything left after last element
