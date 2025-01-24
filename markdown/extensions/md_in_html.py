@@ -180,17 +180,16 @@ class HTMLExtractorExtra(HTMLExtractor):
                             state = child.attrib.get('markdown', 'off')
 
                             # If the tail is just a new line, omit it.
-                            if tail == '\n':
-                                tail = ''
+                            tail = '' if tail == '\n' else '\n' + tail
 
                             # Process the block nested under the span appropriately
                             if state in ('span', 'block'):
-                                current.text = text + '\n' + self.md.htmlStash.store(child) + '\n' + tail
+                                current.text = f'{text}\n{self.md.htmlStash.store(child)}{tail}'
                                 last.append(child)
                             else:
                                 child.attrib.pop('markdown')
                                 [c.attrib.pop('markdown', None) for c in child.iter()]
-                                current.text = text + '\n' + self.md.htmlStash.store(child) + '\n' + tail
+                                current.text = f'{text}\n{self.md.htmlStash.store(child)}{tail}'
                         current = last.pop(0) if last else None
 
                     self.cleandoc.append(self.md.htmlStash.store(element))
@@ -311,7 +310,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
             # as their content is not normally accessed by block processors, so expand stashed
             # HTML under the span. Span content itself will not be parsed here, but will await
             # the inline parser.
-            block = element.text
+            block = element.text if element.text is not None else ''
             element.text = ''
             child = None
             start = 0
@@ -327,7 +326,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
                     if child is None:
                         element.text = block[start:end]
                     else:
-                        child.tail = (child.tail if child.tail is not None else '') + block[start:end]
+                        child.tail = f"{child.tail if child.tail is not None else ''}{block[start:end]}"
                     element.append(el)
                     self.parse_element_content(el)
                     child = el
@@ -339,7 +338,7 @@ class MarkdownInHtmlProcessor(BlockProcessor):
                     if child is None:
                         element.text = block[start:end]
                     else:
-                        child.tail = (child.tail if child.tail is not None else '') + block[start:end]
+                        child.tail = f"{child.tail if child.tail is not None else ''}{block[start:end]}"
                 start = end
 
             # Insert anything left after last element
