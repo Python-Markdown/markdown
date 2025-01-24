@@ -163,6 +163,36 @@ class HTMLExtractorExtra(HTMLExtractor):
                     # If we only have one newline before block element, add another
                     if not item.endswith('\n\n') and item.endswith('\n'):
                         self.cleandoc.append('\n')
+
+                    # Flatten the HTML structure of "markdown" blocks such that when they
+                    # get parsed, content will be parsed similar inside the blocks as it
+                    # does outside the block. Having real HTML elements in the tree before
+                    # the content adjacent content is processed can cause unpredictable
+                    # issues for extensions.
+                    current = element
+                    last = []
+                    while current is not None:
+                        for child in list(current):
+                            current.remove(child)
+                            text = current.text if current.text is not None else  ''
+                            tail = child.tail if child.tail is not None else  ''
+                            child.tail = None
+                            state = child.attrib.get('markdown', 'off')
+
+                            # If the tail is just a new line, omit it.
+                            if tail == '\n':
+                                tail = ''
+
+                            # Process the block nested under the spac appropriately
+                            if state in ('span', 'block'):
+                                current.text = text + '\n' + self.md.htmlStash.store(child) + '\n' + tail
+                                last.append(child)
+                            else:
+                                child.attrib.pop('markdown')
+                                [c.attrib.pop('markdown', None) for c in child.iter()]
+                                current.text = text + '\n' + self.md.htmlStash.store(child) + '\n' + tail
+                        current = last.pop(0) if last else None
+
                     self.cleandoc.append(self.md.htmlStash.store(element))
                     self.cleandoc.append('\n\n')
                     self.state = []
@@ -270,53 +300,53 @@ class MarkdownInHtmlProcessor(BlockProcessor):
         md_attr = element.attrib.pop('markdown', 'off')
 
         if md_attr == 'block':
-            # Parse content as block level
-            # The order in which the different parts are parsed (text, children, tails) is important here as the
-            # order of elements needs to be preserved. We can't be inserting items at a later point in the current
-            # iteration as we don't want to do raw processing on elements created from parsing Markdown text (for
-            # example). Therefore, the order of operations is children, tails, text.
-
-            # Recursively parse existing children from raw HTML
-            for child in list(element):
-                self.parse_element_content(child)
-
-            # Parse Markdown text in tail of children. Do this separate to avoid raw HTML parsing.
-            # Save the position of each item to be inserted later in reverse.
-            tails = []
-            for pos, child in enumerate(element):
-                if child.tail:
-                    block = child.tail.rstrip('\n')
-                    child.tail = ''
-                    # Use a dummy placeholder element.
-                    dummy = etree.Element('div')
-                    self.parser.parseBlocks(dummy, block.split('\n\n'))
-                    children = list(dummy)
-                    children.reverse()
-                    tails.append((pos + 1, children))
-
-            # Insert the elements created from the tails in reverse.
-            tails.reverse()
-            for pos, tail in tails:
-                for item in tail:
-                    element.insert(pos, item)
-
-            # Parse Markdown text content. Do this last to avoid raw HTML parsing.
+            # Parse the block elements content as Markdown
             if element.text:
                 block = element.text.rstrip('\n')
                 element.text = ''
-                # Use a dummy placeholder element as the content needs to get inserted before existing children.
-                dummy = etree.Element('div')
-                self.parser.parseBlocks(dummy, block.split('\n\n'))
-                children = list(dummy)
-                children.reverse()
-                for child in children:
-                    element.insert(0, child)
+                self.parser.parseBlocks(element, block.split('\n\n'))
 
         elif md_attr == 'span':
-            # Span level parsing will be handled by inline processors.
-            # Walk children here to remove any `markdown` attributes.
-            for child in list(element):
-                self.parse_element_content(child)
+            # Span elements need to be recursively processed for block elements and raw HTML
+            # as their content is not normally accessed by block processors, so expand stashed
+            # HTML under the span. Span content itself will not be parsed here, but will await
+            # the inline parser.
+            block = element.text
+            element.text = ''
+            child = None
+            start = 0
+
+            # Search the content for HTML placeholders and process the elements
+            for m in util.HTML_PLACEHOLDER_RE.finditer(block):
+                index = int(m.group(1))
+                el = self.parser.md.htmlStash.rawHtmlBlocks[index]
+                end = m.start()
+
+                # Cut out the placeholder and and insert the processed element back in.
+                if isinstance(el, etree.Element):
+                    if child is None:
+                        element.text = block[start:end]
+                    else:
+                        child.tail = (child.tail if child.tail is not None else '') + block[start:end]
+                    element.append(el)
+                    self.parse_element_content(el)
+                    child = el
+                    self.parser.md.htmlStash.rawHtmlBlocks.pop(index)
+                    self.parser.md.htmlStash.rawHtmlBlocks.insert(index, '')
+
+                else:
+                    # Not an element object, so insert content back into the element
+                    if child is None:
+                        element.text = block[start:end]
+                    else:
+                        child.tail = (child.tail if child.tail is not None else '')+ block[start:end]
+                start = end
+
+            # Insert anything left after last element
+            if child is None:
+                element.text = block[start:]
+            else:
+                child.tail = (child.tail if child.tail is not None else '') + block[start:]
 
         else:
             # Disable inline parsing for everything else
@@ -336,8 +366,8 @@ class MarkdownInHtmlProcessor(BlockProcessor):
             if isinstance(element, etree.Element):
                 # We have a matched element. Process it.
                 blocks.pop(0)
-                self.parse_element_content(element)
                 parent.append(element)
+                self.parse_element_content(element)
                 # Cleanup stash. Replace element with empty string to avoid confusing postprocessor.
                 self.parser.md.htmlStash.rawHtmlBlocks.pop(index)
                 self.parser.md.htmlStash.rawHtmlBlocks.insert(index, '')
