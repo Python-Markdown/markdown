@@ -181,11 +181,15 @@ class HTMLExtractorExtra(HTMLExtractor):
 
                             # Add a newline to tail if it is not just a trailing newline
                             if tail != '\n':
-                                tail = '\n' + tail
+                                tail = '\n' + tail.rstrip('\n')
+
+                            # Ensure there is an empty new line between blocks
+                            if not text.endswith('\n\n'):
+                                text = text.rstrip('\n') + '\n\n'
 
                             # Process the block nested under the span appropriately
                             if state in ('span', 'block'):
-                                current.text = f'{text}\n{self.md.htmlStash.store(child)}{tail}'
+                                current.text = f'{text}{self.md.htmlStash.store(child)}{tail}'
                                 last.append(child)
                             else:
                                 # Non-Markdown HTML will not be recursively parsed for Markdown,
@@ -194,7 +198,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                                 # processing.
                                 child.attrib.pop('markdown')
                                 [c.attrib.pop('markdown', None) for c in child.iter()]
-                                current.text = f'{text}\n{self.md.htmlStash.store(child)}{tail}'
+                                current.text = f'{text}{self.md.htmlStash.store(child)}{tail}'
                         # Target the child elements that have been expanded.
                         current = last.pop(0) if last else None
 
