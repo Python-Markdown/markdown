@@ -1275,6 +1275,7 @@ class TestMdInHTML(TestCase):
         )
 
     def test_md1_oneliner_block(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
         self.assertMarkdownRenders(
             self.dedent(
                 '<div class="outer" markdown="block"><div class="inner" markdown="block">*foo*</div></div>'
@@ -1288,6 +1289,7 @@ class TestMdInHTML(TestCase):
         )
 
     def test_md1_oneliner_block_mixed(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
         self.assertMarkdownRenders(
             self.dedent(
                 """
@@ -1313,6 +1315,7 @@ class TestMdInHTML(TestCase):
         )
 
     def test_md1_oneliner_block_start(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
         self.assertMarkdownRenders(
             self.dedent(
                 """
@@ -1330,6 +1333,7 @@ class TestMdInHTML(TestCase):
         )
 
     def test_md1_oneliner_block_span(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
         self.assertMarkdownRenders(
             self.dedent(
                 '<div class="outer" markdown="block"><div class="inner" markdown="span">*foo*</div></div>'
@@ -1341,6 +1345,7 @@ class TestMdInHTML(TestCase):
         )
 
     def test_md1_oneliner_block_span_start(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
         self.assertMarkdownRenders(
             self.dedent(
                 """
@@ -1358,6 +1363,7 @@ class TestMdInHTML(TestCase):
         )
 
     def test_md1_oneliner_span_block_start(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
         self.assertMarkdownRenders(
             self.dedent(
                 """
