@@ -159,10 +159,10 @@ AUTOMAIL_RE = r'<([^<> !]+@[^@<> ]+)>'
 """ Match an automatic email link (`<me@example.com>`). """
 
 HTML_RE = (
-    r'(<(\/?[a-zA-Z][^<>@ ]*( [^<>]*)?|'           # Tag
-    r'!--(?:(?!<!--|-->).)*--|'                    # Comment
-    r'[?](?:(?!<[?]|[?]>).)*[?]|'                  # Processing instruction
-    r'<!\[CDATA\[(?:(?!<!\[CDATA\[|\]\]).)*\]\]|'  # `CDATA`
+    r'(<(\/?[a-zA-Z][^<>@ ]*( [^<>]*)?|'          # Tag
+    r'!--(?:(?!<!--|-->).)*--|'                   # Comment
+    r'[?](?:(?!<[?]|[?]>).)*[?]|'                 # Processing instruction
+    r'!\[CDATA\[(?:(?!<!\[CDATA\[|\]\]>).)*\]\]'  # `CDATA`
     ')>)'
 )
 """ Match an HTML tag (`<...>`). """

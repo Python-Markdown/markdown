@@ -1206,6 +1206,115 @@ class TestMdInHTML(TestCase):
             extensions=['md_in_html', 'footnotes']
         )
 
+    def test_md1_code_void_tag(self):
+
+        # https://github.com/Python-Markdown/markdown/issues/1075
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="1">
+
+                Code: `<label></input></label>`
+
+                </div>
+
+                <div class="outer" markdown="1">
+
+                HTML: <label></input></label>
+
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<p>Code: <code>&lt;label&gt;&lt;/input&gt;&lt;/label&gt;</code></p>\n'
+            '</div>\n'
+            '<div class="outer">\n'
+            '<p>HTML: <label></input></label></p>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_code_comment(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="1">
+
+                Code: `<label><!-- **comment** --></label>`
+
+                </div>
+
+                <div class="outer" markdown="1">
+
+                HTML: <label><!-- **comment** --></label>
+
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<p>Code: <code>&lt;label&gt;&lt;!-- **comment** --&gt;&lt;/label&gt;</code></p>\n'
+            '</div>\n'
+            '<div class="outer">\n'
+            '<p>HTML: <label><!-- **comment** --></label></p>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_code_pi(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="1">
+
+                Code: `<label><?php # echo '**simple**';?></label>`
+
+                </div>
+
+                <div class="outer" markdown="1">
+
+                HTML: <label><?php # echo '**simple**';?></label>
+
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<p>Code: <code>&lt;label&gt;&lt;?php # echo \'**simple**\';?&gt;&lt;/label&gt;</code></p>\n'
+            '</div>\n'
+            '<div class="outer">\n'
+            '<p>HTML: <label><?php # echo \'**simple**\';?></label></p>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_code_cdata(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="1">
+
+                Code: `<label><![CDATA[some stuff]]></label>`
+
+                </div>
+
+                <div class="outer" markdown="1">
+
+                HTML: <label><![CDATA[some stuff]]></label>
+
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<p>Code: <code>&lt;label&gt;&lt;![CDATA[some stuff]]&gt;&lt;/label&gt;</code></p>\n'
+            '</div>\n'
+            '<div class="outer">\n'
+            '<p>HTML: <label><![CDATA[some stuff]]></label></p>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
 
 def load_tests(loader, tests, pattern):
     """ Ensure `TestHTMLBlocks` doesn't get run twice by excluding it here. """
