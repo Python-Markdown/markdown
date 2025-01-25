@@ -253,13 +253,12 @@ class HTMLExtractorExtra(HTMLExtractor):
         if self.inraw or not self.mdstack:
             super().handle_empty_tag(data, is_block)
         else:
-            if self.at_line_start() or self.intail:
-                if is_block:
-                    self.handle_data('\n' + self.md.htmlStash.store(data) + '\n\n')
-                else:
-                    self.handle_data(self.md.htmlStash.store(data))
+            if self.at_line_start() and is_block:
+                self.handle_data('\n' + self.md.htmlStash.store(data) + '\n\n')
+            elif self.mdstate and self.mdstate[-1] == "off":
+                self.handle_data(self.md.htmlStash.store(data))
             else:
-                self.treebuilder.data(data)
+                self.handle_data(data)
 
     def parse_pi(self, i: int) -> int:
         if self.at_line_start() or self.intail or self.mdstack:

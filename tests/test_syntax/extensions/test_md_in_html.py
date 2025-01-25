@@ -1214,25 +1214,66 @@ class TestMdInHTML(TestCase):
                 """
                 <div class="outer" markdown="1">
 
-                Code: `<label></input></label>`
+                Code: `<label><input/></label>`
 
                 </div>
 
                 <div class="outer" markdown="1">
 
-                HTML: <label></input></label>
+                HTML: <label><input/></label>
 
                 </div>
                 """
             ),
             '<div class="outer">\n'
-            '<p>Code: <code>&lt;label&gt;&lt;/input&gt;&lt;/label&gt;</code></p>\n'
+            '<p>Code: <code>&lt;label&gt;&lt;input/&gt;&lt;/label&gt;</code></p>\n'
             '</div>\n'
             '<div class="outer">\n'
-            '<p>HTML: <label></input></label></p>\n'
+            '<p>HTML: <label><input/></label></p>\n'
             '</div>',
             extensions=['md_in_html']
         )
+
+    def test_md1_code_void_tag_multiline(self):
+
+        # https://github.com/Python-Markdown/markdown/issues/1075
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="1">
+
+                Code: `
+                <label>
+                <input/>
+                </label>
+                `
+
+                </div>
+
+                <div class="outer" markdown="1">
+
+                HTML:
+                <label>
+                <input/>
+                </label>
+
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<p>Code: <code>&lt;label&gt;\n'
+            '&lt;input/&gt;\n'
+            '&lt;/label&gt;</code></p>\n'
+            '</div>\n'
+            '<div class="outer">\n'
+            '<p>HTML:\n'
+            '<label>\n'
+            '<input/>\n'
+            '</label></p>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
 
     def test_md1_code_comment(self):
 
