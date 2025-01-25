@@ -265,8 +265,7 @@ class HTMLExtractorExtra(HTMLExtractor):
         if self.inraw or not self.mdstack:
             super().handle_data(data)
         else:
-            for i in range(len(self.mdstarted)):
-                self.mdstarted[i] = False
+            self.mdstarted[-1] = False
             self.treebuilder.data(data)
 
     def handle_empty_tag(self, data, is_block):

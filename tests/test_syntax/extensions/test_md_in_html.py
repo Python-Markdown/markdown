@@ -1314,6 +1314,48 @@ class TestMdInHTML(TestCase):
             extensions=['md_in_html']
         )
 
+    def test_md1_oneliner_block_tail(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="a" markdown="block"><div class="b" markdown="block">
+                **foo**
+                </div><div class="c" markdown="block"><div class="d" markdown="block">
+                *bar*
+                </div></div></div>
+                """
+            ),
+            '<div class="a">\n'
+            '<div class="b">\n'
+            '<p><strong>foo</strong></p>\n'
+            '</div>\n'
+            '<div class="c">\n'
+            '<div class="d">\n'
+            '<p><em>bar</em></p>\n'
+            '</div>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_complex_start_tail(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        self.assertMarkdownRenders(
+            '<div class="a" markdown><div class="b" markdown>**foo**</div>'
+            '<div class="c" markdown>*bar*</div><div class="d">*not md*</div></div>',
+            '<div class="a">\n'
+            '<div class="b">\n'
+            '<p><strong>foo</strong></p>\n'
+            '</div>\n'
+            '<div class="c">\n'
+            '<p><em>bar</em></p>\n'
+            '</div>\n'
+            '<div class="d">*not md*</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
     def test_md1_oneliner_block_start(self):
         # https://github.com/Python-Markdown/markdown/issues/1074
         self.assertMarkdownRenders(
