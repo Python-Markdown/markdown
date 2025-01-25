@@ -331,28 +331,30 @@ class MarkdownInHtmlProcessor(BlockProcessor):
                     # Replace the placeholder with the element and process it.
                     # Content after the placeholder should be attached to the tail.
                     if child is None:
-                        element.text = block[start:end]
+                        element.text += block[start:end]
                     else:
-                        child.tail = f"{child.tail if child.tail is not None else ''}{block[start:end]}"
+                        child.tail += block[start:end]
                     element.append(el)
                     self.parse_element_content(el)
                     child = el
+                    if child.tail is None:
+                        child.tail = ''
                     self.parser.md.htmlStash.rawHtmlBlocks.pop(index)
                     self.parser.md.htmlStash.rawHtmlBlocks.insert(index, '')
 
                 else:
                     # Not an element object, so insert content back into the element
                     if child is None:
-                        element.text = block[start:end]
+                        element.text += block[start:end]
                     else:
-                        child.tail = f"{child.tail if child.tail is not None else ''}{block[start:end]}"
+                        child.tail += block[start:end]
                 start = end
 
             # Insert anything left after last element
             if child is None:
-                element.text = block[start:]
+                element.text += block[start:]
             else:
-                child.tail = (child.tail if child.tail is not None else '') + block[start:]
+                child.tail += block[start:]
 
         else:
             # Disable inline parsing for everything else
