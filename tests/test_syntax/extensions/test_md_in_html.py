@@ -1274,6 +1274,107 @@ class TestMdInHTML(TestCase):
             extensions=['md_in_html']
         )
 
+    def test_md1_oneliner_block(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '<div class="outer" markdown="block"><div class="inner" markdown="block">*foo*</div></div>'
+            ),
+            '<div class="outer">\n'
+            '<div class="inner">\n'
+            '<p><em>foo</em></p>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_mixed(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="a" markdown="block"><div class="b" markdown="block">
+
+                <div class="c" markdown="block"><div class="d" markdown="block">
+                *foo*
+                </div></div>
+
+                </div></div>
+                """
+            ),
+            '<div class="a">\n'
+            '<div class="b">\n'
+            '<div class="c">\n'
+            '<div class="d">\n'
+            '<p><em>foo</em></p>\n'
+            '</div>\n'
+            '</div>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_start(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="block"><div class="inner" markdown="block">
+                *foo*
+                </div></div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<div class="inner">\n'
+            '<p><em>foo</em></p>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_span(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '<div class="outer" markdown="block"><div class="inner" markdown="span">*foo*</div></div>'
+            ),
+            '<div class="outer">\n'
+            '<div class="inner"><em>foo</em></div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_span_start(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="block"><div class="inner" markdown="span">
+                *foo*
+                </div></div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<div class="inner">\n'
+            '<em>foo</em>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_span_block_start(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="span"><div class="inner" markdown="block">
+                *foo*
+                </div>
+                *foo*
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<div class="inner">\n'
+            '<em>foo</em>\n'
+            '</div>\n\n'
+            '<em>foo</em></div>',
+            extensions=['md_in_html']
+        )
 
     def test_md1_code_comment(self):
 

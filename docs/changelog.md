@@ -17,10 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Backslash Unescape IDs set via `attr_list` on `toc` (#1493).
-* `md_in_html` should now process content inside "markdown" blocks a similar way
+* `md_in_html` will process content inside "markdown" blocks a similar way
   as they are parsed outside of "markdown" blocks giving a more consistent
   expectation to external extensions (#1503).
-* `md_in_html` should not handle tags within inline code blocks better (#1075).
+* `md_in_html` handle tags within inline code blocks better (#1075).
+* `md_in_html` fix handling of one-liner block HTML handling (#1074)
 
 ## [3.7] -- 2024-08-16
 

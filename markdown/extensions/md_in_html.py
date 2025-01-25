@@ -61,6 +61,7 @@ class HTMLExtractorExtra(HTMLExtractor):
         self.mdstack: list[str] = []  # When markdown=1, stack contains a list of tags
         self.treebuilder = etree.TreeBuilder()
         self.mdstate: list[Literal['block', 'span', 'off', None]] = []
+        self.mdstarted: list[bool] = []
         super().reset()
 
     def close(self):
@@ -126,8 +127,24 @@ class HTMLExtractorExtra(HTMLExtractor):
                     self.handle_endtag('p')
                 self.mdstate.append(state)
                 self.mdstack.append(tag)
+                self.mdstarted.append(True)
                 attrs['markdown'] = state
                 self.treebuilder.start(tag, attrs)
+
+        elif not self.inraw and tag in self.block_level_tags and self.mdstarted and self.mdstarted[-1]:
+            # Nested one-liner block tags `<tag><tag>...`
+            attrs = {key: value if value is not None else key for key, value in attrs}
+            state = self.get_state(tag, attrs)
+            if 'p' in self.mdstack and tag in self.block_level_tags:
+                # Close unclosed 'p' tag
+                self.handle_endtag('p')
+            self.mdstate.append(state)
+            self.mdstack.append(tag)
+            self.mdstarted.append(True)
+            attrs['markdown'] = state
+            self.treebuilder.start(tag, attrs)
+            return
+
         else:
             # Span level tag
             if self.inraw:
@@ -151,6 +168,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                 while self.mdstack:
                     item = self.mdstack.pop()
                     self.mdstate.pop()
+                    self.mdstarted.pop()
                     self.treebuilder.end(item)
                     if item == tag:
                         break
@@ -247,6 +265,8 @@ class HTMLExtractorExtra(HTMLExtractor):
         if self.inraw or not self.mdstack:
             super().handle_data(data)
         else:
+            for i in range(len(self.mdstarted)):
+                self.mdstarted[i] = False
             self.treebuilder.data(data)
 
     def handle_empty_tag(self, data, is_block):
