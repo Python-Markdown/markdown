@@ -1206,6 +1206,317 @@ class TestMdInHTML(TestCase):
             extensions=['md_in_html', 'footnotes']
         )
 
+    def test_md1_code_void_tag(self):
+
+        # https://github.com/Python-Markdown/markdown/issues/1075
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="1">
+
+                Code: `<label><input/></label>`
+
+                </div>
+
+                <div class="outer" markdown="1">
+
+                HTML: <label><input/></label>
+
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<p>Code: <code>&lt;label&gt;&lt;input/&gt;&lt;/label&gt;</code></p>\n'
+            '</div>\n'
+            '<div class="outer">\n'
+            '<p>HTML: <label><input/></label></p>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_code_void_tag_multiline(self):
+
+        # https://github.com/Python-Markdown/markdown/issues/1075
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="1">
+
+                Code: `
+                <label>
+                <input/>
+                </label>
+                `
+
+                </div>
+
+                <div class="outer" markdown="1">
+
+                HTML:
+                <label>
+                <input/>
+                </label>
+
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<p>Code: <code>&lt;label&gt;\n'
+            '&lt;input/&gt;\n'
+            '&lt;/label&gt;</code></p>\n'
+            '</div>\n'
+            '<div class="outer">\n'
+            '<p>HTML:\n'
+            '<label>\n'
+            '<input/>\n'
+            '</label></p>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        self.assertMarkdownRenders(
+            self.dedent(
+                '<div class="outer" markdown="block"><div class="inner" markdown="block">*foo*</div></div>'
+            ),
+            '<div class="outer">\n'
+            '<div class="inner">\n'
+            '<p><em>foo</em></p>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_mixed(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="a" markdown="block"><div class="b" markdown="block">
+
+                <div class="c" markdown="block"><div class="d" markdown="block">
+                *foo*
+                </div></div>
+
+                </div></div>
+                """
+            ),
+            '<div class="a">\n'
+            '<div class="b">\n'
+            '<div class="c">\n'
+            '<div class="d">\n'
+            '<p><em>foo</em></p>\n'
+            '</div>\n'
+            '</div>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_tail(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="a" markdown="block"><div class="b" markdown="block">
+                **foo**
+                </div><div class="c" markdown="block"><div class="d" markdown="block">
+                *bar*
+                </div></div></div>
+                """
+            ),
+            '<div class="a">\n'
+            '<div class="b">\n'
+            '<p><strong>foo</strong></p>\n'
+            '</div>\n'
+            '<div class="c">\n'
+            '<div class="d">\n'
+            '<p><em>bar</em></p>\n'
+            '</div>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_complex_start_tail(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        self.assertMarkdownRenders(
+            '<div class="a" markdown><div class="b" markdown>**foo**</div>'
+            '<div class="c" markdown>*bar*</div><div class="d">*not md*</div></div>',
+            '<div class="a">\n'
+            '<div class="b">\n'
+            '<p><strong>foo</strong></p>\n'
+            '</div>\n'
+            '<div class="c">\n'
+            '<p><em>bar</em></p>\n'
+            '</div>\n'
+            '<div class="d">*not md*</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_complex_fail(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        # Nested will fail because an inline tag is only considered at the beginning if it is not preceded by text.
+        self.assertMarkdownRenders(
+            '<div class="a" markdown>**strong**<div class="b" markdown>**strong**</div></div>',
+            '<div class="a">\n'
+            '<p><strong>strong</strong><div class="b" markdown><strong>strong</strong></p>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_start(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="block"><div class="inner" markdown="block">
+                *foo*
+                </div></div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<div class="inner">\n'
+            '<p><em>foo</em></p>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_span(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        self.assertMarkdownRenders(
+            self.dedent(
+                '<div class="outer" markdown="block"><div class="inner" markdown="span">*foo*</div></div>'
+            ),
+            '<div class="outer">\n'
+            '<div class="inner"><em>foo</em></div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_block_span_start(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="block"><div class="inner" markdown="span">
+                *foo*
+                </div></div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<div class="inner">\n'
+            '<em>foo</em>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_oneliner_span_block_start(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="span"><div class="inner" markdown="block">
+                *foo*
+                </div>
+                *foo*
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<div class="inner">\n'
+            '<em>foo</em>\n'
+            '</div>\n\n'
+            '<em>foo</em></div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_code_comment(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="1">
+
+                Code: `<label><!-- **comment** --></label>`
+
+                </div>
+
+                <div class="outer" markdown="1">
+
+                HTML: <label><!-- **comment** --></label>
+
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<p>Code: <code>&lt;label&gt;&lt;!-- **comment** --&gt;&lt;/label&gt;</code></p>\n'
+            '</div>\n'
+            '<div class="outer">\n'
+            '<p>HTML: <label><!-- **comment** --></label></p>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_code_pi(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="1">
+
+                Code: `<label><?php # echo '**simple**';?></label>`
+
+                </div>
+
+                <div class="outer" markdown="1">
+
+                HTML: <label><?php # echo '**simple**';?></label>
+
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<p>Code: <code>&lt;label&gt;&lt;?php # echo \'**simple**\';?&gt;&lt;/label&gt;</code></p>\n'
+            '</div>\n'
+            '<div class="outer">\n'
+            '<p>HTML: <label><?php # echo \'**simple**\';?></label></p>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
+    def test_md1_code_cdata(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div class="outer" markdown="1">
+
+                Code: `<label><![CDATA[some stuff]]></label>`
+
+                </div>
+
+                <div class="outer" markdown="1">
+
+                HTML: <label><![CDATA[some stuff]]></label>
+
+                </div>
+                """
+            ),
+            '<div class="outer">\n'
+            '<p>Code: <code>&lt;label&gt;&lt;![CDATA[some stuff]]&gt;&lt;/label&gt;</code></p>\n'
+            '</div>\n'
+            '<div class="outer">\n'
+            '<p>HTML: <label><![CDATA[some stuff]]></label></p>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
 
 def load_tests(loader, tests, pattern):
     """ Ensure `TestHTMLBlocks` doesn't get run twice by excluding it here. """
