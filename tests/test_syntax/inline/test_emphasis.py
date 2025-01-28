@@ -170,3 +170,24 @@ class TestNotEmphasis(TestCase):
             'on the **1-4 row** of the AP Combat Table ***and*** receive',
             '<p>on the <strong>1-4 row</strong> of the AP Combat Table <strong><em>and</em></strong> receive</p>'
         )
+
+    def test_link_emphasis_outer(self):
+
+        self.assertMarkdownRenders(
+            '**[text](url)**',
+            '<p><strong><a href="url">text</a></strong></p>'
+        )
+
+    def test_link_emphasis_inner(self):
+
+        self.assertMarkdownRenders(
+            '[**text**](url)',
+            '<p><a href="url"><strong>text</strong></a></p>'
+        )
+
+    def test_link_emphasis_inner_outer(self):
+
+        self.assertMarkdownRenders(
+            '**[**text**](url)**',
+            '<p><strong><a href="url"><strong>text</strong></a></strong></p>'
+        )
