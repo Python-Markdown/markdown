@@ -1356,6 +1356,18 @@ class TestMdInHTML(TestCase):
             extensions=['md_in_html']
         )
 
+    def test_md1_oneliner_block_complex_fail(self):
+        # https://github.com/Python-Markdown/markdown/issues/1074
+        # Nested will fail because an inline tag is only considered at the beginning if it is not preceded by text.
+        self.assertMarkdownRenders(
+            '<div class="a" markdown>**strong**<div class="b" markdown>**strong**</div></div>',
+            '<div class="a">\n'
+            '<p><strong>strong</strong><div class="b" markdown><strong>strong</strong></p>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
     def test_md1_oneliner_block_start(self):
         # https://github.com/Python-Markdown/markdown/issues/1074
         self.assertMarkdownRenders(
