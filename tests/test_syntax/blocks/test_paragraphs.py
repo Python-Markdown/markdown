@@ -227,3 +227,30 @@ class TestParagraphBlocks(TestCase):
                 """
             )
         )
+
+    def test_paragraphs_no_list(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Paragraph:
+                * no list
+
+                Paragraph
+                 * no list
+
+                Paragraph:
+                  * no list
+
+                Paragraph:
+                   * no list
+                """
+            ),
+            '<p>Paragraph:\n'
+            '* no list</p>\n'
+            '<p>Paragraph\n'
+            ' * no list</p>\n'
+            '<p>Paragraph:\n'
+            '  * no list</p>\n'
+            '<p>Paragraph:\n'
+            '   * no list</p>',
+        )

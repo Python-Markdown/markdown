@@ -1374,6 +1374,32 @@ class TestHTMLBlocks(TestCase):
             '<div><hr /></div>'
         )
 
+    def test_multiline_attributes(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div id="foo"
+                     class="bar">
+                    text
+                </div>
+
+                <hr class="foo"
+                    id="bar" >
+                """
+            ),
+            self.dedent(
+                """
+                <div id="foo"
+                     class="bar">
+                    text
+                </div>
+
+                <hr class="foo"
+                    id="bar" >
+                """
+            )
+        )
+
     def test_auto_links_dont_break_parser(self):
         self.assertMarkdownRenders(
             self.dedent(

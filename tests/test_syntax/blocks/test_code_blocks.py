@@ -86,3 +86,14 @@ class TestCodeBlocks(TestCase):
                 """
             )
         )
+
+    def test_codeblock_second_line(self):
+        self.assertMarkdownRenders(
+            '\n    Code on the second line',
+            self.dedent(
+                """
+                <pre><code>Code on the second line
+                </code></pre>
+                """
+            )
+        )

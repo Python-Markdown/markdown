@@ -12,7 +12,7 @@ Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
 Currently maintained by Waylan Limberg (https://github.com/waylan),
 Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
 
-Copyright 2007-2023 The Python Markdown Project (v. 1.7 and later)
+Copyright 2007-2019 The Python Markdown Project (v. 1.7 and later)
 Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 Copyright 2004 Manfred Stienstra (the original version)
 
@@ -34,6 +34,30 @@ class TestInlineLinks(TestCase):
         self.assertMarkdownRenders(
             """[Text](http://link.com/(((((((()))))))())) more text""",
             """<p><a href="http://link.com/(((((((()))))))())">Text</a> more text</p>"""
+        )
+
+    def test_nested_escaped_brackets(self):
+        self.assertMarkdownRenders(
+            R"""[Text](/url\(test\) "title").""",
+            """<p><a href="/url(test)" title="title">Text</a>.</p>"""
+        )
+
+    def test_nested_escaped_brackets_and_angles(self):
+        self.assertMarkdownRenders(
+            R"""[Text](</url\(test\)> "title").""",
+            """<p><a href="/url(test)" title="title">Text</a>.</p>"""
+        )
+
+    def test_nested_unescaped_brackets(self):
+        self.assertMarkdownRenders(
+            R"""[Text](/url(test) "title").""",
+            """<p><a href="/url(test)" title="title">Text</a>.</p>"""
+        )
+
+    def test_nested_unescaped_brackets_and_angles(self):
+        self.assertMarkdownRenders(
+            R"""[Text](</url(test)> "title").""",
+            """<p><a href="/url(test)" title="title">Text</a>.</p>"""
         )
 
     def test_uneven_brackets_with_titles1(self):
@@ -132,6 +156,12 @@ class TestInlineLinks(TestCase):
         self.assertMarkdownRenders(
             '[title](http://example.com/?a=1&#x26;b=2)',
             '<p><a href="http://example.com/?a=1&#x26;b=2">title</a></p>'
+        )
+
+    def test_angles_and_nonsense_url(self):
+        self.assertMarkdownRenders(
+            '[test nonsense](<?}]*+|&)>).',
+            '<p><a href="?}]*+|&amp;)">test nonsense</a>.</p>'
         )
 
 
@@ -381,6 +411,26 @@ class TestReferenceLinks(TestCase):
                 """
                 <p>[Text]]</p>
                 <p>[Text]]: http://example.com</p>
+                """
+            )
+        )
+
+    def test_ref_round_brackets(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [Text][1].
+
+                [Text][2].
+
+                  [1]: /url(test) "title"
+                  [2]: </url(test)> "title"
+                """
+            ),
+            self.dedent(
+                """
+                <p><a href="/url(test)" title="title">Text</a>.</p>
+                <p><a href="/url(test)" title="title">Text</a>.</p>
                 """
             )
         )
