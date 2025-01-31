@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   expectation to external extensions (#1503).
 * `md_in_html` handle tags within inline code blocks better (#1075).
 * `md_in_html` fix handling of one-liner block HTML handling (#1074).
-* Ensure `<center>` is treated like a block-level element.
+* Ensure `<center>` is treated like a block-level element (#1481).
 
 ## [3.7] -- 2024-08-16
 
