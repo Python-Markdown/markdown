@@ -113,7 +113,7 @@ class Markdown:
         ]
         """ List of characters which get the backslash escape treatment. """
 
-        self.block_level_elements: list[str] = BLOCK_LEVEL_ELEMENTS.copy()
+        self.block_level_elements: set[str] = BLOCK_LEVEL_ELEMENTS.copy()
 
         self.registeredExtensions: list[Extension] = []
         self.docType = ""  # TODO: Maybe delete this. It does not appear to be used anymore.

@@ -44,7 +44,7 @@ Constants you might want to modify
 """
 
 
-BLOCK_LEVEL_ELEMENTS: list[str] = [
+BLOCK_LEVEL_ELEMENTS: set[str] = {
     # Elements which are invalid to wrap in a `<p>` tag.
     # See https://w3c.github.io/html/grouping-content.html#the-p-element
     'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
@@ -56,9 +56,9 @@ BLOCK_LEVEL_ELEMENTS: list[str] = [
     'math', 'map', 'noscript', 'output', 'object', 'option', 'progress', 'script',
     'style', 'summary', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'video',
     'center'
-]
+}
 """
-List of HTML tags which get treated as block-level elements. Same as the `block_level_elements`
+Set of HTML tags which get treated as block-level elements. Same as the `block_level_elements`
 attribute of the [`Markdown`][markdown.Markdown] class. Generally one should use the
 attribute on the class. This remains for compatibility with older extensions.
 """
