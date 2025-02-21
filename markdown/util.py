@@ -24,6 +24,7 @@ throughout the code base.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 import re
 import sys
 import warnings
@@ -44,7 +45,60 @@ Constants you might want to modify
 """
 
 
-BLOCK_LEVEL_ELEMENTS: list[str] = [
+class _BlockLevelElements(set):
+    # ----------------------------------
+    # Methods common to `list` and `set`
+    # ----------------------------------
+    def copy(self) -> set[str]:
+        return _BlockLevelElements(super().copy())
+
+    def pop(self, index: int | None = None, /) -> str:
+        if index is not None:
+            warnings.warn("The index argument is deprecated and will be removed in the future", DeprecationWarning)
+        try:
+            return self.pop()
+        except KeyError:
+            warnings.warn("`pop` will raise a `KeyError` in the future", DeprecationWarning)
+            raise IndexError("pop from an empty set") from None
+
+    def remove(self, element: object) -> None:
+        try:
+            return self.remove(element)
+        except KeyError:
+            warnings.warn("`remove` will raise a `KeyError` in the future", DeprecationWarning)
+            raise ValueError(f"{element!r} not in set") from None
+
+    # --------------------------
+    # Methods specific to `list`
+    # --------------------------
+    def append(self, element: str) -> None:
+        warnings.warn("method `append` will be removed in the future", DeprecationWarning)
+        self.add(element)
+
+    def count(self, value: str) -> int:
+        warnings.warn("method `count` will be removed in the future", DeprecationWarning)
+        return 1 if value in self else 0
+
+    def extend(self, elements: list[str]) -> None:
+        warnings.warn("method `extend` will be removed in the future", DeprecationWarning)
+        self.update(elements)
+
+    def index(self, value, start=0, stop=0, /) -> int:
+        warnings.warn("method `index` will be removed in the future", DeprecationWarning)
+        return 0 if value in self else -1
+
+    def insert(self, index: int, element: str) -> None:
+        warnings.warn("method `insert` will be removed in the future", DeprecationWarning)
+        self.add(element)
+
+    def reverse(self) -> None:
+        warnings.warn("method `reverse` will be removed in the future", DeprecationWarning)
+
+    def sort(self, /, *, key: Callable | None = None, reverse: bool = False) -> None:
+        warnings.warn("method `sort` will be removed in the future", DeprecationWarning)
+
+
+BLOCK_LEVEL_ELEMENTS: set[str] = _BlockLevelElements({
     # Elements which are invalid to wrap in a `<p>` tag.
     # See https://w3c.github.io/html/grouping-content.html#the-p-element
     'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
@@ -56,9 +110,9 @@ BLOCK_LEVEL_ELEMENTS: list[str] = [
     'math', 'map', 'noscript', 'output', 'object', 'option', 'progress', 'script',
     'style', 'summary', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'video',
     'center'
-]
+})
 """
-List of HTML tags which get treated as block-level elements. Same as the `block_level_elements`
+Set of HTML tags which get treated as block-level elements. Same as the `block_level_elements`
 attribute of the [`Markdown`][markdown.Markdown] class. Generally one should use the
 attribute on the class. This remains for compatibility with older extensions.
 """
