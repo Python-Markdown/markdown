@@ -86,7 +86,7 @@ class RawHtmlPostprocessor(Postprocessor):
 
             if key not in replacements:
                 if key[3:-4] in replacements:
-                    return f'<p>{ replacements[key[3:-4]] }</p>'
+                    return f'<p>{replacements[key[3:-4]]}</p>'
                 else:
                     return key
 
@@ -94,7 +94,7 @@ class RawHtmlPostprocessor(Postprocessor):
 
         if replacements:
             base_placeholder = util.HTML_PLACEHOLDER % r'([0-9]+)'
-            pattern = re.compile(f'<p>{ base_placeholder }</p>|{ base_placeholder }')
+            pattern = re.compile(f'<p>{base_placeholder}</p>|{base_placeholder}')
             processed_text = pattern.sub(substitute_match, text)
         else:
             return text
