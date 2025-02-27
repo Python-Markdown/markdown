@@ -24,7 +24,6 @@ throughout the code base.
 
 from __future__ import annotations
 
-from collections.abc import Callable
 import re
 import sys
 import warnings
@@ -45,60 +44,269 @@ Constants you might want to modify
 """
 
 
-class _BlockLevelElements(set):
-    # ----------------------------------
-    # Methods common to `list` and `set`
-    # ----------------------------------
-    def copy(self) -> set[str]:
-        return _BlockLevelElements(super().copy())
+# TODO: Raise errors from list methods in the future.
+# Later, remove this class entirely and use a regular set.
+class _BlockLevelElements:
+    def __init__(self, elements: list[str]) -> None:
+        self._list = elements.copy()
+        self._set = set(self._list)
 
-    def pop(self, index: int | None = None, /) -> str:
-        if index is not None:
-            warnings.warn("The index argument is deprecated and will be removed in the future", DeprecationWarning)
-        try:
-            return self.pop()
-        except KeyError:
-            warnings.warn("`pop` will raise a `KeyError` in the future", DeprecationWarning)
-            raise IndexError("pop from an empty set") from None
+    def __add__(self, other: list[str]) -> list[str]:
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        # Using `+` means user expects a list back.
+        return self._list + other
 
-    def remove(self, element: object) -> None:
-        try:
-            return self.remove(element)
-        except KeyError:
-            warnings.warn("`remove` will raise a `KeyError` in the future", DeprecationWarning)
-            raise ValueError(f"{element!r} not in set") from None
+    def __and__(self, other: set[str]) -> set[str]:
+        # Using `&` means user expects a set back.
+        return self._set & other
 
-    # --------------------------
-    # Methods specific to `list`
-    # --------------------------
+    def __contains__(self, item):
+        return item in self._set
+
+    def __delitem__(self, key):
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        element = self._list[key]
+        del self._list[key]
+        self._set.remove(element)
+
+    def __getitem__(self, index):
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        return self._list[index]
+
+    def __iadd__(self, other: list[str]) -> None:
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        # In-place addition should update both list and set.
+        self._list += other
+        self._set.update(set(other))
+
+    def __iand__(self, other: set[str]) -> None:
+        # In-place intersection should update both list and set.
+        self._list = [element for element in self._list if element in other]
+        self._set &= other
+
+    def __ior__(self, other: set[str]) -> None:
+        # In-place union should update both list and set.
+        for element in other:
+            if element not in self._set:
+                self._list.append(element)
+        self._set |= other
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._list)
+
+    def __len__(self) -> int:
+        # Length of the list, for backwards compatibility.
+        # If used as a set, both lengths will be the same.
+        return len(self._list)
+
+    def __or__(self, value: set[str]) -> set[str]:
+        # Using `|` means user expects a set back.
+        return self._set | value
+
+    def __rand__(self, value: set[str]) -> set[str]:
+        # Using `&` means user expects a set back.
+        return value & self._set
+
+    def __ror__(self, value: set[str]) -> set[str]:
+        # Using `|` means user expects a set back.
+        return value | self._set
+
+    def __rsub__(self, value: set[str]) -> set[str]:
+        # Using `-` means user expects a set back.
+        return value - self._set
+
+    def __rxor__(self, value: set[str]) -> set[str]:
+        # Using `^` means user expects a set back.
+        return value ^ self._set
+
+    def __sub__(self, value: set[str]) -> set[str]:
+        # Using `-` means user expects a set back.
+        return self._set - value
+
+    def __xor__(self, value: set[str]) -> set[str]:
+        # Using `^` means user expects a set back.
+        return self._set ^ value
+
+    def __reversed__(self) -> Iterator[str]:
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        return reversed(self._list)
+
+    def __setitem__(self, key: int, value: str) -> None:
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        # In-place item-setting should update both list and set.
+        self._list[key] = value
+        self._set.add(value)
+
+    def __str__(self) -> str:
+        return str(self._set)
+
+    def add(self, element: str) -> None:
+        # In-place addition should update both list and set.
+        self._set.add(element)
+        self._list.append(element)
+
     def append(self, element: str) -> None:
-        warnings.warn("method `append` will be removed in the future", DeprecationWarning)
-        self.add(element)
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        # In-place addition should update both list and set.
+        self._list.append(element)
+        self._set.add(element)
+
+    def clear(self) -> None:
+        self._list.clear()
+        self._set.clear()
+
+    def copy(self) -> _BlockLevelElements:
+        # We're not sure yet whether the user wants to use it as a set or list.
+        return _BlockLevelElements(self._list)
 
     def count(self, value: str) -> int:
-        warnings.warn("method `count` will be removed in the future", DeprecationWarning)
-        return 1 if value in self else 0
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        # Count in list, for backwards compatibility.
+        # If used as a set, both counts will be the same (1).
+        return self._list.count(value)
+
+    def difference(self, *others: set[str]) -> set[str]:
+        # User expects a set back.
+        return self._set.difference(*others)
+
+    def difference_update(self, *others) -> None:
+        # In-place difference should update both list and set.
+        self._set.difference_update(*others)
+        for other in others:
+            for element in other:
+                self._list.remove(element)
+
+    def discard(self, element: str) -> None:
+        # In-place discard should update both list and set.
+        self._set.discard(element)
+        while True:
+            try:
+                self._list.remove(element)
+            except ValueError:
+                break
 
     def extend(self, elements: list[str]) -> None:
-        warnings.warn("method `extend` will be removed in the future", DeprecationWarning)
-        self.update(elements)
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        # In-place extension should update both list and set.
+        self._list.extend(elements)
+        self._set.update(elements)
 
-    def index(self, value, start=0, stop=0, /) -> int:
-        warnings.warn("method `index` will be removed in the future", DeprecationWarning)
-        return 0 if value in self else -1
+    def index(self, value, start: int = 0, stop: int = sys.maxsize, /):
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        return self._list.index(value, start, stop)
 
-    def insert(self, index: int, element: str) -> None:
-        warnings.warn("method `insert` will be removed in the future", DeprecationWarning)
-        self.add(element)
+    def insert(self, index: int, element: str, /) -> None:
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        # In-place insertion should update both list and set.
+        self._list.insert(index, element)
+        self._set.add(element)
+
+    def intersection(self, *others: set[str]) -> set[str]:
+        # User expects a set back.
+        return self._set.intersection(*others)
+
+    def intersection_update(self, *others: set[str]) -> None:
+        # In-place intersection should update both list and set.
+        self._set.intersection_update(*others)
+        for element in reversed(self._list):
+            if element not in self._set:
+                self._list.remove(element)
+
+    def isdisjoint(self, other: set[str]) -> bool:
+        return self._set.isdisjoint(other)
+
+    def issubset(self, other: set[str]) -> bool:
+        return self._set.issubset(other)
+
+    def issuperset(self, other: set[str]) -> bool:
+        return self._set.issuperset(other)
+
+    def pop(self, index: int = -1, /) -> str:
+        # In-place pop should update both list and set.
+        element = self._list.pop(index)
+        self._set.remove(element)
+        return element
+
+    def remove(self, element: str) -> None:
+        # In-place removal should update both list and set.
+        self._list.remove(element)
+        self._set.remove(element)
 
     def reverse(self) -> None:
-        warnings.warn("method `reverse` will be removed in the future", DeprecationWarning)
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        self._list.reverse()
 
-    def sort(self, /, *, key: Callable | None = None, reverse: bool = False) -> None:
-        warnings.warn("method `sort` will be removed in the future", DeprecationWarning)
+    def sort(self, /, *, key=None, reverse=False) -> None:
+        warnings.warn(
+            "Using block level elements as a list is deprecated, use it as a set instead.",
+            DeprecationWarning,
+        )
+        self._list.sort(key=key, reverse=reverse)
+
+    def symmetric_difference(self, other: set[str]) -> set[str]:
+        # User expects a set back.
+        return self._set.symmetric_difference(other)
+
+    def symmetric_difference_update(self, other: set[str]) -> None:
+        # In-place symmetric difference should update both list and set.
+        self._set.symmetric_difference_update(other)
+        for element in other:
+            if element in self._set:
+                self._list.remove(element)
+            else:
+                self._list.append(element)
+
+    def union(self, *others: set[str]) -> set[str]:
+        # User expects a set back.
+        return self._set.union(*others)
+
+    def update(self, *others: set[str]) -> None:
+        # In-place union should update both list and set.
+        self._set.update(*others)
+        for other in others:
+            for element in other:
+                if element not in self._set:
+                    self._list.append(element)
 
 
-BLOCK_LEVEL_ELEMENTS: set[str] = _BlockLevelElements({
+# Type it as `set[str]` to express our intent for it to be used as such.
+BLOCK_LEVEL_ELEMENTS: set[str] = _BlockLevelElements([
     # Elements which are invalid to wrap in a `<p>` tag.
     # See https://w3c.github.io/html/grouping-content.html#the-p-element
     'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
@@ -110,7 +318,7 @@ BLOCK_LEVEL_ELEMENTS: set[str] = _BlockLevelElements({
     'math', 'map', 'noscript', 'output', 'object', 'option', 'progress', 'script',
     'style', 'summary', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'video',
     'center'
-})
+])  # type: ignore[assignment]
 """
 Set of HTML tags which get treated as block-level elements. Same as the `block_level_elements`
 attribute of the [`Markdown`][markdown.Markdown] class. Generally one should use the
