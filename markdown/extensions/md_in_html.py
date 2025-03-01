@@ -42,6 +42,7 @@ class HTMLExtractorExtra(HTMLExtractor):
 
     def __init__(self, md: Markdown, *args, **kwargs):
         # All block-level tags.
+        # TODO: Use `md.block_level_elements.copy()` when it becomes a regular set.
         self.block_level_tags = set(md.block_level_elements)
         # Block-level tags in which the content only gets span level parsing
         self.span_tags = set(

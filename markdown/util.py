@@ -72,13 +72,13 @@ class _BlockLevelElements:
     def __contains__(self, item: str, /) -> bool:
         return item in self._set
 
-    def __delitem__(self, key: int, /) -> None:
+    def __delitem__(self, index: int, /) -> None:
         warnings.warn(
             "Using block level elements as a list is deprecated, use it as a set instead.",
             DeprecationWarning,
         )
-        element = self._list[key]
-        del self._list[key]
+        element = self._list[index]
+        del self._list[index]
         self._set.remove(element)
 
     def __getitem__(self, index: int, /) -> str:
@@ -100,16 +100,16 @@ class _BlockLevelElements:
 
     def __iand__(self, other: set[str], /) -> set[str]:
         # In-place intersection should update both list and set.
-        self._list = [element for element in self._list if element in other]
         self._set &= other
+        # Elements were only removed.
+        self._list[:] = [element for element in self._list if element in self._set]
         return self  # type: ignore[return-value]
 
     def __ior__(self, other: set[str], /) -> set[str]:
         # In-place union should update both list and set.
-        for element in other:
-            if element not in self._set:
-                self._list.append(element)
         self._set |= other
+        # Elements were only added.
+        self._list.extend(element for element in sorted(self._set - set(self._list)))
         return self  # type: ignore[return-value]
 
     def __iter__(self) -> Iterator[str]:
@@ -155,14 +155,14 @@ class _BlockLevelElements:
         )
         return reversed(self._list)
 
-    def __setitem__(self, key: int, value: str, /) -> None:
+    def __setitem__(self, index: int, value: str, /) -> None:
         warnings.warn(
             "Using block level elements as a list is deprecated, use it as a set instead.",
             DeprecationWarning,
         )
         # In-place item-setting should update both list and set.
-        old = self._list[key]
-        self._list[key] = value
+        old = self._list[index]
+        self._list[index] = value
         self._set.discard(old)
         self._set.add(value)
 
@@ -207,17 +207,16 @@ class _BlockLevelElements:
     def difference_update(self, *others: set[str]) -> None:
         # In-place difference should update both list and set.
         self._set.difference_update(*others)
-        self._list.clear()
-        self._list.extend(sorted(self._set))
+        # Elements were only removed.
+        self._list[:] = [element for element in self._list if element in self._set]
 
     def discard(self, element: str, /) -> None:
         # In-place discard should update both list and set.
         self._set.discard(element)
-        while True:
-            try:
-                self._list.remove(element)
-            except ValueError:
-                break
+        try:
+            self._list.remove(element)
+        except ValueError:
+            pass
 
     def extend(self, elements: list[str], /) -> None:
         warnings.warn(
@@ -225,9 +224,7 @@ class _BlockLevelElements:
             DeprecationWarning,
         )
         # In-place extension should update both list and set.
-        for element in elements:
-            if element not in self._list:
-                self._list.append(element)
+        self._list.extend(elements)
         self._set.update(elements)
 
     def index(self, value, start: int = 0, stop: int = sys.maxsize, /):
@@ -253,8 +250,8 @@ class _BlockLevelElements:
     def intersection_update(self, *others: set[str]) -> None:
         # In-place intersection should update both list and set.
         self._set.intersection_update(*others)
-        self._list.clear()
-        self._list.extend(sorted(self._set))
+        # Elements were only removed.
+        self._list[:] = [element for element in self._list if element in self._set]
 
     def isdisjoint(self, other: set[str], /) -> bool:
         return self._set.isdisjoint(other)
@@ -297,8 +294,9 @@ class _BlockLevelElements:
     def symmetric_difference_update(self, other: set[str], /) -> None:
         # In-place symmetric difference should update both list and set.
         self._set.symmetric_difference_update(other)
-        self._list.clear()
-        self._list.extend(sorted(self._set))
+        # Elements were both removed and added.
+        self._list[:] = [element for element in self._list if element in self._set]
+        self._list.extend(element for element in sorted(self._set - set(self._list)))
 
     def union(self, *others: set[str]) -> set[str]:
         # User expects a set back.
@@ -307,8 +305,8 @@ class _BlockLevelElements:
     def update(self, *others: set[str]) -> None:
         # In-place union should update both list and set.
         self._set.update(*others)
-        self._list.clear()
-        self._list.extend(sorted(self._set))
+        # Elements were only added.
+        self._list.extend(element for element in sorted(self._set - set(self._list)))
 
 
 # Type it as `set[str]` to express our intent for it to be used as such.
