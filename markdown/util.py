@@ -47,6 +47,12 @@ Constants you might want to modify
 # TODO: Raise errors from list methods in the future.
 # Later, remove this class entirely and use a regular set.
 class _BlockLevelElements:
+    # This hybrid list/set container exists for backwards compatibility reasons,
+    # to support using both the `BLOCK_LEVEL_ELEMENTS` global variable (soft-deprecated)
+    # and the `Markdown.block_level_elements` instance attribute (preferred) as a list or a set.
+    # When we stop supporting list methods on these objects, we can remove the container
+    # as well as the `test_block_level_elements` test module.
+
     def __init__(self, elements: list[str], /) -> None:
         self._list = elements.copy()
         self._set = set(self._list)

@@ -22,6 +22,12 @@ Tests for block level elements.
 ===============================
 
 Tests specific to the hybrid list/set container for block level elements.
+
+The hybrid list/set container exists for backwards compatibility reasons,
+to support using both the `BLOCK_LEVEL_ELEMENTS` global variable (soft-deprecated)
+and the `Markdown.block_level_elements` instance attribute (preferred) as a list or a set.
+When we stop supporting list methods on these objects, we can remove the container
+as well as this test module.
 """
 
 import unittest
