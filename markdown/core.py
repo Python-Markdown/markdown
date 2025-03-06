@@ -113,7 +113,6 @@ class Markdown:
         ]
         """ List of characters which get the backslash escape treatment. """
 
-
         # `BLOCK_LEVEL_ELEMENTS` is actually a hybrid list/set container.
         # It supports list methods for backwards compatibility.
         # We expliclitly lie here, so that users running type checkers will get
