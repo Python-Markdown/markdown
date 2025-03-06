@@ -289,7 +289,7 @@ class _BlockLevelElements:
                 self._list.remove(element)
             except ValueError:
                 break
-        # We raise ValueError for backwards compatibility.
+        # We raise `ValueError` for backwards compatibility.
         try:
             self._set.remove(element)
         except KeyError:
@@ -332,7 +332,7 @@ class _BlockLevelElements:
 
 
 # Type it as `set[str]` to express our intent for it to be used as such.
-# We expliclitly lie here, so that users running type checkers will get
+# We explicitly lie here, so that users running type checkers will get
 # warnings when they use the container as a list. This is a very effective
 # way of communicating the change, and deprecating list-like usage.
 BLOCK_LEVEL_ELEMENTS: set[str] = _BlockLevelElements([
