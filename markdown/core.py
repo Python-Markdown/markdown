@@ -115,7 +115,7 @@ class Markdown:
 
         # `BLOCK_LEVEL_ELEMENTS` is actually a hybrid list/set container.
         # It supports list methods for backwards compatibility.
-        # We expliclitly lie here, so that users running type checkers will get
+        # We explicitly lie here, so that users running type checkers will get
         # warnings when they use the container as a list. This is a very effective
         # way of communicating the change, and deprecating list-like usage.
         self.block_level_elements: set[str] = BLOCK_LEVEL_ELEMENTS.copy()
