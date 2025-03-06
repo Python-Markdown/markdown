@@ -79,7 +79,9 @@ class _BlockLevelElements:
         )
         element = self._list[index]
         del self._list[index]
-        self._set.remove(element)
+        # Only remove from set if absent from list.
+        if element not in self._list:
+            self._set.remove(element)
 
     def __getitem__(self, index: int, /) -> str:
         warnings.warn(
@@ -163,7 +165,9 @@ class _BlockLevelElements:
         # In-place item-setting should update both list and set.
         old = self._list[index]
         self._list[index] = value
-        self._set.discard(old)
+        # Only remove from set if absent from list.
+        if old not in self._list:
+            self._set.discard(old)
         self._set.add(value)
 
     def __str__(self) -> str:
@@ -262,16 +266,34 @@ class _BlockLevelElements:
     def issuperset(self, other: set[str], /) -> bool:
         return self._set.issuperset(other)
 
-    def pop(self, index: int = -1, /) -> str:
+    def pop(self, index: int | None = None, /) -> str:
         # In-place pop should update both list and set.
+        if index is None:
+            index = -1
+        else:
+            warnings.warn(
+                "Using block level elements as a list is deprecated, use it as a set instead.",
+                DeprecationWarning,
+            )
         element = self._list.pop(index)
-        self._set.remove(element)
+        # Only remove from set if absent from list.
+        if element not in self._list:
+            self._set.remove(element)
         return element
 
     def remove(self, element: str, /) -> None:
         # In-place removal should update both list and set.
-        self._list.remove(element)
-        self._set.remove(element)
+        # We give precedence to set behavior, so we remove all occurrences from the list.
+        while True:
+            try:
+                self._list.remove(element)
+            except ValueError:
+                break
+        # We raise ValueError for backwards compatibility.
+        try:
+            self._set.remove(element)
+        except KeyError:
+            raise ValueError(f"{element!r} not in list") from None
 
     def reverse(self) -> None:
         warnings.warn(

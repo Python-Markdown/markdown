@@ -43,12 +43,24 @@ class TestBlockLevelElements(unittest.TestCase):
         self.assertEqual(ble._list, [])
         self.assertEqual(ble._set, set())
 
+    def test__init__duplicates(self):
+        ble = _BlockLevelElements(["a", "a", "b"])
+        self.assertEqual(ble._list, ["a", "a", "b"])
+        self.assertEqual(ble._set, {"a", "b"})
+
     def test___add__(self):
-        ble = _BlockLevelElements(["a", "b", ])
+        ble = _BlockLevelElements(["a", "b"])
         with self.assertWarns(DeprecationWarning):
             ble2 = ble + ["c", "d"]
         self.assertIsInstance(ble2, list)
         self.assertEqual(ble2, ["a", "b", "c", "d"])
+
+    def test___add__duplicates(self):
+        ble = _BlockLevelElements(["a", "b"])
+        with self.assertWarns(DeprecationWarning):
+            ble2 = ble + ["a", "b"]
+        self.assertIsInstance(ble2, list)
+        self.assertEqual(ble2, ["a", "b", "a", "b"])
 
     def test___and__(self):
         ble = _BlockLevelElements(["a", "b"])
@@ -74,6 +86,13 @@ class TestBlockLevelElements(unittest.TestCase):
         with self.assertWarns(DeprecationWarning):
             self.assertRaises(IndexError, ble.__delitem__, 10)
 
+    def test___delitem__duplicates(self):
+        ble = _BlockLevelElements(["a", "a", "b"])
+        with self.assertWarns(DeprecationWarning):
+            del ble[0]
+        self.assertEqual(ble._list, ["a", "b"])
+        self.assertEqual(ble._set, {"a", "b"})
+
     def test___getitem__(self):
         ble = _BlockLevelElements(["a", "b", "c"])
         with self.assertWarns(DeprecationWarning):
@@ -82,12 +101,26 @@ class TestBlockLevelElements(unittest.TestCase):
             self.assertEqual(ble[2], "c")
             self.assertRaises(IndexError, ble.__getitem__, 10)
 
+    def test___getitem__duplicates(self):
+        ble = _BlockLevelElements(["a", "a", "b"])
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(ble[0], "a")
+            self.assertEqual(ble[1], "a")
+            self.assertEqual(ble[2], "b")
+
     def test___iadd__(self):
         ble = _BlockLevelElements(["a", "b"])
         with self.assertWarns(DeprecationWarning):
             ble += ["c", "d"]
         self.assertEqual(ble._list, ["a", "b", "c", "d"])
         self.assertEqual(ble._set, {"a", "b", "c", "d"})
+
+    def test___iadd__duplicates(self):
+        ble = _BlockLevelElements(["a", "b"])
+        with self.assertWarns(DeprecationWarning):
+            ble += ["a", "b"]
+        self.assertEqual(ble._list, ["a", "b", "a", "b"])
+        self.assertEqual(ble._set, {"a", "b"})
 
     def test___iand__(self):
         ble = _BlockLevelElements(["a", "b"])
@@ -105,10 +138,18 @@ class TestBlockLevelElements(unittest.TestCase):
         ble = _BlockLevelElements(["a", "b", "c"])
         self.assertEqual(tuple(ble), ("a", "b", "c"))
 
+    def test___iter__duplicates(self):
+        ble = _BlockLevelElements(["a", "a", "b"])
+        self.assertEqual(tuple(ble), ("a", "a", "b"))
+
     def test___len__(self):
         self.assertEqual(len(_BlockLevelElements([])), 0)
-        self.assertEqual(len(_BlockLevelElements(["a", "a"])), 2)
+        self.assertEqual(len(_BlockLevelElements(["a", "b"])), 2)
         self.assertEqual(len(_BlockLevelElements(["a", "b", "c"])), 3)
+
+    def test___len__duplicates(self):
+        self.assertEqual(len(_BlockLevelElements(["a", "a"])), 2)
+        self.assertEqual(len(_BlockLevelElements(["a", "a", "b"])), 3)
 
     def test___or__(self):
         ble = _BlockLevelElements(["a", "b"])
@@ -157,6 +198,11 @@ class TestBlockLevelElements(unittest.TestCase):
         with self.assertWarns(DeprecationWarning):
             self.assertEqual(tuple(reversed(ble)), ("c", "b", "a"))
 
+    def test___reversed__duplicates(self):
+        ble = _BlockLevelElements(["a", "a", "b"])
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(tuple(reversed(ble)), ("b", "a", "a"))
+
     def test___setitem__(self):
         ble = _BlockLevelElements(["a", "b", "c"])
         with self.assertWarns(DeprecationWarning):
@@ -170,6 +216,17 @@ class TestBlockLevelElements(unittest.TestCase):
         with self.assertWarns(DeprecationWarning):
             self.assertRaises(IndexError, ble.__setitem__, 10, "f")
 
+    def test___setitem__duplicates(self):
+        ble = _BlockLevelElements(["a", "a", "b"])
+        with self.assertWarns(DeprecationWarning):
+            ble[0] = "b"
+        self.assertEqual(ble._list, ["b", "a", "b"])
+        self.assertEqual(ble._set, {"a", "b"})
+        with self.assertWarns(DeprecationWarning):
+            ble[1] = "b"
+        self.assertEqual(ble._list, ["b", "b", "b"])
+        self.assertEqual(ble._set, {"b"})
+
     def test___str__(self):
         ble = _BlockLevelElements(["a"])
         self.assertEqual(str(ble), "{'a'}")
@@ -180,12 +237,25 @@ class TestBlockLevelElements(unittest.TestCase):
         self.assertEqual(ble._list, ["a", "b", "c"])
         self.assertEqual(ble._set, {"a", "b", "c"})
 
+    def test_add_duplicates(self):
+        ble = _BlockLevelElements(["a", "b"])
+        ble.add("a")
+        self.assertEqual(ble._list, ["a", "b", "a"])
+        self.assertEqual(ble._set, {"a", "b"})
+
     def test_append(self):
         ble = _BlockLevelElements(["a", "b"])
         with self.assertWarns(DeprecationWarning):
             ble.append("c")
         self.assertEqual(ble._list, ["a", "b", "c"])
         self.assertEqual(ble._set, {"a", "b", "c"})
+
+    def test_append_duplicates(self):
+        ble = _BlockLevelElements(["a", "b"])
+        with self.assertWarns(DeprecationWarning):
+            ble.append("a")
+        self.assertEqual(ble._list, ["a", "b", "a"])
+        self.assertEqual(ble._set, {"a", "b"})
 
     def test_clear(self):
         ble = _BlockLevelElements(["a", "b"])
@@ -200,12 +270,24 @@ class TestBlockLevelElements(unittest.TestCase):
         self.assertEqual(ble2._list, ["a", "b"])
         self.assertEqual(ble2._set, {"a", "b"})
 
+    def test_copy_duplicates(self):
+        ble = _BlockLevelElements(["a", "a"])
+        ble2 = ble.copy()
+        self.assertIsNot(ble2, ble)
+        self.assertEqual(ble2._list, ["a", "a"])
+        self.assertEqual(ble2._set, {"a"})
+
     def test_count(self):
-        ble = _BlockLevelElements(["a", "b", "a"])
+        ble = _BlockLevelElements(["a", "b"])
         with self.assertWarns(DeprecationWarning):
-            self.assertEqual(ble.count("a"), 2)
+            self.assertEqual(ble.count("a"), 1)
             self.assertEqual(ble.count("b"), 1)
             self.assertEqual(ble.count("c"), 0)
+
+    def test_count_duplicates(self):
+        ble = _BlockLevelElements(["a", "a"])
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(ble.count("a"), 2)
 
     def test_difference(self):
         ble = _BlockLevelElements(["a", "b"])
@@ -222,6 +304,7 @@ class TestBlockLevelElements(unittest.TestCase):
     def test_discard(self):
         ble = _BlockLevelElements(["a", "b"])
         ble.discard("b")
+        ble.discard("b")  # Assert no error.
         self.assertEqual(ble._list, ["a"])
         self.assertEqual(ble._set, {"a"})
 
@@ -232,6 +315,13 @@ class TestBlockLevelElements(unittest.TestCase):
         self.assertEqual(ble._list, ["a", "b", "c", "d"])
         self.assertEqual(ble._set, {"a", "b", "c", "d"})
 
+    def test_extend_duplicates(self):
+        ble = _BlockLevelElements(["a", "b"])
+        with self.assertWarns(DeprecationWarning):
+            ble.extend(["a", "b"])
+        self.assertEqual(ble._list, ["a", "b", "a", "b"])
+        self.assertEqual(ble._set, {"a", "b"})
+
     def test_index(self):
         ble = _BlockLevelElements(["a", "b", "c"])
         with self.assertWarns(DeprecationWarning):
@@ -239,6 +329,13 @@ class TestBlockLevelElements(unittest.TestCase):
             self.assertEqual(ble.index("b"), 1)
             self.assertEqual(ble.index("c"), 2)
             self.assertRaises(ValueError, ble.index, "d")
+
+    def test_index_duplicates(self):
+        ble = _BlockLevelElements(["a", "b", "b"])
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(ble.index("b"), 1)
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(ble.index("b", 2), 2)
 
     def test_insert(self):
         ble = _BlockLevelElements(["a", "b", "c"])
@@ -249,6 +346,13 @@ class TestBlockLevelElements(unittest.TestCase):
         with self.assertWarns(DeprecationWarning):
             ble.insert(100, "e")
         self.assertIn("e", ble)
+
+    def test_insert_duplicates(self):
+        ble = _BlockLevelElements(["a", "a", "b"])
+        with self.assertWarns(DeprecationWarning):
+            ble.insert(1, "b")
+        self.assertEqual(ble._list, ["a", "b", "a", "b"])
+        self.assertEqual(ble._set, {"a", "b"})
 
     def test_intersection(self):
         ble = _BlockLevelElements(["a", "b"])
@@ -288,12 +392,30 @@ class TestBlockLevelElements(unittest.TestCase):
         self.assertEqual(ble._set, {"b"})
         self.assertRaises(IndexError, ble.pop, 10)
 
+    def test_pop_duplicates(self):
+        ble = _BlockLevelElements(["a", "a", "b", "b"])
+        self.assertEqual(ble.pop(), "b")
+        self.assertEqual(ble._list, ["a", "a", "b"])
+        self.assertEqual(ble._set, {"a", "b"})
+        self.assertEqual(ble.pop(0), "a")
+        self.assertEqual(ble._list, ["a", "b"])
+        self.assertEqual(ble._set, {"a", "b"})
+        self.assertEqual(ble.pop(), "b")
+        self.assertEqual(ble._list, ["a"])
+        self.assertEqual(ble._set, {"a"})
+
     def test_remove(self):
         ble = _BlockLevelElements(["a", "b", "c"])
         ble.remove("b")
         self.assertEqual(ble._list, ["a", "c"])
         self.assertEqual(ble._set, {"a", "c"})
         self.assertRaises(ValueError, ble.remove, "d")
+
+    def test_remove_duplicates(self):
+        ble = _BlockLevelElements(["a", "a", "b"])
+        ble.remove("a")
+        self.assertEqual(ble._list, ["b"])
+        self.assertEqual(ble._set, {"b"})
 
     def test_reverse(self):
         ble = _BlockLevelElements(["a", "b", "c"])
@@ -302,12 +424,26 @@ class TestBlockLevelElements(unittest.TestCase):
         self.assertEqual(ble._list, ["c", "b", "a"])
         self.assertEqual(ble._set, {"a", "b", "c"})
 
+    def test_reverse_duplicates(self):
+        ble = _BlockLevelElements(["a", "a", "b"])
+        with self.assertWarns(DeprecationWarning):
+            ble.reverse()
+        self.assertEqual(ble._list, ["b", "a", "a"])
+        self.assertEqual(ble._set, {"a", "b"})
+
     def test_sort(self):
         ble = _BlockLevelElements(["c", "a", "b"])
         with self.assertWarns(DeprecationWarning):
             ble.sort()
         self.assertEqual(ble._list, ["a", "b", "c"])
         self.assertEqual(ble._set, {"a", "b", "c"})
+
+    def test_sort_duplicates(self):
+        ble = _BlockLevelElements(["b", "a", "b"])
+        with self.assertWarns(DeprecationWarning):
+            ble.sort()
+        self.assertEqual(ble._list, ["a", "b", "b"])
+        self.assertEqual(ble._set, {"a", "b"})
 
     def test_symmetric_difference(self):
         ble = _BlockLevelElements(["a", "b"])
