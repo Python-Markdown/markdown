@@ -30,6 +30,18 @@ class TestAbbr(TestCase):
 
     default_kwargs = {'extensions': ['abbr']}
 
+    def test_ignore_atomic(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                This <https://example.com/{YAFR}>
+
+                *[YAFR]: Yet Another Feature Request
+                """
+            ),
+            '<p>This <a href="https://example.com/{YAFR}">https://example.com/{YAFR}</a></p>'
+        )
+
     def test_abbr_upper(self):
         self.assertMarkdownRenders(
             self.dedent(

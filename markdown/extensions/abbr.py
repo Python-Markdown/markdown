@@ -98,20 +98,22 @@ class AbbrTreeprocessor(Treeprocessor):
         for child in reversed(el):
             self.iter_element(child, el)
         if text := el.text:
-            for m in reversed(list(self.RE.finditer(text))):
-                if self.abbrs[m.group(0)]:
-                    abbr = self.create_element(self.abbrs[m.group(0)], m.group(0), text[m.end():])
-                    el.insert(0, abbr)
-                    text = text[:m.start()]
-            el.text = text
+            if not isinstance(text, AtomicString):
+                for m in reversed(list(self.RE.finditer(text))):
+                    if self.abbrs[m.group(0)]:
+                        abbr = self.create_element(self.abbrs[m.group(0)], m.group(0), text[m.end():])
+                        el.insert(0, abbr)
+                        text = text[:m.start()]
+                el.text = text
         if parent is not None and el.tail:
             tail = el.tail
             index = list(parent).index(el) + 1
-            for m in reversed(list(self.RE.finditer(tail))):
-                abbr = self.create_element(self.abbrs[m.group(0)], m.group(0), tail[m.end():])
-                parent.insert(index, abbr)
-                tail = tail[:m.start()]
-            el.tail = tail
+            if not isinstance(tail, AtomicString):
+                for m in reversed(list(self.RE.finditer(tail))):
+                    abbr = self.create_element(self.abbrs[m.group(0)], m.group(0), tail[m.end():])
+                    parent.insert(index, abbr)
+                    tail = tail[:m.start()]
+                el.tail = tail
 
     def run(self, root: etree.Element) -> etree.Element | None:
         ''' Step through tree to find known abbreviations. '''
