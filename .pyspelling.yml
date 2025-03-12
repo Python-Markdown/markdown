@@ -20,6 +20,7 @@ matrix:
       - alt
       ignores:
       - 'code, pre'
+      - '.autorefs-internal[title]'
       captures:
       - '[role=main] *|*:not(script,style)'
   - pyspelling.filters.context:
