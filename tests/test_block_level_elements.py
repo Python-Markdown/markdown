@@ -480,4 +480,3 @@ class TestBlockLevelElements(unittest.TestCase):
         ble = _BlockLevelElements([])
         self.assertIsInstance(ble, _BlockLevelElements)
         self.assertIsInstance(ble, list)
-        # self.assertIsInstance(ble, set)
