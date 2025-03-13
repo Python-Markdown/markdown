@@ -38,15 +38,34 @@ if TYPE_CHECKING:  # pragma: no cover
 _T = TypeVar('_T')
 
 
-"""
-Constants you might want to modify
------------------------------------------------------------------------------
-"""
+def deprecated(message: str, stacklevel: int = 2):
+    """
+    Raise a [`DeprecationWarning`][] when wrapped function/method is called.
+
+    Usage:
+
+    ```python
+    @deprecated("This method will be removed in version X; use Y instead.")
+    def some_method():
+        pass
+    ```
+    """
+    def wrapper(func):
+        @wraps(func)
+        def deprecated_func(*args, **kwargs):
+            warnings.warn(
+                f"'{func.__name__}' is deprecated. {message}",
+                category=DeprecationWarning,
+                stacklevel=stacklevel
+            )
+            return func(*args, **kwargs)
+        return deprecated_func
+    return wrapper
 
 
 # TODO: Raise errors from list methods in the future.
 # Later, remove this class entirely and use a regular set.
-class _BlockLevelElements:
+class _BlockLevelElements(list):
     # This hybrid list/set container exists for backwards compatibility reasons,
     # to support using both the `BLOCK_LEVEL_ELEMENTS` global variable (soft-deprecated)
     # and the `Markdown.block_level_elements` instance attribute (preferred) as a list or a set.
@@ -57,11 +76,8 @@ class _BlockLevelElements:
         self._list = elements.copy()
         self._set = set(self._list)
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def __add__(self, other: list[str], /) -> list[str]:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         # Using `+` means user expects a list back.
         return self._list + other
 
@@ -72,29 +88,20 @@ class _BlockLevelElements:
     def __contains__(self, item: str, /) -> bool:
         return item in self._set
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def __delitem__(self, index: int, /) -> None:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         element = self._list[index]
         del self._list[index]
         # Only remove from set if absent from list.
         if element not in self._list:
             self._set.remove(element)
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def __getitem__(self, index: int, /) -> str:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         return self._list[index]
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def __iadd__(self, other: list[str], /) -> set[str]:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         # In-place addition should update both list and set.
         self._list += other
         self._set.update(set(other))
@@ -150,18 +157,12 @@ class _BlockLevelElements:
         # Using `^` means user expects a set back.
         return self._set ^ value
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def __reversed__(self) -> Iterator[str]:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         return reversed(self._list)
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def __setitem__(self, index: int, value: str, /) -> None:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         # In-place item-setting should update both list and set.
         old = self._list[index]
         self._list[index] = value
@@ -178,11 +179,8 @@ class _BlockLevelElements:
         self._set.add(element)
         self._list.append(element)
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def append(self, element: str, /) -> None:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         # In-place addition should update both list and set.
         self._list.append(element)
         self._set.add(element)
@@ -195,11 +193,8 @@ class _BlockLevelElements:
         # We're not sure yet whether the user wants to use it as a set or list.
         return _BlockLevelElements(self._list)
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def count(self, value: str, /) -> int:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         # Count in list, for backwards compatibility.
         # If used as a set, both counts will be the same (1).
         return self._list.count(value)
@@ -222,27 +217,18 @@ class _BlockLevelElements:
         except ValueError:
             pass
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def extend(self, elements: list[str], /) -> None:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         # In-place extension should update both list and set.
         self._list.extend(elements)
         self._set.update(elements)
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def index(self, value, start: int = 0, stop: int = sys.maxsize, /):
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         return self._list.index(value, start, stop)
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def insert(self, index: int, element: str, /) -> None:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         # In-place insertion should update both list and set.
         self._list.insert(index, element)
         self._set.add(element)
@@ -289,24 +275,14 @@ class _BlockLevelElements:
                 self._list.remove(element)
             except ValueError:
                 break
-        # We raise `ValueError` for backwards compatibility.
-        try:
-            self._set.remove(element)
-        except KeyError:
-            raise ValueError(f"{element!r} not in list") from None
+        self._set.remove(element)
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def reverse(self) -> None:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         self._list.reverse()
 
+    @deprecated("Using block level elements as a list is deprecated, use it as a set instead.")
     def sort(self, /, *, key: Callable | None = None, reverse: bool = False) -> None:
-        warnings.warn(
-            "Using block level elements as a list is deprecated, use it as a set instead.",
-            DeprecationWarning,
-        )
         self._list.sort(key=key, reverse=reverse)
 
     def symmetric_difference(self, other: set[str], /) -> set[str]:
@@ -330,6 +306,9 @@ class _BlockLevelElements:
         # Elements were only added.
         self._list.extend(element for element in sorted(self._set - set(self._list)))
 
+
+# Constants you might want to modify
+# -----------------------------------------------------------------------------
 
 # Type it as `set[str]` to express our intent for it to be used as such.
 # We explicitly lie here, so that users running type checkers will get
@@ -400,31 +379,6 @@ def get_installed_extensions():
         import importlib_metadata as metadata
     # Only load extension entry_points once.
     return metadata.entry_points(group='markdown.extensions')
-
-
-def deprecated(message: str, stacklevel: int = 2):
-    """
-    Raise a [`DeprecationWarning`][] when wrapped function/method is called.
-
-    Usage:
-
-    ```python
-    @deprecated("This method will be removed in version X; use Y instead.")
-    def some_method():
-        pass
-    ```
-    """
-    def wrapper(func):
-        @wraps(func)
-        def deprecated_func(*args, **kwargs):
-            warnings.warn(
-                f"'{func.__name__}' is deprecated. {message}",
-                category=DeprecationWarning,
-                stacklevel=stacklevel
-            )
-            return func(*args, **kwargs)
-        return deprecated_func
-    return wrapper
 
 
 def parseBoolValue(value: str | None, fail_on_errors: bool = True, preserve_none: bool = False) -> bool | None:
