@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Ensure `<center>` is treated like a block-level element (#1481).
 * Ensure that `abbr` extension respects `AtomicString` and does not process
   perceived abbreviations in these strings (#1512).
+* The `smarty` extension correctly renders nested closing quotes (#1514).
 
 ## [3.7] -- 2024-08-16
 
