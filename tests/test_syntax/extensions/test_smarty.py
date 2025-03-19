@@ -57,6 +57,10 @@ class TestSmarty(TestCase):
             '<p>(He replied, &ldquo;She said &lsquo;Hello.&rsquo;&rdquo;)</p>'
         )
         self.assertMarkdownRenders(
+            '<span>He replied, "She said \'Hello.\'"</span>',
+            '<p><span>He replied, &ldquo;She said &lsquo;Hello.&rsquo;&rdquo;</span></p>'
+        )
+        self.assertMarkdownRenders(
             '"quoted" text and **bold "quoted" text**',
             '<p>&ldquo;quoted&rdquo; text and <strong>bold &ldquo;quoted&rdquo; text</strong></p>'
         )
