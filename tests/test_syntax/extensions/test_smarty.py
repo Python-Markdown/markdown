@@ -45,6 +45,22 @@ class TestSmarty(TestCase):
             '<p>&lsquo;Quoted &ldquo;words&rdquo; in a larger quote.&rsquo;</p>'
         )
         self.assertMarkdownRenders(
+            '"Quoted words at the \'end.\'"',
+            '<p>&ldquo;Quoted words at the &lsquo;end.&rsquo;&rdquo;</p>'
+        )
+        self.assertMarkdownRenders(
+            '\'Quoted words at the "end."\'',
+            '<p>&lsquo;Quoted words at the &ldquo;end.&rdquo;&rsquo;</p>'
+        )
+        self.assertMarkdownRenders(
+            '(He replied, "She said \'Hello.\'")',
+            '<p>(He replied, &ldquo;She said &lsquo;Hello.&rsquo;&rdquo;)</p>'
+        )
+        self.assertMarkdownRenders(
+            '<span>He replied, "She said \'Hello.\'"</span>',
+            '<p><span>He replied, &ldquo;She said &lsquo;Hello.&rsquo;&rdquo;</span></p>'
+        )
+        self.assertMarkdownRenders(
             '"quoted" text and **bold "quoted" text**',
             '<p>&ldquo;quoted&rdquo; text and <strong>bold &ldquo;quoted&rdquo; text</strong></p>'
         )
