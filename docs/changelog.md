@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * DRY fix in `abbr` extension by introducing method `create_element` (#1483).
 * Clean up test directory some removing some redundant tests and port
   non-redundant cases to the newer test framework.
-* Dropped support for Python 3.8 as it has reached its EOL.
+* Dropped support for Python 3.8 as it has reached its end of life.
 
 ### Fixed
 
