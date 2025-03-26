@@ -50,7 +50,7 @@ class Markdown:
     Attributes:
         Markdown.tab_length (int): The number of spaces which correspond to a single tab. Default: `4`.
         Markdown.ESCAPED_CHARS (list[str]): List of characters which get the backslash escape treatment.
-        Markdown.block_level_elements (set[str]): Set of HTML tags which get treated as block-level elements.
+        Markdown.block_level_elements (list[str]): List of HTML tags which get treated as block-level elements.
             See [`markdown.util.BLOCK_LEVEL_ELEMENTS`][] for the full list of elements.
         Markdown.registeredExtensions (list[Extension]): List of extensions which have called
             [`registerExtension`][markdown.Markdown.registerExtension] during setup.
@@ -113,12 +113,7 @@ class Markdown:
         ]
         """ List of characters which get the backslash escape treatment. """
 
-        # `BLOCK_LEVEL_ELEMENTS` is actually a hybrid list/set container.
-        # It supports list methods for backwards compatibility.
-        # We explicitly lie here, so that users running type checkers will get
-        # warnings when they use the container as a list. This is a very effective
-        # way of communicating the change, and deprecating list-like usage.
-        self.block_level_elements: set[str] = BLOCK_LEVEL_ELEMENTS.copy()
+        self.block_level_elements: list[str] = BLOCK_LEVEL_ELEMENTS.copy()
 
         self.registeredExtensions: list[Extension] = []
         self.docType = ""  # TODO: Maybe delete this. It does not appear to be used anymore.

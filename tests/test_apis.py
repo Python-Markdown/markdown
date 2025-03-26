@@ -920,7 +920,7 @@ class TestBlockAppend(unittest.TestCase):
     def testBlockAppend(self):
         """ Test that appended escapes are only in the current instance. """
         md = markdown.Markdown()
-        md.block_level_elements.add('test')
+        md.block_level_elements.append('test')
         self.assertEqual('test' in md.block_level_elements, True)
         md2 = markdown.Markdown()
         self.assertEqual('test' not in md2.block_level_elements, True)
