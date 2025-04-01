@@ -18,3 +18,14 @@ jobs:
       with:
         validation_level: error
         path: docs/changelog.md
+    - name: Validate Latest Version is a Release
+      id: validate_release_version
+      if: ${{ contains(github.event.pull_request.labels.*.name, 'release') && steps.changelog_reader.outputs.status != 'unreleased' }}
+      run: echo "This PR is labeled as a release and the latest version in Changleog is ${{ steps.changelog_reader.outputs.version }}."
+    - name: Validate Latest Version is not a Release
+      id: validate_not_release_version
+      if: ${{ contains(github.event.pull_request.labels.*.name, 'release') && steps.changelog_reader.outputs.status == 'unreleased' }}
+      run: |
+        echo "This PR is labeled as a release but the latest version in Changleog has status 'unreleased'."
+        exit 1
+
