@@ -6,29 +6,30 @@ toc_depth: 2
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). See the [Contributing Guide](contributing.md) for details.
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+See the [Contributing Guide](contributing.md) for details.
 
 ## [Unreleased]
 
 ### Changed
 
 * DRY fix in `abbr` extension by introducing method `create_element` (#1483).
-* Clean up test directory some removing some redundant tests and port
+* Clean up test directory by removing some redundant tests and port
   non-redundant cases to the newer test framework.
 * Improved performance of the raw HTML post-processor (#1510).
 
 ### Fixed
 
 * Backslash Unescape IDs set via `attr_list` on `toc` (#1493).
-* `md_in_html` will process content inside "markdown" blocks a similar way
-  as they are parsed outside of "markdown" blocks giving a more consistent
-  expectation to external extensions (#1503).
+* Ensure `md_in_html` processes content inside "markdown" blocks as they are
+  parsed outside of "markdown" blocks to keep things more consistent for
+  third-party extensions (#1503).
 * `md_in_html` handle tags within inline code blocks better (#1075).
 * `md_in_html` fix handling of one-liner block HTML handling (#1074).
 * Ensure `<center>` is treated like a block-level element (#1481).
 * Ensure that `abbr` extension respects `AtomicString` and does not process
   perceived abbreviations in these strings (#1512).
-* The `smarty` extension correctly renders nested closing quotes (#1514).
+* Ensure `smarty` extension correctly renders nested closing quotes (#1514).
 
 ## [3.7] -- 2024-08-16
 
