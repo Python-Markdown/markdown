@@ -49,10 +49,12 @@ would generate the following output:
 ```html
 <div class="toc">
   <ul>
-    <li><a href="#header-1">Header 1</a></li>
+    <li>
+      <a href="#header-1">Header 1</a>
       <ul>
         <li><a href="#header-2">Header 2</a></li>
       </ul>
+    </li>
   </ul>
 </div>
 <h1 id="header-1">Header 1</h1>
@@ -121,10 +123,12 @@ would generate the following output:
 ```html
 <div class="toc">
   <ul>
-    <li><a href="#functions">Functions</a></li>
+    <li>
+      <a href="#functions">Functions</a>
       <ul>
         <li><a href="#markdown">markdown.markdown</a></li>
       </ul>
+    </li>
   </ul>
 </div>
 <h1 id="functions">Functions</h1>
