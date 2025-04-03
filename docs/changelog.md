@@ -211,7 +211,7 @@ See the [Contributing Guide](contributing.md) for details.
 * Previously deprecated objects have been removed
 
     Various objects were deprecated in version 3.0 and began raising deprecation
-    warnings (see the [version 3.0 release notes](#30-2018-09-21) for details). Any of those objects
+    warnings (see the [version 3.0 release notes](#300-2018-09-21) for details). Any of those objects
     which remained in version 3.3 have been removed from the code base in version 3.4
     and will now raise errors. The relevant objects are listed below.
 
