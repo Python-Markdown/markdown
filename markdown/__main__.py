@@ -54,19 +54,6 @@ def parse_options(args=None, values=None):
     ver = "%%prog %s" % markdown.__version__
 
     parser = optparse.OptionParser(usage=usage, description=desc, version=ver)
-    parser.add_option("-f", "--file", dest="filename", default=None,
-                      help="Write output to OUTPUT_FILE. Defaults to STDOUT.",
-                      metavar="OUTPUT_FILE")
-    parser.add_option("-e", "--encoding", dest="encoding",
-                      help="Encoding for input and output files.",)
-    parser.add_option("-o", "--output_format", dest="output_format",
-                      default='xhtml', metavar="OUTPUT_FORMAT",
-                      help="Use output format 'xhtml' (default) or 'html'.")
-    parser.add_option("-n", "--no_lazy_ol", dest="lazy_ol",
-                      action='store_false', default=True,
-                      help="Observe number of first item of ordered lists.")
-    parser.add_option("-x", "--extension", action="append", dest="extensions",
-                      help="Load extension EXTENSION.", metavar="EXTENSION")
     parser.add_option("-c", "--extension_configs",
                       dest="configfile", default=None,
                       help="Read extension configurations from CONFIG_FILE. "
@@ -78,15 +65,28 @@ def parse_options(args=None, values=None):
                       "class. The extensions must also be loaded with the "
                       "`--extension` option.",
                       metavar="CONFIG_FILE")
-    parser.add_option("-q", "--quiet", default=CRITICAL,
-                      action="store_const", const=CRITICAL+10, dest="verbose",
-                      help="Suppress all warnings.")
-    parser.add_option("-v", "--verbose",
-                      action="store_const", const=WARNING, dest="verbose",
-                      help="Print all warnings.")
+    parser.add_option("-e", "--encoding", dest="encoding",
+                      help="Encoding for input and output files.",)
+    parser.add_option("-f", "--file", dest="filename", default=None,
+                      help="Write output to OUTPUT_FILE. Defaults to STDOUT.",
+                      metavar="OUTPUT_FILE")
+    parser.add_option("-n", "--no_lazy_ol", dest="lazy_ol",
+                      action='store_false', default=True,
+                      help="Observe number of first item of ordered lists.")
     parser.add_option("--noisy",
                       action="store_const", const=DEBUG, dest="verbose",
                       help="Print debug messages.")
+    parser.add_option("-o", "--output_format", dest="output_format",
+                      default='xhtml', metavar="OUTPUT_FORMAT",
+                      help="Use output format 'xhtml' (default) or 'html'.")
+    parser.add_option("-q", "--quiet", default=CRITICAL,
+                      action="store_const", const=CRITICAL+10, dest="verbose",
+                      help="Suppress all warnings.")
+    parser.add_option("-x", "--extension", action="append", dest="extensions",
+                      help="Load extension EXTENSION.", metavar="EXTENSION")
+    parser.add_option("-v", "--verbose",
+                      action="store_const", const=WARNING, dest="verbose",
+                      help="Print all warnings.")
 
     (options, args) = parser.parse_args(args, values)
 
