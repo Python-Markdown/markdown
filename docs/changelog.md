@@ -31,7 +31,7 @@ See the [Contributing Guide](contributing.md) for details.
   perceived abbreviations in these strings (#1512).
 * Ensure `smarty` extension correctly renders nested closing quotes (#1514).
 
-## [3.7] -- 2024-08-16
+## [3.7.0] - 2024-08-16
 
 ### Changed
 
@@ -65,7 +65,7 @@ This can be useful when using the `glossary` option.
 
 * Fixed links to source code on GitHub from the documentation (#1453).
 
-## [3.6] -- 2024-03-14
+## [3.6.0] - 2024-03-14
 
 ### Changed
 
@@ -100,7 +100,7 @@ This can be useful when using the `glossary` option.
 * In attribute lists (`attr_list`, `fenced_code`), quoted attribute values are
   now allowed to contain curly braces (`}`) (#1414).
 
-## [3.5.2] -- 2024-01-10
+## [3.5.2] - 2024-01-10
 
 ### Fixed
 
@@ -114,7 +114,7 @@ This can be useful when using the `glossary` option.
 * Improve and expand type annotations in the code base (#1401).
 * Fix handling of bogus comments (#1425).
 
-## [3.5.1] -- 2023-10-31
+## [3.5.1] - 2023-10-31
 
 ### Fixed
 
@@ -122,7 +122,7 @@ This can be useful when using the `glossary` option.
   trigger quadratic line counting behavior (#1392).
 * Improve and expand type annotations in the code base (#1394).
 
-## [3.5] -- 2023-10-06
+## [3.5.0] - 2023-10-06
 
 ### Added
 
@@ -149,7 +149,7 @@ links to the header, placing them after all other header content.
 * Fix a corner case in admonitions where if an indented code block was provided
   as the first block, the output would be malformed (#1329).
 
-## [3.4.4] -- 2023-07-25
+## [3.4.4] - 2023-07-25
 
 ### Fixed
 
@@ -157,13 +157,13 @@ links to the header, placing them after all other header content.
 * Unescape any backslash escaped inline raw HTML (#1358).
 * Unescape backslash escaped TOC token names (#1360).
 
-## [3.4.3] -- 2023-03-23
+## [3.4.3] - 2023-03-23
 
 ### Fixed
 
 * Restore console script (#1327).
 
-## [3.4.2] -- 2023-03-22
+## [3.4.2] - 2023-03-22
 
 ### Fixed
 * Officially support Python 3.11.
@@ -171,13 +171,13 @@ links to the header, placing them after all other header content.
 * Consider `<html>` HTML tag a block-level element (#1309).
 * Switch from `setup.py` to `pyproject.toml`.
 
-## [3.4.1] -- 2022-07-15
+## [3.4.1] - 2022-07-15
 
 ### Fixed
 
 * Fix an import issue with `importlib.util` (#1274).
 
-## [3.4] -- 2022-07-15
+## [3.4.0] - 2022-07-15
 
 ### Changed
 
@@ -280,7 +280,7 @@ valid parameter and will raise an error if provided.
   `PrettifyTreeprocessor` (#1261, #1263).
 * Fix XML deprecation warnings.
 
-## [3.3.7] -- 2022-05-05
+## [3.3.7] - 2022-05-05
 
 ### Fixed
 
@@ -288,13 +288,13 @@ valid parameter and will raise an error if provided.
 * Retain configured `pygments_style` after first code block (#1240).
 * Ensure fenced code attributes are properly escaped (#1247).
 
-## [3.3.6] -- 2021-11-17
+## [3.3.6] - 2021-11-17
 
 ### Fixed
 
 * Fix a dependency issue (#1195, #1196).
 
-## [3.3.5] -- 2021-11-16
+## [3.3.5] - 2021-11-16
 
 ### Fixed
 
@@ -306,7 +306,7 @@ valid parameter and will raise an error if provided.
 * Ensure `<summary>` tags are parsed correctly (#1079).
 * Support Python 3.10 (#1124).
 
-## [3.3.4] -- 2021-02-24
+## [3.3.4] - 2021-02-24
 
 ### Fixed
 
@@ -318,7 +318,7 @@ valid parameter and will raise an error if provided.
 * Ensure `permalinks` and `anchorlinks` are not restricted by `toc_depth` (#1107).
 * Fix corner cases with lists under admonitions (#1102).
 
-## [3.3.3] -- 2020-10-25
+## [3.3.3] - 2020-10-25
 
 ### Fixed
 
@@ -327,21 +327,21 @@ valid parameter and will raise an error if provided.
 * Avoid catastrophic backtracking in `hr` regex (#1055).
 * Fix `hr` HTML handling (#1053).
 
-## [3.3.2] -- 2020-10-19
+## [3.3.2] - 2020-10-19
 
 ### Fixed
 
 * Properly parse inline HTML in md_in_html (#1040 & #1045).
 * Avoid crashing when md_in_html fails (#1040).
 
-## [3.3.1] -- 2020-10-12
+## [3.3.1] - 2020-10-12
 
 ### Fixed
 
 * Correctly parse raw `script` and `style` tags (#1036).
 * Ensure consistent class handling by `fenced_code` and `codehilite` (#1032).
 
-## [3.3] -- 2020-10-06
+## [3.3.0] - 2020-10-06
 
 ### Changed
 
@@ -444,7 +444,7 @@ In addition, the documentation for the extensions received an overhaul. The feat
 * Fix complex scenarios involving lists and admonitions (#1004).
 * Fix complex scenarios with nested ordered and unordered lists in a definition list (#918).
 
-## [3.2.2] -- 2020-05-08
+## [3.2.2] - 2020-05-08
 
 ### Fixed
 
@@ -458,14 +458,14 @@ In addition, the documentation for the extensions received an overhaul. The feat
 * Remove import of `packaging` (or `pkg_resources` fallback) entirely.
 * Remove `setuptools` as a run-time dependency (`install_required`).
 
-## [3.2.1] -- 2020-02-12
+## [3.2.1] - 2020-02-12
 
 ### Fixed
 
 * The `name` property in `toc_tokens` from the TOC extension now
   escapes HTML special characters (`<`, `>`, and `&`).
 
-## [3.2] -- 2020-02-07
+## [3.2.0] - 2020-02-07
 
 ### Changed
 
@@ -553,7 +553,7 @@ Therefore, extension developers are encouraged to replace
 * Refactor bold and italic logic in order to solve complex nesting issues (#792).
 * Always wrap CodeHilite code in `code` tags (#862).
 
-## [3.1.1] -- 2019-05-20
+## [3.1.1] - 2019-05-20
 
 ### Fixed
 
@@ -562,7 +562,7 @@ Therefore, extension developers are encouraged to replace
 * Prefer public `packaging` module to pkg_resources' private copy of
   it (#825).
 
-## [3.1] -- 2019-03-25
+## [3.1.0] - 2019-03-25
 
 ### Changed
 
@@ -602,14 +602,14 @@ a future release the legacy attributes will be removed.
 * Problems with newlines in references has been fixed (#742).
 * Escaped `#` are now handled in header syntax (#762).
 
-## [3.0.1] -- 2018-09-28
+## [3.0.1] - 2018-09-28
 
 ### Fixed
 
 * Brought back the `version` and `version_info` variables (#709).
 * Added support for hexadecimal HTML entities (#712).
 
-## [3.0] -- 2018-09-21
+## [3.0.0] - 2018-09-21
 
 ### Changed
 
