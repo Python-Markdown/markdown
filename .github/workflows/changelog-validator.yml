@@ -34,10 +34,10 @@ jobs:
       with:
         python-version: 3.11
     - name: Install Markdown
-      run: python -m pip install .
+      run: python -m pip install semver .
     - name: Get Markdown Version
       id: markdown
-      run: echo "version=$(python -c 'import markdown; print(markdown.__version__)')" >> $GITHUB_OUTPUT
+      run: echo "version=$(python -c 'import markdown, semver; print(semver.Version.parse(markdown.__version__, optional_minor_and_patch=True))')" >> $GITHUB_OUTPUT
     - name: Validate Changelog
       id: changelog_reader
       uses: mindsers/changelog-reader-action@v2
