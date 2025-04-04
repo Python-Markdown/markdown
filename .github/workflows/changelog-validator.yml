@@ -7,8 +7,10 @@ on:
     - 'docs/changelog.md'
 
 jobs:
-  validate:
-
+  validate-unreleased:
+    # Validates changelog and confirms that an Unreleased entry exists.
+    # Only run when the `release` label is not set on a PR.
+    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'release') }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -18,14 +20,28 @@ jobs:
       with:
         validation_level: error
         path: docs/changelog.md
-    - name: Validate Latest Version is a Release
-      id: validate_release_version
-      if: ${{ contains(github.event.pull_request.labels.*.name, 'release') && steps.changelog_reader.outputs.status != 'unreleased' }}
-      run: echo "This PR is labeled as a release and the latest version in Changleog is ${{ steps.changelog_reader.outputs.version }}."
-    - name: Validate Latest Version is not a Release
-      id: validate_not_release_version
-      if: ${{ contains(github.event.pull_request.labels.*.name, 'release') && steps.changelog_reader.outputs.status == 'unreleased' }}
-      run: |
-        echo "This PR is labeled as a release but the latest version in Changleog has status 'unreleased'."
-        exit 1
+        version: Unreleased
 
+  validate-release:
+    # Validates changelog and confirms an entry exists for version in code.
+    # Only run when the `release` label is set on a PR.
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'release') }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+    - name: Install Markdown
+      run: python -m pip install .
+    - name: Get Markdown Version
+      id: markdown
+      run: echo "version=$(python -c 'import markdown; print(markdown.__version__)')" >> $GITHUB_OUTPUT
+    - name: Validate Changelog
+      id: changelog_reader
+      uses: mindsers/changelog-reader-action@v2
+      with:
+        validation_level: error
+        path: docs/changelog.md
+        version: ${{ steps.markdown.outputs.version }}
