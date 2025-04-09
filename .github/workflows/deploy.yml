@@ -17,7 +17,7 @@ jobs:
           python-version: 3.11
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip setuptools wheel build
+          python -m pip install --upgrade pip setuptools wheel build semver
       - name: Build
         run: |
           python -m build
@@ -27,19 +27,22 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_PASSWORD }}
+      - name: Normalize Version
+        id: normalize
+        run: echo "version=$(python -c 'import semver; print(semver.Version.parse("${{ github.ref_name }}", optional_minor_and_patch=True))')" >> $GITHUB_OUTPUT
       - name: Get Changelog Entry
         if: success()
         id: changelog_reader
         uses: mindsers/changelog-reader-action@v2
         with:
-          version: ${{ github.ref_name }}
+          version: ${{ steps.normalize.outputs.version }}
           path: ./docs/changelog.md
       - name: Release to GitHub
         if: success()
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.changelog_reader.outputs.version }}
-          name: Release ${{ steps.changelog_reader.outputs.version }}
+          tag: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
           body: ${{ steps.changelog_reader.outputs.changes }}
           artifacts: dist/**
           prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
