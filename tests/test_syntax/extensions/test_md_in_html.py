@@ -1517,7 +1517,7 @@ class TestMdInHTML(TestCase):
             extensions=['md_in_html']
         )
 
-    def test_trialing_content_after_tag_in_md_block(self):
+    def test_trailing_content_after_tag_in_md_block(self):
 
         self.assertMarkdownRenders(
             self.dedent(
