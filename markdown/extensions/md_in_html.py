@@ -387,12 +387,16 @@ class MarkdownInHtmlProcessor(BlockProcessor):
             element = self.parser.md.htmlStash.rawHtmlBlocks[index]
             if isinstance(element, etree.Element):
                 # We have a matched element. Process it.
-                blocks.pop(0)
+                block = blocks.pop(0)
                 parent.append(element)
                 self.parse_element_content(element)
                 # Cleanup stash. Replace element with empty string to avoid confusing postprocessor.
                 self.parser.md.htmlStash.rawHtmlBlocks.pop(index)
                 self.parser.md.htmlStash.rawHtmlBlocks.insert(index, '')
+                content = block[m.end(0):]
+                # Ensure the rest of the content gets handled
+                if content:
+                    blocks.insert(0, content)
                 # Confirm the match to the `blockparser`.
                 return True
         # No match found.

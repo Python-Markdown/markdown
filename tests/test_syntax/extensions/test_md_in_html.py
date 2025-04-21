@@ -1517,6 +1517,27 @@ class TestMdInHTML(TestCase):
             extensions=['md_in_html']
         )
 
+    def test_trailing_content_after_tag_in_md_block(self):
+
+        # It should be noted that this is not the way `md_in_html` is intended to be used.
+        # What we are specifically testing is an edge case where content was previously lost.
+        # Lost content should not happen.
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown>
+                <div class="circle"></div>AAAAA<div class="circle"></div>
+                </div>
+                """
+            ),
+            '<div>\n'
+            '<div class="circle"></div>\n'
+            '<p>AAAAA<div class="circle"></p>\n'
+            '</div>\n'
+            '</div>',
+            extensions=['md_in_html']
+        )
+
 
 def load_tests(loader, tests, pattern):
     """ Ensure `TestHTMLBlocks` doesn't get run twice by excluding it here. """
