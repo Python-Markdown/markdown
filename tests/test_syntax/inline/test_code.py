@@ -62,3 +62,20 @@ class TestCode(TestCase):
                 """
             )
         )
+
+    def test_noname_tag(self):
+        # Browsers ignore `</>`, but a Markdown parser should not, and should treat it as data
+        # but not a tag.
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                `</>`
+                """
+            ),
+            self.dedent(
+                """
+                <p><code>&lt;/&gt;</code></p>
+                """
+            )
+        )
