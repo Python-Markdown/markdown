@@ -1643,3 +1643,21 @@ class TestHTMLBlocks(TestCase):
         placeholder = md.htmlStash.get_placeholder(md.htmlStash.html_counter + 1)
         result = md.postprocessors['raw_html'].run(placeholder)
         self.assertEqual(placeholder, result)
+
+    def test_noname_tag(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div>
+                </>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                </>
+                </div>
+                """
+            )
+        )

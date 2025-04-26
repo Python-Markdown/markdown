@@ -31,3 +31,6 @@ class TestRawHtml(TestCase):
 
     def test_inline_html_backslashes(self):
         self.assertMarkdownRenders('<img src="..\\..\\foo.png">', '<p><img src="..\\..\\foo.png"></p>')
+
+    def test_noname_tag(self):
+        self.assertMarkdownRenders('<span></></span>', '<p><span>&lt;/&gt;</span></p>')

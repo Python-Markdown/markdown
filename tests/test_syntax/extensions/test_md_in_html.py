@@ -1538,6 +1538,24 @@ class TestMdInHTML(TestCase):
             extensions=['md_in_html']
         )
 
+    def test_noname_tag(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <div markdown>
+                </>
+                </div>
+                """
+            ),
+            self.dedent(
+                """
+                <div>
+                <p>&lt;/&gt;</p>
+                </div>
+                """
+            )
+        )
+
 
 def load_tests(loader, tests, pattern):
     """ Ensure `TestHTMLBlocks` doesn't get run twice by excluding it here. """

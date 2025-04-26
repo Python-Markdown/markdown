@@ -14,6 +14,7 @@ See the [Contributing Guide](contributing.md) for details.
 ### Fixed
 
 * Fixed dropped content in `md_in_html` (#1526).
+* Fixed HTML handling corner case that prevented some content from not being rendered (#1528).
 
 ## [3.8.0] - 2025-04-09
 
