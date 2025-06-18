@@ -474,24 +474,37 @@ following steps:
 
 3. Update the version defined in [`markdown/__meta__.py`][markdown/__meta__.py].
 
-4. Build a local copy of the documentation, browse through the pages and
+4. Build a local copy of the documentation and browse through the pages to
    confirm that no obvious issues exist with the documentation.
 
-5. Create a pull request with a commit message in the following format:
+5. Create a pull request labeled `release`{ .label .release } with a commit
+   message in the following format:
 
         Bump version to X.X.X
 
+    !!! note 
+
+        For the checks to run properly the `release`{ .label .release } label
+        must be set on GitHub before creating the pull request. If the label
+        is added to the pull request later, additional changes will need to
+        be pushed to the pull request for the checks to acknowledge the
+        label.The relevant check verifies that the version defined in the
+        code matches the latest version in the changelog and that the
+        changelog no longer lists an `unreleased` entry. This check is
+        nessecary to ensure deployment will not fail later. 
+
 6. After all checks have passed, merge the pull request.
 
-7. Create a git tag with the new version as the tag name and push to the
-   [Python-Markdown/markdown] repository. The new tag should trigger a GitHub
-   workflow which will automatically deploy the release to PyPI and update the
-   documentation.
+7. Create a git tag with the new version as the tag name (in the format X.X.X
+   with no prefixes or sufixes) and push to the [Python-Markdown/markdown] 
+   repository. The new tag should trigger a GitHub workflow which will
+   automatically deploy the release to PyPI and update the documentation.
 
     In the event that the deployment fails, the following steps can be taken to
     deploy manually:
 
-    - Deploy the release to [PyPI] with the command `make deploy`.
+    - Deploy the release to [PyPI] with the command `make deploy` (a valid
+      authentication token will need to be provided).
 
     - Deploy an update to the documentation using [MkDocs]. The following example
       assumes that local clones of the [Python-Markdown/markdown] and
@@ -504,7 +517,7 @@ following steps:
 
 ## Issue and Pull Request Labels
 
-Below are the labels used to track and manages issues and pull requests. The
+Below are the labels used to track and manage issues and pull requests. The
 labels are loosely grouped by their purpose, but it is not necessary for every
 issue to have a label from every group, and an issue may have more than one
 label from the same group.
@@ -551,6 +564,10 @@ label from the same group.
 | `approved`{ .label .approved }        | The pull request is ready to be merged.              |
 | `rejected`{ .label .rejected }        | The pull request is rejected for the stated reasons. |
 
+One additional label exists named `release`{ .label .release }. This label should only be
+assigned to pull requests which bump the version. See the [Release Process](#release-process)
+for details.
+
 [Python-Markdown Organization]: https://github.com/Python-Markdown
 [Python-Markdown Code of Conduct]: https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md
 [Python-Markdown/markdown]: https://github.com/Python-Markdown/markdown
@@ -596,41 +613,46 @@ label from the same group.
         font-weight: 600;
         line-height: 15px;
         display: inline-block;
-        padding: 4px 6px;
+        padding: 0 8px;
+        margin: 4px 0;
+        border-radius: 999px;
     }
     code.bug {
-        background-color: #c45b46;
+        background-color: #c45b46 !important;
     }
     code.feature {
-        background-color: #7b17d8;
+        background-color: #7b17d8 !important;
         color: #ffffff;
     }
     code.support {
-        background-color: #efbe62;
+        background-color: #efbe62 !important;
     }
     code.process {
-        background-color: #eec9ff;
+        background-color: #eec9ff !important;
     }
     code.core {
-        background-color: #0b02e1;
+        background-color: #0b02e1 !important;
         color: #ffffff;
     }
     code.extension {
-        background-color: #709ad8;
+        background-color: #709ad8 !important;
     }
     code.docs {
-        background-color: #b2ffeb;
+        background-color: #b2ffeb !important;
     }
     code.approved {
-        background-color: #beed6d;
+        background-color: #beed6d !important;
     }
     code.low {
-        background-color: #dddddd;
+        background-color: #dddddd !important;
     }
     code.pending {
-        background-color: #f0f49a;
+        background-color: #f0f49a !important;
     }
     code.rejected {
-        background-color: #f7c7be;
+        background-color: #f7c7be !important;
+    }
+    code.release {
+        background-color: #d4c5f9 !important;
     }
 </style>
