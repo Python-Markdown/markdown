@@ -13,6 +13,7 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* Ensure incomplete markup declaration in raw HTML doesn't crash parser (#1534).
 * Fixed dropped content in `md_in_html` (#1526).
 * Fixed HTML handling corner case that prevented some content from not being rendered (#1528).
 

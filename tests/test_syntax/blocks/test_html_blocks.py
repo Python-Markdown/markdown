@@ -1275,6 +1275,13 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
+    def test_not_actually_cdata(self):
+        # Ensure bug reported in #1534 is avoided.
+        self.assertMarkdownRenders(
+            '<![',
+            '<p>&lt;![</p>'
+        )
+
     def test_raw_cdata_code_span(self):
         self.assertMarkdownRenders(
             self.dedent(
