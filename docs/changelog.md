@@ -6,8 +6,11 @@ toc_depth: 2
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to the
+[Python Version Specification]: https://packaging.python.org/en/latest/specifications/version-specifiers/.
 See the [Contributing Guide](contributing.md) for details.
+
+## [unreleased]
 
 ## [3.8.1] - 2025-06-18
 

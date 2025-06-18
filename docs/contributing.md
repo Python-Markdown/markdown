@@ -23,7 +23,7 @@ The [Python-Markdown/markdown] project is organized as follows:
 
 * Branch `master` should generally be stable and release-ready at all times.
 * Version branches should be used for bug-fixes back-ported to the most recent
-  PATCH release.
+  MICRO release.
 * No other branches should be created. Any other branches which exist are
   preserved for historical reasons only.
 
@@ -256,8 +256,8 @@ that version, or is otherwise expressly deemed appropriate by the project
 maintainers.
 
 The current changelog should only document the changes for one MAJOR release and
-its various MINOR and PATCH releases (see [Versions](#versions) for an
-explanation of MAJOR, MINOR, and PATCH releases). Older versions from previous
+its various MINOR and MICRO releases (see [Versions](#versions) for an
+explanation of MAJOR, MINOR, and MICRO releases). Older versions from previous
 series of releases can be found in the archive at `docs/change_log/` and may
 follow a different format. Note that the archived changelogs are not in the site
 navigation and are only linked from the [Previous
@@ -416,22 +416,23 @@ with no arguments. See help (`tox -h`) for more options.
 
 ## Versions
 
-Python-Markdown follows [Semantic Versioning] and uses the
-`MAJOR.MINOR.PATCH[.dev#|a#|b#|rc#]` format for identifying releases. The status
-of the `master` branch should always be identified in the `__version_info__`
-tuple defined in [`markdown/__meta__.py`][markdown/__meta__.py]. The contents of
-that tuple will automatically be converted into a normalized version which
-conforms to [PEP 440]. Each time the version is changed, the continuous
-integration server will run a test to ensure that the current version is in a
-valid normalized format.
+Python-Markdown follows the [Python Version Specification] (originally defined
+in [PEP 440]) and uses the `MAJOR.MINOR.MICRO[.dev#|a#|b#|rc#]` format for
+identifying releases. The status of the `master` branch should always be
+identified in the `__version_info__` tuple defined in[`markdown/__meta__.py`]
+[markdown/__meta__.py]. The contents of that tuple will automatically be
+converted into a normalized version string which conforms to the
+[Python Version Specification]. Each time the version is changed, the
+continuous integration server will run a test to ensure that the current
+version is in a valid normalized format.
 
 ### Version Status
 
 A MAJOR version is in development status when the MINOR version is `0`, the
-PATCH version is `0`, and the version includes a `dev` segment.
+MICRO version is `0`, and the version includes a `dev` segment.
 
 A MINOR version is in development status when the MINOR version is not `0`, the
-PATCH version is `0`, and the version includes a `dev` segment.
+MICRO version is `0`, and the version includes a `dev` segment.
 
 At all other times, the code is considered stable and release-ready.
 
@@ -446,7 +447,7 @@ failed prior to the change.
 
 New features and backward incompatible changes may only be merged to the
 `master` branch when the MAJOR and/or MINOR version is in development status
-pursuant to [Semantic Versioning].
+pursuant to the [Python Version Specification].
 
 A separate commit to the `master` branch should be made to bump up the MAJOR
 and/or MINOR version and set development status. Only then will any pull
@@ -459,7 +460,7 @@ request back-porting the fix made against that branch. The version branch should
 be named with the most recently released MINOR version. For example, if the
 `master` branch is at `3.1.dev0` and the most recent MINOR release was `3.0.4`,
 then the version branch would be named `3.0` and any releases from that branch
-would increment the PATCH version only (`3.0.5`, `3.0.6`...).
+would increment the MICRO version only (`3.0.5`, `3.0.6`...).
 
 ## Release Process
 
@@ -491,12 +492,12 @@ following steps:
         label.The relevant check verifies that the version defined in the
         code matches the latest version in the changelog and that the
         changelog no longer lists an `unreleased` entry. This check is
-        nessecary to ensure deployment will not fail later. 
+        necessary to ensure deployment will not fail later. 
 
 6. After all checks have passed, merge the pull request.
 
 7. Create a git tag with the new version as the tag name (in the format X.X.X
-   with no prefixes or sufixes) and push to the [Python-Markdown/markdown] 
+   with no prefixes or suffixes) and push to the [Python-Markdown/markdown] 
    repository. The new tag should trigger a GitHub workflow which will
    automatically deploy the release to PyPI and update the documentation.
 
@@ -599,8 +600,8 @@ for details.
 [tox]: https://tox.readthedocs.io/en/latest/
 [aspell]: http://aspell.net/
 [test tools]: test_tools.md
-[Semantic Versioning]: https://semver.org/spec/v2.0.0.html
-[markdown/__meta__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__meta__.py#L29
+[Python Version Specification]: https://packaging.python.org/en/latest/specifications/version-specifiers/
+[markdown/__meta__.py]: https://github.com/Python-Markdown/markdown/blob/master/markdown/__meta__.py#L31
 [PEP 440]: https://www.python.org/dev/peps/pep-0440/
 [PyPI]: https://pypi.org/project/Markdown/
 [Python-Markdown/Python-Markdown.github.io]: https://github.com/Python-Markdown/Python-Markdown.github.io
