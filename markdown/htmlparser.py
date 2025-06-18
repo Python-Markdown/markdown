@@ -93,6 +93,8 @@ class HTMLExtractor(htmlparser.HTMLParser):
 
         self.lineno_start_cache = [0]
 
+        self.override_comment_update = False
+
         # This calls self.reset
         super().__init__(*args, **kwargs)
         self.md = md
@@ -253,7 +255,21 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.handle_empty_tag('&{};'.format(name), is_block=False)
 
     def handle_comment(self, data: str):
+        # Check if the comment is unclosed, if so, we need to override position
+        # update
+        i = self.line_offset + self.offset + len(data) + 4
+        if self.rawdata[i:i + 3] != '-->':
+            self.handle_data('<!--')
+            self.override_comment_update = True
+            return
         self.handle_empty_tag('<!--{}-->'.format(data), is_block=True)
+
+    def updatepos(self, i: int, j: int) -> int:
+        if self.override_comment_update:
+            self.override_comment_update = False
+            i = 0
+            j = 4
+        return super().updatepos(i, j)
 
     def handle_decl(self, data: str):
         self.handle_empty_tag('<!{}>'.format(data), is_block=True)
