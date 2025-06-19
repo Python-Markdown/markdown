@@ -93,6 +93,8 @@ class HTMLExtractor(htmlparser.HTMLParser):
 
         self.lineno_start_cache = [0]
 
+        self.override_comment_update = False
+
         # This calls self.reset
         super().__init__(*args, **kwargs)
         self.md = md
@@ -253,7 +255,20 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.handle_empty_tag('&{};'.format(name), is_block=False)
 
     def handle_comment(self, data: str):
+        # Check if the comment is unclosed, if so, we need to override position
+        i = self.line_offset + self.offset + len(data) + 4
+        if self.rawdata[i:i + 3] != '-->':
+            self.handle_data('<')
+            self.override_comment_update = True
+            return
         self.handle_empty_tag('<!--{}-->'.format(data), is_block=True)
+
+    def updatepos(self, i: int, j: int) -> int:
+        if self.override_comment_update:
+            self.override_comment_update = False
+            i = 0
+            j = 1
+        return super().updatepos(i, j)
 
     def handle_decl(self, data: str):
         self.handle_empty_tag('<!{}>'.format(data), is_block=True)
@@ -278,7 +293,11 @@ class HTMLExtractor(htmlparser.HTMLParser):
             if self.rawdata[i:i+3] == '<![' and not self.rawdata[i:i+9] == '<![CDATA[':
                 # We have encountered the bug in #1534 (Python bug `gh-77057`).
                 # Provide an override until we drop support for Python < 3.13.
-                return self.parse_bogus_comment(i)
+                result = self.parse_bogus_comment(i)
+                if result == -1:
+                    self.handle_data(self.rawdata[i:i + 1])
+                    return i + 1
+                return result
             return super().parse_html_declaration(i)
         # This is not the beginning of a raw block so treat as plain data
         # and avoid consuming any tags which may follow (see #1066).
@@ -313,7 +332,8 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.__starttag_text = None
         endpos = self.check_for_whole_start_tag(i)
         if endpos < 0:
-            return endpos
+            self.handle_data(self.rawdata[i:i + 1])
+            return i + 1
         rawdata = self.rawdata
         self.__starttag_text = rawdata[i:endpos]
 

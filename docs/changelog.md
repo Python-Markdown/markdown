@@ -10,7 +10,14 @@ and this project adheres to the
 [Python Version Specification]: https://packaging.python.org/en/latest/specifications/version-specifiers/.
 See the [Contributing Guide](contributing.md) for details.
 
-## [unreleased]
+## [Unreleased]
+
+### Fixed
+
+* Fix `codecs` deprecation in Python 3.14.
+* Fix issue with unclosed comment parsing in Python 3.14.
+* Fix issue with unclosed declarations in Python 3.14.
+* Fix issue with unclosed HTML tag `<foo` and Python 3.14.
 
 ## [3.8.1] - 2025-06-18
 

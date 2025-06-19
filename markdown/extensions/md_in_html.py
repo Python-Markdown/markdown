@@ -283,7 +283,11 @@ class HTMLExtractorExtra(HTMLExtractor):
             if self.rawdata[i:i+3] == '<![' and not self.rawdata[i:i+9] == '<![CDATA[':
                 # We have encountered the bug in #1534 (Python bug `gh-77057`).
                 # Provide an override until we drop support for Python < 3.13.
-                return self.parse_bogus_comment(i)
+                result = self.parse_bogus_comment(i)
+                if result == -1:
+                    self.handle_data(self.rawdata[i:i + 1])
+                    return i + 1
+                return result
             # The same override exists in `HTMLExtractor` without the check
             # for `mdstack`. Therefore, use parent of `HTMLExtractor` instead.
             return super(HTMLExtractor, self).parse_html_declaration(i)
