@@ -14,7 +14,7 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
-* Fix `codecs` deprecation.
+* Fix `codecs` deprecation in Python 3.14.
 * Fix issue with unclosed comment parsing in Python 3.14.
 * Fix issue with unclosed declarations in Python 3.14.
 * Fix issue with unclosed HTML tag `<foo` and Python 3.14.
