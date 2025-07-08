@@ -51,7 +51,7 @@ method appropriately ([see below](#convert)).
 [bleach-allowlist]: https://github.com/yourcelf/bleach-allowlist
 [^1]: We are aware that the [bleach] project has been [deprecated](https://github.com/mozilla/bleach/issues/698). 
 However, it is the only pure-Python HTML sanitation library we are aware of and may be the only option for
-those who cannot use [nh3] (Python bindings to a Rust library). 
+those who cannot use [`nh3`][nh3] (Python bindings to a Rust library). 
 
 The following options are available on the `markdown.markdown` function:
 
