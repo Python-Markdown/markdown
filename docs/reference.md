@@ -36,11 +36,11 @@ method appropriately ([see below](#convert)).
     sanitization in popular software] for notes on best practices to ensure
     HTML is properly sanitized.
 
-    The developers of Python-Markdown recommend using [nh3] or [bleach][][^1]
+    The developers of Python-Markdown recommend using [`nh3`][nh3] or [`bleach`][bleach][^1]
     as a sanitizer on the output of `markdown.markdown`. However, be
     aware that those libraries may not be sufficient in themselves and will
     likely require customization. Some useful lists of allowed tags and
-    attributes can be found in the [bleach-allowlist] library, which should
+    attributes can be found in the [`bleach-allowlist`][bleach-allowlist] library, which should
     work with either sanitizer.
 
 
@@ -251,12 +251,12 @@ __encoding__{: #encoding }
     sanitization in popular software] for notes on best practices to ensure
     HTML is properly sanitized.
 
-    The developers of Python-Markdown recommend using [nh3] or [bleach][]
-    [^1] as a sanitizer on the output of `markdown.markdownFromFile`.
+    The developers of Python-Markdown recommend using [`nh3`][nh3] or [`bleach`][bleach][^1]
+    as a sanitizer on the output of `markdown.markdownFromFile`.
     However, be aware that those libraries may not be sufficient in
     themselves and will likely require customization. Some useful lists of
     allowed tags and attributes can be found in the
-    [bleach-allowlist] library, which should work with either sanitizer.
+    [`bleach-allowlist`][bleach-allowlist] library, which should work with either sanitizer.
 
 ### `markdown.Markdown([**kwargs])` {: #Markdown data-toc-label='markdown.Markdown' }
 
@@ -309,11 +309,11 @@ html3 = md.reset().convert(text3)
     sanitization in popular software] for notes on best practices to ensure
     HTML is properly sanitized.
 
-    The developers of Python-Markdown recommend using [nh3] or [bleach][]
-    [^1] as a sanitizer on the output of `Markdown.convert`. However, be
+    The developers of Python-Markdown recommend using [`nh3`][nh3] or [`bleach`][bleach][^1]
+    as a sanitizer on the output of `Markdown.convert`. However, be
     aware that those libraries may not be sufficient in themselves and will
     likely require customization. Some useful lists of allowed tags and
-    attributes can be found in the [bleach-allowlist] library, which should
+    attributes can be found in the [`bleach-allowlist`][bleach-allowlist] library, which should
     work with either sanitizer.
 
 #### `Markdown.convertFile(**kwargs)` {: #convertFile data-toc-label='Markdown.convertFile' }
@@ -335,9 +335,9 @@ each document. State may need to be `reset` between each call to
     sanitization in popular software] for notes on best practices to ensure
     HTML is properly sanitized.
 
-    The developers of Python-Markdown recommend using [nh3] or [bleach][]
-    [^1] as a sanitizer on the output of `Markdown.convertFile`. However, be
+    The developers of Python-Markdown recommend using [`nh3`][nh3] or [`bleach`][bleach][^1]
+    as a sanitizer on the output of `Markdown.convertFile`. However, be
     aware that those libraries may not be sufficient in themselves and will
     likely require customization. Some useful lists of allowed tags and
-    attributes can be found in the [bleach-allowlist] library, which should
+    attributes can be found in the [`bleach-allowlist`][bleach-allowlist] library, which should
     work with either sanitizer.
