@@ -33,6 +33,7 @@ import xml.etree.ElementTree as etree
 FN_BACKLINK_TEXT = util.STX + "zz1337820767766393qq" + util.ETX
 NBSP_PLACEHOLDER = util.STX + "qq3936677670287331zz" + util.ETX
 RE_REF_ID = re.compile(r'(fnref)(\d+)')
+RE_REFERENCE = re.compile(r'(?<!!)\[\^([^\]]*)\](?!\s*:)')
 
 
 class FootnoteExtension(Extension):
@@ -100,6 +101,7 @@ class FootnoteExtension(Extension):
 
     def reset(self) -> None:
         """ Clear footnotes on reset, and prepare for distinct document. """
+        self.footnote_order: list[str] = []
         self.footnotes: OrderedDict[str, str] = OrderedDict()
         self.unique_prefix += 1
         self.found_refs = {}
@@ -150,6 +152,11 @@ class FootnoteExtension(Extension):
         """ Store a footnote for later retrieval. """
         self.footnotes[id] = text
 
+    def addFootnoteRef(self, id: str) -> None:
+        """ Store a footnote reference id in order of appearance. """
+        if id not in self.footnote_order:
+            self.footnote_order.append(id)
+
     def get_separator(self) -> str:
         """ Get the footnote separator. """
         return self.getConfig("SEPARATOR")
@@ -173,6 +180,8 @@ class FootnoteExtension(Extension):
 
         if not list(self.footnotes.keys()):
             return None
+
+        self.reorderFootnoteDict()
 
         div = etree.Element("div")
         div.set('class', 'footnote')
@@ -212,9 +221,24 @@ class FootnoteExtension(Extension):
                     p.append(backlink)
         return div
 
+    def reorderFootnoteDict(self) -> None:
+        """ Reorder the footnotes dict based on the order of references found. """
+        ordered_footnotes = OrderedDict()
+        
+        for ref in self.footnote_order:
+            if ref in self.footnotes:
+                ordered_footnotes[ref] = self.footnotes[ref]
+        
+        # Add back any footnotes that were defined but not referenced.
+        for id, text in self.footnotes.items():
+            if id not in ordered_footnotes:
+                ordered_footnotes[id] = text
+
+        self.footnotes = ordered_footnotes
+
 
 class FootnoteBlockProcessor(BlockProcessor):
-    """ Find all footnote references and store for later use. """
+    """ Find footnote definitions and references, storing both for later use. """
 
     RE = re.compile(r'^[ ]{0,3}\[\^([^\]]*)\]:[ ]*(.*)$', re.MULTILINE)
 
@@ -226,8 +250,14 @@ class FootnoteBlockProcessor(BlockProcessor):
         return True
 
     def run(self, parent: etree.Element, blocks: list[str]) -> bool:
-        """ Find, set, and remove footnote definitions. """
+        """ Find, set, and remove footnote definitions. Find footnote references."""
         block = blocks.pop(0)
+
+        # Find any footnote references in the block to determine order.
+        for match in RE_REFERENCE.finditer(block):
+            ref_id = match.group(1)
+            self.footnotes.addFootnoteRef(ref_id)
+
         m = self.RE.search(block)
         if m:
             id = m.group(1)
