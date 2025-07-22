@@ -10,6 +10,12 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
+## [unreleased] - Unreleased
+
+### Fixed
+
+* Fix issue with footnote ordering (#1367).
+
 ## [3.8.2] - 2025-06-19
 
 ### Fixed

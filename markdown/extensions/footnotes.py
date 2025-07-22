@@ -224,11 +224,11 @@ class FootnoteExtension(Extension):
     def reorderFootnoteDict(self) -> None:
         """ Reorder the footnotes dict based on the order of references found. """
         ordered_footnotes = OrderedDict()
-        
+
         for ref in self.footnote_order:
             if ref in self.footnotes:
                 ordered_footnotes[ref] = self.footnotes[ref]
-        
+
         # Add back any footnotes that were defined but not referenced.
         for id, text in self.footnotes.items():
             if id not in ordered_footnotes:
