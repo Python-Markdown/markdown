@@ -302,3 +302,204 @@ Must not be confused with 'ndash'  (--) ... >>
 is the &sbquo;mdash&lsquo;: \u2014
 Must not be confused with &sbquo;ndash&lsquo;  (\u2013) \u2026 ]</p>"""
         self.assertEqual(self.md.convert(text), correct)
+
+
+class TestFootnotes(unittest.TestCase):
+    """Test Footnotes Extension."""
+
+    def setUp(self):
+        self.md = markdown.Markdown(extensions=["footnotes"])
+
+    def testBasicFootnote(self):
+        """ Test basic footnote syntax. """
+        text = "This is a footnote reference[^1].\n\n[^1]: This is the footnote."
+
+        expected = (
+            '<p>This is a footnote reference<sup id="fnref:1">'
+            '<a class="footnote-ref" href="#fn:1">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            "<hr />\n"
+            "<ol>\n"
+            '<li id="fn:1">\n'
+            "<p>This is the footnote.&#160;"
+            '<a class="footnote-backref" href="#fnref:1" title="Jump back to '
+            'footnote 1 in the text">&#8617;</a></p>\n'
+            "</li>\n"
+            "</ol>\n"
+            "</div>"
+        )
+
+        self.assertEqual(self.md.convert(text), expected)
+
+    def testFootnoteOrder(self):
+        """ Test that footnotes are ordered correctly. """
+        text = (
+            "First footnote reference[^first]. Second footnote reference[^last].\n\n"
+            "[^last]: Second footnote.\n[^first]: First footnote."
+        )
+
+        expected = (
+            '<p>First footnote reference<sup id="fnref:first"><a class="footnote-ref" '
+            'href="#fn:first">1</a></sup>. Second footnote reference<sup id="fnref:last">'
+            '<a class="footnote-ref" href="#fn:last">2</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            "<hr />\n"
+            "<ol>\n"
+            '<li id="fn:first">\n'
+            '<p>First footnote.&#160;<a class="footnote-backref" href="#fnref:first" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            "</li>\n"
+            '<li id="fn:last">\n'
+            '<p>Second footnote.&#160;<a class="footnote-backref" href="#fnref:last" '
+            'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            "</li>\n"
+            "</ol>\n"
+            "</div>"
+        )
+
+        self.assertEqual(self.md.convert(text), expected)
+
+    def testFootnoteReferenceWithinCodeSpan(self):
+        """ Test footnote reference within a code span. """
+
+        text = "A `code span with a footnote[^1] reference`."
+        expected = "<p>A <code>code span with a footnote[^1] reference</code>.</p>"
+
+        self.assertEqual(self.md.convert(text), expected)
+
+    def testFootnoteReferenceInLink(self):
+        """ Test footnote reference within a link. """
+
+        text = "A [link with a footnote[^1] reference](http://example.com)."
+        expected = '<p>A <a href="http://example.com">link with a footnote[^1] reference</a>.</p>'
+
+        self.assertEqual(self.md.convert(text), expected)
+
+    def testDuplicateFootnoteReferences(self):
+        """ Test multiple references to the same footnote. """
+        text = "First[^dup] and second[^dup] reference.\n\n[^dup]: Duplicate footnote."
+
+        expected = (
+            '<p>First<sup id="fnref:dup">'
+            '<a class="footnote-ref" href="#fn:dup">1</a></sup> and second<sup id="fnref2:dup">'
+            '<a class="footnote-ref" href="#fn:dup">1</a></sup> reference.</p>\n'
+            '<div class="footnote">\n'
+            "<hr />\n"
+            "<ol>\n"
+            '<li id="fn:dup">\n'
+            "<p>Duplicate footnote.&#160;"
+            '<a class="footnote-backref" href="#fnref:dup" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a>'
+            '<a class="footnote-backref" href="#fnref2:dup" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            "</li>\n"
+            "</ol>\n"
+            "</div>"
+        )
+
+        self.assertEqual(self.md.convert(text), expected)
+
+    def testFootnoteReferenceWithoutDefinition(self):
+        """ Test footnote reference without corresponding definition. """
+        text = "This has a missing footnote[^missing]."
+        expected = "<p>This has a missing footnote[^missing].</p>"
+
+        self.assertEqual(self.md.convert(text), expected)
+
+    def testFootnoteDefinitionWithoutReference(self):
+        """ Test footnote definition without corresponding reference. """
+        text = "No reference here.\n\n[^orphan]: Orphaned footnote."
+
+        self.assertIn("fn:orphan", self.md.convert(text))
+
+        # For the opposite behavior:
+        # self.assertNotIn("fn:orphan", self.md.convert(text))
+
+    def testMultilineFootnote(self):
+        """ Test footnote definition spanning multiple lines. """
+
+        text = (
+            "Multi-line footnote[^multi].\n\n"
+            "[^multi]: This is a footnote\n"
+            "    that spans multiple lines\n"
+            "    with proper indentation."
+        )
+
+        expected = (
+            '<p>Multi-line footnote<sup id="fnref:multi"><a class="footnote-ref" href="#fn:multi">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:multi">\n'
+            '<p>This is a footnote\n'
+            'that spans multiple lines\n'
+            'with proper indentation.&#160;<a class="footnote-backref" href="#fnref:multi" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+        self.assertEqual(self.md.convert(text), expected)
+
+    def testFootnoteInBlockquote(self):
+        """ Test footnote reference within a blockquote. """
+        text = "> This is a quote with a footnote[^quote].\n\n[^quote]: Quote footnote."
+
+        result = self.md.convert(text)
+        self.assertIn("<blockquote>", result)
+        self.assertIn("fnref:quote", result)
+
+    def testFootnoteInList(self):
+        """ Test footnote reference within a list item. """
+        text = "1. First item with footnote[^note]\n1. Second item\n\n[^note]: List footnote."
+
+        result = self.md.convert(text)
+        self.assertIn("<ol>", result)
+        self.assertIn("fnref:note", result)
+
+    def testNestedFootnotes(self):
+        """ Test footnote definition containing another footnote reference. """
+        text = (
+            "Main footnote[^main].\n\n"
+            "[^main]: This footnote references another[^nested].\n"
+            "[^nested]: Nested footnote."
+        )
+        result = self.md.convert(text)
+
+        self.assertIn("fnref:main", result)
+        self.assertIn("fnref:nested", result)
+        self.assertIn("fn:main", result)
+        self.assertIn("fn:nested", result)
+
+    def testFootnoteReset(self):
+        """ Test that footnotes are properly reset between documents. """
+        text1 = "First doc[^1].\n\n[^1]: First footnote."
+        text2 = "Second doc[^1].\n\n[^1]: Different footnote."
+
+        result1 = self.md.convert(text1)
+        self.md.reset()
+        result2 = self.md.convert(text2)
+
+        self.assertIn("First footnote", result1)
+        self.assertIn("Different footnote", result2)
+        self.assertNotIn("Different footnote", result1)
+
+    def testFootnoteIdWithSpecialChars(self):
+        """ Test footnote id containing special and unicode characters. """
+        text = "Unicode footnote id[^!#¤%/()=?+}{§øé].\n\n[^!#¤%/()=?+}{§øé]: Footnote with unicode id."
+
+        self.assertIn("fnref:!#¤%/()=?+}{§øé", self.md.convert(text))
+
+    def testFootnoteRefInHtml(self):
+        """ Test footnote reference within HTML tags. """
+        text = "A <span>footnote reference[^1] in an HTML</span>.\n\n[^1]: The footnote."
+
+        self.assertIn("fnref:1", self.md.convert(text))
+
+    def testFootnoteWithHtmlAndMarkdown(self):
+        """ Test footnote containing HTML and markdown elements. """
+        text = "A footnote with style[^html].\n\n[^html]: Has *emphasis* and <strong>bold</strong>."
+
+        result = self.md.convert(text)
+        self.assertIn("<em>emphasis</em>", result)
+        self.assertIn("<strong>bold</strong>", result)
