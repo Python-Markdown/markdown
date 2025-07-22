@@ -69,6 +69,20 @@ htmlparser.locatestarttagend_tolerant = re.compile(r"""
    )?
   \s*                                 # trailing whitespace
 """, re.VERBOSE)
+htmlparser.locatetagend = re.compile(r"""
+  [a-zA-Z][^`\t\n\r\f />]*           # tag name
+  [\t\n\r\f /]*                     # optional whitespace before attribute name
+  (?:(?<=['"\t\n\r\f /])[^`\t\n\r\f />][^\t\n\r\f /=>]*  # attribute name
+    (?:=                            # value indicator
+      (?:'[^']*'                    # LITA-enclosed value
+        |"[^"]*"                    # LIT-enclosed value
+        |(?!['"])[^>\t\n\r\f ]*     # bare value
+       )
+     )?
+    [\t\n\r\f /]*                   # possibly followed by a space
+   )*
+   >?
+""", re.VERBOSE)
 
 # Match a blank line at the start of a block of text (two newlines).
 # The newlines may be preceded by additional whitespace.
