@@ -336,3 +336,192 @@ class TestFootnotes(TestCase):
             '</div>',
             extension_configs={'footnotes': {'SUPERSCRIPT_TEXT': '[{}]'}}
         )
+
+    def test_footnote_order(self):
+        """Test that footnotes occur in order of reference appearance."""
+
+        self.assertMarkdownRenders(
+            'First footnote reference[^first]. Second footnote reference[^last].\n\n'
+            '[^last]: Second footnote.\n[^first]: First footnote.',
+            '<p>First footnote reference<sup id="fnref:first"><a class="footnote-ref" '
+            'href="#fn:first">1</a></sup>. Second footnote reference<sup id="fnref:last">'
+            '<a class="footnote-ref" href="#fn:last">2</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:first">\n'
+            '<p>First footnote.&#160;<a class="footnote-backref" href="#fnref:first" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:last">\n'
+            '<p>Second footnote.&#160;<a class="footnote-backref" href="#fnref:last" '
+            'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_footnote_reference_within_code_span(self):
+        """Test footnote reference within a code span."""
+
+        self.assertMarkdownRenders(
+            'A `code span with a footnote[^1] reference`.',
+            '<p>A <code>code span with a footnote[^1] reference</code>.</p>'
+        )
+
+    def test_footnote_reference_within_link(self):
+        """Test footnote reference within a link."""
+
+        self.assertMarkdownRenders(
+            'A [link with a footnote[^1] reference](http://example.com).',
+            '<p>A <a href="http://example.com">link with a footnote[^1] reference</a>.</p>'
+        )
+
+    def test_footnote_reference_within_footnote_definition(self):
+        """Test footnote definition containing another footnote reference."""
+
+        self.assertMarkdownRenders(
+            'Main footnote[^main].\n\n'
+            '[^main]: This footnote references another[^nested].\n'
+            '[^nested]: Nested footnote.',
+            '<p>Main footnote<sup id="fnref:main"><a class="footnote-ref" href="#fn:main">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:main">\n'
+            '<p>This footnote references another<sup id="fnref:nested"><a class="footnote-ref" '
+            'href="#fn:nested">2</a></sup>.&#160;<a class="footnote-backref" href="#fnref:main" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:nested">\n'
+            '<p>Nested footnote.&#160;<a class="footnote-backref" href="#fnref:nested" '
+            'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_footnote_reference_within_blockquote(self):
+        """Test footnote reference within a blockquote."""
+
+        self.assertMarkdownRenders(
+            '> This is a quote with a footnote[^quote].\n\n[^quote]: Quote footnote.',
+            '<blockquote>\n'
+            '<p>This is a quote with a footnote<sup id="fnref:quote">'
+            '<a class="footnote-ref" href="#fn:quote">1</a></sup>.</p>\n'
+            '</blockquote>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:quote">\n'
+            '<p>Quote footnote.&#160;<a class="footnote-backref" href="#fnref:quote" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_footnote_reference_within_list(self):
+        """Test footnote reference within a list item."""
+
+        self.assertMarkdownRenders(
+            '1. First item with footnote[^note]\n1. Second item\n\n[^note]: List footnote.',
+            '<ol>\n'
+            '<li>First item with footnote<sup id="fnref:note">'
+            '<a class="footnote-ref" href="#fn:note">1</a></sup></li>\n'
+            '<li>Second item</li>\n'
+            '</ol>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:note">\n'
+            '<p>List footnote.&#160;<a class="footnote-backref" href="#fnref:note" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_footnote_reference_within_html(self):
+        """Test footnote reference within HTML tags."""
+
+        self.assertMarkdownRenders(
+            'A <span>footnote reference[^1] within a span element</span>.\n\n[^1]: The footnote.',
+            '<p>A <span>footnote reference<sup id="fnref:1">'
+            '<a class="footnote-ref" href="#fn:1">1</a>'
+            '</sup> within a span element</span>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>The footnote.&#160;<a class="footnote-backref" href="#fnref:1" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_duplicate_footnote_references(self):
+        """Test multiple references to the same footnote."""
+
+        self.assertMarkdownRenders(
+            'First[^dup] and second[^dup] reference.\n\n[^dup]: Duplicate footnote.',
+            '<p>First<sup id="fnref:dup">'
+            '<a class="footnote-ref" href="#fn:dup">1</a></sup> and second<sup id="fnref2:dup">'
+            '<a class="footnote-ref" href="#fn:dup">1</a></sup> reference.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:dup">\n'
+            '<p>Duplicate footnote.&#160;'
+            '<a class="footnote-backref" href="#fnref:dup" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a>'
+            '<a class="footnote-backref" href="#fnref2:dup" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_footnote_reference_without_definition(self):
+        """Test footnote reference without corresponding definition."""
+
+        self.assertMarkdownRenders(
+            'This has a missing footnote[^missing].',
+            '<p>This has a missing footnote[^missing].</p>'
+        )
+
+    def test_footnote_definition_without_reference(self):
+        """Test footnote definition without corresponding reference."""
+
+        self.assertMarkdownRenders(
+            'No reference here.\n\n[^orphan]: Orphaned footnote.',
+            '<p>No reference here.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:orphan">\n'
+            '<p>Orphaned footnote.&#160;<a class="footnote-backref" href="#fnref:orphan" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_footnote_id_with_special_chars(self):
+        """Test footnote id containing special and Unicode characters."""
+
+        self.assertMarkdownRenders(
+            'Special footnote id[^!#¤%/()=?+}{§øé].\n\n[^!#¤%/()=?+}{§øé]: The footnote.',
+            '<p>Special footnote id<sup id="fnref:!#¤%/()=?+}{§øé">'
+            '<a class="footnote-ref" href="#fn:!#¤%/()=?+}{§øé">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:!#¤%/()=?+}{§øé">\n'
+            '<p>The footnote.&#160;<a class="footnote-backref" href="#fnref:!#¤%/()=?+}{§øé" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
