@@ -361,6 +361,34 @@ class TestFootnotes(TestCase):
             '</div>'
         )
 
+    def test_footnote_order_tricky(self):
+        """Test that tricky sequence of footnote references."""
+
+        self.assertMarkdownRenders(
+            '`Footnote reference in code spans should be ignored[^tricky]`. '
+            'A footnote reference[^ordinary]. '
+            'Another footnote reference[^tricky].\n\n'
+            '[^ordinary]: This should be the first footnote.\n'
+            '[^tricky]: This should be the second footnote.',
+            '<p><code>Footnote reference in code spans should be ignored[^tricky]</code>. '
+            'A footnote reference<sup id="fnref:ordinary"><a class="footnote-ref" '
+            'href="#fn:ordinary">1</a></sup>. Another footnote reference<sup id="fnref:tricky">'
+            '<a class="footnote-ref" href="#fn:tricky">2</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:ordinary">\n'
+            '<p>This should be the first footnote.&#160;<a class="footnote-backref" '
+            'href="#fnref:ordinary" title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:tricky">\n'
+            '<p>This should be the second footnote.&#160;<a class="footnote-backref" '
+            'href="#fnref:tricky" title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
     def test_footnote_reference_within_code_span(self):
         """Test footnote reference within a code span."""
 
