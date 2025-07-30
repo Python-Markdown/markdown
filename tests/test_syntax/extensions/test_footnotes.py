@@ -504,7 +504,7 @@ class TestFootnotes(TestCase):
             'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
             '</li>\n'
             '</ol>\n'
-            '</div>\n'
+            '</div>'
         )
 
     def test_footnote_reference_within_html(self):
