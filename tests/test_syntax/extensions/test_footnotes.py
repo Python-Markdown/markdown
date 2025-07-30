@@ -470,6 +470,45 @@ class TestFootnotes(TestCase):
             '</div>'
         )
 
+    def test_footnote_references_within_loose_list(self):
+        """Test footnote reference within a list item."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                * Reference to [^first]
+
+                * Reference to [^second]
+
+                [^first]: First footnote definition
+                [^second]: Second footnote definition
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <p>Reference to <sup id="fnref:first"><a class="footnote-ref" href="#fn:first">1</a></sup></p>
+                </li>
+                <li>
+                <p>Reference to <sup id="fnref:second"><a class="footnote-ref" href="#fn:second">2</a></sup></p>
+                </li>
+                </ul>
+                <div class="footnote">
+                <hr />
+                <ol>
+                <li id="fn:first">
+                <p>First footnote definition&#160;<a class="footnote-backref" href="#fnref:first" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+                </li>
+                <li id="fn:second">
+                <p>Second footnote definition&#160;<a class="footnote-backref" href="#fnref:second" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+                </li>
+                </ol>
+                </div>
+                '''
+            )
+        )
+
     def test_footnote_reference_within_html(self):
         """Test footnote reference within HTML tags."""
 
