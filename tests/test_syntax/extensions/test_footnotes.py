@@ -484,29 +484,27 @@ class TestFootnotes(TestCase):
                 [^second]: Second footnote definition
                 '''
             ),
-            self.dedent(
-                '''
-                <ul>
-                <li>
-                <p>Reference to <sup id="fnref:first"><a class="footnote-ref" href="#fn:first">1</a></sup></p>
-                </li>
-                <li>
-                <p>Reference to <sup id="fnref:second"><a class="footnote-ref" href="#fn:second">2</a></sup></p>
-                </li>
-                </ul>
-                <div class="footnote">
-                <hr />
-                <ol>
-                <li id="fn:first">
-                <p>First footnote definition&#160;<a class="footnote-backref" href="#fnref:first" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-                </li>
-                <li id="fn:second">
-                <p>Second footnote definition&#160;<a class="footnote-backref" href="#fnref:second" title="Jump back to footnote 2 in the text">&#8617;</a></p>
-                </li>
-                </ol>
-                </div>
-                '''
-            )
+            '<ul>\n'
+            '<li>\n'
+            '<p>Reference to <sup id="fnref:first"><a class="footnote-ref" href="#fn:first">1</a></sup></p>\n'
+            '</li>\n'
+            '<li>\n'
+            '<p>Reference to <sup id="fnref:second"><a class="footnote-ref" href="#fn:second">2</a></sup></p>\n'
+            '</li>\n'
+            '</ul>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:first">\n'
+            '<p>First footnote definition&#160;<a class="footnote-backref" href="#fnref:first" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:second">\n'
+            '<p>Second footnote definition&#160;<a class="footnote-backref" href="#fnref:second" '
+            'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>\n'
         )
 
     def test_footnote_reference_within_html(self):

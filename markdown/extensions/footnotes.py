@@ -95,7 +95,7 @@ class FootnoteExtension(Extension):
 
         # Insert a tree-processor to reorder the footnotes if necessary. This must be after
         # `inline` tree-processor so it can access the footnote reference order
-        # (self.footnote_order) that gets populated by the FootnoteInlineProcessor.
+        # (`self.footnote_order`) that gets populated by the `FootnoteInlineProcessor`.
         md.treeprocessors.register(FootnoteReorderingProcessor(self), 'footnote-reorder', 19)
 
         # Insert a tree-processor that will run after inline is done.
