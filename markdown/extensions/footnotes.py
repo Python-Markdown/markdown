@@ -226,7 +226,7 @@ class FootnoteExtension(Extension):
 
 
 class FootnoteBlockProcessor(BlockProcessor):
-    """ Find footnote definitions and references, storing both for later use. """
+    """ Find footnote definitions and store for later use. """
 
     RE = re.compile(r'^[ ]{0,3}\[\^([^\]]*)\]:[ ]*(.*)$', re.MULTILINE)
 
@@ -238,7 +238,7 @@ class FootnoteBlockProcessor(BlockProcessor):
         return True
 
     def run(self, parent: etree.Element, blocks: list[str]) -> bool:
-        """ Find, set, and remove footnote definitions. Find footnote references."""
+        """ Find, set, and remove footnote definitions. """
         block = blocks.pop(0)
 
         m = self.RE.search(block)

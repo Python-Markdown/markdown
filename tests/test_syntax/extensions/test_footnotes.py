@@ -341,8 +341,14 @@ class TestFootnotes(TestCase):
         """Test that footnotes occur in order of reference appearance."""
 
         self.assertMarkdownRenders(
-            'First footnote reference[^first]. Second footnote reference[^last].\n\n'
-            '[^last]: Second footnote.\n[^first]: First footnote.',
+            self.dedent(
+                """
+                First footnote reference[^first]. Second footnote reference[^last].
+
+                [^last]: Second footnote.
+                [^first]: First footnote.
+                """
+            ),
             '<p>First footnote reference<sup id="fnref:first"><a class="footnote-ref" '
             'href="#fn:first">1</a></sup>. Second footnote reference<sup id="fnref:last">'
             '<a class="footnote-ref" href="#fn:last">2</a></sup>.</p>\n'
@@ -362,17 +368,23 @@ class TestFootnotes(TestCase):
         )
 
     def test_footnote_order_tricky(self):
-        """Test that tricky sequence of footnote references."""
+        """Test a tricky sequence of footnote references."""
 
         self.assertMarkdownRenders(
-            '`Footnote reference in code spans should be ignored[^tricky]`. '
-            'A footnote reference[^ordinary]. '
-            'Another footnote reference[^tricky].\n\n'
-            '[^ordinary]: This should be the first footnote.\n'
-            '[^tricky]: This should be the second footnote.',
-            '<p><code>Footnote reference in code spans should be ignored[^tricky]</code>. '
-            'A footnote reference<sup id="fnref:ordinary"><a class="footnote-ref" '
-            'href="#fn:ordinary">1</a></sup>. Another footnote reference<sup id="fnref:tricky">'
+            self.dedent(
+                """
+                `Footnote reference in code spans should be ignored[^tricky]`.
+                A footnote reference[^ordinary].
+                Another footnote reference[^tricky].
+
+                [^ordinary]: This should be the first footnote.
+                [^tricky]: This should be the second footnote.
+                """
+            ),
+            '<p><code>Footnote reference in code spans should be ignored[^tricky]</code>.\n'
+            'A footnote reference<sup id="fnref:ordinary">'
+            '<a class="footnote-ref" href="#fn:ordinary">1</a></sup>.\n'
+            'Another footnote reference<sup id="fnref:tricky">'
             '<a class="footnote-ref" href="#fn:tricky">2</a></sup>.</p>\n'
             '<div class="footnote">\n'
             '<hr />\n'
@@ -409,9 +421,14 @@ class TestFootnotes(TestCase):
         """Test footnote definition containing another footnote reference."""
 
         self.assertMarkdownRenders(
-            'Main footnote[^main].\n\n'
-            '[^main]: This footnote references another[^nested].\n'
-            '[^nested]: Nested footnote.',
+            self.dedent(
+                """
+                Main footnote[^main].
+
+                [^main]: This footnote references another[^nested].
+                [^nested]: Nested footnote.
+                """
+            ),
             '<p>Main footnote<sup id="fnref:main"><a class="footnote-ref" href="#fn:main">1</a></sup>.</p>\n'
             '<div class="footnote">\n'
             '<hr />\n'
@@ -433,7 +450,13 @@ class TestFootnotes(TestCase):
         """Test footnote reference within a blockquote."""
 
         self.assertMarkdownRenders(
-            '> This is a quote with a footnote[^quote].\n\n[^quote]: Quote footnote.',
+            self.dedent(
+                """
+                > This is a quote with a footnote[^quote].
+
+                [^quote]: Quote footnote.
+                """
+            ),
             '<blockquote>\n'
             '<p>This is a quote with a footnote<sup id="fnref:quote">'
             '<a class="footnote-ref" href="#fn:quote">1</a></sup>.</p>\n'
@@ -453,7 +476,14 @@ class TestFootnotes(TestCase):
         """Test footnote reference within a list item."""
 
         self.assertMarkdownRenders(
-            '1. First item with footnote[^note]\n1. Second item\n\n[^note]: List footnote.',
+            self.dedent(
+                """
+                1. First item with footnote[^note]
+                1. Second item
+
+                [^note]: List footnote.
+                """
+            ),
             '<ol>\n'
             '<li>First item with footnote<sup id="fnref:note">'
             '<a class="footnote-ref" href="#fn:note">1</a></sup></li>\n'
@@ -511,7 +541,13 @@ class TestFootnotes(TestCase):
         """Test footnote reference within HTML tags."""
 
         self.assertMarkdownRenders(
-            'A <span>footnote reference[^1] within a span element</span>.\n\n[^1]: The footnote.',
+            self.dedent(
+                """
+                A <span>footnote reference[^1] within a span element</span>.
+
+                [^1]: The footnote.
+                """
+            ),
             '<p>A <span>footnote reference<sup id="fnref:1">'
             '<a class="footnote-ref" href="#fn:1">1</a>'
             '</sup> within a span element</span>.</p>\n'
@@ -530,7 +566,13 @@ class TestFootnotes(TestCase):
         """Test multiple references to the same footnote."""
 
         self.assertMarkdownRenders(
-            'First[^dup] and second[^dup] reference.\n\n[^dup]: Duplicate footnote.',
+            self.dedent(
+                """
+                First[^dup] and second[^dup] reference.
+
+                [^dup]: Duplicate footnote.
+                """
+            ),
             '<p>First<sup id="fnref:dup">'
             '<a class="footnote-ref" href="#fn:dup">1</a></sup> and second<sup id="fnref2:dup">'
             '<a class="footnote-ref" href="#fn:dup">1</a></sup> reference.</p>\n'
@@ -560,7 +602,13 @@ class TestFootnotes(TestCase):
         """Test footnote definition without corresponding reference."""
 
         self.assertMarkdownRenders(
-            'No reference here.\n\n[^orphan]: Orphaned footnote.',
+            self.dedent(
+                """
+                No reference here.
+
+                [^orphan]: Orphaned footnote.
+                """
+            ),
             '<p>No reference here.</p>\n'
             '<div class="footnote">\n'
             '<hr />\n'
@@ -577,7 +625,13 @@ class TestFootnotes(TestCase):
         """Test footnote id containing special and Unicode characters."""
 
         self.assertMarkdownRenders(
-            'Special footnote id[^!#¤%/()=?+}{§øé].\n\n[^!#¤%/()=?+}{§øé]: The footnote.',
+            self.dedent(
+                """
+                Special footnote id[^!#¤%/()=?+}{§øé].
+
+                [^!#¤%/()=?+}{§øé]: The footnote.
+                """
+            ),
             '<p>Special footnote id<sup id="fnref:!#¤%/()=?+}{§øé">'
             '<a class="footnote-ref" href="#fn:!#¤%/()=?+}{§øé">1</a></sup>.</p>\n'
             '<div class="footnote">\n'

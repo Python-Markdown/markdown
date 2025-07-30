@@ -16,6 +16,7 @@ See the [Contributing Guide](contributing.md) for details.
 
 * Fix handling of incomplete HTML tags in code spans in Python 3.14.
 * Fix issue with footnote ordering (#1367).
+* Ensure inline processing iterates through elements in document order.
 
 ## [3.8.2] - 2025-06-19
 
