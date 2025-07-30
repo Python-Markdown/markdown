@@ -471,7 +471,7 @@ class TestFootnotes(TestCase):
         )
 
     def test_footnote_references_within_loose_list(self):
-        """Test footnote reference within a list item."""
+        """Test footnote references within loose list items."""
 
         self.assertMarkdownRenders(
             self.dedent(
