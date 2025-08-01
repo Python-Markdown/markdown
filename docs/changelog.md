@@ -14,9 +14,10 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Changed
 
-* Footnotes are now ordered by the occurrence of their references in the document.
-  A new config option for `footnotes`, `USE_DEFINITION_ORDER`, has been added to support
-  restoring the previous behavior of ordering footnotes by the occurrence of definitions.
+* Footnotes are now ordered by the occurrence of their references in the
+  document. A new configuration option for the footnotes extension,
+  `USE_DEFINITION_ORDER`, has been added to support restoring the previous
+  behavior of ordering footnotes by the occurrence of definitions.
 
 ### Fixed
 

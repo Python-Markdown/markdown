@@ -402,7 +402,7 @@ class TestFootnotes(TestCase):
         )
 
     def test_footnote_order_by_definition(self):
-        """Test that footnotes occur in order of definition occurence when so configured."""
+        """Test that footnotes occur in order of definition occurrence when so configured."""
 
         self.assertMarkdownRenders(
             self.dedent(
