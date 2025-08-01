@@ -24,26 +24,33 @@ the output.
 Example:
 
 ```md
-Footnotes[^1] have a label[^@#$%] and the footnote's content.
+Footnotes have a name, a reference[^1], and a definition[^word].
 
-[^1]: This is a footnote content.
-[^@#$%]: A footnote on the label: "@#$%".
+[^1]: This is a footnote definition.
+[^word]: A footnote with the name "word".
 ```
 
-A footnote label must start with a caret `^` and may contain any inline text
-(including spaces) between a set of square brackets `[]`. Only the first
-caret has any special meaning.
+A **footnote name** is a string that uniquely identifies a footnote within the
+document. It may contain any character which is valid for an HTML id attribute
+(including spaces). Examples: `1` in `[^1]`, `word` in `[^word]`,
+and `@#$%` in `[^@#$%]`.
 
-A footnote content must start with the label followed by a colon and at least
-one space. The label used to define the content must exactly match the label used
-in the body (including capitalization and white space). The content would then
-follow the label either on the same line or on the next line. The content may
-contain multiple lines, paragraphs, code blocks, blockquotes and most any other
-markdown syntax. The additional lines must be indented one level (four spaces or
-one tab).
+A **footnote reference** is a link within the text body to a footnote definition.
+A footnote reference contains the footnote name prefixed by a caret `^` and enclosed
+in square brackets `[]`. Examples: `[^1]` and `[^@#$%]`. In the output, footnote
+references are replaced by a superscript number that links to the footnote definition.
 
-When working with multiple blocks, it may be helpful to start the content on a
-separate line from the label which defines the content. This way the entire block
+A **footnote definition** must start with the corresponding footnote reference
+followed by a colon and at least one space. The reference must exactly match
+the reference used in the body (including capitalization and white space).
+The content of the definition would then follow either on the same line
+(`[^1]: This is a footnote definition.`) or on the next line.
+Footnote definitions may contain multiple lines, paragraphs, code blocks,
+blockquotes and most any other markdown syntax. The additional lines must be
+indented one level (four spaces or one tab).
+
+When working with multiple blocks, it may be helpful to start the definition on a
+separate line from the reference which defines the content. This way the entire block
 is indented consistently and any errors are more easily discernible by the author.
 
 ```md
@@ -98,6 +105,15 @@ The following options are provided to configure the output:
 * **`SEPARATOR`**:
     The text string used to set the footnote separator. Defaults to `:`.
 
+* **`USE_DEFINITION_ORDER`**:
+    Whether to order footnotes by the occurrence of footnote definitions
+    in the document. Defaults to `False`.
+
+    Introduced in version 3.9.0, this option allows footnotes to be ordered
+    by the occurrence of their definitions in the document, rather than by the
+    order of their references in the text. This was the behavior of
+    previous versions of the extension.
+
 A trivial example:
 
 ```python
@@ -109,7 +125,7 @@ Resetting Instance State
 
 Footnote definitions are stored within the  `markdown.Markdown` class instance between
 multiple runs of the class.  This allows footnotes from all runs to be included in
-output, with  links and references that are unique, even though the class has been
+output, with links and references that are unique, even though the class has been
 called multiple times.
 
 However, if needed, the definitions can be cleared between runs by calling `reset`.

@@ -12,8 +12,16 @@ See the [Contributing Guide](contributing.md) for details.
 
 ## [Unreleased]
 
+### Changed
+
+* Footnotes are now ordered by the occurrence of their references in the
+  document. A new configuration option for the footnotes extension,
+  `USE_DEFINITION_ORDER`, has been added to support restoring the previous
+  behavior of ordering footnotes by the occurrence of definitions.
+
 ### Fixed
 
+* Ensure inline processing iterates through elements in document order.
 * Fix handling of incomplete HTML tags in code spans in Python 3.14.
 
 ## [3.8.2] - 2025-06-19
