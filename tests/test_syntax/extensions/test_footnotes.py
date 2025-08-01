@@ -401,6 +401,37 @@ class TestFootnotes(TestCase):
             '</div>'
         )
 
+    def test_footnote_order_by_definition(self):
+        """Test that footnotes occur in order of definition occurence when so configured."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                First footnote reference[^last_def]. Second footnote reference[^first_def].
+
+                [^first_def]: First footnote.
+                [^last_def]: Second footnote.
+                """
+            ),
+            '<p>First footnote reference<sup id="fnref:last_def"><a class="footnote-ref" '
+            'href="#fn:last_def">2</a></sup>. Second footnote reference<sup id="fnref:first_def">'
+            '<a class="footnote-ref" href="#fn:first_def">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:first_def">\n'
+            '<p>First footnote.&#160;<a class="footnote-backref" href="#fnref:first_def" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:last_def">\n'
+            '<p>Second footnote.&#160;<a class="footnote-backref" href="#fnref:last_def" '
+            'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>',
+            extension_configs={'footnotes': {'USE_DEFINITION_ORDER': True}}
+        )
+
     def test_footnote_reference_within_code_span(self):
         """Test footnote reference within a code span."""
 

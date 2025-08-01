@@ -98,6 +98,15 @@ The following options are provided to configure the output:
 * **`SEPARATOR`**:
     The text string used to set the footnote separator. Defaults to `:`.
 
+* **`USE_DEFINITION_ORDER`**:
+    Whether to order footnotes by the occurence of footnote definitions
+    in the document. Defaults to `False`.
+
+    Introduced in version 3.9.0, this option allows footnotes to be ordered
+    by the occurence of their definitions in the document, rather than by the
+    order of their references in the text. This was the behavior of
+    previous versions of the extension.
+
 A trivial example:
 
 ```python

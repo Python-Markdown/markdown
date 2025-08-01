@@ -62,6 +62,9 @@ class FootnoteExtension(Extension):
             ],
             'SEPARATOR': [
                 ':', 'Footnote separator.'
+            ],
+            'USE_DEFINITION_ORDER': [
+                False, 'Whether to order footnotes by footnote content rather than by footnote label.'
             ]
         }
         """ Default configuration options. """
@@ -96,7 +99,8 @@ class FootnoteExtension(Extension):
         # Insert a tree-processor to reorder the footnotes if necessary. This must be after
         # `inline` tree-processor so it can access the footnote reference order
         # (`self.footnote_order`) that gets populated by the `FootnoteInlineProcessor`.
-        md.treeprocessors.register(FootnoteReorderingProcessor(self), 'footnote-reorder', 19)
+        if not self.getConfig("USE_DEFINITION_ORDER"):
+            md.treeprocessors.register(FootnoteReorderingProcessor(self), 'footnote-reorder', 19)
 
         # Insert a tree-processor that will run after inline is done.
         # In this tree-processor we want to check our duplicate footnote tracker
@@ -327,14 +331,19 @@ class FootnoteInlineProcessor(InlineProcessor):
         if id in self.footnotes.footnotes.keys():
             self.footnotes.addFootnoteRef(id)
 
+            if not self.footnotes.getConfig("USE_DEFINITION_ORDER"):
+                # Order by reference
+                footnote_num = self.footnotes.footnote_order.index(id) + 1
+            else:
+                # Order by definition
+                footnote_num = list(self.footnotes.footnotes.keys()).index(id) + 1
+
             sup = etree.Element("sup")
             a = etree.SubElement(sup, "a")
             sup.set('id', self.footnotes.makeFootnoteRefId(id, found=True))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
             a.set('class', 'footnote-ref')
-            a.text = self.footnotes.getConfig("SUPERSCRIPT_TEXT").format(
-                self.footnotes.footnote_order.index(id) + 1
-            )
+            a.text = self.footnotes.getConfig("SUPERSCRIPT_TEXT").format(footnote_num)
             return sup, m.start(0), m.end(0)
         else:
             return None, None, None
