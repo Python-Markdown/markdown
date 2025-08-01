@@ -24,15 +24,16 @@ the output.
 Example:
 
 ```md
-Footnotes have a name, a reference[^1], and a definition[^@#$%].
+Footnotes have a name, a reference[^1], and a definition[^word].
 
 [^1]: This is a footnote definition.
-[^@#$%]: A footnote with the name "@#$%".
+[^word]: A footnote with the name "word".
 ```
 
-A **footnote name**  is a string that uniquely identifies a footnote within the
+A **footnote name** is a string that uniquely identifies a footnote within the
 document. It may contain any character which is valid for an HTML id attribute
-(including spaces). Examples: `1` in `[^1]` and `@#$%` in `[^@#$%]`.
+(including spaces). Examples: `1` in `[^1]`, `word` in `[^word]`,
+and `@#$%` in `[^@#$%]`.
 
 A **footnote reference** is a link within the text body to a footnote definition.
 A footnote reference contains the footnote name prefixed by a caret `^` and enclosed
