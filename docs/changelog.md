@@ -10,28 +10,28 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
-## [Unreleased]
+## [3.9.0] - 2025-09-04
 
 ### Changed
 
 * Footnotes are now ordered by the occurrence of their references in the
   document. A new configuration option for the footnotes extension,
   `USE_DEFINITION_ORDER`, has been added to support restoring the previous
-  behavior of ordering footnotes by the occurrence of definitions.
+  behavior of ordering footnotes by the occurrence of definitions (#1367).
 
 ### Fixed
 
-* Ensure inline processing iterates through elements in document order.
-* Fix handling of incomplete HTML tags in code spans in Python 3.14.
+* Ensure inline processing iterates through elements in document order (#1546).
+* Fix handling of incomplete HTML tags in code spans in Python 3.14 (#1547).
 
 ## [3.8.2] - 2025-06-19
 
 ### Fixed
 
-* Fix `codecs` deprecation in Python 3.14.
-* Fix issue with unclosed comment parsing in Python 3.14.
-* Fix issue with unclosed declarations in Python 3.14.
-* Fix issue with unclosed HTML tag `<foo` and Python 3.14.
+* Fix `codecs` deprecation in Python 3.14 (#1537).
+* Fix issue with unclosed comment parsing in Python 3.14 (#1537).
+* Fix issue with unclosed declarations in Python 3.14 (#1537).
+* Fix issue with unclosed HTML tag `<foo` and Python 3.14 (#1537).
 
 ## [3.8.1] - 2025-06-18
 
