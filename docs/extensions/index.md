@@ -55,6 +55,7 @@ Extension                          | Entry Point    | Dot Notation
 [SmartyPants]                      | `smarty`       | `markdown.extensions.smarty`
 [Table of Contents]                | `toc`          | `markdown.extensions.toc`
 [WikiLinks]                        | `wikilinks`    | `markdown.extensions.wikilinks`
+[Video]                            | `video`        | `markdown.extensions.video`
 
 [Extra]: extra.md
 [Abbreviations]: abbreviations.md
