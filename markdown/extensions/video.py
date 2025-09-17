@@ -11,7 +11,7 @@ Usage:
         # optional config:
         # ('video', {'video_extensions': ['mp4', 'webm']})
     ])
-    html = md.convert('![sample](video.mov?loop=1&controls=0&autoplay=1&muted)')
+    html = md.convert('![sample](video.mov?loop=1&controls=0&autoplay=1&muted&poster=thumb.png)')
 """
 
 import os
@@ -45,15 +45,15 @@ class VideoImageProcessor(ImageInlineProcessor):
 
         # Build <video> element
         video = etree.Element("video")
-        video.set("src", src)
+        video.set("src", path)  # src without query parameters
 
-        # Parse Grav-style query parameters
+        # Parse query parameters
         query_params = parse_qs(query, keep_blank_values=True)
         for key, values in query_params.items():
             val = values[0] if values else ""
             # Boolean attributes
             if key.lower() in ("controls", "autoplay", "loop", "muted"):
-                if val == "0":
+                if val in ("0", "false"):
                     continue
                 video.set(key, key)
             else:
