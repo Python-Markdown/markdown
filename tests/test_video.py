@@ -1,6 +1,6 @@
 import unittest
 import markdown
-from video import VideoImageExtension
+from markdown.extensions.video import VideoImageExtension
 
 class TestVideoExtension(unittest.TestCase):
     def make_md(self, **kwargs):
