@@ -1018,7 +1018,7 @@ class TestHTMLBlocks(TestCase):
     # Note: This is a change in behavior. Previously, Python-Markdown interpreted this in the same manner
     # as browsers and all text after the opening comment tag was considered to be in a comment. However,
     # that did not match the reference implementation. The new behavior does.
-    def test_unclosed_comment_(self):
+    def test_unclosed_comment(self):
         self.assertMarkdownRenders(
             self.dedent(
                 """
@@ -1031,6 +1031,22 @@ class TestHTMLBlocks(TestCase):
                 """
                 <p>&lt;!-- unclosed comment</p>
                 <p><em>not</em> a comment</p>
+                """
+            )
+        )
+
+    def test_invalid_comment_end(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <!-- This comment is malformed and never closes -- >
+                Some content after the bad comment.
+                """
+            ),
+            self.dedent(
+                """
+                <p>&lt;!-- This comment is malformed and never closes -- &gt;
+                Some content after the bad comment.</p>
                 """
             )
         )

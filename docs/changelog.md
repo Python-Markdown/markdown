@@ -10,6 +10,12 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
+## [Unreleased]
+
+### Fixed
+
+* Fix an HTML comment parsing case in some Python versions that can cause an infinite loop (#1554).
+
 ## [3.9.0] - 2025-09-04
 
 ### Changed
