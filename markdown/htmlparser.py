@@ -33,6 +33,9 @@ from typing import TYPE_CHECKING, Sequence
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
 
+# Included for versions which do not have current comment fix
+commentclose = re.compile(r'--!?>')
+commentabruptclose = re.compile(r'-?>')
 
 # Import a copy of the html.parser lib as `htmlparser` so we can monkeypatch it.
 # Users can still do `from html import parser` and get the default behavior.
@@ -301,6 +304,22 @@ class HTMLExtractor(htmlparser.HTMLParser):
         # and avoid consuming any tags which may follow (see #1066).
         self.handle_data('<?')
         return i + 2
+
+    if not hasattr(htmlparser, 'commentabruptclose'):
+        # Internal -- parse comment, return length or -1 if not terminated
+        # see https://html.spec.whatwg.org/multipage/parsing.html#comment-start-state
+        def parse_comment(self, i, report=True):
+            rawdata = self.rawdata
+            assert rawdata.startswith('<!--', i), 'unexpected call to parse_comment()'
+            match = commentclose.search(rawdata, i+4)
+            if not match:
+                match = commentabruptclose.match(rawdata, i+4)
+                if not match:
+                    return -1
+            if report:
+                j = match.start()
+                self.handle_comment(rawdata[i+4: j])
+            return match.end()
 
     def parse_html_declaration(self, i: int) -> int:
         if self.at_line_start() or self.intail:
