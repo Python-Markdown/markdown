@@ -64,7 +64,7 @@ class FootnoteExtension(Extension):
                 ':', 'Footnote separator.'
             ],
             'USE_DEFINITION_ORDER': [
-                True, 
+                True,
                 'Order footnote labels by definition order (True) or by document order (False). '
                 'Default: True.'
             ]
