@@ -14,8 +14,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Changed
 
-* Oficially support Python 3.14 and pypy 3.11 and drop support for Python 3.9
-  and pypy 3.9.
+* Oficially support Python 3.14 and PyPy 3.11 and drop support for Python 3.9
+  and PyPy 3.9.
 
 ### Fixed
 
