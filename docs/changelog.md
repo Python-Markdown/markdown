@@ -12,6 +12,11 @@ See the [Contributing Guide](contributing.md) for details.
 
 ## [Unreleased]
 
+### Changed
+
+* Officially support Python 3.14 and PyPy 3.11 and drop support for Python 3.9
+  and PyPy 3.9.
+
 ### Fixed
 
 * Fix an HTML comment parsing case in some Python versions that can cause an
