@@ -14,7 +14,11 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
-* Fix an HTML comment parsing case in some Python versions that can cause an infinite loop (#1554).
+* Fix an HTML comment parsing case in some Python versions that can cause an
+  infinite loop (#1554).
+* Revert the default behavior of `USE_DEFINITION_ORDER` (to `True`). The new
+  behavior introduced in 3.9.0 is experimental and results are inconsistent.
+  It should not have been made the default behavior (#1561).
 
 ## [3.9.0] - 2025-09-04
 
