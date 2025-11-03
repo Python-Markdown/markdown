@@ -337,8 +337,8 @@ class TestFootnotes(TestCase):
             extension_configs={'footnotes': {'SUPERSCRIPT_TEXT': '[{}]'}}
         )
 
-    def test_footnote_order(self):
-        """Test that footnotes occur in order of reference appearance."""
+    def test_footnote_order_by_doc_order(self):
+        """Test that footnotes occur in order of reference appearance when so configured."""
 
         self.assertMarkdownRenders(
             self.dedent(
@@ -364,7 +364,8 @@ class TestFootnotes(TestCase):
             'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
             '</li>\n'
             '</ol>\n'
-            '</div>'
+            '</div>',
+            extension_configs={'footnotes': {'USE_DEFINITION_ORDER': False}}
         )
 
     def test_footnote_order_tricky(self):

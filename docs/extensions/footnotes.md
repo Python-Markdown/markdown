@@ -106,13 +106,12 @@ The following options are provided to configure the output:
     The text string used to set the footnote separator. Defaults to `:`.
 
 * **`USE_DEFINITION_ORDER`**:
-    Whether to order footnotes by the occurrence of footnote definitions
-    in the document. Defaults to `False`.
+    Order footnotes by definition order (`True`) or by document order (`False`).
+    Defaults to `True`.
 
-    Introduced in version 3.9.0, this option allows footnotes to be ordered
-    by the occurrence of their definitions in the document, rather than by the
-    order of their references in the text. This was the behavior of
-    previous versions of the extension.
+    The default behavior matches the behavior prior to this option being added. 
+    Disabling this option (setting to `False`) is experimental and results may not
+    be consistent.
 
 A trivial example:
 
