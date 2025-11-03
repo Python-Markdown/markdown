@@ -19,21 +19,18 @@ maintainers = [
 ]
 license = "BSD-3-Clause"
 license-files = ["LICENSE.md"]
-requires-python = '>=3.9'
-dependencies = [
-    "importlib-metadata>=4.4;python_version<'3.10'"
-]
+requires-python = '>=3.10'
 keywords = ['markdown', 'markdown-parser', 'python-markdown', 'markdown-to-html']
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
     'Programming Language :: Python :: 3 :: Only',
     'Programming Language :: Python :: Implementation :: CPython',
     'Programming Language :: Python :: Implementation :: PyPy',
