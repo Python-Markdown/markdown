@@ -239,18 +239,12 @@ The following options are provided to configure the output:
     Word separator. Character which replaces white space in id. Defaults to "`-`".
 
 * **`toc_depth`**
-    Define the range of section levels to include in the Table of Contents.
-    A single integer (`b`) defines the bottom section level (`<h1>..<hb>`) only.
-    A string consisting of two digits separated by a hyphen in between (`"2-5"`),
-    define the top (`t`) and the bottom (`b`) (`<ht>..<hb>`). Defaults to `6` (bottom).
+    Define the highest heading level (deepest `<hN>`) for which to add anchor links or permalinks.
+    Defaults to `6`
 
-    When used with conjunction with `baselevel`, this parameter will not
-    take the fitted hierarchy from `baselevel` into account. That is, if
-    both `toc_depth` and `baselevel` are `3`, then only the highest level
-    will be present in the table. If you set `baselevel` to `3` and
-    `toc_depth` to `"2-6"`, the *first* headline will be `<h3>` and so still
-    included in the Table of Contents. To exclude this first level, you
-    have to set `toc_depth` to `"4-6"`.
+    For example, setting max_level to `2` adds anchors only to `<h1>` and `<h2>` elements.
+
+* **`max_level`**
 
 A trivial example:
 

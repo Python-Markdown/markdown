@@ -257,7 +257,7 @@ class TocTreeprocessor(Treeprocessor):
         self.permalink_class: str = config["permalink_class"]
         self.permalink_title: str = config["permalink_title"]
         self.permalink_leading: bool | None = parseBoolValue(config["permalink_leading"], False)
-        self.header_rgx = re.compile("[Hh][123456]")
+        self.header_rgx = re.compile(f'[Hh][1-{config["max_level"]}')
         if isinstance(config["toc_depth"], str) and '-' in config["toc_depth"]:
             self.toc_top, self.toc_bottom = [int(x) for x in config["toc_depth"].split('-')]
         else:
@@ -466,6 +466,11 @@ class TocExtension(Extension):
                 'separated by a hyphen in between (`2-5`) defines the top (t) and the bottom (b) (<ht>..<hb>). '
                 'Default: `6` (bottom).'
             ],
+            'max_level': [
+                6,
+                'Define the max heading level for which to add anchors/permalinks.'
+                'Default: `6`'
+            ]
         }
         """ Default configuration options. """
 

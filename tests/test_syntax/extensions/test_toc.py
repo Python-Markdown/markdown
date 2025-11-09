@@ -555,6 +555,24 @@ class TestTOC(TestCase):
             extensions=[TocExtension(anchorlink=True)]
         )
 
+    def testAnchorLinkWithMaxLevel(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                # Header 1
+
+                ## Header *2*
+                '''
+            ),
+            self.dedent(
+                '''
+                <h1 id="header-1"><a class="toclink" href="#header-1">Header 1</a></h1>
+                <h2 id="header-2">Header <em>2</em></h2>
+                '''
+            ),
+            extensions=[TocExtension(anchorlink=True, max_level=1)]
+        )
+
     def testPermalink(self):
         self.assertMarkdownRenders(
             '# Header',
