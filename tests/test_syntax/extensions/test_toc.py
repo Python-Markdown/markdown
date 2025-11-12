@@ -555,7 +555,7 @@ class TestTOC(TestCase):
             extensions=[TocExtension(anchorlink=True)]
         )
 
-    def testAnchorLinkWithMaxLevel(self):
+    def testAnchorLinkWithLinkDepth(self):
         self.assertMarkdownRenders(
             self.dedent(
                 '''
@@ -570,7 +570,7 @@ class TestTOC(TestCase):
                 <h2>Header <em>2</em></h2>
                 '''
             ),
-            extensions=[TocExtension(anchorlink=True, max_level=1)]
+            extensions=[TocExtension(anchorlink=True, link_depth=1)]
         )
 
     def testPermalink(self):

@@ -252,11 +252,11 @@ The following options are provided to configure the output:
     included in the Table of Contents. To exclude this first level, you
     have to set `toc_depth` to `"4-6"`.
 
-* **`max_level`**
-    Define the highest heading level (deepest `<hN>`) for which to add anchor links or permalinks.
+* **`link_depth`**
+    Add anchors/permalinks only to headings up to this depth (`h1`–`hN`).
     Defaults to `6`.
 
-    For example, setting max_level to `2` adds anchors only to `<h1>` and `<h2>` elements.
+    For example, setting `link_depth` to `2` adds anchors only to `<h1>` and `<h2>` elements.
 
 A trivial example:
 
