@@ -10,6 +10,12 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
+## [unreleased]
+
+### Fixed
+
+* Ensure nested elements inside inline comments are properly unescaped (#1571).
+
 ## [3.10.0] - 2025-11-03
 
 ### Changed
