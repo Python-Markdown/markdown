@@ -520,7 +520,8 @@ class HtmlInlineProcessor(InlineProcessor):
             value = stash.get(id)
             if value is not None:
                 try:
-                    return self.md.serializer(value)
+                    # Ensure we don't have a placeholder inside a placeholder
+                    return self.unescape(self.md.serializer(value))
                 except Exception:
                     return r'\%s' % value
 

@@ -34,3 +34,9 @@ class TestRawHtml(TestCase):
 
     def test_noname_tag(self):
         self.assertMarkdownRenders('<span></></span>', '<p><span>&lt;/&gt;</span></p>')
+
+    def test_markdown_nested_in_inline_comment(self):
+        self.assertMarkdownRenders(
+            'Example: <!-- [**Bold link**](http://example.com) -->',
+            '<p>Example: <!-- <a href="http://example.com"><strong>Bold link</strong></a> --></p>'
+        )
