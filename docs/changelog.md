@@ -15,6 +15,7 @@ See the [Contributing Guide](contributing.md) for details.
 ### Fixed
 
 * Ensure nested elements inside inline comments are properly unescaped (#1571).
+* Make the docs build successfully with mkdocstrings-python 2.0 (#1575).
 
 ## [3.10.0] - 2025-11-03
 
