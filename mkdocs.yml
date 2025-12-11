@@ -81,7 +81,7 @@ plugins:
     custom_templates: docs/templates
     handlers:
       python:
-        import:
+        inventories:
         - https://docs.python.org/3/objects.inv
         options:
           annotations_path: brief
@@ -113,7 +113,8 @@ plugins:
           show_symbol_type_toc: false
           signature_crossrefs: false
           summary: true
-          source:
-            repo: https://github.com/Python-Markdown/markdown
-            tag: !!python/name:markdown.__version__
-            title: "View source code on GitHub."
+          extra:
+            source:
+              repo: https://github.com/Python-Markdown/markdown
+              tag: !!python/name:markdown.__version__
+              title: "View source code on GitHub."
