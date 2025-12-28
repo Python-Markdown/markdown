@@ -111,6 +111,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.lineno_start_cache = [0]
 
         self.override_comment_update = False
+        self.override_comment_start = 0
 
         # This calls self.reset
         super().__init__(*args, **kwargs)
@@ -124,6 +125,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self._cache: list[str] = []
         self.cleandoc: list[str] = []
         self.lineno_start_cache = [0]
+        self.override_comment_start = 0
 
         super().reset()
 
@@ -276,6 +278,8 @@ class HTMLExtractor(htmlparser.HTMLParser):
         i = self.line_offset + self.offset + len(data) + 4
         if self.rawdata[i:i + 3] != '-->':
             self.handle_data('<')
+            pos = self.line_offset + self.offset
+            self.override_comment_start = pos - 1 if self.rawdata[pos - 1:pos] == '<' else pos
             self.override_comment_update = True
             return
         self.handle_empty_tag('<!--{}-->'.format(data), is_block=True)
@@ -283,8 +287,8 @@ class HTMLExtractor(htmlparser.HTMLParser):
     def updatepos(self, i: int, j: int) -> int:
         if self.override_comment_update:
             self.override_comment_update = False
-            i = 0
-            j = 1
+            i = self.override_comment_start
+            j = self.override_comment_start + 1
         return super().updatepos(i, j)
 
     def handle_decl(self, data: str):

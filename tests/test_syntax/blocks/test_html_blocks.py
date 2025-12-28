@@ -1684,3 +1684,17 @@ class TestHTMLBlocks(TestCase):
                 """
             )
         )
+
+    def test_multiple_bogus_comments_no_hang(self):
+        """Test that multiple bogus comments (</` patterns) don't cause infinite loop."""
+        self.assertMarkdownRenders(
+            '`</` and `</`',
+            '<p><code>&lt;/</code> and <code>&lt;/</code></p>'
+        )
+
+    def test_multiple_unclosed_comments_no_hang(self):
+        """Test that multiple unclosed comments don't cause infinite loop."""
+        self.assertMarkdownRenders(
+            '<!-- and <!--',
+            '<p>&lt;!-- and &lt;!--</p>'
+        )
