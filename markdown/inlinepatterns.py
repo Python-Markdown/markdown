@@ -70,7 +70,7 @@ def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry[InlinePro
 
     """
     inlinePatterns = util.Registry()
-    inlinePatterns.register(BacktickInlineProcessor(BACKTICK_RE), 'backtick', 190)
+    inlinePatterns.register(BacktickInlineProcessor(BACKTICK_RE, md), 'backtick', 190)
     inlinePatterns.register(EscapeInlineProcessor(ESCAPE_RE, md), 'escape', 180)
     inlinePatterns.register(ReferenceInlineProcessor(REFERENCE_RE, md), 'reference', 170)
     inlinePatterns.register(LinkInlineProcessor(LINK_RE, md), 'link', 160)
@@ -435,11 +435,13 @@ class SubstituteTagInlineProcessor(SimpleTagInlineProcessor):
 
 class BacktickInlineProcessor(InlineProcessor):
     """ Return a `<code>` element containing the escaped matching text. """
-    def __init__(self, pattern: str):
+    def __init__(self, pattern: str, md: Markdown):
         InlineProcessor.__init__(self, pattern)
         self.ESCAPED_BSLASH = '{}{}{}'.format(util.STX, ord('\\'), util.ETX)
         self.tag = 'code'
         """ The tag of the rendered element. """
+
+        self.md = md
 
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | str, int, int]:
         """
@@ -451,6 +453,8 @@ class BacktickInlineProcessor(InlineProcessor):
 
         """
         if m.group(3):
+            if data.lstrip('[').rstrip(']').lower() in self.md.references:  # ignore known references
+                return None, None, None
             el = etree.Element(self.tag)
             el.text = util.AtomicString(util.code_escape(m.group(3).strip()))
             return el, m.start(0), m.end(0)
@@ -879,6 +883,8 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
 
     RE_LINK = re.compile(r'\s?\[([^\]]*)\]', re.DOTALL | re.UNICODE)
 
+    RE_BACKTICK = re.compile(BACKTICK_RE, re.DOTALL | re.UNICODE)
+
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | None, int | None, int | None]:
         """
         Return [`Element`][xml.etree.ElementTree.Element] returned by `makeTag` method or `(None, None, None)`.
@@ -925,7 +931,19 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
         if title:
             el.set('title', title)
 
-        el.text = text
+        if '`' in text: # Process possible backtick within text
+            m = self.RE_BACKTICK.search(text)
+            if m and m.group(3):
+                el2 = etree.Element('code')
+                el2.text = util.AtomicString(util.code_escape(m.group(3).strip()))
+                el.append(el2)
+                el.text = text[0:m.start(0)]
+                el2.tail = text[m.end(0):]
+            else:
+                el.text = text
+        else:
+            el.text = text
+
         return el
 
 
