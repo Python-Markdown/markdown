@@ -164,6 +164,29 @@ class TestInlineLinks(TestCase):
             '<p><a href="?}]*+|&amp;)">test nonsense</a>.</p>'
         )
 
+    def test_monospaced_title(self):
+        self.assertMarkdownRenders(
+            """[`test`](link)""",
+            """<p><a href="link"><code>test</code></a></p>"""
+        )
+
+    def test_title_containing_monospaced_title(self):
+        self.assertMarkdownRenders(
+            """[some `test`](link)""",
+            """<p><a href="link">some <code>test</code></a></p>"""
+        )
+
+        self.assertMarkdownRenders(
+            """before [`test` and `test`](link) after""",
+            """<p>before <a href="link"><code>test</code> and <code>test</code></a> after</p>"""
+        )
+
+    def test_title_containing_single_backtick(self):
+        self.assertMarkdownRenders(
+            """[some `test](link)""",
+            """<p><a href="link">some `test</a></p>"""
+        )
+
 
 class TestReferenceLinks(TestCase):
 
@@ -433,4 +456,75 @@ class TestReferenceLinks(TestCase):
                 <p><a href="/url(test)" title="title">Text</a>.</p>
                 """
             )
+        )
+
+    def test_ref_link_monospaced_text(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [`Text`]
+
+                [`Text`]: http://example.com
+                """
+            ),
+            """<p><a href="http://example.com"><code>Text</code></a></p>"""
+        )
+
+    def test_ref_link_with_containing_monospaced_text(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                text before [`Text` internal `Text`] text after
+
+                [`Text` internal `Text`]: http://example.com
+                """
+            ),
+            """<p>text before <a href="http://example.com"><code>Text</code> internal <code>Text</code></a> text after</p>"""
+        )
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [some `Text`]
+
+                [some `Text`]: http://example.com
+                """
+            ),
+            """<p><a href="http://example.com">some <code>Text</code></a></p>"""
+        )
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [`Text` after]
+
+                [`Text` after]: http://example.com
+                """
+            ),
+            """<p><a href="http://example.com"><code>Text</code> after</a></p>"""
+        )
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                text before [`Text` internal] text after
+
+                [`Text` internal]: http://example.com
+                """
+            ),
+            """<p>text before <a href="http://example.com"><code>Text</code> internal</a> text after</p>"""
+        )
+
+
+    def test_ref_link_with_single_backtick(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [some `Text]
+
+                [some `Text]: http://example.com
+                """
+            ),
+            """<p><a href="http://example.com">some `Text</a></p>"""
         )

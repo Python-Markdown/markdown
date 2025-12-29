@@ -580,6 +580,12 @@ class ReferenceProcessor(BlockProcessor):
         r'^[ ]{0,3}\[([^\[\]]*)\]:[ ]*\n?[ ]*([^\s]+)[ ]*(?:\n[ ]*)?((["\'])(.*)\4[ ]*|\((.*)\)[ ]*)?$', re.MULTILINE
     )
 
+    def __init__(self, parser: BlockParser):
+        super().__init__(parser)
+
+        from markdown.inlinepatterns import BACKTICK_RE, BacktickInlineProcessor
+        self.processor = BacktickInlineProcessor(BACKTICK_RE)
+
     def test(self, parent: etree.Element, block: str) -> bool:
         return True
 
@@ -587,9 +593,22 @@ class ReferenceProcessor(BlockProcessor):
         block = blocks.pop(0)
         m = self.RE.search(block)
         if m:
-            id = m.group(1).strip().lower()
+            id = m.group(1).strip()
             link = m.group(2).lstrip('<').rstrip('>')
             title = m.group(5) or m.group(6)
+
+            # ID may contain backticks that need to be processed, so process
+            # to the expanded form and use that as the id
+            bt_m = self.processor.compiled_re.search(id)
+            while bt_m and bt_m.group(3):
+                el, start, end = self.processor.handleMatch(bt_m, id)
+                id = '{}{}{}'.format(
+                    id[:start],
+                    etree.tostring(el, encoding='unicode'),
+                    id[end:]
+                )
+                bt_m = self.processor.compiled_re.search(id)
+     
             self.parser.md.references[id] = (link, title)
             if block[m.end():].strip():
                 # Add any content after match back to blocks as separate block

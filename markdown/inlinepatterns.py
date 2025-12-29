@@ -892,6 +892,21 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
         if not handled:
             return None, None, None
 
+        # If candidate data contains placeholder string - attempt to expand it
+        # in a limited way - only going 1 level deep.
+        if str(util.INLINE_PLACEHOLDER_PREFIX) in id:
+            inline_processor_index = self.md.treeprocessors.get_index_for_name('inline')
+
+            ex_m = util.INLINE_PLACEHOLDER_RE.search(id)
+            while ex_m and ex_m.group(1) in self.md.treeprocessors[inline_processor_index].stashed_nodes:
+                value = self.md.treeprocessors[inline_processor_index].stashed_nodes.get(ex_m.group(1))
+                if isinstance(value, str):
+                    id = id.replace(ex_m.group(0), value)
+                else:
+                    # An `etree` Element - return rendered version only
+                    id = id.replace(ex_m.group(0), ''.join(etree.tostring(value, encoding='unicode')))
+                ex_m = util.INLINE_PLACEHOLDER_RE.search(id)
+
         # Clean up line breaks in id
         id = self.NEWLINE_CLEANUP_RE.sub(' ', id)
         if id not in self.md.references:  # ignore undefined refs
@@ -911,10 +926,10 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
         if not m:
             return None, index, False
         else:
-            id = m.group(1).lower()
+            id = m.group(1)
             end = m.end(0)
             if not id:
-                id = text.lower()
+                id = text
         return id, end, True
 
     def makeTag(self, href: str, title: str, text: str) -> etree.Element:
@@ -926,6 +941,7 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
             el.set('title', title)
 
         el.text = text
+
         return el
 
 
@@ -934,7 +950,7 @@ class ShortReferenceInlineProcessor(ReferenceInlineProcessor):
     def evalId(self, data: str, index: int, text: str) -> tuple[str, int, bool]:
         """Evaluate the id of `[ref]`.  """
 
-        return text.lower(), index, True
+        return text, index, True
 
 
 class ImageReferenceInlineProcessor(ReferenceInlineProcessor):
