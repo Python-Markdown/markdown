@@ -931,7 +931,7 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
         if title:
             el.set('title', title)
 
-        if '`' in text: # Process possible backtick within text
+        if '`' in text:  # Process possible backtick within text
             m = self.RE_BACKTICK.search(text)
             if m and m.group(3):
                 el2 = etree.Element('code')

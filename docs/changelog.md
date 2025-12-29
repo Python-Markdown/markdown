@@ -16,6 +16,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 * Ensure nested elements inside inline comments are properly unescaped (#1571).
 * Make the docs build successfully with mkdocstrings-python 2.0 (#1575).
+* Backtick formatting permitted in reference links to match conventional
+  links (#495).
 
 ## [3.10.0] - 2025-11-03
 

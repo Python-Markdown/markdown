@@ -182,6 +182,7 @@ class TestInlineLinks(TestCase):
             """<p><a href="link">some `test</a></p>"""
         )
 
+
 class TestReferenceLinks(TestCase):
 
     def test_ref_link(self):
@@ -486,7 +487,6 @@ class TestReferenceLinks(TestCase):
             ),
             """<p><a href="http://example.com"><code>Text</code> after</a></p>"""
         )
-
 
     def test_ref_link_with_single_backtick(self):
         self.assertMarkdownRenders(
