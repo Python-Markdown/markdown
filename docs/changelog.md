@@ -16,6 +16,7 @@ See the [Contributing Guide](contributing.md) for details.
 
 * Ensure nested elements inside inline comments are properly unescaped (#1571).
 * Make the docs build successfully with mkdocstrings-python 2.0 (#1575).
+* Fix infinite loop when multiple bogus or unclosed HTML comments appear in input (#1578).
 * Backtick formatting permitted in reference links to match conventional
   links (#495).
 
