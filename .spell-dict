@@ -111,6 +111,7 @@ rST
 ryneeverett
 sanitizer
 sanitizers
+sanitization
 Sauder
 schemeless
 setuptools
@@ -168,6 +169,7 @@ workflow
 Xanthakis
 XHTML
 xhtml
+XSS
 YAML
 Yunusov
 inline
