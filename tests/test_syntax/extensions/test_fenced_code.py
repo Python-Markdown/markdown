@@ -1060,3 +1060,127 @@ class TestFencedCodeWithCodehilite(TestCase):
                 'fenced_code'
             ]
         )
+
+
+class TestFencedCodeInBlockquote(TestCase):
+    """Test fenced code blocks inside blockquotes."""
+
+    def test_fenced_code_in_blockquote_backticks(self):
+        """Test basic fenced code block with backticks inside a blockquote."""
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                > ```
+                > code here
+                > ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <pre><code>code here
+                </code></pre>
+                </blockquote>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def test_fenced_code_in_blockquote_tildes(self):
+        """Test basic fenced code block with tildes inside a blockquote."""
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                > ~~~
+                > code here
+                > ~~~
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <pre><code>code here
+                </code></pre>
+                </blockquote>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def test_fenced_code_in_blockquote_with_language(self):
+        """Test fenced code block with language specifier inside a blockquote."""
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                > ```python
+                > def hello():
+                >     print("Hello")
+                > ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <pre><code class="language-python">def hello():
+                    print(&quot;Hello&quot;)
+                </code></pre>
+                </blockquote>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def test_fenced_code_in_blockquote_with_surrounding_text(self):
+        """Test fenced code block with surrounding text inside a blockquote."""
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                > This is a blockquote.
+                >
+                > ```python
+                > def hello_world():
+                >     print("Hello, world!")
+                > ```
+                >
+                > More text after the code.
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <p>This is a blockquote.</p>
+                <pre><code class="language-python">def hello_world():
+                    print(&quot;Hello, world!&quot;)
+                </code></pre>
+                <p>More text after the code.</p>
+                </blockquote>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def test_fenced_code_in_nested_blockquote(self):
+        """Test fenced code block inside nested blockquotes."""
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                > Outer blockquote
+                >
+                > > ```
+                > > nested code
+                > > ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <p>Outer blockquote</p>
+                <blockquote>
+                <pre><code>nested code
+                </code></pre>
+                </blockquote>
+                </blockquote>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
