@@ -1700,7 +1700,7 @@ class TestHTMLBlocks(TestCase):
         )
 
     def test_no_hang_issue_1586(self):
-        """Test no hange condition for issue #1586."""
+        """Test no hang condition for issue #1586."""
 
         self.assertMarkdownRenders(
             'Test `<!--[if mso]>` and `<!--[if !mso]>`',
