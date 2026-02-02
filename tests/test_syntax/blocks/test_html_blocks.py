@@ -1706,3 +1706,29 @@ class TestHTMLBlocks(TestCase):
             'Test `<!--[if mso]>` and `<!--[if !mso]>`',
             '<p>Test <code>&lt;!--[if mso]&gt;</code> and <code>&lt;!--[if !mso]&gt;</code></p>'
         )
+
+    def test_issue_1590(self):
+        """Test case with comments in table for issue #1590."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                <table>
+                <!--[if mso]>-->
+                <td>foo</td>
+                <!--<!endif]-->
+                <td>bar</td>
+                </table>
+                '''
+            ),
+            self.dedent(
+                '''
+                <table>
+                <!--[if mso]>-->
+                <td>foo</td>
+                <!--<!endif]-->
+                <td>bar</td>
+                </table>
+                '''
+            )
+        )
