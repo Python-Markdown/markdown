@@ -1706,3 +1706,10 @@ class TestHTMLBlocks(TestCase):
             'Test `<!--[if mso]>` and `<!--[if !mso]>`',
             '<p>Test <code>&lt;!--[if mso]&gt;</code> and <code>&lt;!--[if !mso]&gt;</code></p>'
         )
+
+    def test_mso_conditional_comments_truncate_table_content(self):
+        """Content after MSO conditional comments should not be truncated."""
+        self.assertMarkdownRenders(
+            '<table>\n<!--[if mso]>-->\n<td>keep</td>\n<!--<![endif]-->\n<td>also keep</td>\n</table>\n',
+            '<table>\n<!--[if mso]>-->\n<td>keep</td>\n<!--<![endif]-->\n<td>also keep</td>\n</table>'
+        )
