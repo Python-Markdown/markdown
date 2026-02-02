@@ -276,7 +276,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
 
     def handle_comment(self, data: str):
         # Check if the comment is unclosed, if so, we need to override position
-        j = len(self.rawdata) - len(data)
+        j = self.rawdata.find(data)
         i = j - 2
         if self.rawdata[i:j] == '</':
             self.handle_data('<')
