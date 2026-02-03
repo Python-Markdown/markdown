@@ -227,14 +227,6 @@ class HTMLExtractor(htmlparser.HTMLParser):
                 # This is presumably a standalone tag in a code span (see #1036).
                 self.clear_cdata_mode()
 
-    def parse_endtag(self, i):
-        start = self.rawdata[i:i+3]
-        c = ord(start[-1])
-        if len(start) < 3 or not (65 <= c <= 90 or 97 <= c <= 122):
-            self.handle_data(self.rawdata[i:i + 2])
-            return i + 2
-        return super().parse_endtag(i)
-
     def handle_endtag(self, tag: str):
         text = self.get_endtag_text(tag)
 
