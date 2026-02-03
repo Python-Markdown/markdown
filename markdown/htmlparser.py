@@ -47,7 +47,7 @@ sys.modules['htmlparser'] = htmlparser
 # throwing it away. When we see it, we will process it as data.
 htmlparser.starttagopen = re.compile('<[a-zA-Z]|</>')
 
-htmlparser.endtagopen = re.compile('</[a-zA-Z]|</')
+htmlparser.endtagopen = re.compile('</[a-zA-Z]?')
 
 # Monkeypatch `HTMLParser` to only accept `?>` to close Processing Instructions.
 htmlparser.piclose = re.compile(r'\?>')
