@@ -15,6 +15,7 @@ See the [Contributing Guide](contributing.md) for details.
 ### Fixed
 
 * Fix a regression related to comment handling (#1590).
+* More reliable fix for `</`.
 
 ## [3.10.1] - 2026-01-21
 

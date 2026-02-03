@@ -1732,3 +1732,58 @@ class TestHTMLBlocks(TestCase):
                 '''
             )
         )
+
+    def test_stress_comment_handling(self):
+        """Stress test the comment handling."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                `</` <!-- `<!--[if mso]>` and <!-- </> and `<!--[if mso]>`
+
+                <!-- and <!-- `<!--[if mso]>` and </> `</` and `<!--[if mso]>`
+
+                <!-- Real comment -->
+
+                `<!--[if mso]>` `</` `<!--[if mso]>` and </> <!-- and <!--
+
+                </> `<!--[if mso]>` `</` <!--  and <!--  and `<!--[if mso]>`
+                '''
+            ),
+            self.dedent(
+                '''
+                <p><code>&lt;/</code> &lt;!-- <code>&lt;!--[if mso]&gt;</code> and &lt;!-- &lt;/&gt; and <code>&lt;!--[if mso]&gt;</code></p>
+                <p>&lt;!-- and &lt;!-- <code>&lt;!--[if mso]&gt;</code> and &lt;/&gt; <code>&lt;/</code> and <code>&lt;!--[if mso]&gt;</code></p>
+                <!-- Real comment -->
+                <p><code>&lt;!--[if mso]&gt;</code> <code>&lt;/</code> <code>&lt;!--[if mso]&gt;</code> and &lt;/&gt; &lt;!-- and &lt;!--</p>
+                <p>&lt;/&gt; <code>&lt;!--[if mso]&gt;</code> <code>&lt;/</code> &lt;!--  and &lt;!--  and <code>&lt;!--[if mso]&gt;</code></p>
+                '''
+            )
+        )
+
+    def test_unclosed_endtag(self):
+        """Ensure unclosed end tag does not have side effects."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                `</`
+
+                <div>
+                <!--[if mso]>-->
+                <p>foo</p>
+                <!--<!endif]-->
+                </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <p><code>&lt;/</code></p>
+                <div>
+                <!--[if mso]>-->
+                <p>foo</p>
+                <!--<!endif]-->
+                </div>
+                '''
+            )
+        )

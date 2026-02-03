@@ -35,7 +35,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
 # Included for versions which do not have current comment fix
 commentclose = re.compile(r'--!?>')
-commentabruptclose = re.compile(r'-?>')
 
 # Import a copy of the html.parser lib as `htmlparser` so we can monkeypatch it.
 # Users can still do `from html import parser` and get the default behavior.
@@ -47,6 +46,8 @@ sys.modules['htmlparser'] = htmlparser
 # This is a hack. We are sneaking in `</>` so we can capture it without the HTML parser
 # throwing it away. When we see it, we will process it as data.
 htmlparser.starttagopen = re.compile('<[a-zA-Z]|</>')
+
+htmlparser.endtagopen = re.compile('</[a-zA-Z]|</')
 
 # Monkeypatch `HTMLParser` to only accept `?>` to close Processing Instructions.
 htmlparser.piclose = re.compile(r'\?>')
@@ -110,9 +111,6 @@ class HTMLExtractor(htmlparser.HTMLParser):
 
         self.lineno_start_cache = [0]
 
-        self.override_comment_update = False
-        self.override_comment_start = 0
-
         # This calls self.reset
         super().__init__(*args, **kwargs)
         self.md = md
@@ -125,8 +123,6 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self._cache: list[str] = []
         self.cleandoc: list[str] = []
         self.lineno_start_cache = [0]
-        self.override_comment_start = 0
-        self.override_comment_update = False
 
         super().reset()
 
@@ -207,6 +203,14 @@ class HTMLExtractor(htmlparser.HTMLParser):
                 # This is presumably a standalone tag in a code span (see #1036).
                 self.clear_cdata_mode()
 
+    def parse_endtag(self, i):
+        start = self.rawdata[i:i+3]
+        c = ord(start[-1])
+        if len(start) < 3 or not (65 <= c <= 90 or 97 <= c <= 122):
+            self.handle_data(self.rawdata[i:i + 2])
+            return i + 2
+        return super().parse_endtag(i)
+
     def handle_endtag(self, tag: str):
         text = self.get_endtag_text(tag)
 
@@ -276,21 +280,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
 
     def handle_comment(self, data: str):
         # Check if the comment is unclosed, if so, we need to override position
-        j = self.rawdata.find(data)
-        i = j - 2
-        if self.rawdata[i:j] == '</':
-            self.handle_data('<')
-            self.override_comment_start = i
-            self.override_comment_update = True
-            return
         self.handle_empty_tag('<!--{}-->'.format(data), is_block=True)
-
-    def updatepos(self, i: int, j: int) -> int:
-        if self.override_comment_update:
-            self.override_comment_update = False
-            i = self.override_comment_start
-            j = self.override_comment_start + 1
-        return super().updatepos(i, j)
 
     def handle_decl(self, data: str):
         self.handle_empty_tag('<!{}>'.format(data), is_block=True)
