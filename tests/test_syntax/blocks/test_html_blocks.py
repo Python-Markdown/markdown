@@ -1757,7 +1757,7 @@ class TestHTMLBlocks(TestCase):
                 <!-- Real comment -->
                 <p><code>&lt;!--[if mso]&gt;</code> <code>&lt;/</code> <code>&lt;!--[if mso]&gt;</code> and &lt;/&gt; &lt;!-- and &lt;!--</p>
                 <p>&lt;/&gt; <code>&lt;!--[if mso]&gt;</code> <code>&lt;/</code> &lt;!--  and &lt;!--  and <code>&lt;!--[if mso]&gt;</code></p>
-                '''
+                '''  # noqa: E501
             )
         )
 
