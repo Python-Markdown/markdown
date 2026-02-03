@@ -93,6 +93,30 @@ htmlparser.locatetagend = re.compile(r"""
 blank_line_re = re.compile(r'^([ ]*\n){2}')
 
 
+class _HTMLParser(htmlparser.HTMLParser):
+    """Handle special start and end tags."""
+
+    def parse_endtag(self, i):
+        start = self.rawdata[i:i+3]
+        c = ord(start[-1])
+        if len(start) < 3 or not (65 <= c <= 90 or 97 <= c <= 122):
+            self.handle_data(self.rawdata[i:i + 2])
+            return i + 2
+        return super().parse_endtag(i)
+
+    def parse_starttag(self, i: int) -> int:  # pragma: no cover
+        # Treat `</>` as normal data as it is not a real tag.
+        if self.rawdata[i:i + 3] == '</>':
+            self.handle_data(self.rawdata[i:i + 3])
+            return i + 3
+
+        return super().parse_starttag(i)
+
+
+# Overwrite our custom one for people like MkDocs that pull it in
+htmlparser.HTMLParser = _HTMLParser
+
+
 class HTMLExtractor(htmlparser.HTMLParser):
     """
     Extract raw HTML from text.
