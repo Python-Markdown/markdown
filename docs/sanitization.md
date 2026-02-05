@@ -15,10 +15,10 @@ That said, if you fully trust the source of your input, you may choose to do
 nothing. Conversely, you may find solutions other than those suggested here.
 However, you do so at your own risk.
 
-## Using JustHTML
+## Using `JustHTML`
 
-[JustHTML] is recommended as a sanitizer on the output of `markdown.markdown`
-or `Markdown.convert`. When you pass HTML output through JustHTML, it is
+[`JustHTML`][JustHTML] is recommended as a sanitizer on the output of `markdown.markdown`
+or `Markdown.convert`. When you pass HTML output through `JustHTML`, it is
 sanitized by default according to a strict [allow list policy]. The policy
 can be [customized] if necessary.
 
@@ -30,14 +30,14 @@ html =  markdown.markdown(text)
 safe_html = JustHTML(html, fragment=True).to_html()
 ```
 
-## Using nh3 or bleach
+## Using `nh3` or `bleach`
 
-If you cannot use JustHTML for some reason, some alternatives include [nh3] or
-[bleach][^1]. However, be aware that these libraries will not be sufficient
+If you cannot use `JustHTML` for some reason, some alternatives include [`nh3`][nh3] or
+[`bleach`][bleach][^1]. However, be aware that these libraries will not be sufficient
 in themselves and will require customization. Some useful lists of allowed
 tags and attributes can be found in the [`bleach-allowlist`]
-[bleach-allowlist] library, which should work with both nh3 and bleach as nh3
-mirrors bleach's API.
+[bleach-allowlist] library, which should work with both `nh3` and `bleach` as `nh3`
+mirrors `bleach`'s API.
 
 ``` python
 import markdown
@@ -48,20 +48,20 @@ html =  markdown.markdown(text)
 safe_html = bleach.clean(html, markdown_tags, markdown_attrs)
 ```
 
-[^1]: The [bleach] project has been [deprecated](https://github.com/mozilla/bleach/issues/698). 
-However, it may be the only option for some users as [nh3] is a set of Python bindings to a Rust library.
+[^1]: The [`bleach`][bleach] project has been [deprecated](https://github.com/mozilla/bleach/issues/698). 
+However, it may be the only option for some users as `nh3` is a set of Python bindings to a Rust library.
 
 ## Sanitizing on the Command Line
 
-Both Python-Markdown and JustHTML provide command line interfaces which read
-from STDIN and write to STDOUT. Therefore, they can be used together to
+Both Python-Markdown and `JustHTML` provide command line interfaces which read
+from `STDIN` and write to `STDOUT`. Therefore, they can be used together to
 ensure that the output from untrusted input is properly sanitized.
 
 ```sh
 echo "Some **Markdown** text." | python -m markdown | justhtml - --fragment > safe_output.html
 ```
 
-For more information on JustHTML's Command Line Interface, see the
+For more information on `JustHTML`'s Command Line Interface, see the
 [documentation][JustHTML_CLI]. Use the `--help` option for a list of all available
 options and arguments to the `markdown` command.
 
