@@ -54,7 +54,7 @@ However, it may be the only option for some users as [nh3] is a set of Python bi
 ## Sanitizing on the Command Line
 
 Both Python-Markdown and JustHTML provide command line interfaces which read
-from STDIN and write to STDOUT. Therefore, they can be used togeather to
+from STDIN and write to STDOUT. Therefore, they can be used together to
 ensure that the output from untrusted input is properly sanitized.
 
 ```sh

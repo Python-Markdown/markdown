@@ -422,7 +422,7 @@ class Markdown:
             easy way to sanitize the output from Python code. Therefore, it is
             recommended that the `Markdown.convertFile` method not be used on input
             from an untrusted source.  For more information see [Sanitizing HTML
-            Output](sanitization.md).
+            Output](../../sanitization.md).
 
         """
 
@@ -495,7 +495,7 @@ def markdown(text: str, **kwargs: Any) -> str:
         The Python-Markdown library does ***not*** sanitize its HTML output.
         If you are processing Markdown input from an untrusted source, it is your
         responsibility to ensure that it is properly sanitized. For more
-        information see [Sanitizing HTML Output](sanitization.md).
+        information see [Sanitizing HTML Output](../../sanitization.md).
 
     """
     md = Markdown(**kwargs)
@@ -522,7 +522,7 @@ def markdownFromFile(**kwargs: Any):
         easy way to sanitize the output from Python code. Therefore, it is
         recommended that the `markdown.markdownFromFile` function not be used on input
         from an untrusted source.  For more information see [Sanitizing HTML
-        Output](sanitization.md).
+        Output](../../sanitization.md).
 
     """
     md = Markdown(**kwargs)
