@@ -36,22 +36,31 @@ method appropriately ([see below](#convert)).
     sanitization in popular software] for notes on best practices to ensure
     HTML is properly sanitized.
 
-    The developers of Python-Markdown recommend using [`nh3`][nh3] or [`bleach`][bleach][^1]
-    as a sanitizer on the output of `markdown.markdown`. However, be
-    aware that those libraries may not be sufficient in themselves and will
-    likely require customization. Some useful lists of allowed tags and
-    attributes can be found in the [`bleach-allowlist`][bleach-allowlist] library, which should
+    The developers of Python-Markdown recommend using [JustHTML] as a
+    sanitizer on the output of `markdown.markdown`. JustHTML includes a
+    built-in HTML sanitizer. When you pass the HTML output through JustHTML
+    (`JustHTML(markdown.markdown(text), fragment=True).to_html())`), it
+    is sanitized by default according to a strict [allow list policy]. The
+    policy can be [customized] if necessary.
+
+    If you cannot use JustHTML for some reason, some alternatives include
+    [`nh3`][nh3] or [`bleach`][bleach][^1]. However, be aware that those
+    libraries will not be sufficient in themselves and will require
+    customization. Some useful lists of allowed tags and attributes can be
+    found in the [`bleach-allowlist`][bleach-allowlist] library, which should
     work with either sanitizer.
 
 
 [Markdown and XSS]: https://michelf.ca/blog/2010/markdown-and-xss/
 [Improper markup sanitization in popular software]: https://github.com/ChALkeR/notes/blob/master/Improper-markup-sanitization.md
+[JustHTML]: https://emilstenstrom.github.io/justhtml/
+[allow list policy]: https://emilstenstrom.github.io/justhtml/html-cleaning.html#default-sanitization-policy
+[customized]: https://emilstenstrom.github.io/justhtml/html-cleaning.html#use-a-custom-sanitization-policy
 [nh3]: https://nh3.readthedocs.io/en/latest/
 [bleach]: http://bleach.readthedocs.org/en/latest/
 [bleach-allowlist]: https://github.com/yourcelf/bleach-allowlist
-[^1]: We are aware that the [bleach] project has been [deprecated](https://github.com/mozilla/bleach/issues/698). 
-However, it is the only pure-Python HTML sanitation library we are aware of and may be the only option for
-those who cannot use [`nh3`][nh3] (Python bindings to a Rust library). 
+[^1]: Note that the [bleach] project has been [deprecated](https://github.com/mozilla/bleach/issues/698). 
+However, it may be the only option for some users. 
 
 The following options are available on the `markdown.markdown` function:
 
@@ -205,6 +214,20 @@ __tab_length__{: #tab_length }:
 
 ### `markdown.markdownFromFile (**kwargs)` {: #markdownFromFile data-toc-label='markdown.markdownFromFile' }
 
+!!! warning
+
+    The Python-Markdown library does ***not*** sanitize its HTML output. If
+    you are processing Markdown input from an untrusted source, it is your
+    responsibility to ensure that it is properly sanitized. See [Markdown and
+    XSS] for an overview of some of the dangers and [Improper markup
+    sanitization in popular software] for notes on best practices to ensure
+    HTML is properly sanitized.
+
+    As `markdown.markdownFromFile` writes directly to the file system, there
+    is no easy way to sanitize the output from Python code. Therefore, it is
+    recommended that the `markdown.markdownFromFile` function not be used on
+    input from an untrusted source.
+
 With a few exceptions, `markdown.markdownFromFile` accepts the same options as
 `markdown.markdown`. It does **not** accept a `text` (or Unicode) string.
 Instead, it accepts the following required options:
@@ -242,22 +265,6 @@ __encoding__{: #encoding }
         meet your specific needs, it is suggested that you write your own code
         to handle your encoding/decoding needs.
 
-!!! warning
-
-    The Python-Markdown library does ***not*** sanitize its HTML output. If
-    you are processing Markdown input from an untrusted source, it is your
-    responsibility to ensure that it is properly sanitized. See [Markdown and
-    XSS] for an overview of some of the dangers and [Improper markup
-    sanitization in popular software] for notes on best practices to ensure
-    HTML is properly sanitized.
-
-    The developers of Python-Markdown recommend using [`nh3`][nh3] or [`bleach`][bleach][^1]
-    as a sanitizer on the output of `markdown.markdownFromFile`.
-    However, be aware that those libraries may not be sufficient in
-    themselves and will likely require customization. Some useful lists of
-    allowed tags and attributes can be found in the
-    [`bleach-allowlist`][bleach-allowlist] library, which should work with either sanitizer.
-
 ### `markdown.Markdown([**kwargs])` {: #Markdown data-toc-label='markdown.Markdown' }
 
 The same options are available when initializing the `markdown.Markdown` class
@@ -272,6 +279,29 @@ string must be passed to one of two instance methods.
     from multiple threads.
 
 #### `Markdown.convert(source)` {: #convert data-toc-label='Markdown.convert' }
+
+!!! warning
+
+    The Python-Markdown library does ***not*** sanitize its HTML output. If
+    you are processing Markdown input from an untrusted source, it is your
+    responsibility to ensure that it is properly sanitized. See [Markdown and
+    XSS] for an overview of some of the dangers and [Improper markup
+    sanitization in popular software] for notes on best practices to ensure
+    HTML is properly sanitized.
+
+    The developers of Python-Markdown recommend using [JustHTML] as a
+    sanitizer on the output of `Markdown.convert`. JustHTML includes a
+    built-in HTML sanitizer. When you pass the HTML output through JustHTML
+    (`JustHTML(md.convert(text), fragment=True).to_html())`), it
+    is sanitized by default according to a strict [allow list policy]. The
+    policy can be [customized] if necessary.
+
+    If you cannot use JustHTML for some reason, some alternatives include
+    [`nh3`][nh3] or [`bleach`][bleach][^1]. However, be aware that those
+    libraries will not be sufficient in themselves and will require
+    customization. Some useful lists of allowed tags and attributes can be
+    found in the [`bleach-allowlist`][bleach-allowlist] library, which should
+    work with either sanitizer.
 
 The `source` text must meet the same requirements as the [`text`](#text)
 argument of the [`markdown.markdown`](#markdown) function.
@@ -300,6 +330,8 @@ To make this easier, you can also chain calls to `reset` together:
 html3 = md.reset().convert(text3)
 ```
 
+#### `Markdown.convertFile(**kwargs)` {: #convertFile data-toc-label='Markdown.convertFile' }
+
 !!! warning
 
     The Python-Markdown library does ***not*** sanitize its HTML output. If
@@ -309,14 +341,10 @@ html3 = md.reset().convert(text3)
     sanitization in popular software] for notes on best practices to ensure
     HTML is properly sanitized.
 
-    The developers of Python-Markdown recommend using [`nh3`][nh3] or [`bleach`][bleach][^1]
-    as a sanitizer on the output of `Markdown.convert`. However, be
-    aware that those libraries may not be sufficient in themselves and will
-    likely require customization. Some useful lists of allowed tags and
-    attributes can be found in the [`bleach-allowlist`][bleach-allowlist] library, which should
-    work with either sanitizer.
-
-#### `Markdown.convertFile(**kwargs)` {: #convertFile data-toc-label='Markdown.convertFile' }
+    As `Markdown.convertFile` writes directly to the file system, there
+    is no easy way to sanitize the output from Python code. Therefore, it is
+    recommended that the `Markdown.convertFile` method not be used on
+    input from an untrusted source.
 
 The arguments of this method are identical to the arguments of the same
 name on the `markdown.markdownFromFile` function ([`input`](#input),
@@ -325,19 +353,3 @@ name on the `markdown.markdownFromFile` function ([`input`](#input),
 process multiple files without creating a new instance of the class for
 each document. State may need to be `reset` between each call to
 `convertFile` as is the case with `convert`.
-
-!!! warning
-
-    The Python-Markdown library does ***not*** sanitize its HTML output. If
-    you are processing Markdown input from an untrusted source, it is your
-    responsibility to ensure that it is properly sanitized. See [Markdown and
-    XSS] for an overview of some of the dangers and [Improper markup
-    sanitization in popular software] for notes on best practices to ensure
-    HTML is properly sanitized.
-
-    The developers of Python-Markdown recommend using [`nh3`][nh3] or [`bleach`][bleach][^1]
-    as a sanitizer on the output of `Markdown.convertFile`. However, be
-    aware that those libraries may not be sufficient in themselves and will
-    likely require customization. Some useful lists of allowed tags and
-    attributes can be found in the [`bleach-allowlist`][bleach-allowlist] library, which should
-    work with either sanitizer.
