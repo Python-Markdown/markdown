@@ -78,7 +78,6 @@ munge
 namespace
 NanoDOM
 Neale
-nh3
 nosetests
 OrderedDict
 OrderedDicts
