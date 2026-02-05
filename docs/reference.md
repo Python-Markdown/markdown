@@ -31,36 +31,10 @@ method appropriately ([see below](#convert)).
 
     The Python-Markdown library does ***not*** sanitize its HTML output. If
     you are processing Markdown input from an untrusted source, it is your
-    responsibility to ensure that it is properly sanitized. See [Markdown and
-    XSS] for an overview of some of the dangers and [Improper markup
-    sanitization in popular software] for notes on best practices to ensure
-    HTML is properly sanitized.
+    responsibility to ensure that it is properly sanitized. For more
+    information see [Sanitizing HTML Output].
 
-    The developers of Python-Markdown recommend using [JustHTML] as a
-    sanitizer on the output of `markdown.markdown`. JustHTML includes a
-    built-in HTML sanitizer. When you pass the HTML output through JustHTML
-    (`JustHTML(markdown.markdown(text), fragment=True).to_html())`), it
-    is sanitized by default according to a strict [allow list policy]. The
-    policy can be [customized] if necessary.
-
-    If you cannot use JustHTML for some reason, some alternatives include
-    [`nh3`][nh3] or [`bleach`][bleach][^1]. However, be aware that those
-    libraries will not be sufficient in themselves and will require
-    customization. Some useful lists of allowed tags and attributes can be
-    found in the [`bleach-allowlist`][bleach-allowlist] library, which should
-    work with either sanitizer.
-
-
-[Markdown and XSS]: https://michelf.ca/blog/2010/markdown-and-xss/
-[Improper markup sanitization in popular software]: https://github.com/ChALkeR/notes/blob/master/Improper-markup-sanitization.md
-[JustHTML]: https://emilstenstrom.github.io/justhtml/
-[allow list policy]: https://emilstenstrom.github.io/justhtml/html-cleaning.html#default-sanitization-policy
-[customized]: https://emilstenstrom.github.io/justhtml/html-cleaning.html#use-a-custom-sanitization-policy
-[nh3]: https://nh3.readthedocs.io/en/latest/
-[bleach]: http://bleach.readthedocs.org/en/latest/
-[bleach-allowlist]: https://github.com/yourcelf/bleach-allowlist
-[^1]: Note that the [bleach] project has been [deprecated](https://github.com/mozilla/bleach/issues/698). 
-However, it may be the only option for some users. 
+[Sanitizing HTML Output]: sanitization.md
 
 The following options are available on the `markdown.markdown` function:
 
@@ -216,17 +190,12 @@ __tab_length__{: #tab_length }:
 
 !!! warning
 
-    The Python-Markdown library does ***not*** sanitize its HTML output. If
-    you are processing Markdown input from an untrusted source, it is your
-    responsibility to ensure that it is properly sanitized. See [Markdown and
-    XSS] for an overview of some of the dangers and [Improper markup
-    sanitization in popular software] for notes on best practices to ensure
-    HTML is properly sanitized.
-
-    As `markdown.markdownFromFile` writes directly to the file system, there
-    is no easy way to sanitize the output from Python code. Therefore, it is
+    The Python-Markdown library does ***not*** sanitize its HTML output. As
+    `markdown.markdownFromFile` writes directly to the file system, there is
+    no easy way to sanitize the output from Python code. Therefore, it is
     recommended that the `markdown.markdownFromFile` function not be used on
-    input from an untrusted source.
+    input from an untrusted source. For more information see [Sanitizing HTML
+    Output].
 
 With a few exceptions, `markdown.markdownFromFile` accepts the same options as
 `markdown.markdown`. It does **not** accept a `text` (or Unicode) string.
@@ -284,24 +253,8 @@ string must be passed to one of two instance methods.
 
     The Python-Markdown library does ***not*** sanitize its HTML output. If
     you are processing Markdown input from an untrusted source, it is your
-    responsibility to ensure that it is properly sanitized. See [Markdown and
-    XSS] for an overview of some of the dangers and [Improper markup
-    sanitization in popular software] for notes on best practices to ensure
-    HTML is properly sanitized.
-
-    The developers of Python-Markdown recommend using [JustHTML] as a
-    sanitizer on the output of `Markdown.convert`. JustHTML includes a
-    built-in HTML sanitizer. When you pass the HTML output through JustHTML
-    (`JustHTML(md.convert(text), fragment=True).to_html())`), it
-    is sanitized by default according to a strict [allow list policy]. The
-    policy can be [customized] if necessary.
-
-    If you cannot use JustHTML for some reason, some alternatives include
-    [`nh3`][nh3] or [`bleach`][bleach][^1]. However, be aware that those
-    libraries will not be sufficient in themselves and will require
-    customization. Some useful lists of allowed tags and attributes can be
-    found in the [`bleach-allowlist`][bleach-allowlist] library, which should
-    work with either sanitizer.
+    responsibility to ensure that it is properly sanitized. For more
+    information see [Sanitizing HTML Output].
 
 The `source` text must meet the same requirements as the [`text`](#text)
 argument of the [`markdown.markdown`](#markdown) function.
@@ -334,17 +287,12 @@ html3 = md.reset().convert(text3)
 
 !!! warning
 
-    The Python-Markdown library does ***not*** sanitize its HTML output. If
-    you are processing Markdown input from an untrusted source, it is your
-    responsibility to ensure that it is properly sanitized. See [Markdown and
-    XSS] for an overview of some of the dangers and [Improper markup
-    sanitization in popular software] for notes on best practices to ensure
-    HTML is properly sanitized.
-
-    As `Markdown.convertFile` writes directly to the file system, there
-    is no easy way to sanitize the output from Python code. Therefore, it is
-    recommended that the `Markdown.convertFile` method not be used on
-    input from an untrusted source.
+    The Python-Markdown library does ***not*** sanitize its HTML output. As
+    `Markdown.convertFile` writes directly to the file system, there is no
+    easy way to sanitize the output from Python code. Therefore, it is
+    recommended that the `Markdown.convertFile` method not be used on input
+    from an untrusted source.  For more information see [Sanitizing HTML
+    Output].
 
 The arguments of this method are identical to the arguments of the same
 name on the `markdown.markdownFromFile` function ([`input`](#input),

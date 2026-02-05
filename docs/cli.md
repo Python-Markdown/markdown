@@ -35,11 +35,18 @@ For example:
 echo "Some **Markdown** text." | python -m markdown > output.html
 ```
 
-Use the `--help` option for a list all available options and arguments:
+Use the `--help` option for a list of all available options and arguments:
 
 ```bash
 python -m markdown --help
 ```
+
+!!! warning
+
+    The Python-Markdown library does ***not*** sanitize its HTML output. If
+    you are processing Markdown input from an untrusted source, it is your
+    responsibility to ensure that it is properly sanitized. For more
+    information see [Sanitizing HTML Output](sanitization.md).
 
 If you don't want to call the python executable directly (using the `-m` flag),
 follow the instructions below to use a wrapper script:
