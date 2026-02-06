@@ -25,7 +25,16 @@ instance of the `markdown.Markdown` class and pass multiple documents through
 it. If you do use a single instance though, make sure to call the `reset`
 method appropriately ([see below](#convert)).
 
-### markdown.markdown(text [, **kwargs]) {: #markdown data-toc-label='markdown.markdown' }
+### `markdown.markdown(text [, **kwargs])` {: #markdown data-toc-label='markdown.markdown' }
+
+!!! warning
+
+    The Python-Markdown library does ***not*** sanitize its HTML output. If
+    you are processing Markdown input from an untrusted source, it is your
+    responsibility to ensure that it is properly sanitized. For more
+    information see [Sanitizing HTML Output].
+
+[Sanitizing HTML Output]: sanitization.md
 
 The following options are available on the `markdown.markdown` function:
 
@@ -179,6 +188,15 @@ __tab_length__{: #tab_length }:
 
 ### `markdown.markdownFromFile (**kwargs)` {: #markdownFromFile data-toc-label='markdown.markdownFromFile' }
 
+!!! warning
+
+    The Python-Markdown library does ***not*** sanitize its HTML output. As
+    `markdown.markdownFromFile` writes directly to the file system, there is
+    no easy way to sanitize the output from Python code. Therefore, it is
+    recommended that the `markdown.markdownFromFile` function not be used on
+    input from an untrusted source. For more information see [Sanitizing HTML
+    Output].
+
 With a few exceptions, `markdown.markdownFromFile` accepts the same options as
 `markdown.markdown`. It does **not** accept a `text` (or Unicode) string.
 Instead, it accepts the following required options:
@@ -216,7 +234,7 @@ __encoding__{: #encoding }
         meet your specific needs, it is suggested that you write your own code
         to handle your encoding/decoding needs.
 
-### markdown.Markdown([**kwargs]) {: #Markdown data-toc-label='markdown.Markdown' }
+### `markdown.Markdown([**kwargs])` {: #Markdown data-toc-label='markdown.Markdown' }
 
 The same options are available when initializing the `markdown.Markdown` class
 as on the [`markdown.markdown`](#markdown) function, except that the class does
@@ -229,7 +247,14 @@ string must be passed to one of two instance methods.
     the thread they were created in. A single instance should not be accessed
     from multiple threads.
 
-#### Markdown.convert(source) {: #convert data-toc-label='Markdown.convert' }
+#### `Markdown.convert(source)` {: #convert data-toc-label='Markdown.convert' }
+
+!!! warning
+
+    The Python-Markdown library does ***not*** sanitize its HTML output. If
+    you are processing Markdown input from an untrusted source, it is your
+    responsibility to ensure that it is properly sanitized. For more
+    information see [Sanitizing HTML Output].
 
 The `source` text must meet the same requirements as the [`text`](#text)
 argument of the [`markdown.markdown`](#markdown) function.
@@ -258,7 +283,16 @@ To make this easier, you can also chain calls to `reset` together:
 html3 = md.reset().convert(text3)
 ```
 
-#### Markdown.convertFile(**kwargs) {: #convertFile data-toc-label='Markdown.convertFile' }
+#### `Markdown.convertFile(**kwargs)` {: #convertFile data-toc-label='Markdown.convertFile' }
+
+!!! warning
+
+    The Python-Markdown library does ***not*** sanitize its HTML output. As
+    `Markdown.convertFile` writes directly to the file system, there is no
+    easy way to sanitize the output from Python code. Therefore, it is
+    recommended that the `Markdown.convertFile` method not be used on input
+    from an untrusted source.  For more information see [Sanitizing HTML
+    Output].
 
 The arguments of this method are identical to the arguments of the same
 name on the `markdown.markdownFromFile` function ([`input`](#input),

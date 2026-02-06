@@ -54,6 +54,7 @@ implementers
 InlineProcessor
 Jiryu
 JSON
+JustHTML
 keepachangelog
 Kjell
 Krech
@@ -111,6 +112,7 @@ rST
 ryneeverett
 sanitizer
 sanitizers
+sanitization
 Sauder
 schemeless
 setuptools
@@ -135,6 +137,7 @@ svn
 Swartz
 Szakmeister
 Takhteyev
+templating
 Tiago
 toc
 tokenized
@@ -168,6 +171,7 @@ workflow
 Xanthakis
 XHTML
 xhtml
+XSS
 YAML
 Yunusov
 inline

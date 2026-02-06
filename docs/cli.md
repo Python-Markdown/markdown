@@ -12,6 +12,8 @@ Generally, you will want to have the Markdown library fully installed on your
 system to run the command line script. See the
 [Installation instructions](install.md) for details.
 
+## Basic Usage
+
 Python-Markdown's command line script takes advantage of Python's `-m` flag.
 Therefore, assuming the python executable is on your system path, use the
 following format:
@@ -28,92 +30,62 @@ At its most basic usage, one would simply pass in a file name as the only argume
 python -m markdown input_file.txt
 ```
 
-Piping input and output (on `STDIN` and `STDOUT`) is fully supported as well.
+Use the `--help` option for a list of all available options and arguments:
+
+```bash
+python -m markdown --help
+```
+
+!!! warning
+
+    The Python-Markdown library does ***not*** sanitize its HTML output. If
+    you are processing Markdown input from an untrusted source, it is your
+    responsibility to ensure that it is properly sanitized. For more
+    information see [Sanitizing HTML Output](sanitization.md).
+
+## Piping Input and Output
+
+Piping input and output (on `STDIN` and `STDOUT`) is fully supported.
 For example:
 
 ```bash
 echo "Some **Markdown** text." | python -m markdown > output.html
 ```
 
-Use the `--help` option for a list all available options and arguments:
-
-```bash
-python -m markdown --help
+The above command would generate a file named `output.html` with the following content:
+```html
+<p>Some <strong>Markdown</strong> Text.</p>
 ```
 
-If you don't want to call the python executable directly (using the `-m` flag),
-follow the instructions below to use a wrapper script:
-
-Setup
------
-
-Upon installation, the `markdown_py` script will have been copied to
-your Python "Scripts" directory. Different systems require different methods to
-ensure that any files in the Python "Scripts" directory are on your system
-path.
-
-* **Windows**:
-
-    Assuming a default install of Python on Windows, your "Scripts" directory
-    is most likely something like `C:\\Python37\Scripts`. Verify the location
-    of your "Scripts" directory and add it to you system path.
-
-    Calling `markdown_py` from the command line will call the wrapper batch
-    file `markdown_py.bat` in the `"Scripts"` directory created during install.
-
-* __*nix__ (Linux, OSX, BSD, Unix, etc.):
-
-    As each \*nix distribution is different and we can't possibly document all
-    of them here, we'll provide a few helpful pointers:
-
-    * Some systems will automatically install the script on your path. Try it
-      and see if it works. Just run `markdown_py` from the command line.
-
-    * Other systems may maintain a separate "Scripts" ("bin") directory which
-      you need to add to your path. Find it (check with your distribution) and
-      either add it to your path or make a symbolic link to it from your path.
-
-    * If you are sure `markdown_py` is on your path, but it still is not being
-      found, check the permissions of the file and make sure it is executable.
-
-    As an alternative, you could just `cd` into the directory which contains
-    the source distribution, and run it from there. However, remember that your
-    markdown text files will not likely be in that directory, so it is much
-    more convenient to have `markdown_py` on your path.
-
-!!!Note
-    Python-Markdown uses `"markdown_py"` as a script name because the Perl
-    implementation has already taken the more obvious name "markdown".
-    Additionally, the default Python configuration on some systems would cause a
-    script named `"markdown.py"` to fail by importing itself rather than the
-    markdown library. Therefore, the script has been named `"markdown_py"` as a
-    compromise. If you prefer a different name for the script on your system, it
-    is suggested that you create a symbolic link to `markdown_py` with your
-    preferred name.
-
-Usage
------
-
-To use `markdown_py` from the command line, run it as
+As Python-Markdown only ever outputs HTML fragments (no `<html>`, `<head>`,
+and `<body>` tags), it is generally expected that the command line interface
+will always be used to pipe output to a templating engine. In the event that
+no additional content is needed and the output only needs to be wrapped in
+otherwise empty `<html>`, `<head>`, and `<body>` tags, 
+[JustHTML](https://emilstenstrom.github.io/justhtml/) can do that with with
+a single command:
 
 ```bash
-markdown_py input_file.txt
+echo "Some **Markdown** text." | python -m markdown | justhtml - --fragment > output.html
 ```
 
-or
+The above command would generate a file named `output.html` with the following content:
 
-```bash
-markdown_py input_file.txt > output_file.html
+```html
+<html>
+  <head></head>
+  <body>
+    <p>Some <strong>Markdown</strong> Text.</p>
+  </body>
+</html>
 ```
 
-For a complete list of options, run
+If you don't need or want JustHTML's HTML sanitation, you can disable it with the
+`--unsafe` flag, although that is not recommended. See JustHTML's 
+[Command Line Interface](https://emilstenstrom.github.io/justhtml/cli.html)
+documentation for details.
 
-```bash
-markdown_py --help
-```
-
-Using Extensions
-----------------
+## Using Extensions
 
 To load a Python-Markdown extension from the command line use the `-x`
 (or `--extension`) option. The extension module must be on your `PYTHONPATH`
@@ -187,3 +159,74 @@ dependencies. The format of your configuration file is automatically detected.
 [JSON]: https://json.org/
 [PyYAML]: https://pyyaml.org/
 [2.5 release notes]: change_log/release-2.5.md
+
+## Using the `markdown_py` Command
+
+If you don't want to call the python executable directly (using the `-m` flag),
+follow the instructions below to use a wrapper script:
+
+### Setup `markdown_py`
+
+Upon installation, the `markdown_py` script will have been copied to
+your Python "Scripts" directory. Different systems require different methods to
+ensure that any files in the Python "Scripts" directory are on your system
+path.
+
+* **Windows**:
+
+    Assuming a default install of Python on Windows, your "Scripts" directory
+    is most likely something like `C:\\Python37\Scripts`. Verify the location
+    of your "Scripts" directory and add it to you system path.
+
+    Calling `markdown_py` from the command line will call the wrapper batch
+    file `markdown_py.bat` in the `"Scripts"` directory created during install.
+
+* __*nix__ (Linux, OSX, BSD, Unix, etc.):
+
+    As each \*nix distribution is different and we can't possibly document all
+    of them here, we'll provide a few helpful pointers:
+
+    * Some systems will automatically install the script on your path. Try it
+      and see if it works. Just run `markdown_py` from the command line.
+
+    * Other systems may maintain a separate "Scripts" ("bin") directory which
+      you need to add to your path. Find it (check with your distribution) and
+      either add it to your path or make a symbolic link to it from your path.
+
+    * If you are sure `markdown_py` is on your path, but it still is not being
+      found, check the permissions of the file and make sure it is executable.
+
+    As an alternative, you could just `cd` into the directory which contains
+    the source distribution, and run it from there. However, remember that your
+    markdown text files will not likely be in that directory, so it is much
+    more convenient to have `markdown_py` on your path.
+
+!!!Note
+    Python-Markdown uses `"markdown_py"` as a script name because the Perl
+    implementation has already taken the more obvious name "markdown".
+    Additionally, the default Python configuration on some systems would cause a
+    script named `"markdown.py"` to fail by importing itself rather than the
+    markdown library. Therefore, the script has been named `"markdown_py"` as a
+    compromise. If you prefer a different name for the script on your system, it
+    is suggested that you create a symbolic link to `markdown_py` with your
+    preferred name.
+
+### Using `markdown_py`
+
+To use `markdown_py` from the command line, run it as
+
+```bash
+markdown_py input_file.txt
+```
+
+or
+
+```bash
+markdown_py input_file.txt > output_file.html
+```
+
+For a complete list of options, run
+
+```bash
+markdown_py --help
+```

@@ -22,6 +22,7 @@ nav:
   - Installation: install.md
   - Library Reference: reference.md
   - Command Line: cli.md
+  - Sanitization and Security: sanitization.md
   - Extensions: extensions/index.md
   - Officially Supported Extensions:
       - Abbreviations: extensions/abbreviations.md
