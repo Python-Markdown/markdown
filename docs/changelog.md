@@ -10,12 +10,12 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
-## [Unreleased]
+## [3.10.2] - 2026-02-09
 
 ### Fixed
 
 * Fix a regression related to comment handling (#1590).
-* More reliable fix for `</`.
+* More reliable fix for `</` (#1593).
 
 ## [3.10.1] - 2026-01-21
 
