@@ -40,7 +40,11 @@ commentclose = re.compile(r'--!?>')
 # Users can still do `from html import parser` and get the default behavior.
 spec = importlib.util.find_spec('html.parser')
 htmlparser = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(htmlparser)
+if hasattr(spec.loader, 'exec_module'):
+    spec.loader.exec_module(htmlparser)
+else:
+    import importlib
+    htmlparser.__dict__.update(importlib.import_module('html.parser').__dict__)
 sys.modules['htmlparser'] = htmlparser
 
 # This is a hack. We are sneaking in `</>` so we can capture it without the HTML parser
