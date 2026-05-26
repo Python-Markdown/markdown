@@ -109,6 +109,58 @@ class TestSetextHeaders(TestCase):
 
     # TODO: fix this
     # see https://johnmacfarlane.net/babelmark2/?normalize=1&text=Paragraph%0AAn+H1%0A%3D%3D%3D%3D%3D
+
+    def test_setext_mixed_chars_not_h1(self):
+        """Mixed = and - chars should not form a valid H1."""
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                This is not an H1
+                =-
+                """
+            ),
+            self.dedent(
+                """
+                <p>This is not an H1
+                =-</p>
+                """
+            )
+        )
+
+    def test_setext_mixed_chars_not_h2(self):
+        """Mixed - and = chars should not form a valid H2."""
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                This is not an H2
+                -=
+                """
+            ),
+            self.dedent(
+                """
+                <p>This is not an H2
+                -=</p>
+                """
+            )
+        )
+
+    def test_setext_mixed_multiple_chars(self):
+        """Multiple mixed = and - chars should not form a valid H1/H2."""
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Not a Header
+                =-=-
+                """
+            ),
+            self.dedent(
+                """
+                <p>Not a Header
+                =-=-</p>
+                """
+            )
+        )
+
     @unittest.skip('This is broken in Python-Markdown')
     def test_p_followed_by_setext_h1(self):
         self.assertMarkdownRenders(
