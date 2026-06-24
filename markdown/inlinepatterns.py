@@ -879,6 +879,35 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
 
     RE_LINK = re.compile(r'\s?\[([^\]]*)\]', re.DOTALL | re.UNICODE)
 
+    def _unescapeId(self, id: str) -> str:
+        """Unescape inline placeholders in a reference ID for lookup.
+
+        Inline processing (e.g. backtick code spans at priority 190) runs before
+        reference resolution (priority 170). Code spans are replaced with
+        placeholders that would not match the raw-text reference definition key.
+        This method reverses that transformation for reference matching.
+
+        Backtick delimiters are stripped during normalization since the backtick
+        count is not preserved in the stashed element. Reference definitions are
+        stored under a similarly backtick-stripped key.
+        """
+        try:
+            stash = self.md.treeprocessors['inline'].stashed_nodes
+        except (KeyError, AttributeError):
+            return id
+
+        def _replace_placeholder(m: re.Match[str]) -> str:
+            sid = m.group(1)
+            if sid in stash:
+                value = stash.get(sid)
+                if isinstance(value, str):
+                    return value
+                else:
+                    return ''.join(value.itertext())
+            return m.group(0)
+
+        return util.INLINE_PLACEHOLDER_RE.sub(_replace_placeholder, id)
+
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | None, int | None, int | None]:
         """
         Return [`Element`][xml.etree.ElementTree.Element] returned by `makeTag` method or `(None, None, None)`.
@@ -894,6 +923,8 @@ class ReferenceInlineProcessor(LinkInlineProcessor):
 
         # Clean up line breaks in id
         id = self.NEWLINE_CLEANUP_RE.sub(' ', id)
+        # Unescape inline placeholders (code spans, etc.) for matching
+        id = self._unescapeId(id)
         if id not in self.md.references:  # ignore undefined refs
             return None, m.start(0), end
 

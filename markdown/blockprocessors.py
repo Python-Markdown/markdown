@@ -591,6 +591,13 @@ class ReferenceProcessor(BlockProcessor):
             link = m.group(2).lstrip('<').rstrip('>')
             title = m.group(5) or m.group(6)
             self.parser.md.references[id] = (link, title)
+            # Also store under a backtick-stripped key so that inline
+            # reference lookups work when the label contains code spans.
+            # Backtick code spans are processed before reference resolution,
+            # and the stashed code element does not preserve the backtick count.
+            id_stripped = id.replace('`', '')
+            if id_stripped != id:
+                self.parser.md.references[id_stripped] = (link, title)
             if block[m.end():].strip():
                 # Add any content after match back to blocks as separate block
                 blocks.insert(0, block[m.end():].lstrip('\n'))
