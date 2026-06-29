@@ -112,6 +112,46 @@ series of commits along with the discussion about those changes as they
 progress over time. If your pull request is accepted, it will be squashed at
 that time if deemed appropriate.
 
+## AI Contributions
+
+Contributions to the Python-Markdown project are welcome, including those
+developed with the assistance of generative AI tools. However, the use of
+such tools does not change expectations for contributor responsibility,
+engagement, or code quality. The following apply to all contributions.
+
+Contributors are responsible for all submitted content, regardless of whether
+generative AI tools were used.
+
+Contributors must be able to explain all changes upon request during review.
+
+Contributors are responsible for ensuring all submitted code complies with
+Python-Markdown's licensing, regardless of whether generative AI tools were
+used.
+
+The pull request process should be collaborative and iterative. Contributors
+are expected to actively engage with reviewer feedback themselves.
+Contributors are expected to understand the changes they are proposing, not
+act as a message courier for a third party. Copying and pasting replies to /
+from a generative AI tool does not count as engaging with the reviewer. The
+use of an AI agent to submit a pull request, issue, or comment autonomously
+is not permitted.
+
+All code and prose (documentation, commit messages, comments, etc.) must
+reflect the style and conventions used by the Python-Markdown project (see
+[Code Style Guide](#code-style-guide), [Documentation Style
+Guide](#documentation-style-guide), and [Commit Message Style
+Guide](#commit-message-style-guide) below).
+
+Maintainers may close issues and pull requests that are not useful or
+productive, regardless of whether AI tools were used or not. If a contributor
+repeatedly opens unproductive issues or requests, they may be blocked from
+contributing to the project as it is disruptive and disrespectful of the
+maintainers' time.
+
+!!! Note
+    This policy was largely inspired by the Astropy Project's 
+    [Usage of Generative AI] policy.
+
 ## Style Guides
 
 In an effort to maintain consistency, Python-Markdown adheres to the following
@@ -577,6 +617,7 @@ for details.
 [Babelmark]: https://johnmacfarlane.net/babelmark2/
 [Creating a pull request from a fork]: https://help.github.com/articles/creating-a-pull-request-from-a-fork/
 [action words]: https://help.github.com/articles/closing-issues-using-keywords/
+[Usage of Generative AI]: https://github.com/astropy/astropy-project/blob/b842b9bef3c8d69da73d639ea0254ae17fbc1fd1/policies/ai-policy.md
 [PEP8 Style Guide]: https://www.python.org/dev/peps/pep-0008/
 [Flake8]: http://flake8.pycqa.org/en/latest/index.html
 [Markdown]: https://daringfireball.net/projects/markdown/basics
