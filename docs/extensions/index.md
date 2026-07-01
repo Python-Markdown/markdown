@@ -26,12 +26,12 @@ See the [Command Line docs](../cli.md) or use the `--help` option for more detai
     If you would like to write your own extensions, see the
     [Extension API](api.md) for details.
 
-Officially Supported Extensions
--------------------------------
+Included Extensions
+-------------------
 
 The extensions listed below are included with (at least) the most recent release
 and are officially supported by Python-Markdown. Any documentation is
-maintained here and all bug reports should be made to the project. If you
+maintained here and all bug reports should be made to this project. If you
 have a typical install of Python-Markdown, these extensions are already
 available to you using the "Entry Point" name listed in the second column below.
 
@@ -75,7 +75,23 @@ Extension                          | Entry Point    | Dot Notation
 [Table of Contents]: toc.md
 [WikiLinks]: wikilinks.md
 
-Third Party Extensions
+!!! Note
+
+    All of the included extensions are in __maintenance mode__. We will
+    continue to fix bugs and keep them up-to-date with the core parser, but
+    no new features or changes in behavior will be made. Additionally, no new
+    extensions will be added to the project. All future extension development
+    should happen in third-party extensions. If you need a feature that seems
+    like it would be a good addition to one of the included extensions, then
+    you have three options (1) find an existing [third-party extension] which
+    meets your needs, (2) [build your own extension], or (3) fork the
+    relevant included extension (pursuant to its licensing requirements) and
+    maintain it as a third-party extension.
+
+[third-party extension]: #third-party-extensions
+[build your own extension]: api.md
+
+Third-Party Extensions
 ----------------------
 
 Various individuals and/or organizations have developed extensions which they

@@ -9,6 +9,21 @@ indented code blocks.
 
 This extension is included in the standard Markdown library.
 
+!!! Note
+
+    This extension is in __maintanence mode__.  We will continue to fix bugs
+    and keep it up-to-date with the core parser, but no new features or
+    changes in behavior will be made. If you need a feature that this
+    extension does not offer, then you have three options (1) find an
+    existing [third-party extension] which meets your needs, (2) [build your
+    own extension], or (3) fork this extension (pursuant to its licensing
+    requirements) and maintain it as a third-party extension.
+
+    We recommend [SuperFences] as an actively developed alternative.
+
+[third-party extension]: index.md#third-party-extensions
+[build your own extension]: api.md
+
 ## Syntax
 
 Fenced Code Blocks are defined using the syntax originally established in [PHP Markdown Extra][php] and popularized by
