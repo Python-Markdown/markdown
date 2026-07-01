@@ -52,7 +52,7 @@ extension_configs = {
 
 !!! Note
 
-    This extension is in __maintanence mode__.  We will continue to fix bugs
+    This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or
     changes in behavior will be made. If you need a feature that this
     extension does not offer, then you have three options (1) find an
