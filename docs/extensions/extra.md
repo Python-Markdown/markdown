@@ -20,6 +20,19 @@ The supported extensions include:
 See each individual extension for syntax documentation. Extra and all its
 supported extensions are included in the standard Markdown library.
 
+!!! Note
+
+    This extension is in __maintenance mode__.  We will continue to fix bugs
+    and keep it up-to-date with the core parser, but no new features or
+    changes in behavior will be made. If you need a feature that this
+    extension does not offer, then you have three options (1) find an
+    existing [third-party extension] which meets your needs, (2) [build your
+    own extension], or (3) fork this extension (pursuant to its licensing
+    requirements) and maintain it as a third-party extension.
+
+[third-party extension]: index.md#third-party-extensions
+[build your own extension]: api.md
+
 ## Usage
 
 From the Python interpreter:

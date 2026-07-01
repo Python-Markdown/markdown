@@ -94,6 +94,7 @@ prepended
 preprocessor
 preprocessors
 Pygments
+PyMdown
 PyPI
 PyPy
 PYTHONPATH
