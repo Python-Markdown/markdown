@@ -424,7 +424,15 @@ class MarkdownInHtmlExtension(Extension):
     """Add Markdown parsing in HTML to Markdown class."""
 
     def extendMarkdown(self, md):
-        """ Register extension instances. """
+        """ Register the processors.
+
+        | Class Instance                                                              | Registry                                                         | Name   | Priority |
+        | --------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------ | :------: |
+        | [`HtmlBlockPreprocessor`][markdown.extensions.md_in_html.HtmlBlockPreprocessor] | [`preprocessors`][markdown.preprocessors.build_preprocessors] | `html_block` | `20` |
+        | [`MarkdownInHtmlProcessor`][markdown.extensions.md_in_html.MarkdownInHtmlProcessor] | [`blockprocessors`][markdown.blockprocessors.build_block_parser] | `markdown_block` | `105` |
+        | [`MarkdownInHTMLPostprocessor`][markdown.extensions.md_in_html.MarkdownInHTMLPostprocessor] | [`postprocessors`][markdown.postprocessors.build_postprocessors] | `raw_html` | `30` |
+
+        """
 
         # Replace raw HTML preprocessor
         md.preprocessors.register(HtmlBlockPreprocessor(md), 'html_block', 20)

@@ -43,7 +43,13 @@ class LegacyEmExtension(Extension):
     """ Add legacy_em extension to Markdown class."""
 
     def extendMarkdown(self, md):
-        """ Modify inline patterns. """
+        """ Register the processor.
+
+        | Class Instance                                                | Registry                                                         | Name   | Priority |
+        | ------------------------------------------------------------- | ---------------------------------------------------------------- | ------ | :------: |
+        | [`LegacyUnderscoreProcessor`][markdown.extensions.legacy_em.LegacyUnderscoreProcessor] | [`inlinepatterns`][markdown.inlinepatterns.build_inlinepatterns] | `em_strong2` | `50` |
+
+        """
         md.inlinePatterns.register(LegacyUnderscoreProcessor(r'_'), 'em_strong2', 50)
 
 

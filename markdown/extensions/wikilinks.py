@@ -48,6 +48,13 @@ class WikiLinkExtension(Extension):
         super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
+        """ Register the processor.
+
+        | Class Instance                                                              | Registry                                                         | Name   | Priority |
+        | --------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------ | :------: |
+        | [`WikiLinksInlineProcessor`][markdown.extensions.wikilinks.WikiLinksInlineProcessor] | [`inlinepatterns`][markdown.inlinepatterns.build_inlinepatterns] | `wikilink` | `75` |
+
+        """
         self.md = md
 
         # append to end of inline patterns

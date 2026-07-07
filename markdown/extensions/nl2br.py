@@ -30,9 +30,16 @@ BR_RE = r'\n'
 
 
 class Nl2BrExtension(Extension):
+    """ Newline-to-linebreak extension for Python-Markdown. """
 
     def extendMarkdown(self, md):
-        """ Add a `SubstituteTagInlineProcessor` to Markdown. """
+        """ Register the processor.
+
+        | Class Instance                                                  | Registry                                                      | Name   | Priority |
+        | --------------------------------------------------------------- | ------------------------------------------------------------- | ------ | :------: |
+        | [`SubstituteTagInlineProcessor`][markdown.inlinepatterns.SubstituteTagInlineProcessor] | [`inlinepatterns`][markdown.inlinepatterns.build_inlinepatterns] | `nl` | `5` |
+
+        """
         br_tag = SubstituteTagInlineProcessor(BR_RE, 'br')
         md.inlinePatterns.register(br_tag, 'nl', 5)
 

@@ -41,7 +41,14 @@ class AdmonitionExtension(Extension):
     """ Admonition extension for Python-Markdown. """
 
     def extendMarkdown(self, md):
-        """ Add Admonition to Markdown instance. """
+        """ 
+        Register the processor.
+
+        | Class Instance                                                              | Registry                                                         | Name   | Priority |
+        | --------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------ | :------: |
+        | [`AdmonitionProcessor`][markdown.extensions.admonition.AdmonitionProcessor] | [`blockprocessors`][markdown.blockprocessors.build_block_parser] | `admonition` | `105` |
+
+        """
         md.registerExtension(self)
 
         md.parser.blockprocessors.register(AdmonitionProcessor(md.parser), 'admonition', 105)
