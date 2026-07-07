@@ -16,9 +16,10 @@ block processors and inline processors, renders the ElementTree object as Unicod
 postprocessors.
 
 There are classes and helpers provided to ease writing your extension. Each part of the API is discussed in its
-respective section below. Additionally, you can walk through the [Tutorial on Writing Extensions][tutorial]; look at
-some of the [Available Extensions][] and their [source code][extension source]. As always, you may report bugs, ask
-for help, and discuss various other issues on the [bug tracker].
+respective section below. Additionally, you can walk through the [Tutorial on Writing Extensions][tutorial]; browse the 
+[API Reference][markdown] which was generated from the source code; look at some of the [Available Extensions][] and 
+their [source code][extension source]. As always, you may report bugs, ask for help, and discuss various other issues
+on the [bug tracker].
 
 ## Phases of processing {: #stages }
 
@@ -27,9 +28,10 @@ for help, and discuss various other issues on the [bug tracker].
 Preprocessors munge the source text before it is passed to the Markdown parser. This is an excellent place to clean up
 bad characters or to extract portions for later processing that the parser may otherwise choke on.
 
-Preprocessors inherit from `markdown.preprocessors.Preprocessor` and implement a `run` method, which takes a single
-parameter `lines`. This parameter is the entire source text stored as a list of Unicode strings, one per line.  `run`
-should return its processed list of Unicode strings, one per line.
+Preprocessors inherit from [`markdown.preprocessors.Preprocessor`][markdown.preprocessors.Preprocessor]
+and implement a [`run`][markdown.preprocessors.Preprocessor.run] method, which takes a single parameter
+`lines`. This parameter is the entire source text stored as a list of Unicode strings, one per line.
+`run` should return its processed list of Unicode strings, one per line.
 
 #### Example
 
@@ -55,19 +57,11 @@ class NoRender(Preprocessor):
 
 Some preprocessors in the Markdown source tree include:
 
-| Class                         | Kind      | Description |
-| ------------------------------|-----------|------------------------------------------------- |
-| [`NormalizeWhiteSpace`][c1]   | built-in  | Normalizes whitespace by expanding tabs, fixing `\r` line endings, etc. |
-| [`HtmlBlockPreprocessor`][c2] | built-in  | Removes html blocks from the text and stores them for later processing |
-| [`ReferencePreprocessor`][c3] | built-in  | Removes reference definitions from text and stores for later processing |
-| [`MetaPreprocessor`][c4]      | extension | Strips and records meta data at top of documents |
-| [`FootnotesPreprocessor`][c5] | extension | Removes footnote blocks from the text and stores them for later processing |
-
-[c1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py
-[c2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py
-[c3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/preprocessors.py
-[c4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/meta.py
-[c5]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
+| Class                                                                   | Kind      | Description |
+| ------------------------------------------------------------------------|-----------|------------------------------------------------- |
+| [`NormalizeWhiteSpace`][markdown.preprocessors.NormalizeWhitespace]     | built-in  | Normalizes whitespace by expanding tabs, fixing `\r` line endings, etc. |
+| [`HtmlBlockPreprocessor`][markdown.preprocessors.HtmlBlockPreprocessor] | built-in  | Removes html blocks from the text and stores them in [`htmlStash`][markdown.util.HtmlStash] for later processing |
+| [`MetaPreprocessor`][markdown.extensions.meta.MetaPreprocessor]         | extension | Strips and records meta data at top of documents |
 
 ### Block Processors {: #blockprocessors }
 
@@ -75,16 +69,12 @@ A block processor parses blocks of text and adds new elements to the `ElementTre
 other text by blank lines, may have a different syntax and produce a differently structured tree than other Markdown.
 Block processors excel at code formatting, equation layouts, and tables.
 
-Block processors inherit from `markdown.blockprocessors.BlockProcessor`, are passed `md.parser` on initialization, and
-implement both the `test` and `run` methods:
+Block processors inherit from [`markdown.blockprocessors.BlockProcessor`][markdown.blockprocessors.BlockProcessor],
+are passed `md.parser` on initialization, and implement both the [`test`][markdown.blockprocessors.BlockProcessor.test]
+and [`run`][markdown.blockprocessors.BlockProcessor.run] methods:
 
-* `test(self, parent, block)` takes two parameters: `parent` is the parent `ElementTree` element and `block` is a
-  single, multi-line, Unicode string of the current block. `test`, often a regular expression match, returns a true
-  value if the block processor's `run` method should be called to process starting at that block.
-* `run(self, parent, blocks)` has the same `parent` parameter as `test`; and `blocks` is the list of all remaining
-  blocks in the document, starting with the `block` passed to `test`. `run` may return `False` (not `None`) to signal
-  failure, meaning that it did not process the blocks after all. On success, `run` is expected to `pop` one or more
-  blocks from the front of `blocks` and attach new nodes to `parent`.
+* [`test`][markdown.blockprocessors.BlockProcessor.test]
+* [`run`][markdown.blockprocessors.BlockProcessor.run]
 
 Crafting block processors is more involved and flexible than the other processors, involving controlling recursive
 parsing of the block's contents and managing state across invocations. For example, a blank line is allowed in
@@ -95,18 +85,17 @@ and more.
 To make writing these complex beasts more tractable, three convenience functions have been provided by the
 `BlockProcessor` parent class:
 
-* `lastChild(parent)` returns the last child of the given element or `None` if it has no children.
-* `detab(text)` removes one level of indent (four spaces by default) from the front of each line of the given
-  multi-line, text string, until a non-blank line is indented less.
-* `looseDetab(text, level)` removes multiple levels
-  of indent from the front of each line of `text` but does not affect lines indented less.
+* [`lastChild`][markdown.blockprocessors.BlockProcessor.lastChild]
+* [`detab`][markdown.blockprocessors.BlockProcessor.detab]
+* [`looseDetab`][markdown.blockprocessors.BlockProcessor.looseDetab]
 
 Also, `BlockProcessor` provides the fields `self.tab_length`, the tab length (default 4), and `self.parser`, the
-current `BlockParser` instance.
+current [`BlockParser`][markdown.blockparser.BlockParser] instance.
 
 #### BlockParser
 
-`BlockParser`, not to be confused with `BlockProcessor`, is the class used by Markdown to cycle through all the
+[`BlockParser`][markdown.blockparser.BlockParser], not to be confused with
+[`BlockProcessor`][markdown.blockprocessors.BlockProcessor], is the class used by Markdown to cycle through all the
 registered block processors.  You should never need to create your own instance; use `self.parser` instead.
 
 The `BlockParser` instance provides a stack of strings for its current state, which your processor can push with
@@ -116,12 +105,9 @@ The `BlockParser` instance provides a stack of strings for its current state, wh
 The `BlockParser` instance can also be called recursively, that is, to process blocks from within your block
 processor.  There are three methods:
 
-* `parseDocument(lines)` parses a list of lines, each a single-line Unicode string, returning a complete
-  `ElementTree`.
-* `parseChunk(parent, text)` parses a single, multi-line, possibly multi-block, Unicode string `text` and attaches the
-  resulting tree to `parent`.
-* `parseBlocks(parent, blocks)` takes a list of `blocks`, each a multi-line Unicode string without blank lines, and
-  attaches the resulting tree to `parent`.
+* [`parseDocument`][markdown.blockparser.BlockParser.parseDocument]
+* [`parseChunk`][markdown.blockparser.BlockParser.parseChunk]
+* [`parseBlocks`][markdown.blockparser.BlockParser.parseBlocks]
 
 For perspective, Markdown calls `parseDocument` which calls `parseChunk` which calls `parseBlocks` which calls your
 block processor, which, in turn, might call one of these routines.
@@ -205,31 +191,28 @@ The example output might display as follows:
 
 Some block processors in the Markdown source tree include:
 
-| Class                       | Kind      |  Description                                |
-| ----------------------------|-----------|---------------------------------------------|
-| [`HashHeaderProcessor`][b1] | built-in  |  Title hashes (`#`), which may split blocks |
-| [`HRProcessor`][b2]         | built-in  |  Horizontal lines, e.g., `---`              |
-| [`OListProcessor`][b3]      | built-in  |  Ordered lists; complex and using `state`   |
-| [`Admonition`][b4]          | extension |  Render each [Admonition][] in a new `div`  |
+| Class                                                                            | Kind      |  Description                                |
+| ---------------------------------------------------------------------------------|-----------|---------------------------------------------|
+| [`HashHeaderProcessor`][markdown.blockprocessors.HashHeaderProcessor]            | built-in  |  Title hashes (`#`), which may split blocks |
+| [`HRProcessor`][markdown.blockprocessors.HRProcessor]                            | built-in  |  Horizontal lines, e.g., `---`              |
+| [`OListProcessor`][markdown.blockprocessors.OListProcessor]                      | built-in  |  Ordered lists; complex and using `state`   |
+| [`AdmonitionProcessor`][markdown.extensions.admonition.AdmonitionProcessor]      | extension |  Render each [Admonition][] in a new `div`  |
+| [`FootnoteBlockProcessor`][markdown.extensions.footnotes.FootnoteBlockProcessor] | extension | Find footnote definitions and store for later use. |
 
-[b1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py
-[b2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py
-[b3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/blockprocessors.py
 [Admonition]: https://python-markdown.github.io/extensions/admonition/
-[b4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/admonition.py
 
 ### Tree processors {: #treeprocessors }
 
 Tree processors manipulate the tree created by block processors.  They can even create an entirely new ElementTree
 object. This is an excellent place for creating summaries, adding collected references, or last minute adjustments.
 
-A tree processor must inherit from `markdown.treeprocessors.Treeprocessor` (note the capitalization). A tree processor
-must implement a `run` method which takes a single argument `root`. In most cases `root` would be an
-`xml.etree.ElementTree.Element` instance; however, in rare cases it could be some other type of ElementTree object.
-The `run` method may return `None`, in which case the (possibly modified) original `root` object is used, or it may
-return an entirely new `Element` object, which will replace the existing `root` object and all of its children.  It is
-generally preferred to modify `root` in place and return `None`, which avoids creating multiple copies of the entire
-document tree in memory.
+A tree processor must inherit from [`markdown.treeprocessors.Treeprocessor`][markdown.treeprocessors.Treeprocessor]
+(note the capitalization). A tree processor must implement a [`run`][markdown.treeprocessors.Treeprocessor.run] method
+which takes a single argument `root`. In most cases `root` would be an `xml.etree.ElementTree.Element` instance;
+however, in rare cases it could be some other type of ElementTree object. The `run` method may return `None`, in which
+case the (possibly modified) original `root` object is used, or it may return an entirely new `Element` object, which
+will replace the existing `root` object and all of its children.  It is generally preferred to modify `root` in place
+and return `None`, which avoids creating multiple copies of the entire document tree in memory.
 
 For specifics on manipulating the ElementTree, see [Working with the ElementTree][workingwithetree] below.
 
@@ -248,22 +231,18 @@ class MyTreeprocessor(Treeprocessor):
 
 #### Usages
 
-The  core `InlineProcessor` class is a tree processor.  It walks the tree, matches patterns, and splits and creates
-nodes on matches.
+The  core [`InlineProcessor`][markdown.treeprocessors.InlineProcessor] class is a tree processor.  It walks the tree,
+matches patterns, and splits and creates nodes on matches.
 
 Additional tree processors in the Markdown source tree include:
 
-| Class                             | Kind      | Description                                                   |
-| ----------------------------------|-----------|---------------------------------------------------------------|
-| [`PrettifyTreeprocessor`][e1]     | built-in  |  Add line breaks to the html document                         |
-| [`TocTreeprocessor`][e2]          | extension |  Builds a [table of contents][] from the finished tree        |
-| [`FootnoteTreeprocessor`][e3]     | extension |  Create [footnote][] div at end of document                   |
-| [`FootnotePostTreeprocessor`][e4] | extension |  Amend div created by `FootnoteTreeprocessor` with duplicates |
+| Class                                                                                  | Kind      | Description                                                   |
+| ---------------------------------------------------------------------------------------|-----------|---------------------------------------------------------------|
+| [`PrettifyTreeprocessor`][markdown.treeprocessors.PrettifyTreeprocessor]               | built-in  |  Add line breaks to the html document                         |
+| [`TocTreeprocessor`][markdown.extensions.toc.TocTreeprocessor]                         | extension |  Builds a [table of contents][] from the finished tree        |
+| [`FootnoteTreeprocessor`][markdown.extensions.footnotes.FootnoteTreeprocessor]         | extension |  Create [footnote][] div at end of document                   |
+| [`FootnotePostTreeprocessor`][markdown.extensions.footnotes.FootnotePostTreeprocessor] | extension |  Amend div created by `FootnoteTreeprocessor` with duplicates |
 
-[e1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/treeprocessors.py
-[e2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/toc.py
-[e3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
-[e4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
 [table of contents]: https://python-markdown.github.io/extensions/toc/
 [footnote]: https://python-markdown.github.io/extensions/footnotes/
 
@@ -273,22 +252,8 @@ Inline processors, previously called inline patterns, are used to add formatting
 a matched pattern with a new element tree node. It is an excellent place for adding new syntax for inline tags.  Inline
 processor code is often quite short.
 
-Inline processors inherit from `InlineProcessor`, are initialized, and implement `handleMatch`:
-
-*   `__init__(self, pattern, md=None)` is the inherited constructor.  You do not need to implement your own.
-    * `pattern` is the regular expression string that must match the code block in order for the `handleMatch` method
-      to be called.
-    * `md`, an optional parameter, is a pointer to the instance of `markdown.Markdown` and is available as `self.md`
-      on the `InlineProcessor` instance.
-
-*   `handleMatch(self, m, data)` must be implemented in all `InlineProcessor` subclasses.
-    * `m` is the regular expression [match object][] found by the `pattern` passed to `__init__`.
-    * `data` is a single, multi-line, Unicode string containing the entire block of text around the pattern.  A block
-      is text set apart by blank lines.
-    * Returns either `(None, None, None)`, indicating the provided match was rejected or `(el, start, end)`, if the
-      match was successfully processed.  On success, `el` is the element being added to the tree, `start` and `end` are
-      indexes in `data` that were "consumed" by the pattern.  The "consumed" span will be replaced by a placeholder.
-      The same inline processor may be called several times on the same block.
+Inline processors inherit from [`InlineProcessor`][markdown.inlinepatterns.InlineProcessor], are initialized, and implement
+[`handleMatch`][markdown.inlinepatterns.InlineProcessor.handleMatch].
 
 Inline Processors can define the property `ANCESTOR_EXCLUDES` which is either a list or tuple of undesirable ancestors.
 The processor will be skipped if it would cause the content to be a descendant of one of the listed tag names.
@@ -297,11 +262,11 @@ The processor will be skipped if it would cause the content to be a descendant o
 
 Convenience subclasses of `InlineProcessor` are provided for common operations:
 
-* [`SimpleTextInlineProcessor`][i1] returns the text of `group(1)` of the match.
-* [`SubstituteTagInlineProcessor`][i4] is initialized as `SubstituteTagInlineProcessor(pattern, tag)`. It returns a
-  new element `tag` whenever `pattern` is matched.
-* [`SimpleTagInlineProcessor`][i3] is initialized as `SimpleTagInlineProcessor(pattern, tag)`. It returns an element
-  `tag` with a text field of `group(2)` of the match.
+* [`SimpleTextInlineProcessor`][markdown.inlinepatterns.SimpleTextInlineProcessor] returns the text of `group(1)` of the match.
+* [`SubstituteTagInlineProcessor`][markdown.inlinepatterns.SubstituteTagInlineProcessor] is initialized as
+  `SubstituteTagInlineProcessor(pattern, tag)`. It returns a new element `tag` whenever `pattern` is matched.
+* [`SimpleTagInlineProcessor`][markdown.inlinepatterns.SimpleTagInlineProcessor] is initialized as
+  `SimpleTagInlineProcessor(pattern, tag)`. It returns an element `tag` with a text field of `group(2)` of the match.
 
 ##### Example
 
@@ -355,16 +320,16 @@ The example output might display as follows:
     * `data` will be the string
       `First line of the block.\nThis is klzzwxh:0000.\nThis is --strike two--.\nEnd of the block.`
 
-Note the placeholder token `klzzwxh:0000`. This allows the regular expression to be run against the entire block,
-not just the the text contained in an individual element. The placeholders will later be swapped back out for the
-actual elements by the parser.
+Note the [placeholder][markdown.util.INLINE_PLACEHOLDER_PREFIX] token `klzzwxh:0000`. This allows the
+regular expression to be run against the entire block, not just the the text contained in an individual element.
+The placeholders will later be swapped back out for the actual elements by the parser.
 
 Actually it would not be necessary to create the above inline processor. The fact is, that example is not very DRY
 (Don't Repeat Yourself). A pattern for `**strong**` text would be almost identical, with the exception that it would
 create a `strong` element. Therefore, Markdown provides a number of generic `InlineProcessor` subclasses that can
 provide some common functionality. For example, strike could be implemented with an instance of the
-`SimpleTagInlineProcessor` class as demonstrated below. Feel free to use or extend any of the `InlineProcessor`
-subclasses found at `markdown.inlinepatterns`.
+[`SimpleTagInlineProcessor`][markdown.inlinepatterns.SimpleTagInlineProcessor] class as demonstrated below. Feel
+free to use or extend any of the `InlineProcessor` subclasses found at `markdown.inlinepatterns`.
 
 ```python
 from markdown.inlinepatterns import SimpleTagInlineProcessor
@@ -380,26 +345,17 @@ class DelExtension(Extension):
 
 Here are some convenience functions and other examples:
 
-| Class                            | Kind      | Description                                                   |
-| ---------------------------------|-----------|---------------------------------------------------------------|
-| [`AsteriskProcessor`][i5]        | built-in  | Emphasis processor for handling strong and em matches inside asterisks |
-| [`AbbrInlineProcessor`][i6]      | extension | Apply tag to abbreviation registered by preprocessor          |
-| [`WikiLinksInlineProcessor`][i7] | extension | Link `[[article names]]` to wiki given in metadata            |
-| [`FootnoteInlineProcessor`][i8]  | extension | Replaces footnote in text with link to footnote div at bottom |
-
-[i1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
-[i2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
-[i3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
-[i4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
-[i5]: https://github.com/Python-Markdown/markdown/blob/master/markdown/inlinepatterns.py
-[i6]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/abbr.py
-[i7]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/wikilinks.py
-[i8]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
+| Class                                                                                | Kind      | Description                                                   |
+| -------------------------------------------------------------------------------------|-----------|---------------------------------------------------------------|
+| [`AsteriskProcessor`][markdown.inlinepatterns.AsteriskProcessor]                     | built-in  | Emphasis processor for handling strong and em matches inside asterisks |
+| [`WikiLinksInlineProcessor`][markdown.extensions.wikilinks.WikiLinksInlineProcessor] | extension | Link `[[article names]]` to wiki given in metadata            |
+| [`FootnoteInlineProcessor`][markdown.extensions.footnotes.FootnoteInlineProcessor]   | extension | Replaces footnote in text with link to footnote div at bottom |
 
 ### Patterns
 
-In version 3.0, a new, more flexible inline processor was added, `markdown.inlinepatterns.InlineProcessor`.   The
-original inline patterns, which inherit from `markdown.inlinepatterns.Pattern` or one of its children are still
+In version 3.0, a new, more flexible inline processor was added, 
+[`markdown.inlinepatterns.InlineProcessor`][markdown.inlinepatterns.InlineProcessor].   The original inline patterns,
+which inherit from [`markdown.inlinepatterns.Pattern`][markdown.inlinepatterns.Pattern] or one of its children are still
 supported, though users are encouraged to migrate.
 
 #### Comparison with new `InlineProcessor`
@@ -425,13 +381,8 @@ Inline Patterns can implement inline HTML element syntax for Markdown such as `*
 `markdown.inlinepatterns.Pattern` or one of its children. Each pattern object uses a single regular expression and
 must have the following methods:
 
-* **`getCompiledRegExp()`**:
-
-    Returns a compiled regular expression.
-
-* **`handleMatch(m)`**:
-
-    Accepts a match object and returns an ElementTree element of a plain Unicode string.
+* [`getCompiledRegExp`][markdown.inlinepatterns.Pattern.getCompiledRegExp]
+* [`handleMatch`][markdown.inlinepatterns.Pattern.handleMatch]
 
 Inline Patterns can define the property `ANCESTOR_EXCLUDES` with is either a list or tuple of undesirable ancestors.
 The pattern will be skipped if it would cause the content to be a descendant of one of the listed tag names.
@@ -471,9 +422,10 @@ Postprocessors munge the document after the ElementTree has been serialized into
 used to work with the text just before output.  Usually, they are used to add back sections that were extracted in a
 preprocessor, fix up outgoing encodings, or wrap the whole document.
 
-Postprocessors inherit from `markdown.postprocessors.Postprocessor` and implement a `run` method which takes a single
-parameter `text`, the entire HTML document as a single Unicode string.  `run` should return a single Unicode string
-ready for output.  Note that preprocessors use a list of lines while postprocessors use a single multi-line string.
+Postprocessors inherit from [`markdown.postprocessors.Postprocessor`][markdown.postprocessors.Postprocessor] and 
+implement a [`run`][markdown.postprocessors.Postprocessor.run] method which takes a single parameter `text`, the
+entire HTML document as a single Unicode string.  `run` should return a single Unicode string ready for output.
+Note that preprocessors use a list of lines while postprocessors use a single multi-line string.
 
 #### Example
 
@@ -493,18 +445,11 @@ class ShowActualHtmlPostprocesor(Postprocessor):
 
 Some postprocessors in the Markdown source tree include:
 
-| Class                         | Kind      |  Description                                       |
-| ------------------------------|-----------|----------------------------------------------------|
-| [`raw_html`][p1]              | built-in  | Restore raw html from `htmlStash`, stored by `HTMLBlockPreprocessor`, and code highlighters |
-| [`amp_substitute`][p2]        | built-in  | Convert ampersand substitutes to `&`; used in links |
-| [`unescape`][p3]              | built-in  | Convert some escaped characters back from integers; used in links |
-| [`FootnotePostProcessor`][p4] | extension | Replace footnote placeholders with html entities; as set by other stages |
-
- [p1]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py
- [p2]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py
- [p3]: https://github.com/Python-Markdown/markdown/blob/master/markdown/postprocessors.py
- [p4]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
-
+| Class                                                                              | Kind      |  Description                                       |
+| -----------------------------------------------------------------------------------|-----------|----------------------------------------------------|
+| [`RawHtmlPostprocessor`][markdown.postprocessors.RawHtmlPostprocessor]             | built-in  | Restore raw html from [`htmlStash`][markdown.util.HtmlStash], stored by [`HTMLBlockPreprocessor`][markdown.preprocessors.HtmlBlockPreprocessor], and code highlighters |
+| [`AndSubstitutePostprocessor`][markdown.postprocessors.AndSubstitutePostprocessor] | built-in  | Convert ampersand substitutes to `&`; used in links |
+| [`FootnotePostProcessor`][markdown.extensions.footnotes.FootnotePostprocessor]     | extension | Replace footnote placeholders with html entities; as set by other stages |
 
 ## Working with the ElementTree {: #working_with_et }
 
@@ -558,8 +503,9 @@ Documentation][ElementTree].
 
 Occasionally an extension may need to call out to a third party library which returns a pre-made string
 of raw HTML that needs to be inserted into the document unmodified. Raw strings can be stashed for later
-retrieval using an `htmlStash` instance, rather than converting them into `ElementTree` objects. A raw string
-(which may or may not be raw HTML) passed to `self.md.htmlStash.store()` will be saved to the stash and a
+retrieval using an [`htmlStash`][markdown.util.HtmlStash] instance, rather than converting them into
+`ElementTree` objects. A raw string (which may or may not be raw HTML) passed to 
+[`self.md.htmlStash.store()`][markdown.util.HtmlStash.store] will be saved to the stash and a
 placeholder string will be returned which should be inserted into the tree instead. After the tree is
 serialized, a postprocessor will replace the placeholder with the raw string. This prevents subsequent
 processing steps from modifying the HTML data. For example,
@@ -570,50 +516,50 @@ el = etree.Element("div")
 el.text = self.md.htmlStash.store(html)
 ```
 
-For the global `htmlStash` instance to be available from a processor, the `markdown.Markdown` instance must
-be passed to the processor from [extendMarkdown](#extendmarkdown) and will be available as `self.md.htmlStash`.
+For the global `htmlStash` instance to be available from a processor, the [`markdown.Markdown`][markdown.Markdown]
+instance must be passed to the processor from [extendMarkdown](#extendmarkdown) and will be available as 
+`self.md.htmlStash`.
 
 ## Integrating Your Code Into Markdown {: #integrating_into_markdown }
 
 Once you have the various pieces of your extension built, you need to tell Markdown about them and ensure that they
 are run in the proper sequence. Markdown accepts an `Extension` instance for each extension. Therefore, you will need
-to define a class that extends `markdown.extensions.Extension` and overrides the `extendMarkdown` method. Within this
-class you will manage configuration options for your extension and attach the various processors and patterns to the
-Markdown instance.
+to define a class that extends [`markdown.extensions.Extension`][markdown.extensions.Extension] and overrides the
+[`extendMarkdown`][markdown.extensions.Extension.extendMarkdown] method. Within this class you will manage
+configuration options for your extension and attach the various processors and patterns to the Markdown instance.
 
 It is important to note that the order of the various processors and patterns matters. For example, if we replace
 `http://...` links with `<a>` elements, and *then* try to deal with  inline HTML, we will end up with a mess.
-Therefore, the various types of processors and patterns are stored within an instance of the `markdown.Markdown` class
-in a [Registry][]. Your `Extension` class will need to manipulate those registries appropriately. You may `register`
-instances of your processors and patterns with an appropriate priority, `deregister` built-in instances, or replace a
-built-in instance with your own.
+Therefore, the various types of processors and patterns are stored within an instance of the
+[`markdown.Markdown`][markdown.Markdown] class in a [Registry][]. Your `Extension` class will need to manipulate
+those registries appropriately. You may `register` instances of your processors and patterns with an appropriate
+priority, `deregister` built-in instances, or replace a built-in instance with your own.
 
 ### `extendMarkdown` {: #extendmarkdown }
 
-The `extendMarkdown` method of a `markdown.extensions.Extension` class accepts one argument:
+The [`extendMarkdown`][markdown.extensions.Extension.extendMarkdown] method of a 
+[`markdown.extensions.Extension`][markdown.extensions.Extension] class accepts one argument `md`, which is a
+pointer to the instance of the [`markdown.Markdown`][markdown.Markdown] class. You should use this to access
+the [Registries][Registry] of processors and patterns. They are found under the following attributes:
 
-* **`md`**:
+* `md.preprocessors`
+* `md.inlinePatterns`
+* `md.parser.blockprocessors`
+* `md.treeprocessors`
+* `md.postprocessors`
 
-    A pointer to the instance of the `markdown.Markdown` class. You should use this to access the
-    [Registries][Registry] of processors and patterns. They are found under the following attributes:
+Some other things you may want to access on the [`markdown.Markdown`][markdown.Markdown] instance are:
 
-    * `md.preprocessors`
-    * `md.inlinePatterns`
-    * `md.parser.blockprocessors`
-    * `md.treeprocessors`
-    * `md.postprocessors`
-
-    Some other things you may want to access on the `markdown.Markdown` instance are:
-
-    * `md.htmlStash`
-    * `md.output_formats`
-    * `md.set_output_format()`
-    * `md.output_format`
-    * `md.serializer`
-    * `md.registerExtension()`
-    * `md.tab_length`
-    * `md.block_level_elements`
-    * `md.isBlockLevel()`
+* `md.htmlStash`
+* [`md.output_formats`][markdown.Markdown.output_formats]
+* [`md.set_output_format()`][markdown.Markdown.set_output_format]
+* `md.output_format`
+* `md.serializer`
+* [`md.registerExtension()`][markdown.Markdown.registerExtension]
+* `md.tab_length`
+* [`md.block_level_elements`][markdown.util.BLOCK_LEVEL_ELEMENTS]
+* [`md.is_block_level()`][markdown.Markdown.is_block_level]
+* [`md.ESCAPED_CHARS`][markdown.Markdown.ESCAPED_CHARS]
 
 !!! Warning
     With access to the above items, theoretically you have the option to change anything through various
@@ -636,7 +582,7 @@ class MyExtension(Extension):
 
 ### registerExtension {: #registerextension }
 
-Some extensions may need to have their state reset between multiple runs of the `markdown.Markdown` class. For
+Some extensions may need to have their state reset between multiple runs of the [`markdown.Markdown`][markdown.Markdown] class. For
 example, consider the following use of the [Footnotes][] extension:
 
 ```python
@@ -646,12 +592,14 @@ md.reset()
 html2 = md.convert(text_without_footnote)
 ```
 
-Without calling `reset`, the footnote definitions from the first document will be inserted into the second document as
-they are still stored within the class instance. Therefore the `Extension` class needs to define a `reset` method that
+Without calling [`reset`][markdown.Markdown.reset], the footnote definitions from the first document will be inserted
+into the second document as they are still stored within the class instance. Therefore the
+[`Extension`][markdown.extensions.Extension] class needs to define a `reset` method that
 will reset the state of the extension (i.e.: `self.footnotes = {}`). However, as many extensions do not have a need
 for `reset`, `reset` is only called on extensions that are registered.
 
-To register an extension, call `md.registerExtension` from within your `extendMarkdown` method:
+To register an extension, call [`md.registerExtension`][markdown.Markdown.registerExtension] from within your 
+[`extendMarkdown`][markdown.extensions.Extension.extendMarkdown] method:
 
 ```python
 def extendMarkdown(self, md):
@@ -666,7 +614,8 @@ initialized the first time. Keep that in mind when over-riding the extension's `
 ### Configuration Settings {: #configsettings }
 
 If an extension uses any parameters that the user may want to change, those parameters should be stored in
-`self.config` of your `markdown.extensions.Extension` class in the following format:
+[`self.config`][markdown.extensions.Extension.config] of your [`markdown.extensions.Extension`][markdown.extensions.Extension]
+class in the following format:
 
 ```python
 class MyExtension(markdown.extensions.Extension):
@@ -687,37 +636,19 @@ markdown.Markdown(extensions=[MyExtension(option1='other value')])
 
 Note that if a keyword is passed in that is not already defined in `self.config`, then a `KeyError` is raised.
 
-The `markdown.extensions.Extension` class and its subclasses have the following methods available to assist in working
-with configuration settings:
+The [`markdown.extensions.Extension`][markdown.extensions.Extension] class and its subclasses have the following
+methods available to assist in working with configuration settings:
 
-* **`getConfig(key [, default])`**:
-
-    Returns the stored value for the given `key` or `default` if the `key` does not exist. If not set, `default`
-    returns an empty string.
-
-* **`getConfigs()`**:
-
-    Returns a dict of all key/value pairs.
-
-* **`getConfigInfo()`**:
-
-    Returns all configuration descriptions as a list of tuples.
-
-* **`setConfig(key, value)`**:
-
-    Sets a configuration setting for `key` with the given `value`. If `key` is unknown, a `KeyError` is raised. If the
-    previous value of `key` was a Boolean value, then `value` is converted to a Boolean value. If the previous value
-    of `key` is `None`, then `value` is converted to a Boolean value except when it is `None`. No conversion takes
-    place when the previous value of `key` is a string.
-
-* **`setConfigs(items)`**:
-
-    Sets multiple configuration settings given a dict of key/value pairs.
+* [`getConfig`][markdown.extensions.Extension.getConfig]
+* [`getConfigs`][markdown.extensions.Extension.getConfigs]
+* [`getConfigInfo`][markdown.extensions.Extension.getConfigInfo]
+* [`setConfig`][markdown.extensions.Extension.setConfig]
+* [`setConfigs`][markdown.extensions.Extension.setConfigs]
 
 ### Naming an Extension { #naming_an_extension }
 
-As noted in the [library reference] an instance of an extension can be passed directly to `markdown.Markdown`. In
-fact, this is the preferred way to use third-party extensions.
+As noted in the [library reference] an instance of an extension can be passed directly to [`markdown.Markdown`][markdown.Markdown].
+In fact, this is the preferred way to use third-party extensions.
 
 For example:
 
@@ -797,16 +728,17 @@ def makeExtension(**kwargs):
     return MyExtension(**kwargs)
 ```
 
-When `markdown.Markdown` is passed the "name" of your extension as a dot notation string that does not include a class
-(for example `path.to.module`), it will import the module and call the `makeExtension` function to initiate your
-extension.
+When [`markdown.Markdown`][markdown.Markdown] is passed the "name" of your extension as a dot notation string that
+does not include a class (for example `path.to.module`), it will import the module and call the `makeExtension`
+function to initiate your extension.
 
 ## Registries { #registry }
 
-The `markdown.util.Registry` class is a priority sorted registry which Markdown uses internally to determine the
-processing order of its various processors and patterns.
+The [`markdown.util.Registry`][markdown.util.Registry] class is a priority sorted registry which Markdown uses
+internally to determine the processing order of its various processors and patterns.
 
-A `Registry` instance provides two public methods to alter the data of the registry: `register` and `deregister`. Use
+A `Registry` instance provides two public methods to alter the data of the registry: 
+[`register`][markdown.util.Registry.register] and [`deregister`][markdown.util.Registry.deregister]. Use
 `register` to add items and `deregister` to remove items. See each method for specifics.
 
 When registering an item, a "name" and a "priority" must be provided. All items are automatically sorted by the value
@@ -839,31 +771,54 @@ assert 'itemname' in registry
 assert someitem in registry
 ```
 
-`markdown.util.Registry` has the following methods:
+The method [`get_index_for_name`][markdown.util.Registry.get_index_for_name] is also available to obtain the index of
+an item using that item’s assigned "name."
 
-### `Registry.register(self, item, name, priority)` {: #registry.register data-toc-label='Registry.register'}
+```python
+index = registry.get_index_for_name('itemname')
+```
 
-:   Add an item to the registry with the given name and priority.
+The priorities of all built-in processors are documented in the API Reference for each type of processor as outlined below.
 
-    Arguments:
+* [`preprocessors`][markdown.preprocessors.build_preprocessors]
+* [`blockprocessors`][markdown.blockprocessors.build_block_parser]
+* [`treeprocessors`][markdown.treeprocessors.build_treeprocessors]
+* [`inlinepatterns`][markdown.inlinepatterns.build_inlinepatterns]
+* [`postprocessors`][markdown.postprocessors.build_postprocessors]
 
-    * `item`: The item being registered.
-    * `name`: A string used to reference the item.
-    * `priority`: An integer or float used to sort against all items.
+The built-in extensions modify those collections of processors as documented in the API Reference for each extension.
 
-    If an item is registered with a "name" which already exists, the existing item is replaced with the new item.
-    Be careful as the old item is lost with no way to recover it. The new item will be sorted according to its
-    priority and will **not** retain the position of the old item.
+* [Abbreviations][markdown.extensions.abbr.AbbrExtension.extendMarkdown]
+* [Admonition][markdown.extensions.admonition.AdmonitionExtension.extendMarkdown]
+* [Attribute Lists][markdown.extensions.attr_list.AttrListExtension.extendMarkdown]
+* [CodeHilite][markdown.extensions.codehilite.CodeHiliteExtension.extendMarkdown]
+* [Definition Lists][markdown.extensions.def_list.DefListExtension.extendMarkdown]
+* [Fenced Code Blocks][markdown.extensions.fenced_code.FencedCodeExtension.extendMarkdown]
+* [Footnotes][markdown.extensions.footnotes.FootnoteExtension.extendMarkdown]
+* [Legacy Attributes][markdown.extensions.legacy_attrs.LegacyAttrExtension.extendMarkdown]
+* [Legacy Emphasis][markdown.extensions.legacy_em.LegacyEmExtension.extendMarkdown]
+* [Markdown in HTML][markdown.extensions.md_in_html.MarkdownInHtmlExtension.extendMarkdown]
+* [Meta-Data][markdown.extensions.meta.MetaExtension.extendMarkdown]
+* [New Line to Break][markdown.extensions.nl2br.Nl2BrExtension.extendMarkdown]
+* [Sane Lists][markdown.extensions.sane_lists.SaneListExtension.extendMarkdown]
+* [SmartyPants][markdown.extensions.smarty.SmartyExtension.extendMarkdown]
+* [Tables][markdown.extensions.tables.TableExtension.extendMarkdown]
+* [Table of Contents][markdown.extensions.toc.TocExtension.extendMarkdown]
+* [WikiLinks][markdown.extensions.wikilinks.WikiLinkExtension.extendMarkdown]
 
-### `Registry.deregister(self, name, strict=True)`  {: #registry.deregister data-toc-label='Registry.deregister'}
+A few things to note about the above linked collections.
 
-:   Remove an item from the registry.
-
-    Set `strict=False` to fail silently.
-
-### `Registry.get_index_for_name(self, name)` {: #registry.get_index_for_name data-toc-label='Registry.get_index_for_name'}
-
-:   Return the index of the given `name`.
+* A higher number has a higher priority. Processors assigned a higher priority are run before processors with a lower
+  priority. In other words, processors assigned a higher number are run before those assigned a lower number.
+* Large gaps have been left between the default processors. This leaves lots of room for multiple different extensions
+  to insert many additional processors. While integers have been used, floats may be used to get even more precision.
+  While negative numbers could be used, that would only be useful to ensure that a processor was the absolutely last
+  processor run.
+* While it is preferred that the assigned priorities of the built-in processors remain stable, a bug fix has occasionally
+  required an adjustment to an assigned priority. Any such changes will always be documented as backward incompatible
+  changes.
+* You will likely need to check the source code to determine assigned priorities of third-party extensions when resolving
+  conflicts.
 
 [match object]: https://docs.python.org/3/library/re.html#match-objects
 [bug tracker]: https://github.com/Python-Markdown/markdown/issues
