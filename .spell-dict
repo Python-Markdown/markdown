@@ -80,6 +80,7 @@ namespace
 NanoDOM
 Neale
 nosetests
+noqa
 OrderedDict
 OrderedDicts
 OSX

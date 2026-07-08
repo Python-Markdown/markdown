@@ -16,6 +16,7 @@ See the [Contributing Guide](contributing.md) for details.
 
 * Fix `SetextHeaderProcessor` regex to prevent mixed `=` and `-` chars in setext-style headers (#1606).
 * Officially document all included extensions as being in maintenance mode.
+* Link the Extension API documentation to the API Reference (#1612).
 
 ## [3.10.2] - 2026-02-09
 
