@@ -70,6 +70,7 @@ class LegacyAttrExtension(Extension):
         | [`LegacyAttrs`][markdown.extensions.legacy_attrs.LegacyAttrs] | [`treeprocessors`][markdown.treeprocessors.build_treeprocessors] | `legacyattrs` | `15` |
 
         """
+        # flake8: noqa: E501 68-70
         md.treeprocessors.register(LegacyAttrs(md), 'legacyattrs', 15)
 
 

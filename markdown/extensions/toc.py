@@ -480,6 +480,7 @@ class TocExtension(Extension):
         | [`TocTreeprocessor`][markdown.extensions.toc.TocTreeprocessor] | [`treeprocessors`][markdown.treeprocessors.build_treeprocessors] | `toc` | `5` |
 
         """
+        # flake8: noqa: E501 478-480
         md.registerExtension(self)
         self.md = md
         self.reset()

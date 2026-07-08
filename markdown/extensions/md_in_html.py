@@ -433,7 +433,7 @@ class MarkdownInHtmlExtension(Extension):
         | [`MarkdownInHTMLPostprocessor`][markdown.extensions.md_in_html.MarkdownInHTMLPostprocessor] | [`postprocessors`][markdown.postprocessors.build_postprocessors] | `raw_html` | `30` |
 
         """
-
+        # flake8: noqa: E501 429-433
         # Replace raw HTML preprocessor
         md.preprocessors.register(HtmlBlockPreprocessor(md), 'html_block', 20)
         # Add `blockprocessor` which handles the placeholders for `etree` elements

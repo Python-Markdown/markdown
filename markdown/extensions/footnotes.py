@@ -95,6 +95,7 @@ class FootnoteExtension(Extension):
         | [`FootnotePostprocessor`][markdown.extensions.footnotes.FootnotePostprocessor] | [`postprocessors`][markdown.postprocessors.build_postprocessors] | `footnote` | `25` |
 
         """
+        # flake8: noqa: E501 88-95
         md.registerExtension(self)
         self.parser = md.parser
         self.md = md

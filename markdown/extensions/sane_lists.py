@@ -68,6 +68,7 @@ class SaneListExtension(Extension):
         | [`SaneUListProcessor`][markdown.extensions.sane_lists.SaneUListProcessor] | [`blockprocessors`][markdown.blockprocessors.build_block_parser] | `ulist` | `30` |
 
         """
+        # flake8: noqa: E501 65-68
         md.parser.blockprocessors.register(SaneOListProcessor(md.parser), 'olist', 40)
         md.parser.blockprocessors.register(SaneUListProcessor(md.parser), 'ulist', 30)
 

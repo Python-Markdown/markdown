@@ -69,8 +69,8 @@ class AbbrExtension(Extension):
             self.glossary = {**dictionary, **self.glossary}
 
     def extendMarkdown(self, md):
-        """ 
-        Register the processors. 
+        """
+        Register the processors.
 
         | Class Instance                                                      | Registry                                                         | Name   | Priority |
         | ------------------------------------------------------------------- | ---------------------------------------------------------------- | ------ | :------: |
@@ -78,6 +78,7 @@ class AbbrExtension(Extension):
         | [`AbbrBlockprocessor`][markdown.extensions.abbr.AbbrBlockprocessor] | [`blockprocessors`][markdown.blockprocessors.build_block_parser] | `abbr` | `16`     |
 
         """
+        # flake8: noqa: E501 75-78
         if (self.config['glossary'][0]):
             self.load_glossary(self.config['glossary'][0])
         self.abbrs.update(self.glossary)

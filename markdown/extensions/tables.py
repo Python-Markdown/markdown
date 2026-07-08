@@ -244,6 +244,7 @@ class TableExtension(Extension):
         | [`TableProcessor`][markdown.extensions.tables.TableProcessor] | [`blockprocessors`][markdown.blockprocessors.build_block_parser] | `table` | `75` |
 
         """
+        # flake8: noqa: E501 242-244
         if '|' not in md.ESCAPED_CHARS:
             md.ESCAPED_CHARS.append('|')
         processor = TableProcessor(md.parser, self.getConfigs())

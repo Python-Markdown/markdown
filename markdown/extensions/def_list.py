@@ -110,7 +110,7 @@ class DefListExtension(Extension):
     """ Add definition lists to Markdown. """
 
     def extendMarkdown(self, md):
-        """ 
+        """
         Register the processors.
 
         | Class Instance                                                              | Registry                                                         | Name   | Priority |
@@ -119,6 +119,7 @@ class DefListExtension(Extension):
         | [`DefListProcessor`][markdown.extensions.def_list.DefListProcessor] | [`blockprocessors`][markdown.blockprocessors.build_block_parser] | `deflist` | `25` |
 
         """
+        # flake8: noqa: E501 116-119
         md.parser.blockprocessors.register(DefListIndentProcessor(md.parser), 'defindent', 85)
         md.parser.blockprocessors.register(DefListProcessor(md.parser), 'deflist', 25)
 

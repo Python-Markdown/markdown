@@ -50,6 +50,7 @@ class LegacyEmExtension(Extension):
         | [`LegacyUnderscoreProcessor`][markdown.extensions.legacy_em.LegacyUnderscoreProcessor] | [`inlinepatterns`][markdown.inlinepatterns.build_inlinepatterns] | `em_strong2` | `50` |
 
         """
+        # flake8: noqa: E501 48-50
         md.inlinePatterns.register(LegacyUnderscoreProcessor(r'_'), 'em_strong2', 50)
 
 

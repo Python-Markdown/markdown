@@ -267,10 +267,11 @@ class SmartyExtension(Extension):
         The `HtmlInlineProcessor` , above, is only used if the `smart_angled_quotes` option is enabled.
 
         The `InlineProcessor`, above, is a separate instance from the `InlineProcessor` used for
-        standard inline parsing. It contains a collection of inline patterns dependant upon the
+        standard inline parsing. It contains a collection of inline patterns dependent upon the
         various configuration options.
 
         """
+        # flake8: noqa: E501 263-265
         configs = self.getConfigs()
         self.inlinePatterns: Registry[inlinepatterns.InlineProcessor] = Registry()
         if configs['smart_ellipses']:

@@ -47,6 +47,7 @@ class MetaExtension (Extension):
         | [`MetaPreprocessor`][markdown.extensions.meta.MetaPreprocessor] | [`preprocessors`][markdown.preprocessors.build_preprocessors] | `meta` | `27` |
 
         """
+        # flake8: noqa: E501 45-47
         md.registerExtension(self)
         self.md = md
         md.preprocessors.register(MetaPreprocessor(md), 'meta', 27)
