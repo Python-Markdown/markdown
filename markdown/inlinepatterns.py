@@ -101,7 +101,7 @@ def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry[InlinePro
 NOIMG = r'(?<!\!)'
 """ Match not an image. Partial regular expression which matches if not preceded by `!`. """
 
-BACKTICK_RE = r'(?:(?<!\\)((?:\\{2})+)(?=`+)|(?<!\\)(`+)(.+?)(?<!`)\2(?!`))'
+BACKTICK_RE = r'(?:(?<!\\)((?:\\{2})+)(?=`+)|(?<!\\)`)'
 """ Match backtick quoted string (`` `e=f()` `` or ``` ``e=f("`")`` ```). """
 
 ESCAPE_RE = r'\\(.)'
@@ -435,27 +435,77 @@ class SubstituteTagInlineProcessor(SimpleTagInlineProcessor):
 
 class BacktickInlineProcessor(InlineProcessor):
     """ Return a `<code>` element containing the escaped matching text. """
+
+    RE_TICKS = re.compile(r'`+')
+
     def __init__(self, pattern: str):
         InlineProcessor.__init__(self, pattern)
         self.ESCAPED_BSLASH = '{}{}{}'.format(util.STX, ord('\\'), util.ETX)
         self.tag = 'code'
         """ The tag of the rendered element. """
 
-    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | str, int, int]:
+    def find_code_spans(self, start: int, text: str) -> tuple[int, int] | None:
+        """Find code spans."""
+
+        # Get the maximum starting ticks
+        m = self.RE_TICKS.match(text, start)
+        if m is None:  # pragma: no cover
+            # This is not ever expected to happen.
+            return None
+        max_ticks = len(m.group(0))
+
+        start = m.end(0)
+        last = len(text)
+        longest_span = 0
+        end = 0
+
+        # Find an ending span of backticks that matches our opening
+        i = start
+        while i < last:
+            m = self.RE_TICKS.match(text, i)
+            if m is None:
+                i += 1
+                continue
+
+            # Did we find the end?
+            i = m.end(0)
+            span_length = len(m.group(0))
+            if max_ticks == span_length:
+                return start, i - span_length
+
+            # Track the longest span of backticks we find as a fallback.
+            if span_length > longest_span:
+                longest_span = span_length
+                end = i
+
+        # Since we didn't find an exact matching start and end,
+        # adjust start to match the largest end we could calculate.
+        if longest_span:
+            return start - (max_ticks - longest_span), end - longest_span
+
+        # We could not find a suitable pairing
+        return None
+
+    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | str | None, int | None, int | None]:
         """
         If the match contains `group(3)` of a pattern, then return a `code`
         [`Element`][xml.etree.ElementTree.Element] which contains HTML escaped text (with
         [`code_escape`][markdown.util.code_escape]) as an [`AtomicString`][markdown.util.AtomicString].
 
-        If the match does not contain `group(3)` then return the text of `group(1)` backslash escaped.
+        If the match contains `group(1)` then return the text of `group(1)` as backslash escaped.
 
         """
-        if m.group(3):
-            el = etree.Element(self.tag)
-            el.text = util.AtomicString(util.code_escape(m.group(3).strip()))
-            return el, m.start(0), m.end(0)
-        else:
+        if m.group(1):
             return m.group(1).replace('\\\\', self.ESCAPED_BSLASH), m.start(0), m.end(0)
+
+        begin = m.start(0)
+        result = self.find_code_spans(begin, data)
+        if result is not None:
+            start, end = result
+            el = etree.Element(self.tag)
+            el.text = util.AtomicString(util.code_escape(data[start:end].strip()))
+            return el, begin, result[1] + (start - begin)
+        return None, None, None
 
 
 class DoubleTagPattern(SimpleTagPattern):  # pragma: no cover
