@@ -725,11 +725,46 @@ class testAtomicString(unittest.TestCase):
             '<div><p>a &lt;b&gt;atomic&lt;/b&gt; c</p></div>'
         )
 
+    def testInlineProcessorAdvancesSearchIndex(self):
+        """Test that repeated matches resume after the previous match."""
+        pattern = _InlineProcessorThatRecordsSearchIndex(r'x', self.md)
+        self.md.inlinePatterns.register(pattern, 'record-search-index', 1000)
+
+        self.assertEqual(self.md.convert('xxxx'), '<p>xxxx</p>')
+        self.assertEqual(pattern.start_indices[0], 0)
+        self.assertGreater(pattern.start_indices[1], pattern.start_indices[0])
+
 
 class _InlineProcessorThatReturnsAtomicString(inlinepatterns.InlineProcessor):
     """ Return a simple text of `group(1)` of a Pattern. """
     def handleMatch(self, m, data):
         return markdown.util.AtomicString('<b>atomic</b>'), m.start(0), m.end(0)
+
+
+class _RecordingPattern:
+    """Proxy a compiled pattern while recording the search offsets."""
+
+    def __init__(self, pattern, start_indices):
+        self.pattern = pattern
+        self.start_indices = start_indices
+
+    def finditer(self, data, start_index=0):
+        self.start_indices.append(start_index)
+        return self.pattern.finditer(data, start_index)
+
+
+class _InlineProcessorThatRecordsSearchIndex(inlinepatterns.InlineProcessor):
+    """Record each offset passed to the processor's compiled expression."""
+
+    def __init__(self, pattern, md):
+        super().__init__(pattern, md)
+        self.start_indices = []
+
+    def getCompiledRegExp(self):
+        return _RecordingPattern(self.compiled_re, self.start_indices)
+
+    def handleMatch(self, m, data):
+        return m.group(0), m.start(0), m.end(0)
 
 
 class TestConfigParsing(unittest.TestCase):

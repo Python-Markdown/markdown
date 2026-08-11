@@ -21,8 +21,6 @@ License: BSD (see LICENSE.md for details).
 
 from markdown.test_tools import TestCase
 
-import time
-
 
 class TestInlineLinks(TestCase):
 
@@ -436,21 +434,3 @@ class TestReferenceLinks(TestCase):
                 """
             )
         )
-
-    def test_many_repeated_links(self):
-        # Regression test for #1619: rendering many inline links in one
-        # paragraph used to rescan the unprocessed text from the start after
-        # every match, making conversion quadratic in the number of links.
-        from markdown import Markdown
-
-        text = "[link](x)" * 8192
-        start = time.monotonic()
-        html = Markdown().convert(text)
-        elapsed = time.monotonic() - start
-
-        # The old implementation takes several seconds (or more on slow CI)
-        # for this input; the linear implementation finishes well under a
-        # second on any machine. Allow a generous ceiling to avoid flakes.
-        self.assertLess(elapsed, 5)
-        self.assertEqual(html.count("<a "), 8192)
-        self.assertEqual(html.count("</a>"), 8192)
