@@ -323,12 +323,17 @@ class InlineProcessor(Treeprocessor):
         placeholder = self.__stashNode(node, pattern.type())
 
         if new_style:
+            # Return the index just past the inserted placeholder so the
+            # next call scans only the unprocessed tail. Scanning from 0
+            # after every match makes repeated inline patterns quadratic.
             return "{}{}{}".format(data[:start],
-                                   placeholder, data[end:]), True, 0
+                                   placeholder, data[end:]), True, start + len(placeholder)
         else:  # pragma: no cover
             return "{}{}{}{}".format(leftData,
                                      match.group(1),
-                                     placeholder, match.groups()[-1]), True, 0
+                                     placeholder, match.groups()[-1]), True, (
+                len(leftData) + len(match.group(1)) + len(placeholder)
+            )
 
     def __build_ancestors(self, parent: etree.Element | None, parents: list[str]) -> None:
         """Build the ancestor list."""

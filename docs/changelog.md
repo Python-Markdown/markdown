@@ -15,6 +15,7 @@ See the [Contributing Guide](contributing.md) for details.
 ### Fixed
 
 * Fix an issue with excessive backtracking when matching inline code blocks (#1617).
+* Fix quadratic rendering time when a paragraph contains many inline links (#1619).
 
 ## [3.10.3] - 2026-07-30
 
