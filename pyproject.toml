@@ -50,13 +50,10 @@ testing = [
     'pyyaml'
 ]
 docs = [
-    'mkdocs>=1.6',
+    'mkdocs==1.6.1',
     'mkdocs-nature>=0.6',
     'mdx_gh_links>=0.2',
-    "mkdocstrings[python]>=0.28.3",
-    "mkdocs-gen-files",
-    "mkdocs-section-index",
-    "mkdocs-literate-nav",
+    "mkdocstrings[python]>=0.28.3"
 ]
 
 [project.urls]
