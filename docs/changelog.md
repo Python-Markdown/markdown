@@ -12,6 +12,11 @@ See the [Contributing Guide](contributing.md) for details.
 
 ## [Unreleased]
 
+### Changed
+
+* Inline processors now resume searching after the previous match, improving
+  performance for repeated inline patterns (#1619).
+
 ### Fixed
 
 * Fix an issue with excessive backtracking when matching inline code blocks (#1617).
