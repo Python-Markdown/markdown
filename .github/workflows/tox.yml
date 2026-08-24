@@ -20,10 +20,8 @@ jobs:
       fail-fast: false
       max-parallel: 4
       matrix:
-        tox-env: [py310, py311, py312, py313, py314, pypy310, pypy311, pygments]
+        tox-env: [py311, py312, py313, py314, pypy311, pygments]
         include:
-          - tox-env: py310
-            python-version: '3.10'
           - tox-env: py311
             python-version: '3.11'
           - tox-env: py312
@@ -32,8 +30,8 @@ jobs:
             python-version: '3.13'
           - tox-env: py314
             python-version: '3.14'
-          - tox-env: pypy310
-            python-version: pypy-3.10
+          - tox-env: py315
+            python-version: '3.15'
           - tox-env: pypy311
             python-version: pypy-3.11
           - tox-env: pygments
