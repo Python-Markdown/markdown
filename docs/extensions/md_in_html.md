@@ -1,4 +1,6 @@
+---
 title: Markdown in HTML Extension
+---
 
 # Markdown in HTML
 
@@ -6,7 +8,7 @@ title: Markdown in HTML Extension
 
 An extension that parses Markdown inside of HTML tags.
 
-!!! Note
+!!! info "Note"
 
     This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or
@@ -31,7 +33,7 @@ preserved.
 
 The `markdown` attribute can be assigned one of three values: [`"1"`](#markdown1), [`"block"`](#block), or [`"span"`](#span).
 
-!!! note
+!!! tip
 
     The expressions "block-level" and "span-level" as used in this document refer to an element's designation
     according to the HTML specification. Whereas the `"span"` and `"block"` values assigned to the `markdown`

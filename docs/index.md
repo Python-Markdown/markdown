@@ -1,4 +1,6 @@
+---
 title: Python-Markdown
+---
 
 Python-Markdown
 ===============
@@ -28,7 +30,7 @@ The Python-Markdown project is developed with the following goals in mind:
 * Provide an [Extension API](extensions/api.md) which makes it possible
   to change and/or extend the behavior of the parser.
 
-!!! Note
+!!! info "Note"
 
     *This is not a CommonMark implementation*; nor is it trying to be!
     Python-Markdown was developed long before the CommonMark specification was

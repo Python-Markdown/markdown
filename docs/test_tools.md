@@ -1,4 +1,6 @@
+---
 title: Test Tools
+---
 
 # Test Tools
 
@@ -165,7 +167,7 @@ sub-directories and run all `unittest` tests that it finds, including
 `markdown.test_tools.LegacyTestCase` subclasses. Normal [unittest] discovery
 rules apply.
 
-!!! seealso "See Also"
+!!! info "See Also"
 
     See the [Contributing Guide] for instructions on setting up a
     [development environment] for running the tests.

@@ -1,4 +1,6 @@
-title:      Extensions API
+---
+title: Extensions API
+---
 
 # Writing Extensions for Python-Markdown
 
@@ -826,15 +828,10 @@ A few things to note about the above linked collections.
 [tutorial]: https://github.com/Python-Markdown/markdown/wiki/Tutorial-1---Writing-Extensions-for-Python-Markdown
 [workingwithetree]: #working_with_et
 [Integrating your code into Markdown]: #integrating_into_markdown
-[extendMarkdown]: #extendmarkdown
 [Registry]: #registry
-[registerExtension]: #registerextension
-[Config Settings]: #configsettings
-[makeExtension]: #makeextension
 [ElementTree]: https://docs.python.org/3/library/xml.etree.elementtree.html
 [Available Extensions]: index.md
 [Footnotes]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
-[Definition Lists]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/definition_lists
 [library reference]: ../reference.md
 [setuptools]: https://packaging.python.org/key_projects/#setuptools
 [Entry points]: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins

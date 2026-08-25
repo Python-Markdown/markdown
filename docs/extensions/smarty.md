@@ -1,4 +1,6 @@
+---
 title: SmartyPants Extension
+---
 
 SmartyPants
 ===========
@@ -38,7 +40,7 @@ extension_configs = {
 }
 ```
 
-!!! note
+!!! tip
     This extension re-implements the Python [SmartyPants]
     library by integrating it into the markdown parser.
     While this does not provide any additional features,
@@ -50,7 +52,7 @@ extension_configs = {
 [SmartyPants]: https://pythonhosted.org/smartypants/
 [CodeHilite]: code_hilite.md
 
-!!! Note
+!!! info "Note"
 
     This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or

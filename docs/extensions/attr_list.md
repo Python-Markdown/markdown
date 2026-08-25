@@ -1,4 +1,6 @@
+---
 title: Attribute Lists Extension
+---
 
 # Attribute Lists
 
@@ -9,7 +11,7 @@ HTML elements in markdown's output.
 
 This extension is included in the standard Markdown library.
 
-!!! Note
+!!! info "Note"
 
     This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or
@@ -116,7 +118,7 @@ The above results in the following output:
 <h3 id="hash">A hash style header</h3>
 ```
 
-!!! seealso "See Also"
+!!! info "See Also"
     By default, the [Fenced Code Blocks](./fenced_code_blocks.md#attributes) extension includes limited support for
     attribute lists. To get [full support](./fenced_code_blocks.md#keyvalue-pairs), both extensions must be enabled.
 

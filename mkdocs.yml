@@ -1,21 +1,59 @@
 site_name: Python-Markdown
 site_url: https://Python-Markdown.github.io/
 repo_url: https://github.com/Python-Markdown/markdown
+repo_name: Python-Markdown/markdown
 site_author: "The Python-Markdown Project"
-copyright: "Copyright &copy; 2010-2023"
+copyright: "Copyright &copy; 2010-2026 The Python-Markdown Project"
 
 use_directory_urls: true
 watch: [markdown, scripts]
 
 theme:
-  name: nature
-  icon: py.png
-  release: !!python/name:markdown.__version__
-  issue_tracker: https://github.com/Python-Markdown/markdown/issues
+  variant: modern
+  logo: py.png
+  favicon: favicon.ico
+  features:
+    # - navigation.tabs
+    - navigation.path
+    - navigation.indexes
+    - navigation.footer
+    - navigation.top
+    - content.action.edit
+    - content.action.view
+    - content.code.copy
+    - content.footnote.tooltips
+    - search.highlight
+    
+  palette:
 
-extra_css:
-  - custom.css
-  - mkdocstrings.css
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: lucide/sun-moon
+        name: Switch to light mode
+
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default 
+      toggle:
+        icon: lucide/sun
+        name: Switch to dark mode
+      primary: green
+      accent:  light green
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: lucide/moon
+        name: Switch to system preference
+      primary: green
+      accent:  light green
+
+# extra_css:
+#   - custom.css
+#   - mkdocstrings.css
 
 nav:
   - Python-Markdown: index.md
@@ -23,26 +61,26 @@ nav:
   - Library Reference: reference.md
   - Command Line: cli.md
   - Sanitization and Security: sanitization.md
-  - Extensions: extensions/index.md
-  - Officially Supported Extensions:
-      - Abbreviations: extensions/abbreviations.md
-      - Admonition: extensions/admonition.md
-      - Attribute Lists: extensions/attr_list.md
-      - CodeHilite: extensions/code_hilite.md
-      - Definition Lists: extensions/definition_lists.md
-      - Extra: extensions/extra.md
-      - Fenced Code Blocks: extensions/fenced_code_blocks.md
-      - Footnotes: extensions/footnotes.md
-      - Legacy Attributes: extensions/legacy_attrs.md
-      - Legacy Emphasis: extensions/legacy_em.md
-      - Meta-Data: extensions/meta_data.md
-      - New Line to Break: extensions/nl2br.md
-      - Markdown in HTML: extensions/md_in_html.md
-      - Sane Lists: extensions/sane_lists.md
-      - SmartyPants: extensions/smarty.md
-      - Table of Contents: extensions/toc.md
-      - Tables: extensions/tables.md
-      - WikiLinks: extensions/wikilinks.md
+  - Extensions: 
+    - extensions/index.md
+    - Abbreviations: extensions/abbreviations.md
+    - Admonition: extensions/admonition.md
+    - Attribute Lists: extensions/attr_list.md
+    - CodeHilite: extensions/code_hilite.md
+    - Definition Lists: extensions/definition_lists.md
+    - Extra: extensions/extra.md
+    - Fenced Code Blocks: extensions/fenced_code_blocks.md
+    - Footnotes: extensions/footnotes.md
+    - Legacy Attributes: extensions/legacy_attrs.md
+    - Legacy Emphasis: extensions/legacy_em.md
+    - Meta-Data: extensions/meta_data.md
+    - New Line to Break: extensions/nl2br.md
+    - Markdown in HTML: extensions/md_in_html.md
+    - Sane Lists: extensions/sane_lists.md
+    - SmartyPants: extensions/smarty.md
+    - Table of Contents: extensions/toc.md
+    - Tables: extensions/tables.md
+    - WikiLinks: extensions/wikilinks.md
   - Extension API: extensions/api.md
   - Test Tools: test_tools.md
   - API Reference:
@@ -80,25 +118,39 @@ nav:
   - Changelog: changelog.md
   - Authors: authors.md
 
-not_in_nav: |
-  change_log/
-
 validation:
-  omitted_files: warn
-  absolute_links: warn
-  unrecognized_links: warn
-  anchors: warn
+  invalid_links: true
+  invalid_link_anchors: true
+  unresolved_references: false
+  unresolved_footnotes: true
+  unused_definitions: true
+  unused_footnotes: true
+  shadowed_definitions: true
+  shadowed_footnotes: true
 
 markdown_extensions:
-  - extra
+  - abbr
   - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
   - smarty
-  - codehilite
   - toc:
-      permalink: true
+      permalink: "§"
   - mdx_gh_links:
       user: Python-Markdown
       repo: markdown
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
 
 plugins:
 - search

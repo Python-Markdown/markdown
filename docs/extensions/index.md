@@ -1,4 +1,6 @@
+---
 title: Extensions
+---
 
 # Extensions
 
@@ -22,7 +24,7 @@ python -m markdown -x myext -x path.to.module:MyExtClass input.txt > output.html
 
 See the [Command Line docs](../cli.md) or use the `--help` option for more details.
 
-!!! seealso "See Also"
+!!! info "See Also"
     If you would like to write your own extensions, see the
     [Extension API](api.md) for details.
 
@@ -75,7 +77,7 @@ Extension                          | Entry Point    | Dot Notation
 [Table of Contents]: toc.md
 [WikiLinks]: wikilinks.md
 
-!!! Note
+!!! info "Note"
 
     All of the included extensions are in __maintenance mode__. We will
     continue to fix bugs and keep them up-to-date with the core parser, but

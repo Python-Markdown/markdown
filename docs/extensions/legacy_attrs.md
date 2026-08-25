@@ -1,4 +1,6 @@
+---
 title: Legacy Attributes Extension
+---
 
 # Legacy Attributes
 
@@ -11,7 +13,7 @@ users have never made use of the syntax and it has been deprecated in favor of
 [Attribute Lists](attr_list.md). This extension restores the legacy behavior for
 users who have existing documents which use the syntax.
 
-!!! Note
+!!! info "Note"
 
     This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or

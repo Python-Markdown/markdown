@@ -1,5 +1,7 @@
+---
 title: Changelog
 toc_depth: 2
+---
 
 # Python-Markdown Changelog
 

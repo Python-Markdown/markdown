@@ -1,4 +1,6 @@
+---
 title: Library Reference
+---
 
 # Using Markdown as a Python Library
 
@@ -42,21 +44,23 @@ __text__{: #text }
 
 :   The source Unicode string. (required)
 
-    !!! note "Important"
+    !!! tip "Important"
         Python-Markdown expects a **Unicode** string as input (some simple ASCII binary strings *may* work only by
         coincidence) and returns output as a Unicode string. Do not pass binary strings to it! If your input is
         encoded, (e.g. as UTF-8), it is your responsibility to decode it.  For example:
 
-            :::python
-            with open("some_file.txt", "r", encoding="utf-8") as input_file:
-                text = input_file.read()
-            html = markdown.markdown(text)
+        ``` python
+        with open("some_file.txt", "r", encoding="utf-8") as input_file:
+            text = input_file.read()
+        html = markdown.markdown(text)
+        ```
 
         If you want to write the output to disk, you *must* encode it yourself:
 
-            :::python
-            with open("some_file.html", "w", encoding="utf-8", errors="xmlcharrefreplace") as output_file:
-                output_file.write(html)
+        ``` python
+        with open("some_file.html", "w", encoding="utf-8", errors="xmlcharrefreplace") as output_file:
+            output_file.write(html)
+        ```
 
 __extensions__{: #extensions }
 
@@ -71,10 +75,11 @@ __extensions__{: #extensions }
     The list of extensions may contain instances of extensions and/or strings
     of extension names.
 
-        :::python
-        extensions=[MyExtClass(), 'myext', 'path.to.my.ext:MyExtClass']
+    ``` python
+    extensions=[MyExtClass(), 'myext', 'path.to.my.ext:MyExtClass']
+    ```
 
-    !!! note
+    !!! tip
         The preferred method is to pass in an instance of an extension. Strings
         should only be used when it is impossible to import the Extension Class
         directly (from the command line or in a template).
@@ -84,12 +89,13 @@ __extensions__{: #extensions }
     defined when initiating the class instance rather than using the
     [`extension_configs`](#extension_configs) keyword. For example:
 
-        :::python
-        from markdown.extensions import Extension
-        class MyExtClass(Extension):
-            # define your extension here...
+    ``` python
+    from markdown.extensions import Extension
+    class MyExtClass(Extension):
+        # define your extension here...
 
-        markdown.markdown(text, extensions=[MyExtClass(option='value')])
+    markdown.markdown(text, extensions=[MyExtClass(option='value')])
+    ```
 
     If an extension name is provided as a string, the string must either be the
     registered entry point of any installed extension or the importable path
@@ -101,8 +107,9 @@ __extensions__{: #extensions }
     name `myext` assigned to it and the extension is properly installed, then
     do the following:
 
-        :::python
-        markdown.markdown(text, extensions=['myext'])
+    ``` python
+    markdown.markdown(text, extensions=['myext'])
+    ```
 
     If an extension does not have a registered entry point, Python's dot
     notation may be used instead. The extension must be installed as a
@@ -112,13 +119,15 @@ __extensions__{: #extensions }
 
     Therefore, if you were to import the class like this:
 
-        :::python
-        from path.to.module import MyExtClass
+    ``` python
+    from path.to.module import MyExtClass
+    ```
 
     Then load the extension as follows:
 
-        :::python
-        markdown.markdown(text, extensions=['path.to.module:MyExtClass'])
+    ``` python
+    markdown.markdown(text, extensions=['path.to.module:MyExtClass'])
+    ```
 
     If only one extension is defined within a module and the module includes a
     `makeExtension` function which returns an instance of the extension, then
@@ -130,7 +139,7 @@ __extensions__{: #extensions }
     configuration settings to the extension by using the
     [`extension_configs`](#extension_configs) keyword.
 
-    !!! seealso "See Also"
+    !!! info "See Also"
         See the documentation of the [Extension API](extensions/api.md) for
         assistance in creating extensions.
 
@@ -142,23 +151,24 @@ __extension_configs__{: #extension_configs }
     (as a string). When loading extensions as class instances, pass the
     configuration settings directly to the class when initializing it.
 
-    !!! Note
+    !!! tip
         The preferred method is to pass in an instance of an extension, which
         does not require use of the `extension_configs` keyword at all.
         See the [extensions](#extensions) keyword for details.
 
     The dictionary of configuration settings must be in the following format:
 
-        :::python
-        extension_configs = {
-            'extension_name_1': {
-                'option_1': 'value_1',
-                'option_2': 'value_2'
-            },
-            'extension_name_2': {
-                'option_1': 'value_1'
-            }
+    ``` python
+    extension_configs = {
+        'extension_name_1': {
+            'option_1': 'value_1',
+            'option_2': 'value_2'
+        },
+        'extension_name_2': {
+            'option_1': 'value_1'
         }
+    }
+    ```
 
     When specifying the extension name, be sure to use the exact same
     string as is used in the [extensions](#extensions) keyword to load the
@@ -228,7 +238,7 @@ __encoding__{: #encoding }
     Defaults to `"utf-8"`. The same encoding will always be used for input and output.
     The `xmlcharrefreplace` error handler is used when encoding the output.
 
-    !!! Note
+    !!! tip
         This is the only place that decoding and encoding of Unicode
         takes place in Python-Markdown. If this rather naive solution does not
         meet your specific needs, it is suggested that you write your own code

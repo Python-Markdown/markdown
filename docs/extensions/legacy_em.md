@@ -1,4 +1,6 @@
+---
 title: Legacy EM Extension
+---
 
 # Legacy EM
 
@@ -17,7 +19,7 @@ of the reference implementation. Therefore, this extension can be used to better
 match the reference implementation. With the extension enabled, the above input
 would result in this output: `<em>connected</em>words_`.
 
-!!! Note
+!!! info "Note"
 
     This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or
