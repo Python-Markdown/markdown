@@ -13,7 +13,7 @@ theme:
   logo: py.png
   favicon: favicon.ico
   features:
-    # - navigation.tabs
+    - navigation.tabs
     - navigation.path
     - navigation.indexes
     - navigation.footer
@@ -55,67 +55,70 @@ extra_css:
   - mkdocstrings.css
 
 nav:
-  - Python-Markdown: index.md
-  - Installation: install.md
-  - Library Reference: reference.md
-  - Command Line: cli.md
-  - Sanitization and Security: sanitization.md
-  - Extensions: 
-    - extensions/index.md
-    - Abbreviations: extensions/abbreviations.md
-    - Admonition: extensions/admonition.md
-    - Attribute Lists: extensions/attr_list.md
-    - CodeHilite: extensions/code_hilite.md
-    - Definition Lists: extensions/definition_lists.md
-    - Extra: extensions/extra.md
-    - Fenced Code Blocks: extensions/fenced_code_blocks.md
-    - Footnotes: extensions/footnotes.md
-    - Legacy Attributes: extensions/legacy_attrs.md
-    - Legacy Emphasis: extensions/legacy_em.md
-    - Meta-Data: extensions/meta_data.md
-    - New Line to Break: extensions/nl2br.md
-    - Markdown in HTML: extensions/md_in_html.md
-    - Sane Lists: extensions/sane_lists.md
-    - SmartyPants: extensions/smarty.md
-    - Table of Contents: extensions/toc.md
-    - Tables: extensions/tables.md
-    - WikiLinks: extensions/wikilinks.md
-  - Extension API: extensions/api.md
-  - Test Tools: test_tools.md
-  - API Reference:
-    - <code>markdown</code>: reference/markdown.md
-    - <code>markdown.&#8203;preprocessors</code>: reference/markdown.preprocessors.md
-    - <code>markdown.&#8203;blockparser</code>: reference/markdown.blockparser.md
-    - <code>markdown.&#8203;blockprocessors</code>: reference/markdown.blockprocessors.md
-    - <code>markdown.&#8203;treeprocessors</code>: reference/markdown.treeprocessors.md
-    - <code>markdown.&#8203;inlinepatterns</code>: reference/markdown.inlinepatterns.md
-    - <code>markdown.&#8203;postprocessors</code>: reference/markdown.postprocessors.md
-    - <code>markdown.&#8203;serializers</code>: reference/markdown.serializers.md
-    - <code>markdown.&#8203;util</code>: reference/markdown.util.md
-    - <code>markdown.&#8203;htmlparser</code>: reference/markdown.htmlparser.md
-    - <code>markdown.&#8203;test_tools</code>: reference/markdown.test_tools.md
-    - <code>markdown.&#8203;extensions</code>: reference/markdown.extensions.md
-    - <code>markdown.&#8203;extensions.&#8203;abbr</code>: reference/markdown.extensions.abbr.md
-    - <code>markdown.&#8203;extensions.&#8203;admonition</code>: reference/markdown.extensions.admonition.md
-    - <code>markdown.&#8203;extensions.&#8203;attr_list</code>: reference/markdown.extensions.attr_list.md
-    - <code>markdown.&#8203;extensions.&#8203;codehilite</code>: reference/markdown.extensions.codehilite.md
-    - <code>markdown.&#8203;extensions.&#8203;def_list</code>: reference/markdown.extensions.def_list.md
-    - <code>markdown.&#8203;extensions.&#8203;extra</code>: reference/markdown.extensions.extra.md
-    - <code>markdown.&#8203;extensions.&#8203;fenced_code</code>: reference/markdown.extensions.fenced_code.md
-    - <code>markdown.&#8203;extensions.&#8203;footnotes</code>: reference/markdown.extensions.footnotes.md
-    - <code>markdown.&#8203;extensions.&#8203;legacy_attrs</code>: reference/markdown.extensions.legacy_attrs.md
-    - <code>markdown.&#8203;extensions.&#8203;legacy_em</code>: reference/markdown.extensions.legacy_em.md
-    - <code>markdown.&#8203;extensions.&#8203;md_in_html</code>: reference/markdown.extensions.md_in_html.md
-    - <code>markdown.&#8203;extensions.&#8203;meta</code>: reference/markdown.extensions.meta.md
-    - <code>markdown.&#8203;extensions.&#8203;nl2br</code>: reference/markdown.extensions.nl2br.md
-    - <code>markdown.&#8203;extensions.&#8203;sane_lists</code>: reference/markdown.extensions.sane_lists.md
-    - <code>markdown.&#8203;extensions.&#8203;smarty</code>: reference/markdown.extensions.smarty.md
-    - <code>markdown.&#8203;extensions.&#8203;tables</code>: reference/markdown.extensions.tables.md
-    - <code>markdown.&#8203;extensions.&#8203;toc</code>: reference/markdown.extensions.toc.md
-    - <code>markdown.&#8203;extensions.&#8203;wikilinks</code>: reference/markdown.extensions.wikilinks.md
-  - Contributing to Python-Markdown: contributing.md
-  - Changelog: changelog.md
-  - Authors: authors.md
+  - Home: index.md
+  - Usage:
+    - Installation: install.md
+    - Library Reference: reference.md
+    - Command Line: cli.md
+    - Sanitization and Security: sanitization.md
+    - Extensions: 
+      - extensions/index.md
+      - Abbreviations: extensions/abbreviations.md
+      - Admonition: extensions/admonition.md
+      - Attribute Lists: extensions/attr_list.md
+      - CodeHilite: extensions/code_hilite.md
+      - Definition Lists: extensions/definition_lists.md
+      - Extra: extensions/extra.md
+      - Fenced Code Blocks: extensions/fenced_code_blocks.md
+      - Footnotes: extensions/footnotes.md
+      - Legacy Attributes: extensions/legacy_attrs.md
+      - Legacy Emphasis: extensions/legacy_em.md
+      - Meta-Data: extensions/meta_data.md
+      - New Line to Break: extensions/nl2br.md
+      - Markdown in HTML: extensions/md_in_html.md
+      - Sane Lists: extensions/sane_lists.md
+      - SmartyPants: extensions/smarty.md
+      - Table of Contents: extensions/toc.md
+      - Tables: extensions/tables.md
+      - WikiLinks: extensions/wikilinks.md
+  - Development:
+    - Extension API: extensions/api.md
+    - Test Tools: test_tools.md
+    - API Reference:
+      - <code>markdown</code>: reference/markdown.md
+      - <code>markdown.&#8203;preprocessors</code>: reference/markdown.preprocessors.md
+      - <code>markdown.&#8203;blockparser</code>: reference/markdown.blockparser.md
+      - <code>markdown.&#8203;blockprocessors</code>: reference/markdown.blockprocessors.md
+      - <code>markdown.&#8203;treeprocessors</code>: reference/markdown.treeprocessors.md
+      - <code>markdown.&#8203;inlinepatterns</code>: reference/markdown.inlinepatterns.md
+      - <code>markdown.&#8203;postprocessors</code>: reference/markdown.postprocessors.md
+      - <code>markdown.&#8203;serializers</code>: reference/markdown.serializers.md
+      - <code>markdown.&#8203;util</code>: reference/markdown.util.md
+      - <code>markdown.&#8203;htmlparser</code>: reference/markdown.htmlparser.md
+      - <code>markdown.&#8203;test_tools</code>: reference/markdown.test_tools.md
+      - <code>markdown.&#8203;extensions</code>: reference/markdown.extensions.md
+      - <code>markdown.&#8203;extensions.&#8203;abbr</code>: reference/markdown.extensions.abbr.md
+      - <code>markdown.&#8203;extensions.&#8203;admonition</code>: reference/markdown.extensions.admonition.md
+      - <code>markdown.&#8203;extensions.&#8203;attr_list</code>: reference/markdown.extensions.attr_list.md
+      - <code>markdown.&#8203;extensions.&#8203;codehilite</code>: reference/markdown.extensions.codehilite.md
+      - <code>markdown.&#8203;extensions.&#8203;def_list</code>: reference/markdown.extensions.def_list.md
+      - <code>markdown.&#8203;extensions.&#8203;extra</code>: reference/markdown.extensions.extra.md
+      - <code>markdown.&#8203;extensions.&#8203;fenced_code</code>: reference/markdown.extensions.fenced_code.md
+      - <code>markdown.&#8203;extensions.&#8203;footnotes</code>: reference/markdown.extensions.footnotes.md
+      - <code>markdown.&#8203;extensions.&#8203;legacy_attrs</code>: reference/markdown.extensions.legacy_attrs.md
+      - <code>markdown.&#8203;extensions.&#8203;legacy_em</code>: reference/markdown.extensions.legacy_em.md
+      - <code>markdown.&#8203;extensions.&#8203;md_in_html</code>: reference/markdown.extensions.md_in_html.md
+      - <code>markdown.&#8203;extensions.&#8203;meta</code>: reference/markdown.extensions.meta.md
+      - <code>markdown.&#8203;extensions.&#8203;nl2br</code>: reference/markdown.extensions.nl2br.md
+      - <code>markdown.&#8203;extensions.&#8203;sane_lists</code>: reference/markdown.extensions.sane_lists.md
+      - <code>markdown.&#8203;extensions.&#8203;smarty</code>: reference/markdown.extensions.smarty.md
+      - <code>markdown.&#8203;extensions.&#8203;tables</code>: reference/markdown.extensions.tables.md
+      - <code>markdown.&#8203;extensions.&#8203;toc</code>: reference/markdown.extensions.toc.md
+      - <code>markdown.&#8203;extensions.&#8203;wikilinks</code>: reference/markdown.extensions.wikilinks.md
+  - About:
+    - Contributing to Python-Markdown: contributing.md
+    - Changelog: changelog.md
+    - Authors: authors.md
 
 validation:
   invalid_links: true

@@ -1,5 +1,8 @@
 ---
 title: Python-Markdown
+hide:
+  - navigation
+  - path
 ---
 
 Python-Markdown
