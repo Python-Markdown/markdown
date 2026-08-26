@@ -18,8 +18,8 @@ theme:
     - navigation.indexes
     - navigation.footer
     - navigation.top
-    - content.action.edit
-    - content.action.view
+    # - content.action.edit
+    # - content.action.view
     - content.code.copy
     - content.footnote.tooltips
     - search.highlight
@@ -51,9 +51,8 @@ theme:
       primary: green
       accent:  light green
 
-# extra_css:
-#   - custom.css
-#   - mkdocstrings.css
+extra_css:
+  - mkdocstrings.css
 
 nav:
   - Python-Markdown: index.md
@@ -84,36 +83,36 @@ nav:
   - Extension API: extensions/api.md
   - Test Tools: test_tools.md
   - API Reference:
-    - <code>markdown</code>: reference/markdown/index.md
-    - <code>markdown.preprocessors</code>: reference/markdown/preprocessors.md
-    - <code>markdown.blockparser</code>: reference/markdown/blockparser.md
-    - <code>markdown.blockprocessors</code>: reference/markdown/blockprocessors.md
-    - <code>markdown.treeprocessors</code>: reference/markdown/treeprocessors.md
-    - <code>markdown.inlinepatterns</code>: reference/markdown/inlinepatterns.md
-    - <code>markdown.postprocessors</code>: reference/markdown/postprocessors.md
-    - <code>markdown.serializers</code>: reference/markdown/serializers.md
-    - <code>markdown.util</code>: reference/markdown/util.md
-    - <code>markdown.htmlparser</code>: reference/markdown/htmlparser.md
-    - <code>markdown.test_tools</code>: reference/markdown/test_tools.md
-    - <code>markdown.extensions</code>: reference/markdown/extensions/index.md
-    - <code>markdown.extensions.abbr</code>: reference/markdown/extensions/abbr.md
-    - <code>markdown.extensions.admonition</code>: reference/markdown/extensions/admonition.md
-    - <code>markdown.extensions.attr_list</code>: reference/markdown/extensions/attr_list.md
-    - <code>markdown.extensions.codehilite</code>: reference/markdown/extensions/codehilite.md
-    - <code>markdown.extensions.def_list</code>: reference/markdown/extensions/def_list.md
-    - <code>markdown.extensions.extra</code>: reference/markdown/extensions/extra.md
-    - <code>markdown.extensions.fenced_code</code>: reference/markdown/extensions/fenced_code.md
-    - <code>markdown.extensions.footnotes</code>: reference/markdown/extensions/footnotes.md
-    - <code>markdown.extensions.legacy_attrs</code>: reference/markdown/extensions/legacy_attrs.md
-    - <code>markdown.extensions.legacy_em</code>: reference/markdown/extensions/legacy_em.md
-    - <code>markdown.extensions.md_in_html</code>: reference/markdown/extensions/md_in_html.md
-    - <code>markdown.extensions.meta</code>: reference/markdown/extensions/meta.md
-    - <code>markdown.extensions.nl2br</code>: reference/markdown/extensions/nl2br.md
-    - <code>markdown.extensions.sane_lists</code>: reference/markdown/extensions/sane_lists.md
-    - <code>markdown.extensions.smarty</code>: reference/markdown/extensions/smarty.md
-    - <code>markdown.extensions.tables</code>: reference/markdown/extensions/tables.md
-    - <code>markdown.extensions.toc</code>: reference/markdown/extensions/toc.md
-    - <code>markdown.extensions.wikilinks</code>: reference/markdown/extensions/wikilinks.md
+    - <code>markdown</code>: reference/markdown.md
+    - <code>markdown.&#8203;preprocessors</code>: reference/markdown.preprocessors.md
+    - <code>markdown.&#8203;blockparser</code>: reference/markdown.blockparser.md
+    - <code>markdown.&#8203;blockprocessors</code>: reference/markdown.blockprocessors.md
+    - <code>markdown.&#8203;treeprocessors</code>: reference/markdown.treeprocessors.md
+    - <code>markdown.&#8203;inlinepatterns</code>: reference/markdown.inlinepatterns.md
+    - <code>markdown.&#8203;postprocessors</code>: reference/markdown.postprocessors.md
+    - <code>markdown.&#8203;serializers</code>: reference/markdown.serializers.md
+    - <code>markdown.&#8203;util</code>: reference/markdown.util.md
+    - <code>markdown.&#8203;htmlparser</code>: reference/markdown.htmlparser.md
+    - <code>markdown.&#8203;test_tools</code>: reference/markdown.test_tools.md
+    - <code>markdown.&#8203;extensions</code>: reference/markdown.extensions.md
+    - <code>markdown.&#8203;extensions.&#8203;abbr</code>: reference/markdown.extensions.abbr.md
+    - <code>markdown.&#8203;extensions.&#8203;admonition</code>: reference/markdown.extensions.admonition.md
+    - <code>markdown.&#8203;extensions.&#8203;attr_list</code>: reference/markdown.extensions.attr_list.md
+    - <code>markdown.&#8203;extensions.&#8203;codehilite</code>: reference/markdown.extensions.codehilite.md
+    - <code>markdown.&#8203;extensions.&#8203;def_list</code>: reference/markdown.extensions.def_list.md
+    - <code>markdown.&#8203;extensions.&#8203;extra</code>: reference/markdown.extensions.extra.md
+    - <code>markdown.&#8203;extensions.&#8203;fenced_code</code>: reference/markdown.extensions.fenced_code.md
+    - <code>markdown.&#8203;extensions.&#8203;footnotes</code>: reference/markdown.extensions.footnotes.md
+    - <code>markdown.&#8203;extensions.&#8203;legacy_attrs</code>: reference/markdown.extensions.legacy_attrs.md
+    - <code>markdown.&#8203;extensions.&#8203;legacy_em</code>: reference/markdown.extensions.legacy_em.md
+    - <code>markdown.&#8203;extensions.&#8203;md_in_html</code>: reference/markdown.extensions.md_in_html.md
+    - <code>markdown.&#8203;extensions.&#8203;meta</code>: reference/markdown.extensions.meta.md
+    - <code>markdown.&#8203;extensions.&#8203;nl2br</code>: reference/markdown.extensions.nl2br.md
+    - <code>markdown.&#8203;extensions.&#8203;sane_lists</code>: reference/markdown.extensions.sane_lists.md
+    - <code>markdown.&#8203;extensions.&#8203;smarty</code>: reference/markdown.extensions.smarty.md
+    - <code>markdown.&#8203;extensions.&#8203;tables</code>: reference/markdown.extensions.tables.md
+    - <code>markdown.&#8203;extensions.&#8203;toc</code>: reference/markdown.extensions.toc.md
+    - <code>markdown.&#8203;extensions.&#8203;wikilinks</code>: reference/markdown.extensions.wikilinks.md
   - Contributing to Python-Markdown: contributing.md
   - Changelog: changelog.md
   - Authors: authors.md
