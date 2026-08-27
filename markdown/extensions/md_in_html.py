@@ -34,6 +34,17 @@ if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
 
 
+class _BlockLevelTagSet(set):
+    """A set of block-level tags that also treats custom element names as members.
+
+    Custom elements are required to contain a hyphen in their names.
+    See https://html.spec.whatwg.org/#valid-custom-element-name.
+    """
+
+    def __contains__(self, item: object) -> bool:
+        return super().__contains__(item) or (isinstance(item, str) and '-' in item)
+
+
 class HTMLExtractorExtra(HTMLExtractor):
     """
     Override `HTMLExtractor` and create `etree` `Elements` for any elements which should have content parsed as
@@ -52,9 +63,13 @@ class HTMLExtractorExtra(HTMLExtractor):
 
         super().__init__(md, *args, **kwargs)
 
-        # Block-level tags in which the content gets parsed as blocks
-        self.block_tags = set(self.block_level_tags) - (self.span_tags | self.raw_tags | self.empty_tags)
-        self.span_and_blocks_tags = self.block_tags | self.span_tags
+        # Block-level tags in which the content gets parsed as blocks.
+        # Custom element names (tags with a hyphen) are treated as block-level.
+        self.block_level_tags = _BlockLevelTagSet(self.block_level_tags)
+        self.block_tags = _BlockLevelTagSet(
+            set(self.block_level_tags) - (self.span_tags | self.raw_tags | self.empty_tags)
+        )
+        self.span_and_blocks_tags = _BlockLevelTagSet(self.block_tags | self.span_tags)
 
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""

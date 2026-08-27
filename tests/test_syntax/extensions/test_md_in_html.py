@@ -1556,6 +1556,48 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_custom_element_markdown_attr(self):
+        # Custom element names contain a hyphen and are treated as block-level.
+        # https://github.com/Python-Markdown/markdown/issues/1246
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <a-b markdown>
+
+                asdf
+
+                </a-b>
+                """
+            ),
+            self.dedent(
+                """
+                <a-b>
+                <p>asdf</p>
+                </a-b>
+                """
+            )
+        )
+
+    def test_custom_element_md1(self):
+        # https://github.com/Python-Markdown/markdown/issues/1246
+        self.assertMarkdownRenders(
+            '<a-b markdown="1">*foo*</a-b>',
+            self.dedent(
+                """
+                <a-b>
+                <p><em>foo</em></p>
+                </a-b>
+                """
+            )
+        )
+
+    def test_custom_element_inline(self):
+        # Inline custom elements (not at the start of a block) remain span-level.
+        self.assertMarkdownRenders(
+            'hello <my-icon></my-icon> world',
+            '<p>hello <my-icon></my-icon> world</p>'
+        )
+
 
 def load_tests(loader, tests, pattern):
     """ Ensure `TestHTMLBlocks` doesn't get run twice by excluding it here. """

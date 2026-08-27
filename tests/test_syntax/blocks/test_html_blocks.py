@@ -133,6 +133,30 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
+    def test_raw_custom_element(self):
+        # Custom element names contain a hyphen and are treated as block-level.
+        # https://github.com/Python-Markdown/markdown/issues/1246
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <a-b>
+
+                asdf
+
+                </a-b>
+                """
+            ),
+            self.dedent(
+                """
+                <a-b>
+
+                asdf
+
+                </a-b>
+                """
+            )
+        )
+
     def test_multiple_raw_single_line(self):
         self.assertMarkdownRenders(
             '<p>*foo*</p><div>*bar*</div>',

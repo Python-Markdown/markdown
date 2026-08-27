@@ -303,12 +303,15 @@ class Markdown:
         """
         Check if the given `tag` is a block level HTML tag.
 
-        Returns `True` for any string listed in `Markdown.block_level_elements`. A `tag` which is
-        not a string always returns `False`.
+        Returns `True` for any string listed in `Markdown.block_level_elements`.
+        Also returns `True` for valid custom element names (tag names that contain
+        a hyphen; see https://html.spec.whatwg.org/#valid-custom-element-name).
+        A `tag` which is not a string always returns `False`.
 
         """
         if isinstance(tag, str):
-            return tag.lower().rstrip('/') in self.block_level_elements
+            tag = tag.lower().rstrip('/')
+            return tag in self.block_level_elements or '-' in tag
         # Some ElementTree tags are not strings, so return False.
         return False
 
