@@ -17,6 +17,7 @@ See the [Contributing Guide](contributing.md) for details.
 * Inline processors now resume searching after the previous match, improving
   performance for repeated inline patterns (#1619).
 * Officially support Python 3.15 and drop support for Python 3.10
+* Walk backtick runs in `BacktickInlineProcessor` without a regex (#1620).
 
 ### Fixed
 

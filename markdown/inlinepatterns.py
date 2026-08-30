@@ -436,8 +436,6 @@ class SubstituteTagInlineProcessor(SimpleTagInlineProcessor):
 class BacktickInlineProcessor(InlineProcessor):
     """ Return a `<code>` element containing the escaped matching text. """
 
-    RE_TICKS = re.compile(r'`+')
-
     def __init__(self, pattern: str):
         InlineProcessor.__init__(self, pattern)
         self.ESCAPED_BSLASH = '{}{}{}'.format(util.STX, ord('\\'), util.ETX)
@@ -447,29 +445,33 @@ class BacktickInlineProcessor(InlineProcessor):
     def find_code_spans(self, start: int, text: str) -> tuple[int, int] | None:
         """Find code spans."""
 
+        last = len(text)
+
         # Get the maximum starting ticks
-        m = self.RE_TICKS.match(text, start)
-        if m is None:  # pragma: no cover
+        max_ticks = 0
+        while start < last and text[start] == '`':
+            max_ticks += 1
+            start += 1
+
+        if not max_ticks:  # pragma: no cover
             # This is not ever expected to happen.
             return None
-        max_ticks = len(m.group(0))
 
-        start = m.end(0)
-        last = len(text)
         longest_span = 0
         end = 0
 
         # Find an ending span of backticks that matches our opening
         i = start
         while i < last:
-            m = self.RE_TICKS.match(text, i)
-            if m is None:
+            span_length = 0
+            while i < last and text[i] == '`':
+                span_length += 1
+                i += 1
+            if not span_length:
                 i += 1
                 continue
 
             # Did we find the end?
-            i = m.end(0)
-            span_length = len(m.group(0))
             if max_ticks == span_length:
                 return start, i - span_length
 
