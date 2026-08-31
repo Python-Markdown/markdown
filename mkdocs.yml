@@ -6,7 +6,7 @@ site_author: "The Python-Markdown Project"
 copyright: "Copyright &copy; 2010-2026 The Python-Markdown Project"
 
 use_directory_urls: true
-watch: [markdown, scripts]
+watch: [markdown, scripts, docs/templates]
 
 theme:
   variant: modern

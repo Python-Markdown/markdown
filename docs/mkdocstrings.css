@@ -70,6 +70,10 @@ a.doc-source-link:hover {
   text-decoration: none;
 }
 
+h1 a.doc-source-link {
+  mask-position: bottom;
+}
+
 /* Reposiiton content.action.edit and content.action.view page buttons */
 [dir=ltr] .md-content__button {
     position: relative;
