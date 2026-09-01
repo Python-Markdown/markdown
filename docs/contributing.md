@@ -448,7 +448,7 @@ with no arguments. See help (`tox -h`) for more options.
     dependencies may differ significantly from system to system and is outside
     the scope of this guide.
 
-!!! info "See Also"
+!!! seealso "See Also"
 
     Python-Markdown provides [test tools] which simply test Markdown syntax.
     Understanding those tools will often help in understanding why a test may be

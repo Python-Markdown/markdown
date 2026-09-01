@@ -24,7 +24,8 @@ python -m markdown -x myext -x path.to.module:MyExtClass input.txt > output.html
 
 See the [Command Line docs](../cli.md) or use the `--help` option for more details.
 
-!!! info "See Also"
+!!! seealso "See Also"
+
     If you would like to write your own extensions, see the
     [Extension API](api.md) for details.
 

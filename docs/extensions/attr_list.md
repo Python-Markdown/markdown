@@ -118,7 +118,8 @@ The above results in the following output:
 <h3 id="hash">A hash style header</h3>
 ```
 
-!!! info "See Also"
+!!! seealso "See Also"
+
     By default, the [Fenced Code Blocks](./fenced_code_blocks.md#attributes) extension includes limited support for
     attribute lists. To get [full support](./fenced_code_blocks.md#keyvalue-pairs), both extensions must be enabled.
 

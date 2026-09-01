@@ -68,7 +68,7 @@ See Pygments' excellent [documentation] for more details. If no language is
 defined, Pygments will attempt to guess the language. When that fails, the code
 block will not be highlighted.
 
-!!! info "See Also"
+!!! seealso "See Also"
 
     GitHub user [richeland] has provided a number of different [CSS style
     sheets][rich] which work with Pygments along with a [preview] of each theme.

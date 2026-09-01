@@ -249,7 +249,7 @@ Conversely, to disable syntax highlighting on an individual code block, include 
 list. While the `use_pygments` key/value pair will not be included in the output, all other attributes will behave as
 they would if syntax highlighting was disabled for that code block regardless of any global setting.
 
-!!! info "See Also"
+!!! seealso "See Also"
 
     You will need to properly install and setup Pygments for syntax highlighting to work. See the `codehilite`
     extension's [documentation][setup] for details.

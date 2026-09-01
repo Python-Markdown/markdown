@@ -168,7 +168,7 @@ When loading an extension by name (as a string), you can only pass in
 configuration settings to the extension by using the
 [`extension_configs`](#extension_configs) keyword.
 
-!!! info "See Also"
+!!! seealso "See Also"
     See the documentation of the [Extension API](extensions/api.md) for
     assistance in creating extensions.
 
