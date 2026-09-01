@@ -79,6 +79,10 @@ h1 a.doc-source-link {
   mask-position: bottom;
 }
 
+.md-tooltip2 a.doc-source-link {
+  display: none;
+}
+
 /* Reposiiton content.action.edit and content.action.view page buttons */
 [dir=ltr] .md-content__button {
     position: relative;

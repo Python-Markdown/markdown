@@ -21,6 +21,7 @@ theme:
     # - content.action.edit
     # - content.action.view
     - content.code.copy
+    - content.tooltips
     - content.footnote.tooltips
     - search.highlight
     
