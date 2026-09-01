@@ -13,7 +13,7 @@ following command from the command line:
 pip install markdown
 ```
 
-That's it! You're ready to [use](reference.md) Python-Markdown. Enjoy!
+That's it! You're ready to [use](library.md) Python-Markdown. Enjoy!
 
 For more detailed instructions on installing Python packages, see the
 [Installing Packages] tutorial in the [Python Packaging User Guide].

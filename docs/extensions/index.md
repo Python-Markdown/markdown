@@ -14,7 +14,7 @@ To use an extension, pass it to markdown with the `extensions` keyword.
 markdown.markdown(some_text, extensions=[MyExtClass(), 'myext', 'path.to.my.ext:MyExtClass'])
 ```
 
-See the [Library Reference](../reference.md#extensions) for more details.
+See the [Library Reference](../library.md#extensions) for more details.
 
 From the command line, specify an extension with the `-x` option.
 

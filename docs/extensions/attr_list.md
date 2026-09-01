@@ -59,7 +59,7 @@ id="id2" class="class2 class3 class4"
 ```
 
 HTML includes support for some attributes to be a single term, like `checked`, for example. Therefore, the attribute
-list `{: checked }` would result in `checked` if the [output format](../reference.md#output_format) is `html` or
+list `{: checked }` would result in `checked` if the [output format](../library.md#output_format) is `html` or
 `checked="checked"` if the output format is `xhtml`.
 
 Curly braces can be backslash escaped to avoid being identified as an attribute list.

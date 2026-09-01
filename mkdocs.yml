@@ -58,7 +58,7 @@ nav:
   - Home: index.md
   - Usage:
     - Installation: install.md
-    - Library Reference: reference.md
+    - Library Reference: library.md
     - Command Line: cli.md
     - Sanitization and Security: sanitization.md
     - Extensions: 

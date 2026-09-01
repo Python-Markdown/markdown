@@ -64,7 +64,7 @@ becomes
 See [Extensions](index.md) for general extension usage. Use `wikilinks` as the
 name of the extension.
 
-See the [Library Reference](../reference.md#extensions) for information about
+See the [Library Reference](../library.md#extensions) for information about
 configuring extensions.
 
 The default behavior is to point each link to the document root of the current

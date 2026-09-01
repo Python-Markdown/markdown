@@ -832,7 +832,7 @@ A few things to note about the above linked collections.
 [ElementTree]: https://docs.python.org/3/library/xml.etree.elementtree.html
 [Available Extensions]: index.md
 [Footnotes]: https://github.com/Python-Markdown/markdown/blob/master/markdown/extensions/footnotes.py
-[library reference]: ../reference.md
+[library reference]: ../library.md
 [setuptools]: https://packaging.python.org/key_projects/#setuptools
 [Entry points]: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins
 [Packaging and Distributing Projects]: https://packaging.python.org/tutorials/distributing-packages/

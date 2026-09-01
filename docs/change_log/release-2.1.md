@@ -32,7 +32,7 @@ release, there are a few backward-incompatible changes to note:
   wrapper methods. It now expects keyword arguments. Currently, the positional
   arguments should continue to work, but the solution feels hacky and may be
   removed in a future version. All users are encouraged to use keyword arguments
-  as documented in the [Library Reference](../reference.md).
+  as documented in the [Library Reference](../library.md).
 
 * Past versions of Python-Markdown provided module level Global variables which
   controlled the behavior of a few different aspects of the parser. Those global
@@ -41,7 +41,7 @@ release, there are a few backward-incompatible changes to note:
   initializing a class instance. Therefore, if you were editing the global
   variables (either by editing the source or by overriding them in your code),
   you should now set them on the class. See the [Library
-  Reference](../reference.md) for the options available.
+  Reference](../library.md) for the options available.
 
 * If you have been using the HeaderId extension to
   define custom ids on headers, you will want to switch to using the new

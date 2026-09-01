@@ -73,7 +73,7 @@ Usage
 See [Extensions](index.md) for general extension usage. Use `tables` as the
 name of the extension.
 
-See the [Library Reference](../reference.md#extensions) for information about
+See the [Library Reference](../library.md#extensions) for information about
 configuring extensions.
 
 The following options are provided to change the default behavior:

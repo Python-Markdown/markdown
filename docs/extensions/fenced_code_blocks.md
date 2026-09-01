@@ -283,4 +283,4 @@ markdown.markdown(some_text, extensions=['fenced_code'])
 [PHP lexer's]: https://pygments.org/docs/lexers/#lexers-for-php-and-related-languages
 [setup]: ./code_hilite.md#setup
 [Extensions]: ./index.md
-[Library Reference]: ../reference.md#extensions
+[Library Reference]: ../library.md#extensions

@@ -16,7 +16,7 @@ though there are a few very minor [differences](#differences). See John's
 for the syntax rules.
 
 To get started, see the [installation instructions](install.md), the [library
-reference](reference.md), and the [command line interface](cli.md).
+reference](library.md), and the [command line interface](cli.md).
 
 Goals
 -----
@@ -51,7 +51,7 @@ features:
 
 * __International Input__
 
-    Python-Markdown will accept [input](reference.md#text) in any language
+    Python-Markdown will accept [input](library.md#the-basics) in any language
     supported by Unicode including bi-directional text. In fact the test suite
     includes documents written in Russian and Arabic.
 
@@ -65,7 +65,7 @@ features:
 * __Output Formats__
 
     Python-Markdown can output documents with either HTML or XHTML style tags.
-    See the [Library Reference](reference.md#output_format) for details.
+    See the [Library Reference](library.md#output_format) for details.
 
 * __Command Line Interface__
 
@@ -104,7 +104,7 @@ are summarized below:
     be indented by at least four spaces (or one tab) for each level of nesting.
 
     In the event that one would prefer different behavior,
-    [tab_length](reference.md#tab_length) can be set to whatever length is
+    [tab_length](library.md#tab_length) can be set to whatever length is
     desired. Be warned however, as this will affect indentation for all aspects
     of the syntax (including root level code blocks). Alternatively, a
     [third party extension] may offer a solution that meets your needs.
