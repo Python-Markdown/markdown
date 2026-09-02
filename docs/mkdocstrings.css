@@ -50,7 +50,7 @@ table code {
 }
 
 .doc-label-deprecated>code {
-  background-color: #ffe2bd;
+  background-color: #ff91001a;
   border-color: #ff9100;
 }
 
@@ -60,14 +60,13 @@ a.doc-source-link {
   -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-code-icon lucide-square-code"><path d="m10 9-3 3 3 3"/><path d="m14 15 3-3-3-3"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>');
   mask-position: center;
   mask-repeat: no-repeat;
-  content: '';
   display: inline-block;
   height: 1.5rem;
   width: 1.5rem;
   position: relative;
   float: right;
   margin-left: .5rem;
-  background-color: var(--md-default-fg-color--lighter)
+  background-color: var(--md-default-fg-color--lighter);
 }
 
 a.doc-source-link:hover {
