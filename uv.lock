@@ -240,7 +240,7 @@ testing = [
 [package.metadata]
 requires-dist = [
     { name = "coverage", marker = "extra == 'testing'" },
-    { name = "mdx-gh-links", marker = "extra == 'docs'", specifier = "==0.2" },
+    { name = "mdx-gh-links", marker = "extra == 'docs'", specifier = "==0.4" },
     { name = "mkdocstrings", marker = "extra == 'docs'", specifier = "==1.0.6" },
     { name = "mkdocstrings-python", marker = "extra == 'docs'", specifier = "==1.16.8" },
     { name = "pygments", marker = "extra == 'docs'", specifier = "==2.21.0" },
@@ -337,14 +337,14 @@ wheels = [
 
 [[package]]
 name = "mdx-gh-links"
-version = "0.2"
+version = "0.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markdown" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/38/e7/76324cb45a3b655a3f4392e5e1c771a1b9a6b938700d7f9ac31fcbb43377/mdx_gh_links-0.2.tar.gz", hash = "sha256:59fb8dafdf62bd0757593d6ab1f13b554d1d3ef0dcc44bedea2eca71970cf398", size = 4961, upload-time = "2018-03-09T17:17:20.063Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/2f/ea/bf1f721a8dc0ff83b426480f040ac68dbe3d7898b096c1277a5a4e3da0ec/mdx_gh_links-0.4.tar.gz", hash = "sha256:41d5aac2ab201425aa0a19373c4095b79e5e015fdacfe83c398199fe55ca3686", size = 5783, upload-time = "2023-12-22T19:54:02.136Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/27/5d/b0e9afc67f3db79e6eda5a81b01c06969b1cc33d020a1c3f5da37e290dbb/mdx_gh_links-0.2-py2.py3-none-any.whl", hash = "sha256:0815d6f2880fc78e7a06e3964dfab55def5bf45a10ce1555423c5bcd405873e5", size = 5390, upload-time = "2018-03-09T17:17:17.945Z" },
+    { url = "https://files.pythonhosted.org/packages/c5/c7/ccfe05ade98ba7a63f05d1b05b7508d9af743cbd1f1681aa0c9900a8cd40/mdx_gh_links-0.4-py3-none-any.whl", hash = "sha256:9057bca1fa5280bf1fcbf354381e46c9261cc32c2d5c0407801f8a910be5f099", size = 7166, upload-time = "2023-12-22T19:54:00.384Z" },
 ]
 
 [[package]]
