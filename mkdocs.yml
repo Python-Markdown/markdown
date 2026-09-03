@@ -6,12 +6,12 @@ site_author: "The Python-Markdown Project"
 copyright: "Copyright &copy; 2010-2026 The Python-Markdown Project"
 
 use_directory_urls: true
-watch: [markdown, scripts, docs/templates]
+watch: [markdown, .zensical/scripts, .zensical/mkdocstring_templates]
 
 theme:
   variant: modern
-  logo: py.png
-  favicon: favicon.ico
+  logo: assets/images/py.png
+  favicon: assets/images/favicon.ico
   features:
     - navigation.tabs
     - navigation.tabs.sticky
@@ -54,7 +54,7 @@ theme:
       accent:  light green
 
 extra_css:
-  - mkdocstrings.css
+  - assets/stylesheets/mkdocstrings.css
 
 nav:
   - Home: index.md
@@ -159,7 +159,7 @@ markdown_extensions:
 plugins:
 - search
 - mkdocstrings:
-    custom_templates: docs/templates
+    custom_templates: .zensical/mkdocstring_templates
     handlers:
       python:
         inventories:
@@ -171,8 +171,8 @@ plugins:
           docstring_style: google
           docstring_section_style: list
           extensions:
-          - scripts/griffe_extensions.py:DeprecatedExtension
-          - scripts/griffe_extensions.py:PriorityTableExtension:
+          - .zensical/scripts/griffe_extensions.py:DeprecatedExtension
+          - .zensical/scripts/griffe_extensions.py:PriorityTableExtension:
               paths:
                 - markdown.preprocessors.build_preprocessors
                 - markdown.blockprocessors.build_block_parser
