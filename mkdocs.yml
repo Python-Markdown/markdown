@@ -10,8 +10,8 @@ watch: [markdown, .zensical/scripts, .zensical/mkdocstring_templates]
 
 theme:
   variant: modern
-  logo: assets/images/py.png
-  favicon: assets/images/favicon.ico
+  logo: assets/images/pyMd_icon2.png
+  favicon: assets/images/pyMd_icon2.ico
   features:
     - navigation.tabs
     - navigation.tabs.sticky
