@@ -1,4 +1,6 @@
+---
 title: Meta-Data Extension
+---
 
 Meta-Data
 =========
@@ -16,7 +18,7 @@ This extension is included in the standard Markdown library.
 
 [MultiMarkdown]: https://fletcherpenney.net/multimarkdown/#metadata
 
-!!! Note
+!!! info "Note"
 
     This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or

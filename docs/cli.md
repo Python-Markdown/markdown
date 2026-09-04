@@ -1,4 +1,6 @@
+---
 title: Command Line
+---
 
 Using Python-Markdown on the Command Line
 =========================================
@@ -154,11 +156,10 @@ The `--extension_configs` option will only support YAML configuration files if
 [PyYAML] is installed on your system. JSON should work with no additional
 dependencies. The format of your configuration file is automatically detected.
 
-[ec]: reference.md#extension_configs
+[ec]: library.md#extension_configs
 [YAML]: https://yaml.org/
 [JSON]: https://json.org/
 [PyYAML]: https://pyyaml.org/
-[2.5 release notes]: change_log/release-2.5.md
 
 ## Using the `markdown_py` Command
 
@@ -201,7 +202,7 @@ path.
     markdown text files will not likely be in that directory, so it is much
     more convenient to have `markdown_py` on your path.
 
-!!!Note
+!!! tip
     Python-Markdown uses `"markdown_py"` as a script name because the Perl
     implementation has already taken the more obvious name "markdown".
     Additionally, the default Python configuration on some systems would cause a

@@ -1,4 +1,6 @@
+---
 title: Abbreviations Extension
+---
 
 Abbreviations
 =============
@@ -11,7 +13,7 @@ Specifically, any defined abbreviation is wrapped in  an `<abbr>` tag.
 
 The Abbreviations extension is included in the standard Markdown library.
 
-!!! Note
+!!! info "Note"
 
     This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or

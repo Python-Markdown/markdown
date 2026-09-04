@@ -1,4 +1,6 @@
+---
 title: Fenced Code Blocks Extension
+---
 
 # Fenced Code Blocks
 
@@ -9,7 +11,7 @@ indented code blocks.
 
 This extension is included in the standard Markdown library.
 
-!!! Note
+!!! info "Note"
 
     This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or
@@ -227,7 +229,7 @@ as well as any options accepted by the relevant [lexer][lexer] (each language ha
 don't have options that are all that useful in this context, there are a few important exceptions. For example, the
 [PHP lexer's] `startinline` option eliminates the need to start each code fragment with `<?php`.
 
-!!! note
+!!! tip
 
     The `fenced_code` extension does not alter the output provided by Pygments. Therefore, only options which Pygments
     provides can be utilized. As Pygments does not currently provide a way to define an ID, any ID defined in an
@@ -281,4 +283,4 @@ markdown.markdown(some_text, extensions=['fenced_code'])
 [PHP lexer's]: https://pygments.org/docs/lexers/#lexers-for-php-and-related-languages
 [setup]: ./code_hilite.md#setup
 [Extensions]: ./index.md
-[Library Reference]: ../reference.md#extensions
+[Library Reference]: ../library.md#extensions

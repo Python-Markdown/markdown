@@ -1,4 +1,6 @@
+---
 title: WikiLinks Extension
+---
 
 # WikiLinks
 
@@ -11,7 +13,7 @@ This extension is included in the standard Markdown library.
 
 [WikiLinks]: https://en.wikipedia.org/wiki/Wikilink
 
-!!! Note
+!!! info "Note"
 
     This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or
@@ -62,7 +64,7 @@ becomes
 See [Extensions](index.md) for general extension usage. Use `wikilinks` as the
 name of the extension.
 
-See the [Library Reference](../reference.md#extensions) for information about
+See the [Library Reference](../library.md#extensions) for information about
 configuring extensions.
 
 The default behavior is to point each link to the document root of the current

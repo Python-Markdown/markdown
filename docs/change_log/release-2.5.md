@@ -14,8 +14,6 @@ Backwards-incompatible Changes
 * Python-Markdown no longer supports Python version 2.6. You must be using Python
   versions 2.7, 3.2, 3.3, or 3.4.
 
-[importlib]: https://pypi.org/project/importlib/
-
 * The `force_linenos` configuration key on the [CodeHilite Extension] has been **deprecated**
   and will raise a `KeyError` if provided. In the previous release (2.4), it was
   issuing a `DeprecationWarning`. The [`linenums`][linenums] keyword should be used
@@ -96,14 +94,14 @@ Backwards-incompatible Changes
 
         $ python -m markdown -x markdown.extensions.extra input.txt
 
-    See the [documentation](../reference.md#extensions) for a full explanation
+    See the [documentation](../library.md#extensions) for a full explanation
     of the current behavior.
 
 * The previously documented method of appending the extension configuration as
   a string to the extension name will be deprecated in Python-Markdown
   version 2.6 and will raise a **`PendingDeprecationWarning`** in 2.5. The
-  [`extension_configs`](../reference.md#extension_configs) keyword should
-  be used instead. See the [documentation](../reference.md#extension_configs)
+  [`extension_configs`](../library.md#extension_configs) keyword should
+  be used instead. See the [documentation](../library.md#extension_configs)
   for a full explanation of the current behavior.
 
 What's New in Python-Markdown 2.5
@@ -146,7 +144,7 @@ What's New in Python-Markdown 2.5
     `makeExtension` function included in the module. Extension authors will want
     to document carefully what is required to load their extensions.
 
-[ex]: ../reference.md#extensions
+[ex]: ../library.md#extensions
 
 * The Extension Configuration code has been refactored to make it a little
   easier for extension authors to work with configuration settings. As a
@@ -160,7 +158,7 @@ What's New in Python-Markdown 2.5
     their code going forward. The included extensions provide a model for best
     practices. See the [API] documentation for a full explanation.
 
-[ec]: ../reference.md#extension_configs
+[ec]: ../library.md#extension_configs
 [API]: ../extensions/api.md#configsettings
 
 * The [Command Line Interface][cli] now accepts a `--extensions_config` (or

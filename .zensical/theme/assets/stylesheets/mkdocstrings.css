@@ -1,0 +1,108 @@
+/* Highlight the bottom border of the active menu item. */
+.md-tabs .md-tabs__item--active {
+    border-bottom: .1rem solid var(--md-accent-fg-color);
+}
+
+/* Mark external links as such. */
+a.external::after,
+a.autorefs-external::after {
+  /* https://primer.style/octicons/arrow-up-right-24 */
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.25 15.5a.75.75 0 00.75-.75v-9a.75.75 0 00-.75-.75h-9a.75.75 0 000 1.5h7.19L6.22 16.72a.75.75 0 101.06 1.06L17.5 7.56v7.19c0 .414.336.75.75.75z"></path></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.25 15.5a.75.75 0 00.75-.75v-9a.75.75 0 00-.75-.75h-9a.75.75 0 000 1.5h7.19L6.22 16.72a.75.75 0 101.06 1.06L17.5 7.56v7.19c0 .414.336.75.75.75z"></path></svg>');
+  content: ' ';
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  height: 1em;
+  width: 1em;
+  background-color: var(--md-typeset-a-color);
+}
+
+a.external:hover::after,
+a.autorefs-external:hover::after {
+  background-color: var(--md-accent-fg-color);
+}
+
+/* Code spans in tables. */
+
+table code {
+  background-color: transparent !important;
+}
+
+/* Style headings */
+.doc-heading {
+  background: var(--md-accent-fg-color--transparent);
+  border-radius: .4rem;
+  padding: .35rem .8rem;
+}
+
+.doc-heading code {
+  background: transparent;  
+}
+
+/* Customize labels. */
+.doc-label>code {
+  background-color: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color);
+  border-radius: 15px;
+  padding: 2px 1em;
+  text-wrap: nowrap;
+}
+
+.doc-label-deprecated>code {
+  background-color: #ff91001a;
+  border-color: #ff9100;
+}
+
+/* Style source links */
+a.doc-source-link {
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-code-icon lucide-square-code"><path d="m10 9-3 3 3 3"/><path d="m14 15 3-3-3-3"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-code-icon lucide-square-code"><path d="m10 9-3 3 3 3"/><path d="m14 15 3-3-3-3"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>');
+  mask-position: center;
+  mask-repeat: no-repeat;
+  display: inline-block;
+  height: 1.5rem;
+  width: 1.5rem;
+  position: relative;
+  float: right;
+  margin-left: .5rem;
+  background-color: var(--md-default-fg-color--lighter);
+}
+
+a.doc-source-link:hover {
+  background-color: var(--md-accent-fg-color);
+  text-decoration: none;
+}
+
+h1 a.doc-source-link {
+  mask-position: bottom;
+}
+
+.md-tooltip2 a.doc-source-link {
+  display: none;
+}
+
+/* Reposiiton content.action.edit and content.action.view page buttons */
+[dir=ltr] .md-content__button {
+    position: relative;
+    top: -3.5em;
+}
+
+/* Add support for `seealso` Admonition */
+.md-typeset .admonition.seealso {
+    background-color: var(--md-accent-fg-color--transparent);
+}
+
+.md-typeset .seealso>.admonition-title:before {
+    background-color: var(--md-accent-fg-color);
+}
+
+.md-typeset .seealso>.admonition-title:after {
+    color: var(--md-accent-fg-color);
+}
+
+.md-typeset .seealso>.admonition-title:before {
+    --md-admonition-icon--seealso: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-arrow-out-up-right-icon lucide-square-arrow-out-up-right"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></svg>');
+    -webkit-mask-image: var(--md-admonition-icon--seealso);
+    mask-image: var(--md-admonition-icon--seealso);
+}

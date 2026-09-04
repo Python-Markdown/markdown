@@ -1,4 +1,6 @@
+---
 title: Sanitization and Security
+---
 
 # Sanitizing HTML Output
 

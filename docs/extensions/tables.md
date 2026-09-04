@@ -1,4 +1,6 @@
+---
 title: Tables Extension
+---
 
 Tables
 ======
@@ -10,7 +12,7 @@ The Tables extension adds the ability to create tables in Markdown documents.
 
 This extension is included in the standard Markdown library.
 
-!!! Note
+!!! info "Note"
 
     This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or
@@ -63,6 +65,7 @@ will be rendered as:
 ```
 
 !!! seealso "See Also"
+
     The [Attribute Lists](./attr_list.md) extension includes support for defining attributes on table cells.
 
 Usage
@@ -71,7 +74,7 @@ Usage
 See [Extensions](index.md) for general extension usage. Use `tables` as the
 name of the extension.
 
-See the [Library Reference](../reference.md#extensions) for information about
+See the [Library Reference](../library.md#extensions) for information about
 configuring extensions.
 
 The following options are provided to change the default behavior:

@@ -148,7 +148,7 @@ repeatedly opens unproductive issues or requests, they may be blocked from
 contributing to the project as it is disruptive and disrespectful of the
 maintainers' time.
 
-!!! Note
+!!! info
     This policy was largely inspired by the Astropy Project's 
     [Usage of Generative AI] policy.
 
@@ -411,7 +411,7 @@ coverage run --source=markdown -m unittest discover tests
 coverage report --show-missing
 ```
 
-!!! note
+!!! tip
 
     Some tests require the [PyTidyLib] library, which depends on the [HTML Tidy]
     library. If you do not have PyTidyLib installed, the tests which depend upon
@@ -436,7 +436,7 @@ pip install tox
 Then, to run all configured test environments, simply call the command `tox`
 with no arguments. See help (`tox -h`) for more options.
 
-!!! note
+!!! tip
 
     The tox environments expect that some dependencies are already installed on
     your system. For example, by default, any Python version specific
@@ -523,7 +523,7 @@ following steps:
 
         Bump version to X.X.X
 
-    !!! note 
+    !!! tip
 
         For the checks to run properly the `release`{ .label .release } label
         must be set on GitHub before creating the pull request. If the label

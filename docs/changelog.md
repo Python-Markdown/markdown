@@ -1,5 +1,7 @@
+---
 title: Changelog
 toc_depth: 2
+---
 
 # Python-Markdown Changelog
 
@@ -794,15 +796,15 @@ See the [Contributing Guide](contributing.md) for details.
     for each specific extension to find the assigned name.
 
     If an extension does not define an entry point, then the full path to the
-    extension must be used. See the [documentation](reference.md#extensions) for
+    extension must be used. See the [documentation](library.md#extensions) for
     a full explanation of the current behavior.
 
 * Extension configuration as part of extension name deprecated
 
     The previously documented method of appending the extension configuration
     options as a string to the extension name is deprecated and will raise an error.
-    The [`extension_configs`](reference.md#extension_configs) keyword should be
-    used instead. See the [documentation](reference.md#extension_configs) for a
+    The [`extension_configs`](library.md#extension_configs) keyword should be
+    used instead. See the [documentation](library.md#extension_configs) for a
     full explanation of the current behavior.
 
 * HeaderId extension deprecated

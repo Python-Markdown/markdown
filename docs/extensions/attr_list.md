@@ -1,4 +1,6 @@
+---
 title: Attribute Lists Extension
+---
 
 # Attribute Lists
 
@@ -9,7 +11,7 @@ HTML elements in markdown's output.
 
 This extension is included in the standard Markdown library.
 
-!!! Note
+!!! info "Note"
 
     This extension is in __maintenance mode__.  We will continue to fix bugs
     and keep it up-to-date with the core parser, but no new features or
@@ -57,7 +59,7 @@ id="id2" class="class2 class3 class4"
 ```
 
 HTML includes support for some attributes to be a single term, like `checked`, for example. Therefore, the attribute
-list `{: checked }` would result in `checked` if the [output format](../reference.md#output_format) is `html` or
+list `{: checked }` would result in `checked` if the [output format](../library.md#output_format) is `html` or
 `checked="checked"` if the output format is `xhtml`.
 
 Curly braces can be backslash escaped to avoid being identified as an attribute list.
@@ -117,6 +119,7 @@ The above results in the following output:
 ```
 
 !!! seealso "See Also"
+
     By default, the [Fenced Code Blocks](./fenced_code_blocks.md#attributes) extension includes limited support for
     attribute lists. To get [full support](./fenced_code_blocks.md#keyvalue-pairs), both extensions must be enabled.
 

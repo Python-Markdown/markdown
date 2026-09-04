@@ -128,7 +128,7 @@ markdown.markdown(text, extensions=['mdx_math'])
 Extension authors will want to update their documentation to reflect the new
 behavior.
 
-See the [documentation](../reference.md#extensions) for a full explanation
+See the [documentation](../library.md#extensions) for a full explanation
 of the current behavior.
 
 ### Extension Configuration as Part of Extension Name Deprecated
@@ -136,8 +136,8 @@ of the current behavior.
 The previously documented method of appending the extension configuration
 options as a string to the extension name is deprecated and will raise a
 **`DeprecationWarning`** in version 2.6 and an error in 2.7. The
-[`extension_configs`](../reference.md#extension_configs) keyword should be used
-instead. See the [documentation](../reference.md#extension_configs) for a full
+[`extension_configs`](../library.md#extension_configs) keyword should be used
+instead. See the [documentation](../library.md#extension_configs) for a full
 explanation of the current behavior.
 
 ### HeaderId Extension Pending Deprecation

@@ -37,7 +37,7 @@ jobs:
       - name: Build
         run: |
           cd md
-          python -m mkdocs build --clean --verbose
+          python -m zensical build --clean
       - name: Publish
         if: success()
         run: |
