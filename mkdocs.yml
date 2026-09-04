@@ -1,9 +1,10 @@
 site_name: Python-Markdown
+site_description: Python implementation of John Gruber's Markdown.
 site_url: https://Python-Markdown.github.io/
 repo_url: https://github.com/Python-Markdown/markdown
 repo_name: Python-Markdown/markdown
 site_author: "The Python-Markdown Project"
-copyright: "Copyright &copy; 2010-2026 The Python-Markdown Project"
+copyright: "Copyright &copy; 2010-2026 The Python-Markdown Project."
 
 use_directory_urls: true
 watch: [markdown, .zensical/scripts, .zensical/mkdocstring_templates]
@@ -25,7 +26,7 @@ theme:
     - content.tooltips
     - content.footnote.tooltips
     - search.highlight
-    
+  custom_dir: .zensical/theme  
   palette:
 
     # Palette toggle for automatic mode
