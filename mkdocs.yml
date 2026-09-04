@@ -122,6 +122,11 @@ nav:
     - Changelog: changelog.md
     - Authors: authors.md
 
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Python-Markdown
+
 validation:
   invalid_links: true
   invalid_link_anchors: true
