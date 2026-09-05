@@ -24,6 +24,8 @@ See the [Contributing Guide](contributing.md) for details.
 ### Fixed
 
 * Fix an issue with excessive backtracking when matching inline code blocks (#1617).
+* `md_in_html` now honors tags added to `Markdown.block_level_elements` after
+  the extension is loaded (#1246).
 
 ## [3.10.3] - 2026-07-30
 

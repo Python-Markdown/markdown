@@ -41,8 +41,6 @@ class HTMLExtractorExtra(HTMLExtractor):
     """
 
     def __init__(self, md: Markdown, *args, **kwargs):
-        # All block-level tags.
-        self.block_level_tags = set(md.block_level_elements.copy())
         # Block-level tags in which the content only gets span level parsing
         self.span_tags = set(
             ['address', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'legend', 'li', 'p', 'summary', 'td', 'th']
@@ -52,9 +50,19 @@ class HTMLExtractorExtra(HTMLExtractor):
 
         super().__init__(md, *args, **kwargs)
 
-        # Block-level tags in which the content gets parsed as blocks
-        self.block_tags = set(self.block_level_tags) - (self.span_tags | self.raw_tags | self.empty_tags)
-        self.span_and_blocks_tags = self.block_tags | self.span_tags
+    @property
+    def block_level_tags(self) -> set[str]:
+        # Read from the Markdown instance so tags registered after the
+        # extension is loaded (md.block_level_elements.append) are honored.
+        return set(self.md.block_level_elements)
+
+    @property
+    def block_tags(self) -> set[str]:
+        return set(self.block_level_tags) - (self.span_tags | self.raw_tags | self.empty_tags)
+
+    @property
+    def span_and_blocks_tags(self) -> set[str]:
+        return self.block_tags | self.span_tags
 
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""

@@ -1556,6 +1556,36 @@ class TestMdInHTML(TestCase):
             )
         )
 
+    def test_registered_custom_element_is_block_level(self):
+        # Tags added to Markdown.block_level_elements after construction
+        # must still be treated as block-level HTML (#1246).
+        md = Markdown(extensions=['md_in_html'])
+        md.block_level_elements.append('a-b')
+        src = self.dedent(
+            """
+            <a-b>
+
+            asdf
+
+            </a-b>
+            """
+        )
+        self.assertEqual(md.convert(src), '<a-b>\n\nasdf\n\n</a-b>')
+
+    def test_registered_custom_element_markdown_attr(self):
+        md = Markdown(extensions=['md_in_html'])
+        md.block_level_elements.append('a-b')
+        src = self.dedent(
+            """
+            <a-b markdown>
+
+            *asdf*
+
+            </a-b>
+            """
+        )
+        self.assertEqual(md.convert(src), '<a-b>\n<p><em>asdf</em></p>\n</a-b>')
+
 
 def load_tests(loader, tests, pattern):
     """ Ensure `TestHTMLBlocks` doesn't get run twice by excluding it here. """
