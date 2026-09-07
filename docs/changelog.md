@@ -26,6 +26,9 @@ See the [Contributing Guide](contributing.md) for details.
 * Fix an issue with excessive backtracking when matching inline code blocks (#1617).
 * `md_in_html` now honors tags added to `Markdown.block_level_elements` after
   the extension is loaded (#1246).
+* Fix quadratic-time regex backtracking in `ReferenceProcessor` when a link
+  reference definition has no URL, e.g. a line consisting only of `[id]:`
+  followed by many trailing spaces (#798).
 
 ## [3.10.3] - 2026-07-30
 
