@@ -448,11 +448,42 @@ class FootnoteReorderingProcessor(Treeprocessor):
     def run(self, root: etree.Element) -> None:
         if not self.footnotes.footnotes:
             return
+        # Rebuild from the tree: inline processing is not document order.
+        self.footnotes.footnote_order = self.get_document_order(root)
+        self.renumber_refs(root)
         if self.footnotes.footnote_order != list(self.footnotes.footnotes.keys()):
             for div in root.iter('div'):
                 if div.attrib.get('class', '') == 'footnote':
                     self.reorder_footnotes(div)
                     break
+
+    def get_fn_id(self, href: str) -> str:
+        """ Return the footnote id from a `footnote-ref` href. """
+        return href.lstrip('#').split(self.footnotes.get_separator(), 1)[-1]
+
+    def get_document_order(self, root: etree.Element) -> list[str]:
+        """ Return footnote ids in document order (first reference wins). """
+        order: list[str] = []
+        for el in root.iter('a'):
+            if el.attrib.get('class', '') != 'footnote-ref':
+                continue
+            fn_id = self.get_fn_id(el.attrib.get('href', ''))
+            if fn_id not in order:
+                order.append(fn_id)
+        return order
+
+    def renumber_refs(self, root: etree.Element) -> None:
+        """ Rewrite superscript numbers to match document order. """
+        numbers = {
+            fn_id: i for i, fn_id in enumerate(self.footnotes.footnote_order, start=1)
+        }
+        fmt = self.footnotes.getConfig("SUPERSCRIPT_TEXT")
+        for el in root.iter('a'):
+            if el.attrib.get('class', '') != 'footnote-ref':
+                continue
+            fn_id = self.get_fn_id(el.attrib.get('href', ''))
+            if fn_id in numbers:
+                el.text = fmt.format(numbers[fn_id])
 
     def reorder_footnotes(self, parent: etree.Element) -> None:
         old_list = parent.find('ol')

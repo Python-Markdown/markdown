@@ -433,6 +433,108 @@ class TestFootnotes(TestCase):
             extension_configs={'footnotes': {'USE_DEFINITION_ORDER': True}}
         )
 
+    def test_footnote_order_nested_blocks(self):
+        """Test document-order numbering when refs are inside nested blocks."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                First.[^1]
+
+                1. Nested list.[^2]
+
+                Third.[^3]
+
+                > Nested quote.[^4]
+
+                Fifth.[^5]
+
+                [^1]: First
+                [^2]: Second
+                [^3]: Third
+                [^4]: Fourth
+                [^5]: Fifth
+                """
+            ),
+            '<p>First.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>\n'
+            '<ol>\n'
+            '<li>Nested list.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></li>\n'
+            '</ol>\n'
+            '<p>Third.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>\n'
+            '<blockquote>\n'
+            '<p>Nested quote.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup></p>\n'
+            '</blockquote>\n'
+            '<p>Fifth.<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>First&#160;<a class="footnote-backref" href="#fnref:1"'
+            ' title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<p>Second&#160;<a class="footnote-backref" href="#fnref:2"'
+            ' title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:3">\n'
+            '<p>Third&#160;<a class="footnote-backref" href="#fnref:3"'
+            ' title="Jump back to footnote 3 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:4">\n'
+            '<p>Fourth&#160;<a class="footnote-backref" href="#fnref:4"'
+            ' title="Jump back to footnote 4 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:5">\n'
+            '<p>Fifth&#160;<a class="footnote-backref" href="#fnref:5"'
+            ' title="Jump back to footnote 5 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>',
+            extension_configs={'footnotes': {'USE_DEFINITION_ORDER': False}}
+        )
+
+    def test_footnote_order_nested_blocks_not_definition_order(self):
+        """Test that nested refs follow document order, not definition order."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                First.[^b]
+
+                1. Nested.[^a]
+
+                Third.[^c]
+
+                [^c]: C
+                [^a]: A
+                [^b]: B
+                """
+            ),
+            '<p>First.<sup id="fnref:b"><a class="footnote-ref" href="#fn:b">1</a></sup></p>\n'
+            '<ol>\n'
+            '<li>Nested.<sup id="fnref:a"><a class="footnote-ref" href="#fn:a">2</a></sup></li>\n'
+            '</ol>\n'
+            '<p>Third.<sup id="fnref:c"><a class="footnote-ref" href="#fn:c">3</a></sup></p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:b">\n'
+            '<p>B&#160;<a class="footnote-backref" href="#fnref:b"'
+            ' title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:a">\n'
+            '<p>A&#160;<a class="footnote-backref" href="#fnref:a"'
+            ' title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:c">\n'
+            '<p>C&#160;<a class="footnote-backref" href="#fnref:c"'
+            ' title="Jump back to footnote 3 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>',
+            extension_configs={'footnotes': {'USE_DEFINITION_ORDER': False}}
+        )
+
     def test_footnote_reference_within_code_span(self):
         """Test footnote reference within a code span."""
 
