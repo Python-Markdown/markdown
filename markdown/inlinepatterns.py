@@ -41,7 +41,8 @@ The new `InlineProcessor` provides two major enhancements to `Patterns`:
 from __future__ import annotations
 
 from . import util
-from typing import TYPE_CHECKING, Any, Collection, NamedTuple
+from typing import TYPE_CHECKING, Any, Collection, NamedTuple, cast
+from collections import deque
 import re
 import xml.etree.ElementTree as etree
 from html import entities
@@ -89,9 +90,8 @@ def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry[InlinePro
     inlinePatterns.register(SubstituteTagInlineProcessor(LINE_BREAK_RE, 'br'), 'linebreak', 100)
     inlinePatterns.register(HtmlInlineProcessor(HTML_RE, md), 'html', 90)
     inlinePatterns.register(HtmlInlineProcessor(ENTITY_RE, md), 'entity', 80)
-    inlinePatterns.register(SimpleTextInlineProcessor(NOT_STRONG_RE), 'not_strong', 70)
-    inlinePatterns.register(AsteriskProcessor(r'\*'), 'em_strong', 60)
-    inlinePatterns.register(UnderscoreProcessor(r'_'), 'em_strong2', 50)
+    inlinePatterns.register(DelimiterProcessor('*', 'strong,em'), 'em_strong', 60)
+    inlinePatterns.register(DelimiterProcessor('_', 'strong,em', smart=True), 'em_strong2', 50)
     return inlinePatterns
 
 
@@ -107,36 +107,6 @@ BACKTICK_RE = r'(?:(?<!\\)((?:\\{2})+)(?=`+)|(?<!\\)`)'
 ESCAPE_RE = r'\\(.)'
 """ Match a backslash escaped character (`\\<` or `\\*`). """
 
-EMPHASIS_RE = r'(\*)([^\*]+)\1'
-""" Match emphasis with an asterisk (`*emphasis*`). """
-
-STRONG_RE = r'(\*{2})(.+?)\1'
-""" Match strong with an asterisk (`**strong**`). """
-
-SMART_STRONG_RE = r'(?<!\w)(_{2})(?!_)(.+?)(?<!_)\1(?!\w)'
-""" Match strong with underscore while ignoring middle word underscores (`__smart__strong__`). """
-
-SMART_EMPHASIS_RE = r'(?<!\w)(_)(?!_)(.+?)(?<!_)\1(?!\w)'
-""" Match emphasis with underscore while ignoring middle word underscores (`_smart_emphasis_`). """
-
-SMART_STRONG_EM_RE = r'(?<!\w)(\_)\1(?!\1)(.+?)(?<!\w)\1(?!\1)(.+?)\1{3}(?!\w)'
-""" Match strong emphasis with underscores (`__strong _em__`). """
-
-EM_STRONG_RE = r'(\*)\1{2}(.+?)\1(.*?)\1{2}'
-""" Match emphasis strong with asterisk (`***strongem***` or `***em*strong**`). """
-
-EM_STRONG2_RE = r'(_)\1{2}(.+?)\1(.*?)\1{2}'
-""" Match emphasis strong with underscores (`___emstrong___` or `___em_strong__`). """
-
-STRONG_EM_RE = r'(\*)\1{2}(.+?)\1{2}(.*?)\1'
-""" Match strong emphasis with asterisk (`***strong**em*`). """
-
-STRONG_EM2_RE = r'(_)\1{2}(.+?)\1{2}(.*?)\1'
-""" Match strong emphasis with underscores (`___strong__em_`). """
-
-STRONG_EM3_RE = r'(\*)\1(?!\1)([^*]+?)\1(?!\1)(.+?)\1{3}'
-""" Match strong emphasis with asterisk (`**strong*em***`). """
-
 LINK_RE = NOIMG + r'\['
 """ Match start of in-line link (`[text](url)` or `[text](<url>)` or `[text](url "title")`). """
 
@@ -148,9 +118,6 @@ REFERENCE_RE = LINK_RE
 
 IMAGE_REFERENCE_RE = IMAGE_LINK_RE
 """ Match start of image reference (`![alt text][2]`). """
-
-NOT_STRONG_RE = r'((^|(?<=\s))(\*{1,3}|_{1,3})(?=\s|$))'
-""" Match a stand-alone `*` or `_`. """
 
 AUTOLINK_RE = r'<((?:[Ff]|[Hh][Tt])[Tt][Pp][Ss]?://[^<>]*)>'
 """ Match an automatic link (`<http://www.example.com>`). """
@@ -596,151 +563,383 @@ class HtmlInlineProcessor(InlineProcessor):
         return RE.sub(_unescape, text)
 
 
-class AsteriskProcessor(InlineProcessor):
-    """Emphasis processor for handling strong and em matches inside asterisks."""
+class DelimiterProcessor(InlineProcessor):
+    """Processor for handling complex nested patterns such as strong and em matches."""
 
-    PATTERNS = [
-        EmStrongItem(re.compile(EM_STRONG_RE, re.DOTALL | re.UNICODE), 'double', 'strong,em'),
-        EmStrongItem(re.compile(STRONG_EM_RE, re.DOTALL | re.UNICODE), 'double', 'em,strong'),
-        EmStrongItem(re.compile(STRONG_EM3_RE, re.DOTALL | re.UNICODE), 'double2', 'strong,em'),
-        EmStrongItem(re.compile(STRONG_RE, re.DOTALL | re.UNICODE), 'single', 'strong'),
-        EmStrongItem(re.compile(EMPHASIS_RE, re.DOTALL | re.UNICODE), 'single', 'em')
-    ]
-    """ The various strong and emphasis patterns handled by this processor. """
-
-    def build_single(self, m: re.Match[str], tag: str, idx: int) -> etree.Element:
-        """Return single tag."""
-        el1 = etree.Element(tag)
-        text = m.group(2)
-        self.parse_sub_patterns(text, el1, None, idx)
-        return el1
-
-    def build_double(self, m: re.Match[str], tags: str, idx: int) -> etree.Element:
-        """Return double tag."""
-
-        tag1, tag2 = tags.split(",")
-        el1 = etree.Element(tag1)
-        el2 = etree.Element(tag2)
-        text = m.group(2)
-        self.parse_sub_patterns(text, el2, None, idx)
-        el1.append(el2)
-        if len(m.groups()) == 3:
-            text = m.group(3)
-            self.parse_sub_patterns(text, el1, el2, idx)
-        return el1
-
-    def build_double2(self, m: re.Match[str], tags: str, idx: int) -> etree.Element:
-        """Return double tags (variant 2): `<strong>text <em>text</em></strong>`."""
-
-        tag1, tag2 = tags.split(",")
-        el1 = etree.Element(tag1)
-        el2 = etree.Element(tag2)
-        text = m.group(2)
-        self.parse_sub_patterns(text, el1, None, idx)
-        text = m.group(3)
-        el1.append(el2)
-        self.parse_sub_patterns(text, el2, None, idx)
-        return el1
-
-    def parse_sub_patterns(
-        self, data: str, parent: etree.Element, last: etree.Element | None, idx: int
+    def __init__(
+        self,
+        token: str,
+        tags: str,
+        md: Markdown | None = None,
+        smart: bool = False,
+        double: bool = False
     ) -> None:
         """
-        Parses sub patterns.
+        Initialize.
 
-        `data`: text to evaluate.
+        Arguments:
+            token: A single character token.
+            tags: A tag or two tags seprated by comma. When two are specified, the first will be the
+                  one that takes double tokens.
+            md: the Markdown object
+            smart: Enable intelligent word logic.
+            double: If only one tag is specified, indicate whether it requires double tokens.
 
-        `parent`: Parent to attach text and sub elements to.
-
-        `last`: Last appended child to parent. Can also be None if parent has no children.
-
-        `idx`: Current pattern index that was used to evaluate the parent.
         """
 
-        offset = 0
-        pos = 0
+        # Cache info
+        self.regions: list[tuple[int, int, int, int, int]] = []
+        self.stack: deque[tuple[int, int, int]] = deque()
+        self.cache_index = 0
+        self.cache_pos = 0
 
-        length = len(data)
-        while pos < length:
-            # Find the start of potential emphasis or strong tokens
-            if self.compiled_re.match(data, pos):
-                matched = False
-                # See if the we can match an emphasis/strong pattern
-                for index, item in enumerate(self.PATTERNS):
-                    # Only evaluate patterns that are after what was used on the parent
-                    if index <= idx:
-                        continue
-                    m = item.pattern.match(data, pos)
-                    if m:
-                        # Append child nodes to parent
-                        # Text nodes should be appended to the last
-                        # child if present, and if not, it should
-                        # be added as the parent's text node.
-                        text = data[offset:m.start(0)]
-                        if text:
-                            if last is not None:
-                                last.tail = text
-                            else:
-                                parent.text = text
-                        el = self.build_element(m, item.builder, item.tags, index)
-                        parent.append(el)
-                        last = el
-                        # Move our position past the matched hunk
-                        offset = pos = m.end(0)
-                        matched = True
-                if not matched:
-                    # We matched nothing, move on to the next character
-                    pos += 1
+        self.smart = smart
+        self.tags = tags.split(',')
+        self.double = len(tags) != 2 and double
+        super().__init__(self._build_patterns(token), md)
+
+    def _build_patterns(self, token: str) -> str:
+        """Build regular expression patterns."""
+
+        # Build up patterns
+        self.token = token
+        etoken = re.escape(token)
+        avoid_start = fr'(?:(?<=_)|(?<![\w{etoken}]))' if token != '_' else fr'(?<![\w{etoken}])'
+        avoid_end = fr'(?:(?=_)|(?![\w{etoken}]))' if token != '_' else fr'(?![\w{etoken}])'
+
+        # Patterns for "smart" cases.
+        if self.smart:
+            if len(self.tags) == 2:
+                self.boundary = re.compile(
+                    fr'''(?x)
+                    (?P<ambiguous>(?<!^)(?<![\s{etoken}]){avoid_start}{etoken}{{1,3}}{avoid_end}(?![\s{etoken}])(?!$))|
+                    (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{1,3}}{avoid_end})|
+                    (?P<start>{avoid_start}{etoken}{{1,3}}(?![\s{etoken}])(?!$))
+                    ''',
+                    flags=re.UNICODE
+                )
+            elif self.double:
+                self.boundary = re.compile(
+                    fr'''(?x)
+                    (?P<ambiguous>(?<!^)(?<![\s{etoken}]){avoid_start}{etoken}{{2}}{avoid_end}(?![\s{etoken}])(?!$))|
+                    (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{2}}{avoid_end})|
+                    (?P<start>{avoid_start}{etoken}{{2}}(?![\s{etoken}])(?!$))
+                    ''',
+                    flags=re.UNICODE
+                )
             else:
-                # Increment position as no potential emphasis start was found.
-                pos += 1
-
-        # Append any leftover text as a text node.
-        text = data[offset:]
-        if text:
-            if last is not None:
-                last.tail = text
+                # This case is not currently used
+                self.boundary = re.compile(
+                    fr'''(?x)
+                    (?P<ambiguous>(?<!^)(?<![\s{etoken}]){avoid_start}{etoken}{{1}}{avoid_end}(?![\s{etoken}])(?!$))|
+                    (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{1}}{avoid_end})|
+                    (?P<start>{avoid_start}{etoken}{{1}}(?![\s{etoken}])(?!$))
+                    ''',
+                    flags=re.UNICODE
+                )
+        # Patterns for "dumb" cases.
+        else:
+            if len(self.tags) == 2:
+                self.boundary = re.compile(
+                    fr'''(?x)(?:
+                    (?P<ambiguous>(?<!^)(?<![\s{etoken}]){etoken}{{1,3}}(?![\s{etoken}])(?!$))|
+                    (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{1,3}})|
+                    (?P<start>{etoken}{{1,3}}(?![\s{etoken}])(?!$))
+                    )''',
+                    flags=re.UNICODE
+                )
+            elif self.double:
+                self.boundary = re.compile(
+                    fr'''(?x)
+                    (?P<ambiguous>(?<!^)(?<![\s{etoken}]){etoken}{{2}}(?![\s{etoken}])(?!$))|
+                    (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{2}})|
+                    (?P<start>{etoken}{{2}}(?![\s{etoken}])(?!$))
+                    ''',
+                    flags=re.UNICODE
+                )
             else:
-                parent.text = text
+                self.boundary = re.compile(
+                    fr'''(?x)
+                    (?P<ambiguous>(?<!^)(?<![\s{etoken}]){etoken}{{1}}(?![\s{etoken}])(?!$))|
+                    (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{1}})|
+                    (?P<start>{etoken}{{1}}(?![\s{etoken}])(?!$))
+                    ''',
+                    flags=re.UNICODE
+                )
 
-    def build_element(self, m: re.Match[str], builder: str, tags: str, index: int) -> etree.Element:
+        return fr'{etoken}'
+
+    def _build_element(
+        self,
+        data: str,
+        start: int = 0,
+        offset: int = 0
+    ) -> tuple[etree.Element, int]:
         """Element builder."""
 
-        if builder == 'double2':
-            return self.build_double2(m, tags, index)
-        elif builder == 'double':
-            return self.build_double(m, tags, index)
+        regions = self.regions
+        el: etree.Element | None = None
+        last: Any = None
+        previous: Any = None
+        greater: Any = None
+        lesser: Any = None
+
+        triple = set()
+        outer: list[etree.Element] = []
+        outer_r: list[tuple[int, int, int, int, int]] = []
+
+        if len(self.tags) == 2:
+            greater, lesser = self.tags
+        elif self.double:
+            greater = self.tags[0]
+            lesser = None
         else:
-            return self.build_single(m, tags, index)
+            lesser = self.tags[0]
+            greater = None
 
-    def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | None, int | None, int | None]:
-        """Parse patterns."""
-
-        el = None
-        start = None
-        end = None
-
-        for index, item in enumerate(self.PATTERNS):
-            m1 = item.pattern.match(data, m.start(0))
-            if m1:
-                start = m1.start(0)
-                end = m1.end(0)
-                el = self.build_element(m1, item.builder, item.tags, index)
+        # Iterate regions creating the elements they represent
+        end = len(regions)
+        idx = 0
+        for idx, i in enumerate(range(start, end), 1):
+            r = regions[i]
+            # Not contained within region
+            if idx and r[0] > regions[start][3]:
+                idx -= 1
                 break
-        return el, start, end
+            # Get the appropriate element(s)
+            if r[4] == 3:
+                el1 = etree.Element(greater)
+                el2 = etree.Element(lesser)
+            elif r[4] == 2:
+                el1 = etree.Element(greater)
+                el2 = None
+            else:
+                el1 = etree.Element(lesser)
+                el2 = None
 
+            # Populate the elements with their text
+            if idx > 1:
+                if last.text is None:
+                    if previous[2] < r[0]:
+                        last.text = data[previous[1]+offset:previous[2]+offset]
+                    else:
+                        last.text = data[previous[1]+offset:r[0]+offset]
+                if last is not outer[-1] and last.tail is None:
+                    if r[0] < outer_r[-1][3]:
+                        last.tail = data[previous[3]+offset:r[0]+offset]
+                    else:
+                        last.tail = data[previous[3]+offset:outer_r[-1][2]+offset]
+                        outer[-1].tail = data[outer_r[-1][3]+offset:r[0]+offset]
 
-class UnderscoreProcessor(AsteriskProcessor):
-    """Emphasis processor for handling strong and em matches inside underscores."""
+            # First element
+            if el is None:
+                el = el1
+                last = el
+                outer.append(el)
+                outer_r.append(r)
 
-    PATTERNS = [
-        EmStrongItem(re.compile(EM_STRONG2_RE, re.DOTALL | re.UNICODE), 'double', 'strong,em'),
-        EmStrongItem(re.compile(STRONG_EM2_RE, re.DOTALL | re.UNICODE), 'double', 'em,strong'),
-        EmStrongItem(re.compile(SMART_STRONG_EM_RE, re.DOTALL | re.UNICODE), 'double2', 'strong,em'),
-        EmStrongItem(re.compile(SMART_STRONG_RE, re.DOTALL | re.UNICODE), 'single', 'strong'),
-        EmStrongItem(re.compile(SMART_EMPHASIS_RE, re.DOTALL | re.UNICODE), 'single', 'em')
-    ]
-    """ The various strong and emphasis patterns handled by this processor. """
+            # Subsequent elements
+            else:
+                # Is the current outer element no longer wrapping this one?
+                while len(outer_r) > 1 and r[3] > outer_r[-1][3]:
+                    outer.pop()
+                    outer_r.pop()
+
+                # Double nested element (triple token)
+                if outer[-1] in triple:
+                    outer[-1][-1].append(el1)
+
+                # Non-nested
+                else:
+                    outer[-1].append(el1)
+
+                # Is this element wrapping the next?
+                if i + 1 < end:
+                    if r[3] > regions[i + 1][3]:
+                        outer.append(el1)
+                        outer_r.append(r)
+
+                # Track the last element we parsed.
+                last = el1
+
+            # Nest secondary element if there is one.
+            # Track triple tokens (double elements)
+            # so we can identify quickly and properly nest.
+            if el2 is not None:
+                el1.append(el2)
+                last = el2
+                triple.add(el1)
+
+            # Track the previous region.
+            previous = r
+
+        # Populate remaining elements with their text
+        while outer:
+            if last.text is None:
+                last.text = data[previous[1]+offset:previous[2]+offset]
+            if last.tail is None and last is not outer[-1]:
+                last.tail = data[previous[3]+offset:outer_r[-1][2]+offset]
+            last = outer.pop()
+            previous = outer_r.pop()
+
+        return cast('etree.Element', el), idx
+
+    def get_cached_result(self, pos: int, data: str) -> tuple[etree.Element, int, int]:
+        """Get a cached result."""
+
+        stack = self.stack
+        regions = self.regions
+
+        # Process the next region(s) in the cache
+        offset = pos - self.cache_pos
+        start, end = regions[self.cache_index][0], regions[self.cache_index][3]
+        el, count = self._build_element(data, self.cache_index, offset)
+
+        # Determine next offset
+        self.cache_index += count
+        if self.cache_index < len(regions):
+            self.cache_pos = regions[self.cache_index][0]
+            while stack:
+                entry = stack.popleft()
+                if entry[0] > end:
+                    if entry[0] < self.cache_pos:
+                        self.cache_pos = entry[0]
+                    break
+
+        # Nothing left to process
+        else:
+            regions.clear()
+            stack.clear()
+            self.cache_index = 0
+            self.cache_pos = 0
+
+        # Whether element is valid or not, we'll advance past the end
+        return el, start + offset, end + offset
+
+    def handleMatch(  # type: ignore[override]
+        self,
+        m: re.Match[str],
+        data: str
+    ) -> tuple[etree.Element | None, int | None, int | None]:
+        """Parse delimiter pattern."""
+
+        # Do we have entries we haven't returned yet?
+        if self.regions:
+            return self.get_cached_result(m.start(0), data)
+
+        # If token is not an opening, quit
+        m2 = self.boundary.match(data, m.start(0))
+        if m2 is None or m2.lastgroup[0] == 'e':  # type: ignore[index]
+            if m2 is not None:
+                m = m2
+            # Advance past the full length of the delimiter found
+            return None, m.start(0), m.end(0)
+
+        # Get the stack and regions
+        stack = self.stack
+        regions = self.regions
+
+        # Data offset
+        offset = m2.end(0)
+        # Stack of opening delimiters
+        stack.append((m2.start(0), offset, len(m2.group(0))))
+
+        # Pair tokens until the stack is empty or we can no longer find tokens.
+        while stack:
+            m2 = self.boundary.search(data, offset)
+            if m2 is None:
+                break
+            offset = m2.end(0)
+
+            # Get current and last delimiter size
+            current = len(m2.group(0))
+            last = stack[-1][-1]
+
+            # Some delimiters may be ambiguous and look like both a start or an end
+            is_start = m2.lastgroup[0] != 'e'  # type: ignore[index]
+            is_end = not is_start or m2.lastgroup[0] != 's'  # type: ignore[index]
+            ambiguous = is_start and is_end
+
+            # Find closing tokens
+            # Looking for:
+            # - `*em*`
+            # - `**strong**`
+            # - `***strong,em***`
+            # - `*em**`
+            # - `*em***`
+            # - `**strong***`
+            #
+            # Avoid ambiguous tokens that could be a start or an end.
+            # Consume starts until the end token is fully consumed.
+            # If we don't consume the entire end, see if next rule consumes it.
+            if is_end and ((not ambiguous and current > last) or (current == last)):
+                is_start = False
+
+                # Consume previous tokens until the delimiter is consumed
+                s = m2.start(0)
+                while current and last <= current:
+                    delimiter = stack.pop()
+
+                    # Build up region for pair and adjust accounting.
+                    regions.append((delimiter[0], delimiter[1], s, s + delimiter[-1], delimiter[-1]))
+                    s += delimiter[-1]
+                    current -= delimiter[-1]
+                    if not stack:
+                        is_end = False
+                        break
+                    last = stack[-1][-1]
+
+                # Do we still have more to consume?
+                is_end = current and stack and last > current
+
+            # Looking for:
+            # - `***em*`
+            # - `***strong**`
+            # - `**em*`
+            if is_end and (last == 3 or not ambiguous) and last > current:
+                is_start = False
+                delimiter = stack.pop()
+                new = last - current
+                regions.append((delimiter[0] + new, delimiter[1], m2.start(0), offset, current))
+                stack.append((delimiter[0], delimiter[0] + new, new))
+
+            # Find opening tokens
+            if is_start:
+                # Looking for:
+                # - `*em ...*`
+                # - `**strong ...*`
+                # - `***em ...*`
+                stack.append((m2.start(0), m2.end(0), current))
+
+        # Build the HTML elements
+        if regions:
+            # Regions may be out of order.
+            regions.sort(key=lambda x: x[0])
+            start, end = regions[0][0], regions[0][3]
+            el, count = self._build_element(data)
+
+            # Cache unprocessed regions to avoid repeated searches
+            if count < len(regions):
+                self.cache_index = count
+                self.cache_pos = self.regions[count][0]
+                while stack:
+                    entry = stack.popleft()
+                    if entry[0] > end:
+                        if entry[0] < self.cache_pos:
+                            self.cache_pos = entry[0]
+                        break
+            else:
+                # Cleanup
+                stack.clear()
+                regions.clear()
+
+            return el, start, end
+
+        # We failed to pair any valid start/end delimiters, avoid the parsed range next pass.
+        start = m.start(0)
+        end = stack[-1][1] if stack else m.end(0)
+        stack.clear()
+        return None, start, end
 
 
 class LinkInlineProcessor(InlineProcessor):

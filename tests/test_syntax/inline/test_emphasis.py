@@ -20,6 +20,7 @@ License: BSD (see LICENSE.md for details).
 """
 
 from markdown.test_tools import TestCase
+import textwrap
 
 
 class TestNotEmphasis(TestCase):
@@ -147,7 +148,7 @@ class TestNotEmphasis(TestCase):
     def test_complex_emphasis_smart_underscore_mid_word(self):
         self.assertMarkdownRenders(
             'This is text __bold_italic bold___ with more text',
-            '<p>This is text __bold_italic bold___ with more text</p>'
+            '<p>This is text <strong>bold_italic bold</strong>_ with more text</p>'
         )
 
     def test_nested_emphasis(self):
@@ -190,4 +191,34 @@ class TestNotEmphasis(TestCase):
         self.assertMarkdownRenders(
             '**[**text**](url)**',
             '<p><strong><a href="url"><strong>text</strong></a></strong></p>'
+        )
+
+    def test_underscore_legacy(self):
+
+        self.assertMarkdownRenders(
+            textwrap.dedent(
+                """
+                THIS_SHOULD_STAY_AS_IS
+
+                Here is some _emphasis_, ok?
+
+                Ok, at least _this_ should work.
+
+                THIS__SHOULD__STAY
+
+                Here is some __strong__ stuff.
+
+                THIS___SHOULD___STAY?
+                """
+            ),
+            textwrap.dedent(
+                """
+                <p>THIS_SHOULD_STAY_AS_IS</p>
+                <p>Here is some <em>emphasis</em>, ok?</p>
+                <p>Ok, at least <em>this</em> should work.</p>
+                <p>THIS__SHOULD__STAY</p>
+                <p>Here is some <strong>strong</strong> stuff.</p>
+                <p>THIS___SHOULD___STAY?</p>
+                """
+            ).strip()
         )

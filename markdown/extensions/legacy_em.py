@@ -14,29 +14,7 @@ This extension provides legacy behavior for _connected_words_.
 from __future__ import annotations
 
 from . import Extension
-from ..inlinepatterns import UnderscoreProcessor, EmStrongItem, EM_STRONG2_RE, STRONG_EM2_RE
-import re
-
-# _emphasis_
-EMPHASIS_RE = r'(_)([^_]+)\1'
-
-# __strong__
-STRONG_RE = r'(_{2})(.+?)\1'
-
-# __strong_em___
-STRONG_EM_RE = r'(_)\1(?!\1)([^_]+?)\1(?!\1)(.+?)\1{3}'
-
-
-class LegacyUnderscoreProcessor(UnderscoreProcessor):
-    """Emphasis processor for handling strong and em matches inside underscores."""
-
-    PATTERNS = [
-        EmStrongItem(re.compile(EM_STRONG2_RE, re.DOTALL | re.UNICODE), 'double', 'strong,em'),
-        EmStrongItem(re.compile(STRONG_EM2_RE, re.DOTALL | re.UNICODE), 'double', 'em,strong'),
-        EmStrongItem(re.compile(STRONG_EM_RE, re.DOTALL | re.UNICODE), 'double2', 'strong,em'),
-        EmStrongItem(re.compile(STRONG_RE, re.DOTALL | re.UNICODE), 'single', 'strong'),
-        EmStrongItem(re.compile(EMPHASIS_RE, re.DOTALL | re.UNICODE), 'single', 'em')
-    ]
+from ..inlinepatterns import DelimiterProcessor
 
 
 class LegacyEmExtension(Extension):
@@ -50,8 +28,8 @@ class LegacyEmExtension(Extension):
         | [`LegacyUnderscoreProcessor`][markdown.extensions.legacy_em.LegacyUnderscoreProcessor] | [`inlinepatterns`][markdown.inlinepatterns.build_inlinepatterns] | `em_strong2` | `50` |
 
         """
-        # flake8: noqa: E501 48-50
-        md.inlinePatterns.register(LegacyUnderscoreProcessor(r'_'), 'em_strong2', 50)
+        # flake8: noqa: E501 27-29
+        md.inlinePatterns.register(DelimiterProcessor(r'_', 'strong,em'), 'em_strong2', 50)
 
 
 def makeExtension(**kwargs):  # pragma: no cover
