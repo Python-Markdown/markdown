@@ -594,7 +594,7 @@ class DelimiterProcessor(InlineProcessor):
         self.reset()
         super().__init__(self._build_patterns(token), md)
 
-    def reset(self):
+    def reset(self) -> None:
         """Rest."""
 
         # Cache info
