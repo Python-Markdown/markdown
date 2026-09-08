@@ -23,9 +23,9 @@ class LegacyEmExtension(Extension):
     def extendMarkdown(self, md):
         """ Register the processor.
 
-        | Class Instance                                                | Registry                                                         | Name   | Priority |
-        | ------------------------------------------------------------- | ---------------------------------------------------------------- | ------ | :------: |
-        | [`LegacyUnderscoreProcessor`][markdown.extensions.legacy_em.LegacyUnderscoreProcessor] | [`inlinepatterns`][markdown.inlinepatterns.build_inlinepatterns] | `em_strong2` | `50` |
+        | Class Instance                                                     | Registry                                                         | Name         | Priority |
+        | ------------------------------------------------------------------ | ---------------------------------------------------------------- | ------------ | :------: |
+        | [`DelimiterProcessor`][markdown.inlinepatterns.DelimiterProcessor] | [`inlinepatterns`][markdown.inlinepatterns.build_inlinepatterns] | `em_strong2` | `50`     |
 
         """
         # flake8: noqa: E501 27-29
