@@ -936,15 +936,14 @@ class DelimiterProcessor(InlineProcessor):
                         break
             else:
                 # Cleanup
-                stack.clear()
-                regions.clear()
+                self.reset()
 
             return el, start, end
 
         # We failed to pair any valid start/end delimiters, avoid the parsed range next pass.
         start = m.start(0)
         end = stack[-1][1] if stack else m.end(0)
-        stack.clear()
+        self.reset()
         return None, start, end
 
 
