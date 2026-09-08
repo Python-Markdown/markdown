@@ -29,7 +29,7 @@ class LegacyEmExtension(Extension):
 
         """
         # flake8: noqa: E501 27-29
-        md.inlinePatterns.register(DelimiterProcessor(r'_', 'strong,em'), 'em_strong2', 50)
+        md.inlinePatterns.register(DelimiterProcessor(r'_', 'strong,em', md), 'em_strong2', 50)
 
 
 def makeExtension(**kwargs):  # pragma: no cover

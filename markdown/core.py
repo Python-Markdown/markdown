@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 import codecs
+import time
 import sys
 import logging
 import importlib
@@ -106,6 +107,7 @@ class Markdown:
 
         """
 
+        self.last_run: float = 0.0
         self.tab_length: int = kwargs.get('tab_length', 4)
 
         self.ESCAPED_CHARS: list[str] = [
@@ -267,6 +269,7 @@ class Markdown:
         Called once upon creation of a class instance. Should be called manually between calls
         to [`Markdown.convert`][markdown.Markdown.convert].
         """
+        self.last_run = time.time()
         self.htmlStash.reset()
         self.references.clear()
 

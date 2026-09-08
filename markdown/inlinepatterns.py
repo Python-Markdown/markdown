@@ -90,8 +90,8 @@ def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry[InlinePro
     inlinePatterns.register(SubstituteTagInlineProcessor(LINE_BREAK_RE, 'br'), 'linebreak', 100)
     inlinePatterns.register(HtmlInlineProcessor(HTML_RE, md), 'html', 90)
     inlinePatterns.register(HtmlInlineProcessor(ENTITY_RE, md), 'entity', 80)
-    inlinePatterns.register(DelimiterProcessor('*', 'strong,em'), 'em_strong', 60)
-    inlinePatterns.register(DelimiterProcessor('_', 'strong,em', smart=True), 'em_strong2', 50)
+    inlinePatterns.register(DelimiterProcessor('*', 'strong,em', md), 'em_strong', 60)
+    inlinePatterns.register(DelimiterProcessor('_', 'strong,em', md, smart=True), 'em_strong2', 50)
     return inlinePatterns
 
 
@@ -593,6 +593,7 @@ class DelimiterProcessor(InlineProcessor):
         self.cache_index = 0
         self.cache_pos = 0
 
+        self.last_run = 0.0
         self.smart = smart
         self.tags = tags.split(',')
         self.double = len(tags) != 2 and double
@@ -821,6 +822,13 @@ class DelimiterProcessor(InlineProcessor):
         data: str
     ) -> tuple[etree.Element | None, int | None, int | None]:
         """Parse delimiter pattern."""
+
+        # We are in a new run. Reset just in case we were somehow left in a bad state.
+        if self.md.last_run != self.last_run:
+            self.regions.clear()
+            self.stack.clear()
+            self.cache_index = 0
+            self.cache_pos = 0
 
         # Do we have entries we haven't returned yet?
         if self.regions:
