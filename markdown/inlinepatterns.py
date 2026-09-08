@@ -813,7 +813,6 @@ class DelimiterProcessor(InlineProcessor):
             self.cache_index = 0
             self.cache_pos = 0
 
-        # Whether element is valid or not, we'll advance past the end
         return el, start + offset, end + offset
 
     def handleMatch(  # type: ignore[override]
