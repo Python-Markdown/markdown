@@ -789,32 +789,37 @@ class DelimiterProcessor(InlineProcessor):
 
         return cast('etree.Element', el), idx
 
-    def get_cached_result(self, pos: int, data: str) -> tuple[etree.Element, int, int]:
-        """Get a cached result."""
+    def increment_next_position(self, end: int, count: int) -> None:
+        """
+        Increment cache position to the next location that we can initiate an insertion.
 
-        stack = self.stack
-        regions = self.regions
-
-        # Process the next region(s) in the cache
-        offset = pos - self.cache_pos
-        start, end = regions[self.cache_index][0], regions[self.cache_index][3]
-        el, count = self._build_element(data, self.cache_index, offset)
+        Cache position should be the first match after our current replacement.
+        This gives us an anchor to calculate the new offset after insertion.
+        """
 
         # Determine next offset
         self.cache_index += count
-        if self.cache_index < len(regions):
-            self.cache_pos = regions[self.cache_index][0]
-            while stack:
-                entry = stack.popleft()
+        if self.cache_index < len(self.regions):
+            self.cache_pos = self.regions[self.cache_index][0]
+            while self.stack:
+                entry = self.stack.popleft()
                 if entry[0] > end:
-                    if entry[0] < self.cache_pos:
-                        self.cache_pos = entry[0]
+                    self.cache_pos = entry[0]
                     break
 
         # Nothing left to process
         else:
             self.reset()
 
+    def get_cached_result(self, pos: int, data: str) -> tuple[etree.Element, int, int]:
+        """Get a cached result."""
+
+        # Process the next region(s) in the cache
+        regions = self.regions
+        offset = pos - self.cache_pos
+        start, end = regions[self.cache_index][0], regions[self.cache_index][3]
+        el, count = self._build_element(data, self.cache_index, offset)
+        self.increment_next_position(end, count)
         return el, start + offset, end + offset
 
     def handleMatch(  # type: ignore[override]
@@ -923,21 +928,7 @@ class DelimiterProcessor(InlineProcessor):
             regions.sort(key=lambda x: x[0])
             start, end = regions[0][0], regions[0][3]
             el, count = self._build_element(data)
-
-            # Cache unprocessed regions to avoid repeated searches
-            if count < len(regions):
-                self.cache_index = count
-                self.cache_pos = self.regions[count][0]
-                while stack:
-                    entry = stack.popleft()
-                    if entry[0] > end:
-                        if entry[0] < self.cache_pos:
-                            self.cache_pos = entry[0]
-                        break
-            else:
-                # Cleanup
-                self.reset()
-
+            self.increment_next_position(end, count)
             return el, start, end
 
         # We failed to pair any valid start/end delimiters, avoid the parsed range next pass.
