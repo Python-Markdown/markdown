@@ -216,3 +216,31 @@ A trivial example:
 ```python
 markdown.markdown(some_text, extensions=['attr_list'])
 ```
+
+#### Combining with Definition Lists
+
+You can use `attr_list` in combination with the [`def_list`](def_list.md) extension to add IDs or classes to definition terms. This is particularly useful for creating anchor links to specific items in a glossary or list.
+
+```python
+import markdown
+
+text = """
+Term 1
+:   Definition of term 1.
+
+Term 2 {: #term-2 .highlight }
+:   Definition of term 2.
+"""
+
+html = markdown.markdown(text, extensions=['def_list', 'attr_list'])
+print(html)
+
+The output will be:
+
+```html
+<dl>
+<dt>Term 1</dt>
+<dd>Definition of term 1.</dd>
+<dt class="highlight" id="term-2">Term 2</dt>
+<dd>Definition of term 2.</dd>
+</dl>
