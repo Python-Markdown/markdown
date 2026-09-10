@@ -23,6 +23,7 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* Ensure removing Abbreviations does not raise an error (#1634).
 * Fix an issue with excessive backtracking when matching inline code blocks (#1617).
 * `md_in_html` now honors tags added to `Markdown.block_level_elements` after
   the extension is loaded (#1246).
