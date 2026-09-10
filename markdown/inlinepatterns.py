@@ -587,6 +587,13 @@ class DelimiterProcessor(InlineProcessor):
 
         """
 
+        # Cache info
+        self.regions: list[tuple[int, int, int, int, int]] = []
+        self.stack: deque[tuple[int, int, bool, int]] = deque()
+        self.cache_index = 0
+        self.cache_pos = 0
+        self.cache_legacy_pos = -1
+
         self.last_run = 0.0
         self.smart = smart
         self.tags = tags.split(',')
@@ -597,9 +604,8 @@ class DelimiterProcessor(InlineProcessor):
     def reset(self) -> None:
         """Rest."""
 
-        # Cache info
-        self.regions: list[tuple[int, int, int, int, int]] = []
-        self.stack: deque[tuple[int, int, bool, int]] = deque()
+        self.regions.clear()
+        self.stack.clear()
         self.cache_index = 0
         self.cache_pos = 0
 
