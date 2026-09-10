@@ -859,7 +859,7 @@ class DelimiterProcessor(InlineProcessor):
         # Data offset
         offset = m2.end(0)
         # Stack of opening delimiters
-        is_ambiguous =  m2.lastgroup[0] != 's'  # type: ignore[index]
+        is_ambiguous = m2.lastgroup[0] != 's'  # type: ignore[index]
         stack.append((m2.start(0), offset, is_ambiguous, len(m2.group(0))))
 
         # Pair tokens until the stack is empty or we can no longer find tokens.
@@ -926,7 +926,7 @@ class DelimiterProcessor(InlineProcessor):
 
                 # Don't pair with an ambiguous opening
                 while stack and delimiter[-1] != 3 and delimiter[2]:
-                    delimiter =  stack.pop()
+                    delimiter = stack.pop()
                     last = delimiter[-1]
                 if delimiter[2]:
                     break
