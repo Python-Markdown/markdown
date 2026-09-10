@@ -20,7 +20,6 @@
 from __future__ import annotations
 
 import codecs
-import time
 import sys
 import logging
 import importlib

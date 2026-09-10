@@ -310,4 +310,3 @@ class TestProcessorRemoval(TestCase):
 
         extensions = md.delimiters.values()
         self.assertEqual(len(extensions), 0)
-
