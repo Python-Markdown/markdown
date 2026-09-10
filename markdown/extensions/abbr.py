@@ -162,7 +162,7 @@ class AbbrBlockprocessor(BlockProcessor):
             title = m.group('title').strip()
             if title and abbr:
                 if title == "''" or title == '""':
-                    self.abbrs.pop(abbr)
+                    self.abbrs.pop(abbr, None)
                 else:
                     self.abbrs[abbr] = title
                 if block[m.end():].strip():

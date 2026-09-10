@@ -211,6 +211,56 @@ class TestAbbr(TestCase):
             extensions=[abbr_ext]
         )
 
+    def test_abbr_glossary_override(self):
+
+        glossary = {
+            "HTML": "Hyper Text Markup Language",
+            "W3C": "World Wide Web Consortium"
+        }
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                HTML
+                W3C
+
+                *[HTML]: ''
+                *[W3C]: Something Else
+                """
+            ),
+            self.dedent(
+                """
+                <p>HTML
+                <abbr title="Something Else">W3C</abbr></p>
+                """
+            ),
+            extensions=[AbbrExtension(glossary=glossary)]
+        )
+
+    def test_abbr_override_not_in_glossary(self):
+
+        glossary = {
+            "W3C": "World Wide Web Consortium"
+        }
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                HTML
+                W3C
+
+                *[HTML]: ''
+                """
+            ),
+            self.dedent(
+                """
+                <p>HTML
+                <abbr title="World Wide Web Consortium">W3C</abbr></p>
+                """
+            ),
+            extensions=[AbbrExtension(glossary=glossary)]
+        )
+
     def test_abbr_nested(self):
         self.assertMarkdownRenders(
             self.dedent(
