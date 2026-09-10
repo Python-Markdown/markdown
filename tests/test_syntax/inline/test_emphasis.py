@@ -284,3 +284,30 @@ class TestNotEmphasis(TestCase):
                 """
             ).strip()
         )
+
+
+class TestProcessorRemoval(TestCase):
+
+    def test_remove_processor(self):
+
+        import markdown
+        from markdown.inlinepatterns import DelimiterProcessor
+
+        # Remove all delimeter processors
+        md = markdown.Markdown()
+
+        extensions = md.delimiters.values()
+        self.assertEqual(len(extensions), 2)
+
+        for ext in md.delimiters.values():
+            self.assertTrue(isinstance(ext, DelimiterProcessor))
+
+        md.inlinePatterns.deregister('em_strong')
+        md.inlinePatterns.deregister('em_strong2')
+
+        # Call reset which will cause them to remove themselves from being registered
+        md.reset()
+
+        extensions = md.delimiters.values()
+        self.assertEqual(len(extensions), 0)
+

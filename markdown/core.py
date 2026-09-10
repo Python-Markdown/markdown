@@ -29,7 +29,7 @@ from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
 from .treeprocessors import build_treeprocessors
-from .inlinepatterns import build_inlinepatterns
+from .inlinepatterns import build_inlinepatterns, DelimiterProcessor
 from .postprocessors import build_postprocessors
 from .extensions import Extension
 from .serializers import to_html_string, to_xhtml_string
@@ -120,6 +120,7 @@ class Markdown:
         self.registeredExtensions: list[Extension] = []
         self.docType = ""  # TODO: Maybe delete this. It does not appear to be used anymore.
         self.stripTopLevelTags: bool = True
+        self.delimiters: dict[str, DelimiterProcessor] = {}
 
         self.build_parser()
 
@@ -269,9 +270,14 @@ class Markdown:
         Called once upon creation of a class instance. Should be called manually between calls
         to [`Markdown.convert`][markdown.Markdown.convert].
         """
-        self.last_run = time.time()
         self.htmlStash.reset()
         self.references.clear()
+
+        for key in list(self.delimiters):
+            ext = self.delimiters[key]
+            ext.reset()
+            if ext not in self.inlinePatterns:
+                del self.delimiters[key]
 
         for extension in self.registeredExtensions:
             if hasattr(extension, 'reset'):

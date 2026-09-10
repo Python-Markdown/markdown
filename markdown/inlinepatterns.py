@@ -570,7 +570,7 @@ class DelimiterProcessor(InlineProcessor):
         self,
         token: str,
         tags: str,
-        md: Markdown | None = None,
+        md: Markdown,
         smart: bool = False,
         double: bool = False
     ) -> None:
@@ -588,17 +588,16 @@ class DelimiterProcessor(InlineProcessor):
         """
 
         # Cache info
+        md.delimiters[token] = self
         self.regions: list[tuple[int, int, int, int, int]] = []
         self.stack: deque[tuple[int, int, bool, int]] = deque()
         self.cache_index = 0
         self.cache_pos = 0
-        self.cache_legacy_pos = -1
 
         self.last_run = 0.0
         self.smart = smart
         self.tags = tags.split(',')
         self.double = len(tags) != 2 and double
-        self.reset()
         super().__init__(self._build_patterns(token), md)
 
     def reset(self) -> None:
@@ -834,11 +833,6 @@ class DelimiterProcessor(InlineProcessor):
         data: str
     ) -> tuple[etree.Element | None, int | None, int | None]:
         """Parse delimiter pattern."""
-
-        # We are in a new run. Reset just in case we were somehow left in a bad state.
-        if self.md.last_run != self.last_run:
-            self.last_run = self.md.last_run
-            self.reset()
 
         # Do we have entries we haven't returned yet?
         if self.regions:
