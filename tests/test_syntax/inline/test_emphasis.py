@@ -293,7 +293,7 @@ class TestProcessorRemoval(TestCase):
         import markdown
         from markdown.inlinepatterns import DelimiterProcessor
 
-        # Remove all delimeter processors
+        # Remove all delimiter processors
         md = markdown.Markdown()
 
         extensions = md.delimiters.values()
