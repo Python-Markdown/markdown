@@ -48,38 +48,28 @@ The following tags have the `block` behavior by default: `article`, `aside`, `bl
 `iframe`,  `main`, `map`, `menu`, `nav`, `noscript`, `object`, `ol`, `output`, `progress`, `section`, `table`,
 `tbody`, `tfoot`, `thead`, `tr`,  `ul` and `video`.
 
-For example, the following:
+For example:
 
-```
+``` md-render
+---
+extensions: [md_in_html]
+---
 <div markdown="1">
 This is a *Markdown* Paragraph.
-</div>
-```
-
-... is rendered as:
-
-``` html
-<div>
-<p>This is a <em>Markdown</em> Paragraph.</p>
 </div>
 ```
 
 The following tags have the `span` behavior by default: `address`, `dd`, `dt`, `h[1-6]`, `legend`, `li`, `p`, `td`,
 and `th`.
 
-For example, the following:
+For example:
 
-```
+``` md-render
+---
+extensions: [md_in_html]
+---
 <p markdown="1">
 This is not a *Markdown* Paragraph.
-</p>
-```
-
-... is rendered as:
-
-``` html
-<p>
-This is not a <em>Markdown</em> Paragraph.
 </p>
 ```
 
@@ -91,9 +81,12 @@ the element so long as it is one of the `block` or `span` tags.
 The content of a `block` element is parsed into block-level content. In other words, the text is rendered as
 paragraphs, headers, lists, blockquotes, etc. Any inline syntax within those elements is processed as well.
 
-For example, the following:
+For example:
 
-```
+``` md-render
+---
+extensions: [md_in_html]
+---
 <section markdown="block">
 # A header.
 
@@ -102,19 +95,6 @@ A *Markdown* paragraph.
 * A list item.
 * A second list item.
 
-</section>
-```
-
-... is rendered as:
-
-``` html
-<section>
-<h1>A header.</h1>
-<p>A <em>Markdown</em> paragraph.</p>
-<ul>
-<li>A list item.</li>
-<li>A second list item.</li>
-</ul>
 </section>
 ```
 
@@ -133,19 +113,14 @@ of the element so long as it is one of the `block` or `span` tags.
 The content of a `span` element is not parsed into block-level content. In other words, the content will not be
 rendered as paragraphs, headers, etc. Only inline syntax will be rendered, such as links, strong, emphasis, etc.
 
-For example, the following:
+For example:
 
-```
+``` md-render
+---
+extensions: [md_in_html]
+---
 <div markdown="span">
 # *Not* a header
-</div>
-```
-
-... is rendered as:
-
-``` html
-<div>
-# <em>Not</em> a header
 </div>
 ```
 
@@ -161,9 +136,12 @@ When nesting multiple levels of raw HTML elements, a `markdown` attribute must b
 element. For any block-level element which does not have a `markdown` attribute, everything inside that element is
 ignored, including child elements with `markdown` attributes.
 
-For example, the following:
+For example:
 
-```
+``` md-render
+---
+extensions: [md_in_html]
+---
 <article id="my-article" markdown="1">
 # Article Title
 
@@ -186,23 +164,6 @@ A Markdown paragraph.
 </article>
 ```
 
-... is rendered as:
-
-```html
-<article id="my-article">
-<h1>Article Title</h1>
-<p>A Markdown paragraph.</p>
-<section id="section-1">
-<h2>Section 1 Title</h2>
-<p>Custom raw **HTML** which gets ignored.</p>
-</section>
-<section id="section-2">
-<h2>Section 2 Title</h2>
-<p><strong>Markdown</strong> content.</p>
-</section>
-</article>
-```
-
 When the value of an element's `markdown` attribute is more permissive that its parent, then the parent's stricter
 behavior is enforced. For example, a `block` element nested within a `span` element will be parsed using the `span`
 behavior. However, if the value of an element's `markdown` attribute is the same as, or more restrictive than, its
@@ -211,23 +172,15 @@ elements or `span` elements as children and each element will be parsed using th
 
 ### Tag Normalization
 
-While the default behavior is for Markdown to not alter raw HTML, as this extension is parsing the content of raw HTML elements, it will do some normalization of the tags of block-level elements. For example, the following raw HTML:
+While the default behavior is for Markdown to not alter raw HTML, as this extension is parsing the content of raw HTML elements, it will do some normalization of the tags of block-level elements. For example:
 
-```
+``` md-render
+---
+extensions: [md_in_html]
+---
 <div markdown="1">
 <p markdown="1">A Markdown paragraph with *no* closing tag.
 <p>A raw paragraph with *no* closing tag.
-</div>
-```
-
-... is rendered as:
-
-``` html
-<div>
-<p>A Markdown paragraph with <em>no</em> closing tag.
-</p>
-<p>A raw paragraph with *no* closing tag.
-</p>
 </div>
 ```
 

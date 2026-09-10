@@ -29,16 +29,13 @@ This extension is included in the standard Markdown library.
 ## Syntax
 
 A ``[[bracketed]]`` word is any combination of  upper or lower case letters,
-number, dashes, underscores and spaces surrounded by double brackets. Therefore
+number, dashes, underscores and spaces surrounded by double brackets.
 
-```md
+``` md-render
+---
+extensions: [wikilinks]
+---
 [[Bracketed]]
-```
-
-would produce the following HTML:
-
-```html
-<a href="/Bracketed/" class="wikilink">Bracketed</a>
 ```
 
 Note that WikiLinks are automatically assigned `class="wikilink"` making it
@@ -49,14 +46,11 @@ Also note that when a space is used, the space is converted to an underscore in
 the link but left as-is in the label. Perhaps an example would illustrate this
 best:
 
-```md
+``` md-render
+---
+extensions: [wikilinks]
+---
 [[Wiki Link]]
-```
-
-becomes
-
-```html
-<a href="/Wiki_Link/" class="wikilink">Wiki Link</a>
 ```
 
 ## Usage
@@ -105,10 +99,17 @@ For an example, let us suppose links should always point to the sub-directory
 ... )
 ```
 
-The above would result in the following link for `[[WikiLink]]`.
+The above configuration would result in the following:
 
-```html
-<a href="/wiki/WikiLink.html" class="wikilink">WikiLink</a>
+``` md-render
+---
+extensions: [wikilinks]
+extension_configs:
+    wikilinks:
+        base_url: /wiki/
+        end_url: .html
+---
+[[WikiLink]]
 ```
 
 If you want to do more that just alter the base and/or end of the URL, you
@@ -135,8 +136,14 @@ The option is also provided to change or remove the class attribute.
 
 Would cause all WikiLinks to be assigned to the class `myclass`.
 
-```html
-<a href="/WikiLink/" class="myclass">WikiLink</a>
+``` md-render
+---
+extensions: [wikilinks]
+extension_configs:
+    wikilinks:
+        html_class: myclass
+---
+[[WikiLink]]
 ```
 
 ## Using with Meta-Data extension
@@ -152,18 +159,15 @@ meta-data keywords are:
 When used, the meta-data will override the settings provided through the
 `extension_configs` interface.
 
-This document:
+For example (notice the blank `wiki_html_class`):
 
-```md
+``` md-render
+---
+extensions: [wikilinks, meta]
+---
 wiki_base_url: http://example.com/
 wiki_end_url:  .html
 wiki_html_class:
 
 A [[WikiLink]] in the first paragraph.
-```
-
-would result in the following output (notice the blank `wiki_html_class`):
-
-```html
-<p>A <a href="http://example.com/WikiLink.html">WikiLink</a> in the first paragraph.</p>
 ```

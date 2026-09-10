@@ -34,21 +34,17 @@ Abbreviations are defined using the syntax established in
 
 [php]: http://www.michelf.com/projects/php-markdown/extra/#abbr
 
-Thus, the following text (taken from the above referenced PHP documentation):
+For example, consider the following text (taken from the above referenced PHP documentation).
 
-```md
+``` md-render
+---
+extensions: [abbr]
+---
 The HTML specification
 is maintained by the W3C.
 
 *[HTML]: Hyper Text Markup Language
 *[W3C]:  World Wide Web Consortium
-```
-
-will be rendered as:
-
-```html
-<p>The <abbr title="Hyper Text Markup Language">HTML</abbr> specification
-is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.</p>
 ```
 
 The backslash (`\`) is not permitted in an abbreviation. Any abbreviation
@@ -78,7 +74,14 @@ Disabling Abbreviations
 When using the `glossary` option, there may be times when you need to turn off
 a specific abbreviation. To do this, set the abbreviation to `''` or `""`.
 
-```md
+``` md-render
+---
+extensions: [abbr]
+extension_configs:
+    abbr:
+        glossary:
+            HTML: Hyper Text Markup Language
+---
 The HTML abbreviation is disabled on this page.
 
 *[HTML]: ''

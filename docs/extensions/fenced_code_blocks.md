@@ -35,7 +35,10 @@ Fenced code blocks begin with three or more backticks (` ``` `) or tildes (`~~~`
 a matching set of backticks or tildes on a line by themselves. The closing set must contain the same number and type
 of characters as the opening set. It is recommended that a blank line be placed before and after the code block.
 
-````md
+```` md-render
+---
+extensions: [fenced_code]
+---
 A paragraph before the code block.
 
 ```
@@ -47,7 +50,10 @@ A paragraph after the code block.
 
 While backticks seem to be more popular among users, tildes may be used as well.
 
-````md
+```` md-render
+---
+extensions: [fenced_code]
+---
 ~~~
 a one-line code block
 ~~~
@@ -56,7 +62,10 @@ a one-line code block
 To include a set of backticks (or tildes) within a code block, use a different number of backticks for the
 delimiters.
 
-`````md
+````` md-render
+---
+extensions: [fenced_code]
+---
 ````
 ```
 ````
@@ -65,7 +74,10 @@ delimiters.
 Fenced code blocks can have a blank line as the first and/or last line of the code block and those lines will be
 preserved.
 
-````md
+```` md-render
+---
+extensions: [fenced_code]
+---
 ```
 
 a three-line code block
@@ -76,7 +88,10 @@ a three-line code block
 Unlike indented code blocks, a fenced code block can immediately follow a list item without becoming
 part of the list.
 
-````md
+```` md-render
+---
+extensions: [fenced_code]
+---
 * A list item.
 
 ```
@@ -97,7 +112,7 @@ deliminator. The attributes should be wrapped in curly braces `{}` and be on the
 generally best to separate the attribute list from the deliminator with a space. Attributes within the list must be
 separated by a space.
 
-````md
+```` markdown
 ``` { attributes go here }
 a code block with attributes
 ```
@@ -110,7 +125,10 @@ How those attributes will affect the output will depend on various factors as de
 The language of the code within a code block can be specified for use by syntax highlighters, etc. The language should
 be prefixed with a dot and not contain any whitespace (`.language-name`).
 
-````md
+```` md-render
+---
+extensions: [fenced_code]
+---
 ``` { .html }
 <p>HTML Document</p>
 ```
@@ -118,18 +136,14 @@ be prefixed with a dot and not contain any whitespace (`.language-name`).
 
 So long as the language is the only option specified, the curly brackets and/or the dot may be excluded:
 
-````md
+```` md-render
+---
+extensions: [fenced_code]
+---
 ``` html
 <p>HTML Document</p>
 ```
 ````
-
-Either of the above examples will output the following HTML:
-
-```html
-<pre><code class="language-html">&lt;p&gt;HTML Document&lt;/p&gt;
-</code></pre>
-```
 
 Note that the language name has been prefixed with `language-` and it has been assigned to the `class` attribute on
 the `<code>` tag, which is the format suggested by the [HTML 5 Specification][html5] (see the second "example" in the
@@ -140,7 +154,10 @@ Specification). While `language` is the default prefix, the prefix may be overri
 
 In addition to the language, additional classes may be defined by prefixing them with a dot, just like the language.
 
-````md
+```` md-render
+---
+extensions: [fenced_code]
+---
 ``` { .html .foo .bar }
 <p>HTML Document</p>
 ```
@@ -150,37 +167,31 @@ When defining multiple classes, only the first class will be used as the "langua
 assigned to the `<pre>` tag unaltered. Additionally, the curly braces and dot are required for all classes, including
 the language class if more than one class is defined.
 
-The above example will output the following HTML:
-
-```html
-<pre class="foo bar"><code class="language-html">&lt;p&gt;HTML Document&lt;/p&gt;
-</code></pre>
-```
-
 #### ID
 
 An `id` can be defined for a code block, which would allow a link to point directly to the code block using a URL
 hash. IDs must be prefixed with a hash character (`#`) and only contain characters permitted in HTML `id` attributes.
 
-````md
+```` md-render
+---
+extensions: [fenced_code]
+---
 ``` { #example }
 A linkable code block
 ```
 ````
 
-The `id` attribute is assigned to the `<pre>` tag of the output. The above example will output the following HTML:
-
-```html
-<pre id="example"><code>A linkable code block
-</code></pre>
-```
-
-From elsewhere within the same document, one could link to the code block with `[link](#example)`.
+The `id` attribute is assigned to the `<pre>` tag of the output. From
+elsewhere within the same document, one could link to the code block with `
+[link](#example)`.
 
 IDs may be defined along with the language, other classes, or any other supported attributes. The order of items does
 not matter.
 
-````md
+```` md-render
+---
+extensions: [fenced_code]
+---
 ``` { #example .lang .foo .bar }
 A linkable code block
 ```
@@ -193,18 +204,14 @@ the attribute list. So long as code highlighting is not enabled (see below), the
 attributes on the `<code>` tag in the output. Key/value pairs must be defined using the syntax documented for the
 `attr_list` extension (for example, values with whitespace must be wrapped in quotes).
 
-````md
+```` md-render
+---
+extensions: [fenced_code, attr_list]
+---
 ``` { .lang #example style="color: #333; background: #f8f8f8;" }
 A code block with inline styles. Fancy!
 ```
 ````
-
-The above example will output the following HTML:
-
-```html
-<pre id="example"><code class="language-lang"  style="color: #333; background: #f8f8f8;">A code block with inline styles. Fancy!
-</code></pre>
-```
 
 If the `attr_list` extension is not enabled, then the key/value pairs will be ignored.
 
@@ -218,9 +225,12 @@ language guessing is not disabled for the `codehilite` extension, then the langu
 The `codehilite` extension uses the [Pygments] engine to do syntax highlighting. Any valid Pygments options can be
 defined as key/value pairs in the attribute list and will be passed on to Pygments.
 
-````md
-``` { .lang linenos=true linenostart=42 hl_lines="43-44 50" title="An Example Code Block" }`
-A truncated code block...
+```` md-render
+---
+extensions: [fenced_code, codehilite, attr_list]
+---
+``` { .python linenos=true linenostart=42 hl_lines="43-44 50" title="An Example Code Block" }
+# A code block...
 ```
 ````
 

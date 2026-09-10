@@ -86,10 +86,11 @@ block will not be highlighted.
 
 ## Syntax
 
-The CodeHilite extension follows the same [syntax][] as regular Markdown code
-blocks, with one exception. The highlighter needs to know what language to use for
-the code block. There are three ways to tell the highlighter what language the
-code block contains and each one has a different result.
+The CodeHilite extension follows the same [syntax][] as regular (indented)
+Markdown code blocks, with one exception. The highlighter needs to know what
+language to use for the code block. There are three ways to tell the
+highlighter what language the code block contains and each one has a
+different result.
 
 !!! tip
     The format of the language identifier only effects the display of line numbers
@@ -105,16 +106,12 @@ code block contains and each one has a different result.
 If the first line of the code block contains a shebang, the language is derived
 from that and line numbers are used.
 
-```md
+``` md-render
+---
+extensions: [codehilite]
+---
     #!/usr/bin/python
     # Code goes here ...
-```
-
-Will result in:
-
-``` python
-#!/usr/bin/python
-# Code goes here ...
 ```
 
 ### Shebang (no path)
@@ -123,15 +120,12 @@ If the first line contains a shebang, but the shebang line does not contain a
 path (a single `/` or even a space), then that line is removed from the code
 block before processing. Line numbers are used.
 
-```md
+``` md-render
+---
+extensions: [codehilite]
+---
     #!python
     # Code goes here ...
-```
-
-Will result in:
-
-``` python
-# Code goes here ...
 ```
 
 ### Colons
@@ -140,31 +134,23 @@ If the first line begins with three or more colons, the text following the
 colons identifies the language. The first line is removed from the code block
 before processing and line numbers are not used.
 
-```md
+``` md-render
+---
+extensions: [codehilite]
+---
     :::python
     # Code goes here ...
-```
-
-Will result in:
-
-``` python
-# Code goes here ...
 ```
 
 Certain lines can be selected for emphasis with the colon syntax. When
 using Pygments' default CSS styles, emphasized lines have a yellow background.
 This is useful to direct the reader's attention to specific lines.
 
-```md
+``` md-render
+---
+extensions: [codehilite]
+---
     :::python hl_lines="1 3"
-    # This line is emphasized
-    # This line isn't
-    # This line is emphasized
-```
-
-Will result in:
-
-``` python hl_lines="1 3"
     # This line is emphasized
     # This line isn't
     # This line is emphasized
@@ -179,19 +165,11 @@ CodeHilite is completely backwards compatible so that if a code block is
 encountered that does not define a language, the block is simply wrapped in
 `<pre>` tags and output.
 
-```md
+``` md-render
+---
+extensions: [codehilite]
+---
     # Code goes here ...
-```
-
-Will result in:
-
-    # Code goes here ...
-
-Lets see the source for that:
-
-```html
-<div class="codehilite"><pre><code># Code goes here ...
-</code></pre></div>
 ```
 
 !!! tip

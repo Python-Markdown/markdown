@@ -1,4 +1,4 @@
----
+--
 title: Tables Extension
 ---
 
@@ -32,36 +32,16 @@ Tables are defined using the syntax established in [PHP Markdown Extra][php].
 
 [php]: http://www.michelf.com/projects/php-markdown/extra/#table
 
-Thus, the following text (taken from the above referenced PHP documentation):
+Consider the following text (taken from the above referenced PHP documentation).
 
-```md
+``` md-render
+---
+extensions: [tables]
+---
 First Header  | Second Header
 ------------- | -------------
 Content Cell  | Content Cell
 Content Cell  | Content Cell
-```
-
-will be rendered as:
-
-```html
-<table>
-  <thead>
-    <tr>
-      <th>First Header</th>
-      <th>Second Header</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Content Cell</td>
-      <td>Content Cell</td>
-    </tr>
-    <tr>
-      <td>Content Cell</td>
-      <td>Content Cell</td>
-    </tr>
-  </tbody>
-</table>
 ```
 
 !!! seealso "See Also"

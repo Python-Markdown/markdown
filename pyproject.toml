@@ -55,7 +55,7 @@ docs = [
     'mkdocstrings==1.0.6',
     'mkdocstrings-python==1.16.8',
     'pygments==2.21.0',
-    'pymdown-extensions==11.0.2'
+    'pymdown-extensions==11.0.2',
 ]
 
 [project.urls]

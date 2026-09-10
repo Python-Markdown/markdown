@@ -37,34 +37,29 @@ assign the attributes to:
 
 For example, to define a class to a paragraph:
 
-```md
+``` md-render
+---
+extensions: [legacy_attrs]
+---
 A paragraph with the attribute defined {@class=foo}anywhere within.
-```
-
-Which results in the following output:
-
-```html
-<p class="foo">A paragraph with the attribute defined anywhere within.</p>
 ```
 
 The same applies for inline elements:
 
-```md
+``` md-render
+---
+extensions: [legacy_attrs]
+---
 Some *emphasized{@id=bar}* text.
-```
-
-```html
-<p>Some <em id="bar">emphasized</em> text.</p>
 ```
 
 You can also define attributes in images:
 
-```md
+``` md-render
+---
+extensions: [legacy_attrs]
+---
 ![Alt text{@id=baz}](path/to/image.jpg)
-```
-
-```html
-<p><img alt="Alt text" id="baz" src="path/to/image.jpg" /></p>
 ```
 
 ## Usage

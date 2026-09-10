@@ -34,8 +34,8 @@ The basic syntax was inspired by Maruku's Attribute Lists feature (see [web arch
 
 An example attribute list might look like this:
 
-```text
-{: #someid .someclass somekey='some value' }
+``` markdown
+{ #someid .someclass somekey='some value' }
 ```
 
 A word which starts with a hash (`#`) will set the id of an element.
@@ -48,13 +48,13 @@ A key/value pair (`somekey='some value'`) will assign that pair to the element.
 Be aware that while the dot syntax will add to a class, using key/value pairs
 will always override the previously defined attribute. Consider the following:
 
-```text
-{: #id1 .class1 id=id2 class="class2 class3" .class4 }
+``` markdown
+{ #id1 .class1 id=id2 class="class2 class3" .class4 }
 ```
 
 The above example would result in the following attributes being defined:
 
-```text
+``` markdown
 id="id2" class="class2 class3 class4"
 ```
 
@@ -64,18 +64,18 @@ list `{: checked }` would result in `checked` if the [output format](../library.
 
 Curly braces can be backslash escaped to avoid being identified as an attribute list.
 
-```text
+``` markdown
 \{ not an attribute list }
 ```
 
 Opening and closing curly braces which are empty or only contain whitespace are ignored whether they are escaped or
 not. Additionally, any attribute lists which are not located in the specific locations documented below are ignored.
 
-The colon after the opening brace is optional, but is supported to maintain consistency with other implementations.
+A colon after the opening brace is optional, but is supported to maintain consistency with other implementations.
 Therefore, the following is also a valid attribute list:
 
-```text
-{ #someid .someclass somekey='some value' }
+``` markdown
+{: #someid .someclass somekey='some value' }
 ```
 
 In addition, the spaces after the opening brace and before the closing brace are optional. They are recommended as
@@ -91,31 +91,24 @@ characters are reduced to a single underscore.
 To define attributes for a block level element, the attribute list should
 be defined on the last line of the block by itself.
 
-```text
+``` md-render
+---
+extensions: [attr_list]
+---
 This is a paragraph.
-{: #an_id .a_class }
-```
-
-The above results in the following output:
-
-```html
-<p id="an_id" class="a_class">This is a paragraph.</p>
+{ #an_id .a_class }
 ```
 
 An exception is headers, as they are only ever allowed on one line.
 
-```text
-A setext style header {: #setext}
+``` md-render
+---
+extensions: [attr_list]
+---
+A setext style header { #setext}
 =================================
 
-### A hash style header ### {: #hash }
-```
-
-The above results in the following output:
-
-```html
-<h1 id="setext">A setext style header</h1>
-<h3 id="hash">A hash style header</h3>
+### A hash style header ### { #hash }
 ```
 
 !!! seealso "See Also"
@@ -128,14 +121,11 @@ The above results in the following output:
 To define attributes on inline elements, the attribute list should be defined
 immediately after the inline element with no white space.
 
-```text
-[link](http://example.com){: class="foo bar" title="Some title!" }
-```
-
-The above results in the following output:
-
-```html
-<p><a href="http://example.com" class="foo bar" title="Some title!">link</a></p>
+``` md-render
+---
+extensions: [attr_list]
+---
+[link](http://example.com){ class="foo bar" title="Some title!" }
 ```
 
 If the [tables](./tables.md) extension is enabled, attribute lists can be defined on table cells. To differentiate
@@ -143,29 +133,13 @@ attributes for an inline element from attributes for the containing cell, the at
 the content by at least one space and be defined at the end of the cell content. As table cells can only ever be on
 a single line, the attribute list must remain on the same line as the content of the cell.
 
-```text
+``` md-render
+---
+extensions: [tables, attr_list]
+---
 | set on td    | set on em   |
 |--------------|-------------|
 | *a* { .foo } | *b*{ .foo } |
-```
-
-The above example results in the following output:
-
-```html
-<table>
-  <thead>
-    <tr>
-      <th>set on td</th>
-      <th>set on em</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="foo"><em>a</em></td>
-      <td><em class="foo">b</em></td>
-    </tr>
-  </tbody>
-</table>
 ```
 
 Note that in the first column, the attribute list is preceded by a space; therefore, it is assigned to the table cell

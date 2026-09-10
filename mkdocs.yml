@@ -7,7 +7,7 @@ site_author: "The Python-Markdown Project"
 copyright: "Copyright &copy; 2010-2026 The Python-Markdown Project."
 
 use_directory_urls: true
-watch: [markdown, .zensical/scripts, .zensical/mkdocstring_templates]
+watch: [markdown, .zensical/scripts, .zensical/mkdocstring_templates, tools]
 
 theme:
   variant: modern
@@ -160,6 +160,9 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: md-render
+          class: md-render
+          format: !!python/name:tools.superfences_formaters.md_render
 
 
 plugins:

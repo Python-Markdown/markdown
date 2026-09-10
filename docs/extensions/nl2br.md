@@ -29,16 +29,12 @@ hard breaks; like StackOverflow and [GitHub][] flavored Markdown do.
 Example
 -------
 
-```pycon
->>> import markdown
->>> text = """
-... Line 1
-... Line 2
-... """
->>> html = markdown.markdown(text, extensions=['nl2br'])
->>> print html
-<p>Line 1<br />
-Line 2</p>
+``` md-render
+---
+extensions: [nl2br]
+---
+Line 1
+Line 2
 ```
 
 Usage

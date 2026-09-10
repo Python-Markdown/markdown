@@ -35,7 +35,10 @@ Syntax
 
 Admonitions are created using the following syntax:
 
-```md
+``` md-render
+---
+extensions: [admonition]
+---
 !!! type "optional explicit title within double quotes"
     Any number of other indented markdown elements.
 
@@ -43,68 +46,45 @@ Admonitions are created using the following syntax:
 ```
 
 `type` will be used as the CSS class name and as default title. It must be a
-single word. So, for instance:
+single word.
 
-```md
+``` md-render
+---
+extensions: [admonition]
+---
 !!! note
     You should note that the title will be automatically capitalized.
 ```
 
-will render:
+Optionally, you can use custom titles.
 
-```html
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You should note that the title will be automatically capitalized.</p>
-</div>
-```
-
-Optionally, you can use custom titles. For instance:
-
-```md
+``` md-render
+---
+extensions: [admonition]
+---
 !!! danger "Don't try this at home"
     ...
 ```
 
-will render:
+If you don't want a title, use a blank string `""`.
 
-```html
-<div class="admonition danger">
-<p class="admonition-title">Don't try this at home</p>
-<p>...</p>
-</div>
-```
-
-If you don't want a title, use a blank string `""`:
-
-```md
+``` md-render
+---
+extensions: [admonition]
+---
 !!! important ""
     This is an admonition box without a title.
 ```
 
-results in:
-
-```html
-<div class="admonition important">
-<p>This is an admonition box without a title.</p>
-</div>
-```
-
 You can also provide additional CSS class names separated by spaces. The first
-class should be the "type." For example:
+class should be the "type."
 
-```md
+``` md-render
+---
+extensions: [admonition]
+---
 !!! danger highlight blink "Don't try this at home"
     ...
-```
-
-will render:
-
-```html
-<div class="admonition danger highlight blink">
-<p class="admonition-title">Don't try this at home</p>
-<p>...</p>
-</div>
 ```
 
 rST suggests the following "types": `attention`, `caution`, `danger`, `error`,

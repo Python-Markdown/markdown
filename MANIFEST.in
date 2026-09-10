@@ -6,7 +6,7 @@ include LICENSE.md
 include README.md
 include INSTALL.md
 include MANIFEST
-include *-requirements.txt
 include mkdocs.yml
 include tox.ini
-include scripts/*.py
+recursive-include .zensical *.jinja *.py *.ico *.png *.svg *.css *.html
+include tools/*.py

@@ -38,7 +38,10 @@ the output.
 
 Example:
 
-```md
+``` md-render
+---
+extensions: [footnotes]
+---
 Footnotes have a name, a reference[^1], and a definition[^word].
 
 [^1]: This is a footnote definition.

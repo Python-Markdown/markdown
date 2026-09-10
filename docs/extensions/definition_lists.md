@@ -37,28 +37,18 @@ Definition lists are defined using the syntax established in
 
 [php]: http://www.michelf.com/projects/php-markdown/extra/#def-list
 
-Thus, the following text (taken from the above referenced PHP documentation):
+Consider the following text taken from the above referenced PHP documentation.
 
-```md
+``` md-render
+---
+extensions: [def_list]
+---
 Apple
 :   Pomaceous fruit of plants of the genus Malus in
     the family Rosaceae.
 
 Orange
 :   The fruit of an evergreen tree of the genus Citrus.
-```
-
-will be rendered as:
-
-```html
-<dl>
-<dt>Apple</dt>
-<dd>Pomaceous fruit of plants of the genus Malus in
-the family Rosaceae.</dd>
-
-<dt>Orange</dt>
-<dd>The fruit of an evergreen tree of the genus Citrus.</dd>
-</dl>
 ```
 
 Usage
