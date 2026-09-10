@@ -822,7 +822,7 @@ class DelimiterProcessor(InlineProcessor):
 
         # Process the next region(s) in the cache
         regions = self.regions
-        offset = pos - self.cache_pos
+        offset = pos - self.cache_pos if pos != self.cache_pos else pos - regions[self.cache_index][0]
         start, end = regions[self.cache_index][0], regions[self.cache_index][3]
         el, count = self._build_element(data, self.cache_index, offset)
         self.increment_next_position(start, count)
