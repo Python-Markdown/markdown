@@ -73,13 +73,13 @@ def md_render(src="", language="", class_name=None, options=None, md="", **kwarg
         import traceback
         print(traceback.format_exc())
         raise
+
     options = options or {}
     if 'title' not in options:
         options['title'] = 'Markdown Source'
     result_options = options.copy()
     result_options['title'] = 'HTML Output'
-    output = [
-        md.preprocessors['fenced_code_block'].highlight(text, 'markdown', options, md, **kwargs),
-        f'<div class="result">{md.preprocessors['fenced_code_block'].highlight(html, 'html', result_options, md, **kwargs)}</div>'
-    ]
-    return '\n'.join(output)
+
+    source = md.preprocessors['fenced_code_block'].highlight(text, 'markdown', options, md, **kwargs)
+    output = md.preprocessors['fenced_code_block'].highlight(html, 'html', result_options, md, **kwargs)
+    return f'{source}\n<div class="result">{output}</div>'
