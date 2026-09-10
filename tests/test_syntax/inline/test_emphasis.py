@@ -20,7 +20,6 @@ License: BSD (see LICENSE.md for details).
 """
 
 from markdown.test_tools import TestCase
-import textwrap
 
 
 class TestNotEmphasis(TestCase):
@@ -196,7 +195,7 @@ class TestNotEmphasis(TestCase):
     def test_underscore_legacy(self):
 
         self.assertMarkdownRenders(
-            textwrap.dedent(
+            self.dedent(
                 """
                 THIS_SHOULD_STAY_AS_IS
 
@@ -211,7 +210,7 @@ class TestNotEmphasis(TestCase):
                 THIS___SHOULD___STAY?
                 """
             ),
-            textwrap.dedent(
+            self.dedent(
                 """
                 <p>THIS_SHOULD_STAY_AS_IS</p>
                 <p>Here is some <em>emphasis</em>, ok?</p>
@@ -220,15 +219,13 @@ class TestNotEmphasis(TestCase):
                 <p>Here is some <strong>strong</strong> stuff.</p>
                 <p>THIS___SHOULD___STAY?</p>
                 """
-            ).strip()
+            )
         )
 
     def test_advanced_nesting(self):
 
-        self.maxDiff = None
-
         self.assertMarkdownRenders(
-            textwrap.dedent(
+            self.dedent(
                 """
                 **a*bc**
 
@@ -263,7 +260,7 @@ class TestNotEmphasis(TestCase):
                 _a __b__ _c __d__ _e __f__
                 """
             ),
-            textwrap.dedent(
+            self.dedent(
                 """
                 <p>*<em>a<em>bc</em></em></p>
                 <p><em>a<strong>b</strong>c<strong>d</strong>e**f</em></p>
@@ -282,7 +279,7 @@ class TestNotEmphasis(TestCase):
                 <p><strong><em>a <em><strong>b c</strong> d</em> e</em></strong></p>
                 <p>_a <strong>b</strong> _c <strong>d</strong> _e <strong>f</strong></p>
                 """
-            ).strip()
+            )
         )
 
 
