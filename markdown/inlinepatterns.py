@@ -599,7 +599,7 @@ class DelimiterProcessor(InlineProcessor):
 
         # Cache info
         self.regions: list[tuple[int, int, int, int, int]] = []
-        self.stack: deque[tuple[int, int, int]] = deque()
+        self.stack: deque[tuple[int, int, bool, int]] = deque()
         self.cache_index = 0
         self.cache_pos = 0
 
@@ -623,7 +623,7 @@ class DelimiterProcessor(InlineProcessor):
                     ''',
                     flags=re.UNICODE
                 )
-            elif self.double:
+            elif self.double:  # pragma: no cover
                 self.boundary = re.compile(
                     fr'''(?x)
                     (?P<ambiguous>(?<!^)(?<![\s{etoken}]){avoid_start}{etoken}{{2}}{avoid_end}(?![\s{etoken}])(?!$))|
@@ -632,7 +632,7 @@ class DelimiterProcessor(InlineProcessor):
                     ''',
                     flags=re.UNICODE
                 )
-            else:
+            else:  # pragma: no cover
                 # This case is not currently used
                 self.boundary = re.compile(
                     fr'''(?x)
@@ -653,7 +653,7 @@ class DelimiterProcessor(InlineProcessor):
                     )''',
                     flags=re.UNICODE
                 )
-            elif self.double:
+            elif self.double:  # pragma: no cover
                 self.boundary = re.compile(
                     fr'''(?x)
                     (?P<ambiguous>(?<!^)(?<![\s{etoken}]){etoken}{{2}}(?![\s{etoken}])(?!$))|
@@ -662,7 +662,7 @@ class DelimiterProcessor(InlineProcessor):
                     ''',
                     flags=re.UNICODE
                 )
-            else:
+            else:  # pragma: no cover
                 self.boundary = re.compile(
                     fr'''(?x)
                     (?P<ambiguous>(?<!^)(?<![\s{etoken}]){etoken}{{1}}(?![\s{etoken}])(?!$))|
@@ -695,10 +695,10 @@ class DelimiterProcessor(InlineProcessor):
 
         if len(self.tags) == 2:
             greater, lesser = self.tags
-        elif self.double:
+        elif self.double:  # pragma: no cover
             greater = self.tags[0]
             lesser = None
-        else:
+        else:  # pragma: no cover
             lesser = self.tags[0]
             greater = None
 
@@ -708,7 +708,7 @@ class DelimiterProcessor(InlineProcessor):
         for idx, i in enumerate(range(start, end), 1):
             r = regions[i]
             # Not contained within region
-            if idx and r[0] > regions[start][3]:
+            if idx and r[0] >= regions[start][3]:
                 idx -= 1
                 break
             # Get the appropriate element(s)
@@ -789,7 +789,7 @@ class DelimiterProcessor(InlineProcessor):
 
         return cast('etree.Element', el), idx
 
-    def increment_next_position(self, end: int, count: int) -> None:
+    def increment_next_position(self, start: int, count: int) -> None:
         """
         Increment cache position to the next location that we can initiate an insertion.
 
@@ -803,7 +803,7 @@ class DelimiterProcessor(InlineProcessor):
             self.cache_pos = self.regions[self.cache_index][0]
             while self.stack:
                 entry = self.stack.popleft()
-                if entry[0] > end:
+                if entry[0] > start:
                     self.cache_pos = entry[0]
                     break
 
@@ -819,7 +819,7 @@ class DelimiterProcessor(InlineProcessor):
         offset = pos - self.cache_pos
         start, end = regions[self.cache_index][0], regions[self.cache_index][3]
         el, count = self._build_element(data, self.cache_index, offset)
-        self.increment_next_position(end, count)
+        self.increment_next_position(start, count)
         return el, start + offset, end + offset
 
     def handleMatch(  # type: ignore[override]
@@ -853,7 +853,8 @@ class DelimiterProcessor(InlineProcessor):
         # Data offset
         offset = m2.end(0)
         # Stack of opening delimiters
-        stack.append((m2.start(0), offset, len(m2.group(0))))
+        is_ambiguous =  m2.lastgroup[0] != 's'  # type: ignore[index]
+        stack.append((m2.start(0), offset, is_ambiguous, len(m2.group(0))))
 
         # Pair tokens until the stack is empty or we can no longer find tokens.
         while stack:
@@ -869,7 +870,7 @@ class DelimiterProcessor(InlineProcessor):
             # Some delimiters may be ambiguous and look like both a start or an end
             is_start = m2.lastgroup[0] != 'e'  # type: ignore[index]
             is_end = not is_start or m2.lastgroup[0] != 's'  # type: ignore[index]
-            ambiguous = is_start and is_end
+            is_ambiguous = is_start and is_end
 
             # Find closing tokens
             # Looking for:
@@ -883,11 +884,12 @@ class DelimiterProcessor(InlineProcessor):
             # Avoid ambiguous tokens that could be a start or an end.
             # Consume starts until the end token is fully consumed.
             # If we don't consume the entire end, see if next rule consumes it.
-            if is_end and ((not ambiguous and current > last) or (current == last)):
+            if is_end and ((not is_ambiguous and current > last) or current in (last, 3)):
                 is_start = False
 
                 # Consume previous tokens until the delimiter is consumed
                 s = m2.start(0)
+                original = current
                 while current and last <= current:
                     delimiter = stack.pop()
 
@@ -900,19 +902,33 @@ class DelimiterProcessor(InlineProcessor):
                         break
                     last = stack[-1][-1]
 
+                # Should remainder be treated as a new start?
+                if original == 3 and current and is_ambiguous:
+                    self.stack.append((m2.start(0) + regions[-1][-1], m2.end(0), False, current))
+                    is_end = False
+
                 # Do we still have more to consume?
-                is_end = current and stack and last > current
+                else:
+                    is_end = current and stack and last > current
 
             # Looking for:
             # - `***em*`
             # - `***strong**`
             # - `**em*`
-            if is_end and (last == 3 or not ambiguous) and last > current:
-                is_start = False
+            if is_end and (last == 3 or not is_ambiguous) and last > current:
                 delimiter = stack.pop()
+
+                # Don't pair with an ambiguous opening
+                while stack and delimiter[-1] != 3 and delimiter[2]:
+                    delimiter =  stack.pop()
+                    last = delimiter[-1]
+                if delimiter[2]:
+                    break
+
+                is_start = False
                 new = last - current
                 regions.append((delimiter[0] + new, delimiter[1], m2.start(0), offset, current))
-                stack.append((delimiter[0], delimiter[0] + new, new))
+                stack.append((delimiter[0], delimiter[0] + new, False, new))
 
             # Find opening tokens
             if is_start:
@@ -920,7 +936,7 @@ class DelimiterProcessor(InlineProcessor):
                 # - `*em ...*`
                 # - `**strong ...*`
                 # - `***em ...*`
-                stack.append((m2.start(0), m2.end(0), current))
+                stack.append((m2.start(0), m2.end(0), is_ambiguous, current))
 
         # Build the HTML elements
         if regions:
@@ -928,7 +944,7 @@ class DelimiterProcessor(InlineProcessor):
             regions.sort(key=lambda x: x[0])
             start, end = regions[0][0], regions[0][3]
             el, count = self._build_element(data)
-            self.increment_next_position(end, count)
+            self.increment_next_position(start, count)
             return el, start, end
 
         # We failed to pair any valid start/end delimiters, avoid the parsed range next pass.

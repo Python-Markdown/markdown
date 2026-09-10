@@ -222,3 +222,65 @@ class TestNotEmphasis(TestCase):
                 """
             ).strip()
         )
+
+    def test_advanced_nesting(self):
+
+        self.maxDiff = None
+
+        self.assertMarkdownRenders(
+            textwrap.dedent(
+                """
+                **a*bc**
+
+                *a**b**c**d**e**f*
+
+                ***a**b*cd**e*f***
+
+                ***a**b*cd*e**f***
+
+                ***a**b*cd*e**f*g*h***
+
+                ***a***bc**d*e***
+
+                *a**b**c**d**e**f*
+
+                *a**b***c**d***e**f*
+
+                *a**b***c**d***e**f**
+
+                __a _b c__
+
+                _a __b __c __d __e __f_
+
+                ___a __b _c d__ e_ f___
+
+                ___a __b _c d_ e__ f___
+
+                ___a __b _c d_ e__ f _g_ h___
+
+                ___a ___b c__ d_ e___
+
+                _a __b__ _c __d__ _e __f__
+                """
+            ),
+            textwrap.dedent(
+                """
+                <p>*<em>a<em>bc</em></em></p>
+                <p><em>a<strong>b</strong>c<strong>d</strong>e**f</em></p>
+                <p><em><strong>a</strong>b</em>cd<strong>e<em>f</em></strong></p>
+                <p><em><strong>a</strong>b</em>cd<em>e<strong>f</strong></em></p>
+                <p><em><strong>a</strong>b</em>cd<em>e<strong>f<em>g</em>h</strong></em></p>
+                <p><strong><em>a</em></strong>bc<strong>d<em>e</em></strong></p>
+                <p><em>a<strong>b</strong>c<strong>d</strong>e**f</em></p>
+                <p><em>a<strong>b</strong></em>c<strong>d</strong><em>e**f</em></p>
+                <p><em>a<strong>b</strong></em>c<strong>d</strong>*e<strong>f</strong></p>
+                <p>_<em>a <em>b c</em></em></p>
+                <p>_a __b __c __d __e _<em>f</em></p>
+                <p><strong><em>a <em><em>b <em>c d</em></em> e</em> f</em></strong></p>
+                <p><strong><em>a <strong>b <em>c d</em> e</strong> f</em></strong></p>
+                <p><strong><em>a <strong>b <em>c d</em> e</strong> f <em>g</em> h</em></strong></p>
+                <p><strong><em>a <em><strong>b c</strong> d</em> e</em></strong></p>
+                <p>_a <strong>b</strong> _c <strong>d</strong> _e <strong>f</strong></p>
+                """
+            ).strip()
+        )
