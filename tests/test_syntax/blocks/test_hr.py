@@ -318,7 +318,7 @@ class TestHorizontalRules(TestCase):
             ),
             self.dedent(
                 """
-                <p><strong><em>text</em></strong></p>
+                <p><em><strong>text</strong></em></p>
                 <hr />
                 """
             )

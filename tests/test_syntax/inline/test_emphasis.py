@@ -161,14 +161,14 @@ class TestNotEmphasis(TestCase):
 
         self.assertMarkdownRenders(
             'traced ***along*** bla **blocked** if other ***or***',
-            '<p>traced <strong><em>along</em></strong> bla <strong>blocked</strong> if other <strong><em>or</em></strong></p>'  # noqa: E501
+            '<p>traced <em><strong>along</strong></em> bla <strong>blocked</strong> if other <em><strong>or</strong></em></p>'  # noqa: E501
         )
 
     def test_complex_multple_emphasis_type_variant2(self):
 
         self.assertMarkdownRenders(
             'on the **1-4 row** of the AP Combat Table ***and*** receive',
-            '<p>on the <strong>1-4 row</strong> of the AP Combat Table <strong><em>and</em></strong> receive</p>'
+            '<p>on the <strong>1-4 row</strong> of the AP Combat Table <em><strong>and</strong></em> receive</p>'
         )
 
     def test_link_emphasis_outer(self):
@@ -222,6 +222,120 @@ class TestNotEmphasis(TestCase):
             )
         )
 
+    def test_nested_patterns(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ___[link](http://example.com)___
+                ***[link](http://example.com)***
+                **[*link*](http://example.com)**
+                __[_link_](http://example.com)__
+                __[*link*](http://example.com)__
+                **[_link_](http://example.com)**
+                [***link***](http://example.com)
+
+                ***I am ___italic_ and__ bold* I am `just` bold**
+
+                Example __*bold italic*__ on the same line __*bold italic*__.
+
+                Example **_bold italic_** on the same line **_bold italic_**.
+                """
+            ),
+            self.dedent(
+                """
+                <p><em><strong><a href="http://example.com">link</a></strong></em>
+                <em><strong><a href="http://example.com">link</a></strong></em>
+                <strong><a href="http://example.com"><em>link</em></a></strong>
+                <strong><a href="http://example.com"><em>link</em></a></strong>
+                <strong><a href="http://example.com"><em>link</em></a></strong>
+                <strong><a href="http://example.com"><em>link</em></a></strong>
+                <a href="http://example.com"><em><strong>link</strong></em></a></p>
+                <p><strong><em>I am <strong><em>italic</em> and</strong> bold</em> I am <code>just</code> bold</strong></p>
+                <p>Example <strong><em>bold italic</em></strong> on the same line <strong><em>bold italic</em></strong>.</p>
+                <p>Example <strong><em>bold italic</em></strong> on the same line <strong><em>bold italic</em></strong>.</p>
+                """  # noqa: E501
+            )
+        )
+
+    def test_em_strong_complex(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ___test test__ test test_
+
+                ___test test_ test test__
+
+                ___test___
+
+                __test__
+
+                ___test_ test___
+
+                ___test_ test__
+
+                _test_test test_test_
+
+                ***test test** test test*
+
+                ***test test* test test**
+
+                **test*
+
+                ***test***
+
+                **test***
+
+                ***test* test**
+
+                *test*test test*test*
+                """
+            ),
+            self.dedent(
+                """
+                <p><em><strong>test test</strong> test test</em></p>
+                <p><strong><em>test test</em> test test</strong></p>
+                <p><em><strong>test</strong></em></p>
+                <p><strong>test</strong></p>
+                <p><strong><em>test</em> test</strong>_</p>
+                <p><strong><em>test</em> test</strong></p>
+                <p><em>test_test test_test</em></p>
+                <p><em><strong>test test</strong> test test</em></p>
+                <p><strong><em>test test</em> test test</strong></p>
+                <p>*<em>test</em></p>
+                <p><em><strong>test</strong></em></p>
+                <p><strong>test</strong>*</p>
+                <p><strong><em>test</em> test</strong></p>
+                <p><em>test</em>test test<em>test</em></p>
+                """
+            )
+        )
+
+    def test_strong_and_em_together(self):
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                ***This is strong and em.***
+
+                So is ***this*** word.
+
+                ___This is strong and em.___
+
+                So is ___this___ word.
+                """
+            ),
+            self.dedent(
+                """
+                <p><em><strong>This is strong and em.</strong></em></p>
+                <p>So is <em><strong>this</strong></em> word.</p>
+                <p><em><strong>This is strong and em.</strong></em></p>
+                <p>So is <em><strong>this</strong></em> word.</p>
+                """
+            )
+        )
+
     def test_advanced_nesting(self):
 
         self.assertMarkdownRenders(
@@ -267,17 +381,462 @@ class TestNotEmphasis(TestCase):
                 <p><em><strong>a</strong>b</em>cd<strong>e<em>f</em></strong></p>
                 <p><em><strong>a</strong>b</em>cd<em>e<strong>f</strong></em></p>
                 <p><em><strong>a</strong>b</em>cd<em>e<strong>f<em>g</em>h</strong></em></p>
-                <p><strong><em>a</em></strong>bc<strong>d<em>e</em></strong></p>
+                <p><em><strong>a</strong></em>bc<strong>d<em>e</em></strong></p>
                 <p><em>a<strong>b</strong>c<strong>d</strong>e**f</em></p>
                 <p><em>a<strong>b</strong></em>c<strong>d</strong><em>e**f</em></p>
                 <p><em>a<strong>b</strong></em>c<strong>d</strong>*e<strong>f</strong></p>
                 <p>_<em>a <em>b c</em></em></p>
                 <p>_a __b __c __d __e _<em>f</em></p>
-                <p><strong><em>a <em><em>b <em>c d</em></em> e</em> f</em></strong></p>
-                <p><strong><em>a <strong>b <em>c d</em> e</strong> f</em></strong></p>
-                <p><strong><em>a <strong>b <em>c d</em> e</strong> f <em>g</em> h</em></strong></p>
-                <p><strong><em>a <em><strong>b c</strong> d</em> e</em></strong></p>
+                <p><em><strong>a <em><em>b <em>c d</em></em> e</em> f</strong></em></p>
+                <p><em><strong>a <strong>b <em>c d</em> e</strong> f</strong></em></p>
+                <p><em><strong>a <strong>b <em>c d</em> e</strong> f <em>g</em> h</strong></em></p>
+                <p><em><strong>a <em><strong>b c</strong> d</em> e</strong></em></p>
                 <p>_a <strong>b</strong> _c <strong>d</strong> _e <strong>f</strong></p>
+                """
+            )
+        )
+
+
+class TestCommonMark(TestCase):
+    """Test CommonMark."""
+
+    def test_commonmark(self):
+        """Test CommonMark."""
+
+        self.maxDiff = None
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R"""
+                *foo bar*
+
+                a * foo bar*
+
+                <!-- a*"foo"* -->
+
+                <!-- *$*alpha.
+
+                *£*bravo.
+
+                *€*charlie. -->
+
+                <!-- Augment because Python Markdown parses lists first -->
+                test * a *
+
+                foo*bar*
+
+                5*6*78
+
+                _foo bar_
+
+                _ foo bar_
+
+                a_"foo"_
+
+                foo_bar_
+
+                5_6_78
+
+                пристаням_стремятся_
+
+                aa_"bb"_cc
+
+                foo-_(bar)_
+
+                _foo*
+
+                *foo bar *
+
+                *foo bar
+                *
+
+                <!-- *(*foo) -->
+
+                *(*foo*)*
+
+                *foo*bar
+
+                _foo bar _
+
+                _(_foo)
+
+                _(_foo_)_
+
+                _foo_bar
+
+                _пристаням_стремятся
+
+                _foo_bar_baz_
+
+                _(bar)_.
+
+                **foo bar**
+
+                ** foo bar**
+
+                <!-- a**"foo"** -->
+
+                foo**bar**
+
+                __foo bar__
+
+                __ foo bar__
+
+                __
+                foo bar__
+
+                a__"foo"__
+
+                foo__bar__
+
+                5__6__78
+
+                пристаням__стремятся__
+
+                __foo, __bar__, baz__
+
+                foo-__(bar)__
+
+                **foo bar **
+
+                <!-- **(**foo) -->
+
+                *(**foo**)*
+
+                **Gomphocarpus (*Gomphocarpus physocarpus*, syn.
+                *Asclepias physocarpa*)**
+
+                **foo "*bar*" foo**
+
+                **foo**bar
+
+                __foo bar __
+
+                __(__foo)
+
+                _(__foo__)_
+
+                __foo__bar
+
+                __пристаням__стремятся
+
+                __foo__bar__baz__
+
+                __(bar)__.
+
+                *foo [bar](/url)*
+
+                *foo
+                bar*
+
+                _foo __bar__ baz_
+
+                _foo _bar_ baz_
+
+                __foo_ bar_
+
+                *foo *bar**
+
+                *foo **bar** baz*
+
+                *foo**bar**baz*
+
+                *foo**bar*
+
+                ***foo** bar*
+
+                *foo **bar***
+
+                *foo**bar***
+
+                foo***bar***baz
+
+                foo******bar*********baz
+
+                *foo **bar *baz* bim** bop*
+
+                *foo [*bar*](/url)*
+
+                ** is not an empty emphasis
+
+                **** is not an empty strong emphasis
+
+                **foo [bar](/url)**
+
+                **foo
+                bar**
+
+                __foo _bar_ baz__
+
+                __foo __bar__ baz__
+
+                ____foo__ bar__
+
+                **foo **bar****
+
+                **foo *bar* baz**
+
+                **foo*bar*baz**
+
+                ***foo* bar**
+
+                **foo *bar***
+
+                **foo *bar **baz**
+                bim* bop**
+
+                **foo [*bar*](/url)**
+
+                __ is not an empty emphasis
+
+                ____ is not an empty strong emphasis
+
+                foo ***
+
+                foo *\**
+
+                foo *_*
+
+                foo *****
+
+                foo **\***
+
+                foo **_**
+
+                **foo*
+
+                *foo**
+
+                ***foo**
+
+                ****foo*
+
+                **foo***
+
+                *foo****
+
+                foo ___
+
+                foo _\__
+
+                foo _*_
+
+                foo _____
+
+                foo __\___
+
+                foo __*__
+
+                __foo_
+
+                _foo__
+
+                ___foo__
+
+                ____foo_
+
+                __foo___
+
+                _foo____
+
+                **foo**
+
+                *_foo_*
+
+                __foo__
+
+                _*foo*_
+
+                ****foo****
+
+                ____foo____
+
+                ******foo******
+
+                ***foo***
+
+                _____foo_____
+
+                *foo _bar* baz_
+
+                <!-- we run * and _ in different passes, we cannot match CommonMark here currently>
+                <!-- *foo __bar *baz bim__ bam* -->
+
+                **foo **bar baz**
+
+                *foo *bar baz*
+
+                *[bar*](/url)
+
+                _foo [bar_](/url)
+
+                *<img src="foo" title="*"/>
+
+                **<a href="**">
+
+                __<a href="__">
+
+                *a `*`*
+
+                _a `_`_
+
+                **a<https://foo.bar/?q=**>
+
+                __a<https://foo.bar/?q=__>
+                """
+            ),
+            self.dedent(
+                """
+                <p><em>foo bar</em></p>
+                <p>a * foo bar*</p>
+                <!-- a*"foo"* -->
+
+                <!-- *$*alpha.
+
+                *£*bravo.
+
+                *€*charlie. -->
+
+                <!-- Augment because Python Markdown parses lists first -->
+                <p>test * a *</p>
+                <p>foo<em>bar</em></p>
+                <p>5<em>6</em>78</p>
+                <p><em>foo bar</em></p>
+                <p>_ foo bar_</p>
+                <p>a_"foo"_</p>
+                <p>foo_bar_</p>
+                <p>5_6_78</p>
+                <p>пристаням_стремятся_</p>
+                <p>aa_"bb"_cc</p>
+                <p>foo-<em>(bar)</em></p>
+                <p>_foo*</p>
+                <p>*foo bar *</p>
+                <p>*foo bar
+                *</p>
+                <!-- *(*foo) -->
+
+                <p><em>(</em>foo<em>)</em></p>
+                <p><em>foo</em>bar</p>
+                <p>_foo bar _</p>
+                <p>_(_foo)</p>
+                <p><em>(<em>foo</em>)</em></p>
+                <p>_foo_bar</p>
+                <p>_пристаням_стремятся</p>
+                <p><em>foo_bar_baz</em></p>
+                <p><em>(bar)</em>.</p>
+                <p><strong>foo bar</strong></p>
+                <p>** foo bar**</p>
+                <!-- a**"foo"** -->
+
+                <p>foo<strong>bar</strong></p>
+                <p><strong>foo bar</strong></p>
+                <p>__ foo bar__</p>
+                <p>__
+                foo bar__</p>
+                <p>a__"foo"__</p>
+                <p>foo__bar__</p>
+                <p>5__6__78</p>
+                <p>пристаням__стремятся__</p>
+                <p><strong>foo, <strong>bar</strong>, baz</strong></p>
+                <p>foo-<strong>(bar)</strong></p>
+                <p>**foo bar **</p>
+                <!-- **(**foo) -->
+
+                <p><em>(<strong>foo</strong>)</em></p>
+                <p><strong>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.
+                <em>Asclepias physocarpa</em>)</strong></p>
+                <p><strong>foo "<em>bar</em>" foo</strong></p>
+                <p><strong>foo</strong>bar</p>
+                <p>__foo bar __</p>
+                <p>__(__foo)</p>
+                <p><em>(<strong>foo</strong>)</em></p>
+                <p>__foo__bar</p>
+                <p>__пристаням__стремятся</p>
+                <p><strong>foo__bar__baz</strong></p>
+                <p><strong>(bar)</strong>.</p>
+                <p><em>foo <a href="/url">bar</a></em></p>
+                <p><em>foo
+                bar</em></p>
+                <p><em>foo <strong>bar</strong> baz</em></p>
+                <p><em>foo <em>bar</em> baz</em></p>
+                <p><em><em>foo</em> bar</em></p>
+                <p><em>foo <em>bar</em></em></p>
+                <p><em>foo <strong>bar</strong> baz</em></p>
+                <p><em>foo<strong>bar</strong>baz</em></p>
+                <p><em>foo**bar</em></p>
+                <p><em><strong>foo</strong> bar</em></p>
+                <p><em>foo <strong>bar</strong></em></p>
+                <p><em>foo<strong>bar</strong></em></p>
+                <p>foo<em><strong>bar</strong></em>baz</p>
+                <p>foo<strong><strong><strong>bar</strong></strong></strong>***baz</p>
+                <p><em>foo <strong>bar <em>baz</em> bim</strong> bop</em></p>
+                <p><em>foo <a href="/url"><em>bar</em></a></em></p>
+                <p>** is not an empty emphasis</p>
+                <p>**** is not an empty strong emphasis</p>
+                <p><strong>foo <a href="/url">bar</a></strong></p>
+                <p><strong>foo
+                bar</strong></p>
+                <p><strong>foo <em>bar</em> baz</strong></p>
+                <p><strong>foo <strong>bar</strong> baz</strong></p>
+                <p><strong><strong>foo</strong> bar</strong></p>
+                <p><strong>foo <strong>bar</strong></strong></p>
+                <p><strong>foo <em>bar</em> baz</strong></p>
+                <p><strong>foo<em>bar</em>baz</strong></p>
+                <p><strong><em>foo</em> bar</strong></p>
+                <p><strong>foo <em>bar</em></strong></p>
+                <p><strong>foo <em>bar <strong>baz</strong>
+                bim</em> bop</strong></p>
+                <p><strong>foo <a href="/url"><em>bar</em></a></strong></p>
+                <p>__ is not an empty emphasis</p>
+                <p>____ is not an empty strong emphasis</p>
+                <p>foo ***</p>
+                <p>foo <em>*</em></p>
+                <p>foo <em>_</em></p>
+                <p>foo *****</p>
+                <p>foo <strong>*</strong></p>
+                <p>foo <strong>_</strong></p>
+                <p>*<em>foo</em></p>
+                <p><em>foo</em>*</p>
+                <p>*<strong>foo</strong></p>
+                <p>***<em>foo</em></p>
+                <p><strong>foo</strong>*</p>
+                <p><em>foo</em>***</p>
+                <p>foo ___</p>
+                <p>foo <em>_</em></p>
+                <p>foo <em>*</em></p>
+                <p>foo _____</p>
+                <p>foo <strong>_</strong></p>
+                <p>foo <strong>*</strong></p>
+                <p>_<em>foo</em></p>
+                <p><em>foo</em>_</p>
+                <p>_<strong>foo</strong></p>
+                <p>___<em>foo</em></p>
+                <p><strong>foo</strong>_</p>
+                <p><em>foo</em>___</p>
+                <p><strong>foo</strong></p>
+                <p><em><em>foo</em></em></p>
+                <p><strong>foo</strong></p>
+                <p><em><em>foo</em></em></p>
+                <p><strong><strong>foo</strong></strong></p>
+                <p><strong><strong>foo</strong></strong></p>
+                <p><strong><strong><strong>foo</strong></strong></strong></p>
+                <p><em><strong>foo</strong></em></p>
+                <p><em><strong><strong>foo</strong></strong></em></p>
+                <p><em>foo _bar</em> baz_</p>
+                <!-- we run * and _ in different passes, we cannot match CommonMark here currently>
+                <!-- *foo __bar *baz bim__ bam* -->
+
+                <p>**foo <strong>bar baz</strong></p>
+                <p>*foo <em>bar baz</em></p>
+                <p>*<a href="/url">bar*</a></p>
+                <p>_foo <a href="/url">bar_</a></p>
+                <p>*<img src="foo" title="*"/></p>
+                <p>**<a href="**"></p>
+                <p>__<a href="__"></p>
+                <p><em>a <code>*</code></em></p>
+                <p><em>a <code>_</code></em></p>
+                <p>**a<a href="https://foo.bar/?q=**">https://foo.bar/?q=**</a></p>
+                <p>__a<a href="https://foo.bar/?q=__">https://foo.bar/?q=__</a></p>
                 """
             )
         )
