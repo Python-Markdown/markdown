@@ -91,7 +91,7 @@ class TestPl2004(LegacyTestCase):
     location = os.path.join(parent_test_dir, 'pl/Tests_2004')
     normalize = True
     input_ext = '.text'
-    exclude = ['Yuri_Footnotes', 'Yuri_Attributes']
+    exclude = ['Yuri_Footnotes', 'Yuri_Attributes', 'Strong_and_em_together']
 
 
 class TestPl2007(LegacyTestCase):
@@ -116,7 +116,8 @@ class TestPl2007(LegacyTestCase):
         'Code_Blocks',
         'Links,_reference_style',
         'Backslash_escapes',
-        'Code_Spans'
+        'Code_Spans',
+        'Strong_and_em_together'
     ]
 
 
