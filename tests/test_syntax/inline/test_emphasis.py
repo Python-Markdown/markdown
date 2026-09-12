@@ -161,14 +161,14 @@ class TestNotEmphasis(TestCase):
 
         self.assertMarkdownRenders(
             'traced ***along*** bla **blocked** if other ***or***',
-            '<p>traced <em><strong>along</strong></em> bla <strong>blocked</strong> if other <em><strong>or</strong></em></p>'  # noqa: E501
+            '<p>traced <strong><em>along</em></strong> bla <strong>blocked</strong> if other <strong><em>or</em></strong></p>'  # noqa: E501
         )
 
     def test_complex_multple_emphasis_type_variant2(self):
 
         self.assertMarkdownRenders(
             'on the **1-4 row** of the AP Combat Table ***and*** receive',
-            '<p>on the <strong>1-4 row</strong> of the AP Combat Table <em><strong>and</strong></em> receive</p>'
+            '<p>on the <strong>1-4 row</strong> of the AP Combat Table <strong><em>and</em></strong> receive</p>'
         )
 
     def test_link_emphasis_outer(self):
@@ -244,13 +244,13 @@ class TestNotEmphasis(TestCase):
             ),
             self.dedent(
                 """
-                <p><em><strong><a href="http://example.com">link</a></strong></em>
-                <em><strong><a href="http://example.com">link</a></strong></em>
+                <p><strong><em><a href="http://example.com">link</a></em></strong>
+                <strong><em><a href="http://example.com">link</a></em></strong>
                 <strong><a href="http://example.com"><em>link</em></a></strong>
                 <strong><a href="http://example.com"><em>link</em></a></strong>
                 <strong><a href="http://example.com"><em>link</em></a></strong>
                 <strong><a href="http://example.com"><em>link</em></a></strong>
-                <a href="http://example.com"><em><strong>link</strong></em></a></p>
+                <a href="http://example.com"><strong><em>link</em></strong></a></p>
                 <p><strong><em>I am <strong><em>italic</em> and</strong> bold</em> I am <code>just</code> bold</strong></p>
                 <p>Example <strong><em>bold italic</em></strong> on the same line <strong><em>bold italic</em></strong>.</p>
                 <p>Example <strong><em>bold italic</em></strong> on the same line <strong><em>bold italic</em></strong>.</p>
@@ -296,7 +296,7 @@ class TestNotEmphasis(TestCase):
                 """
                 <p><em><strong>test test</strong> test test</em></p>
                 <p><strong><em>test test</em> test test</strong></p>
-                <p><em><strong>test</strong></em></p>
+                <p><strong><em>test</em></strong></p>
                 <p><strong>test</strong></p>
                 <p><strong><em>test</em> test</strong>_</p>
                 <p><strong><em>test</em> test</strong></p>
@@ -304,7 +304,7 @@ class TestNotEmphasis(TestCase):
                 <p><em><strong>test test</strong> test test</em></p>
                 <p><strong><em>test test</em> test test</strong></p>
                 <p>*<em>test</em></p>
-                <p><em><strong>test</strong></em></p>
+                <p><strong><em>test</em></strong></p>
                 <p><strong>test</strong>*</p>
                 <p><strong><em>test</em> test</strong></p>
                 <p><em>test</em>test test<em>test</em></p>
@@ -328,10 +328,10 @@ class TestNotEmphasis(TestCase):
             ),
             self.dedent(
                 """
-                <p><em><strong>This is strong and em.</strong></em></p>
-                <p>So is <em><strong>this</strong></em> word.</p>
-                <p><em><strong>This is strong and em.</strong></em></p>
-                <p>So is <em><strong>this</strong></em> word.</p>
+                <p><strong><em>This is strong and em.</em></strong></p>
+                <p>So is <strong><em>this</em></strong> word.</p>
+                <p><strong><em>This is strong and em.</em></strong></p>
+                <p>So is <strong><em>this</em></strong> word.</p>
                 """
             )
         )
@@ -381,16 +381,16 @@ class TestNotEmphasis(TestCase):
                 <p><em><strong>a</strong>b</em>cd<strong>e<em>f</em></strong></p>
                 <p><em><strong>a</strong>b</em>cd<em>e<strong>f</strong></em></p>
                 <p><em><strong>a</strong>b</em>cd<em>e<strong>f<em>g</em>h</strong></em></p>
-                <p><em><strong>a</strong></em>bc<strong>d<em>e</em></strong></p>
+                <p><strong><em>a</em></strong>bc<strong>d<em>e</em></strong></p>
                 <p><em>a<strong>b</strong>c<strong>d</strong>e**f</em></p>
                 <p><em>a<strong>b</strong></em>c<strong>d</strong><em>e**f</em></p>
                 <p><em>a<strong>b</strong></em>c<strong>d</strong>*e<strong>f</strong></p>
                 <p>_<em>a <em>b c</em></em></p>
                 <p>_a __b __c __d __e _<em>f</em></p>
-                <p><em><strong>a <em><em>b <em>c d</em></em> e</em> f</strong></em></p>
-                <p><em><strong>a <strong>b <em>c d</em> e</strong> f</strong></em></p>
-                <p><em><strong>a <strong>b <em>c d</em> e</strong> f <em>g</em> h</strong></em></p>
-                <p><em><strong>a <em><strong>b c</strong> d</em> e</strong></em></p>
+                <p><strong><em>a <em><em>b <em>c d</em></em> e</em> f</em></strong></p>
+                <p><strong><em>a <strong>b <em>c d</em> e</strong> f</em></strong></p>
+                <p><strong><em>a <strong>b <em>c d</em> e</strong> f <em>g</em> h</em></strong></p>
+                <p><strong><em>a <em><strong>b c</strong> d</em> e</em></strong></p>
                 <p>_a <strong>b</strong> _c <strong>d</strong> _e <strong>f</strong></p>
                 """
             )
@@ -549,6 +549,7 @@ class TestCommonMark(TestCase):
 
                 *foo**bar***
 
+                <!-- Python Markdown prefers triple tokens as <strong><em> -->
                 foo***bar***baz
 
                 foo******bar*********baz
@@ -653,6 +654,7 @@ class TestCommonMark(TestCase):
 
                 ******foo******
 
+                <!-- Python Markdown prefers triple tokens as <strong><em> -->
                 ***foo***
 
                 _____foo_____
@@ -767,7 +769,8 @@ class TestCommonMark(TestCase):
                 <p><em><strong>foo</strong> bar</em></p>
                 <p><em>foo <strong>bar</strong></em></p>
                 <p><em>foo<strong>bar</strong></em></p>
-                <p>foo<em><strong>bar</strong></em>baz</p>
+                <!-- Python Markdown prefers triple tokens as <strong><em> -->
+                <p>foo<strong><em>bar</em></strong>baz</p>
                 <p>foo<strong><strong><strong>bar</strong></strong></strong>***baz</p>
                 <p><em>foo <strong>bar <em>baz</em> bim</strong> bop</em></p>
                 <p><em>foo <a href="/url"><em>bar</em></a></em></p>
@@ -820,8 +823,9 @@ class TestCommonMark(TestCase):
                 <p><strong><strong>foo</strong></strong></p>
                 <p><strong><strong>foo</strong></strong></p>
                 <p><strong><strong><strong>foo</strong></strong></strong></p>
-                <p><em><strong>foo</strong></em></p>
-                <p><em><strong><strong>foo</strong></strong></em></p>
+                <!-- Python Markdown prefers triple tokens as <strong><em> -->
+                <p><strong><em>foo</em></strong></p>
+                <p><strong><em><strong>foo</strong></em></strong></p>
                 <p><em>foo _bar</em> baz_</p>
                 <!-- we run * and _ in different passes, we cannot match CommonMark here currently>
                 <!-- *foo __bar *baz bim__ bam* -->

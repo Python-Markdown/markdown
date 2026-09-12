@@ -55,12 +55,12 @@ class TestLegacyEm(TestCase):
 
         self.assertMarkdownRenders(
             'traced ___along___ bla __blocked__ if other ___or___',
-            '<p>traced <em><strong>along</strong></em> bla <strong>blocked</strong> if other <em><strong>or</strong></em></p>'  # noqa: E501
+            '<p>traced <strong><em>along</em></strong> bla <strong>blocked</strong> if other <strong><em>or</em></strong></p>'  # noqa: E501
         )
 
     def test_complex_multple_underscore_type_variant2(self):
 
         self.assertMarkdownRenders(
             'on the __1-4 row__ of the AP Combat Table ___and___ receive',
-            '<p>on the <strong>1-4 row</strong> of the AP Combat Table <em><strong>and</strong></em> receive</p>'
+            '<p>on the <strong>1-4 row</strong> of the AP Combat Table <strong><em>and</em></strong> receive</p>'
         )

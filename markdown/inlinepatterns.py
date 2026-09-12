@@ -848,7 +848,9 @@ class DelimiterProcessor(InlineProcessor):
                     delimiter = stack.pop()
 
                     # Build up region for pair and adjust accounting.
-                    size = min(delimiter[-1], self.max_size)
+                    # Special handle span of 3 to preserve old Python Markdown behavior.
+                    # For true CommonMark logic `2` should always be used.
+                    size = min(delimiter[-1], 1 if len(self.tags) == 2 and delimiter[-1] == 3 else self.max_size)
                     regions.append((delimiter[1] - size, delimiter[1], start, start + size, size))
                     start += size
                     current -= size
@@ -886,7 +888,7 @@ class DelimiterProcessor(InlineProcessor):
                 is_start = False
                 ds, de = delimiter[:2]
                 while current and (not self.double or current != 1):
-                    size = min(current, self.max_size)
+                    size = min(current, 1 if len(self.tags) == 2 and current == 3 else self.max_size)
                     new = last - size
                     regions.append((ds + new, de, start, start + size, size))
                     start += size
