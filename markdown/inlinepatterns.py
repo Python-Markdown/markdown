@@ -661,7 +661,6 @@ class DelimiterProcessor(InlineProcessor):
         greater: Any = None
         lesser: Any = None
 
-        triple = set()
         outer: list[etree.Element] = []
         outer_r: list[tuple[int, int, int, int, int]] = []
 
@@ -684,15 +683,10 @@ class DelimiterProcessor(InlineProcessor):
                 idx -= 1
                 break
             # Get the appropriate element(s)
-            if r[4] == 3:
-                el1 = etree.Element(lesser)
-                el2 = etree.Element(greater)
-            elif r[4] == 2:
+            if r[4] == 2:
                 el1 = etree.Element(greater)
-                el2 = None
             else:
                 el1 = etree.Element(lesser)
-                el2 = None
 
             # Populate the elements with their text
             if idx > 1:
@@ -722,10 +716,6 @@ class DelimiterProcessor(InlineProcessor):
                     outer.pop()
                     outer_r.pop()
 
-                # Double nested element (triple token)
-                if outer[-1] in triple:
-                    outer[-1][-1].append(el1)
-
                 # Non-nested
                 else:
                     outer[-1].append(el1)
@@ -738,14 +728,6 @@ class DelimiterProcessor(InlineProcessor):
 
                 # Track the last element we parsed.
                 last = el1
-
-            # Nest secondary element if there is one.
-            # Track triple tokens (double elements)
-            # so we can identify quickly and properly nest.
-            if el2 is not None:
-                el1.append(el2)
-                last = el2
-                triple.add(el1)
 
             # Track the previous region.
             previous = r
