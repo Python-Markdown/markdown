@@ -597,7 +597,7 @@ class DelimiterProcessor(InlineProcessor):
         self.last_run = 0.0
         self.smart = smart
         self.tags = tags.split(',')
-        self.double = len(tags) != 2 and double
+        self.double = len(self.tags) != 2 and double
         super().__init__(self._build_patterns(token), md)
 
     def reset(self) -> None:
@@ -616,20 +616,17 @@ class DelimiterProcessor(InlineProcessor):
         etoken = re.escape(token)
         avoid_start = fr'(?:(?<=_)|(?<![\w{etoken}]))' if token != '_' else fr'(?<![\w{etoken}])'
         avoid_end = fr'(?:(?=_)|(?![\w{etoken}]))' if token != '_' else fr'(?![\w{etoken}])'
-        if len(self.tags) == 2:
-            n = '1,'
-        elif self.double:  # pragma: no cover
-            n = '2'
-        else:  # pragma: no cover
-            n = '1'
+        self.max_size = 2
+        if len(self.tags) != 2 and not self.double:
+            self.max_size = 1
 
         # Patterns for "smart" cases.
         if self.smart:
             self.boundary = re.compile(
                 fr'''(?x)
-                (?P<ambiguous>(?<!^)(?<![\s{etoken}]){avoid_start}{etoken}{{{n}}}{avoid_end}(?![\s{etoken}])(?!$))|
-                (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{{n}}}{avoid_end})|
-                (?P<start>{avoid_start}{etoken}{{{n}}}(?![\s{etoken}])(?!$))
+                (?P<ambiguous>(?<!^)(?<![\s{etoken}]){avoid_start}{etoken}{{1,}}{avoid_end}(?![\s{etoken}])(?!$))|
+                (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{1,}}{avoid_end})|
+                (?P<start>{avoid_start}{etoken}{{1,}}(?![\s{etoken}])(?!$))
                 ''',
                 flags=re.UNICODE
             )
@@ -637,9 +634,9 @@ class DelimiterProcessor(InlineProcessor):
         else:
             self.boundary = re.compile(
                 fr'''(?x)(?:
-                (?P<ambiguous>(?<!^)(?<![\s{etoken}]){etoken}{{{n}}}(?![\s{etoken}])(?!$))|
-                (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{{n}}})|
-                (?P<start>{etoken}{{{n}}}(?![\s{etoken}])(?!$))
+                (?P<ambiguous>(?<!^)(?<![\s{etoken}]){etoken}{{1,}}(?![\s{etoken}])(?!$))|
+                (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{1,}})|
+                (?P<start>{etoken}{{1,}}(?![\s{etoken}])(?!$))
                 )''',
                 flags=re.UNICODE
             )
@@ -836,7 +833,7 @@ class DelimiterProcessor(InlineProcessor):
             # If we don't consume the entire end, see if next rule consumes it.
             if (
                 is_end and
-                ((not is_ambiguous and current > last) or (current <= 3 and current == last) or current >= 3)
+                ((not is_ambiguous and current > last) or current == last or current >= 3)
             ):
                 is_start = False
 
@@ -846,11 +843,11 @@ class DelimiterProcessor(InlineProcessor):
                     delimiter = stack.pop()
 
                     # Build up region for pair and adjust accounting.
-                    size = min(delimiter[-1], 2)
+                    size = min(delimiter[-1], self.max_size)
                     regions.append((delimiter[1] - size, delimiter[1], start, start + size, size))
                     start += size
                     current -= size
-                    if size < delimiter[-1]:
+                    if size < delimiter[-1] and (not self.double or (delimiter[-1] - size) != 1):
                         new = delimiter[-1] - size
                         stack.append((delimiter[0], delimiter[1] - size, delimiter[2], new))
                     if not stack:
@@ -883,18 +880,19 @@ class DelimiterProcessor(InlineProcessor):
 
                 is_start = False
                 ds, de = delimiter[:2]
-                while current:
-                    size = min(current, 2)
+                while current and (not self.double or current != 1):
+                    size = min(current, self.max_size)
                     new = last - size
                     regions.append((ds + new, de, start, start + size, size))
                     start += size
                     current -= size
                     last -= size
                     de -= size
-                stack.append((ds, de, False, last))
+                if not self.double or last > 1:
+                    stack.append((ds, de, False, last))
 
             # Find opening tokens
-            if is_start:
+            if is_start and (not self.double or current != 1):
                 # Looking for:
                 # - `*em ...*`
                 # - `**strong ...*`
