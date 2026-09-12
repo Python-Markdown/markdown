@@ -799,6 +799,11 @@ class DelimiterProcessor(InlineProcessor):
         start = m2.start(0)
         end = m2.end(0)
         length = end - start
+
+        # Double needs at least a size of 2
+        if self.double and length < 2:
+            return None, m.start(0), m.end(0)
+
         is_ambiguous = m2.lastgroup[0] != 's'  # type: ignore[index]
         self.stack.append((start, start + length, is_ambiguous, length))
 
