@@ -754,7 +754,7 @@ class DelimiterProcessor(InlineProcessor):
             self.cache_pos = self.regions[self.cache_index][0]
             while self.stack:
                 entry = self.stack.popleft()
-                if entry[0] > start:
+                if start < entry[0] <= self.cache_pos:
                     self.cache_pos = entry[0]
                     break
 
