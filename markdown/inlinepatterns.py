@@ -878,7 +878,7 @@ class DelimiterProcessor(InlineProcessor):
                 while stack and delimiter[-1] != 3 and delimiter[2]:
                     delimiter = stack.pop()
                     last = delimiter[-1]
-                if delimiter[2]:
+                if delimiter[2] and delimiter[-1] != 3:
                     break
 
                 is_start = False
