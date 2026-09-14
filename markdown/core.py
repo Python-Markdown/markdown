@@ -119,7 +119,7 @@ class Markdown:
         self.registeredExtensions: list[Extension] = []
         self.docType = ""  # TODO: Maybe delete this. It does not appear to be used anymore.
         self.stripTopLevelTags: bool = True
-        self.delimiters: dict[str, DelimiterProcessor] = {}
+        self.delimiters: DelimiterProcessor | None = None
 
         self.build_parser()
 
@@ -272,11 +272,10 @@ class Markdown:
         self.htmlStash.reset()
         self.references.clear()
 
-        for key in list(self.delimiters):
-            ext = self.delimiters[key]
-            ext.reset()
-            if ext not in self.inlinePatterns:
-                del self.delimiters[key]
+        if self.delimiters is not None:
+            self.delimiters.reset()
+            if self.delimiters not in self.inlinePatterns:
+                self.delimiters = None
 
         for extension in self.registeredExtensions:
             if hasattr(extension, 'reset'):

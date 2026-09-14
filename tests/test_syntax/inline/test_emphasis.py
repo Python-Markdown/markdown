@@ -372,6 +372,10 @@ class TestNotEmphasis(TestCase):
                 ___a ___b c__ d_ e___
 
                 _a __b__ _c __d__ _e __f__
+
+                ___bold and italic***bold and italic**bold and italic*__ italic_
+
+                ***a __b** __c *d__ e*
                 """
             ),
             self.dedent(
@@ -392,7 +396,9 @@ class TestNotEmphasis(TestCase):
                 <p><strong><em>a <strong>b <em>c d</em> e</strong> f <em>g</em> h</em></strong></p>
                 <p><strong><em>a <em><strong>b c</strong> d</em> e</em></strong></p>
                 <p>_a <strong>b</strong> _c <strong>d</strong> _e <strong>f</strong></p>
-                """
+                <p><em><strong>bold and italic<em><strong>bold and italic</strong>bold and italic</em></strong> italic</em></p>
+                <p><em><strong>a __b</strong> <strong>c *d</strong> e</em></p>
+                """  # noqa: E501
             )
         )
 
@@ -661,8 +667,7 @@ class TestCommonMark(TestCase):
 
                 *foo _bar* baz_
 
-                <!-- we run * and _ in different passes, we cannot match CommonMark here currently>
-                <!-- *foo __bar *baz bim__ bam* -->
+                *foo __bar *baz bim__ bam*
 
                 **foo **bar baz**
 
@@ -827,9 +832,7 @@ class TestCommonMark(TestCase):
                 <p><strong><em>foo</em></strong></p>
                 <p><strong><em><strong>foo</strong></em></strong></p>
                 <p><em>foo _bar</em> baz_</p>
-                <!-- we run * and _ in different passes, we cannot match CommonMark here currently>
-                <!-- *foo __bar *baz bim__ bam* -->
-
+                <p><em>foo <strong>bar *baz bim</strong> bam</em></p>
                 <p>**foo <strong>bar baz</strong></p>
                 <p>*foo <em>bar baz</em></p>
                 <p>*<a href="/url">bar*</a></p>
@@ -856,17 +859,12 @@ class TestProcessorRemoval(TestCase):
         # Remove all delimiter processors
         md = markdown.Markdown()
 
-        extensions = md.delimiters.values()
-        self.assertEqual(len(extensions), 2)
-
-        for ext in md.delimiters.values():
-            self.assertTrue(isinstance(ext, DelimiterProcessor))
+        self.assertTrue(md.delimiters is not None)
+        self.assertTrue(isinstance(md.delimiters, DelimiterProcessor))
 
         md.inlinePatterns.deregister('em_strong')
-        md.inlinePatterns.deregister('em_strong2')
 
         # Call reset which will cause them to remove themselves from being registered
         md.reset()
 
-        extensions = md.delimiters.values()
-        self.assertEqual(len(extensions), 0)
+        self.assertTrue(md.delimiters is None)

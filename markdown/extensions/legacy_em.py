@@ -25,12 +25,15 @@ class LegacyEmExtension(Extension):
 
         | Class Instance                                                     | Registry                                                         | Name         | Priority |
         | ------------------------------------------------------------------ | ---------------------------------------------------------------- | ------------ | :------: |
-        | [`DelimiterProcessor`][markdown.inlinepatterns.DelimiterProcessor] | [`inlinepatterns`][markdown.inlinepatterns.build_inlinepatterns] | `em_strong2` | `50`     |
+        | [`DelimiterProcessor`][markdown.inlinepatterns.DelimiterProcessor] | [`inlinepatterns`][markdown.inlinepatterns.build_inlinepatterns] | `em_strong`  | `60`     |
 
         """
         # flake8: noqa: E501 27-29
-        md.inlinePatterns.register(DelimiterProcessor(r'_', 'strong,em', md), 'em_strong2', 50)
 
+        if md.delimiters is not None:
+            md.delimiters.add('_', 'strong,em')
+        else:
+            md.inlinePatterns.register(DelimiterProcessor('_', 'strong,em', md), 'em_strong', 60)
 
 def makeExtension(**kwargs):  # pragma: no cover
     """ Return an instance of the `LegacyEmExtension` """
