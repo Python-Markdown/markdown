@@ -91,7 +91,7 @@ def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry[InlinePro
     inlinePatterns.register(HtmlInlineProcessor(HTML_RE, md), 'html', 90)
     inlinePatterns.register(HtmlInlineProcessor(ENTITY_RE, md), 'entity', 80)
     inlinePatterns.register(DelimiterProcessor('*', 'strong,em', md), 'em_strong', 60)
-    inlinePatterns.register(DelimiterProcessor('_', 'strong,em', md, smart=True), 'em_strong2', 50)
+    md.delimiters.add('_', 'strong,em', smart=True)
     return inlinePatterns
 
 
@@ -559,8 +559,68 @@ class HtmlInlineProcessor(InlineProcessor):
         return RE.sub(_unescape, text)
 
 
+class Delimiter:
+    """Delimiter."""
+
+    def __init__(self, token: str, tags: str, smart: bool, double: bool):
+        """Initialize."""
+
+        self.stack: deque[tuple[int, int, bool, int]] = deque()
+        temp = tags.split(',')
+        self.tag_count = len(temp)
+        self.tags: tuple[str, str] = (temp[0], temp[1]) if self.tag_count == 2 else (temp[0], temp[0])
+        self.double = len(temp) != 2 and double
+        self.single = len(temp) != 2 and not double
+        self.smart = smart
+        self._build_patterns(token)
+
+    def _build_patterns(self, token: str) -> str:
+        """Build regular expression patterns."""
+
+        # Build up patterns
+        self.token = token
+        etoken = re.escape(token)
+        # Avoid at start and end
+        xstart = fr'(?:(?<=_)|(?<![\w{etoken}]))' if token != '_' else fr'(?<![\w{etoken}])'
+        xend = fr'(?:(?=_)|(?![\w{etoken}]))' if token != '_' else fr'(?![\w{etoken}])'
+        self.max_size = 2
+        if self.tag_count != 2 and not self.double:
+            self.max_size = 1
+
+        # Patterns for "smart" cases.
+        if self.smart:
+            self.boundary = re.compile(
+                fr'''(?x)
+                (?P<ambiguous>(?<!^)(?<![\s{etoken}]){xstart}{etoken}{{1,}}{xend}(?![\s{etoken}])(?!$))|
+                (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{1,}}{xend})|
+                (?P<start>{xstart}{etoken}{{1,}}(?![\s{etoken}])(?!$))
+                ''',
+                flags=re.UNICODE
+            )
+        # Patterns for "dumb" cases.
+        else:
+            self.boundary = re.compile(
+                fr'''(?x)
+                (?P<ambiguous>(?<!^)(?<![\s{etoken}]){etoken}{{1,}}(?![\s{etoken}])(?!$))|
+                (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{1,}})|
+                (?P<start>{etoken}{{1,}}(?![\s{etoken}])(?!$))
+                ''',
+                flags=re.UNICODE
+            )
+
+        return fr'{etoken}'
+
+    def reset(self) -> None:
+        """Reset."""
+
+        # Cache info
+        self.stack.clear()
+
+
 class DelimiterProcessor(InlineProcessor):
     """Processor for handling complex nested patterns such as strong and em matches."""
+
+    SPACE = re.compile(r'\s')
 
     def __init__(
         self,
@@ -570,74 +630,57 @@ class DelimiterProcessor(InlineProcessor):
         smart: bool = False,
         double: bool = False
     ) -> None:
-        """
-        Initialize.
+        """Initialize."""
 
-        Arguments:
-            token: A single character token.
-            tags: A tag or two tags seprated by comma. When two are specified, the first will be the
-                  one that takes double tokens.
-            md: the Markdown object
-            smart: Enable intelligent word logic.
-            double: If only one tag is specified, indicate whether it requires double tokens.
-
-        """
-
-        # Cache info
-        md.delimiters[token] = self
-        self.regions: list[tuple[int, int, int, int, int]] = []
-        self.stack: deque[tuple[int, int, bool, int]] = deque()
+        md.delimiters = self
+        self.regions: list[tuple[int, int, int, int, tuple[str, str], int]] = []
+        self.stack: list[tuple[int, int, bool, int]] = []
+        self.tokens: list[str] = []
+        self.delimiters: dict[str, Delimiter] = {}
         self.cache_index = 0
         self.cache_pos = 0
+        self.md = md
+        # API for Markdown to pass `safe_mode` into instance
+        self.safe_mode = False
+        self.add(token, tags, smart, double)
 
-        self.last_run = 0.0
-        self.smart = smart
-        self.tags = tags.split(',')
-        self.double = len(self.tags) != 2 and double
-        super().__init__(self._build_patterns(token), md)
+    def add(
+        self,
+        token: str,
+        tags: str,
+        smart: bool = False,
+        double: bool = False
+    ) -> None:
+        """Add a delimiter."""
+
+        if token not in self.tokens:
+            self.tokens.append(token)
+        self.delimiters[token] = Delimiter(token, tags, smart, double)
+        self.pattern = '|'.join([re.escape(t) for t in self.tokens])
+        self.compiled_re = re.compile(self.pattern, re.DOTALL | re.UNICODE)
+
+    def remove(self, token: str) -> None:
+        """Remove a token."""
+
+        try:
+            i = self.tokens.index(token)
+            del self.tokens[i]
+            del self.delimiters[token]
+        except Exception:
+            pass
+        self.pattern = '|'.join([re.escape(t) for t in self.tokens])
+        self.compiled_re = re.compile(self.pattern, re.DOTALL | re.UNICODE) if self.pattern else re.compile(r'(?!)')
 
     def reset(self) -> None:
-        """Rest."""
+        """Reset."""
 
+        # Cache info
+        for v in self.delimiters.values():
+            v.reset()
         self.regions.clear()
         self.stack.clear()
         self.cache_index = 0
         self.cache_pos = 0
-
-    def _build_patterns(self, token: str) -> str:
-        """Build regular expression patterns."""
-
-        # Build up patterns
-        self.token = token
-        etoken = re.escape(token)
-        avoid_start = fr'(?:(?<=_)|(?<![\w{etoken}]))' if token != '_' else fr'(?<![\w{etoken}])'
-        avoid_end = fr'(?:(?=_)|(?![\w{etoken}]))' if token != '_' else fr'(?![\w{etoken}])'
-        self.max_size = 2
-        if len(self.tags) != 2 and not self.double:
-            self.max_size = 1
-
-        # Patterns for "smart" cases.
-        if self.smart:
-            self.boundary = re.compile(
-                fr'''(?x)
-                (?P<ambiguous>(?<!^)(?<![\s{etoken}]){avoid_start}{etoken}{{1,}}{avoid_end}(?![\s{etoken}])(?!$))|
-                (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{1,}}{avoid_end})|
-                (?P<start>{avoid_start}{etoken}{{1,}}(?![\s{etoken}])(?!$))
-                ''',
-                flags=re.UNICODE
-            )
-        # Patterns for "dumb" cases.
-        else:
-            self.boundary = re.compile(
-                fr'''(?x)(?:
-                (?P<ambiguous>(?<!^)(?<![\s{etoken}]){etoken}{{1,}}(?![\s{etoken}])(?!$))|
-                (?P<end>(?<!^)(?<![\s{etoken}]){etoken}{{1,}})|
-                (?P<start>{etoken}{{1,}}(?![\s{etoken}])(?!$))
-                )''',
-                flags=re.UNICODE
-            )
-
-        return fr'{etoken}'
 
     def _build_element(
         self,
@@ -651,20 +694,9 @@ class DelimiterProcessor(InlineProcessor):
         el: etree.Element | None = None
         last: Any = None
         previous: Any = None
-        greater: Any = None
-        lesser: Any = None
 
         outer: list[etree.Element] = []
-        outer_r: list[tuple[int, int, int, int, int]] = []
-
-        if len(self.tags) == 2:
-            greater, lesser = self.tags
-        elif self.double:  # pragma: no cover
-            greater = self.tags[0]
-            lesser = None
-        else:  # pragma: no cover
-            lesser = self.tags[0]
-            greater = None
+        outer_r: list[tuple[int, int, int, int, tuple[str, str], int]] = []
 
         # Iterate regions creating the elements they represent
         end = len(regions)
@@ -675,11 +707,12 @@ class DelimiterProcessor(InlineProcessor):
             if idx and r[0] >= regions[start][3]:
                 idx -= 1
                 break
+
             # Get the appropriate element(s)
-            if r[4] == 2:
-                el1 = etree.Element(greater)
+            if r[-1] == 2:
+                el1 = etree.Element(r[4][0])
             else:
-                el1 = etree.Element(lesser)
+                el1 = etree.Element(r[4][1])
 
             # Populate the elements with their text
             if idx > 1:
@@ -749,7 +782,7 @@ class DelimiterProcessor(InlineProcessor):
         if self.cache_index < len(self.regions):
             self.cache_pos = self.regions[self.cache_index][0]
             while self.stack:
-                entry = self.stack.popleft()
+                entry = self.stack.pop(0)
                 if start < entry[0] <= self.cache_pos:
                     self.cache_pos = entry[0]
                     break
@@ -769,6 +802,40 @@ class DelimiterProcessor(InlineProcessor):
         self.increment_next_position(start, count)
         return el, start + offset, end + offset
 
+    def get_match(self, data: str, start: int) -> re.Match[str] | None:
+        """Get match."""
+
+        for d in self.delimiters.values():
+            m = d.boundary.match(data, start)
+            if m is not None:
+                return m
+        return None
+
+    def search(self, data: str, start: int) -> re.Match[str] | None:
+        """Search."""
+
+        for i in range(start, len(data)):
+            if data[i] in self.delimiters:
+                d = self.delimiters[data[i]]
+                m = d.boundary.match(data, i)
+                if m is not None:
+                    if not d.stack and m.lastgroup[0] == 'e':  # type: ignore[index]
+                        continue
+                    return m
+        return None
+
+    def add_region(self, delim: Delimiter, a: int, b: int, c: int, d: int, size: int) -> None:
+        """Add region."""
+
+        self.regions.append((a, b, c, d, delim.tags, size))
+        for delim in self.delimiters.values():
+            while delim.stack:
+                p = delim.stack[-1][0]
+                if max(p, a) <= min(p, d - 1):
+                    delim.stack.pop()
+                    continue
+                break
+
     def handleMatch(  # type: ignore[override]
         self,
         m: re.Match[str],
@@ -781,7 +848,7 @@ class DelimiterProcessor(InlineProcessor):
             return self.get_cached_result(m.start(0), data)
 
         # If token is not an opening, quit
-        m2 = self.boundary.match(data, m.start(0))
+        m2 = self.get_match(data, m.start(0))
         if m2 is None or m2.lastgroup[0] == 'e':  # type: ignore[index]
             if m2 is not None:
                 m = m2
@@ -789,36 +856,43 @@ class DelimiterProcessor(InlineProcessor):
             return None, m.start(0), m.end(0)
 
         # Get the stack and regions
-        stack = self.stack
-        regions = self.regions
+        token = data[m.start(0)]
+        delim = self.delimiters[token]
+        stack = delim.stack
 
         start = m2.start(0)
         end = m2.end(0)
         length = end - start
 
         # Double needs at least a size of 2
-        if self.double and length < 2:
+        if delim.double and length < 2:
             return None, m.start(0), m.end(0)
 
         is_ambiguous = m2.lastgroup[0] != 's'  # type: ignore[index]
-        self.stack.append((start, start + length, is_ambiguous, length))
+        stack.append((start, start + length, is_ambiguous, length))
 
         # Pair tokens until the stack is empty or we can no longer find tokens.
-        while stack:
-            m2 = self.boundary.search(data, end)
+        while any(d.stack for d in self.delimiters.values()):
+            m2 = self.search(data, end)
             if m2 is None:
                 break
+
+            token = data[m2.start(0)]
+            delim = self.delimiters[token]
+            stack = delim.stack
+
             start = m2.start(0)
             end = m2.end(0)
 
             # Get current and last delimiter size
             current = len(m2.group(0))
-            last = stack[-1][-1]
 
             # Some delimiters may be ambiguous and look like both a start or an end
             is_start = m2.lastgroup[0] != 'e'  # type: ignore[index]
             is_end = not is_start or m2.lastgroup[0] != 's'  # type: ignore[index]
             is_ambiguous = is_start and is_end
+
+            last = stack[-1][-1] if stack else 0
 
             # Find closing tokens
             # Looking for:
@@ -832,35 +906,36 @@ class DelimiterProcessor(InlineProcessor):
             # Avoid ambiguous tokens that could be a start or an end.
             # Consume starts until the end token is fully consumed.
             # If we don't consume the entire end, see if next rule consumes it.
-            if (
-                is_end and
-                ((not is_ambiguous and current > last) or current == last or current >= 3)
-            ):
+            if stack and is_end and ((not is_ambiguous and current > last) or current == last or current >= 3):
                 is_start = False
 
-                # Consume previous tokens until the delimiter is consumed
+                # Consume previous points until the delimiter is consumed
                 original = current
-                while current and last <= current:
+                while stack and current and last <= current:
                     delimiter = stack.pop()
 
                     # Build up region for pair and adjust accounting.
-                    # Special handle span of 3 to preserve old Python Markdown behavior.
-                    # For true CommonMark logic `2` should always be used.
-                    size = min(delimiter[-1], 1 if len(self.tags) == 2 and delimiter[-1] == 3 else self.max_size)
-                    regions.append((delimiter[1] - size, delimiter[1], start, start + size, size))
+                    size = min(delimiter[-1], 1 if delim.tag_count == 2 and delimiter[-1] == 3 else delim.max_size)
+                    self.add_region(delim, delimiter[1] - size, delimiter[1], start, start + size, size)
                     start += size
                     current -= size
-                    if size < delimiter[-1] and (not self.double or (delimiter[-1] - size) != 1):
+                    new = 0
+                    if size < delimiter[-1] and (not delim.double or (delimiter[-1] - size) != 1):
                         new = delimiter[-1] - size
                         stack.append((delimiter[0], delimiter[1] - size, delimiter[2], new))
+
                     if not stack:
+                        if any(d.stack for d in self.delimiters.values() if d is not delim):
+                            delim.reset()
+                            continue
                         is_end = False
                         break
+
                     last = stack[-1][-1]
 
                 # Should remainder be treated as a new start?
                 if original >= 3 and current and is_ambiguous:
-                    self.stack.append((regions[-1][3], end, False, current))
+                    delim.stack.append((m2.start(0) + (original - current), end, False, current))
                     is_end = False
 
                 # Do we still have more to consume?
@@ -871,49 +946,62 @@ class DelimiterProcessor(InlineProcessor):
             # - `***em*`
             # - `***strong**`
             # - `**em*`
-            if is_end and (last >= 3 or not is_ambiguous) and last > current:
+            if stack and is_end and (last >= 3 or not is_ambiguous) and last > current:
                 delimiter = stack.pop()
 
                 # Don't pair with an ambiguous opening
                 while stack and delimiter[-1] != 3 and delimiter[2]:
                     delimiter = stack.pop()
                     last = delimiter[-1]
+
                 if delimiter[2] and delimiter[-1] != 3:
+                    if any(d.stack for d in self.delimiters.values() if d is not delim):
+                        delim.reset()
+                        continue
                     break
 
-                is_start = False
-                ds, de = delimiter[:2]
-                while current and (not self.double or current != 1):
-                    size = min(current, 1 if len(self.tags) == 2 and current == 3 else self.max_size)
-                    new = last - size
-                    regions.append((ds + new, de, start, start + size, size))
-                    start += size
-                    current -= size
-                    last -= size
-                    de -= size
-                if not self.double or last > 1:
-                    stack.append((ds, de, False, last))
+                ignore = False
+                # Create new region if end is valid.
+                # If not valid, ignore the end but continue parsing.
+                if not ignore:
+                    is_start = False
+                    ds, de = delimiter[:2]
+                    while current and (not delim.double or current != 1):
+                        size = min(current, 1 if delim.tag_count == 2 and current == 3 else delim.max_size)
+                        new = last - size
+                        self.add_region(delim, ds + new, de, start, start + size, size)
+                        start += size
+                        current -= size
+                        last -= size
+                        de -= size
+                    if not delim.double or last > 1:
+                        stack.append((ds, de, False, last))
 
             # Find opening tokens
-            if is_start and (not self.double or current != 1):
-                # Looking for:
-                # - `*em ...*`
-                # - `**strong ...*`
-                # - `***em ...*`
+            # Looking for:
+            # - `*em ...*`
+            # - `**strong ...*`
+            # - `***em ...*`
+            if is_start and (not delim.double or current != 1):
                 stack.append((start, end, is_ambiguous, current))
 
+        # Combine the stacks and order them
+        for delim in self.delimiters.values():
+            self.stack.extend(delim.stack)
+        self.stack.sort(key=lambda x: x[0])
+
         # Build the HTML elements
-        if regions:
+        if self.regions:
             # Regions may be out of order.
-            regions.sort(key=lambda x: x[0])
-            start, end = regions[0][0], regions[0][3]
+            self.regions.sort(key=lambda x: x[0])
+            start, end = self.regions[0][0], self.regions[0][3]
             el, count = self._build_element(data)
             self.increment_next_position(start, count)
             return el, start, end
 
         # We failed to pair any valid start/end delimiters, avoid the parsed range next pass.
         start = m.start(0)
-        end = stack[-1][1] if stack else m.end(0)
+        end = self.stack[-1][1] if self.stack else m.end(0)
         self.reset()
         return None, start, end
 
