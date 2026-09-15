@@ -426,7 +426,7 @@ class TestCommonMark(TestCase):
 
                 *€*charlie.
 
-                <!-- CommonMark uses nbsp to test this, we instead just but test in front to avoid list parsing -->
+                <!-- CommonMark uses nbsp to test this, we instead just put test in front to avoid list parsing -->
                 test * a *
 
                 foo*bar*
@@ -700,7 +700,7 @@ class TestCommonMark(TestCase):
                 <p>*$*alpha.</p>
                 <p>*£*bravo.</p>
                 <p>*€*charlie.</p>
-                <!-- CommonMark uses nbsp to test this, we instead just but test in front to avoid list parsing -->
+                <!-- CommonMark uses nbsp to test this, we instead just put test in front to avoid list parsing -->
                 <p>test * a *</p>
                 <p>foo<em>bar</em></p>
                 <p>5<em>6</em>78</p>
