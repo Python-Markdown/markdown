@@ -10,49 +10,26 @@ used by various projects to convert Markdown syntax into HTML.
 ## The Basics
 
 To use markdown as a module, pass a string to the [`markdown.markdown`]
-[markdown.markdown] function.
+[markdown.markdown] function. The string must be a *Unicode* string
+(the default string type in Python).
 
-```python
+``` py-render { output-lang='html' }
 import markdown
-html = markdown.markdown(your_text_string)
-```
 
-The string must be a *Unicode* string (the default string type in Python).
-
-``` python
 src = 'Some **Markdown** text.'
-html = markdown.markdown(src)
+fragment = markdown.markdown(src)
 ```
 
-Python-Markdown only ever outputs an HTML fragment. Therefore, the value of
-`html` above would be:
+Python-Markdown only ever outputs an HTML fragment. If you need a complete
+HTML document, including `<html>`, `<head>` and `<body>` tags, then you will
+need to pass the output of Python-Markdown into some other tool. For a
+minimal complete document, [JustHTML](https://emilstenstrom.github.io/justhtml/)
+can do that with a single line of code:
 
-``` html
-<p>Some <strong>Markdown</strong> text.</p>
-```
-
-If you need a complete HTML document, including `<html>`, `<head>` and
-`<body>` tags, then you will need to pass the output of Python-Markdown into
-some other tool. For a minimal complete document,
-[JustHTML](https://emilstenstrom.github.io/justhtml/) can do that with a
-single line of code:
-
-``` python
+``` py-render { output-lang='html' }
 from justhtml import JustHTML
 
-doc = JustHTML(html)
-```
-
-Assuming the value of `html` from above, the value returned by 
-`doc.to_html()` would be the following string:
-
-``` html
-<html>
-  <head></head>
-  <body>
-    <p>Some <strong>Markdown</strong> text.</p>
-  </body>
-</html>
+html = JustHTML(fragment).to_html()
 ```
 
 For more sophisticated output, you may need to explore the use of a templating

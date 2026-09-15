@@ -7,6 +7,9 @@
 import markdown
 import yaml
 import re
+import ast
+import sys
+from io import StringIO
 from collections import OrderedDict
 
 
@@ -83,3 +86,92 @@ def md_render(src="", language="", class_name=None, options=None, md="", **kwarg
     source = md.preprocessors['fenced_code_block'].highlight(text, 'markdown', options, md, **kwargs)
     output = md.preprocessors['fenced_code_block'].highlight(html, 'html', result_options, md, **kwargs)
     return f'{source}\n<div class="result">{output}</div>'
+
+
+class PyExecNamespace():
+    def __init__(self, globals=None, locals=None):
+        self.globals = globals or {}
+        self.locals = locals or {}
+
+    def exec(self, source):
+        """ 
+        Execute code in namespace.
+
+        If code outputs to stdout, that output is captured and returned.
+        If nothing it output to stdout, then the last line of code is checked
+        for a variable assignment. If one exists, then the value of that variable
+        is returned. If that fails, then `None` is returned.
+        """
+
+        # Temporarily redirect stdout
+        save_stdout = sys.stdout
+        sys.stdout = StringIO()
+
+        # Run code
+        try:
+            exec(source, self.globals, self.locals)
+        except KeyboardInterrupt:
+            sys.stdout.close()
+            sys.stdout = save_stdout
+            raise
+        except BaseException as exc:
+            sys.stdout.close()
+            sys.stdout = save_stdout
+            import traceback
+            tb = traceback.format_exception(exc, exc, exc.__traceback__.tb_next)
+            return 'traceback', '\n'.join(tb)
+
+        # Retreive anything sent to stdout and restore system default
+        out = sys.stdout.getvalue()
+        sys.stdout.close()
+        sys.stdout = save_stdout
+
+        if out:
+            # Return text sent to stdout
+            return 'stdout', out
+        else:
+            # Nothing sent to stdout. Try to get value of last variable assignment
+            target = None
+            a = ast.parse(source)
+            if a.body:
+                if isinstance(a_last := a.body[-1], ast.Assign):
+                    target = ast.unparse(a_last.targets[0])
+                elif isinstance(a_last, (ast.AnnAssign, ast.AugAssign)):
+                    target = ast.unparse(a_last.target)
+            if target and target in self.locals:
+                return target, self.locals[target]
+        return None, None
+
+
+def py_render(src="", language="", class_name=None, options=None, md="", **kwargs):
+    """ Render Python in a code block and output of the code in a result code block. """
+
+    if not hasattr(md, 'py_namespace'):
+        # This is the first instance of a Python render block on the page. 
+        # Create namespace for this and all future blocks to run in.
+        md.py_namespace = PyExecNamespace()
+    target, result = md.py_namespace.exec(src)
+
+    # Retreive and remove output language from attrs
+    output_lang = kwargs['attrs'].pop('output-lang', '')
+
+    options = options or {}
+    if 'title' not in options:
+        options['title'] = 'Python'
+
+    source = md.preprocessors['fenced_code_block'].highlight(src, 'python', options, md, **kwargs)
+
+    if result is not None:
+        result_options = options.copy()
+        if target == 'traceback':
+            result_options['title'] = 'Error Raised'
+            output_lang = 'py3tb'  # PythonTracebackLexer
+        elif target == 'stdout':
+            result_options['title'] = 'Text Written to STDOUT'
+        elif target is not None:
+            result_options['title'] = f'Value of `{target}`'
+        
+        output = md.preprocessors['fenced_code_block'].highlight(result, output_lang, result_options, md, **kwargs)
+        return f'{source}\n<div class="result">{output}</div>'
+    # No result so only render source
+    return source

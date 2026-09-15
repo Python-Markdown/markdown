@@ -262,7 +262,8 @@ markdown.markdown(some_text, extensions=['codehilite'])
 To keep the code block's language in the Pygments generated HTML output, one can provide a custom Pygments formatter
 that takes the `lang_str` option. For example,
 
-```python
+```py-render { output-lang='html' }
+import markdown
 from pygments.formatters import HtmlFormatter
 from markdown.extensions.codehilite import CodeHiliteExtension
 
@@ -285,22 +286,10 @@ some_text = '''\
     print('hellow world')
 '''
 
-markdown.markdown(
+output = markdown.markdown(
     some_text,
     extensions=[CodeHiliteExtension(pygments_formatter=CustomHtmlFormatter)],
 )
-```
-
-The formatter above will output the following HTML structure for a code block:
-
-```html
-<div class="codehilite">
-    <pre>
-        <code class="language-python">
-        ...
-        </code>
-    </pre>
-</div>
 ```
 
 [html formatter]: https://pygments.org/docs/formatters/#HtmlFormatter

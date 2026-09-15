@@ -157,13 +157,12 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.superfences:
       custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
         - name: md-render
           class: md-render
           format: !!python/name:tools.superfences_formaters.md_render
-
+        - name: py-render
+          class: py-render
+          format: !!python/name:tools.superfences_formaters.py_render
 
 plugins:
 - search

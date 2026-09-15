@@ -206,11 +206,21 @@ wheels = [
 ]
 
 [[package]]
+name = "justhtml"
+version = "3.11.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c0/fc/fa19f7406a02a5fac3c4e59b366bb49b04687edf7da247e3da740125402b/justhtml-3.11.2.tar.gz", hash = "sha256:83329a7436620a79ebd0b7310b5e4d653fa0688cd315e7a92d2188febd0d6ab0", size = 956210, upload-time = "2026-08-27T16:25:52.69Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cd/8c/8266010c7d05cd55e1c34f0f524bf611621871cc709d619a2cee2ad262a9/justhtml-3.11.2-py3-none-any.whl", hash = "sha256:366986de83fab5f7ab643f79ffb3ad44dbaeb63f34b6361b955930575417cdd2", size = 171841, upload-time = "2026-08-27T16:25:51.308Z" },
+]
+
+[[package]]
 name = "markdown"
 source = { editable = "." }
 
 [package.optional-dependencies]
 docs = [
+    { name = "justhtml" },
     { name = "mdx-gh-links" },
     { name = "mkdocstrings" },
     { name = "mkdocstrings-python" },
@@ -226,6 +236,7 @@ testing = [
 [package.metadata]
 requires-dist = [
     { name = "coverage", marker = "extra == 'testing'" },
+    { name = "justhtml", marker = "extra == 'docs'", specifier = "==3.11.2" },
     { name = "mdx-gh-links", marker = "extra == 'docs'", specifier = "==0.4" },
     { name = "mkdocstrings", marker = "extra == 'docs'", specifier = "==1.0.6" },
     { name = "mkdocstrings-python", marker = "extra == 'docs'", specifier = "==1.16.8" },
