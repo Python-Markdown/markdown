@@ -315,10 +315,19 @@ words.
 
 #### Code Blocks
 
-All code blocks should use the fenced code block style. If a code block is
-demonstrating Markdown syntax, if can be assigned the `md-render` attribute,
-and both the Markdown source and HTML output will be rendered in a nested set
-of code blocks.
+All code blocks should use the fenced code block style and indicate the
+language of the code contained in the block to ensure proper syntax
+highlighting. 
+
+There are two special types of code blocks which will render output based on
+the content of the code block. See [Rendered Markdown](#rendered-markdown)
+and [Rendered Python](#rendered-python) below.
+
+##### Rendered Markdown
+
+If a code block is demonstrating Markdown syntax, it can be assigned the
+`md-render` attribute in place of the language, and both the Markdown source
+and HTML output will be rendered in a nested set of code blocks.
 
 ```` markdown
 ``` md-render
@@ -387,6 +396,87 @@ The above code block would render as follows:
 ``` markdown
 Some *Markdown* text.
 ```
+
+##### Rendered Python
+
+If a code block is demonstrating Python code, it can be assigned the
+`py-render` attribute in place of the language, and both the Python code and
+output will be rendered in a nested set of code blocks. The language of the
+output should be specified using the `output-lang` attribute.
+
+```` markdown
+``` py-render { output-lang='html' }
+import markdown
+
+src = 'Some **Markdown** text.'
+fragment = markdown.markdown(src)
+```
+````
+
+The above code block will be rendered as follows:
+
+``` py-render { output-lang='html' }
+import markdown
+
+src = 'Some **Markdown** text.'
+fragment = markdown.markdown(src)
+```
+
+Note that the Python code is executed in an isolated environment. Therefore,
+any imports need to be made to avoid errors. However, as all `py-render`
+blocks on the same page are run within the same environment, an import only
+needs to be made once (before the first use) for all code blocks on the same
+page. Variables assigned in one block will be available in later blocks on the
+same page.
+
+```` markdown
+``` py-render { output-lang='html' }
+from justhtml import JustHTML
+
+html = JustHTML(fragment).to_html()
+```
+````
+
+Notice that in the block above, the variable `fragment` from the previous code
+block is available within this code block. However, `JustHTML` needs to be
+imported as it had not been previously.
+
+``` py-render { output-lang='html' }
+from justhtml import JustHTML
+
+html = JustHTML(fragment).to_html()
+```
+
+Each page contains it's own isolated environment. Objects defined on one page
+will not be available on another page and would need to be redefined.
+
+Output will be generated if one of three conditions are met. Whichever
+condition is encountered first (in decreasing order) is the controlling
+condition.
+
+1. If an error is raised, a traceback will be rendered in the output and
+   highlighted using Pygment's `PythonTracebackLexer` (`py3tb`). 
+2. If the code writes to STDOUT (for example, it passes text to `print()`),
+   then the text sent to STDOUT will be rendered in the output and
+   highlighted using the language assigned to `output-lang`.
+3. If the last line of the code assigns a value to a variable, the value of
+   that variable will be rendered in the output and highlighted using the
+   language assigned to `output-lang`.
+
+If none of the above conditions are met, then the code block will render as
+normal without rendered output. However, the code block will have updated the
+isolated Python environment and any objects created can be referenced in
+later code blocks on the same page.
+
+If a Python code block should not have it's code executed and rendered, then
+simply assign it the `python` attribute. It will then be rendered as a normal
+Python code block. Any objects defined in standard Python code blocks
+will **not** be available to `py-render` style blocks
+
+Code blocks which contain Python Console sessions are not supported by
+`py-render`. They should be assigned `pycon` and contain the code and output
+as copied out of a Python Console session. Any objects defined in Python
+Session code blocks will **not** be available to `py-render` style blocks.
 
 #### Changelog
 

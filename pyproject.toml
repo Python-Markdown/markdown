@@ -56,6 +56,7 @@ docs = [
     'mkdocstrings-python==1.16.8',
     'pygments==2.21.0',
     'pymdown-extensions==11.0.2',
+    'justhtml==3.11.2'
 ]
 
 [project.urls]
