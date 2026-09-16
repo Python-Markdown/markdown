@@ -1077,7 +1077,7 @@ class DelimiterProcessor(InlineProcessor):
                         current -= size
                         last -= size
                         de -= size
-                    if not delim.double or last > 1:
+                    if last and (not delim.double or last > 1):
                         stack.append((ds, de, False, last))
 
             # Find opening tokens
