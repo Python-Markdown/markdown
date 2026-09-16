@@ -1063,22 +1063,19 @@ class DelimiterProcessor(InlineProcessor):
                         continue
                     break
 
-                ignore = False
-                # Create new region if end is valid.
-                # If not valid, ignore the end but continue parsing.
-                if not ignore:
-                    is_start = False
-                    ds, de = delimiter[:2]
-                    while current and (not delim.double or current != 1):
-                        size = min(current, 1 if delim.tag_count == 2 and current == 3 else delim.max_size)
-                        new = last - size
-                        self.add_region(delim, ds + new, de, start, start + size, size)
-                        start += size
-                        current -= size
-                        last -= size
-                        de -= size
-                    if last and (not delim.double or last > 1):
-                        stack.append((ds, de, False, last))
+                # Create new regions
+                is_start = False
+                ds, de = delimiter[:2]
+                while current and (not delim.double or current != 1):
+                    size = min(current, 1 if delim.tag_count == 2 and current == 3 else delim.max_size)
+                    new = last - size
+                    self.add_region(delim, ds + new, de, start, start + size, size)
+                    start += size
+                    current -= size
+                    last -= size
+                    de -= size
+                if last and (not delim.double or last > 1):
+                    stack.append((ds, de, False, last))
 
             # Find opening tokens
             # Looking for:
