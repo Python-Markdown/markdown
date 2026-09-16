@@ -349,7 +349,7 @@ Here are some convenience functions and other examples:
 
 | Class                                                                                | Kind      | Description                                                   |
 | -------------------------------------------------------------------------------------|-----------|---------------------------------------------------------------|
-| [`AsteriskProcessor`][markdown.inlinepatterns.AsteriskProcessor]                     | built-in  | Emphasis processor for handling strong and em matches inside asterisks |
+| [`DelimiterProcessor`][markdown.inlinepatterns.DelimiterProcessor]                    | built-in  | Emphasis processor for handling strong and em matches        |
 | [`WikiLinksInlineProcessor`][markdown.extensions.wikilinks.WikiLinksInlineProcessor] | extension | Link `[[article names]]` to wiki given in metadata            |
 | [`FootnoteInlineProcessor`][markdown.extensions.footnotes.FootnoteInlineProcessor]   | extension | Replaces footnote in text with link to footnote div at bottom |
 

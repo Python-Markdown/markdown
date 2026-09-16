@@ -20,6 +20,7 @@ See the [Contributing Guide](contributing.md) for details.
   performance for repeated inline patterns (#1619).
 * Officially support Python 3.15 and drop support for Python 3.10
 * Walk backtick runs in `BacktickInlineProcessor` without a regex (#1620).
+* Complete rework of emphasis handling to imporove nested emphasis handling better (#1632).
 
 ### Fixed
 

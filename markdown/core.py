@@ -28,7 +28,7 @@ from . import util
 from .preprocessors import build_preprocessors
 from .blockprocessors import build_block_parser
 from .treeprocessors import build_treeprocessors
-from .inlinepatterns import build_inlinepatterns
+from .inlinepatterns import build_inlinepatterns, DelimiterProcessor
 from .postprocessors import build_postprocessors
 from .extensions import Extension
 from .serializers import to_html_string, to_xhtml_string
@@ -106,6 +106,7 @@ class Markdown:
 
         """
 
+        self.last_run: float = 0.0
         self.tab_length: int = kwargs.get('tab_length', 4)
 
         self.ESCAPED_CHARS: list[str] = [
@@ -118,6 +119,7 @@ class Markdown:
         self.registeredExtensions: list[Extension] = []
         self.docType = ""  # TODO: Maybe delete this. It does not appear to be used anymore.
         self.stripTopLevelTags: bool = True
+        self.delimiters: DelimiterProcessor | None = None
 
         self.build_parser()
 
@@ -269,6 +271,11 @@ class Markdown:
         """
         self.htmlStash.reset()
         self.references.clear()
+
+        if self.delimiters is not None:
+            self.delimiters.reset()
+            if self.delimiters not in self.inlinePatterns:
+                self.delimiters = None
 
         for extension in self.registeredExtensions:
             if hasattr(extension, 'reset'):
