@@ -126,7 +126,7 @@ Orange { #orange }
 :   The fruit of an evergreen tree of the genus Citrus.
 ```
 
-[Definition List]: def_list.md
+[Definition List]: ./definition_lists.md
 
 !!! seealso "See Also"
 
