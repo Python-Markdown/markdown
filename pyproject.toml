@@ -50,13 +50,14 @@ testing = [
     'pyyaml'
 ]
 docs = [
-    'zensical==0.0.57',
+    'zensical==0.0.62',
     'mdx_gh_links==0.4',
     'mkdocstrings==1.0.6',
     'mkdocstrings-python==1.16.8',
     'pygments==2.21.0',
     'pymdown-extensions==11.0.2',
-    'justhtml==3.11.2'
+    'justhtml==3.11.2',
+    'ghp-import==2.1.0'
 ]
 
 [project.urls]

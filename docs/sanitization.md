@@ -59,7 +59,7 @@ Both Python-Markdown and `JustHTML` provide command line interfaces which read
 from `STDIN` and write to `STDOUT`. Therefore, they can be used together to
 ensure that the output from untrusted input is properly sanitized.
 
-```sh
+```shell
 echo "Some **Markdown** text." | python -m markdown | justhtml - --fragment > safe_output.html
 ```
 
