@@ -577,7 +577,8 @@ class EmptyBlockProcessor(BlockProcessor):
 class ReferenceProcessor(BlockProcessor):
     """ Process link references. """
     RE = re.compile(
-        r'^[ ]{0,3}\[([^\[\]]*)\]:[ ]*\n?[ ]*([^\s]+)[ ]*(?:\n[ ]*)?((["\'])(.*)\4[ ]*|\((.*)\)[ ]*)?$', re.MULTILINE
+        r'^[ ]{0,3}\[([^\[\]]*)\]:[ ]*(?:\n[ ]*)?([^\s]+)[ ]*(?:\n[ ]*)?((["\'])(.*)\4[ ]*|\((.*)\)[ ]*)?$',
+        re.MULTILINE
     )
 
     def test(self, parent: etree.Element, block: str) -> bool:
