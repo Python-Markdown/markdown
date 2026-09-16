@@ -111,6 +111,23 @@ A setext style header { #setext}
 ### A hash style header ### { #hash }
 ```
 
+Similarly, when using with the [Definition List] Extension, an attribute list
+must be on the same line as the term.
+
+``` md-render
+---
+extensions: [attr_list, def_list]
+---
+Apple { #apple }
+:   Pomaceous fruit of plants of the genus Malus in
+    the family Rosaceae.
+
+Orange { #orange }
+:   The fruit of an evergreen tree of the genus Citrus.
+```
+
+[Definition List]: ./definition_lists.md
+
 !!! seealso "See Also"
 
     By default, the [Fenced Code Blocks](./fenced_code_blocks.md#attributes) extension includes limited support for

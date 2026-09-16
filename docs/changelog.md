@@ -32,6 +32,7 @@ See the [Contributing Guide](contributing.md) for details.
 * Fix quadratic-time regex backtracking in `ReferenceProcessor` when a link
   reference definition has no URL, e.g. a line consisting only of `[id]:`
   followed by many trailing spaces (#798).
+* Document `attr_list` usage for `def_list` (#1123).
 
 ## [3.10.3] - 2026-07-30
 
