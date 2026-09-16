@@ -274,7 +274,7 @@ encoding the output.
         output_file.write(html)
     ```
 
-## The `markdown.Markdown` Class
+## The `markdown.Markdown` Class { #Markdown }
 
 The above-referenced functions (`markdown.markdown` and
 `markdown.markdownFromFile`) wrap the [`markdown.Markdown`][markdown.Markdown]

@@ -20,6 +20,8 @@ See the [Contributing Guide](contributing.md) for details.
   performance for repeated inline patterns (#1619).
 * Officially support Python 3.15 and drop support for Python 3.10
 * Walk backtick runs in `BacktickInlineProcessor` without a regex (#1620).
+* Switch static site generator for documentation from MkDocs to Zensical
+  (#1627, #1635, #1637, and #1638).
 
 ### Fixed
 

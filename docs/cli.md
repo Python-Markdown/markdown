@@ -20,7 +20,7 @@ Python-Markdown's command line script takes advantage of Python's `-m` flag.
 Therefore, assuming the python executable is on your system path, use the
 following format:
 
-```bash
+``` shell
 python -m markdown [options] [args]
 ```
 
@@ -28,14 +28,48 @@ That will run the module as a script with the options and arguments provided.
 
 At its most basic usage, one would simply pass in a file name as the only argument:
 
-```bash
+``` shell
 python -m markdown input_file.txt
 ```
 
 Use the `--help` option for a list of all available options and arguments:
 
-```bash
-python -m markdown --help
+``` console
+$ python -m markdown --help
+Usage: __main__.py [options] [INPUTFILE]
+       (STDIN is assumed if no INPUTFILE is given)
+
+A Python implementation of John Gruber's Markdown. https://python-
+markdown.github.io/
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -f OUTPUT_FILE, --file=OUTPUT_FILE
+                        Write output to OUTPUT_FILE. Defaults to STDOUT.
+  -e ENCODING, --encoding=ENCODING
+                        Encoding for input and output files.
+  -o OUTPUT_FORMAT, --output_format=OUTPUT_FORMAT
+                        Use output format 'xhtml' (default) or 'html'.
+  -x EXTENSION, --extension=EXTENSION
+                        Load extension EXTENSION.
+  -c CONFIG_FILE, --extension_configs=CONFIG_FILE
+                        Read extension configurations from CONFIG_FILE.
+                        CONFIG_FILE must be of JSON or YAML format. YAML
+                        format requires that a python YAML library be
+                        installed. The parsed JSON or YAML must result in a
+                        python dictionary which would be accepted by the
+                        'extension_configs' keyword on the markdown.Markdown
+                        class. The extensions must also be loaded with the
+                        `--extension` option.
+  -q, --quiet           Suppress all warnings.
+  -v, --verbose         Print all warnings.
+  --noisy               Print debug messages.
+
+WARNING: The Python-Markdown library does NOT sanitize its HTML output. If you
+are processing Markdown input from an untrusted source, it is your
+responsibility to ensure that it is properly sanitized. For more information
+see <https://python-markdown.github.io/sanitization/>.
 ```
 
 !!! warning
@@ -50,14 +84,15 @@ python -m markdown --help
 Piping input and output (on `STDIN` and `STDOUT`) is fully supported.
 For example:
 
-```bash
+``` shell { title="Console" }
 echo "Some **Markdown** text." | python -m markdown > output.html
 ```
 
-The above command would generate a file named `output.html` with the following content:
-```html
+/// html | div.result
+```html { title='output.html'}
 <p>Some <strong>Markdown</strong> Text.</p>
 ```
+///
 
 As Python-Markdown only ever outputs HTML fragments (no `<html>`, `<head>`,
 and `<body>` tags), it is generally expected that the command line interface
@@ -67,13 +102,12 @@ otherwise empty `<html>`, `<head>`, and `<body>` tags,
 [JustHTML](https://emilstenstrom.github.io/justhtml/) can do that with with
 a single command:
 
-```bash
+``` shell { title="Console" }
 echo "Some **Markdown** text." | python -m markdown | justhtml - --fragment > output.html
 ```
 
-The above command would generate a file named `output.html` with the following content:
-
-```html
+/// html | div.result
+```html { title='output.html'}
 <html>
   <head></head>
   <body>
@@ -81,6 +115,7 @@ The above command would generate a file named `output.html` with the following c
   </body>
 </html>
 ```
+///
 
 If you don't need or want JustHTML's HTML sanitation, you can disable it with the
 `--unsafe` flag, although that is not recommended. See JustHTML's 
@@ -98,19 +133,19 @@ notation to point to an extension
 For example, to load an extension with the assigned entry point name `myext`,
 run the following command:
 
-```bash
+``` shell
 python -m markdown -x myext input.txt
 ```
 
 And to load an extension with Python's dot notation:
 
-```bash
+``` shell
 python -m markdown -x path.to.module:MyExtClass input.txt
 ```
 
 To load multiple extensions, specify an `-x` option for each extension:
 
-```bash
+``` shell
 python -m markdown -x myext -x path.to.module:MyExtClass input.txt
 ```
 
@@ -118,7 +153,7 @@ If the extension supports configuration options (see the documentation for the
 extension you are using to determine what settings it supports, if any), you
 can pass them in as well:
 
-```bash
+``` shell
 python -m markdown -x myext -c config.yml input.txt
 ```
 
@@ -128,7 +163,7 @@ map to a Python Dictionary in the format required by the
 [`extension_configs`][ec] keyword of the `markdown.Markdown` class. Therefore,
 the file `config.yaml` referenced in the above example might look like this:
 
-```yaml
+``` yaml
 myext:
     option1: 'value1'
     option2: True
@@ -136,7 +171,7 @@ myext:
 
 Similarly, a JSON configuration file might look like this:
 
-```json
+``` json
 {
   "myext":
   {
@@ -216,18 +251,18 @@ path.
 
 To use `markdown_py` from the command line, run it as
 
-```bash
+``` shell
 markdown_py input_file.txt
 ```
 
 or
 
-```bash
+``` shell
 markdown_py input_file.txt > output_file.html
 ```
 
 For a complete list of options, run
 
-```bash
+``` shell
 markdown_py --help
 ```

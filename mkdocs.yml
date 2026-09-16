@@ -146,6 +146,7 @@ markdown_extensions:
   - footnotes
   - md_in_html
   - smarty
+  - pymdownx.blocks.html
   - toc:
       permalink: "§"
   - mdx_gh_links:
@@ -166,6 +167,12 @@ markdown_extensions:
 
 plugins:
 - search
+- redirects:
+    redirect_maps:
+      reference.md: library.md
+      reference.md#the-details: library.md#the-basics
+      reference.md#markdown: library.md#the-basics
+      reference.md#markdownFromFile: library.md#working-with-files
 - mkdocstrings:
     custom_templates: .zensical/mkdocstring_templates
     handlers:
