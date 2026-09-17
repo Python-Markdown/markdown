@@ -11,6 +11,7 @@ import ast
 import sys
 from io import StringIO
 from collections import OrderedDict
+from markdown.util import code_escape
 
 
 def yaml_load(stream, loader=yaml.Loader):
@@ -169,7 +170,8 @@ def py_render(src="", language="", class_name=None, options=None, md="", **kwarg
         elif target == 'stdout':
             result_options['title'] = 'Text Written to STDOUT'
         elif target is not None:
-            result_options['title'] = f'Value of `{target}`'
+            # Store title in stash to avoid it being escaped by Pygments.
+            result_options['title'] = md.htmlStash.store(f'Value of <code>{code_escape(target)}</code>')
         
         output = md.preprocessors['fenced_code_block'].highlight(result, output_lang, result_options, md, **kwargs)
         return f'{source}\n<div class="result">{output}</div>'
