@@ -295,23 +295,28 @@ Python-Markdown's [Admonition Extension]:
 
     This is the content of the note.
 ```
+/// html | div.result
+!!! note
+
+    This is the content of the note.
+///
 
 In addition to the [supported types] listed in Zensical's documentation, the
-`seealso` type is supported.
+`seealso` type is supported. Unlike the other defined types, `seealso` needs
+the title to be manually defined (`"See Also"`) as the default behavior will
+not split a generated title into two words.
 
 ``` markdown
 !!! seealso "See Also"
 
-    This should link to some relevant content contained elsewhere.
+    See Zensical's documentation on [supported types] for more information.
 ```
 
-Unlike the other defined types, `seealso` needs the title to be manually
-defined as the default behavior will not split a generated title into two
-words.
-
+/// html | div.result
 !!! seealso "See Also"
 
     See Zensical's documentation on [supported types] for more information.
+///
 
 #### Code Blocks
 
