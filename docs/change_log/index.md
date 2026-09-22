@@ -1,11 +1,14 @@
+---
 title: Change Log
+---
 
 Python-Markdown Change Log
 =========================
 
 !!! note
 
-    This is an archive of the changelog prior to the release of version 3.0. See the [current changelog](../changelog.md) for up-to-date details.
+    This is an archive of the changelog prior to the release of version 3.0.
+    See the [current changelog](../changelog.md) for up-to-date details.
 
 Jan 4, 2018: Released version 2.6.11 (a bug-fix release). Added a new
 `BACKLINK-TITLE` option to the footnote extension so that non-English

@@ -1,4 +1,6 @@
+---
 title: Release Notes for v2.2
+---
 
 Python-Markdown 2.2 Release Notes
 =================================
