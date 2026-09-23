@@ -711,6 +711,8 @@ class Delimiter:
                 flags=re.UNICODE
             )
 
+        self.bad = re.compile(fr'{etoken}+')
+
         return fr'{etoken}'
 
     def reset(self) -> None:
@@ -953,10 +955,11 @@ class DelimiterProcessor(InlineProcessor):
         # If token is not an opening, quit
         m2 = self.get_match(data, m.start(0))
         if m2 is None or m2.lastgroup[0] == 'e':  # type: ignore[index]
-            if m2 is not None:
-                m = m2
+            if m2 is None:
+                delim = self.delimiters[m.group(0)]
+                m2 = delim.bad.match(data, m.start(0))
             # Advance past the full length of the delimiter found
-            return None, m.start(0), m.end(0)
+            return None, m2.start(0), m2.end(0)
 
         # Get the stack and regions
         token = data[m.start(0)]
