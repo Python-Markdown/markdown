@@ -48,6 +48,7 @@ from __future__ import annotations
 from xml.etree.ElementTree import ProcessingInstruction
 from xml.etree.ElementTree import Comment, ElementTree, Element, QName, HTML_EMPTY
 import re
+from collections import deque
 from typing import Callable, Literal, NoReturn
 
 __all__ = ['to_html_string', 'to_xhtml_string']
@@ -116,60 +117,76 @@ def _escape_attrib_html(text: str) -> str:
 
 
 def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal["html", "xhtml"]) -> None:
-    tag = elem.tag
-    text = elem.text
-    if tag is Comment:
-        write("<!--%s-->" % _escape_cdata(text))
-    elif tag is ProcessingInstruction:
-        write("<?%s?>" % _escape_cdata(text))
-    elif tag is None:
-        if text:
-            write(_escape_cdata(text))
-        for e in elem:
-            _serialize_html(write, e, format)
-    else:
-        namespace_uri = None
-        if isinstance(tag, QName):
-            # `QNAME` objects store their data as a string: `{uri}tag`
-            if tag.text[:1] == "{":
-                namespace_uri, tag = tag.text[1:].split("}", 1)
-            else:
-                raise ValueError('QName objects must define a tag.')
-        write("<" + tag)
-        items = elem.items()
-        if items:
-            items = sorted(items)  # lexical order
-            for k, v in items:
-                if isinstance(k, QName):
-                    # Assume a text only `QName`
-                    k = k.text
-                if isinstance(v, QName):
-                    # Assume a text only `QName`
-                    v = v.text
-                else:
-                    v = _escape_attrib_html(v)
-                if k == v and format == 'html':
-                    # handle boolean attributes
-                    write(" %s" % v)
-                else:
-                    write(' {}="{}"'.format(k, v))
-        if namespace_uri:
-            write(' xmlns="%s"' % (_escape_attrib(namespace_uri)))
-        if format == "xhtml" and tag.lower() in HTML_EMPTY:
-            write(" />")
-        else:
-            write(">")
+    stack: deque[Element | str] = deque([elem])
+
+    count = 0
+    while stack:
+        count += 1
+        el = stack.popleft()
+
+        if isinstance(el, str):
+            write(el)
+            continue
+
+        tag = el.tag
+        text = el.text
+
+        if tag is Comment:
+            write("<!--%s-->" % _escape_cdata(text))
+        elif tag is ProcessingInstruction:
+            write("<?%s?>" % _escape_cdata(text))
+        elif tag is None:
             if text:
-                if tag.lower() in ["script", "style"]:
-                    write(text)
+                write(_escape_cdata(text))
+            # Add the children in reverse order so we process them in the right order.
+            stack.extendleft(reversed(el))
+        else:
+            namespace_uri = None
+            if isinstance(tag, QName):
+                # `QNAME` objects store their data as a string: `{uri}tag`
+                if tag.text[:1] == "{":
+                    namespace_uri, tag = tag.text[1:].split("}", 1)
                 else:
-                    write(_escape_cdata(text))
-            for e in elem:
-                _serialize_html(write, e, format)
-            if tag.lower() not in HTML_EMPTY:
-                write("</" + tag + ">")
-    if elem.tail:
-        write(_escape_cdata(elem.tail))
+                    raise ValueError('QName objects must define a tag.')
+            write("<" + tag)
+            items = el.items()
+            if items:
+                items = sorted(items)  # lexical order
+                for k, v in items:
+                    if isinstance(k, QName):
+                        # Assume a text only `QName`
+                        k = k.text
+                    if isinstance(v, QName):
+                        # Assume a text only `QName`
+                        v = v.text
+                    else:
+                        v = _escape_attrib_html(v)
+                    if k == v and format == 'html':
+                        # handle boolean attributes
+                        write(" %s" % v)
+                    else:
+                        write(' {}="{}"'.format(k, v))
+            if namespace_uri:
+                write(' xmlns="%s"' % (_escape_attrib(namespace_uri)))
+            if format == "xhtml" and tag.lower() in HTML_EMPTY:
+                write(" />")
+            else:
+                write(">")
+                if text:
+                    if tag.lower() in ["script", "style"]:
+                        write(text)
+                    else:
+                        write(_escape_cdata(text))
+                # Add the tail, end tag, and then the children in reverse order.
+                # Since we pop from the left, this will ensure results are ordered correctly.
+                if el.tail:
+                    stack.appendleft(_escape_cdata(el.tail))
+                if tag.lower() not in HTML_EMPTY:
+                    stack.appendleft("</" + tag + ">")
+                stack.extendleft(reversed(el))
+                continue
+        if el.tail:
+            write(_escape_cdata(el.tail))
 
 
 def _write_html(root: Element, format: Literal["html", "xhtml"] = "html") -> str:
