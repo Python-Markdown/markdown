@@ -132,9 +132,9 @@ def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal
         text = el.text
 
         if tag is Comment:
-            write("<!--%s-->" % _escape_cdata(text))
+            write(f"<!--{_escape_cdata(text)}-->")
         elif tag is ProcessingInstruction:
-            write("<?%s?>" % _escape_cdata(text))
+            write(f"<?{_escape_cdata(text)}?>")
         elif tag is None:
             if text:
                 write(_escape_cdata(text))
@@ -151,7 +151,7 @@ def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal
                     namespace_uri, tag = tag.text[1:].split("}", 1)
                 else:
                     raise ValueError('QName objects must define a tag.')
-            write("<" + tag)
+            write(f"<{tag}")
             items = el.items()
             if items:
                 items = sorted(items)  # lexical order
@@ -166,11 +166,11 @@ def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal
                         v = _escape_attrib_html(v)
                     if k == v and format == 'html':
                         # handle boolean attributes
-                        write(" %s" % v)
+                        write(f" {v}")
                     else:
-                        write(' {}="{}"'.format(k, v))
+                        write(f' {k}="{v}"')
             if namespace_uri:
-                write(' xmlns="%s"' % (_escape_attrib(namespace_uri)))
+                write(f' xmlns="{_escape_attrib(namespace_uri)}"')
             if format == "xhtml" and tag.lower() in HTML_EMPTY:
                 write(" />")
             else:
@@ -185,7 +185,7 @@ def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal
                 if el.tail:
                     stack.appendleft(_escape_cdata(el.tail))
                 if tag.lower() not in HTML_EMPTY:
-                    stack.appendleft("</" + tag + ">")
+                    stack.appendleft(f"</{tag}>")
                 stack.extendleft(reversed(el))
                 continue
         if el.tail:
