@@ -571,10 +571,10 @@ class HtmlInlineProcessor(InlineProcessor):
             id = m.group(1)
             value = stash.get(id)
             if value is not None:
-                try:
+                if isinstance(value, etree.Element):
                     # Ensure we don't have a placeholder inside a placeholder
                     return self.unescape(self.md.serializer(value))
-                except Exception:
+                else:
                     return r'\%s' % value
 
         return util.INLINE_PLACEHOLDER_RE.sub(get_stash, text)
