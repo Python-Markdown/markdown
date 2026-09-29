@@ -45,8 +45,8 @@ When the `markdown` attribute is set to `"1"`, then the parser will use the defa
 
 The following tags have the `block` behavior by default: `article`, `aside`, `blockquote`, `body`, `colgroup`,
 `details`, `div`, `dl`, `fieldset`, `figcaption`, `figure`, `footer`, `form`, `group`, `header`, `hgroup`, `hr`,
-`iframe`,  `main`, `map`, `menu`, `nav`, `noscript`, `object`, `ol`, `output`, `progress`, `section`, `table`,
-`tbody`, `tfoot`, `thead`, `tr`,  `ul` and `video`.
+`iframe`,  `main`, `map`, `menu`, `nav`, `noscript`, `object`, `ol`, `output`, `picture`, `progress`, `section`,
+`table`, `tbody`, `tfoot`, `thead`, `tr`,  `ul` and `video`.
 
 For example:
 

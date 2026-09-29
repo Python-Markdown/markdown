@@ -12,6 +12,13 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
+## [unreleased]
+
+### Fixed
+
+* Treat `picture` as a block-level HTML element so comments inside it do not
+  split the element into invalid paragraphs (#1643).
+
 ## [3.11.0] - 2026-09-25
 
 ### Changed

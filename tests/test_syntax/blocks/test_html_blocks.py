@@ -1004,6 +1004,35 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
+    def test_raw_picture_with_comment(self):
+        # HTML comments inside <picture> must not split the element (see #1643).
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <picture>
+                  <!-- comment -->
+                  <source media="(prefers-color-scheme: dark)" srcset="dark.svg">
+                  <img alt="Example" src="example.svg">
+                </picture>
+                """
+            ),
+            self.dedent(
+                """
+                <picture>
+                  <!-- comment -->
+                  <source media="(prefers-color-scheme: dark)" srcset="dark.svg">
+                  <img alt="Example" src="example.svg">
+                </picture>
+                """
+            )
+        )
+
+    def test_inline_picture_remains_inline(self):
+        self.assertMarkdownRenders(
+            'See <picture><img alt="Example" src="x.svg"></picture> here.',
+            '<p>See <picture><img alt="Example" src="x.svg"></picture> here.</p>'
+        )
+
     def test_comment_in_code_block(self):
         self.assertMarkdownRenders(
             '    <!-- *foo* -->',
