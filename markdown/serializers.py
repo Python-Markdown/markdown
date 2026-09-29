@@ -139,7 +139,10 @@ def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal
             if text:
                 write(_escape_cdata(text))
             # Add the children in reverse order so we process them in the right order.
+            if el.tail:
+                stack.appendleft(_escape_cdata(el.tail))
             stack.extendleft(reversed(el))
+            continue
         else:
             namespace_uri = None
             if isinstance(tag, QName):
