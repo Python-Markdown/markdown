@@ -14,7 +14,7 @@ See the [Contributing Guide](contributing.md) for details.
 
 ## [Unreleased]
 
-* Upate serializer to be non-recursive (#1644).
+* Update serializer to be non-recursive (#1644).
 
 ## [3.11.0] - 2026-09-25
 
