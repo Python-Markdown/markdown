@@ -15,6 +15,7 @@ See the [Contributing Guide](contributing.md) for details.
 ## [Unreleased]
 
 * Update serializer to be non-recursive (#1644).
+* Improve ancestor handling in the inline `Treeprocessor` (#1646).
 
 ## [3.11.0] - 2026-09-25
 
