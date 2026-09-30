@@ -12,6 +12,10 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
+## [Unreleased]
+
+* Update serializer to be non-recursive (#1644).
+
 ## [3.11.0] - 2026-09-25
 
 ### Changed
