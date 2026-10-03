@@ -40,3 +40,10 @@ class TestRawHtml(TestCase):
             'Example: <!-- [**Bold link**](http://example.com) -->',
             '<p>Example: <!-- <a href="http://example.com"><strong>Bold link</strong></a> --></p>'
         )
+
+    def test_angle_brackets_in_attributes(self):
+        # https://github.com/Python-Markdown/markdown/issues/1647
+        self.assertMarkdownRenders(
+            '<span data-tip-txt="<kbd>Ctrl</kbd>">Anything</span>',
+            '<p><span data-tip-txt="<kbd>Ctrl</kbd>">Anything</span></p>'
+        )
