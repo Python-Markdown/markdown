@@ -770,6 +770,22 @@ class TestHTMLBlocks(TestCase):
             )
         )
 
+    def test_comment_in_inline_html_same_line_as_start_tag(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                <span><!-- comment -->
+                </span>
+                """
+            ),
+            self.dedent(
+                """
+                <p><span><!-- comment -->
+                </span></p>
+                """
+            )
+        )
+
     def test_comment_in_inline_html_own_line_before_endtag(self):
         self.assertMarkdownRenders(
             self.dedent(
