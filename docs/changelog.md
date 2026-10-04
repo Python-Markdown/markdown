@@ -18,6 +18,7 @@ See the [Contributing Guide](contributing.md) for details.
 * Improve ancestor handling in the inline `Treeprocessor` (#1646).
 * Keep a raw HTML comment inside an inline HTML element that closes in the
   same paragraph, instead of splitting the paragraph around it (#1643).
+* Fix issue where inline HTML attributes were rejected if they had `<` or `>` in the attribute (#1647).
 
 ## [3.11.0] - 2026-09-25
 
