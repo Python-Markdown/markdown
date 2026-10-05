@@ -1787,3 +1787,60 @@ class TestHTMLBlocks(TestCase):
                 '''
             )
         )
+
+    def test_unterminated_endtag_in_code_span(self):
+        """Ensure an unterminated end tag does not swallow the remaining content."""
+
+        # https://github.com/Python-Markdown/markdown/issues/1651
+        self.assertMarkdownRenders(
+            'Run `cmd 2</dev/null` here.\n\nThis paragraph should not disappear.',
+            self.dedent(
+                '''
+                <p>Run <code>cmd 2&lt;/dev/null</code> here.</p>
+                <p>This paragraph should not disappear.</p>
+                '''
+            )
+        )
+
+    def test_additional_tail_cases(self):
+        """Ensure various tail cases survive."""
+
+        # https://github.com/Python-Markdown/markdown/issues/1651
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                `</dev` z > q
+
+                `</ab c` z
+
+                `</dev/` > q
+
+                `</dev/null` z > q
+
+                `</ab c>` z
+                """
+            ),
+            self.dedent(
+                """
+                <p><code>&lt;/dev</code> z &gt; q</p>
+                <p><code>&lt;/ab c</code> z</p>
+                <p><code>&lt;/dev/</code> &gt; q</p>
+                <p><code>&lt;/dev/null</code> z &gt; q</p>
+                <p><code>&lt;/ab c&gt;</code> z</p>
+                """
+            )
+        )
+
+    def test_unterminated_endtag(self):
+        """Ensure an unterminated end tag is treated as text."""
+
+        # https://github.com/Python-Markdown/markdown/issues/1651
+        self.assertMarkdownRenders(
+            'foo </bar\n\nbaz',
+            self.dedent(
+                '''
+                <p>foo &lt;/bar</p>
+                <p>baz</p>
+                '''
+            )
+        )
