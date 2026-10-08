@@ -92,6 +92,14 @@ htmlparser.locatetagend = re.compile(r"""
 # The newlines may be preceded by additional whitespace.
 blank_line_re = re.compile(r'^([ ]*\n){2}')
 
+# Match a blank line anywhere in a run of text.
+inner_blank_line_re = re.compile(r'\n[ \t]*\n')
+
+# Elements which never have an end tag and so cannot contain a comment.
+void_tags = frozenset([
+    'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'
+])
+
 
 class _HTMLParser(htmlparser.HTMLParser):
     """Handle special start and end tags."""
@@ -146,6 +154,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.inraw = False
         self.intail = False
         self.stack: list[str] = []  # When `inraw==True`, stack contains a list of tags
+        self.inline_stack: list[str] = []  # Unclosed raw inline tags in the current paragraph
         self._cache: list[str] = []
         self.cleandoc: list[str] = []
         self.lineno_start_cache = [0]
@@ -225,6 +234,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
             self._cache.append(text)
         else:
             self.cleandoc.append(text)
+            self.open_inline_tag(tag)
             if tag in self.CDATA_CONTENT_ELEMENTS:
                 # This is presumably a standalone tag in a code span (see #1036).
                 self.clear_cdata_mode()
@@ -255,6 +265,26 @@ class HTMLExtractor(htmlparser.HTMLParser):
                 self._cache = []
         else:
             self.cleandoc.append(text)
+            self.close_inline_tag(tag)
+
+    def open_inline_tag(self, tag: str):
+        """ Track an unclosed raw inline tag so a comment inside it is not treated as a block. """
+        if not self.md.is_block_level(tag) and tag not in void_tags:
+            self.inline_stack.append(tag)
+
+    def close_inline_tag(self, tag: str):
+        """ Stop tracking an inline tag and any unclosed inline tags opened after it. """
+        if tag in self.inline_stack:
+            while self.inline_stack:
+                if self.inline_stack.pop() == tag:
+                    break
+
+    def inline_close_follows(self, text: str) -> bool:
+        """ Return `True` if an open inline tag is closed in the same paragraph after the comment `text`. """
+        if not self.inline_stack:
+            return False
+        rest = inner_blank_line_re.split(self.rawdata[self.line_offset + self.offset + len(text):], 1)[0]
+        return any(re.search(r'</\s*{}\s*>'.format(re.escape(tag)), rest, re.I) for tag in self.inline_stack)
 
     def handle_data(self, data: str):
         if self.intail and '\n' in data:
@@ -262,6 +292,9 @@ class HTMLExtractor(htmlparser.HTMLParser):
         if self.inraw:
             self._cache.append(data)
         else:
+            if inner_blank_line_re.search(data):
+                # A blank line ends the paragraph, so open inline tags no longer enclose what follows.
+                self.inline_stack = []
             self.cleandoc.append(data)
 
     def handle_empty_tag(self, data: str, is_block: bool):
@@ -298,7 +331,10 @@ class HTMLExtractor(htmlparser.HTMLParser):
 
     def handle_comment(self, data: str):
         # Check if the comment is unclosed, if so, we need to override position
-        self.handle_empty_tag('<!--{}-->'.format(data), is_block=True)
+        text = '<!--{}-->'.format(data)
+        # A comment inside a raw inline element is part of that inline content, unless it contains a blank line.
+        is_block = bool(inner_blank_line_re.search(data)) or not self.inline_close_follows(text)
+        self.handle_empty_tag(text, is_block=is_block)
 
     def handle_decl(self, data: str):
         self.handle_empty_tag('<!{}>'.format(data), is_block=True)

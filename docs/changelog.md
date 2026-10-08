@@ -16,6 +16,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 * Update serializer to be non-recursive (#1644).
 * Improve ancestor handling in the inline `Treeprocessor` (#1646).
+* Keep a raw HTML comment inside an inline HTML element that closes in the
+  same paragraph, instead of splitting the paragraph around it (#1643).
 * Fix issue where inline HTML attributes were rejected if they had `<` or `>` in the attribute (#1647).
 * Fix issue where an unterminated end tag (`</foo`) could cause all remaining content to be dropped (#1651).
 

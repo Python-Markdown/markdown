@@ -152,6 +152,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                     self.handle_data(self.md.htmlStash.store(text))
                 else:
                     self.handle_data(text)
+                self.open_inline_tag(tag)
                 if tag in self.CDATA_CONTENT_ELEMENTS:
                     # This is presumably a standalone tag in a code span (see #1036).
                     self.clear_cdata_mode()
@@ -242,6 +243,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                     self.handle_data(self.md.htmlStash.store(text))
                 else:
                     self.handle_data(text)
+                self.close_inline_tag(tag)
 
     def handle_startendtag(self, tag, attrs):
         if tag in self.empty_tags:
