@@ -84,6 +84,7 @@ nav:
       - Table of Contents: extensions/toc.md
       - Tables: extensions/tables.md
       - WikiLinks: extensions/wikilinks.md
+  - Playground: playground.md
   - Development:
     - Extension API: extensions/api.md
     - Test Tools: test_tools.md
@@ -147,6 +148,10 @@ markdown_extensions:
   - md_in_html
   - smarty
   - pymdownx.blocks.html
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:zensical.extensions.emoji.to_svg
+      emoji_index: !!python/name:zensical.extensions.emoji.twemoji
+  - pymdownx.keys
   - toc:
       permalink: "§"
   - mdx_gh_links:
