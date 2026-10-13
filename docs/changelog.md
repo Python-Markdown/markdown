@@ -12,7 +12,9 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
-## [Unreleased]
+## [3.11.1] - 2026-10-13
+
+### Fixed
 
 * Update serializer to be non-recursive (#1644).
 * Improve ancestor handling in the inline `Treeprocessor` (#1646).
