@@ -90,8 +90,10 @@ def build_inlinepatterns(md: Markdown, **kwargs: Any) -> util.Registry[InlinePro
     inlinePatterns.register(SubstituteTagInlineProcessor(LINE_BREAK_RE, 'br'), 'linebreak', 100)
     inlinePatterns.register(HtmlInlineProcessor(HTML_RE, md), 'html', 90)
     inlinePatterns.register(HtmlInlineProcessor(ENTITY_RE, md), 'entity', 80)
-    inlinePatterns.register(DelimiterProcessor('*', 'strong,em', md), 'em_strong', 60)
-    md.delimiters.add('_', 'strong,em', smart=True)
+    delim1 = Delimiter('*', 'strong,em')
+    delim2 = Delimiter('_', 'strong,em', smart=True)
+    inlinePatterns.register(DelimiterProcessor(delim1, md), 'em_strong', 60)
+    md.delimiters.add(delim2)
     return inlinePatterns
 
 
@@ -643,9 +645,16 @@ PUNCT = (
 class Delimiter:
     """Delimiter."""
 
-    def __init__(self, token: str, tags: str, smart: bool, double: bool):
+    def __init__(
+        self,
+        token: str,
+        tags: str,
+        smart: bool = False,
+        double: bool = False
+    ):
         """Initialize."""
 
+        self.token = token
         self.stack: deque[tuple[int, int, bool, int]] = deque()
         temp = tags.split(',')
         self.tag_count = len(temp)
@@ -729,11 +738,8 @@ class DelimiterProcessor(InlineProcessor):
 
     def __init__(
         self,
-        token: str,
-        tags: str,
-        md: Markdown,
-        smart: bool = False,
-        double: bool = False
+        delimiter: Delimiter,
+        md: Markdown
     ) -> None:
         """Initialize."""
 
@@ -747,20 +753,15 @@ class DelimiterProcessor(InlineProcessor):
         self.md = md
         # API for Markdown to pass `safe_mode` into instance
         self.safe_mode = False
-        self.add(token, tags, smart, double)
+        self.add(delimiter)
 
-    def add(
-        self,
-        token: str,
-        tags: str,
-        smart: bool = False,
-        double: bool = False
-    ) -> None:
+    def add(self, delimiter: Delimiter) -> None:
         """Add a delimiter."""
 
+        token = delimiter.token
         if token not in self.tokens:
             self.tokens.append(token)
-        self.delimiters[token] = Delimiter(token, tags, smart, double)
+        self.delimiters[token] = delimiter
         self.pattern = '|'.join([re.escape(t) for t in self.tokens])
         self.compiled_re = re.compile(self.pattern, re.DOTALL | re.UNICODE)
 
