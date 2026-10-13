@@ -14,7 +14,7 @@ This extension provides legacy behavior for _connected_words_.
 from __future__ import annotations
 
 from . import Extension
-from ..inlinepatterns import DelimiterProcessor, Delimiter
+from ..inlinepatterns import DelimiterProcessor
 
 
 class LegacyEmExtension(Extension):
@@ -31,9 +31,9 @@ class LegacyEmExtension(Extension):
         # flake8: noqa: E501 27-29
 
         if md.delimiters is not None:
-            md.delimiters.add(Delimiter('_', 'strong,em'))
+            md.delimiters.add('_', 'strong,em')
         else:
-            md.inlinePatterns.register(DelimiterProcessor(Delimiter('_', 'strong,em'), md), 'em_strong', 60)
+            md.inlinePatterns.register(DelimiterProcessor('_', 'strong,em', md), 'em_strong', 60)
 
 def makeExtension(**kwargs):  # pragma: no cover
     """ Return an instance of the `LegacyEmExtension` """
