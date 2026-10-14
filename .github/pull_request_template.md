@@ -6,6 +6,16 @@
 - [ ] **No AI tools were used** in preparing this PR.
 - [ ] **AI tools were used** and I have disclosed which ones, and have fully reviewed and verified their output.
 
+    AI tools were use to assist with the following:
+
+    - [ ] Code
+    - [ ] Code Comments
+    - [ ] Documentation
+    - [ ] Changelog Entry
+    - [ ] Commit Message
+    - [ ] The Description Above
+    - [ ] Other: ______________
+
 #### Checklist
 - [ ] This PR follows the [contribution guidelines](https://python-markdown.github.io/contributing/).
 - [ ] The code follows the [Code Style Guide](https://python-markdown.github.io/contributing/#code-style-guide).
