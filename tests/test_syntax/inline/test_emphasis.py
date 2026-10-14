@@ -126,6 +126,9 @@ class TestNotEmphasis(TestCase):
             '<p>_ bar _</p>'
         )
 
+
+class TestEmphasis(TestCase):
+
     def test_complex_emphasis_asterisk(self):
         self.assertMarkdownRenders(
             'This is text **bold *italic bold*** with more text',
@@ -402,12 +405,23 @@ class TestNotEmphasis(TestCase):
             )
         )
 
+    def test_non_english(self):
+
+        self.assertMarkdownRenders(
+            '**단어(설명)**입니다.',
+            '<p><strong>단어(설명)</strong>입니다.</p>'
+        )
+
 
 class TestCommonMark(TestCase):
     """Test CommonMark."""
 
     def test_commonmark(self):
-        """Test CommonMark."""
+        """
+        Test CommonMark.
+
+        Omit some punctuation tests as we do not enforce CommonMark punctuation rules.
+        """
 
         self.maxDiff = None
 
@@ -417,14 +431,6 @@ class TestCommonMark(TestCase):
                 *foo bar*
 
                 a * foo bar*
-
-                a*"foo"*
-
-                *$*alpha.
-
-                *£*bravo.
-
-                *€*charlie.
 
                 <!-- CommonMark uses nbsp to test this, we instead just put test in front to avoid list parsing -->
                 test * a *
@@ -456,10 +462,6 @@ class TestCommonMark(TestCase):
                 *foo bar
                 *
 
-                *(*foo)
-
-                *(*foo*)*
-
                 *foo*bar
 
                 _foo bar _
@@ -479,8 +481,6 @@ class TestCommonMark(TestCase):
                 **foo bar**
 
                 ** foo bar**
-
-                a**"foo"**
 
                 foo**bar**
 
@@ -504,8 +504,6 @@ class TestCommonMark(TestCase):
                 foo-__(bar)__
 
                 **foo bar **
-
-                **(**foo)
 
                 *(**foo**)*
 
@@ -696,10 +694,6 @@ class TestCommonMark(TestCase):
                 """
                 <p><em>foo bar</em></p>
                 <p>a * foo bar*</p>
-                <p>a*"foo"*</p>
-                <p>*$*alpha.</p>
-                <p>*£*bravo.</p>
-                <p>*€*charlie.</p>
                 <!-- CommonMark uses nbsp to test this, we instead just put test in front to avoid list parsing -->
                 <p>test * a *</p>
                 <p>foo<em>bar</em></p>
@@ -716,8 +710,6 @@ class TestCommonMark(TestCase):
                 <p>*foo bar *</p>
                 <p>*foo bar
                 *</p>
-                <p>*(*foo)</p>
-                <p><em>(<em>foo</em>)</em></p>
                 <p><em>foo</em>bar</p>
                 <p>_foo bar _</p>
                 <p>_(_foo)</p>
@@ -728,7 +720,6 @@ class TestCommonMark(TestCase):
                 <p><em>(bar)</em>.</p>
                 <p><strong>foo bar</strong></p>
                 <p>** foo bar**</p>
-                <p>a**"foo"**</p>
                 <p>foo<strong>bar</strong></p>
                 <p><strong>foo bar</strong></p>
                 <p>__ foo bar__</p>
@@ -741,7 +732,6 @@ class TestCommonMark(TestCase):
                 <p><strong>foo, <strong>bar</strong>, baz</strong></p>
                 <p>foo-<strong>(bar)</strong></p>
                 <p>**foo bar **</p>
-                <p>**(**foo)</p>
                 <p><em>(<strong>foo</strong>)</em></p>
                 <p><strong>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.
                 <em>Asclepias physocarpa</em>)</strong></p>
