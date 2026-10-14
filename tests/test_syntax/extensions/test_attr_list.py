@@ -78,6 +78,18 @@ class TestAttrList(TestCase):
             '<h1 id="*Foo*"><code>*Foo*</code></h1>'
         )
 
+    def test_unclosed_curly_with_long_run_of_spaces(self):
+        """
+        An unclosed attribute list followed by a long run of spaces should be
+        left as plain text, no matter how many trailing spaces there are.
+
+        The content and the trailing spaces both match the same part of the
+        pattern, so without care the regex backtracks quadratically over the
+        spaces while failing to find the closing brace.
+        """
+        text = 'foo\n{a' + (' ' * 50000)
+        self.assertMarkdownRenders(text, f'<p>{text}</p>')
+
     def test_table_td(self):
         self.assertMarkdownRenders(
             self.dedent(
