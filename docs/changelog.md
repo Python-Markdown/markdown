@@ -14,6 +14,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 ## [Unreleased]
 
+### Fixed
+
 * For backwards compatibility in some languages, revert the enforcement of CommonMark
   style punctuation rules (#1657).
 
