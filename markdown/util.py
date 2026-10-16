@@ -245,6 +245,10 @@ class HtmlStash:
         """ Clear the stash. """
         self.html_counter = 0
         self.rawHtmlBlocks = []
+        # Also clear stored tag state so placeholders and tag indices
+        # don't leak between runs when the same Markdown instance is reused.
+        self.tag_counter = 0
+        self.tag_data = []
 
     def get_placeholder(self, key: int) -> str:
         return HTML_PLACEHOLDER % key
