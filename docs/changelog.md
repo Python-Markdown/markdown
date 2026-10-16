@@ -19,7 +19,7 @@ See the [Contributing Guide](contributing.md) for details.
 * For backwards compatibility in some languages, revert the enforcement of CommonMark
   style punctuation rules (#1657).
 * Fix quadratic processing time in the `fenced_code` extension for documents
-  with many fenced code blocks (#XXXX).
+  with many fenced code blocks (#1660).
 
 ## [3.11.1] - 2026-10-13
 
