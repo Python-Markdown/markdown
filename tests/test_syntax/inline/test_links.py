@@ -19,6 +19,11 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+import time
+import unittest
+
+import markdown
+
 from markdown.test_tools import TestCase
 
 
@@ -433,4 +438,31 @@ class TestReferenceLinks(TestCase):
                 <p><a href="/url(test)" title="title">Text</a>.</p>
                 """
             )
+        )
+
+
+class TestUnclosedBracketPerformance(unittest.TestCase):
+    """
+    Regression tests for https://github.com/Python-Markdown/markdown/issues/798.
+
+    `LinkInlineProcessor.getText` used to rescan the entire remaining document
+    for a matching bracket on every call, so a run of n unclosed `[` made
+    parsing O(n^2): before the fix, the documents below took tens of seconds
+    to parse. The fix pre-computes bracket matches in a single linear pass, so
+    parsing completes in milliseconds and the generous time bounds below only
+    fire if the quadratic scan ever comes back.
+    """
+
+    def test_unclosed_bracket_run_scales_linearly(self):
+        start = time.perf_counter()
+        rendered = markdown.markdown('[' * 20000)
+        elapsed = time.perf_counter() - start
+        self.assertEqual(rendered, '<p>' + '[' * 20000 + '</p>')
+        self.assertLess(elapsed, 5.0)
+
+    def test_link_after_unclosed_bracket_run(self):
+        prefix = '[' * 5000
+        self.assertEqual(
+            markdown.markdown(f'{prefix}[Text](http://link.com) more text'),
+            f'<p>{prefix}<a href="http://link.com">Text</a> more text</p>'
         )
