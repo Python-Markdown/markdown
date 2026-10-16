@@ -1015,6 +1015,10 @@ class LinkInlineProcessor(InlineProcessor):
     RE_LINK = re.compile(r'''\(\s*(?:(<[^<>]*>)\s*(?:('[^']*'|"[^"]*")\s*)?\))?''', re.DOTALL | re.UNICODE)
     RE_TITLE_CLEAN = re.compile(r'\s')
 
+    # Cache of the bracket pairing computed for the last `data` string seen by
+    # `getText`, as `(data, matches)`; rebuilt when the string identity changes.
+    _bracket_cache: tuple[str, dict[int, int]] | None = None
+
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | None, int | None, int | None]:
         """ Return an `a` [`Element`][xml.etree.ElementTree.Element] or `(None, None, None)`. """
         text, index, handled = self.getText(data, m.end(0))
@@ -1157,19 +1161,38 @@ class LinkInlineProcessor(InlineProcessor):
         resolving nested square brackets.
 
         """
-        bracket_count = 1
-        text = []
-        for pos in range(index, len(data)):
-            c = data[pos]
-            if c == ']':
-                bracket_count -= 1
-            elif c == '[':
-                bracket_count += 1
-            index += 1
-            if bracket_count == 0:
-                break
-            text.append(c)
-        return ''.join(text), index, bracket_count == 0
+        cache = self._bracket_cache
+        if cache is None or cache[0] is not data:
+            cache = (data, self._pair_brackets(data))
+            self._bracket_cache = cache
+        end = cache[1].get(index, -1)
+        if end == -1:
+            # The brackets were never closed - scan the rest as before.
+            return data[index:], len(data), False
+        return data[index:end - 1], end, True
+
+    @staticmethod
+    def _pair_brackets(data: str) -> dict[int, int]:
+        """Map each position to one past the `]` that closes a bracket opened
+        right before it (the first position whose bracket balance drops below
+        this position's), computed for all positions in one pass.
+        """
+        balances = [0] * (len(data) + 1)
+        balance = 0
+        for i, c in enumerate(data):
+            if c == '[':
+                balance += 1
+            elif c == ']':
+                balance -= 1
+            balances[i + 1] = balance
+        matches: dict[int, int] = {}
+        nearest: dict[int, int] = {}
+        for i in range(len(data), -1, -1):
+            end = nearest.get(balances[i] - 1)
+            if end is not None:
+                matches[i] = end
+            nearest[balances[i]] = i
+        return matches
 
 
 class ImageInlineProcessor(LinkInlineProcessor):
