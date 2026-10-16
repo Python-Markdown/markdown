@@ -102,6 +102,9 @@ class FencedBlockPreprocessor(Preprocessor):
             self.checked_for_deps = True
 
         text = "\n".join(lines)
+        # Collect the output in pieces, as rebuilding the full text after each block is quadratic.
+        pieces: list[str] = []
+        last = 0
         index = 0
         while 1:
             m = self.FENCED_BLOCK_RE.search(text, index)
@@ -163,12 +166,13 @@ class FencedBlockPreprocessor(Preprocessor):
                     code = f'<pre{id_attr}{class_attr}><code{lang_attr}{kv_pairs}>{code}</code></pre>'
 
                 placeholder = self.md.htmlStash.store(code)
-                text = f'{text[:m.start()]}\n{placeholder}\n{text[m.end():]}'
+                pieces.append(f'{text[last:m.start()]}\n{placeholder}\n')
                 # Continue from after the replaced text in the next iteration.
-                index = m.start() + 1 + len(placeholder)
+                index = last = m.end()
             else:
                 break
-        return text.split("\n")
+        pieces.append(text[last:])
+        return "".join(pieces).split("\n")
 
     def handle_attrs(self, attrs: Iterable[tuple[str, str]]) -> tuple[str, list[str], dict[str, Any]]:
         """ Return tuple: `(id, [list, of, classes], {configs})` """
