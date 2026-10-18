@@ -88,17 +88,28 @@ def isheader(elem: Element) -> bool:
     return elem.tag in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 
+NAME_RE = re.compile(r'[^A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff'
+                     r'\u0370-\u037d\u037f-\u1fff\u200c-\u200d'
+                     r'\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff'
+                     r'\uf900-\ufdcf\ufdf0-\ufffd'
+                     r'\:\-\.0-9\u00b7\u0300-\u036f\u203f-\u2040]+')
+
+
+def sanitize_name(name: str) -> str:
+    """
+    Sanitize name as 'an XML Name, minus the `:`.'
+    See <https://www.w3.org/TR/REC-xml-names/#NT-NCName>.
+    """
+    return NAME_RE.sub('_', name)
+
+
 class AttrListTreeprocessor(Treeprocessor):
 
     BASE_RE = r'\{\:?[ ]*([^\}\n ][^\n]*)[ ]*\}'
     HEADER_RE = re.compile(r'[ ]+{}[ ]*$'.format(BASE_RE))
     BLOCK_RE = re.compile(r'\n[ ]*{}[ ]*$'.format(BASE_RE))
     INLINE_RE = re.compile(r'^{}'.format(BASE_RE))
-    NAME_RE = re.compile(r'[^A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff'
-                         r'\u0370-\u037d\u037f-\u1fff\u200c-\u200d'
-                         r'\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff'
-                         r'\uf900-\ufdcf\ufdf0-\ufffd'
-                         r'\:\-\.0-9\u00b7\u0300-\u036f\u203f-\u2040]+')
+    NAME_RE = NAME_RE
 
     def run(self, doc: Element) -> None:
         for elem in doc.iter():
@@ -190,7 +201,7 @@ class AttrListTreeprocessor(Treeprocessor):
         Sanitize name as 'an XML Name, minus the `:`.'
         See <https://www.w3.org/TR/REC-xml-names/#NT-NCName>.
         """
-        return self.NAME_RE.sub('_', name)
+        return sanitize_name(name)
 
 
 class AttrListExtension(Extension):
