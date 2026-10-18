@@ -16,6 +16,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* Sanitize attribute names in the `fenced_code` and `legacy_attrs` extensions so an
+  attribute name cannot break out of its tag and inject markup (#1663).
 * For backwards compatibility in some languages, revert the enforcement of CommonMark
   style punctuation rules (#1657).
 
