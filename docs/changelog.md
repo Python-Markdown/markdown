@@ -18,7 +18,7 @@ See the [Contributing Guide](contributing.md) for details.
 
 * Fix quadratic-time regex backtracking in `attr_list` when a block ends with an
   unclosed attribute list followed by a long run of spaces, e.g. a line
-  consisting only of `{` and some text with many trailing spaces.
+  consisting only of `{` and some text with many trailing spaces (#1656).
 
 ## [3.11.1] - 2026-10-13
 
