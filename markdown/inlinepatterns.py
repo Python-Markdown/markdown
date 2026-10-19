@@ -1157,19 +1157,38 @@ class LinkInlineProcessor(InlineProcessor):
         resolving nested square brackets.
 
         """
-        bracket_count = 1
-        text = []
-        for pos in range(index, len(data)):
-            c = data[pos]
-            if c == ']':
-                bracket_count -= 1
-            elif c == '[':
-                bracket_count += 1
-            index += 1
-            if bracket_count == 0:
-                break
-            text.append(c)
-        return ''.join(text), index, bracket_count == 0
+        # Scanning forward from every `[` is quadratic when the brackets do not
+        # close, so find the closing bracket for every index of `data` at once.
+        if getattr(self, '_bracket_data', None) is not data:
+            self._bracket_data = data
+            self._bracket_ends = self._findBracketEnds(data)
+        end = self._bracket_ends[index]
+        if end is None:
+            return data[index:], len(data), False
+        return data[index:end - 1], end, True
+
+    @staticmethod
+    def _findBracketEnds(data: str) -> list[int | None]:
+        """
+        For each index of `data`, return the index just past the `]` which closes an
+        opening bracket before that index, or `None` if the bracket never closes.
+
+        """
+        ends: list[int | None] = [None] * (len(data) + 1)
+        depth = 0
+        # `stack` holds the indexes still waiting for a closing bracket. The bracket
+        # depth before each one is strictly increasing from bottom to top.
+        stack: list[tuple[int, int]] = []
+        for pos in range(len(data) + 1):
+            while stack and depth < stack[-1][1]:
+                ends[stack.pop()[0]] = pos
+            stack.append((pos, depth))
+            if pos < len(data):
+                if data[pos] == '[':
+                    depth += 1
+                elif data[pos] == ']':
+                    depth -= 1
+        return ends
 
 
 class ImageInlineProcessor(LinkInlineProcessor):
