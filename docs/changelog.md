@@ -12,14 +12,14 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
-## [Unreleased]
+## [3.11.2] - 2026-10-19
 
 ### Fixed
 
 * Sanitize attribute names in the `fenced_code` and `legacy_attrs` extensions so an
   attribute name cannot break out of its tag and inject markup (#1663).
-* For backwards compatibility in some languages, revert the enforcement of CommonMark
-  style punctuation rules (#1657).
+* For backwards compatibility, revert the enforcement of CommonMark style
+  punctuation rules (#1657).
 
 ## [3.11.1] - 2026-10-13
 
