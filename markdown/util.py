@@ -210,6 +210,27 @@ if TYPE_CHECKING:  # pragma: no cover
         right_index: int
 
 
+class IndentedRawHtml(str):
+    """
+    A raw HTML block which was extracted from a line indented by more than
+    `tab_length` spaces.
+
+    The content is stored with the indentation of its start tag removed and
+    the `indent` attribute preserves the number of spaces which were removed.
+    Consumers (such as `RawHtmlPostprocessor`) can use `indent` to restore
+    the appropriate indentation for the context in which the placeholder ends
+    up (for example, within an indented code block). Otherwise it behaves as
+    a normal string.
+    """
+
+    def __new__(cls, html: str, indent: int):
+        obj = super().__new__(cls, html)
+        obj.indent = indent
+        return obj
+
+    indent: int
+
+
 class HtmlStash:
     """
     This class is used for stashing HTML objects that we extract

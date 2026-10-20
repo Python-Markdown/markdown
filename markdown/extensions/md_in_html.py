@@ -122,7 +122,7 @@ class HTMLExtractorExtra(HTMLExtractor):
 
         if (
             tag in self.block_level_tags and
-            (self.at_line_start() or self.intail or self.mdstarted and self.mdstarted[-1])
+            (self.at_line_start() or self.indented_line_start() or self.intail or self.mdstarted and self.mdstarted[-1])
         ):
             # Valueless attribute (ex: `<tag checked>`) results in `[('checked', None)]`.
             # Convert to `{'checked': 'checked'}`.
@@ -279,7 +279,7 @@ class HTMLExtractorExtra(HTMLExtractor):
                 self.handle_data(data)
 
     def parse_pi(self, i: int) -> int:
-        if self.at_line_start() or self.intail or self.mdstack:
+        if self.at_line_start() or self.indented_line_start() or self.intail or self.mdstack:
             # The same override exists in `HTMLExtractor` without the check
             # for `mdstack`. Therefore, use parent of `HTMLExtractor` instead.
             return super(HTMLExtractor, self).parse_pi(i)
@@ -289,7 +289,7 @@ class HTMLExtractorExtra(HTMLExtractor):
         return i + 2
 
     def parse_html_declaration(self, i: int) -> int:
-        if self.at_line_start() or self.intail or self.mdstack:
+        if self.at_line_start() or self.indented_line_start() or self.intail or self.mdstack:
             if self.rawdata[i:i+3] == '<![' and not self.rawdata[i:i+9] == '<![CDATA[':
                 # We have encountered the bug in #1534 (Python bug `gh-77057`).
                 # Provide an override until we drop support for Python < 3.13.
