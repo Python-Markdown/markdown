@@ -24,6 +24,7 @@ from ..treeprocessors import Treeprocessor
 from ..util import parseBoolValue, AMP_SUBSTITUTE, deprecated, HTML_PLACEHOLDER_RE, AtomicString
 from ..treeprocessors import UnescapeTreeprocessor
 from ..serializers import RE_AMP
+from ..inlinepatterns import HTML_RE
 import re
 import html
 import unicodedata
@@ -108,8 +109,8 @@ def strip_tags(text: str) -> str:
     while (start := text.find('<!--')) != -1 and (end := text.find('-->', start)) != -1:
         text = f'{text[:start]}{text[end + 3:]}'
 
-    while (start := text.find('<')) != -1 and (end := text.find('>', start)) != -1:
-        text = f'{text[:start]}{text[end + 1:]}'
+    # Use the inline HTML pattern to respect quoted attribute values.
+    text = re.sub(HTML_RE, '', text, flags=re.DOTALL)
 
     # Collapse whitespace
     text = ' '.join(text.split())
