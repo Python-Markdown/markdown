@@ -4,7 +4,17 @@
 #### AI Assistance Disclosure
 <!-- Please select exactly ONE of the following: -->
 - [ ] **No AI tools were used** in preparing this PR.
-- [ ] **If AI tools were used**, I have disclosed which ones, and fully reviewed and verified their output.
+- [ ] **AI tools were used** and I have disclosed which ones, and have fully reviewed and verified their output.
+
+    AI tools were use to assist with the following:
+
+    - [ ] Code
+    - [ ] Code Comments
+    - [ ] Documentation
+    - [ ] Changelog Entry
+    - [ ] Commit Message
+    - [ ] The Description Above
+    - [ ] Other: ______________
 
 #### Checklist
 - [ ] This PR follows the [contribution guidelines](https://python-markdown.github.io/contributing/).

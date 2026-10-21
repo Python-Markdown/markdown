@@ -65,3 +65,11 @@ class TestLegacyAtrributes(TestCase):
             """),  # noqa: E501
             extensions=['legacy_attrs']
         )
+
+    def testLegacyAttrsSanitizesName(self):
+        # An attribute name is sanitized so it cannot break out of the element (see #1663).
+        self.assertMarkdownRenders(
+            'text {@x><svg/onload=alert(1)=y} more',
+            '<p x_svg_onload_alert_1_="y">text  more</p>',
+            extensions=['legacy_attrs']
+        )

@@ -140,6 +140,13 @@ class TestCodeHiliteClass(TestCase):
         )
         self.assertOutputEquals('<?php print("Hello World"); ?>', expected, lang='php', use_pygments=False)
 
+    def test_codehilite_lang_escaped(self):
+        expected = (
+            '<pre class="codehilite"><code class="language-&quot;&gt;&lt;script&gt;">text\n'
+            '</code></pre>'
+        )
+        self.assertOutputEquals('text', expected, lang='"><script>', use_pygments=False)
+
     def test_codehilite_lang_prefix_empty(self):
         expected = (
             '<pre class="codehilite"><code class="php">&lt;?php print(&quot;Hello World&quot;); ?&gt;\n'
