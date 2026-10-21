@@ -16,8 +16,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
-* Escape the language name in the `codehilite` extension's non-Pygments output so
-  a language value cannot break out of the `class` attribute and inject markup.
+* Escape the language name in the `codehilite` extension's non-Pygments output to
+  maintain consistency with Pygments output.
 
 ## [3.11.2] - 2026-10-19
 
