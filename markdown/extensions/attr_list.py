@@ -105,7 +105,7 @@ def sanitize_name(name: str) -> str:
 
 class AttrListTreeprocessor(Treeprocessor):
 
-    BASE_RE = r'\{\:?[ ]*([^\}\n ][^\n]*)[ ]*\}'
+    BASE_RE = r'\{\:?[ ]*([^\}\n ][^\n]*)\}'
     HEADER_RE = re.compile(r'[ ]+{}[ ]*$'.format(BASE_RE))
     BLOCK_RE = re.compile(r'\n[ ]*{}[ ]*$'.format(BASE_RE))
     INLINE_RE = re.compile(r'^{}'.format(BASE_RE))
