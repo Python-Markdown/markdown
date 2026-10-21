@@ -12,6 +12,13 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
+## [Unreleased]
+
+### Fixed
+
+* Escape the language name in the `codehilite` extension's non-Pygments output to
+  maintain consistency with Pygments output.
+
 ## [3.11.2] - 2026-10-19
 
 ### Fixed
