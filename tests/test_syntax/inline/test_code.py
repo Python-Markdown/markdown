@@ -79,3 +79,18 @@ class TestCode(TestCase):
                 """
             )
         )
+
+    def test_bigger_end(self):
+
+        # https://github.com/Python-Markdown/markdown/issues/1668
+        self.assertMarkdownRenders(
+            'a ``` b ````` c',
+            '<p>a ``` b ````` c</p>'
+        )
+
+    def test_smaller_end(self):
+
+        self.assertMarkdownRenders(
+            'a ``` b `` c',
+            '<p>a <code>` b</code> c</p>'
+        )
