@@ -84,8 +84,8 @@ class TestAttrList(TestCase):
         left as plain text, no matter how many trailing spaces there are.
 
         The content and the trailing spaces both match the same part of the
-        pattern, so without care the regex backtracks quadratically over the
-        spaces while failing to find the closing brace.
+        pattern, so without care the regex backtracks over every way of
+        splitting the spaces while failing to find the closing brace.
         """
         text = 'foo\n{a' + (' ' * 50000)
         self.assertMarkdownRenders(text, f'<p>{text}</p>')
