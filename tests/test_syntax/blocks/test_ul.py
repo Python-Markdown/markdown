@@ -135,3 +135,182 @@ class TestUnorderedLists(TestCase):
                 """
             )
         )
+
+    # An unindented list item ends the indented block before it, even without a blank
+    # line. As no blank line comes before the new item, it is not a loose item (#845).
+    def test_item_after_indented_paragraph_no_blank_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                - item one
+
+                    second paragraph of item 1
+                - item two
+                - item three
+                """
+            ),
+            self.dedent(
+                """
+                <ul>
+                <li>
+                <p>item one</p>
+                <p>second paragraph of item 1</p>
+                </li>
+                <li>item two</li>
+                <li>item three</li>
+                </ul>
+                """
+            )
+        )
+
+    def test_ordered_item_after_indented_paragraph_no_blank_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                1. item one
+
+                    second paragraph of item 1
+                2. item two
+                """
+            ),
+            self.dedent(
+                """
+                <ol>
+                <li>
+                <p>item one</p>
+                <p>second paragraph of item 1</p>
+                </li>
+                <li>item two</li>
+                </ol>
+                """
+            )
+        )
+
+    def test_item_after_nested_list_and_paragraph_no_blank_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                * First item:
+
+                    * First sub-item
+                    * Second sub-item
+
+                    Additional paragraph in first item
+                * Second item
+                """
+            ),
+            self.dedent(
+                """
+                <ul>
+                <li>
+                <p>First item:</p>
+                <ul>
+                <li>First sub-item</li>
+                <li>Second sub-item</li>
+                </ul>
+                <p>Additional paragraph in first item</p>
+                </li>
+                <li>Second item</li>
+                </ul>
+                """
+            )
+        )
+
+    # An unindented line which does not start a list item is still a lazy
+    # continuation of the paragraph.
+    def test_lazy_paragraph_continuation_after_indented_paragraph(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                - item one
+
+                    second paragraph of item 1
+                line two of second paragraph of item 1
+                """
+            ),
+            self.dedent(
+                """
+                <ul>
+                <li>
+                <p>item one</p>
+                <p>second paragraph of item 1
+                line two of second paragraph of item 1</p>
+                </li>
+                </ul>
+                """
+            )
+        )
+
+    def test_item_after_indented_paragraph_in_blockquote(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                > - item one
+                >
+                >     second paragraph of item 1
+                > - item two
+                """
+            ),
+            self.dedent(
+                """
+                <blockquote>
+                <ul>
+                <li>
+                <p>item one</p>
+                <p>second paragraph of item 1</p>
+                </li>
+                <li>item two</li>
+                </ul>
+                </blockquote>
+                """
+            )
+        )
+
+    # As with a list at the top level, a horizontal rule ends the list.
+    def test_hr_after_indented_paragraph(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                - item one
+
+                    second paragraph of item 1
+                * * *
+                """
+            ),
+            self.dedent(
+                """
+                <ul>
+                <li>
+                <p>item one</p>
+                <p>second paragraph of item 1</p>
+                </li>
+                </ul>
+                <hr />
+                """
+            )
+        )
+
+    # With `sane_lists`, a marker of the other list type does not start an item.
+    def test_other_list_type_after_indented_paragraph_sane_lists(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                1. item one
+
+                    second paragraph of item 1
+                - not an item
+                """
+            ),
+            self.dedent(
+                """
+                <ol>
+                <li>
+                <p>item one</p>
+                <p>second paragraph of item 1
+                - not an item</p>
+                </li>
+                </ol>
+                """
+            ),
+            extensions=['sane_lists']
+        )

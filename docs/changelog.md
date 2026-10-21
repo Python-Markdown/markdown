@@ -23,6 +23,8 @@ See the [Contributing Guide](contributing.md) for details.
   and closing backticks did not match (#1668).
 * Escape the language name in the `codehilite` extension's non-Pygments output to
   maintain consistency with Pygments output.
+* Fix a list item being merged into the previous item when it directly follows an
+  indented paragraph or nested list of that item without a blank line (#845).
 
 ## [3.11.2] - 2026-10-19
 

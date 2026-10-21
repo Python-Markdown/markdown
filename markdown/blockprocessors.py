@@ -180,6 +180,7 @@ class ListIndentProcessor(BlockProcessor):
 
     def run(self, parent: etree.Element, blocks: list[str]) -> None:
         block = blocks.pop(0)
+        block, rest = self.split_list_items(parent, block)
         level, sibling = self.get_level(parent, block)
         block = self.looseDetab(block, level)
 
@@ -213,6 +214,29 @@ class ListIndentProcessor(BlockProcessor):
         else:
             self.create_item(sibling, block)
         self.parser.state.reset()
+        if rest:
+            # No blank line comes before these items, so they continue the list as
+            # tight items (see `OListProcessor`).
+            self.parser.state.set('listcontinue')
+            self.parser.parseBlocks(parent, [rest])
+            self.parser.state.reset()
+
+    def split_list_items(self, parent: etree.Element, block: str) -> tuple[str, str]:
+        """ Split off the unindented list items which end an indented block.
+
+        Return the part of `block` before the first unindented line which starts another
+        item of the list in `parent`, and the rest, which is empty if there is no such line.
+        """
+        if parent.tag in self.ITEM_TYPES:
+            return block, ''
+        lst = parent[-1]
+        lines = block.split('\n')
+        for i, line in enumerate(lines[1:], start=1):
+            for processor in self.parser.blockprocessors:
+                if (isinstance(processor, OListProcessor) and lst.tag in processor.SIBLING_TAGS and
+                        processor.test(parent, line)):
+                    return '\n'.join(lines[:i]), '\n'.join(lines[i:])
+        return block, ''
 
     def create_item(self, parent: etree.Element, block: str) -> None:
         """ Create a new `li` and parse the block with it as the parent. """
@@ -361,7 +385,12 @@ class OListProcessor(BlockProcessor):
         items = self.get_items(blocks.pop(0))
         sibling = self.lastChild(parent)
 
-        if sibling is not None and sibling.tag in self.SIBLING_TAGS:
+        if (sibling is not None and sibling.tag in self.SIBLING_TAGS and
+                self.parser.state.isstate('listcontinue')):
+            # These items directly follow an indented block of the previous item
+            # without a blank line (see `ListIndentProcessor`), so they are tight.
+            lst = sibling
+        elif sibling is not None and sibling.tag in self.SIBLING_TAGS:
             # Previous block was a list item, so set that as parent
             lst = sibling
             # make sure previous item is in a `p` - if the item has text,
