@@ -14,8 +14,12 @@ See the [Contributing Guide](contributing.md) for details.
 
 ## [Unreleased]
 
-* Fix regression in `BacktickInlineProcessor` where text could be lost when opening and closing backticks did not
-  match (#1668).
+### Fixed
+
+* Fix regression in `BacktickInlineProcessor` where text could be lost when opening
+  and closing backticks did not match (#1668).
+* Escape the language name in the `codehilite` extension's non-Pygments output to
+  maintain consistency with Pygments output.
 
 ## [3.11.2] - 2026-10-19
 
