@@ -28,7 +28,6 @@ document.
 
 from __future__ import annotations
 
-from html import escape
 from typing import TYPE_CHECKING, Any
 from . import util
 import re
@@ -71,10 +70,6 @@ class RawHtmlPostprocessor(Postprocessor):
 
     BLOCK_LEVEL_REGEX = re.compile(r'^\<\/?([^ >]+)')
 
-    # Match regions of code (`<pre>` and `<code>` elements). A raw HTML
-    # placeholder within such a region must be restored as escaped text.
-    CODE_REGION_RE = re.compile(r'<(pre|code)[\s>].*?</\1\s*>', re.DOTALL)
-
     def run(self, text: str) -> str:
         """ Iterate over html stash and restore html. """
         def substitute_match(m: re.Match[str]) -> str:
@@ -85,29 +80,7 @@ class RawHtmlPostprocessor(Postprocessor):
                 wrapped = False
             if (key := int(key)) >= self.md.htmlStash.html_counter:
                 return m.group(0)
-            entry = self.md.htmlStash.rawHtmlBlocks[key]
-            html = self.stash_to_string(entry)
-            if self.in_code_region(m.string, m.start()):
-                # The placeholder is within a code block. Restore the HTML as
-                # escaped text so it displays as content rather than markup.
-                # The code block adds a trailing newline itself and only
-                # strips `tab_length` from each line, so re-indent the content
-                # accordingly.
-                if isinstance(entry, util.IndentedRawHtml):
-                    extra = entry.indent - self.md.tab_length
-                    if extra > 0:
-                        # The first line is the start tag. Its indentation is
-                        # already retained by the placeholder line itself (the
-                        # code block only strips `tab_length` from it), so
-                        # only the following lines are re-indented.
-                        lines = html.split('\n')
-                        html = '\n'.join([lines[0]] + [
-                            ' ' * extra + line if line else line
-                            for line in lines[1:]
-                        ])
-                if html.endswith('\n'):
-                    html = html[:-1]
-                return escape(html, quote=False)
+            html = self.stash_to_string(self.md.htmlStash.rawHtmlBlocks[key])
             if not wrapped or self.isblocklevel(html):
                 return pattern.sub(substitute_match, html)
             return pattern.sub(substitute_match, f"<p>{html}</p>")
@@ -118,10 +91,6 @@ class RawHtmlPostprocessor(Postprocessor):
             return pattern.sub(substitute_match, text)
         else:
             return text
-
-    def in_code_region(self, text: str, pos: int) -> bool:
-        """ Check if position `pos` in `text` is within a `<pre>` or `<code>` region. """
-        return any(m.start() < pos < m.end() for m in self.CODE_REGION_RE.finditer(text))
 
     def isblocklevel(self, html: str) -> bool:
         """ Check is block of HTML is block-level. """
