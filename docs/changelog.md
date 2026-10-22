@@ -21,6 +21,8 @@ See the [Contributing Guide](contributing.md) for details.
 * Fix quadratic-time regex backtracking in `attr_list` when a block ends with an
   unclosed attribute list followed by a long run of spaces, e.g. a line
   consisting only of `{` and some text with many trailing spaces (#1656).
+* Fix quadratic-time regex backtracking in hash headers when a long run of `#`
+  characters is followed by more text on the same line.
 * Fix regression in `BacktickInlineProcessor` where text could be lost when opening
   and closing backticks did not match (#1668).
 * Escape the language name in the `codehilite` extension's non-Pygments output to
