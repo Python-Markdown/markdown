@@ -290,27 +290,35 @@ class TestUnorderedLists(TestCase):
             )
         )
 
-    # With `sane_lists`, a marker of the other list type does not start an item.
-    def test_other_list_type_after_indented_paragraph_sane_lists(self):
+    # The same applies to a nested list item after an indented paragraph of the previous
+    # nested item. The items after it, at any level, are tight.
+    def test_nested_item_after_indented_paragraph_no_blank_line(self):
         self.assertMarkdownRenders(
             self.dedent(
                 """
-                1. item one
+                - item one
+                    - sub-item one
 
-                    second paragraph of item 1
-                - not an item
+                        second paragraph of sub-item 1
+                    - sub-item two
+                - item two
                 """
             ),
             self.dedent(
                 """
-                <ol>
+                <ul>
                 <li>
                 <p>item one</p>
-                <p>second paragraph of item 1
-                - not an item</p>
+                <ul>
+                <li>
+                <p>sub-item one</p>
+                <p>second paragraph of sub-item 1</p>
                 </li>
-                </ol>
+                <li>sub-item two</li>
+                </ul>
+                </li>
+                <li>item two</li>
+                </ul>
                 """
-            ),
-            extensions=['sane_lists']
+            )
         )
