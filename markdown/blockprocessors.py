@@ -458,7 +458,7 @@ class HashHeaderProcessor(BlockProcessor):
     """ Process Hash Headers. """
 
     # Detect a header at start of any line in block
-    RE = re.compile(r'(?:^|\n)(?P<level>#{1,6})(?P<header>(?:\\.|[^\\])*?)#*(?:\n|$)')
+    RE = re.compile(r'(?:^|\n)(?P<level>#{1,6})(?P<header>(?:\\.|[^\\#]|#+(?=[^#\n]))*?)#*(?:\n|$)')
 
     def test(self, parent: etree.Element, block: str) -> bool:
         return bool(self.RE.search(block))
