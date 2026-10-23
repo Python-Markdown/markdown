@@ -445,6 +445,44 @@ class TestTOC(TestCase):
         self.assertEqual(unique('foo', ids), 'foo_1')
         self.assertEqual(ids, {'foo', 'foo_1'})
 
+    def testTOCUniqueFuncCounters(self):
+        """
+        With a cache of counters, `unique` must return the same ids it does
+        without one, including when ids with gaps or leading zeros exist.
+        """
+        ids = {'foo', 'foo_1', 'foo_3'}
+        counters = {}
+        self.assertEqual(unique('foo', ids, counters), 'foo_2')
+        self.assertEqual(unique('foo', ids, counters), 'foo_4')
+        self.assertEqual(unique('foo_1', ids, counters), 'foo_5')
+        self.assertEqual(unique('foo_8', ids, counters), 'foo_8')
+        self.assertEqual(unique('foo_8', ids, counters), 'foo_9')
+        self.assertEqual(unique('foo', ids, counters), 'foo_6')
+        # `foo_07` is taken but `foo_7` is still free.
+        self.assertEqual(unique('foo_07', ids, counters), 'foo_07')
+        self.assertEqual(unique('foo_07', ids, counters), 'foo_10')
+        self.assertEqual(unique('foo', ids, counters), 'foo_7')
+        self.assertEqual(unique('foo', ids, counters), 'foo_11')
+        self.assertEqual(counters, {'foo': 11})
+        self.assertEqual(
+            ids,
+            {'foo', 'foo_07'} | {'foo_%d' % i for i in range(1, 12)}
+        )
+
+    def testManyHeadersWithSameText(self):
+        """
+        Each header with the same text as earlier headers gets the next free id
+        without checking every id already given to those headers again.
+        """
+        count = 10000
+        self.assertMarkdownRenders(
+            '# Header\n' * count,
+            '\n'.join(
+                ['<h1 id="header">Header</h1>'] +
+                ['<h1 id="header_%d">Header</h1>' % i for i in range(1, count)]
+            )
+        )
+
     def testTocInHeaders(self):
         self.assertMarkdownRenders(
             self.dedent(
