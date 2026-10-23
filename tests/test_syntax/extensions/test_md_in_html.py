@@ -1587,10 +1587,80 @@ class TestMdInHTML(TestCase):
         self.assertEqual(md.convert(src), '<a-b>\n<p><em>asdf</em></p>\n</a-b>')
 
 
+class TestIndentedHtmlBlockswMdInHTML(TestCase):
+    """ Raw HTML nested in indented blocks with md_in_html enabled (issue #1096). """
+
+    default_kwargs = {'extensions': ['md_in_html']}
+
+    def test_indented_code_block_with_blank_lines(self):
+        # An indented HTML block with blank lines remains a code block, even
+        # with md_in_html enabled. See #1096.
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                A paragraph.
+
+                    <div>
+                    code
+
+                    more code
+                    </div>
+                """
+            ),
+            self.dedent(
+                """
+                <p>A paragraph.</p>
+                <pre><code>&lt;div&gt;
+                code
+
+                more code
+                &lt;/div&gt;
+                </code></pre>
+                """
+            )
+        )
+
+    def test_raw_indented_in_list_item(self):
+        # A raw HTML block nested in a list item should not be split into
+        # separate paragraphs at blank lines, even with md_in_html enabled.
+        # See #1096.
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                * A list item with a nested raw HTML block.
+
+                    <div>
+                    Some text
+
+                    Some more text
+                    </div>
+                """
+            ),
+            self.dedent(
+                """
+                <ul>
+                <li>
+                <p>A list item with a nested raw HTML block.</p>
+                <div>
+                Some text
+
+                Some more text
+                </div>
+
+                </li>
+                </ul>
+                """
+            )
+        )
+
+
 def load_tests(loader, tests, pattern):
     """ Ensure `TestHTMLBlocks` doesn't get run twice by excluding it here. """
     suite = TestSuite()
-    for test_class in [TestDefaultwMdInHTML, TestMdInHTML, TestMarkdownInHTMLPostProcessor]:
+    for test_class in [
+        TestDefaultwMdInHTML, TestMdInHTML, TestMarkdownInHTMLPostProcessor,
+        TestIndentedHtmlBlockswMdInHTML
+    ]:
         tests = loader.loadTestsFromTestCase(test_class)
         suite.addTests(tests)
     return suite

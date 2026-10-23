@@ -263,3 +263,33 @@ class TestAdmonition(TestCase):
             ),
             extensions=['admonition']
         )
+
+    def test_with_raw_html_block(self):
+        # A raw HTML block nested in an admonition should not be split into
+        # separate paragraphs at blank lines. See #1096.
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                !!! note "Admonition"
+                    <div>
+                    Some text
+
+                    Some more text
+                    </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Admonition</p>
+                <div>
+                Some text
+
+                Some more text
+                </div>
+
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )

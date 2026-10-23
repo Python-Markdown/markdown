@@ -27,6 +27,11 @@ See the [Contributing Guide](contributing.md) for details.
   and closing backticks did not match (#1668).
 * Escape the language name in the `codehilite` extension's non-Pygments output to
   maintain consistency with Pygments output.
+* Treat block-level raw HTML tags which are indented more than three spaces as
+  raw HTML blocks when they are nested within a containing block (a list item,
+  admonition, etc.), instead of incorrectly splitting them into separate
+  paragraphs at blank lines. Raw HTML blocks within indented code blocks are
+  still treated as code (#1096).
 
 ## [3.11.2] - 2026-10-19
 
