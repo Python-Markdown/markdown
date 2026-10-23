@@ -179,7 +179,10 @@ class ListIndentProcessor(BlockProcessor):
                     (parent[-1].tag in self.LIST_TYPES)))
 
     def run(self, parent: etree.Element, blocks: list[str]) -> None:
+        # Whether this block starts with items split off an indented block (see the end of this method).
+        continued = self.parser.state.isstate('listcontinue')
         block = blocks.pop(0)
+        block, rest = self.split_list_items(parent, block)
         level, sibling = self.get_level(parent, block)
         block = self.looseDetab(block, level)
 
@@ -209,10 +212,51 @@ class ListIndentProcessor(BlockProcessor):
                 p.text = sibling[-1].text
                 sibling[-1].text = ''
                 sibling[-1].insert(0, p)
-            self.parser.parseChunk(sibling[-1], block)
+            if continued:
+                # The items continue the nested list in this item, so they are tight too.
+                self.parser.state.set('listcontinue')
+                self.parser.parseChunk(sibling[-1], block)
+                self.parser.state.reset()
+            else:
+                self.parser.parseChunk(sibling[-1], block)
         else:
             self.create_item(sibling, block)
         self.parser.state.reset()
+        if rest:
+            # No blank line comes before these items, so they continue the list as
+            # tight items (see `OListProcessor`).
+            self.parser.state.set('listcontinue')
+            self.parser.parseBlocks(parent, [rest])
+            self.parser.state.reset()
+
+    def split_list_items(self, parent: etree.Element, block: str) -> tuple[str, str]:
+        """ Split off the list items which end an indented block.
+
+        Return the part of `block` before the first line which is indented less than the first
+        line and starts another item of the list at its level of indentation, and the rest,
+        which is empty if there is no such line.
+        """
+        if parent.tag in self.ITEM_TYPES:
+            return block, ''
+        # The list at each level of indentation: the list in `parent`, the list nested in its
+        # last item, and so on.
+        lists = []
+        lst = parent[-1]
+        while lst is not None and lst.tag in self.LIST_TYPES:
+            lists.append(lst)
+            lst = self.lastChild(lst[-1]) if len(lst) else None
+        block_level = len(self.INDENT_RE.match(block).group(1)) // self.tab_length
+        lines = block.split('\n')
+        for i, line in enumerate(lines[1:], start=1):
+            m = self.INDENT_RE.match(line)
+            level = len(m.group(1)) // self.tab_length if m else 0
+            if level >= min(block_level, len(lists)):
+                continue
+            for processor in self.parser.blockprocessors:
+                if (isinstance(processor, OListProcessor) and lists[level].tag in processor.SIBLING_TAGS and
+                        processor.test(parent, line[level * self.tab_length:])):
+                    return '\n'.join(lines[:i]), '\n'.join(lines[i:])
+        return block, ''
 
     def create_item(self, parent: etree.Element, block: str) -> None:
         """ Create a new `li` and parse the block with it as the parent. """
@@ -361,7 +405,12 @@ class OListProcessor(BlockProcessor):
         items = self.get_items(blocks.pop(0))
         sibling = self.lastChild(parent)
 
-        if sibling is not None and sibling.tag in self.SIBLING_TAGS:
+        if (sibling is not None and sibling.tag in self.SIBLING_TAGS and
+                self.parser.state.isstate('listcontinue')):
+            # These items directly follow an indented block of the previous item
+            # without a blank line (see `ListIndentProcessor`), so they are tight.
+            lst = sibling
+        elif sibling is not None and sibling.tag in self.SIBLING_TAGS:
             # Previous block was a list item, so set that as parent
             lst = sibling
             # make sure previous item is in a `p` - if the item has text,
