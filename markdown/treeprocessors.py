@@ -504,7 +504,7 @@ class RawHtmlInCodeTreeprocessor(Treeprocessor):
         content is restored here as escaped text so that it is displayed
         rather than rendered as markup.
 
-        This runs before the `hilite` treeprocessor of the `codehilite`
+        This runs before the `hilite` tree processor of the `codehilite`
         extension (priority `30`) so that the extension receives the code as
         text and can apply its own escaping to it.
         """
