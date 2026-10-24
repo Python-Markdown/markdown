@@ -16,6 +16,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* Ignore glossary abbreviations with empty definitions after inline elements,
+  consistently with abbreviations before inline elements.
 * Strip complete HTML tags with quoted `>` characters from `toc` labels and
   generated heading IDs.
 * Fix quadratic-time regex backtracking in `attr_list` when a block ends with an
