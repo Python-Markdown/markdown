@@ -43,6 +43,17 @@ class TestAutomaticLinks(TestCase):
                     f'<p><a href="{url}">{url}</a></p>'
                 )
 
+    def test_url_schemes_with_userinfo(self):
+        for url in (
+            'ssh://user@example.org/path',
+            'git+ssh://git@example.org/repo.git',
+        ):
+            with self.subTest(url=url):
+                self.assertMarkdownRenders(
+                    f'<{url}>',
+                    f'<p><a href="{url}">{url}</a></p>'
+                )
+
     def test_url_scheme_with_query(self):
         self.assertMarkdownRenders(
             '<ssh://example.org/path?q=one&x=two>',

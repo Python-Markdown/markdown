@@ -122,8 +122,8 @@ are summarized below:
 
     Automatic links recognize URL schemes followed by `://`, including schemes
     other than HTTP and FTP, such as `<ssh://example.org>` and
-    `<git+ssh://example.org/repo>`. URI forms without `://`, such as `<urn:foo>`,
-    continue to be treated as raw HTML.
+    `<git+ssh://example.org/repo>`. URI forms without `://`, such as
+    `<urn:foo>`, continue to be treated as raw HTML.
 
 Support
 -------
