@@ -14,6 +14,11 @@ See the [Contributing Guide](contributing.md) for details.
 
 ## [Unreleased]
 
+### Added
+
+* Support automatic links with URL schemes other than HTTP and FTP, such as
+  `<ssh://example.org>` (#1244).
+
 ### Fixed
 
 * Strip complete HTML tags with quoted `>` characters from `toc` labels and
