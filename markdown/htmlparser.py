@@ -158,6 +158,8 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self._cache: list[str] = []
         self.cleandoc: list[str] = []
         self.lineno_start_cache = [0]
+        # The `rawdata` and position of the last failed search for a comment close.
+        self._no_commentclose: tuple[str | None, int] = (None, 0)
 
         super().reset()
 
@@ -359,8 +361,15 @@ class HTMLExtractor(htmlparser.HTMLParser):
     def parse_comment(self, i, report=True):
         rawdata = self.rawdata
         assert rawdata.startswith('<!--', i), 'unexpected call to parse_comment()'
-        match = commentclose.search(rawdata, i+4)
+        # If no close was found after an earlier position in the same `rawdata`, there
+        # is none after this one either. Don't rescan the rest of the document again.
+        searched, pos = self._no_commentclose
+        if searched is rawdata and i + 4 >= pos:
+            match = None
+        else:
+            match = commentclose.search(rawdata, i+4)
         if not match:
+            self._no_commentclose = (rawdata, i + 4)
             self.handle_data('<')
             return i + 1
         if report:
