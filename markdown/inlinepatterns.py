@@ -119,7 +119,7 @@ REFERENCE_RE = LINK_RE
 IMAGE_REFERENCE_RE = IMAGE_LINK_RE
 """ Match start of image reference (`![alt text][2]`). """
 
-AUTOLINK_RE = r'<((?:[Ff]|[Hh][Tt])[Tt][Pp][Ss]?://[^<>]*)>'
+AUTOLINK_RE = r'<([A-Za-z][A-Za-z0-9+.-]*://[^<>]*)>'
 """ Match an automatic link (`<http://www.example.com>`). """
 
 AUTOMAIL_RE = r'<([^<> !]+@[^@<> ]+)>'
