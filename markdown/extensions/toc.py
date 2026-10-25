@@ -73,13 +73,13 @@ def unique(id: str, ids: MutableSet[str], counters: dict[str, int] | None = None
             known = counters.get(base, 0)
             # Only skip ahead when this id falls within the run of suffixes known to be
             # taken, or is the next one after it, as any later suffix may still be free.
-            if count <= known or id == '%s_%d' % (base, known + 1):
+            if count <= known or id == f'{base}_{known + 1}':
                 skip = True
                 count = max(count, known)
         count += 1
-        while '%s_%d' % (base, count) in ids:
+        while f'{base}_{count}' in ids:
             count += 1
-        id = '%s_%d' % (base, count)
+        id = f'{base}_{count}'
         if skip:
             # Every suffix from `base_1` through the new id is now known to be taken.
             counters[base] = count

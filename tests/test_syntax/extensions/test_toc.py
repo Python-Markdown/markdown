@@ -466,7 +466,7 @@ class TestTOC(TestCase):
         self.assertEqual(counters, {'foo': 11})
         self.assertEqual(
             ids,
-            {'foo', 'foo_07'} | {'foo_%d' % i for i in range(1, 12)}
+            {'foo', 'foo_07'} | {f'foo_{i}' for i in range(1, 12)}
         )
 
     def testManyHeadersWithSameText(self):
@@ -479,7 +479,7 @@ class TestTOC(TestCase):
             '# Header\n' * count,
             '\n'.join(
                 ['<h1 id="header">Header</h1>'] +
-                ['<h1 id="header_%d">Header</h1>' % i for i in range(1, count)]
+                [f'<h1 id="header_{i}">Header</h1>' for i in range(1, count)]
             )
         )
 
