@@ -271,11 +271,33 @@ class TestAttrListValuelessAttributes(TestCase):
         self.assertEqual(to_html_string(elem), '<a download="download">x</a>')
         self.assertEqual(to_xhtml_string(elem), '<a download="download">x</a>')
 
-    def test_fenced_code_valueless_config_word(self):
-        # `fenced_code` shares the attribute parser: a valueless config word
+    def test_fenced_code_valueless_word(self):
+        # `fenced_code` shares the attribute parser: a valueless word
         # keeps its historic treatment there (key used as its own value).
         self.assertMarkdownRenders(
             '``` { .python linenos }\nx = 1\n```',
             '<pre><code class="language-python" linenos="linenos">x = 1\n</code></pre>',
             extensions=['fenced_code', 'attr_list']
+        )
+
+    # The next three tests were moved here from the legacy fixture tests
+    # in `tests/extensions/attr_list.txt` because their expected output
+    # changed with the preservation of valueless attributes.
+
+    def test_valueless_attribute_among_valued_attributes(self):
+        self.assertMarkdownRenders(
+            "And now some random attributes.\n{:foo bar='b az' baz=\"blah blah\" title=\"I wasn't kidding!\" }",
+            '<p bar="b az" baz="blah blah" foo title="I wasn\'t kidding!">And now some random attributes.</p>'
+        )
+
+    def test_bad_syntax_header_with_valueless_attribute(self):
+        self.assertMarkdownRenders(
+            '### Bad Syntax { {: #hash5 }',
+            '<h3 _: id="hash5">Bad Syntax</h3>'
+        )
+
+    def test_key_without_value(self):
+        self.assertMarkdownRenders(
+            'Key without *value*{ foo= }',
+            '<p>Key without <em foo>value</em></p>'
         )

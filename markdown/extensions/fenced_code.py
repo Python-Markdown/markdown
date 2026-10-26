@@ -180,7 +180,7 @@ class FencedBlockPreprocessor(Preprocessor):
         configs = {}
         for k, v in attrs:
             if v is None:
-                # A valueless attribute is a config flag: preserve the
+                # A valueless attribute is a flag: preserve the
                 # historic behavior of using the key as its own value.
                 v = k
             if k == 'id':
