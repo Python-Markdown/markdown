@@ -16,6 +16,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* Fix quadratic-time id generation in the `toc` extension when many headers
+  share the same text.
 * Strip complete HTML tags with quoted `>` characters from `toc` labels and
   generated heading IDs.
 * Fix quadratic-time regex backtracking in `attr_list` when a block ends with an
