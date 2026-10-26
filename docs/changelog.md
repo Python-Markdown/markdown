@@ -20,6 +20,8 @@ See the [Contributing Guide](contributing.md) for details.
   `<ssh://example.org>` (#1244).
 * Fix quadratic-time id generation in the `toc` extension when many headers
   share the same text.
+* Ignore glossary abbreviations with empty definitions after inline elements,
+  consistently with abbreviations before inline elements.
 * Strip complete HTML tags with quoted `>` characters from `toc` labels and
   generated heading IDs.
 * Fix quadratic-time regex backtracking in `attr_list` when a block ends with an
