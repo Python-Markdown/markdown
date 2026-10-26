@@ -18,6 +18,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 * Support automatic links with URL schemes other than HTTP and FTP, such as
   `<ssh://example.org>` (#1244).
+* Fix quadratic-time id generation in the `toc` extension when many headers
+  share the same text.
 * Strip complete HTML tags with quoted `>` characters from `toc` labels and
   generated heading IDs.
 * Fix quadratic-time regex backtracking in `attr_list` when a block ends with an
@@ -29,6 +31,10 @@ See the [Contributing Guide](contributing.md) for details.
   and closing backticks did not match (#1668).
 * Escape the language name in the `codehilite` extension's non-Pygments output to
   maintain consistency with Pygments output.
+* Preserve attributes without a value in the `attr_list` extension exactly as
+  provided, rather than rendering them as `key="key"`, so the same source
+  renders consistently under both the `html` and `xhtml` output formats
+  (#1501).
 
 ## [3.11.2] - 2026-10-19
 

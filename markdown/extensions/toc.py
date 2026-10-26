@@ -54,14 +54,35 @@ def slugify_unicode(value: str, separator: str) -> str:
 IDCOUNT_RE = re.compile(r'^(.*)_([0-9]+)$')
 
 
-def unique(id: str, ids: MutableSet[str]) -> str:
-    """ Ensure id is unique in set of ids. Append '_1', '_2'... if not """
-    while id in ids or not id:
+def unique(id: str, ids: MutableSet[str], counters: dict[str, int] | None = None) -> str:
+    """ Ensure id is unique in set of ids. Append '_1', '_2'... if not
+
+    `counters` is an optional cache which maps a base id to the highest `n` for which
+    `base_1` through `base_n` are all known to be in `ids`. When the same cache is passed
+    along with the same `ids` on every call, a repeated id skips past the suffixes which
+    earlier calls already found to be taken rather than checking each of them again.
+    """
+    if id in ids or not id:
         m = IDCOUNT_RE.match(id)
         if m:
-            id = '%s_%d' % (m.group(1), int(m.group(2))+1)
+            base, count = m.group(1), int(m.group(2))
         else:
-            id = '%s_%d' % (id, 1)
+            base, count = id, 0
+        skip = False
+        if counters is not None:
+            known = counters.get(base, 0)
+            # Only skip ahead when this id falls within the run of suffixes known to be
+            # taken, or is the next one after it, as any later suffix may still be free.
+            if count <= known or id == f'{base}_{known + 1}':
+                skip = True
+                count = max(count, known)
+        count += 1
+        while f'{base}_{count}' in ids:
+            count += 1
+        id = f'{base}_{count}'
+        if skip:
+            # Every suffix from `base_1` through the new id is now known to be taken.
+            counters[base] = count
     ids.add(id)
     return id
 
@@ -369,6 +390,7 @@ class TocTreeprocessor(Treeprocessor):
         for el in doc.iter():
             if "id" in el.attrib:
                 used_ids.add(el.attrib["id"])
+        id_counters: dict[str, int] = {}
 
         toc_tokens = []
         for el in doc.iter():
@@ -379,7 +401,7 @@ class TocTreeprocessor(Treeprocessor):
 
                 # Do not override pre-existing ids
                 if "id" not in el.attrib:
-                    el.attrib["id"] = unique(self.slugify(html.unescape(name), self.sep), used_ids)
+                    el.attrib["id"] = unique(self.slugify(html.unescape(name), self.sep), used_ids, id_counters)
 
                 data_toc_label = ''
                 if 'data-toc-label' in el.attrib:
