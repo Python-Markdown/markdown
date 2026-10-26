@@ -55,6 +55,27 @@ __all__ = ['to_html_string', 'to_xhtml_string']
 
 RE_AMP = re.compile(r'&(?!(?:\#[0-9]+|\#x[0-9a-f]+|[0-9a-z]+);)', re.I)
 
+# Known boolean attributes, whose presence alone carries the meaning and
+# which may therefore be rendered in the minimized (valueless) form. The
+# list of recognized attributes differs per output format: `xhtml` only
+# recognizes the attributes declared boolean by the XHTML 1.0 spec, while
+# `html` recognizes the boolean attributes of the HTML spec. Note that
+# `download` is deliberately absent from both lists: it is only boolean
+# when no value is assigned and a value changes its meaning.
+BOOLEAN_ATTRIBUTES: dict[str, frozenset[str]] = {
+    'html': frozenset([
+        'allowfullscreen', 'async', 'autofocus', 'autoplay', 'checked',
+        'controls', 'default', 'defer', 'disabled', 'formnovalidate',
+        'hidden', 'inert', 'ismap', 'itemscope', 'loop', 'multiple', 'muted',
+        'nomodule', 'novalidate', 'open', 'playsinline', 'readonly',
+        'required', 'reversed', 'selected',
+    ]),
+    'xhtml': frozenset([
+        'checked', 'compact', 'declare', 'defer', 'disabled', 'ismap',
+        'multiple', 'noresize', 'noshade', 'nowrap', 'readonly', 'selected',
+    ]),
+}
+
 
 def _raise_serialization_error(text: str) -> NoReturn:  # pragma: no cover
     raise TypeError(
@@ -162,13 +183,17 @@ def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal
                     if isinstance(v, QName):
                         # Assume a text only `QName`
                         v = v.text
+                    if v is None:
+                        # A valueless attribute is preserved exactly as it
+                        # was provided: render the bare attribute name.
+                        write(f" {k}")
                     else:
                         v = _escape_attrib_html(v)
-                    if k == v and format == 'html':
-                        # handle boolean attributes
-                        write(f" {v}")
-                    else:
-                        write(f' {k}="{v}"')
+                        if k == v and format == 'html' and k in BOOLEAN_ATTRIBUTES['html']:
+                            # handle boolean attributes
+                            write(f" {v}")
+                        else:
+                            write(f' {k}="{v}"')
             if namespace_uri:
                 write(f' xmlns="{_escape_attrib(namespace_uri)}"')
             if format == "xhtml" and tag.lower() in HTML_EMPTY:

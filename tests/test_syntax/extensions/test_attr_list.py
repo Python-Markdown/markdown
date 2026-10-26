@@ -133,3 +133,171 @@ class TestAttrList(TestCase):
             ),
             extensions=['attr_list', 'tables']
         )
+
+
+class TestAttrListValuelessAttributes(TestCase):
+    """ Valueless (boolean-style) attributes are preserved as provided.
+
+    Only known boolean attributes keep the historic `key="key"`
+    representation, and the list of known attributes differs per
+    output format. See issue #1501.
+    """
+
+    maxDiff = None
+    default_kwargs = {'extensions': ['attr_list']}
+
+    def test_valueless_non_boolean_preserved_xhtml(self):
+        self.assertMarkdownRenders(
+            '[download](file.txt){download}',
+            '<p><a download href="file.txt">download</a></p>'
+        )
+
+    def test_valueless_non_boolean_preserved_html(self):
+        self.assertMarkdownRenders(
+            '[download](file.txt){download}',
+            '<p><a download href="file.txt">download</a></p>',
+            output_format='html'
+        )
+
+    def test_valueless_non_boolean_consistent_across_formats(self):
+        # Previously `xhtml` rendered `download="download"` (which gives the
+        # downloaded file a default name) while `html` rendered bare
+        # `download` (which does not): the same source changed meaning with
+        # the output format.
+        for output_format in ['xhtml', 'html']:
+            self.assertMarkdownRenders(
+                '[download](file.txt){download}',
+                '<p><a download href="file.txt">download</a></p>',
+                output_format=output_format
+            )
+
+    def test_explicit_value_equal_to_name_preserved(self):
+        # An explicitly assigned value must not be dropped, even when it is
+        # equal to the attribute name and the attribute is not boolean.
+        for output_format in ['xhtml', 'html']:
+            self.assertMarkdownRenders(
+                '[download](file.txt){download="download"}',
+                '<p><a download="download" href="file.txt">download</a></p>',
+                output_format=output_format
+            )
+
+    def test_known_boolean_attribute_xhtml(self):
+        self.assertMarkdownRenders(
+            '[x](y){checked}',
+            '<p><a checked="checked" href="y">x</a></p>'
+        )
+
+    def test_known_boolean_attribute_html(self):
+        self.assertMarkdownRenders(
+            '[x](y){checked}',
+            '<p><a checked href="y">x</a></p>',
+            output_format='html'
+        )
+
+    def test_xhtml_only_boolean_attribute(self):
+        # `compact` is a boolean attribute in XHTML 1.0 but not in HTML.
+        self.assertMarkdownRenders(
+            '# Heading {compact}',
+            '<h1 compact="compact">Heading</h1>'
+        )
+        self.assertMarkdownRenders(
+            '# Heading {compact}',
+            '<h1 compact>Heading</h1>',
+            output_format='html'
+        )
+
+    def test_html_only_boolean_attribute(self):
+        # `open` is a boolean attribute in HTML but not in XHTML 1.0. It
+        # renders bare in both formats: in HTML as a known boolean, and in
+        # XHTML as a valueless attribute preserved as provided.
+        for output_format in ['xhtml', 'html']:
+            self.assertMarkdownRenders(
+                '[x](y){open}',
+                '<p><a href="y" open>x</a></p>',
+                output_format=output_format
+            )
+
+    def test_generic_valueless_attribute(self):
+        for output_format in ['xhtml', 'html']:
+            self.assertMarkdownRenders(
+                '[x](y){foo}',
+                '<p><a foo href="y">x</a></p>',
+                output_format=output_format
+            )
+
+    def test_valueless_attribute_on_block_element(self):
+        self.assertMarkdownRenders(
+            '# Heading {download}',
+            '<h1 download>Heading</h1>'
+        )
+
+    def test_get_attrs_and_remainder_marks_valueless_as_none(self):
+        from markdown.extensions.attr_list import get_attrs_and_remainder
+        attrs, remainder = get_attrs_and_remainder('download checked key=value .cls #the-id')
+        self.assertEqual(remainder, '')
+        self.assertIn(('download', None), attrs)
+        self.assertIn(('checked', None), attrs)
+        self.assertIn(['key', 'value'], attrs)
+        self.assertIn(('.', 'cls'), attrs)
+        self.assertIn(('id', 'the-id'), attrs)
+
+    def test_serializer_renders_none_value_as_bare_name(self):
+        import xml.etree.ElementTree as etree
+
+        from markdown.serializers import to_html_string, to_xhtml_string
+
+        elem = etree.Element('a')
+        elem.set('download', None)
+        elem.set('checked', 'checked')
+        elem.set('href', 'file.txt')
+        elem.text = 'x'
+        self.assertEqual(
+            to_html_string(elem),
+            '<a checked download href="file.txt">x</a>'
+        )
+        self.assertEqual(
+            to_xhtml_string(elem),
+            '<a checked="checked" download href="file.txt">x</a>'
+        )
+
+    def test_serializer_preserves_explicit_value_equal_to_name(self):
+        import xml.etree.ElementTree as etree
+
+        from markdown.serializers import to_html_string, to_xhtml_string
+
+        elem = etree.Element('a')
+        elem.set('download', 'download')
+        elem.text = 'x'
+        self.assertEqual(to_html_string(elem), '<a download="download">x</a>')
+        self.assertEqual(to_xhtml_string(elem), '<a download="download">x</a>')
+
+    def test_fenced_code_valueless_word(self):
+        # `fenced_code` shares the attribute parser: a valueless word
+        # keeps its historic treatment there (key used as its own value).
+        self.assertMarkdownRenders(
+            '``` { .python linenos }\nx = 1\n```',
+            '<pre><code class="language-python" linenos="linenos">x = 1\n</code></pre>',
+            extensions=['fenced_code', 'attr_list']
+        )
+
+    # The next three tests were moved here from the legacy fixture tests
+    # in `tests/extensions/attr_list.txt` because their expected output
+    # changed with the preservation of valueless attributes.
+
+    def test_valueless_attribute_among_valued_attributes(self):
+        self.assertMarkdownRenders(
+            "And now some random attributes.\n{:foo bar='b az' baz=\"blah blah\" title=\"I wasn't kidding!\" }",
+            '<p bar="b az" baz="blah blah" foo title="I wasn\'t kidding!">And now some random attributes.</p>'
+        )
+
+    def test_bad_syntax_header_with_valueless_attribute(self):
+        self.assertMarkdownRenders(
+            '### Bad Syntax { {: #hash5 }',
+            '<h3 _: id="hash5">Bad Syntax</h3>'
+        )
+
+    def test_key_without_value(self):
+        self.assertMarkdownRenders(
+            'Key without *value*{ foo= }',
+            '<p>Key without <em foo>value</em></p>'
+        )
