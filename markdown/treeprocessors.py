@@ -481,8 +481,10 @@ class UnescapeTreeprocessor(Treeprocessor):
                 elem.tail = self.unescape(elem.tail)
             # Unescape attribute values
             for key, value in elem.items():
-                elem.set(key, self.unescape(value))
-
+                if value is not None:
+                    # A value of `None` is a valueless attribute, which
+                    # has nothing to unescape.
+                    elem.set(key, self.unescape(value))
 
 class RawHtmlInCodeTreeprocessor(Treeprocessor):
     """ Restore indented raw HTML blocks which ended up in a code block. """

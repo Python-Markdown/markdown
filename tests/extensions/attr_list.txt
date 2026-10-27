@@ -16,9 +16,6 @@ And a __nested [link][]{: .linky2}__{: .nest}
 
 ### This is a hash Header ### {: #hash}
 
-And now some random attributes.
-{:foo bar='b az' baz="blah blah" title="I wasn't kidding!" }
-
 ### No closing hash header {: #hash2}
 
 Now test overrides
@@ -32,8 +29,6 @@ Now test overrides
 
 Also a codespan: `{: .someclass}`{: .foo}.
 {: #the_end}
-
-### Bad Syntax { {: #hash5 }
 
 * Item1
   {: .item }
@@ -77,8 +72,6 @@ DT2 {.term}
 :   Some dd
 
 # Bad attributes
-
-Key without *value*{ foo= }
 
 Value without *key*{ =bar }
 

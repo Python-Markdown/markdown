@@ -155,6 +155,53 @@ class TestTOC(TestCase):
         self.assertEqual(md.toc, '')
         self.assertEqual(md.toc_tokens, [])
 
+    def testHTMLAttributeWithAngleBracket(self):
+        for quote in ['"', "'"]:
+            with self.subTest(quote=quote):
+                heading = f'<abbr title={quote}Python > 3{quote}>Python</abbr> support'
+                self.assertMarkdownRenders(
+                    f'# {heading}',
+                    f'<h1 id="python-support">{heading}</h1>',
+                    expected_attrs={
+                        'toc': (
+                            '<div class="toc">\n<ul>\n'
+                            '<li><a href="#python-support">Python support</a></li>\n'
+                            '</ul>\n</div>\n'
+                        ),
+                        'toc_tokens': [{
+                            'level': 1,
+                            'id': 'python-support',
+                            'name': 'Python support',
+                            'html': heading,
+                            'data-toc-label': '',
+                            'children': []
+                        }]
+                    }
+                )
+
+    def testCustomLabelAttributeWithAngleBracket(self):
+        label = '<abbr title="Python > 3">Python</abbr> &amp; support'
+        self.assertMarkdownRenders(
+            f"# Python support {{data-toc-label='{label}'}}",
+            '<h1 id="python-support">Python support</h1>',
+            expected_attrs={
+                'toc': (
+                    '<div class="toc">\n<ul>\n'
+                    '<li><a href="#python-support">Python &amp; support</a></li>\n'
+                    '</ul>\n</div>\n'
+                ),
+                'toc_tokens': [{
+                    'level': 1,
+                    'id': 'python-support',
+                    'name': 'Python &amp; support',
+                    'html': 'Python support',
+                    'data-toc-label': label,
+                    'children': []
+                }]
+            },
+            extensions=[TocExtension(), 'attr_list']
+        )
+
     def testUniqueIds(self):
         self.assertMarkdownRenders(
             self.dedent(
@@ -397,6 +444,44 @@ class TestTOC(TestCase):
         ids = {'foo'}
         self.assertEqual(unique('foo', ids), 'foo_1')
         self.assertEqual(ids, {'foo', 'foo_1'})
+
+    def testTOCUniqueFuncCounters(self):
+        """
+        With a cache of counters, `unique` must return the same ids it does
+        without one, including when ids with gaps or leading zeros exist.
+        """
+        ids = {'foo', 'foo_1', 'foo_3'}
+        counters = {}
+        self.assertEqual(unique('foo', ids, counters), 'foo_2')
+        self.assertEqual(unique('foo', ids, counters), 'foo_4')
+        self.assertEqual(unique('foo_1', ids, counters), 'foo_5')
+        self.assertEqual(unique('foo_8', ids, counters), 'foo_8')
+        self.assertEqual(unique('foo_8', ids, counters), 'foo_9')
+        self.assertEqual(unique('foo', ids, counters), 'foo_6')
+        # `foo_07` is taken but `foo_7` is still free.
+        self.assertEqual(unique('foo_07', ids, counters), 'foo_07')
+        self.assertEqual(unique('foo_07', ids, counters), 'foo_10')
+        self.assertEqual(unique('foo', ids, counters), 'foo_7')
+        self.assertEqual(unique('foo', ids, counters), 'foo_11')
+        self.assertEqual(counters, {'foo': 11})
+        self.assertEqual(
+            ids,
+            {'foo', 'foo_07'} | {f'foo_{i}' for i in range(1, 12)}
+        )
+
+    def testManyHeadersWithSameText(self):
+        """
+        Each header with the same text as earlier headers gets the next free id
+        without checking every id already given to those headers again.
+        """
+        count = 10000
+        self.assertMarkdownRenders(
+            '# Header\n' * count,
+            '\n'.join(
+                ['<h1 id="header">Header</h1>'] +
+                [f'<h1 id="header_{i}">Header</h1>' for i in range(1, count)]
+            )
+        )
 
     def testTocInHeaders(self):
         self.assertMarkdownRenders(
@@ -1453,6 +1538,18 @@ class testStripTags(TestCase):
             strip_tags('foo <meta content="tag\nwith\nnewlines"> bar'),
             'foo bar'
         )
+
+    def testStripElementWithQuotedBrackets(self):
+        for tag in [
+            '<abbr title="Python > 3">',
+            "<abbr title='Python > 3'>",
+            '<abbr title="3 < Python > 2">',
+            '<abbr title="Python\n> 3">',
+            '<abbr title="Python\'s > operator">',
+            "<abbr title='The \"greater than\" > operator'>",
+        ]:
+            with self.subTest(tag=tag):
+                self.assertEqual(strip_tags(f'foo {tag}bar</abbr>'), 'foo bar')
 
     def testStripComment(self):
         self.assertEqual(

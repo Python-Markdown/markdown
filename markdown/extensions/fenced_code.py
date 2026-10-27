@@ -171,12 +171,18 @@ class FencedBlockPreprocessor(Preprocessor):
                 break
         return text.split("\n")
 
-    def handle_attrs(self, attrs: Iterable[tuple[str, str]]) -> tuple[str, list[str], dict[str, Any]]:
+    def handle_attrs(
+        self, attrs: Iterable[tuple[str, str | None]]
+    ) -> tuple[str, list[str], dict[str, Any]]:
         """ Return tuple: `(id, [list, of, classes], {configs})` """
         id = ''
         classes = []
         configs = {}
         for k, v in attrs:
+            if v is None:
+                # A valueless attribute is a flag: preserve the
+                # historic behavior of using the key as its own value.
+                v = k
             if k == 'id':
                 id = v
             elif k == '.':

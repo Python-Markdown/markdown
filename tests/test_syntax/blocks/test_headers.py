@@ -779,3 +779,15 @@ class TestHashHeaders(TestCase):
                 """
             )
         )
+
+    def test_long_run_of_hashes_not_at_end(self):
+        """
+        A long run of hashes followed by more text on the same line is part of
+        the header text and should not be scanned once per hash when looking
+        for the closing hashes.
+        """
+        hashes = '#' * 20000
+        self.assertMarkdownRenders(
+            '# ' + hashes + 'x',
+            '<h1>' + hashes + 'x</h1>'
+        )
