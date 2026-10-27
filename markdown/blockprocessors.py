@@ -588,16 +588,34 @@ class ReferenceProcessor(BlockProcessor):
         block = blocks.pop(0)
         m = self.RE.search(block)
         if m:
-            id = m.group(1).strip().lower()
-            link = m.group(2).lstrip('<').rstrip('>')
-            title = m.group(5) or m.group(6)
-            self.parser.md.references[id] = (link, title)
-            if block[m.end():].strip():
+            start = m.start()
+            end = m.end()
+            matches = [m]
+            # Collect the definitions on the following lines so they are all
+            # recorded in this pass rather than one per pass through the block
+            # processors. A definition which is indented or spans lines is left
+            # for the next pass, as is the last one when other content follows
+            # it, as another processor may claim them (an indented code block or
+            # a setext header, for example).
+            for m in self.RE.finditer(block, end):
+                if (block[end:m.start()].strip('\n') or '\n' in m.group()
+                        or block.startswith(' ' * self.tab_length, m.start())):
+                    break
+                matches.append(m)
+                end = m.end()
+            if len(matches) > 1 and block[end:].strip():
+                end = matches.pop().start()
+            for m in matches:
+                id = m.group(1).strip().lower()
+                link = m.group(2).lstrip('<').rstrip('>')
+                title = m.group(5) or m.group(6)
+                self.parser.md.references[id] = (link, title)
+            if block[end:].strip():
                 # Add any content after match back to blocks as separate block
-                blocks.insert(0, block[m.end():].lstrip('\n'))
-            if block[:m.start()].strip():
+                blocks.insert(0, block[end:].lstrip('\n'))
+            if block[:start].strip():
                 # Add any content before match back to blocks as separate block
-                blocks.insert(0, block[:m.start()].rstrip('\n'))
+                blocks.insert(0, block[:start].rstrip('\n'))
             return True
         # No match. Restore block.
         blocks.insert(0, block)

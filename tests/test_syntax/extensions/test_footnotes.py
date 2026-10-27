@@ -265,6 +265,29 @@ class TestFootnotes(TestCase):
             '</div>'
         )
 
+    def test_many_footnote_definitions(self):
+        """
+        Consecutive footnote definitions should be consumed together rather
+        than returning the remainder of the block to be parsed once per
+        definition.
+        """
+        count = 5000
+        self.assertMarkdownRenders(
+            ''.join(f'[^{i}]: Footnote {i}\n' for i in range(count)),
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            + ''.join(
+                f'<li id="fn:{i}">\n'
+                f'<p>Footnote {i}&#160;<a class="footnote-backref" href="#fnref:{i}"'
+                f' title="Jump back to footnote {i + 1} in the text">&#8617;</a></p>\n'
+                '</li>\n'
+                for i in range(count)
+            )
+            + '</ol>\n'
+            '</div>'
+        )
+
     def test_backlink_text(self):
         """Test back-link configuration."""
 

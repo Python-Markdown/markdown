@@ -60,3 +60,30 @@ class TestReferenceLinks(TestCase):
         self.assertMarkdownRenders(
             text, f'<p>{text}</p>', expected_attrs={'references': {}}
         )
+
+    def test_reference_definition_before_setext_header(self):
+        """
+        A reference definition followed by a setext underline is a header, even
+        when it is preceded by another definition.
+        """
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n[b]: http://example.com/b\n===',
+            '<h1>[b]: http://example.com/b</h1>',
+            expected_attrs={'references': {'a': ('http://example.com/a', None)}}
+        )
+
+    def test_many_reference_definitions(self):
+        """
+        Consecutive reference definitions should be consumed together rather
+        than returning the remainder of the block to be parsed once per
+        definition.
+        """
+        count = 10000
+        text = ''.join(f'[id{i}]: http://example.com/{i}\n' for i in range(count))
+        self.assertMarkdownRenders(
+            text,
+            '',
+            expected_attrs={
+                'references': {f'id{i}': (f'http://example.com/{i}', None) for i in range(count)}
+            }
+        )
