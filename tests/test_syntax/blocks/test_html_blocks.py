@@ -1867,6 +1867,13 @@ class TestHTMLBlocks(TestCase):
             '<p>' + '&lt;!--' * 50000 + '</p>'
         )
 
+    def test_many_comments_in_many_unclosed_inline_tags(self):
+        """Test that each comment in open inline tags does not rescan the rest of the paragraph for every tag."""
+        self.assertMarkdownRenders(
+            'x ' + '<span>' * 5000 + '<!---->' * 5000 + '</b>',
+            '<p>x ' + '<span>' * 5000 + '<!---->' * 5000 + '</b></p>'
+        )
+
     def test_no_hang_issue_1586(self):
         """Test no hang condition for issue #1586."""
 
