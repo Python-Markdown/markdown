@@ -61,15 +61,17 @@ class TestReferenceLinks(TestCase):
             text, f'<p>{text}</p>', expected_attrs={'references': {}}
         )
 
-    def test_reference_definition_before_setext_header(self):
+    def test_reference_definitions_before_setext_underline(self):
         """
-        A reference definition followed by a setext underline is a header, even
-        when it is preceded by another definition.
+        A setext underline after consecutive reference definitions is a paragraph,
+        and does not turn the last definition into a header.
         """
         self.assertMarkdownRenders(
             '[a]: http://example.com/a\n[b]: http://example.com/b\n===',
-            '<h1>[b]: http://example.com/b</h1>',
-            expected_attrs={'references': {'a': ('http://example.com/a', None)}}
+            '<p>===</p>',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', None)}
+            }
         )
 
     def test_many_reference_definitions(self):

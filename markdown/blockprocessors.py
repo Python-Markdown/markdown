@@ -593,18 +593,13 @@ class ReferenceProcessor(BlockProcessor):
             matches = [m]
             # Collect the definitions on the following lines so they are all
             # recorded in this pass rather than one per pass through the block
-            # processors. A definition which is indented or spans lines is left
-            # for the next pass, as is the last one when other content follows
-            # it, as another processor may claim them (an indented code block or
-            # a setext header, for example).
+            # processors. A definition which spans lines is left for the next
+            # pass, as another processor may claim part of it.
             for m in self.RE.finditer(block, end):
-                if (block[end:m.start()].strip('\n') or '\n' in m.group()
-                        or block.startswith(' ' * self.tab_length, m.start())):
+                if block[end:m.start()].strip('\n') or '\n' in m.group():
                     break
                 matches.append(m)
                 end = m.end()
-            if len(matches) > 1 and block[end:].strip():
-                end = matches.pop().start()
             for m in matches:
                 id = m.group(1).strip().lower()
                 link = m.group(2).lstrip('<').rstrip('>')

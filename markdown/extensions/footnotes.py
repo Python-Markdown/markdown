@@ -261,32 +261,22 @@ class FootnoteBlockProcessor(BlockProcessor):
 
         m = self.RE.search(block)
         if m:
-            first = m
             preceding = block[:m.start()]
-            therest = block[m.end():].lstrip('\n')
-            m2 = self.RE.search(therest)
             # Record the definitions which are directly followed by another
             # definition in this pass rather than one per pass through the block
-            # processors. The last one is left for the next pass when other
-            # content follows it, as another processor may claim that block (an
-            # indented code block or a setext header, for example).
-            while m2 and m2.start() == 0 and not therest.startswith(' ' * self.tab_length):
+            # processors.
+            for m2 in self.RE.finditer(block, m.end()):
+                if block[m.end():m2.start()].strip('\n'):
+                    break
                 self.footnotes.setFootnote(m.group(1), m.group(2).rstrip())
-                block, m = therest, m2
-                therest = block[m.end():].lstrip('\n')
-                m2 = self.RE.search(therest)
-            if m is not first and therest.strip():
-                # Add back to blocks everything from beginning of match forward for next iteration.
-                blocks.insert(0, block)
-                if preceding.strip():
-                    # Add any content before match back to blocks as separate block
-                    blocks.insert(0, preceding.rstrip('\n'))
-                return True
+                m = m2
 
             id = m.group(1)
             fn_blocks = [m.group(2)]
 
             # Handle rest of block
+            therest = block[m.end():].lstrip('\n')
+            m2 = self.RE.search(therest)
             if m2:
                 # Another footnote exists in the rest of this block.
                 # Any content before match is continuation of this footnote, which may be lazily indented.
