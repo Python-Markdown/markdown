@@ -676,3 +676,99 @@ class TestFootnotes(TestCase):
             '</ol>\n'
             '</div>'
         )
+
+    def test_footnote_indented_nested_definition(self):
+        """Test an indented footnote definition nested within another footnote.
+
+        The nested definition used to be silently dropped from the output.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Main[^1].
+
+                [^1]: First
+
+                    [^2]: Second
+                """
+            ),
+            '<p>Main<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>First&#160;<a class="footnote-backref" href="#fnref:1" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<p>Second&#160;<a class="footnote-backref" href="#fnref:2" '
+            'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_footnote_indented_nested_definition_with_reference(self):
+        """Test an indented nested definition that is also referenced.
+
+        The reference used to link to a `#fn:2` anchor that never existed.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Main[^1].
+
+                [^1]: First [^2]
+
+                    [^2]: Second
+                """
+            ),
+            '<p>Main<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>First <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>'
+            '&#160;<a class="footnote-backref" href="#fnref:1" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<p>Second&#160;<a class="footnote-backref" href="#fnref:2" '
+            'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_footnote_indented_nested_definition_after_content(self):
+        """Test an indented nested definition preceded by continuation content."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Main[^1].
+
+                [^1]: First
+
+                    some continuation
+                    [^2]: Second
+                """
+            ),
+            '<p>Main<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>First</p>\n'
+            '<p>some continuation&#160;<a class="footnote-backref" href="#fnref:1" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<p>Second&#160;<a class="footnote-backref" href="#fnref:2" '
+            'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
