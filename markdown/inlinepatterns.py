@@ -1048,6 +1048,25 @@ class LinkInlineProcessor(InlineProcessor):
             index = m.end(0)
             handled = True
         elif m:
+            start_index = m.end()
+            # Scanning forward from every `(` to pair brackets is quadratic when the
+            # link never closes.  When no quote appears before the matching `)` the
+            # loop below is a plain bracket match, so resolve it from a per-text
+            # table built in a single pass and only fall back to the full scan when a
+            # quote may start a title.
+            if getattr(self, '_paren_data', None) is not data:
+                self._paren_data = data
+                self._paren_ends = self._findParenEnds(data)
+                self._next_quote = self._findNextQuote(data)
+            paren_end = self._paren_ends[start_index]
+            next_quote = self._next_quote[start_index]
+            if paren_end is None and next_quote == len(data):
+                # No closing `)` and no quote: the loop runs to the end and fails.
+                return '', None, len(data), False
+            if paren_end is not None and next_quote >= paren_end - 1:
+                # Brackets pair with no quote in between: a plain match.
+                return self.unescape(data[start_index:paren_end - 1]).strip(), None, paren_end, True
+            # A quote may start a title; fall back to the full scan.
             # Track bracket nesting and index in string
             bracket_count = 1
             backtrack_count = 1
@@ -1147,6 +1166,44 @@ class LinkInlineProcessor(InlineProcessor):
         href = self.unescape(href).strip()
 
         return href, title, index, handled
+
+    @staticmethod
+    def _findParenEnds(data: str) -> list[int | None]:
+        """
+        For each index of `data`, return the index just past the `)` which closes an
+        opening `(` before that index, or `None` if the `(` never closes.
+
+        """
+        ends: list[int | None] = [None] * (len(data) + 1)
+        depth = 0
+        # `stack` holds the indexes still waiting for a closing `)`. The paren depth
+        # before each one is strictly increasing from bottom to top.
+        stack: list[tuple[int, int]] = []
+        for pos in range(len(data) + 1):
+            while stack and depth < stack[-1][1]:
+                ends[stack.pop()[0]] = pos
+            stack.append((pos, depth))
+            if pos < len(data):
+                if data[pos] == '(':
+                    depth += 1
+                elif data[pos] == ')':
+                    depth -= 1
+        return ends
+
+    @staticmethod
+    def _findNextQuote(data: str) -> list[int]:
+        """
+        For each index of `data`, return the index of the next `'` or `"` at or
+        after it, or `len(data)` if there is none.
+
+        """
+        nxt = [len(data)] * (len(data) + 1)
+        pending = len(data)
+        for pos in range(len(data) - 1, -1, -1):
+            if data[pos] == "'" or data[pos] == '"':
+                pending = pos
+            nxt[pos] = pending
+        return nxt
 
     def getText(self, data: str, index: int) -> tuple[str, int, bool]:
         """Parse the content between `[]` of the start of an image or link

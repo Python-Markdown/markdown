@@ -164,6 +164,19 @@ class TestInlineLinks(TestCase):
             '<p><a href="?}]*+|&amp;)">test nonsense</a>.</p>'
         )
 
+    def test_unclosed_link_paren(self):
+        self.assertMarkdownRenders(
+            '[text](unclosed',
+            '<p>[text](unclosed</p>'
+        )
+
+    def test_many_unclosed_link_parens(self):
+        # Each unclosed `(` used to rescan the rest of the text, which is quadratic.
+        self.assertMarkdownRenders(
+            '[a](' * 10000,
+            '<p>' + '[a](' * 10000 + '</p>'
+        )
+
 
 class TestReferenceLinks(TestCase):
 
