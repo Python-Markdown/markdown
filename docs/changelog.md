@@ -29,20 +29,21 @@ See the [Contributing Guide](contributing.md) for details.
   consisting only of `{` and some text with many trailing spaces (#1656).
 * Fix quadratic-time regex backtracking in hash headers when a long run of `#`
   characters is followed by more text on the same line.
+* Fix quadratic time when a document contains many unclosed HTML comments (`<!--`
+  with no matching `-->`).
 * Fix regression in `BacktickInlineProcessor` where text could be lost when opening
   and closing backticks did not match (#1668).
 * Escape the language name in the `codehilite` extension's non-Pygments output to
   maintain consistency with Pygments output.
+* Preserve attributes without a value in the `attr_list` extension exactly as
+  provided, rather than rendering them as `key="key"`, so the same source
+  renders consistently under both the `html` and `xhtml` output formats
+  (#1501).
 * Treat block-level raw HTML tags which are indented more than three spaces as
   raw HTML blocks when they are nested within a containing block (a list item,
   admonition, etc.), instead of incorrectly splitting them into separate
   paragraphs at blank lines. Raw HTML blocks within indented code blocks are
   still treated as code (#1096).
-
-* Preserve attributes without a value in the `attr_list` extension exactly as
-  provided, rather than rendering them as `key="key"`, so the same source
-  renders consistently under both the `html` and `xhtml` output formats
-  (#1501).
 
 ## [3.11.2] - 2026-10-19
 
