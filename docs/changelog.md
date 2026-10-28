@@ -16,6 +16,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* Fix quadratic rendering time for many unclosed parentheses in link and
+  image targets, where each unclosed `(` rescanned the rest of the text.
 * Fix for complex cases in new emphasis handling where text could be unexpectedly
   dropped (#1694).
 * Fix rule of 3 handling in new emphasis handling where an opener skipped by the rule could still be paired
