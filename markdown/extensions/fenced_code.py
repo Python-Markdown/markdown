@@ -126,6 +126,9 @@ class FencedBlockPreprocessor(Preprocessor):
                 # is enabled, so we call it to highlight the code
                 if self.codehilite_conf and self.codehilite_conf['use_pygments'] and config.get('use_pygments', True):
                     local_config = self.codehilite_conf.copy()
+                    # Only the `codehilite` configuration may set the formatter, as some
+                    # formatters (such as `text`) do not escape the code.
+                    config.pop('pygments_formatter', None)
                     local_config.update(config)
                     # Combine classes with `cssclass`. Ensure `cssclass` is at end
                     # as Pygments appends a suffix under certain circumstances.

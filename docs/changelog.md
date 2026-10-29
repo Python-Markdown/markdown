@@ -35,6 +35,9 @@ See the [Contributing Guide](contributing.md) for details.
   and closing backticks did not match (#1668).
 * Escape the language name in the `codehilite` extension's non-Pygments output to
   maintain consistency with Pygments output.
+* Ignore a `pygments_formatter` key in a fenced code block's attribute list so
+  the formatter is always the one set in the `codehilite` configuration. A
+  formatter such as `text` would otherwise leave the code unescaped.
 * Preserve attributes without a value in the `attr_list` extension exactly as
   provided, rather than rendering them as `key="key"`, so the same source
   renders consistently under both the `html` and `xhtml` output formats

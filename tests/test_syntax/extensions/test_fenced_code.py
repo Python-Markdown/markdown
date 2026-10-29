@@ -1079,3 +1079,29 @@ class TestFencedCodeWithCodehilite(TestCase):
                 'fenced_code'
             ]
         )
+
+    def testFencedLanguageAttrPygmentsFormatterIgnored(self):
+        # The formatter can only be set in the `codehilite` configuration.
+        if has_pygments:
+            expected = self.dedent(
+                '''
+                <div class="codehilite"><pre><span></span><code>&lt;b&gt;Some HTML&lt;/b&gt;
+                </code></pre></div>
+                '''
+            )
+        else:
+            expected = (
+                '<pre class="codehilite"><code class="language-text">&lt;b&gt;Some HTML&lt;/b&gt;\n'
+                '</code></pre>'
+            )
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .text pygments_formatter='text' }
+                <b>Some HTML</b>
+                ```
+                '''
+            ),
+            expected,
+            extensions=['codehilite', 'fenced_code']
+        )
