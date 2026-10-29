@@ -312,20 +312,22 @@ class FootnoteBlockProcessor(BlockProcessor):
         while blocks:
             if blocks[0].startswith(' '*4):
                 block = blocks.pop(0)
+                detabbed_block = self.detab(block)
                 # Check for new footnotes within this block and split at new footnote.
-                m = self.RE.search(block)
+                m = self.RE.search(detabbed_block)
                 if m:
                     # Another footnote exists in this block.
                     # Any content before match is continuation of this footnote, which may be lazily indented.
-                    before = block[:m.start()].rstrip('\n')
-                    fn_blocks.append(self.detab(before))
+                    before = detabbed_block[:m.start()].rstrip('\n')
+                    if before:
+                        fn_blocks.append(before)
                     # Add back to blocks everything from beginning of match forward for next iteration.
-                    blocks.insert(0, block[m.start():])
+                    blocks.insert(0, detabbed_block[m.start():])
                     # End of this footnote.
                     break
                 else:
                     # Entire block is part of this footnote.
-                    fn_blocks.append(self.detab(block))
+                    fn_blocks.append(detabbed_block)
             else:
                 # End of this footnote.
                 break
