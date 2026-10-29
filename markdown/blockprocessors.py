@@ -588,23 +588,19 @@ class ReferenceProcessor(BlockProcessor):
         block = blocks.pop(0)
         m = self.RE.search(block)
         if m:
-            start = m.start()
-            end = m.end()
-            matches = [m]
-            # Collect the definitions on the following lines so they are all
-            # recorded in this pass rather than one per pass through the block
-            # processors. A definition which spans lines is left for the next
-            # pass, as another processor may claim part of it.
-            for m in self.RE.finditer(block, end):
-                if block[end:m.start()].strip('\n') or '\n' in m.group():
+            start = end = m.start()
+            # Record the definitions on the following lines in this pass rather
+            # than one per pass through the block processors. A definition after
+            # the first which spans lines is left for the next pass, as another
+            # processor may claim part of it.
+            for m in self.RE.finditer(block, start):
+                if m.start() > start and (block[end:m.start()].strip('\n') or '\n' in m.group()):
                     break
-                matches.append(m)
-                end = m.end()
-            for m in matches:
                 id = m.group(1).strip().lower()
                 link = m.group(2).lstrip('<').rstrip('>')
                 title = m.group(5) or m.group(6)
                 self.parser.md.references[id] = (link, title)
+                end = m.end()
             if block[end:].strip():
                 # Add any content after match back to blocks as separate block
                 blocks.insert(0, block[end:].lstrip('\n'))

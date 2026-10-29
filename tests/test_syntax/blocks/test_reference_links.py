@@ -74,6 +74,128 @@ class TestReferenceLinks(TestCase):
             }
         )
 
+    def test_reference_definitions_before_split_definition(self):
+        """
+        A definition split across lines after other definitions is left for the
+        next pass, so a horizontal rule on its second line is not taken as the link.
+        """
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n[b]:\n***',
+            '<p>[b]:</p>\n<hr />',
+            expected_attrs={'references': {'a': ('http://example.com/a', None)}}
+        )
+
+    def test_reference_definitions_before_definition_split_across_lines(self):
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n[b]:\nhttp://example.com/b',
+            '',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', None)}
+            }
+        )
+
+    def test_reference_definitions_title_on_own_line(self):
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n[b]: http://example.com/b\n"Title"',
+            '',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', 'Title')}
+            }
+        )
+
+    def test_reference_definitions_before_paragraph(self):
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n[b]: http://example.com/b\nSome text',
+            '<p>Some text</p>',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', None)}
+            }
+        )
+
+    def test_paragraph_before_reference_definitions(self):
+        self.assertMarkdownRenders(
+            'Some text\n[a]: http://example.com/a\n[b]: http://example.com/b',
+            '<p>Some text</p>',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', None)}
+            }
+        )
+
+    def test_reference_definitions_separated_by_paragraph(self):
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\nSome text\n[b]: http://example.com/b',
+            '<p>Some text</p>',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', None)}
+            }
+        )
+
+    def test_indented_reference_definitions(self):
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n   [b]: http://example.com/b',
+            '',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', None)}
+            }
+        )
+
+    def test_indented_reference_definitions_short_tab_length(self):
+        """
+        A definition indented by `tab_length` spaces directly after another
+        definition is a definition, not an indented code block.
+        """
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n  [b]: http://example.com/b',
+            '',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', None)}
+            },
+            tab_length=2
+        )
+
+    def test_duplicate_reference_definitions(self):
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n[a]: http://example.com/b',
+            '',
+            expected_attrs={'references': {'a': ('http://example.com/b', None)}}
+        )
+
+    def test_reference_definitions_before_hash_header(self):
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n[b]: http://example.com/b\n# Header',
+            '<h1>Header</h1>',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', None)}
+            }
+        )
+
+    def test_reference_definitions_before_hr(self):
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n[b]: http://example.com/b\n***',
+            '<hr />',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', None)}
+            }
+        )
+
+    def test_reference_definitions_before_blockquote(self):
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n[b]: http://example.com/b\n> quote',
+            '<blockquote>\n<p>quote</p>\n</blockquote>',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', None)}
+            }
+        )
+
+    def test_reference_definitions_before_code_block(self):
+        self.assertMarkdownRenders(
+            '[a]: http://example.com/a\n[b]: http://example.com/b\n    code',
+            '<pre><code>code\n</code></pre>',
+            expected_attrs={
+                'references': {'a': ('http://example.com/a', None), 'b': ('http://example.com/b', None)}
+            }
+        )
+
     def test_many_reference_definitions(self):
         """
         Consecutive reference definitions should be consumed together rather

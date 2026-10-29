@@ -265,6 +265,134 @@ class TestFootnotes(TestCase):
             '</div>'
         )
 
+    def test_consecutive_footnotes_last_multi_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [^1]: Footnote 1
+                [^2]: Footnote 2
+                    line 2
+                """
+            ),
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>Footnote 1&#160;<a class="footnote-backref" href="#fnref:1"'
+            ' title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<p>Footnote 2\nline 2&#160;<a class="footnote-backref" href="#fnref:2"'
+            ' title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_consecutive_footnotes_last_multi_line_lazy_indent(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [^1]: Footnote 1
+                [^2]: Footnote 2
+                line 2
+                """
+            ),
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>Footnote 1&#160;<a class="footnote-backref" href="#fnref:1"'
+            ' title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<p>Footnote 2\nline 2&#160;<a class="footnote-backref" href="#fnref:2"'
+            ' title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_consecutive_footnotes_last_multi_paragraph(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [^1]: Footnote 1
+                [^2]: Footnote 2
+
+                    paragraph 2
+                """
+            ),
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>Footnote 1&#160;<a class="footnote-backref" href="#fnref:1"'
+            ' title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<p>Footnote 2</p>\n'
+            '<p>paragraph 2&#160;<a class="footnote-backref" href="#fnref:2"'
+            ' title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_paragraph_before_consecutive_footnotes(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                paragraph[^1]
+                [^1]: Footnote 1
+                [^2]: Footnote 2
+                """
+            ),
+            '<p>paragraph<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>Footnote 1&#160;<a class="footnote-backref" href="#fnref:1"'
+            ' title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<p>Footnote 2&#160;<a class="footnote-backref" href="#fnref:2"'
+            ' title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_consecutive_footnotes_before_setext_underline(self):
+        """
+        A setext underline after consecutive footnotes is a lazily indented line
+        of the last footnote, and does not turn that definition into a header.
+        """
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                [^1]: Footnote 1
+                [^2]: Footnote 2
+                ===
+                """
+            ),
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>Footnote 1&#160;<a class="footnote-backref" href="#fnref:1"'
+            ' title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<h1>Footnote 2</h1>\n'
+            '<p><a class="footnote-backref" href="#fnref:2"'
+            ' title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
     def test_many_footnote_definitions(self):
         """
         Consecutive footnote definitions should be consumed together rather
