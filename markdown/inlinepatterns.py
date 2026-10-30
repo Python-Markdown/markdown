@@ -119,7 +119,7 @@ REFERENCE_RE = LINK_RE
 IMAGE_REFERENCE_RE = IMAGE_LINK_RE
 """ Match start of image reference (`![alt text][2]`). """
 
-AUTOLINK_RE = r'<((?:[Ff]|[Hh][Tt])[Tt][Pp][Ss]?://[^<>]*)>'
+AUTOLINK_RE = r'<([A-Za-z][A-Za-z0-9+.-]*://[^<>]*)>'
 """ Match an automatic link (`<http://www.example.com>`). """
 
 AUTOMAIL_RE = r'<([^<> !]+@[^@<> ]+)>'
@@ -413,7 +413,7 @@ class BacktickInlineProcessor(InlineProcessor):
         self.tag = 'code'
         """ The tag of the rendered element. """
 
-    def find_code_spans(self, start: int, text: str) -> tuple[int, int] | None:
+    def find_code_spans(self, start: int, text: str) -> tuple[int, int | None]:
         """Find code spans."""
 
         last = len(text)
@@ -423,10 +423,6 @@ class BacktickInlineProcessor(InlineProcessor):
         while start < last and text[start] == '`':
             max_ticks += 1
             start += 1
-
-        if not max_ticks:  # pragma: no cover
-            # This is not ever expected to happen.
-            return None
 
         longest_span = 0
         end = 0
@@ -453,11 +449,11 @@ class BacktickInlineProcessor(InlineProcessor):
 
         # Since we didn't find an exact matching start and end,
         # adjust start to match the largest end we could calculate.
-        if longest_span:
+        if 0 < longest_span < max_ticks:
             return start - (max_ticks - longest_span), end - longest_span
 
         # We could not find a suitable pairing
-        return None
+        return start + max_ticks, None
 
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | str | None, int | None, int | None]:
         """
@@ -472,13 +468,13 @@ class BacktickInlineProcessor(InlineProcessor):
             return m.group(1).replace('\\\\', self.ESCAPED_BSLASH), m.start(0), m.end(0)
 
         begin = m.start(0)
-        result = self.find_code_spans(begin, data)
-        if result is not None:
-            start, end = result
+        start, end = self.find_code_spans(begin, data)
+        if end is not None:
             el = etree.Element(self.tag)
             el.text = util.AtomicString(util.code_escape(data[start:end].strip()))
-            return el, begin, result[1] + (start - begin)
-        return None, None, None
+            return el, begin, end + (start - begin)
+        # Skip over backtick group as we could find no match
+        return None, begin, start
 
 
 class DoubleTagPattern(SimpleTagPattern):  # pragma: no cover

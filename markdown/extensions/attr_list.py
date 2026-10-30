@@ -28,6 +28,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from . import Extension
+from ..serializers import BOOLEAN_ATTRIBUTES
 from ..treeprocessors import Treeprocessor
 import re
 
@@ -54,7 +55,12 @@ def _handle_word(s, t):
         return '.', t[1:]
     if t.startswith('#'):
         return 'id', t[1:]
-    return t, t
+    # A word without a value is a valueless attribute. It is represented
+    # internally with a value of `None` so that what the user provided can
+    # be preserved. Consumers which assign the attribute to an element are
+    # responsible for restoring the historic `key="key"` representation
+    # for known boolean attributes (see `AttrListTreeprocessor.assign_attrs`).
+    return t, None
 
 
 _scanner = re.Scanner([
@@ -66,8 +72,10 @@ _scanner = re.Scanner([
 ])
 
 
-def get_attrs_and_remainder(attrs_string: str) -> tuple[list[tuple[str, str]], str]:
+def get_attrs_and_remainder(attrs_string: str) -> tuple[list[tuple[str, str | None]], str]:
     """ Parse attribute list and return a list of attribute tuples.
+
+    Attributes provided without a value are returned with a value of `None`.
 
     Additionally, return any text that remained after a curly brace. In typical cases, its presence
     should mean that the input does not match the intended attribute list syntax.
@@ -79,7 +87,7 @@ def get_attrs_and_remainder(attrs_string: str) -> tuple[list[tuple[str, str]], s
     return attrs, remainder
 
 
-def get_attrs(str: str) -> list[tuple[str, str]]:  # pragma: no cover
+def get_attrs(str: str) -> list[tuple[str, str | None]]:  # pragma: no cover
     """ Soft-deprecated. Prefer `get_attrs_and_remainder`. """
     return get_attrs_and_remainder(str)[0]
 
@@ -105,7 +113,7 @@ def sanitize_name(name: str) -> str:
 
 class AttrListTreeprocessor(Treeprocessor):
 
-    BASE_RE = r'\{\:?[ ]*([^\}\n ][^\n]*)[ ]*\}'
+    BASE_RE = r'\{\:?[ ]*([^\}\n ][^\n]*)\}'
     HEADER_RE = re.compile(r'[ ]+{}[ ]*$'.format(BASE_RE))
     BLOCK_RE = re.compile(r'\n[ ]*{}[ ]*$'.format(BASE_RE))
     INLINE_RE = re.compile(r'^{}'.format(BASE_RE))
@@ -190,6 +198,18 @@ class AttrListTreeprocessor(Treeprocessor):
                     elem.set('class', '{} {}'.format(cls, v))
                 else:
                     elem.set('class', v)
+            elif v is None:
+                # assign a valueless attribute. Maintain the historic
+                # `key="key"` representation only for known boolean
+                # attributes (which differ per output format). For any
+                # other attribute, preserve what the user provided by
+                # keeping the value as `None`, which the serializer
+                # renders as the bare attribute name.
+                name = self.sanitize_name(k)
+                if name.lower() in BOOLEAN_ATTRIBUTES.get(self.md.output_format, frozenset()):
+                    elem.set(name, name)
+                else:
+                    elem.set(name, None)
             else:
                 # assign attribute `k` with `v`
                 elem.set(self.sanitize_name(k), v)

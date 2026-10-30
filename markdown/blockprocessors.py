@@ -458,7 +458,7 @@ class HashHeaderProcessor(BlockProcessor):
     """ Process Hash Headers. """
 
     # Detect a header at start of any line in block
-    RE = re.compile(r'(?:^|\n)(?P<level>#{1,6})(?P<header>(?:\\.|[^\\])*?)#*(?:\n|$)')
+    RE = re.compile(r'(?:^|\n)(?P<level>#{1,6})(?P<header>(?:\\.|[^\\#]|#+(?=[^#\n]))*?)#*(?:\n|$)')
 
     def test(self, parent: etree.Element, block: str) -> bool:
         return bool(self.RE.search(block))
@@ -588,16 +588,25 @@ class ReferenceProcessor(BlockProcessor):
         block = blocks.pop(0)
         m = self.RE.search(block)
         if m:
-            id = m.group(1).strip().lower()
-            link = m.group(2).lstrip('<').rstrip('>')
-            title = m.group(5) or m.group(6)
-            self.parser.md.references[id] = (link, title)
-            if block[m.end():].strip():
+            start = end = m.start()
+            # Record the definitions on the following lines in this pass rather
+            # than one per pass through the block processors. A definition after
+            # the first which spans lines is left for the next pass, as another
+            # processor may claim part of it.
+            for m in self.RE.finditer(block, start):
+                if m.start() > start and (block[end:m.start()].strip('\n') or '\n' in m.group()):
+                    break
+                id = m.group(1).strip().lower()
+                link = m.group(2).lstrip('<').rstrip('>')
+                title = m.group(5) or m.group(6)
+                self.parser.md.references[id] = (link, title)
+                end = m.end()
+            if block[end:].strip():
                 # Add any content after match back to blocks as separate block
-                blocks.insert(0, block[m.end():].lstrip('\n'))
-            if block[:m.start()].strip():
+                blocks.insert(0, block[end:].lstrip('\n'))
+            if block[:start].strip():
                 # Add any content before match back to blocks as separate block
-                blocks.insert(0, block[:m.start()].rstrip('\n'))
+                blocks.insert(0, block[:start].rstrip('\n'))
             return True
         # No match. Restore block.
         blocks.insert(0, block)

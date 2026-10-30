@@ -18,10 +18,40 @@ See the [Contributing Guide](contributing.md) for details.
 
 * Fix quadratic rendering time for many unclosed square brackets in links
   and images.
+* Fix quadratic-time parsing of many consecutive reference definitions, and of
+  many consecutive footnote definitions in the `footnotes` extension.
+* Support automatic links with URL schemes other than HTTP and FTP, such as
+  `<ssh://example.org>` (#1244).
+* Fix quadratic-time id generation in the `toc` extension when many headers
+  share the same text.
+* Ignore glossary abbreviations with empty definitions after inline elements,
+  consistently with abbreviations before inline elements.
+* Strip complete HTML tags with quoted `>` characters from `toc` labels and
+  generated heading IDs.
+* Fix quadratic-time regex backtracking in `attr_list` when a block ends with an
+  unclosed attribute list followed by a long run of spaces, e.g. a line
+  consisting only of `{` and some text with many trailing spaces (#1656).
+* Fix quadratic-time regex backtracking in hash headers when a long run of `#`
+  characters is followed by more text on the same line.
+* Fix quadratic time when a document contains many unclosed HTML comments (`<!--`
+  with no matching `-->`).
+* Fix regression in `BacktickInlineProcessor` where text could be lost when opening
+  and closing backticks did not match (#1668).
+* Escape the language name in the `codehilite` extension's non-Pygments output to
+  maintain consistency with Pygments output.
+* Preserve attributes without a value in the `attr_list` extension exactly as
+  provided, rather than rendering them as `key="key"`, so the same source
+  renders consistently under both the `html` and `xhtml` output formats
+  (#1501).
+
+## [3.11.2] - 2026-10-19
+
+### Fixed
+
 * Sanitize attribute names in the `fenced_code` and `legacy_attrs` extensions so an
   attribute name cannot break out of its tag and inject markup (#1663).
-* For backwards compatibility in some languages, revert the enforcement of CommonMark
-  style punctuation rules (#1657).
+* For backwards compatibility, revert the enforcement of CommonMark style
+  punctuation rules (#1657).
 
 ## [3.11.1] - 2026-10-13
 

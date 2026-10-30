@@ -261,6 +261,16 @@ class FootnoteBlockProcessor(BlockProcessor):
 
         m = self.RE.search(block)
         if m:
+            preceding = block[:m.start()]
+            # Record the definitions which are directly followed by another
+            # definition in this pass rather than one per pass through the block
+            # processors.
+            for m2 in self.RE.finditer(block, m.end()):
+                if block[m.end():m2.start()].strip('\n'):
+                    break
+                self.footnotes.setFootnote(m.group(1), m.group(2).rstrip())
+                m = m2
+
             id = m.group(1)
             fn_blocks = [m.group(2)]
 
@@ -284,9 +294,9 @@ class FootnoteBlockProcessor(BlockProcessor):
             footnote = "\n\n".join(fn_blocks)
             self.footnotes.setFootnote(id, footnote.rstrip())
 
-            if block[:m.start()].strip():
+            if preceding.strip():
                 # Add any content before match back to blocks as separate block
-                blocks.insert(0, block[:m.start()].rstrip('\n'))
+                blocks.insert(0, preceding.rstrip('\n'))
             return True
         # No match. Restore block.
         blocks.insert(0, block)
