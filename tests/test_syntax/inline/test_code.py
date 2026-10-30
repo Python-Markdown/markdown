@@ -94,3 +94,36 @@ class TestCode(TestCase):
             'a ``` b `` c',
             '<p>a <code>` b</code> c</p>'
         )
+
+    def test_unmatched_opening_before_span(self):
+
+        self.assertMarkdownRenders(
+            '``a```b```c',
+            '<p>``a<code>b</code>c</p>'
+        )
+
+    def test_smaller_end_before_and_after_bigger_end(self):
+
+        self.assertMarkdownRenders(
+            '``a```b`',
+            '<p><code>`a```b</code></p>'
+        )
+
+        self.assertMarkdownRenders(
+            '``a`b```',
+            '<p><code>`a</code>b```</p>'
+        )
+
+    def test_end_in_earlier_text_is_ignored(self):
+
+        self.assertMarkdownRenders(
+            '`a`\n\n`bcd',
+            '<p><code>a</code></p>\n<p>`bcd</p>'
+        )
+
+    def test_many_unmatched_openings(self):
+        """Test that each unmatched opening does not rescan the rest of the text."""
+        self.assertMarkdownRenders(
+            '\\``' * 20000,
+            '<p>' + '``' * 20000 + '</p>'
+        )

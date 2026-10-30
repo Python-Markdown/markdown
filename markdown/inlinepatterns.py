@@ -412,6 +412,11 @@ class BacktickInlineProcessor(InlineProcessor):
         self.ESCAPED_BSLASH = '{}{}{}'.format(util.STX, ord('\\'), util.ETX)
         self.tag = 'code'
         """ The tag of the rendered element. """
+        self.runs: dict[int, list[int]] = {}
+        """
+        The runs of backticks in the current text by length, last run first. Each is held as the distance from
+        its end to the end of the text, which does not change as earlier spans are replaced with placeholders.
+        """
 
     def find_code_spans(self, start: int, text: str) -> tuple[int, int | None]:
         """Find code spans."""
@@ -424,36 +429,17 @@ class BacktickInlineProcessor(InlineProcessor):
             max_ticks += 1
             start += 1
 
-        longest_span = 0
-        end = 0
-
-        # Find an ending span of backticks that matches our opening
-        i = start
-        while i < last:
-            span_length = 0
-            while i < last and text[i] == '`':
-                span_length += 1
-                i += 1
-            if not span_length:
-                i += 1
-                continue
-
-            # Did we find the end?
-            if max_ticks == span_length:
-                return start, i - span_length
-
-            # Track the longest span of backticks we find as a fallback.
-            if span_length > longest_span:
-                longest_span = span_length
-                end = i
-
-        # Since we didn't find an exact matching start and end,
-        # adjust start to match the largest end we could calculate.
-        if 0 < longest_span < max_ticks:
-            return start - (max_ticks - longest_span), end - longest_span
+        # Use as many of the starting ticks as a later run of the same length can close. A run
+        # behind this point can't close a later span either, so it is dropped once passed.
+        for ticks in range(max_ticks, 0, -1):
+            runs = self.runs.get(ticks, [])
+            while runs and runs[-1] >= last - start:
+                runs.pop()
+            if runs:
+                return start - (max_ticks - ticks), last - runs[-1] - ticks
 
         # We could not find a suitable pairing
-        return start + max_ticks, None
+        return start, None
 
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | str | None, int | None, int | None]:
         """
@@ -464,6 +450,12 @@ class BacktickInlineProcessor(InlineProcessor):
         If the match contains `group(1)` then return the text of `group(1)` as backslash escaped.
 
         """
+        if not m.pos:
+            # The search of a new text always starts at the beginning. Find its runs once.
+            self.runs = {}
+            for run in reversed(list(re.finditer('`+', data))):
+                self.runs.setdefault(run.end() - run.start(), []).append(len(data) - run.end())
+
         if m.group(1):
             return m.group(1).replace('\\\\', self.ESCAPED_BSLASH), m.start(0), m.end(0)
 
