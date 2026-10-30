@@ -16,6 +16,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* Fix quadratic rendering time for many unclosed square brackets in links
+  and images.
 * Fix quadratic-time parsing of many consecutive reference definitions, and of
   many consecutive footnote definitions in the `footnotes` extension.
 * Support automatic links with URL schemes other than HTTP and FTP, such as
