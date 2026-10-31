@@ -16,6 +16,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* Fix code spans after a run of backticks with no closing run of the same length
+  in `BacktickInlineProcessor`, and no longer rescan the text for each such run.
 * Fix quadratic-time parsing of many consecutive reference definitions, and of
   many consecutive footnote definitions in the `footnotes` extension.
 * Support automatic links with URL schemes other than HTTP and FTP, such as
