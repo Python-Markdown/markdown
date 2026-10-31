@@ -486,6 +486,7 @@ class UnescapeTreeprocessor(Treeprocessor):
                     # has nothing to unescape.
                     elem.set(key, self.unescape(value))
 
+
 class RawHtmlInCodeTreeprocessor(Treeprocessor):
     """ Restore indented raw HTML blocks which ended up in a code block. """
 
