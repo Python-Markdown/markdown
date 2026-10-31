@@ -172,8 +172,12 @@ class ListIndentProcessor(BlockProcessor):
         self.INDENT_RE = re.compile(r'^(([ ]{%s})+)' % self.tab_length)
 
     def test(self, parent: etree.Element, block: str) -> bool:
+        # A list recurses through `parseBlocks` once per level of nesting, so the
+        # nesting has to stop short of the interpreter's limit. The markers which no
+        # longer nest are kept as text, as they are for a blockquote.
         return block.startswith(' '*self.tab_length) and \
             not self.parser.state.isstate('detabbed') and \
+            not util.nearing_recursion_limit() and \
             (parent.tag in self.ITEM_TYPES or
                 (len(parent) and parent[-1] is not None and
                     (parent[-1].tag in self.LIST_TYPES)))
@@ -354,7 +358,9 @@ class OListProcessor(BlockProcessor):
                                     (self.tab_length, self.tab_length * 2 - 1))
 
     def test(self, parent: etree.Element, block: str) -> bool:
-        return bool(self.RE.match(block))
+        # As in `ListIndentProcessor`, nesting stops short of the recursion limit.
+        # `UListProcessor` inherits this method, so unordered lists are covered too.
+        return bool(self.RE.match(block)) and not util.nearing_recursion_limit()
 
     def run(self, parent: etree.Element, blocks: list[str]) -> None:
         # Check for multiple items in one block.
@@ -417,7 +423,10 @@ class OListProcessor(BlockProcessor):
 
     def get_items(self, block: str) -> list[str]:
         """ Break a block into list items. """
-        items = []
+        # The lines of an item are collected in a list and joined once at the end.
+        # Appending per line, as in `item = '{}\n{}'.format(item, line)`, copies the
+        # whole item every time, which is quadratic in the number of lines of an item.
+        items: list[list[str]] = []
         for line in block.split('\n'):
             m = self.CHILD_RE.match(line)
             if m:
@@ -428,18 +437,18 @@ class OListProcessor(BlockProcessor):
                     INTEGER_RE = re.compile(r'(\d+)')
                     self.STARTSWITH = INTEGER_RE.match(m.group(1)).group()
                 # Append to the list
-                items.append(m.group(3))
+                items.append([m.group(3)])
             elif self.INDENT_RE.match(line):
                 # This is an indented (possibly nested) item.
-                if items[-1].startswith(' '*self.tab_length):
+                if items[-1][0].startswith(' '*self.tab_length):
                     # Previous item was indented. Append to that item.
-                    items[-1] = '{}\n{}'.format(items[-1], line)
+                    items[-1].append(line)
                 else:
-                    items.append(line)
+                    items.append([line])
             else:
                 # This is another line of previous item. Append to that item.
-                items[-1] = '{}\n{}'.format(items[-1], line)
-        return items
+                items[-1].append(line)
+        return ['\n'.join(item) for item in items]
 
 
 class UListProcessor(OListProcessor):
