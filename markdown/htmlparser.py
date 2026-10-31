@@ -30,6 +30,8 @@ import importlib.util
 import sys
 from typing import TYPE_CHECKING, Sequence
 
+from . import util
+
 if TYPE_CHECKING:  # pragma: no cover
     from markdown import Markdown
 
@@ -152,6 +154,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
     def reset(self):
         """Reset this instance.  Loses all unprocessed data."""
         self.inraw = False
+        self.inraw_indent = 0
         self.intail = False
         self.stack: list[str] = []  # When `inraw==True`, stack contains a list of tags
         self.inline_stack: list[str] = []  # Unclosed raw inline tags in the current paragraph
@@ -175,8 +178,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
                 self.handle_data(self.rawdata)
         # Handle any unclosed tags.
         if len(self._cache):
-            self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
-            self._cache = []
+            self.stash_raw_block()
 
     @property
     def line_offset(self) -> int:
@@ -204,6 +206,76 @@ class HTMLExtractor(htmlparser.HTMLParser):
         # Confirm up to first 3 chars are whitespace
         return self.rawdata[self.line_offset:self.line_offset + self.offset].strip() == ''
 
+    def indented_line_start(self) -> bool:
+        """
+        Returns True if current position is at the start of a line which is
+        preceded by more than three spaces of indentation.
+
+        A block-level tag preceded by such indentation may be nested within a
+        containing block (a list item, admonition, etc.) rather than being part
+        of an indented code block. The indentation is preserved on the line
+        which holds the placeholder so the block parser can make that decision.
+        """
+        if self.offset <= 3:
+            return False
+        return self.rawdata[self.line_offset:self.line_offset + self.offset].strip() == ''
+
+    def strip_leading_indent(self) -> None:
+        """
+        Remove the whitespace preceding the current position from `cleandoc`.
+
+        The whitespace is re-added to the placeholder line when the raw block
+        is stashed (see `get_stash_prefix`). This ensures that the placeholder
+        retains the indentation of the original start tag.
+        """
+        remaining = self.offset
+        while remaining and self.cleandoc:
+            chunk = self.cleandoc[-1]
+            cut = len(chunk) - len(chunk.rstrip(' '))
+            if not cut:
+                break
+            take = min(cut, remaining)
+            self.cleandoc[-1] = chunk[:-take]
+            remaining -= take
+
+    def get_stash_prefix(self) -> str:
+        """ Returns the indentation to prefix the raw block placeholder with. """
+        return ' ' * self.inraw_indent
+
+    def dedent_raw(self, text: str) -> str:
+        """
+        Remove the indentation of the raw block's start tag from each line of
+        the raw block's content (after the first line).
+        """
+        if not self.inraw_indent:
+            return text
+        lines = text.split('\n')
+        for i in range(1, len(lines)):
+            line = lines[i]
+            j = 0
+            while j < self.inraw_indent and j < len(line) and line[j] == ' ':
+                j += 1
+            lines[i] = line[j:]
+        return '\n'.join(lines)
+
+    def stash_raw_block(self) -> None:
+        """
+        Store the current raw block in the `htmlStash` and insert its
+        placeholder into `cleandoc`.
+
+        For an indented raw block, the placeholder line preserves the
+        indentation of the start tag and the stashed content records that
+        indentation (see [`IndentedRawHtml`][markdown.util.IndentedRawHtml]).
+        """
+        content = self.dedent_raw(''.join(self._cache))
+        if self.inraw_indent:
+            html = util.IndentedRawHtml(content, self.inraw_indent)
+        else:
+            html = content
+        self.cleandoc.append(self.get_stash_prefix() + self.md.htmlStash.store(html))
+        self._cache = []
+        self.inraw_indent = 0
+
     def get_endtag_text(self, tag: str) -> str:
         """
         Returns the text of the end tag.
@@ -225,10 +297,20 @@ class HTMLExtractor(htmlparser.HTMLParser):
             self.handle_startendtag(tag, attrs)
             return
 
-        if self.md.is_block_level(tag) and (self.intail or (self.at_line_start() and not self.inraw)):
+        if self.md.is_block_level(tag) and (
+            self.intail or ((self.at_line_start() or self.indented_line_start()) and not self.inraw)
+        ):
             # Started a new raw block. Prepare stack.
             self.inraw = True
-            self.cleandoc.append('\n')
+            if self.intail or self.at_line_start():
+                self.inraw_indent = 0
+                self.cleandoc.append('\n')
+            else:
+                # The start tag is indented. Preserve the indentation on the
+                # placeholder line so the block parser can determine whether
+                # this is a nested raw block or an indented code block.
+                self.inraw_indent = self.offset
+                self.strip_leading_indent()
 
         text = self.get_starttag_text()
         if self.inraw:
@@ -256,15 +338,22 @@ class HTMLExtractor(htmlparser.HTMLParser):
                 if blank_line_re.match(self.rawdata[self.line_offset + self.offset + len(text):]):
                     # Preserve blank line and end of raw block.
                     self._cache.append('\n')
+                    if self.inraw_indent:
+                        # The raw block was indented. The blank line which
+                        # follows in the source separates the placeholder from
+                        # any following content, so no extra newlines are
+                        # needed here.
+                        self.inraw = False
+                        self.stash_raw_block()
+                        return
                 else:
                     # More content exists after `endtag`.
                     self.intail = True
                 # Reset stack.
                 self.inraw = False
-                self.cleandoc.append(self.md.htmlStash.store(''.join(self._cache)))
+                self.stash_raw_block()
                 # Insert blank line between this and next line.
                 self.cleandoc.append('\n\n')
-                self._cache = []
         else:
             self.cleandoc.append(text)
             self.close_inline_tag(tag)
@@ -319,6 +408,27 @@ class HTMLExtractor(htmlparser.HTMLParser):
             self.cleandoc.append(self.md.htmlStash.store(data))
             # Insert blank line between this and next line.
             self.cleandoc.append('\n\n')
+        elif self.indented_line_start() and is_block:
+            # Handle this as a standalone indented raw block. The indentation
+            # is preserved on the placeholder line so the block parser can
+            # determine whether this is nested content or a code block.
+            self.inraw_indent = self.offset
+            if blank_line_re.match(self.rawdata[self.line_offset + self.offset + len(data):]):
+                # Preserve blank line after tag in raw block. The blank line
+                # which follows in the source separates the placeholder from
+                # any following content, so no extra newlines are needed here.
+                data += '\n'
+                self.strip_leading_indent()
+                self._cache.append(data)
+                self.stash_raw_block()
+            else:
+                # More content exists after tag.
+                self.intail = True
+                self.strip_leading_indent()
+                self._cache.append(data)
+                self.stash_raw_block()
+                # Insert blank line between this and next line.
+                self.cleandoc.append('\n\n')
         else:
             self.cleandoc.append(data)
 
@@ -349,7 +459,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.handle_empty_tag('<![{}{}'.format(data, end), is_block=True)
 
     def parse_pi(self, i: int) -> int:
-        if self.at_line_start() or self.intail:
+        if self.at_line_start() or self.indented_line_start() or self.intail:
             return super().parse_pi(i)
         # This is not the beginning of a raw block so treat as plain data
         # and avoid consuming any tags which may follow (see #1066).
@@ -378,7 +488,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         return match.end()
 
     def parse_html_declaration(self, i: int) -> int:
-        if self.at_line_start() or self.intail:
+        if self.at_line_start() or self.indented_line_start() or self.intail:
             if self.rawdata[i:i+3] == '<![' and not self.rawdata[i:i+9] == '<![CDATA[':
                 # We have encountered the bug in #1534 (Python bug `gh-77057`).
                 # Provide an override until we drop support for Python < 3.13.

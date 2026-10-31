@@ -2012,3 +2012,67 @@ class TestHTMLBlocks(TestCase):
                 '''
             )
         )
+
+
+class TestIndentedHtmlBlocks(TestCase):
+    """ Raw HTML nested in indented blocks (issue #1096). """
+
+    def test_indented_code_block_with_blank_lines(self):
+        # Ensure an indented HTML block with blank lines remains a code block.
+        # See #1096.
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                A paragraph.
+
+                    <div>
+                    code
+
+                    more code
+                    </div>
+                """
+            ),
+            self.dedent(
+                """
+                <p>A paragraph.</p>
+                <pre><code>&lt;div&gt;
+                code
+
+                more code
+                &lt;/div&gt;
+                </code></pre>
+                """
+            )
+        )
+
+    def test_raw_indented_in_list_item(self):
+        # A raw HTML block nested in a list item should not be split into
+        # separate paragraphs at blank lines. See #1096.
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                * A list item with a nested raw HTML block.
+
+                    <div>
+                    Some text
+
+                    Some more text
+                    </div>
+                """
+            ),
+            self.dedent(
+                """
+                <ul>
+                <li>
+                <p>A list item with a nested raw HTML block.</p>
+                <div>
+                Some text
+
+                Some more text
+                </div>
+
+                </li>
+                </ul>
+                """
+            )
+        )

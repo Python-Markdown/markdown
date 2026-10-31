@@ -39,6 +39,7 @@ if TYPE_CHECKING:  # pragma: no cover
 def build_treeprocessors(md: Markdown, **kwargs: Any) -> util.Registry[Treeprocessor]:
     """ Build the default  `treeprocessors` for Markdown. """
     treeprocessors = util.Registry()
+    treeprocessors.register(RawHtmlInCodeTreeprocessor(md), 'raw_html_in_code', 35)
     treeprocessors.register(InlineProcessor(md), 'inline', 20)
     treeprocessors.register(PrettifyTreeprocessor(md), 'prettify', 10)
     treeprocessors.register(UnescapeTreeprocessor(md), 'unescape', 0)
@@ -484,3 +485,63 @@ class UnescapeTreeprocessor(Treeprocessor):
                     # A value of `None` is a valueless attribute, which
                     # has nothing to unescape.
                     elem.set(key, self.unescape(value))
+
+
+class RawHtmlInCodeTreeprocessor(Treeprocessor):
+    """ Restore indented raw HTML blocks which ended up in a code block. """
+
+    PLACEHOLDER_RE = re.compile(util.HTML_PLACEHOLDER % r'([0-9]+)')
+
+    def run(self, root: etree.Element) -> None:
+        """
+        Replace raw HTML placeholders within code blocks with escaped text.
+
+        A block level tag which is indented by more than `tab_length` spaces
+        may be nested within a containing block (a list item, an admonition,
+        etc.) rather than being part of an indented code block. Which of the
+        two applies can only be determined once the document has been parsed
+        into blocks, so the raw block is stashed and its placeholder retains
+        the indentation (see
+        [`HTMLExtractor`][markdown.htmlparser.HTMLExtractor]). When the block
+        parser determines that the placeholder is in fact code, the stashed
+        content is restored here as escaped text so that it is displayed
+        rather than rendered as markup.
+
+        This runs before the `hilite` tree processor of the `codehilite`
+        extension (priority `30`) so that the extension receives the code as
+        text and can apply its own escaping to it.
+        """
+        if not self.md.htmlStash.html_counter:
+            return
+        for block in root.iter('pre'):
+            if len(block) == 1 and block[0].tag == 'code' and block[0].text:
+                block[0].text = util.AtomicString(
+                    self.PLACEHOLDER_RE.sub(self.restore, block[0].text)
+                )
+
+    def restore(self, m: re.Match[str]) -> str:
+        """ Return the escaped content of an indented raw HTML block. """
+        key = int(m.group(1))
+        if key >= self.md.htmlStash.html_counter:
+            return m.group(0)
+        entry = self.md.htmlStash.rawHtmlBlocks[key]
+        if not isinstance(entry, util.IndentedRawHtml):
+            # Only indented raw blocks are expected to occur within code.
+            return m.group(0)
+        html = str(entry)
+        # The code block only strips `tab_length` spaces from each line while
+        # the start tag of the raw block was indented by `entry.indent` spaces.
+        # Restore the difference on the lines which follow the start tag. The
+        # indentation of the start tag itself is retained by the placeholder
+        # line, which the code block only strips `tab_length` spaces from.
+        extra = entry.indent - self.md.tab_length
+        if extra > 0:
+            lines = html.split('\n')
+            html = '\n'.join([lines[0]] + [
+                ' ' * extra + line if line else line
+                for line in lines[1:]
+            ])
+        if html.endswith('\n'):
+            # The code block adds the trailing newline itself.
+            html = html[:-1]
+        return util.code_escape(html)
