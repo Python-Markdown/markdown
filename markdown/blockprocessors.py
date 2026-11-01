@@ -172,7 +172,7 @@ class ListIndentProcessor(BlockProcessor):
         self.INDENT_RE = re.compile(r'^(([ ]{%s})+)' % self.tab_length)
 
     def test(self, parent: etree.Element, block: str) -> bool:
-        # A list recurses through `parseBlocks` once per level of nesting, so the
+        # A list calls `parseBlocks` once per level of nesting, so the
         # nesting has to stop short of the interpreter's limit. The markers which no
         # longer nest are kept as text, as they are for a blockquote.
         return block.startswith(' '*self.tab_length) and \
