@@ -25,7 +25,7 @@ from markdown.test_tools import TestCase, recursionlimit
 
 class TestListNestingLimit(TestCase):
 
-    # A list recurses through `parseBlocks` once per level of nesting, so the nesting
+    # A list calls `parseBlocks` once per level of nesting, so the nesting
     # has to stop short of the interpreter's limit. The remaining markers are kept as
     # text, the same way a blockquote keeps its markers (see `TestBlockquoteBlocks`).
 
