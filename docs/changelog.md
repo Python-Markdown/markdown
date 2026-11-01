@@ -41,6 +41,11 @@ See the [Contributing Guide](contributing.md) for details.
   provided, rather than rendering them as `key="key"`, so the same source
   renders consistently under both the `html` and `xhtml` output formats
   (#1501).
+* Stop list nesting short of the interpreter's recursion limit, as blockquote
+  nesting already is, instead of raising `RecursionError` on a deeply nested
+  list. The markers which no longer nest are kept as text (#1679).
+* Fix quadratic-time splitting of a list block whose items span many lines,
+  which dominated the time taken to render a deeply nested list.
 
 ## [3.11.2] - 2026-10-19
 
