@@ -43,6 +43,7 @@ def build_block_parser(md: Markdown, **kwargs: Any) -> BlockParser:
     """ Build the default block parser used by Markdown. """
     parser = BlockParser(md)
     parser.blockprocessors.register(EmptyBlockProcessor(parser), 'empty', 100)
+    parser.blockprocessors.register(RawHtmlBlockProcessor(parser), 'rawhtml', 95)
     parser.blockprocessors.register(ListIndentProcessor(parser), 'indent', 90)
     parser.blockprocessors.register(CodeBlockProcessor(parser), 'code', 80)
     parser.blockprocessors.register(HashHeaderProcessor(parser), 'hashheader', 70)
@@ -148,6 +149,86 @@ class BlockProcessor:
             blocks: A list of all remaining blocks of the document.
         """
         pass  # pragma: no cover
+
+
+class RawHtmlBlockProcessor(BlockProcessor):
+    """
+    Extract raw HTML blocks nested in a container.
+
+    The preprocessor can only extract a raw block that is at the start of a line. Within a container (a list item,
+    an admonition, etc.) the block is indented, which can not be told apart from an indented code block until the
+    container has removed its indentation. At that point the block starts a block of text and is extracted here.
+
+    Containers pass their content on a block at a time, so a raw block with blank lines in it is collected across
+    calls until it is closed. Anything still open when the document has been parsed is handled by
+    [`RawHtmlFlushTreeprocessor`][markdown.treeprocessors.RawHtmlFlushTreeprocessor].
+    """
+
+    START_RE = re.compile(r'^[ ]{0,3}(?:<!--|<\?|<![A-Za-z\[]|<([A-Za-z][\w:-]*))')
+
+    def __init__(self, parser: BlockParser):
+        super().__init__(parser)
+        self.extractor = None
+        self.open: dict[etree.Element, Any] = {}
+        self._root: etree.Element | None = None
+
+    def get_extractor(self):
+        """ Get an extractor to collect a raw block with. """
+        from .htmlparser import HTMLExtractor
+        return (self.extractor or HTMLExtractor)(self.parser.md)
+
+    def starts_raw(self, block: str) -> bool:
+        """ Does `block` start with something the HTML extractor treats as a raw block? """
+        m = self.START_RE.match(block)
+        return bool(m) and (m.group(1) is None or self.parser.md.is_block_level(m.group(1).lower()))
+
+    def test(self, parent: etree.Element, block: str) -> bool:
+        """ Is this the start of a raw block, or a block of one that is still open in `parent`? """
+        root = getattr(self.parser, 'root', None)
+        if self._root is not root:
+            # A new document. Discard anything a document that failed to parse left behind.
+            self._root = root
+            self.open = {}
+        if parent in self.open:
+            return True
+        if parent.tag == 'blockquote' or self.parser.state.isstate('list') or self.parser.state.isstate('looselist'):
+            # Content of a blockquote, or what follows the marker of a list item or definition, is parsed as it
+            # always has been. Only the indented content of a container is extracted.
+            return False
+        return self.starts_raw(block)
+
+    @staticmethod
+    def closed(extractor) -> bool:
+        """ Has the extractor closed everything it has been fed? """
+        return not extractor.inraw and not getattr(extractor, 'mdstack', None)
+
+    def run(self, parent: etree.Element, blocks: list[str]) -> bool | None:
+        """ Feed the block to the extractor and, once the raw block is closed, replace it with its placeholder. """
+        block = blocks.pop(0)
+        extractor = self.open.get(parent)
+        if extractor is None:
+            extractor = self.get_extractor()
+            feed = block
+        else:
+            feed = '\n\n' + block
+        extractor.feed(feed)
+        if not self.closed(extractor):
+            self.open[parent] = extractor
+            return True
+        self.open.pop(parent, None)
+        result = self.finish(extractor)
+        if result == [block.strip('\n')]:
+            # Not something the extractor treats as raw HTML (a bogus comment, for example)
+            blocks.insert(0, block)
+            return False
+        blocks[0:0] = result
+        return True
+
+    @staticmethod
+    def finish(extractor) -> list[str]:
+        """ Get the blocks that replace the text fed to the extractor. """
+        extractor.close()
+        return ''.join(extractor.cleandoc).strip('\n').split('\n\n')
 
 
 class ListIndentProcessor(BlockProcessor):
