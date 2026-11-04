@@ -39,7 +39,6 @@ if TYPE_CHECKING:  # pragma: no cover
 def build_treeprocessors(md: Markdown, **kwargs: Any) -> util.Registry[Treeprocessor]:
     """ Build the default  `treeprocessors` for Markdown. """
     treeprocessors = util.Registry()
-    treeprocessors.register(RawHtmlFlushTreeprocessor(md), 'rawhtml_flush', 30)
     treeprocessors.register(InlineProcessor(md), 'inline', 20)
     treeprocessors.register(PrettifyTreeprocessor(md), 'prettify', 10)
     treeprocessors.register(UnescapeTreeprocessor(md), 'unescape', 0)
@@ -485,13 +484,3 @@ class UnescapeTreeprocessor(Treeprocessor):
                     # A value of `None` is a valueless attribute, which
                     # has nothing to unescape.
                     elem.set(key, self.unescape(value))
-
-
-class RawHtmlFlushTreeprocessor(Treeprocessor):
-    """ Finish any raw HTML block, nested in a container, which was never closed. """
-
-    def run(self, root: etree.Element) -> None:
-        processor = self.md.parser.blockprocessors['rawhtml']
-        open_blocks, processor.open = processor.open, {}
-        for parent, extractor in open_blocks.items():
-            self.md.parser.parseBlocks(parent, processor.finish(extractor))

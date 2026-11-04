@@ -1316,17 +1316,18 @@ class TestIndentedHTMLBlocks(TestCase):
                     **x**
                 '''
             ),
-            self.dedent(
-                '''
-                <p>Text<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
-                <div class="footnote">
-                <hr />
-                <ol>
-                <li id="fn:1"></li>
-                </ol>
-                </div>
-                '''
-            ),
+            '<p>Text<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p><div>\n'
+            '\n'
+            '**x**&#160;<a class="footnote-backref" href="#fnref:1" title="Jump'
+            ' back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>',
             extensions=['footnotes']
         )
 
@@ -1660,6 +1661,1460 @@ class TestIndentedHTMLBlocks(TestCase):
                 </div>
                 </div>
                 </blockquote>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_blockquote_in_admonition(self):
+        """A blockquote is a container too, so HTML in one is raw. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    > <div>
+                    > **x**
+                    > </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <blockquote>
+                <div>
+                **x**
+                </div>
+                </blockquote>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_blockquote_div(self):
+        """A block of HTML in a blockquote is raw. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <div>
+                > **x**
+                > </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <div>
+                **x**
+                </div>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_div_blank_lines(self):
+        """Blank lines in the raw block do not end it. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <div>
+                >
+                > **x**
+                >
+                > </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <div>
+
+                **x**
+
+                </div>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_div_after_paragraph(self):
+        """Raw block after a paragraph in a blockquote. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > para
+                >
+                > <div>
+                > **x**
+                > </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <p>para</p>
+                <div>
+                **x**
+                </div>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_div_then_paragraph(self):
+        """A paragraph follows the raw block. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <div>
+                > x
+                > </div>
+                >
+                > after
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <div>
+                x
+                </div>
+                <p>after</p>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_text_after_close(self):
+        """
+        Text after the end of the raw block starts its own paragraph. Intended change: a raw block in a
+        container.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <div>x</div>
+                > more
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <div>x</div>
+                <p>more</p>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_two_blocks(self):
+        """Two raw blocks in a blockquote. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <div>a</div>
+                >
+                > <div>b</div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <div>a</div>
+                <div>b</div>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_chained_blocks(self):
+        """Raw blocks that start where the last one ended. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <div>a</div><div>b</div> tail
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <div>a</div>
+                <div>b</div>
+                <p>tail</p>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_lazy_line_in_html(self):
+        """A lazy line inside the raw block belongs to it. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <div>
+                lazy
+                > </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <div>
+                lazy
+                </div>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_lazy_line_after_html(self):
+        """
+        A lazy line after the raw block is a paragraph in the blockquote. Intended change: a raw block in a
+        container.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <div>x</div>
+                lazy
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <div>x</div>
+                <p>lazy</p>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_unclosed_html(self):
+        """
+        A raw block that is never closed ends with the blockquote. Intended change: a raw block in a
+        container.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <div>
+                > x
+
+                after
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <div>
+                x
+                </blockquote>
+                <p>after</p>
+                '''
+            )
+        )
+
+    def test_blockquote_nested(self):
+        """Raw block in a nested blockquote. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > > <div>
+                > > **x**
+                > > </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <blockquote>
+                <div>
+                **x**
+                </div>
+                </blockquote>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_nested_after_text(self):
+        """Raw block in a blockquote nested after text. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > text
+                > > <div>
+                > > x
+                > > </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <p>text</p>
+                <blockquote>
+                <div>
+                x
+                </div>
+                </blockquote>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_in_list(self):
+        """Raw block in a blockquote in a list item. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                - item
+
+                    > <div>
+                    > **x**
+                    > </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <p>item</p>
+                <blockquote>
+                <div>
+                **x**
+                </div>
+                </blockquote>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_blockquote_on_list_marker(self):
+        """Raw block in a blockquote on the line of a list marker. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                - > <div>
+                  > **x**
+                  > </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <blockquote>
+                <div>
+                **x**
+                </div>
+                </blockquote>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_blockquote_comment(self):
+        """A comment in a blockquote is raw. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <!-- c -->
+                > text
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <!-- c -->
+                <p>text</p>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_pre_blank_line(self):
+        """A blank line in a raw block does not split it. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <pre>
+                > a
+                >
+                > b
+                > </pre>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <pre>
+                a
+
+                b
+                </pre>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_script(self):
+        """The content of a raw block is not escaped. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <script>
+                > var a = 1 < 2;
+                > </script>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <script>
+                var a = 1 < 2;
+                </script>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_table(self):
+        """A table in a blockquote. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <table>
+                > <tr><td>x</td></tr>
+                > </table>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <table>
+                <tr><td>x</td></tr>
+                </table>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_md_in_html(self):
+        """A `markdown` attribute works in a blockquote. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <div markdown>
+                > **x**
+                > </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <div>
+                <p><strong>x</strong></p>
+                </div>
+                </blockquote>
+                '''
+            ),
+            extensions=['md_in_html']
+        )
+
+    def test_blockquote_md_in_html_block(self):
+        """A `markdown` attribute with blank lines. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <div markdown="block">
+                >
+                > **x**
+                >
+                > </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <div>
+                <p><strong>x</strong></p>
+                </div>
+                </blockquote>
+                '''
+            ),
+            extensions=['md_in_html']
+        )
+
+    def test_blockquote_in_footnote(self):
+        """Raw block in a blockquote in a footnote. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                text[^1]
+
+                [^1]:
+                    > <div>
+                    > x
+                    > </div>
+                '''
+            ),
+            '<p>text<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<blockquote>\n'
+            '<div>\n'
+            'x\n'
+            '</div>\n'
+            '</blockquote>\n'
+            '<p><a class="footnote-backref" href="#fnref:1" title="Jump back to'
+            ' footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>',
+            extensions=['footnotes']
+        )
+
+    def test_blockquote_paragraph_continuation(self):
+        """A raw block can not interrupt a paragraph in a blockquote. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > a
+                > <div>x</div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <p>a
+                <div>x</div></p>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_inline_tag(self):
+        """An inline tag in a blockquote is not a raw block. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <span>x</span> text
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <p><span>x</span> text</p>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_code_block(self):
+        """An indented code block in a blockquote is code. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                >     <div>
+                >     x
+                >     </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <pre><code>&lt;div&gt;
+                x
+                &lt;/div&gt;
+                </code></pre>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_fenced_code(self):
+        """HTML in a fenced code block in a blockquote is code. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > ```
+                > <div>
+                > ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <p><code>&lt;div&gt;</code></p>
+                </blockquote>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def test_blockquote_list_marker_html(self):
+        """
+        What follows a list marker in a blockquote is parsed as it always has been. Regression: renders as
+        it always has.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > - <div>x</div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <ul>
+                <li><div>x</div></li>
+                </ul>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_blockquote_invalid_declaration(self):
+        """
+        Something the extractor does not treat as a raw block is left alone. Regression: renders as it
+        always has.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <!invalid>
+                > text
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <p>&lt;!invalid&gt;
+                text</p>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_comment_blank_line_admonition(self):
+        """A comment with a blank line in it is one raw block. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <!--
+                    c
+
+                    -->
+                    text
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <!--
+                c
+
+                -->
+                <p>text</p>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_comment_blank_line_list(self):
+        """A comment with a blank line in a list item. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                - a
+
+                    <!--
+                    c
+
+                    -->
+                    text
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <p>a</p>
+                <!--
+                c
+
+                -->
+                <p>text</p>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_comment_blank_line_definition(self):
+        """A comment with a blank line in a definition. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                Term
+                :   a
+
+                    <!--
+                    c
+
+                    -->
+                    text
+                '''
+            ),
+            self.dedent(
+                '''
+                <dl>
+                <dt>Term</dt>
+                <dd>
+                <p>a</p>
+                <!--
+                c
+
+                -->
+                <p>text</p>
+                </dd>
+                </dl>
+                '''
+            ),
+            extensions=['def_list']
+        )
+
+    def test_comment_blank_line_blockquote(self):
+        """A comment with a blank line in a blockquote. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <!--
+                > c
+                >
+                > -->
+                > text
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <!--
+                c
+
+                -->
+                <p>text</p>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_comment_blank_line_blockquote_in_list(self):
+        """
+        A comment with a blank line in a blockquote in a list item. Intended change: a raw block in a
+        container.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                - a
+
+                    > <!--
+                    > c
+                    >
+                    > -->
+                    > text
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <p>a</p>
+                <blockquote>
+                <!--
+                c
+
+                -->
+                <p>text</p>
+                </blockquote>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_comment_blank_line_footnote(self):
+        """A comment with a blank line in a footnote. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                x[^1]
+
+                [^1]:
+                    <!--
+                    c
+
+                    -->
+                    text
+                '''
+            ),
+            '<p>x<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<!--\n'
+            'c\n'
+            '\n'
+            '-->\n'
+            '<p>text&#160;<a class="footnote-backref" href="#fnref:1" title="Jump'
+            ' back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>',
+            extensions=['footnotes']
+        )
+
+    def test_comment_many_blank_lines(self):
+        """A comment with several blank lines in it. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <!--
+                    a
+
+                    b
+
+                    c
+                    -->
+                    text
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <!--
+                a
+
+                b
+
+                c
+                -->
+                <p>text</p>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_comment_blank_line_then_div(self):
+        """A raw block follows a comment with a blank line. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <!--
+                    a
+
+                    -->
+
+                    <div>x</div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <!--
+                a
+
+                -->
+                <div>x</div>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_comment_blank_line_two_comments(self):
+        """Two comments with blank lines in them. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <!--
+                    a
+
+                    -->
+
+                    <!--
+                    b
+
+                    -->
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <!--
+                a
+
+                -->
+                <!--
+                b
+
+                -->
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_comment_blank_line_after_paragraph(self):
+        """A comment with a blank line after a paragraph. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    para
+
+                    <!--
+                    c
+
+                    -->
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <p>para</p>
+                <!--
+                c
+
+                -->
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_comment_blank_line_div_after_close(self):
+        """A raw block starts on the line where the comment ends. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <!--
+                    c
+
+                    --> <div>x</div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <!--
+                c
+
+                -->
+                <div>x</div>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_comment_blank_line_md_in_html(self):
+        """
+        A `markdown` attribute after a comment with a blank line. Intended change: a raw block in a
+        container.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <!--
+                    c
+
+                    -->
+                    <div markdown>
+                    **x**
+                    </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <!--
+                c
+
+                -->
+                <div>
+                <p><strong>x</strong></p>
+                </div>
+                </div>
+                '''
+            ),
+            extensions=['admonition', 'md_in_html']
+        )
+
+    def test_processing_instruction_blank_line(self):
+        """A processing instruction with a blank line in it. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <?php
+                    c
+
+                    ?>
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <?php
+                c
+
+                ?>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_processing_instruction_blank_line_blockquote(self):
+        """
+        A processing instruction with a blank line in a blockquote. Intended change: a raw block in a
+        container.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <?php
+                > c
+                >
+                > ?>
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <?php
+                c
+
+                ?>
+                </blockquote>
+                '''
+            )
+        )
+
+    def test_cdata_blank_line(self):
+        """A CDATA section with a blank line in it. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <![CDATA[
+                    c
+
+                    ]]>
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <![CDATA[
+                c
+
+                ]]>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_declaration_blank_line(self):
+        """A declaration with a blank line in it. Intended change: a raw block in a container."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <!DOCTYPE
+                    c
+
+                    html>
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <!DOCTYPE
+                c
+
+                html>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_comment_unclosed_admonition(self):
+        """A comment which is never closed is text. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <!--
+                    a
+
+                    text
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <p>&lt;!--
+                a</p>
+                <p>text</p>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_comment_unclosed_list(self):
+        """
+        What follows a comment which is never closed is parsed as it always has been. Regression: renders as
+        it always has.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                - item
+
+                    <!--
+                    a
+
+                    - nested
+                    - list
+
+                    para
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <p>item</p>
+                <p>&lt;!--
+                a</p>
+                <ul>
+                <li>nested</li>
+                <li>list</li>
+                </ul>
+                <p>para</p>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_comment_unclosed_list_item(self):
+        """
+        A comment which is never closed does not change the list around it. Regression: renders as it always
+        has.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                - a
+                - b
+
+                    <!-- x
+
+                    more
+                - c
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>a</li>
+                <li>
+                <p>b</p>
+                <p>&lt;!-- x</p>
+                <p>more
+                - c</p>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_comment_unclosed_blockquote(self):
+        """A comment which is never closed in a blockquote is text. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                > <!-- x
+                >
+                > more
+
+                after
+                '''
+            ),
+            self.dedent(
+                '''
+                <blockquote>
+                <p>&lt;!-- x</p>
+                <p>more</p>
+                </blockquote>
+                <p>after</p>
+                '''
+            )
+        )
+
+    def test_comment_unclosed_root(self):
+        """A comment which is never closed at the root is text. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                <!-- x
+
+                more
+                '''
+            ),
+            self.dedent(
+                '''
+                <p>&lt;!-- x</p>
+                <p>more</p>
+                '''
+            )
+        )
+
+    def test_comment_closed_then_unclosed(self):
+        """Only the comment that is closed is raw. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <!-- a -->
+
+                    <!-- b
+
+                    text
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <!-- a -->
+                <p>&lt;!-- b</p>
+                <p>text</p>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_comment_in_text_line(self):
+        """A comment that does not start a block is text. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    text <!--
+                    c
+
+                    --> more
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <p>text &lt;!--
+                c</p>
+                <p>--&gt; more</p>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_processing_instruction_unclosed(self):
+        """A processing instruction which is never closed is text. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <?php
+                    c
+
+                    text
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <p>&lt;?php
+                c</p>
+                <p>text</p>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_cdata_unclosed(self):
+        """A CDATA section which is never closed is text. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <![CDATA[
+                    c
+
+                    text
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <p>&lt;![CDATA[
+                c</p>
+                <p>text</p>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_cdata_spaced_close(self):
+        """A CDATA section is closed by `]]>` only. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <![CDATA[
+                    c
+
+                    ] ]>
+                    after
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <p>&lt;![CDATA[
+                c</p>
+                <p>] ]&gt;
+                after</p>
+                </div>
+                '''
+            ),
+            extensions=['admonition']
+        )
+
+    def test_declaration_unclosed(self):
+        """A declaration which is never closed is text. Regression: renders as it always has."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                R'''
+                !!! note
+                    <!DOCTYPE
+                    c
+
+                    text
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="admonition note">
+                <p class="admonition-title">Note</p>
+                <p>&lt;!DOCTYPE
+                c</p>
+                <p>text</p>
+                </div>
                 '''
             ),
             extensions=['admonition']
