@@ -33,7 +33,7 @@ class TestIndentedHTMLBlocks(TestCase):
 
     def test_mdih_admonition_markdown_attr(self):
         """
-        Under md_in_html the extractor stores an etree Element, not IndentedRawHtml, and the element text
+        Under md_in_html the extractor stores an `etree` Element, not `IndentedRawHtml`, and the element text
         keeps the 4-space indent, so `**test**` becomes an indented code block. Intended change: a raw block
         in a container.
         """
@@ -2768,7 +2768,7 @@ class TestIndentedHTMLBlocks(TestCase):
         )
 
     def test_cdata_blank_line(self):
-        """A CDATA section with a blank line in it. Intended change: a raw block in a container."""
+        """A `CDATA` section with a blank line in it. Intended change: a raw block in a container."""
 
         self.assertMarkdownRenders(
             self.dedent(
@@ -3041,7 +3041,7 @@ class TestIndentedHTMLBlocks(TestCase):
         )
 
     def test_cdata_unclosed(self):
-        """A CDATA section which is never closed is text. Regression: renders as it always has."""
+        """A `CDATA` section which is never closed is text. Regression: renders as it always has."""
 
         self.assertMarkdownRenders(
             self.dedent(
@@ -3067,7 +3067,7 @@ class TestIndentedHTMLBlocks(TestCase):
         )
 
     def test_cdata_spaced_close(self):
-        """A CDATA section is closed by `]]>` only. Regression: renders as it always has."""
+        """A `CDATA` section is closed by `]]>` only. Regression: renders as it always has."""
 
         self.assertMarkdownRenders(
             self.dedent(

@@ -182,7 +182,7 @@ class RawHtmlBlockProcessor(BlockProcessor):
     """
 
     START_RE = re.compile(r'^[ ]{0,3}(?:<!--|<\?|<![A-Za-z\[]|<([A-Za-z][\w:-]*))')
-    # Constructs which the extractor can not be given a piece at a time: a comment, processing instruction, CDATA
+    # Constructs which the extractor can not be given a piece at a time: a comment, processing instruction, `CDATA`
     # section or declaration, and what ends each of them.
     UNTERMINATED_RE = re.compile(r'^[ ]{0,3}(?:(<!--)|(<\?)|(<!\[CDATA\[)|(<![A-Za-z\[]))')
     TERMINATORS = (re.compile(r'--!?>'), re.compile(r'>'), re.compile(r']]>'), re.compile(r'>'))
@@ -222,7 +222,7 @@ class RawHtmlBlockProcessor(BlockProcessor):
         return self.starts_raw(block)
 
     def unterminated(self, text: str) -> bool:
-        """ Does `text` start a comment, processing instruction, CDATA section or declaration it does not end? """
+        """ Does `text` start a comment, processing instruction, `CDATA` section or declaration it does not end? """
         m = self.UNTERMINATED_RE.match(text)
         return bool(m) and not self.TERMINATORS[m.lastindex - 1].search(text, m.end())
 
