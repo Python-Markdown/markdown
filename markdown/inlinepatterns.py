@@ -565,7 +565,14 @@ class Delimiter:
     def __init__(self, token: str, tags: str, smart: bool, double: bool):
         """Initialize."""
 
-        self.stack: deque[tuple[int, int, bool, int]] = deque()
+        # An unclosed delimiter.
+        #
+        # 0. Start position of the (remaining) run in the text.
+        # 1. End position of the (remaining) run in the text.
+        # 2. Whether the run is ambiguous (could be a start or an end).
+        # 3. Original length of the run.
+        # 4. Current length of the run.
+        self.stack: deque[tuple[int, int, bool, int, int]] = deque()
         temp = tags.split(',')
         self.tag_count = len(temp)
         self.tags: tuple[str, str] = (temp[0], temp[1]) if self.tag_count == 2 else (temp[0], temp[0])
@@ -636,7 +643,8 @@ class DelimiterProcessor(InlineProcessor):
 
         md.delimiters = self
         self.regions: list[tuple[int, int, int, int, tuple[str, str], int]] = []
-        self.stack: list[tuple[int, int, bool, int]] = []
+        # Unpaired delimiter. The entries are the same as `Delimiter.stack`.
+        self.stack: list[tuple[int, int, bool, int, int]] = []
         self.tokens: list[str] = []
         self.delimiters: dict[str, Delimiter] = {}
         self.cache_index = 0
@@ -804,6 +812,16 @@ class DelimiterProcessor(InlineProcessor):
         self.increment_next_position(start, count)
         return el, start + offset, end + offset
 
+    @staticmethod
+    def rule_of_3(opener: int, closer: int) -> bool:
+        """
+        Check the "rule of 3" which prevents an open delimiter from pairing with an ambiguous one.
+
+        The original lengths of the delimiter must be used, not what is left of them after partial pairing.
+        """
+
+        return (opener + closer) % 3 == 0 and (opener % 3 != 0 or closer % 3 != 0)
+
     def get_match(self, data: str, start: int) -> re.Match[str] | None:
         """Get match."""
 
@@ -872,7 +890,7 @@ class DelimiterProcessor(InlineProcessor):
             return None, m.start(0), m.end(0)
 
         is_ambiguous = m2.lastgroup[0] != 's'  # type: ignore[index]
-        stack.append((start, start + length, is_ambiguous, length))
+        stack.append((start, start + length, is_ambiguous, length, length))
 
         # Pair tokens until the stack is empty or we can no longer find tokens.
         while any(d.stack for d in self.delimiters.values()):
@@ -897,6 +915,17 @@ class DelimiterProcessor(InlineProcessor):
 
             last = stack[-1][-1] if stack else 0
 
+            # Rule of 3: an ambiguous delimiter cannot pair with an open delimiter if the sum of the
+            # original lengths is a multiple of 3 (unless both are multiples of 3).
+            if (
+                stack and is_ambiguous and current != last and
+                self.rule_of_3(stack[-1][3], current)
+            ):
+                for i in range(len(stack) - 2, -1, -1):
+                    if stack[i][-1] == current and not self.rule_of_3(stack[i][3], current):
+                        last = current
+                        break
+
             # Find closing tokens
             # Looking for:
             # - `*em*`
@@ -909,7 +938,10 @@ class DelimiterProcessor(InlineProcessor):
             # Avoid ambiguous tokens that could be a start or an end.
             # Consume starts until the end token is fully consumed.
             # If we don't consume the entire end, see if next rule consumes it.
-            if stack and is_end and ((not is_ambiguous and current > last) or current == last or current >= 3):
+            if stack and is_end and (
+                (current > last and (not is_ambiguous or not self.rule_of_3(stack[-1][3], current))) or
+                current == last or current >= 3
+            ):
                 is_start = False
 
                 # Consume previous points until the delimiter is consumed
@@ -925,7 +957,7 @@ class DelimiterProcessor(InlineProcessor):
                     new = 0
                     if size < delimiter[-1] and (not delim.double or (delimiter[-1] - size) != 1):
                         new = delimiter[-1] - size
-                        stack.append((delimiter[0], delimiter[1] - size, delimiter[2], new))
+                        stack.append((delimiter[0], delimiter[1] - size, delimiter[2], delimiter[3], new))
 
                     if not stack:
                         if any(d.stack for d in self.delimiters.values() if d is not delim):
@@ -938,7 +970,7 @@ class DelimiterProcessor(InlineProcessor):
 
                 # Should remainder be treated as a new start?
                 if original >= 3 and current and is_ambiguous:
-                    delim.stack.append((m2.start(0) + (original - current), end, False, current))
+                    delim.stack.append((m2.start(0) + (original - current), end, False, original, current))
                     is_end = False
 
                 # Do we still have more to consume?
@@ -975,7 +1007,7 @@ class DelimiterProcessor(InlineProcessor):
                     last -= size
                     de -= size
                 if last and (not delim.double or last > 1):
-                    stack.append((ds, de, False, last))
+                    stack.append((ds, de, False,  delimiter[3], last))
 
             # Find opening tokens
             # Looking for:
@@ -983,7 +1015,7 @@ class DelimiterProcessor(InlineProcessor):
             # - `**strong ...*`
             # - `***em ...*`
             if is_start and (not delim.double or current != 1):
-                stack.append((start, end, is_ambiguous, current))
+                stack.append((start, end, is_ambiguous, current, current))
 
         # Combine the stacks and order them
         for delim in self.delimiters.values():

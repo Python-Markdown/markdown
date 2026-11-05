@@ -16,6 +16,8 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* Fix cases in new emphasis handling that did not handle long chains of tokens
+  like they should (#1690).
 * Fix quadratic-time parsing of many consecutive reference definitions, and of
   many consecutive footnote definitions in the `footnotes` extension.
 * Support automatic links with URL schemes other than HTTP and FTP, such as
