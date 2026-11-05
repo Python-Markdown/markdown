@@ -12,7 +12,7 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
-## [Unreleased]
+## [3.11.3] - 2026-11-05
 
 ### Fixed
 
