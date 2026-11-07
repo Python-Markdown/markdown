@@ -925,7 +925,7 @@ class TestCommonMark(TestCase):
             )
 
         def test_unused_tokens_in_returned_element_tail(self):
-            """Test that tokens inside an element's tail are not processed against regions cached for the parent text."""
+            """Test tokens inside an element's tail are not processed against regions cached for the parent text."""
 
             self.check_markdown(
                 '__*)a.* *ab_a_ _)_(*',

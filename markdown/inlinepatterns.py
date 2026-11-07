@@ -896,7 +896,7 @@ class DelimiterProcessor(InlineProcessor):
     ) -> tuple[etree.Element | None, int | None, int | None]:
         """Parse delimiter pattern."""
 
-        # If the cache is not empty, it is possible to recieve text that we already evaluted
+        # If the cache is not empty, it is possible to receive text that we already evaluated
         # between found regions, ignore such text.
         if self.cache and isinstance(data, EvaluatedText):
             skip = self.delimiters[m.group(0)].bad.match(data, m.start(0))
