@@ -911,6 +911,27 @@ class TestCommonMark(TestCase):
                 '<p>*<em>a<em>b</em></em>: x</p>'
             )
 
+        def test_stray_token_before_cached_region(self):
+            """Test that a stray token between cached regions does not corrupt the cached region's offset."""
+
+            self.check_markdown(
+                '***l* * **e**',
+                '<p>**<em>l</em> * <strong>e</strong></p>'
+            )
+
+            self.check_markdown(
+                '**l* * **e**',
+                '<p>*<em>l</em> * <strong>e</strong></p>'
+            )
+
+        def test_unused_tokens_in_returned_element_tail(self):
+            """Test that tokens inside an element's tail are not processed against regions cached for the parent text."""
+
+            self.check_markdown(
+                '__*)a.* *ab_a_ _)_(*',
+                '<p>_<em><em>)a.</em> *ab_a</em> <em>)</em>(*</p>'
+            )
+
 
 class TestProcessorRemoval(TestCase):
 
