@@ -30,6 +30,13 @@ class TestInlineLinks(TestCase):
             """<p><a href="http://link.com">Text[[[[[[[]]]]]]][]</a> more text</p>"""
         )
 
+    def test_many_unclosed_brackets(self):
+        """Test that each unclosed bracket does not rescan the rest of the document."""
+        self.assertMarkdownRenders(
+            '[' * 20000,
+            '<p>' + '[' * 20000 + '</p>'
+        )
+
     def test_nested_round_brackets(self):
         self.assertMarkdownRenders(
             """[Text](http://link.com/(((((((()))))))())) more text""",
