@@ -18,6 +18,10 @@ See the [Contributing Guide](contributing.md) for details.
 
 * Fix for complex cases in new emphasis handling where text could be unexpectedly
   dropped (#1694).
+* Fix rule of 3 handling in new emphasis handling where an opener skipped by the rule could still be paired
+  with the closer, dropping text.
+* Fix the unused part of a partially consumed closing delimiter run being classified using the replacement
+  placeholder instead of the text that preceded it.
 
 ## [3.11.3] - 2026-11-05
 

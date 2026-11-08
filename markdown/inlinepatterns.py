@@ -666,6 +666,8 @@ class DelimiterProcessor(InlineProcessor):
         self.delimiters: dict[str, Delimiter] = {}
         self.cache_index = 0
         self.cache_pos = 0
+        # Info about the unused part of a closing delimiter run that directly follows the last returned element
+        self.remainder: tuple[str, str] | None = None
         self.md = md
         # API for Markdown to pass `safe_mode` into instance
         self.safe_mode = False
@@ -710,6 +712,7 @@ class DelimiterProcessor(InlineProcessor):
         self.positions.clear()
         self.cache_index = 0
         self.cache_pos = 0
+        self.remainder = None
 
     def _build_element(
         self,
@@ -896,6 +899,30 @@ class DelimiterProcessor(InlineProcessor):
     ) -> tuple[etree.Element | None, int | None, int | None]:
         """Parse delimiter pattern."""
 
+        remainder = self.remainder
+        self.remainder = None
+        el, start, end = self._handle_match(m, data, remainder)
+
+        # If the element did not consume the entire closing delimiter run, the rest of the run directly follows
+        # the placeholder that will replace the element. The placeholder will hide what preceded the run, which
+        # is needed to correctly classify the rest of the run, so save it for the next match.
+        if el is not None and end is not None and end < len(data) and data[end] == data[end - 1]:
+            run = end - 1
+            while run > 0 and data[run - 1] == data[end]:
+                run -= 1
+            if run > 0:
+                self.remainder = (data[end], data[run - 1])
+
+        return el, start, end
+
+    def _handle_match(
+        self,
+        m: re.Match[str],
+        data: str,
+        remainder: tuple[str, str] | None
+    ) -> tuple[etree.Element | None, int | None, int | None]:
+        """Parse delimiter pattern."""
+
         # If the cache is not empty, it is possible to receive text that we already evaluated
         # between found regions, ignore such text.
         if self.cache and isinstance(data, EvaluatedText):
@@ -907,7 +934,14 @@ class DelimiterProcessor(InlineProcessor):
             return self.get_cached_result(m.start(0))
 
         # If token is not an opening, quit
-        m2 = self.get_match(data, m.start(0))
+        # If this is the rest of a closing run that was partially consumed, the placeholder directly before it can
+        # change how the run is classified, but the run should be classified by what actually preceded it.
+        text = data
+        pos = m.start(0)
+        if remainder is not None and pos and data[pos - 1] == '\x03' and data[pos] == remainder[0]:
+            text = f'{data[:pos - 1]}{remainder[1]}{data[pos:]}'
+
+        m2 = self.get_match(text, pos)
         if m2 is None or m2.lastgroup[0] == 'e':  # type: ignore[index]
             if m2 is None:
                 delim = self.delimiters[m.group(0)]
@@ -962,6 +996,8 @@ class DelimiterProcessor(InlineProcessor):
             ):
                 for i in range(len(stack) - 2, -1, -1):
                     if stack[i][-1] == current and not self.rule_of_3(stack[i][3], current):
+                        while len(stack) > i + 1:
+                            stack.pop()
                         last = current
                         break
 
