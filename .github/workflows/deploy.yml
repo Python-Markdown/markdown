@@ -12,7 +12,12 @@ jobs:
 
   pypi:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/Markdown
     permissions:
+      # Required for PyPI Trusted Publishing (OIDC).
+      id-token: write
       # Required to create the GitHub release.
       contents: write
     steps:
@@ -32,9 +37,6 @@ jobs:
       - name: Publish to PyPI
         if: success()
         uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_PASSWORD }}
       - name: Normalize Version
         id: normalize
         run: echo "version=$(python -c 'import semver; print(semver.Version.parse("${{ github.ref_name }}", optional_minor_and_patch=True))')" >> $GITHUB_OUTPUT
