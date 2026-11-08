@@ -816,6 +816,18 @@ class DelimiterProcessor(InlineProcessor):
         while index < len(regions):
             el, count = self._build_element(data, index)
             start, end = regions[index][0], regions[index][3]
+            token = data[end - 1]
+            if token in self.delimiters and data[end:end + 1] == token:
+                run_start = end - 1
+                while run_start and data[run_start - 1] == token:
+                    run_start -= 1
+                closing = self.delimiters[token].boundary.match(data, run_start)
+                if closing is not None and closing.lastgroup == 'end':
+                    # A closing-only run cannot become an opener when its prefix
+                    # is replaced by an inline placeholder. Keep its unused tokens
+                    # literal instead of parsing them again in the changed context.
+                    el.tail = util.AtomicString(data[end:closing.end()])
+                    end = closing.end()
             if data[end:end + 1] in self.delimiters:
                 anchor = end
             else:
@@ -962,6 +974,10 @@ class DelimiterProcessor(InlineProcessor):
             ):
                 for i in range(len(stack) - 2, -1, -1):
                     if stack[i][-1] == current and not self.rule_of_3(stack[i][3], current):
+                        # Pair with the opener we found, not the rejected opener
+                        # still at the top of the stack.
+                        while len(stack) > i + 1:
+                            stack.pop()
                         last = current
                         break
 

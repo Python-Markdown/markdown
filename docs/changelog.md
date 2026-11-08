@@ -16,6 +16,9 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* Preserve unused closing emphasis delimiters in their original context and
+  pair rule-of-three matches with the selected opener, without dropping text.
+
 * Fix for complex cases in new emphasis handling where text could be unexpectedly
   dropped (#1694).
 
