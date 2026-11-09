@@ -136,6 +136,14 @@ from a generative AI tool does not count as engaging with the reviewer. The
 use of an AI agent to submit a pull request, issue, or comment autonomously
 is not permitted.
 
+All contributions must disclose whether AI tools were used or not. Disclosures
+of AI use must include the specific tools used and what content was generated
+by the tool, including, but not limited to code, documentation, comments,
+commit messages, and explanations. Issue and pull request templates must be
+followed when provided. If a template is ignored or deleted, it will be
+assumed that an AI agent was used to submit the pull request or issue
+autonomously and the pull request or issue may be closed immediately.
+
 All code and prose (documentation, commit messages, comments, etc.) must
 reflect the style and conventions used by the Python-Markdown project (see
 [Code Style Guide](#code-style-guide), [Documentation Style

@@ -24,6 +24,7 @@ from __future__ import annotations
 from . import Extension
 from ..treeprocessors import Treeprocessor
 from ..util import parseBoolValue
+from ..serializers import _escape_attrib_html
 from typing import TYPE_CHECKING, Callable, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -179,7 +180,7 @@ class CodeHilite:
             txt = txt.replace('"', '&quot;')
             classes = []
             if self.lang:
-                classes.append('{}{}'.format(self.lang_prefix, self.lang))
+                classes.append('{}{}'.format(self.lang_prefix, _escape_attrib_html(self.lang)))
             if self.options['linenos']:
                 classes.append('linenums')
             class_str = ''

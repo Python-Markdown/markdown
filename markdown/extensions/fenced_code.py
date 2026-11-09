@@ -25,7 +25,7 @@ from textwrap import dedent
 from . import Extension
 from ..preprocessors import Preprocessor
 from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
-from .attr_list import get_attrs_and_remainder, AttrListExtension
+from .attr_list import get_attrs_and_remainder, sanitize_name, AttrListExtension
 from ..util import parseBoolValue
 from ..serializers import _escape_attrib_html
 import re
@@ -160,7 +160,8 @@ class FencedBlockPreprocessor(Preprocessor):
                         # pairs were defined on the code block, and the `use_pygments` key was not set to `True`. The
                         # `use_pygments` key could be either set to `False` or not defined. It is omitted from output.
                         kv_pairs = ''.join(
-                            f' {k}="{_escape_attrib_html(v)}"' for k, v in config.items() if k != 'use_pygments'
+                            f' {sanitize_name(k)}="{_escape_attrib_html(v)}"'
+                            for k, v in config.items() if k != 'use_pygments'
                         )
                     code = self._escape(m.group('code'))
                     code = f'<pre{id_attr}{class_attr}><code{lang_attr}{kv_pairs}>{code}</code></pre>'
@@ -174,12 +175,18 @@ class FencedBlockPreprocessor(Preprocessor):
         pieces.append(text[last:])
         return "".join(pieces).split("\n")
 
-    def handle_attrs(self, attrs: Iterable[tuple[str, str]]) -> tuple[str, list[str], dict[str, Any]]:
+    def handle_attrs(
+        self, attrs: Iterable[tuple[str, str | None]]
+    ) -> tuple[str, list[str], dict[str, Any]]:
         """ Return tuple: `(id, [list, of, classes], {configs})` """
         id = ''
         classes = []
         configs = {}
         for k, v in attrs:
+            if v is None:
+                # A valueless attribute is a flag: preserve the
+                # historic behavior of using the key as its own value.
+                v = k
             if k == 'id':
                 id = v
             elif k == '.':

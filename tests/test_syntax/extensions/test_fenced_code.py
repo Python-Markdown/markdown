@@ -304,6 +304,25 @@ class TestFencedCode(TestCase):
             extensions=['fenced_code', 'attr_list']
         )
 
+    def testFencedCodeAttrNameSanitizedNoCodehiliteWithAttrList(self):
+        # An attribute name is sanitized so it cannot break out of the `code` tag (see #1663).
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python x><svg/onload=alert(1) }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-python" x_svg_onload="alert(1)"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
     def testFencedLanguagePygmentsDisabledInAttrNoCodehiliteWithAttrList(self):
         self.assertMarkdownRenders(
             self.dedent(

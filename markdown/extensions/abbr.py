@@ -119,9 +119,10 @@ class AbbrTreeprocessor(Treeprocessor):
             index = list(parent).index(el) + 1
             if not isinstance(tail, AtomicString):
                 for m in reversed(list(self.RE.finditer(tail))):
-                    abbr = self.create_element(self.abbrs[m.group(0)], m.group(0), tail[m.end():])
-                    parent.insert(index, abbr)
-                    tail = tail[:m.start()]
+                    if self.abbrs[m.group(0)]:
+                        abbr = self.create_element(self.abbrs[m.group(0)], m.group(0), tail[m.end():])
+                        parent.insert(index, abbr)
+                        tail = tail[:m.start()]
                 el.tail = tail
 
     def run(self, root: etree.Element) -> etree.Element | None:

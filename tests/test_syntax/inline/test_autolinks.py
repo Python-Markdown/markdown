@@ -24,6 +24,72 @@ from markdown.test_tools import TestCase
 
 class TestAutomaticLinks(TestCase):
 
+    def test_url_schemes(self):
+        for url in (
+            'http://example.org',
+            'https://example.org',
+            'ftp://example.org',
+            'ftps://example.org',
+            'HtTpS://example.org',
+            'ssh://example.org',
+            'git://example.org/repo',
+            's3://bucket/key',
+            'git+ssh://example.org/repo',
+            'x.y-z://example.org',
+        ):
+            with self.subTest(url=url):
+                self.assertMarkdownRenders(
+                    f'<{url}>',
+                    f'<p><a href="{url}">{url}</a></p>'
+                )
+
+    def test_url_schemes_with_userinfo(self):
+        for url in (
+            'ssh://user@example.org/path',
+            'git+ssh://git@example.org/repo.git',
+        ):
+            with self.subTest(url=url):
+                self.assertMarkdownRenders(
+                    f'<{url}>',
+                    f'<p><a href="{url}">{url}</a></p>'
+                )
+
+    def test_url_scheme_with_query(self):
+        self.assertMarkdownRenders(
+            '<ssh://example.org/path?q=one&x=two>',
+            '<p><a href="ssh://example.org/path?q=one&amp;x=two">'
+            'ssh://example.org/path?q=one&amp;x=two</a></p>'
+        )
+
+    def test_adjacent_url_schemes(self):
+        self.assertMarkdownRenders(
+            'Before <ssh://one><git://two> after',
+            '<p>Before <a href="ssh://one">ssh://one</a>'
+            '<a href="git://two">git://two</a> after</p>'
+        )
+
+    def test_url_scheme_without_closing_bracket(self):
+        self.assertMarkdownRenders(
+            '<ssh://example.org',
+            '<p>&lt;ssh://example.org</p>'
+        )
+
+    def test_url_scheme_in_code_span(self):
+        self.assertMarkdownRenders(
+            '`<ssh://example.org>`',
+            '<p><code>&lt;ssh://example.org&gt;</code></p>'
+        )
+
+    def test_invalid_url_schemes(self):
+        for source, expected in (
+            ('<1http://example.org>', '<p>&lt;1http://example.org&gt;</p>'),
+            ('<git_ssh://example.org>', '<p><git_ssh://example.org></p>'),
+            ('<urn:foo>', '<p><urn:foo></p>'),
+            ('<em>boo!</em>', '<p><em>boo!</em></p>'),
+        ):
+            with self.subTest(source=source):
+                self.assertMarkdownRenders(source, expected)
+
     def test_email_address(self):
         self.assertMarkdownRenders(
             'asdfasdfadsfasd <yuri@freewisdom.org> or you can say ',

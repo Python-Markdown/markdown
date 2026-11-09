@@ -178,6 +178,14 @@ class TestAbbr(TestCase):
             extensions=[AbbrExtension(glossary=glossary)]
         )
 
+    def test_abbr_glossary_empty_definition(self):
+        self.assertMarkdownRenders(
+            'HTML W3C HTML *word* HTML W3C HTML',
+            '<p>HTML <abbr title="World Wide Web Consortium">W3C</abbr> HTML '
+            '<em>word</em> HTML <abbr title="World Wide Web Consortium">W3C</abbr> HTML</p>',
+            extensions=[AbbrExtension(glossary={'HTML': '', 'W3C': 'World Wide Web Consortium'})]
+        )
+
     def test_abbr_glossary_2(self):
 
         glossary = {
