@@ -22,6 +22,8 @@ See the [Contributing Guide](contributing.md) for details.
   with the closer, dropping text.
 * Fix the unused part of a partially consumed closing delimiter run being classified using the replacement
   placeholder instead of the text that preceded it.
+* Fix quadratic processing time in the `fenced_code` extension for documents
+  with many fenced code blocks (#1660).
 
 ## [3.11.3] - 2026-11-05
 
