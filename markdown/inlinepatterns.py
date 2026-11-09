@@ -1116,6 +1116,30 @@ class LinkInlineProcessor(InlineProcessor):
     RE_LINK = re.compile(r'''\(\s*(?:(<[^<>]*>)\s*(?:('[^']*'|"[^"]*")\s*)?\))?''', re.DOTALL | re.UNICODE)
     RE_TITLE_CLEAN = re.compile(r'\s')
 
+    # The buffer `getText` was last called with and the positions of the brackets in it which have a match. `getText`
+    # is called once for every opening bracket the pattern matches, so walking to the end of the buffer on each call
+    # takes quadratic time on a run of unclosed brackets. The buffer is unchanged while matches keep being rejected,
+    # so one pass over it, cached for the next calls, is enough for all of them.
+    _bracket_pairs: tuple[str, dict[int, int]] | None = None
+
+    @staticmethod
+    def _matchBrackets(data: str) -> dict[int, int]:
+        """ Map the position of every `[` in `data` which has a matching `]` to the position of that `]`. """
+        open_brackets: list[int] = []
+        pairs: dict[int, int] = {}
+        for position, char in enumerate(data):
+            if char == '[':
+                open_brackets.append(position)
+            elif char == ']' and open_brackets:
+                pairs[open_brackets.pop()] = position
+        return pairs
+
+    def _getBracketPairs(self, data: str) -> dict[int, int]:
+        """ Return the brackets of `data`, matching and caching them first if it is a new buffer. """
+        if self._bracket_pairs is None or self._bracket_pairs[0] is not data:
+            self._bracket_pairs = (data, self._matchBrackets(data))
+        return self._bracket_pairs[1]
+
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | None, int | None, int | None]:
         """ Return an `a` [`Element`][xml.etree.ElementTree.Element] or `(None, None, None)`. """
         text, index, handled = self.getText(data, m.end(0))
@@ -1258,19 +1282,11 @@ class LinkInlineProcessor(InlineProcessor):
         resolving nested square brackets.
 
         """
-        bracket_count = 1
-        text = []
-        for pos in range(index, len(data)):
-            c = data[pos]
-            if c == ']':
-                bracket_count -= 1
-            elif c == '[':
-                bracket_count += 1
-            index += 1
-            if bracket_count == 0:
-                break
-            text.append(c)
-        return ''.join(text), index, bracket_count == 0
+        # The text ends at the bracket which matches the one just before `index`, if there is one.
+        end = self._getBracketPairs(data).get(index - 1)
+        if end is None:
+            return data[index:], len(data), False
+        return data[index:end], end + 1, True
 
 
 class ImageInlineProcessor(LinkInlineProcessor):
