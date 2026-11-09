@@ -22,6 +22,9 @@ See the [Contributing Guide](contributing.md) for details.
   with the closer, dropping text.
 * Fix the unused part of a partially consumed closing delimiter run being classified using the replacement
   placeholder instead of the text that preceded it.
+* Fix quadratic-time parsing of a long run of unclosed `[` brackets, which
+  walked the rest of the buffer once per opening bracket, when no extensions
+  are enabled (#798).
 
 ## [3.11.3] - 2026-11-05
 
