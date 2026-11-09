@@ -455,6 +455,77 @@ class TestFencedCode(TestCase):
             extensions=['fenced_code', 'attr_list']
         )
 
+    def testMultipleFencedBlocks(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                Text before.
+
+                ```python
+                first = 1
+                ```
+
+                Text between.
+
+                ~~~
+                second
+                ~~~
+
+                Text after.
+                '''
+            ),
+            self.dedent(
+                '''
+                <p>Text before.</p>
+                <pre><code class="language-python">first = 1
+                </code></pre>
+                <p>Text between.</p>
+                <pre><code>second
+                </code></pre>
+                <p>Text after.</p>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def testAdjacentFencedBlocks(self):
+        # The second block opens on the line right after the first one closes.
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```
+                first
+                ```
+                ~~~
+                second
+                ~~~
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code>first
+                </code></pre>
+                <pre><code>second
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code']
+        )
+
+    def testFencedBlockAtEndWithoutNewline(self):
+        self.assertMarkdownRenders(
+            'Text.\n\n```\ncode\n```',
+            '<p>Text.</p>\n<pre><code>code\n</code></pre>',
+            extensions=['fenced_code']
+        )
+
+    def testManyFencedBlocks(self):
+        self.assertMarkdownRenders(
+            '\n\n'.join(f'Paragraph {i}.\n\n```\nblock {i}\n```' for i in range(50)),
+            '\n'.join(f'<p>Paragraph {i}.</p>\n<pre><code>block {i}\n</code></pre>' for i in range(50)),
+            extensions=['fenced_code']
+        )
+
 
 class TestFencedCodeWithCodehilite(TestCase):
 
