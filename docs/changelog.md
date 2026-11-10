@@ -24,6 +24,11 @@ See the [Contributing Guide](contributing.md) for details.
   placeholder instead of the text that preceded it.
 * Fix quadratic processing time in the `fenced_code` extension for documents
   with many fenced code blocks (#1660).
+* Stop list nesting short of the interpreter's recursion limit, as blockquote
+  nesting already is, instead of raising `RecursionError` on a deeply nested
+  list. The markers which no longer nest are kept as text (#1679).
+* Fix quadratic-time splitting of a list block whose items span many lines,
+  which dominated the time taken to render a deeply nested list.
 * Stop definition list nesting short of the recursion limit, so deeply nested
   definitions are kept as text instead of raising an uncaught
   `RecursionError` (#1700).
