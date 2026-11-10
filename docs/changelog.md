@@ -24,6 +24,9 @@ See the [Contributing Guide](contributing.md) for details.
   placeholder instead of the text that preceded it.
 * Fix quadratic processing time in the `fenced_code` extension for documents
   with many fenced code blocks (#1660).
+* Stop definition list nesting short of the recursion limit, so deeply nested
+  definitions are kept as text instead of raising an uncaught
+  `RecursionError` (#1700).
 
 ## [3.11.3] - 2026-11-05
 
