@@ -12,10 +12,18 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
-## [unreleased]
+## Unreleased
 
 ### Fixed
 
+* Fix for complex cases in new emphasis handling where text could be unexpectedly
+  dropped (#1694).
+* Fix rule of 3 handling in new emphasis handling where an opener skipped by the rule could still be paired
+  with the closer, dropping text.
+* Fix the unused part of a partially consumed closing delimiter run being classified using the replacement
+  placeholder instead of the text that preceded it.
+* Fix quadratic processing time in the `fenced_code` extension for documents
+  with many fenced code blocks (#1660).
 * Stop definition list nesting short of the recursion limit, so deeply nested
   definitions are kept as text instead of raising an uncaught
   `RecursionError` (#1700).
