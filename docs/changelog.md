@@ -12,6 +12,14 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
+## [unreleased]
+
+### Fixed
+
+* Stop definition list nesting short of the recursion limit, so deeply nested
+  definitions are kept as text instead of raising an uncaught
+  `RecursionError` (#1700).
+
 ## [3.11.3] - 2026-11-05
 
 ### Fixed

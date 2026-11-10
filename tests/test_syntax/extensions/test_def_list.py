@@ -340,7 +340,7 @@ class TestDefListNestingLimit(TestCase):
         self.assertIn('term', result)
 
     def test_deeply_nested_definitions_do_not_raise(self):
-        # Around 5 KB of input, which raised RecursionError before the limit was applied.
+        # Around 5 KB of input, which raised `RecursionError` before the limit was applied.
         result = markdown.markdown('term\n: definition\n' * 600, extensions=['def_list'])
 
         self.assertIn('<dl>', result)
