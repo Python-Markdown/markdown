@@ -24,6 +24,10 @@ See the [Contributing Guide](contributing.md) for details.
   placeholder instead of the text that preceded it.
 * Fix quadratic processing time in the `fenced_code` extension for documents
   with many fenced code blocks (#1660).
+* Reduce processing time for long blocks which are split into many smaller
+  blocks: the rest of the block is no longer scanned with a regular expression
+  for a hash header or an admonition when it cannot contain one, and Setext
+  headers no longer split and rejoin the rest of the block (#1703).
 * Stop list nesting short of the interpreter's recursion limit, as blockquote
   nesting already is, instead of raising `RecursionError` on a deeply nested
   list. The markers which no longer nest are kept as text (#1679).
