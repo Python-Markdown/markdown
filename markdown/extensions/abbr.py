@@ -159,19 +159,38 @@ class AbbrBlockprocessor(BlockProcessor):
         block = blocks.pop(0)
         m = self.RE.search(block)
         if m:
-            abbr = m.group('abbr').strip()
-            title = m.group('title').strip()
-            if title and abbr:
+            start = end = m.start()
+            # When the block starts with a definition, record the definitions on
+            # the following lines in this pass rather than one per pass through
+            # the block processors. A definition after the first is only taken if
+            # it fits on one line and is followed by another definition or the end
+            # of the block, as otherwise another processor may claim it together
+            # with the lines after it.
+            matches = [m]
+            while start == 0 and block.startswith('\n', m.end()):
+                m = self.RE.match(block, m.end() + 1)
+                if m is None or '\n' in m.group():
+                    break
+                matches.append(m)
+            if len(matches) > 1 and block[matches[-1].end():].strip():
+                matches.pop()
+            for m in matches:
+                abbr = m.group('abbr').strip()
+                title = m.group('title').strip()
+                if not (title and abbr):
+                    break
                 if title == "''" or title == '""':
                     self.abbrs.pop(abbr, None)
                 else:
                     self.abbrs[abbr] = title
-                if block[m.end():].strip():
+                end = m.end()
+            if end > start:
+                if block[end:].strip():
                     # Add any content after match back to blocks as separate block
-                    blocks.insert(0, block[m.end():].lstrip('\n'))
-                if block[:m.start()].strip():
+                    blocks.insert(0, block[end:].lstrip('\n'))
+                if block[:start].strip():
                     # Add any content before match back to blocks as separate block
-                    blocks.insert(0, block[:m.start()].rstrip('\n'))
+                    blocks.insert(0, block[:start].rstrip('\n'))
                 return True
         # No match. Restore block.
         blocks.insert(0, block)

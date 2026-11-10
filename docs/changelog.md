@@ -24,6 +24,8 @@ See the [Contributing Guide](contributing.md) for details.
   placeholder instead of the text that preceded it.
 * Fix quadratic processing time in the `fenced_code` extension for documents
   with many fenced code blocks (#1660).
+* Fix quadratic processing time for many consecutive abbreviation definitions
+  in the `abbr` extension, such as a glossary appended to every page.
 
 ## [3.11.3] - 2026-11-05
 
