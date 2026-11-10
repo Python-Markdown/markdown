@@ -843,6 +843,18 @@ Content Cell  |  
             extensions=['tables']
         )
 
+    def test_many_lines_in_one_block(self):
+        """
+        Testing a block for a table should only look at the first rows, as the
+        remainder of a long block can be tested once per line.
+        """
+        count = 5000
+        self.assertMarkdownRenders(
+            '# Header\n' * count,
+            '<h1>Header</h1>\n' * (count - 1) + '<h1>Header</h1>',
+            extensions=['tables']
+        )
+
     def test_align_columns_legacy(self):
         self.assertMarkdownRenders(
             self.dedent(
