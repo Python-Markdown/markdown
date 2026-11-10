@@ -611,7 +611,26 @@ class TestAbbr(TestCase):
             ),
             self.dedent(
                 """
-                <h1>*[HTML]: Hyper Text Markup Language</h1>
+                <p>===</p>
+                """
+            )
+        )
+
+    def test_three_abbr_definitions_before_setext_underline(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                *[ABBR]: Abbreviation
+                *[HTML]: Markup
+                *[CSS]: Styles
+                ===
+                ABBR, HTML and CSS
+                """
+            ),
+            self.dedent(
+                """
+                <p>===
+                <abbr title="Abbreviation">ABBR</abbr>, <abbr title="Markup">HTML</abbr> and <abbr title="Styles">CSS</abbr></p>
                 """
             )
         )

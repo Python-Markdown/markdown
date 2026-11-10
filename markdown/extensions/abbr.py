@@ -162,18 +162,13 @@ class AbbrBlockprocessor(BlockProcessor):
             start = end = m.start()
             # When the block starts with a definition, record the definitions on
             # the following lines in this pass rather than one per pass through
-            # the block processors. A definition after the first is only taken if
-            # it fits on one line and is followed by another definition or the end
-            # of the block, as otherwise another processor may claim it together
-            # with the lines after it.
+            # the block processors.
             matches = [m]
             while start == 0 and block.startswith('\n', m.end()):
                 m = self.RE.match(block, m.end() + 1)
                 if m is None or '\n' in m.group():
                     break
                 matches.append(m)
-            if len(matches) > 1 and block[matches[-1].end():].strip():
-                matches.pop()
             for m in matches:
                 abbr = m.group('abbr').strip()
                 title = m.group('title').strip()

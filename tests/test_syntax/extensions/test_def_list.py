@@ -19,7 +19,8 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
-from markdown.test_tools import TestCase
+import markdown
+from markdown.test_tools import TestCase, recursionlimit
 
 
 class TestDefList(TestCase):
@@ -320,4 +321,47 @@ class TestDefList(TestCase):
                 '''
             ),
             extensions=['def_list', 'admonition']
+        )
+
+
+class TestDefListNestingLimit(TestCase):
+
+    # A definition calls `parseBlocks` on its content, which can contain
+    # further definitions, so the nesting has to stop short of the
+    # interpreter's limit. The remaining markers are kept as text, the same
+    # way a blockquote or a list keeps its markers.
+
+    def test_nesting_stops_short_of_the_recursion_limit(self):
+        # Ten levels of definitions is more than the limit below allows to nest.
+        with recursionlimit(120):
+            result = markdown.markdown('term\n: definition\n' * 10, extensions=['def_list'])
+
+        self.assertLess(result.count('<dl>'), 10)
+        self.assertIn('term', result)
+
+    def test_deeply_nested_definitions_do_not_raise(self):
+        # Around 5 KB of input, which raised `RecursionError` before the limit was applied.
+        result = markdown.markdown('term\n: definition\n' * 600, extensions=['def_list'])
+
+        self.assertIn('<dl>', result)
+        self.assertIn('term', result)
+
+    def test_shallow_definition_nesting_still_nests(self):
+        self.assertMarkdownRenders(
+            'term\n: definition\nterm2\n: definition2',
+            self.dedent(
+                """
+                <dl>
+                <dt>term</dt>
+                <dd>
+                <dl>
+                <dt>definition</dt>
+                <dt>term2</dt>
+                <dd>definition2</dd>
+                </dl>
+                </dd>
+                </dl>
+                """
+            ),
+            extensions=['def_list']
         )
