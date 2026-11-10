@@ -461,7 +461,9 @@ class HashHeaderProcessor(BlockProcessor):
     RE = re.compile(r'(?:^|\n)(?P<level>#{1,6})(?P<header>(?:\\.|[^\\#]|#+(?=[^#\n]))*?)#*(?:\n|$)')
 
     def test(self, parent: etree.Element, block: str) -> bool:
-        return bool(self.RE.search(block))
+        # Check for a line starting with `#` before running the regex, which is
+        # slow to scan long blocks.
+        return (block.startswith('#') or '\n#' in block) and bool(self.RE.search(block))
 
     def run(self, parent: etree.Element, blocks: list[str]) -> None:
         block = blocks.pop(0)
@@ -500,7 +502,7 @@ class SetextHeaderProcessor(BlockProcessor):
         return bool(self.RE.match(block))
 
     def run(self, parent: etree.Element, blocks: list[str]) -> None:
-        lines = blocks.pop(0).split('\n')
+        lines = blocks.pop(0).split('\n', 2)
         # Determine level. `=` is 1 and `-` is 2.
         if lines[1].startswith('='):
             level = 1
@@ -510,7 +512,7 @@ class SetextHeaderProcessor(BlockProcessor):
         h.text = lines[0].strip()
         if len(lines) > 2:
             # Block contains additional lines. Add to  master blocks for later.
-            blocks.insert(0, '\n'.join(lines[2:]))
+            blocks.insert(0, lines[2])
 
 
 class HRProcessor(BlockProcessor):
