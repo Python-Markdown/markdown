@@ -620,8 +620,8 @@ class TestAbbr(TestCase):
         self.assertMarkdownRenders(
             self.dedent(
                 """
-                *[ABBR]: Abbreviation
-                *[HTML]: Markup
+                *[ABBR]: Abbr
+                *[HTML]: Mark
                 *[CSS]: Styles
                 ===
                 ABBR, HTML and CSS
@@ -630,7 +630,7 @@ class TestAbbr(TestCase):
             self.dedent(
                 """
                 <p>===
-                <abbr title="Abbreviation">ABBR</abbr>, <abbr title="Markup">HTML</abbr> and <abbr title="Styles">CSS</abbr></p>
+                <abbr title="Abbr">ABBR</abbr>, <abbr title="Mark">HTML</abbr> and <abbr title="Styles">CSS</abbr></p>
                 """
             )
         )
