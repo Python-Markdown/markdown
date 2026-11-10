@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from . import Extension
 from ..blockprocessors import BlockProcessor, ListIndentProcessor
+from .. import util
 import xml.etree.ElementTree as etree
 import re
 
@@ -34,7 +35,10 @@ class DefListProcessor(BlockProcessor):
     NO_INDENT_RE = re.compile(r'^[ ]{0,3}[^ :]')
 
     def test(self, parent: etree.Element, block: str) -> bool:
-        return bool(self.RE.search(block))
+        # A definition calls `parseBlocks` on its content, which can contain
+        # further definitions, so the nesting has to stop short of the
+        # interpreter's limit, as it does for blockquotes and lists.
+        return bool(self.RE.search(block)) and not util.nearing_recursion_limit()
 
     def run(self, parent: etree.Element, blocks: list[str]) -> bool | None:
 

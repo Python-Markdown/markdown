@@ -29,6 +29,9 @@ See the [Contributing Guide](contributing.md) for details.
   list. The markers which no longer nest are kept as text (#1679).
 * Fix quadratic-time splitting of a list block whose items span many lines,
   which dominated the time taken to render a deeply nested list.
+* Stop definition list nesting short of the recursion limit, so deeply nested
+  definitions are kept as text instead of raising an uncaught
+  `RecursionError` (#1700).
 
 ## [3.11.3] - 2026-11-05
 
