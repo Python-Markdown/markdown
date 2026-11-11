@@ -855,6 +855,110 @@ Content Cell  |  
             extensions=['tables']
         )
 
+    def test_table_after_header_in_same_block(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                # Table
+                | A | B |
+                |---|---|
+                | a | b |
+                """
+            ),
+            self.dedent(
+                """
+                <h1>Table</h1>
+                <table>
+                <thead>
+                <tr>
+                <th>A</th>
+                <th>B</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                <td>a</td>
+                <td>b</td>
+                </tr>
+                </tbody>
+                </table>
+                """
+            ),
+            extensions=['tables']
+        )
+
+    def test_no_table_after_paragraph_line_in_same_block(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Not a table
+                | A | B |
+                |---|---|
+                | a | b |
+                """
+            ),
+            self.dedent(
+                """
+                <p>Not a table
+                | A | B |
+                |---|---|
+                | a | b |</p>
+                """
+            ),
+            extensions=['tables']
+        )
+
+    def test_single_column_table_after_header_in_same_block(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                # Table
+                | A |
+                |---|
+                | a |
+                """
+            ),
+            self.dedent(
+                """
+                <h1>Table</h1>
+                <table>
+                <thead>
+                <tr>
+                <th>A</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                <td>a</td>
+                </tr>
+                </tbody>
+                </table>
+                """
+            ),
+            extensions=['tables']
+        )
+
+    def test_no_single_column_table_with_row_without_pipe(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                | A |
+                |---|
+                | a |
+                not a row
+                """
+            ),
+            self.dedent(
+                """
+                <p>| A |
+                |---|
+                | a |
+                not a row</p>
+                """
+            ),
+            extensions=['tables']
+        )
+
     def test_align_columns_legacy(self):
         self.assertMarkdownRenders(
             self.dedent(
