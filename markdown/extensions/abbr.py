@@ -157,22 +157,31 @@ class AbbrBlockprocessor(BlockProcessor):
 
         """
         block = blocks.pop(0)
-        m = self.RE.search(block)
-        if m:
+        start = end = -1
+        for m in self.RE.finditer(block):
+            # After the first definition, take only the definitions on the lines that
+            # directly follow it, so the rest of the block is parsed as before.
+            if end >= 0 and (m.start() != end + 1 or '\n' in m.group()):
+                break
             abbr = m.group('abbr').strip()
             title = m.group('title').strip()
-            if title and abbr:
-                if title == "''" or title == '""':
-                    self.abbrs.pop(abbr, None)
-                else:
-                    self.abbrs[abbr] = title
-                if block[m.end():].strip():
-                    # Add any content after match back to blocks as separate block
-                    blocks.insert(0, block[m.end():].lstrip('\n'))
-                if block[:m.start()].strip():
-                    # Add any content before match back to blocks as separate block
-                    blocks.insert(0, block[:m.start()].rstrip('\n'))
-                return True
+            if not (title and abbr):
+                break
+            if title == "''" or title == '""':
+                self.abbrs.pop(abbr, None)
+            else:
+                self.abbrs[abbr] = title
+            if start < 0:
+                start = m.start()
+            end = m.end()
+        if end >= 0:
+            if block[end:].strip():
+                # Add any content after match back to blocks as separate block
+                blocks.insert(0, block[end:].lstrip('\n'))
+            if block[:start].strip():
+                # Add any content before match back to blocks as separate block
+                blocks.insert(0, block[:start].rstrip('\n'))
+            return True
         # No match. Restore block.
         blocks.insert(0, block)
         return False

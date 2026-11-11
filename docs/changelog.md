@@ -36,6 +36,8 @@ See the [Contributing Guide](contributing.md) for details.
 * Stop definition list nesting short of the recursion limit, so deeply nested
   definitions are kept as text instead of raising an uncaught
   `RecursionError` (#1700).
+* Fix quadratic processing time for many consecutive abbreviation definitions
+  in the `abbr` extension, such as a glossary appended to every page (#1702).
 
 ## [3.11.3] - 2026-11-05
 

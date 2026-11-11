@@ -589,6 +589,52 @@ class TestAbbr(TestCase):
             )
         )
 
+    def test_many_abbr_definitions(self):
+        """
+        Consecutive definitions should be consumed together rather than returning
+        the remainder of the block to be parsed once per definition.
+        """
+        count = 10000
+        ext = AbbrExtension()
+        text = ''.join(f'*[ABBR{i}]: Abbreviation {i}\n' for i in range(count))
+        self.assertEqual(Markdown(extensions=[ext]).convert(text), '')
+        self.assertEqual(ext.abbrs, {f'ABBR{i}': f'Abbreviation {i}' for i in range(count)})
+
+    def test_abbr_definitions_before_setext_underline(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                *[ABBR]: Abbreviation
+                *[HTML]: Hyper Text Markup Language
+                ===
+                """
+            ),
+            self.dedent(
+                """
+                <p>===</p>
+                """
+            )
+        )
+
+    def test_three_abbr_definitions_before_setext_underline(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                *[ABBR]: Abbr
+                *[HTML]: Mark
+                *[CSS]: Styles
+                ===
+                ABBR, HTML and CSS
+                """
+            ),
+            self.dedent(
+                """
+                <p>===
+                <abbr title="Abbr">ABBR</abbr>, <abbr title="Mark">HTML</abbr> and <abbr title="Styles">CSS</abbr></p>
+                """
+            )
+        )
+
     def test_abbr_reset(self):
         ext = AbbrExtension()
         md = Markdown(extensions=[ext])
