@@ -36,6 +36,9 @@ See the [Contributing Guide](contributing.md) for details.
 * Stop definition list nesting short of the recursion limit, so deeply nested
   definitions are kept as text instead of raising an uncaught
   `RecursionError` (#1700).
+* Fix quadratic processing time in the `tables` extension for long blocks which
+  are split into many smaller blocks, such as many headers with no blank lines
+  between them (#1704).
 
 ## [3.11.3] - 2026-11-05
 

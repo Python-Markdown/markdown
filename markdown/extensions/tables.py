@@ -55,7 +55,9 @@ class TableProcessor(BlockProcessor):
         Keep border check and separator row do avoid repeating the work.
         """
         is_table = False
-        rows = [row.strip(' ') for row in block.split('\n')]
+        # Only the first two rows are needed in most cases. Splitting the whole
+        # block here would make every test linear in the size of the block.
+        rows = [row.strip(' ') for row in block.split('\n', 2)[:2]]
         if len(rows) > 1:
             header0 = rows[0]
             self.border = PIPE_NONE
@@ -69,10 +71,11 @@ class TableProcessor(BlockProcessor):
 
             # Each row in a single column table needs at least one pipe.
             if not is_table and row0_len == 1 and self.border:
-                for index in range(1, len(rows)):
-                    is_table = rows[index].startswith('|')
+                for row in block.split('\n')[1:]:
+                    row = row.strip(' ')
+                    is_table = row.startswith('|')
                     if not is_table:
-                        is_table = self.RE_END_BORDER.search(rows[index]) is not None
+                        is_table = self.RE_END_BORDER.search(row) is not None
                     if not is_table:
                         break
 
