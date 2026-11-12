@@ -16,6 +16,10 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* The `toc` extension no longer raises `TypeError` for a heading whose `id`
+  attribute is present but valueless, as the `attr_list` extension's
+  bare-attribute syntax (`{id}`) writes it: like a heading with no `id` at
+  all, it now gets a generated slug (#1705).
 * Fix for complex cases in new emphasis handling where text could be unexpectedly
   dropped (#1694).
 * Fix rule of 3 handling in new emphasis handling where an opener skipped by the rule could still be paired
