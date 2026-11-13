@@ -39,6 +39,8 @@ See the [Contributing Guide](contributing.md) for details.
 * Fix quadratic processing time in the `tables` extension for long blocks which
   are split into many smaller blocks, such as many headers with no blank lines
   between them (#1704).
+* Fix quadratic processing time for documents with many unclosed HTML start
+  tags, such as `a<b` with no `>` after it.
 
 ## [3.11.3] - 2026-11-05
 

@@ -88,6 +88,20 @@ htmlparser.locatetagend = re.compile(r"""
    >?
 """, re.VERBOSE)
 
+# The parts of `locatetagend` as matched one at a time by `HTMLExtractor.check_for_whole_start_tag`:
+# the tag name and the whitespace after it, and then each attribute and the whitespace after it.
+tagname_re = re.compile(r'([a-zA-Z][^`\t\n\r\f />]*)[\t\n\r\f /]*')
+attr_re = re.compile(r"""
+  (?<=['"\t\n\r\f /])[^`\t\n\r\f />][^\t\n\r\f /=>]*  # attribute name
+  (?:=                            # value indicator
+    (?:'[^']*'                    # LITA-enclosed value
+      |"[^"]*"                    # LIT-enclosed value
+      |(?!['"])[^>\t\n\r\f ]*     # bare value
+     )
+   )?
+  [\t\n\r\f /]*                   # possibly followed by a space
+""", re.VERBOSE)
+
 # Match a blank line at the start of a block of text (two newlines).
 # The newlines may be preceded by additional whitespace.
 blank_line_re = re.compile(r'^([ ]*\n){2}')
@@ -160,6 +174,9 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.lineno_start_cache = [0]
         # The `rawdata` and position of the last failed search for a comment close.
         self._no_commentclose: tuple[str | None, int] = (None, 0)
+        # The `rawdata`, the start and end of the tag name of the last unclosed start tag, and the
+        # positions from which the attributes of a start tag are known to run out without a closing `>`.
+        self._unclosed_tag: tuple[str | None, int, int, set[int]] = (None, 0, 0, set())
 
         super().reset()
 
@@ -401,6 +418,37 @@ class HTMLExtractor(htmlparser.HTMLParser):
             return -1
         self.handle_empty_tag(self.rawdata[i:pos], is_block=False)
         return pos
+
+    def check_for_whole_start_tag(self, i: int) -> int:
+        """
+        Return the end of the start tag at `i`, or `-1` if it has no closing `>`.
+
+        This matches the same text as `locatetagend`, one attribute at a time. An unclosed start tag is
+        passed through as text, so each `<` within it is checked next. To avoid scanning the rest of the
+        text again for each of those, remember where the last unclosed tag name ends and where attributes
+        are known to run out without a closing `>`.
+        """
+        rawdata = self.rawdata
+        if self._unclosed_tag[0] is not rawdata:
+            self._unclosed_tag = (rawdata, 0, 0, set())
+        _, name_start, name_end, unclosed = self._unclosed_tag
+        if name_start <= i + 1 < name_end:
+            # This tag name ends where the unclosed one does, so the rest is the same.
+            return -1
+        name = tagname_re.match(rawdata, i + 1)
+        j = name.end()
+        seen = []
+        while j not in unclosed:
+            seen.append(j)
+            m = attr_re.match(rawdata, j)
+            if not m:
+                if rawdata.startswith('>', j):
+                    return j + 1
+                break
+            j = m.end()
+        unclosed.update(seen)
+        self._unclosed_tag = (rawdata, i + 1, name.end(1), unclosed)
+        return -1
 
     # The rest has been copied from base class in standard lib to address #1036.
     # As `__startag_text` is private, all references to it must be in this subclass.
