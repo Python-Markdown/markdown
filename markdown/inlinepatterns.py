@@ -1011,6 +1011,12 @@ class LinkInlineProcessor(InlineProcessor):
     RE_LINK = re.compile(r'''\(\s*(?:(<[^<>]*>)\s*(?:('[^']*'|"[^"]*")\s*)?\))?''', re.DOTALL | re.UNICODE)
     RE_TITLE_CLEAN = re.compile(r'\s')
 
+    def __init__(self, pattern: str, md: Markdown | None = None):
+        super().__init__(pattern, md)
+        # The text `getText` last saw and the closing bracket for each index of it.
+        self._bracket_data: str | None = None
+        self._bracket_ends: list[int | None] = []
+
     def handleMatch(self, m: re.Match[str], data: str) -> tuple[etree.Element | None, int | None, int | None]:
         """ Return an `a` [`Element`][xml.etree.ElementTree.Element] or `(None, None, None)`. """
         text, index, handled = self.getText(data, m.end(0))
@@ -1155,7 +1161,7 @@ class LinkInlineProcessor(InlineProcessor):
         """
         # Scanning forward from every `[` is quadratic when the brackets do not
         # close, so find the closing bracket for every index of `data` at once.
-        if getattr(self, '_bracket_data', None) is not data:
+        if self._bracket_data is not data:
             self._bracket_data = data
             self._bracket_ends = self._findBracketEnds(data)
         end = self._bracket_ends[index]
