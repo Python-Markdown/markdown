@@ -130,7 +130,10 @@ class AdmonitionProcessor(BlockProcessor):
 
     def test(self, parent: etree.Element, block: str) -> bool:
 
-        if self.RE.search(block):
+        # Check for the marker before running the regex, which is slow to scan
+        # long blocks. Blocks which other processors split one line at a time
+        # get tested again and again.
+        if '!!!' in block and self.RE.search(block):
             return True
         else:
             return self.parse_content(parent, block)[0] is not None

@@ -161,6 +161,17 @@ class TestSetextHeaders(TestCase):
             )
         )
 
+    def test_many_setext_headers_in_one_block(self):
+        """
+        Each header returns the rest of the block to be parsed again, so testing
+        the rest of the block for other kinds of headers should not rescan it.
+        """
+        count = 2000
+        self.assertMarkdownRenders(
+            'Header\n------\n' * count,
+            '<h2>Header</h2>\n' * (count - 1) + '<h2>Header</h2>'
+        )
+
     @unittest.skip('This is broken in Python-Markdown')
     def test_p_followed_by_setext_h1(self):
         self.assertMarkdownRenders(
