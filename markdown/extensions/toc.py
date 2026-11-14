@@ -400,7 +400,10 @@ class TocTreeprocessor(Treeprocessor):
                 name = strip_tags(innerhtml)
 
                 # Do not override pre-existing ids
-                if "id" not in el.attrib:
+                if not el.attrib.get("id"):
+                    # The `attr_list` extension writes bare attributes with a
+                    # value of None. A valueless id is no id at all, so a slug
+                    # is generated for it like for any other id-less heading.
                     el.attrib["id"] = unique(self.slugify(html.unescape(name), self.sep), used_ids, id_counters)
 
                 data_toc_label = ''
