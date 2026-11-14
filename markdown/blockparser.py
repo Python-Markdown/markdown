@@ -96,6 +96,8 @@ class BlockParser:
         self.blockprocessors: util.Registry[BlockProcessor] = util.Registry()
         self.state = State()
         self.md = md
+        # The parent of each call to `parseBlocks` in progress, outermost first.
+        self._frames: list[etree.Element] = []
 
     def parseDocument(self, lines: Iterable[str]) -> etree.ElementTree:
         """ Parse a Markdown document into an `ElementTree`.
@@ -113,6 +115,7 @@ class BlockParser:
             An element tree.
         """
         # Create an `ElementTree` from the lines
+        self._frames = []
         self.root = etree.Element(self.md.doc_tag)
         self.parseChunk(self.root, '\n'.join(lines))
         return etree.ElementTree(self.root)
@@ -147,14 +150,33 @@ class BlockParser:
         additional `BlockProcessors` which call this method to recursively
         parse a nested block.
 
+        Once the blocks are parsed, this calls each processor's
+        [`end_blocks`][markdown.blockprocessors.BlockProcessor.end_blocks] (for a
+        nested call) or [`finish`][markdown.blockprocessors.BlockProcessor.finish]
+        (for the outermost call), so that a processor can release blocks it holds.
+        A subclass which overrides this method must call it to parse the blocks;
+        otherwise, held blocks are never released and their content is lost.
+
         Arguments:
             parent: The parent element.
             blocks: The blocks of text to parse.
 
         """
-        while blocks:
+        self._frames.append(parent)
+        try:
+            while blocks:
+                for processor in self.blockprocessors:
+                    if processor.test(parent, blocks[0]):
+                        if processor.run(parent, blocks) is not False:
+                            # run returns True or None
+                            break
+        finally:
+            self._frames.pop()
+        if self._frames:
+            # The caller may do as it likes with `parent` from here on.
             for processor in self.blockprocessors:
-                if processor.test(parent, blocks[0]):
-                    if processor.run(parent, blocks) is not False:
-                        # run returns True or None
-                        break
+                processor.end_blocks(parent)
+        else:
+            # The outermost call is done, so nothing more will be handed to a processor for these parents.
+            for processor in self.blockprocessors:
+                processor.finish()

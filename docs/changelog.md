@@ -14,6 +14,28 @@ See the [Contributing Guide](contributing.md) for details.
 
 ## Unreleased
 
+### Added
+
+* Add the `finish` and `end_blocks` methods to `BlockProcessor`, which the
+  block parser calls when its outermost call is done and when a nested call is
+  done. A block processor which holds on to blocks until a later call to the
+  parser must release them there. Content held for a nested block, such as an
+  unclosed raw HTML block in a list item, may be added to it after the call to
+  `parseChunk` which parsed it has returned.
+
+### Changed
+
+* Recognize raw HTML blocks nested in a list item, definition, blockquote,
+  admonition or footnote as at the top level of the document, rather than
+  parsing them as Markdown and splitting them into paragraphs at blank lines
+  (#1096). As at the top level, Markdown is no longer parsed within such a
+  block, unless the `md_in_html` extension is enabled and the element has a
+  `markdown` attribute, which is now supported in those places too. Unlike at
+  the top level, a nested raw HTML block must start a block of its own and
+  cannot interrupt a paragraph, and an unclosed tag runs to the end of the
+  nesting block rather than of the document. See
+  [Raw HTML Blocks](index.md#differences) for details.
+
 ### Fixed
 
 * Fix for complex cases in new emphasis handling where text could be unexpectedly

@@ -43,6 +43,7 @@ def build_block_parser(md: Markdown, **kwargs: Any) -> BlockParser:
     """ Build the default block parser used by Markdown. """
     parser = BlockParser(md)
     parser.blockprocessors.register(EmptyBlockProcessor(parser), 'empty', 100)
+    parser.blockprocessors.register(RawHtmlBlockProcessor(parser), 'rawhtml', 95)
     parser.blockprocessors.register(ListIndentProcessor(parser), 'indent', 90)
     parser.blockprocessors.register(CodeBlockProcessor(parser), 'code', 80)
     parser.blockprocessors.register(HashHeaderProcessor(parser), 'hashheader', 70)
@@ -148,6 +149,239 @@ class BlockProcessor:
             blocks: A list of all remaining blocks of the document.
         """
         pass  # pragma: no cover
+
+    def finish(self) -> None:
+        """ Called when the outermost call to the parser is done. Does nothing unless overridden.
+
+        A processor which holds on to blocks, to decide what to do with them once it has seen the next, must
+        release them here: this is the last the parser will hand it for the parents involved.
+        """
+        pass
+
+    def end_blocks(self, parent: etree.Element) -> None:
+        """ Called when a nested call to the parser that parsed blocks into `parent` is done. Does nothing unless
+        overridden.
+
+        The caller may do as it likes with `parent` and what was parsed into it once the call returns. A processor
+        which holds on to blocks until a later call, and can not be sure there will be one, must release them here.
+        """
+        pass
+
+
+class HeldBlocks(list):
+    """
+    Blocks which are held back until it is known whether they are raw HTML, the parser state they are in, and what
+    ends the construct they start.
+    """
+
+    def __init__(self, blocks: list[str], state: list, terminator: re.Pattern[str]):
+        super().__init__(blocks)
+        self.state = list(state)
+        self.terminator = terminator
+
+
+class RawHtmlBlockProcessor(BlockProcessor):
+    """
+    Extract raw HTML blocks nested in a container.
+
+    The preprocessor can only extract a raw block that is at the start of a line. Within a container (a list item,
+    an admonition, a blockquote, etc.) the block is indented or quoted, which can not be told apart from an indented
+    code block or a paragraph until the container has removed its indentation or markers. At that point the block
+    starts a block of text and is extracted here.
+
+    Containers pass their content on a block at a time, so a raw block with blank lines in it is collected across
+    calls until it is closed. Anything still open when the parser is done is handled in
+    [`finish`][markdown.blockprocessors.RawHtmlBlockProcessor.finish].
+    """
+
+    START_RE = re.compile(r'^[ ]{0,3}(?:<!--|<\?|<![A-Za-z\[]|<([A-Za-z][\w:-]*))')
+    # Constructs which the extractor can not be given a piece at a time: a comment, processing instruction, `CDATA`
+    # section or declaration, and what ends each of them.
+    UNTERMINATED_RE = re.compile(r'^[ ]{0,3}(?:(<!--)|(<\?)|(<!\[CDATA\[)|(<![A-Za-z\[]))')
+    TERMINATORS = (re.compile(r'--!?>'), re.compile(r'>'), re.compile(r']]>'), re.compile(r'>'))
+
+    def __init__(self, parser: BlockParser):
+        super().__init__(parser)
+        self.extractor = None
+        # Per container: the extractor of a raw block that is still open, or the blocks of a comment that is.
+        self.open: dict[etree.Element, Any] = {}
+        self.flushing = False
+        self._root: etree.Element | None = None
+        # Per container with an open block: the index, in the parser's calls in progress, of the outermost call
+        # parsing into an element the container is on the last-child path of. The block is held until that call is
+        # done. See [`end_blocks`][markdown.blockprocessors.RawHtmlBlockProcessor.end_blocks].
+        self.anchors: dict[etree.Element, int] = {}
+
+    def get_extractor(self):
+        """ Get an extractor to collect a raw block with. """
+        from .htmlparser import HTMLExtractor
+        return (self.extractor or HTMLExtractor)(self.parser.md)
+
+    def starts_raw(self, block: str) -> bool:
+        """ Does `block` start with something the HTML extractor treats as a raw block? """
+        m = self.START_RE.match(block)
+        return bool(m) and (m.group(1) is None or self.parser.md.is_block_level(m.group(1).lower()))
+
+    def test(self, parent: etree.Element, block: str) -> bool:
+        """ Is this the start of a raw block, or a block of one that is still open in `parent`? """
+        if self.flushing:
+            return False
+        root = getattr(self.parser, 'root', None)
+        if self._root is not root:
+            # A new document. Discard anything a document that failed to parse left behind.
+            self._root = root
+            self.open = {}
+            self.anchors = {}
+        if parent in self.open:
+            return True
+        # What follows the marker of a list item or definition is no different: a raw block there is extracted
+        # like one in any later block of the item.
+        return self.starts_raw(block)
+
+    def unterminated(self, text: str) -> re.Pattern[str] | None:
+        """
+        If `text` starts a comment, processing instruction, `CDATA` section or declaration it does not end, get
+        what would end it.
+        """
+        m = self.UNTERMINATED_RE.match(text)
+        if m is None:
+            return None
+        terminator = self.TERMINATORS[m.lastindex - 1]
+        return None if terminator.search(text, m.end()) else terminator
+
+    @staticmethod
+    def closed(extractor) -> bool:
+        """ Has the extractor closed everything it has been fed? """
+        return not extractor.inraw and not getattr(extractor, 'mdstack', None)
+
+    def run(self, parent: etree.Element, blocks: list[str]) -> bool | None:
+        """ Feed the block to the extractor and, once the raw block is closed, replace it with its placeholder. """
+        block = blocks.pop(0)
+        original = [block]
+        extractor = self.open.get(parent)
+        # A line split off from the block it is in, rather than a block of its own.
+        line = False
+        if parent.tag == 'li' and (self.parser.state.isstate('list') or self.parser.state.isstate('looselist')):
+            # The first block of a list item is handed on as it is, without the indent of the lines after the first
+            # removed as it is from the item's later blocks, and with each indented nested item split off from it.
+            line = extractor is not None and block.startswith(' ' * self.tab_length)
+            block = self.looseDetab(block)
+        if isinstance(extractor, HeldBlocks):
+            # A comment (or similar) with a blank line in it. The extractor is given nothing until it is closed.
+            if line:
+                extractor[-1] += '\n' + block
+            else:
+                extractor.append(block)
+            # No terminator has a newline in it, so one can not span blocks: only the new block needs searching.
+            # Searching (or joining) everything held for each block would take quadratic time.
+            if not extractor.terminator.search(block):
+                return True
+            original = list(extractor)
+            block = '\n\n'.join(original)
+            del self.open[parent]
+            self.anchors.pop(parent, None)
+            extractor = None
+        elif extractor is None and parent is not self.parser.root:
+            terminator = self.unterminated(block)
+            if terminator is not None:
+                self.open[parent] = HeldBlocks(original, self.parser.state, terminator)
+                return True
+        if extractor is None:
+            extractor = self.get_extractor()
+            feed = block
+        else:
+            feed = ('\n' if line else '\n\n') + block
+        extractor.feed(feed)
+        if not self.closed(extractor):
+            self.open[parent] = extractor
+            return True
+        self.open.pop(parent, None)
+        self.anchors.pop(parent, None)
+        result = self.collect(extractor)
+        if result == block.strip('\n').split('\n\n'):
+            # Not something the extractor treats as raw HTML (a bogus comment, for example)
+            blocks[0:0] = original
+            return False
+        for i in range(1, len(result)):
+            if result[i][:1] in (' ', '\t') and util.HTML_PLACEHOLDER_RE.search(result[i - 1]):
+                # Text on the line a raw block ends on keeps the whitespace before it. At the top of the document
+                # its paragraph strips that, but the text of a tight list item is not a paragraph, so strip it here.
+                # Text on a later line (which starts with a newline) is left alone: it may be an indented code block.
+                result[i] = result[i].lstrip(' \t')
+        blocks[0:0] = result
+        return True
+
+    @staticmethod
+    def collect(extractor) -> list[str]:
+        """ Get the blocks that replace the text fed to the extractor. """
+        extractor.close()
+        return ''.join(extractor.cleandoc).strip('\n').split('\n\n')
+
+    def anchor(self, parent: etree.Element) -> int | None:
+        """
+        Find the outermost call in progress which a later call can be counted on to hand `parent` more blocks for:
+        one parsing into an element `parent` is on the last-child path of. A container that will be handed more
+        blocks is at the end of what has been parsed so far, so it is on that path for every call it is nested in.
+        An element an extension parses into on its own (to move what is parsed somewhere else, for example) is only
+        on it for the calls the extension makes.
+        """
+        for index, el in enumerate(self.parser._frames):
+            while True:
+                if el is parent:
+                    return index
+                if not len(el):
+                    break
+                el = el[-1]
+        return None
+
+    def end_blocks(self, parent: etree.Element) -> None:
+        """ Release each open block which no call still in progress can be counted on to hand more blocks to. """
+        if self.flushing or not self.open:
+            return
+        depth = len(self.parser._frames)
+        for container in list(self.open):
+            index = self.anchors.get(container)
+            if index is None or index >= depth:
+                # Not anchored yet, or anchored to a call which is done: look again among the calls in progress.
+                index = self.anchor(container)
+            if index is not None:
+                self.anchors[container] = index
+                continue
+            # The caller may do anything with what this call parsed once it returns, so the content must be in place
+            # by then. The block was held for the container this call parsed into, in the state it is still in.
+            self.anchors.pop(container, None)
+            self.flush(container, self.open.pop(container), keep_state=container is parent)
+
+    def flush(self, parent: etree.Element, item: Any, keep_state: bool = False) -> None:
+        """ Parse a raw block which was never closed, or a comment which was not, into `parent`. """
+        state = self.parser.state
+        self.flushing = True
+        try:
+            if isinstance(item, HeldBlocks) and not keep_state:
+                # Parse the blocks as they would have been had they never been held. A list item hands the
+                # blocks of its content on one at a time, each in its own `detabbed` state, so they are not
+                # parsed in that state all at once.
+                saved = list(state)
+                state[:] = [name for name in item.state if name != 'detabbed']
+                try:
+                    self.parser.parseBlocks(parent, list(item))
+                finally:
+                    state[:] = saved
+            elif isinstance(item, HeldBlocks):
+                self.parser.parseBlocks(parent, list(item))
+            else:
+                self.parser.parseBlocks(parent, self.collect(item))
+        finally:
+            self.flushing = False
+
+    def finish(self) -> None:
+        """ Parse what is left in each container: a raw block which was never closed, or a comment which was not. """
+        if not self.open:
+            return
+        pending, self.open = self.open, {}
+        self.anchors = {}
+        for parent, item in pending.items():
+            self.flush(parent, item)
 
 
 class ListIndentProcessor(BlockProcessor):

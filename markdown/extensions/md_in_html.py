@@ -341,7 +341,16 @@ class MarkdownInHtmlProcessor(BlockProcessor):
             if element.text:
                 block = element.text.rstrip('\n')
                 element.text = ''
-                self.parser.parseBlocks(element, block.split('\n\n'))
+                # Parse the content as it would be at the top of the document, whatever container the element
+                # is in: the state of a list item (a `list` item's text has no `p`, for example) does not carry
+                # over into the element.
+                state = self.parser.state
+                saved = list(state)
+                state[:] = []
+                try:
+                    self.parser.parseBlocks(element, block.split('\n\n'))
+                finally:
+                    state[:] = saved
 
         elif md_attr == 'span':
             # Span elements need to be recursively processed for block elements and raw HTML
@@ -446,6 +455,7 @@ class MarkdownInHtmlExtension(Extension):
         # flake8: noqa: E501 429-433
         # Replace raw HTML preprocessor
         md.preprocessors.register(HtmlBlockPreprocessor(md), 'html_block', 20)
+        md.parser.blockprocessors['rawhtml'].extractor = HTMLExtractorExtra
         # Add `blockprocessor` which handles the placeholders for `etree` elements
         md.parser.blockprocessors.register(
             MarkdownInHtmlProcessor(md.parser), 'markdown_block', 105
