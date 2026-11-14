@@ -3735,6 +3735,7 @@ class TestHeldConstructs(TestCase):
             '<ul>\n<li>\n<p>item</p>\n<p>&lt;!--</p>\n' + '<p>para</p>\n' * count + '</li>\n</ul>'
         )
 
+
 class TestListItemFirstBlock(TestCase):
     """
     A raw block right after the marker of a list item, or the colon of a definition, is extracted like one in any
