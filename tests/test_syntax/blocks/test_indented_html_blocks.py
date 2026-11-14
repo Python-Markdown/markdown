@@ -3655,3 +3655,82 @@ class TestTemporaryParent(TestCase):
             ),
             extensions=[SectionExtension()]
         )
+
+
+class TestHeldConstructs(TestCase):
+    """
+    A comment, processing instruction, `CDATA` section or declaration with a blank line in it is held a block at a
+    time until it is ended. No terminator has a newline in it, so only each new block is searched for one.
+    """
+
+    def test_comment_ended_blocks_later(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - item
+
+                    <!-- a
+
+                    b
+
+                    c --> after
+
+                    para
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <p>item</p>
+                <!-- a
+
+                b
+
+                c -->
+                <p>after</p>
+                <p>para</p>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_processing_instruction_ended_blocks_later(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - item
+
+                    <?php a
+
+                    b ?>
+
+                    para
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <p>item</p>
+                <?php a
+
+                b ?>
+                <p>para</p>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_many_blocks_in_unterminated_comment(self):
+        """
+        Each block held for an unterminated comment should only be searched for a terminator itself, as searching
+        everything held so far for each block takes quadratic time.
+        """
+        count = 5000
+        self.assertMarkdownRenders(
+            '- item\n\n    <!--\n\n' + '    para\n\n' * count,
+            '<ul>\n<li>\n<p>item</p>\n<p>&lt;!--</p>\n' + '<p>para</p>\n' * count + '</li>\n</ul>'
+        )

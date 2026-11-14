@@ -169,11 +169,15 @@ class BlockProcessor:
 
 
 class HeldBlocks(list):
-    """ Blocks which are held back until it is known whether they are raw HTML, and the parser state they are in. """
+    """
+    Blocks which are held back until it is known whether they are raw HTML, the parser state they are in, and what
+    ends the construct they start.
+    """
 
-    def __init__(self, blocks: list[str], state: list):
+    def __init__(self, blocks: list[str], state: list, terminator: re.Pattern[str]):
         super().__init__(blocks)
         self.state = list(state)
+        self.terminator = terminator
 
 
 class RawHtmlBlockProcessor(BlockProcessor):
@@ -235,10 +239,16 @@ class RawHtmlBlockProcessor(BlockProcessor):
             return False
         return self.starts_raw(block)
 
-    def unterminated(self, text: str) -> bool:
-        """ Does `text` start a comment, processing instruction, `CDATA` section or declaration it does not end? """
+    def unterminated(self, text: str) -> re.Pattern[str] | None:
+        """
+        If `text` starts a comment, processing instruction, `CDATA` section or declaration it does not end, get
+        what would end it.
+        """
         m = self.UNTERMINATED_RE.match(text)
-        return bool(m) and not self.TERMINATORS[m.lastindex - 1].search(text, m.end())
+        if m is None:
+            return None
+        terminator = self.TERMINATORS[m.lastindex - 1]
+        return None if terminator.search(text, m.end()) else terminator
 
     @staticmethod
     def closed(extractor) -> bool:
@@ -253,16 +263,20 @@ class RawHtmlBlockProcessor(BlockProcessor):
         if isinstance(extractor, HeldBlocks):
             # A comment (or similar) with a blank line in it. The extractor is given nothing until it is closed.
             extractor.append(block)
+            # No terminator has a newline in it, so one can not span blocks: only the new block needs searching.
+            # Searching (or joining) everything held for each block would take quadratic time.
+            if not extractor.terminator.search(block):
+                return True
             original = list(extractor)
             block = '\n\n'.join(original)
-            if self.unterminated(block):
-                return True
             del self.open[parent]
             self.anchors.pop(parent, None)
             extractor = None
-        elif extractor is None and parent is not self.parser.root and self.unterminated(block):
-            self.open[parent] = HeldBlocks(original, self.parser.state)
-            return True
+        elif extractor is None and parent is not self.parser.root:
+            terminator = self.unterminated(block)
+            if terminator is not None:
+                self.open[parent] = HeldBlocks(original, self.parser.state, terminator)
+                return True
         if extractor is None:
             extractor = self.get_extractor()
             feed = block
