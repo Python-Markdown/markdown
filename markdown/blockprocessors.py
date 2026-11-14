@@ -234,9 +234,8 @@ class RawHtmlBlockProcessor(BlockProcessor):
             self.anchors = {}
         if parent in self.open:
             return True
-        if self.parser.state.isstate('list') or self.parser.state.isstate('looselist'):
-            # What follows the marker of a list item or definition is parsed as it always has been.
-            return False
+        # What follows the marker of a list item or definition is no different: a raw block there is extracted
+        # like one in any later block of the item.
         return self.starts_raw(block)
 
     def unterminated(self, text: str) -> re.Pattern[str] | None:
@@ -260,9 +259,19 @@ class RawHtmlBlockProcessor(BlockProcessor):
         block = blocks.pop(0)
         original = [block]
         extractor = self.open.get(parent)
+        # A line split off from the block it is in, rather than a block of its own.
+        line = False
+        if parent.tag == 'li' and (self.parser.state.isstate('list') or self.parser.state.isstate('looselist')):
+            # The first block of a list item is handed on as it is, without the indent of the lines after the first
+            # removed as it is from the item's later blocks, and with each indented nested item split off from it.
+            line = extractor is not None and block.startswith(' ' * self.tab_length)
+            block = self.looseDetab(block)
         if isinstance(extractor, HeldBlocks):
             # A comment (or similar) with a blank line in it. The extractor is given nothing until it is closed.
-            extractor.append(block)
+            if line:
+                extractor[-1] += '\n' + block
+            else:
+                extractor.append(block)
             # No terminator has a newline in it, so one can not span blocks: only the new block needs searching.
             # Searching (or joining) everything held for each block would take quadratic time.
             if not extractor.terminator.search(block):
@@ -281,7 +290,7 @@ class RawHtmlBlockProcessor(BlockProcessor):
             extractor = self.get_extractor()
             feed = block
         else:
-            feed = '\n\n' + block
+            feed = ('\n' if line else '\n\n') + block
         extractor.feed(feed)
         if not self.closed(extractor):
             self.open[parent] = extractor

@@ -3734,3 +3734,378 @@ class TestHeldConstructs(TestCase):
             '- item\n\n    <!--\n\n' + '    para\n\n' * count,
             '<ul>\n<li>\n<p>item</p>\n<p>&lt;!--</p>\n' + '<p>para</p>\n' * count + '</li>\n</ul>'
         )
+
+class TestListItemFirstBlock(TestCase):
+    """
+    A raw block right after the marker of a list item, or the colon of a definition, is extracted like one in any
+    later block of the item.
+    """
+
+    def test_tight_list_item(self):
+        """A raw block right after the marker of a tight list item."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - <div>*x*</div>
+                - two
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li><div>*x*</div></li>
+                <li>two</li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_loose_list_item(self):
+        """A raw block right after the marker of a loose list item."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - <div>*x*</div>
+
+                - two
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <div>*x*</div>
+                </li>
+                <li>
+                <p>two</p>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_ordered_list_item(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                1. <p>*x*</p>
+                2. two
+                '''
+            ),
+            self.dedent(
+                '''
+                <ol>
+                <li><p>*x*</p></li>
+                <li>two</li>
+                </ol>
+                '''
+            )
+        )
+
+    def test_nested_list_item(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - a
+                    - <div>*x*</div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>a<ul>
+                <li><div>*x*</div></li>
+                </ul>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_text_after_raw_block(self):
+        """Text after the raw block on its line is parsed as Markdown, as in any other block."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - <div>a</div> tail *em*
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li><div>a</div>
+                 tail <em>em</em></li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_same_as_later_block(self):
+        """The first block of an item gives the same raw block as a later block of it."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - <div>a</div>
+
+                    <div>b</div>
+
+                    para *x*
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <div>a</div>
+                <div>b</div>
+                <p>para <em>x</em></p>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_blank_line_in_raw_block(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - <div>
+
+                    *x*
+
+                    </div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <div>
+
+                *x*
+
+                </div>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_indent_removed_from_lines_after_first(self):
+        """The lines after the first lose the indent of the item, as those of a later block do."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - <pre>
+                    code
+                      more
+                    </pre>
+
+                    <pre>
+                    code
+                      more
+                    </pre>
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <pre>
+                code
+                  more
+                </pre>
+                <pre>
+                code
+                  more
+                </pre>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_nested_item_line_in_comment(self):
+        """An indented nested item line is split off from the block, but rejoined to the comment it is in."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - <!-- a
+                    - b
+
+                    c -->
+
+                - d
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <!-- a
+                - b
+
+                c -->
+                </li>
+                <li>
+                <p>d</p>
+                </li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_definition(self):
+        """A raw block right after the colon of a definition."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                Term
+                :   <div>*x*</div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <dl>
+                <dt>Term</dt>
+                <dd><div>*x*</div></dd>
+                </dl>
+                '''
+            ),
+            extensions=['def_list']
+        )
+
+    def test_loose_definition(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                Term
+
+                :   <div>*x*</div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <dl>
+                <dt>Term</dt>
+                <dd>
+                <div>*x*</div>
+                </dd>
+                </dl>
+                '''
+            ),
+            extensions=['def_list']
+        )
+
+    def test_definition_indent(self):
+        """The rest of a definition is already detabbed, so the indent is removed only once."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                Term
+                :   <pre>
+                    code
+                      more
+                    </pre>
+                '''
+            ),
+            self.dedent(
+                '''
+                <dl>
+                <dt>Term</dt>
+                <dd><pre>
+                code
+                  more
+                </pre></dd>
+                </dl>
+                '''
+            ),
+            extensions=['def_list']
+        )
+
+    def test_md_in_html_tight_list_item(self):
+        """Parsed as it would be at the top of the document: a tight item's text has no `p`, but this does."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - <div markdown="1">*x*</div>
+                - two
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <div>
+                <p><em>x</em></p>
+                </div>
+                </li>
+                <li>two</li>
+                </ul>
+                '''
+            ),
+            extensions=['md_in_html']
+        )
+
+    def test_md_in_html_indented_content(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - <div markdown="1">
+                    *x*
+
+                    para
+                    </div>
+
+                - two
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <div>
+                <p><em>x</em></p>
+                <p>para</p>
+                </div>
+                </li>
+                <li>
+                <p>two</p>
+                </li>
+                </ul>
+                '''
+            ),
+            extensions=['md_in_html']
+        )
+
+    def test_md_in_html_definition(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                Term
+                :   <div markdown="1">*x*</div>
+                '''
+            ),
+            self.dedent(
+                '''
+                <dl>
+                <dt>Term</dt>
+                <dd>
+                <div>
+                <p><em>x</em></p>
+                </div>
+                </dd>
+                </dl>
+                '''
+            ),
+            extensions=['md_in_html', 'def_list']
+        )
