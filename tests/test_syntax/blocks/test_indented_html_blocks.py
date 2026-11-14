@@ -3540,3 +3540,118 @@ class TestTemporaryParent(TestCase):
             ),
             extensions=[SectionExtension()]
         )
+
+    def test_nested_list_raw_block_with_blank_line(self):
+        """A list item in the element is handed its blocks a call at a time; the raw block is collected across them."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ::: section
+                    - one
+
+                        <div>
+                        a
+
+                        b
+                        </div>
+
+                    - two
+
+                        text
+
+                after
+                '''
+            ),
+            self.dedent(
+                '''
+                <section>
+                <ul>
+                <li>
+                <p>one</p>
+                <div>
+                a
+
+                b
+                </div>
+                </li>
+                <li>
+                <p>two</p>
+                <p>text</p>
+                </li>
+                </ul>
+                </section>
+                <p>after</p>
+                '''
+            ),
+            extensions=[SectionExtension()]
+        )
+
+    def test_nested_list_unclosed_raw_block(self):
+        """Held for the list item until the call parsing into the element is done, then written out in it."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ::: section
+                    - item
+
+                        <div>
+                        unclosed
+
+                        kept
+
+                after
+                '''
+            ),
+            self.dedent(
+                '''
+                <section>
+                <ul>
+                <li>
+                <p>item</p>
+                <div>
+                unclosed
+
+                kept
+                </li>
+                </ul>
+                </section>
+                <p>after</p>
+                '''
+            ),
+            extensions=[SectionExtension()]
+        )
+
+    def test_nested_list_unterminated_comment(self):
+        """Held for the list item until the call parsing into the element is done, then parsed in the list item."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ::: section
+                    - item
+
+                        <!-- open
+
+                        kept
+
+                after
+                '''
+            ),
+            self.dedent(
+                '''
+                <section>
+                <ul>
+                <li>
+                <p>item</p>
+                <p>&lt;!-- open</p>
+                <p>kept</p>
+                </li>
+                </ul>
+                </section>
+                <p>after</p>
+                '''
+            ),
+            extensions=[SectionExtension()]
+        )

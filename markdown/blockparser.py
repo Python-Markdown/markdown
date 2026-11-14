@@ -96,8 +96,8 @@ class BlockParser:
         self.blockprocessors: util.Registry[BlockProcessor] = util.Registry()
         self.state = State()
         self.md = md
-        self._depth = 0
-        self._outer: etree.Element | None = None
+        # The parent of each call to `parseBlocks` in progress, outermost first.
+        self._frames: list[etree.Element] = []
 
     def parseDocument(self, lines: Iterable[str]) -> etree.ElementTree:
         """ Parse a Markdown document into an `ElementTree`.
@@ -115,7 +115,7 @@ class BlockParser:
             An element tree.
         """
         # Create an `ElementTree` from the lines
-        self._depth = 0
+        self._frames = []
         self.root = etree.Element(self.md.doc_tag)
         self.parseChunk(self.root, '\n'.join(lines))
         return etree.ElementTree(self.root)
@@ -155,10 +155,7 @@ class BlockParser:
             blocks: The blocks of text to parse.
 
         """
-        if not self._depth:
-            # The element the outermost call parses into. Anything held for a later call must be under it.
-            self._outer = parent
-        self._depth += 1
+        self._frames.append(parent)
         try:
             while blocks:
                 for processor in self.blockprocessors:
@@ -166,11 +163,13 @@ class BlockParser:
                         if processor.run(parent, blocks) is not False:
                             # run returns True or None
                             break
+        finally:
+            self._frames.pop()
+        if self._frames:
+            # The caller may do as it likes with `parent` from here on.
             for processor in self.blockprocessors:
                 processor.end_blocks(parent)
-        finally:
-            self._depth -= 1
-        if not self._depth:
+        else:
             # The outermost call is done, so nothing more will be handed to a processor for these parents.
             for processor in self.blockprocessors:
                 processor.finish()
