@@ -3837,7 +3837,33 @@ class TestListItemFirstBlock(TestCase):
                 '''
                 <ul>
                 <li><div>a</div>
-                 tail <em>em</em></li>
+                tail <em>em</em></li>
+                </ul>
+                '''
+            )
+        )
+
+    def test_code_block_after_raw_block(self):
+        """Only text on the line the raw block ends on loses the whitespace before it: an indented line is code."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                - a
+
+                    <div>a</div>
+                        code
+                '''
+            ),
+            self.dedent(
+                '''
+                <ul>
+                <li>
+                <p>a</p>
+                <div>a</div>
+                <pre><code>code
+                </code></pre>
+                </li>
                 </ul>
                 '''
             )

@@ -302,6 +302,12 @@ class RawHtmlBlockProcessor(BlockProcessor):
             # Not something the extractor treats as raw HTML (a bogus comment, for example)
             blocks[0:0] = original
             return False
+        for i in range(1, len(result)):
+            if result[i][:1] in (' ', '\t') and util.HTML_PLACEHOLDER_RE.search(result[i - 1]):
+                # Text on the line a raw block ends on keeps the whitespace before it. At the top of the document
+                # its paragraph strips that, but the text of a tight list item is not a paragraph, so strip it here.
+                # Text on a later line (which starts with a newline) is left alone: it may be an indented code block.
+                result[i] = result[i].lstrip(' \t')
         blocks[0:0] = result
         return True
 
