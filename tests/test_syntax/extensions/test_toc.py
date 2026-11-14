@@ -1578,7 +1578,7 @@ class testStripTags(TestCase):
 
 
 class TestTOCWithAttrList(TestCase):
-    """The toc extension together with attr_list (#1705)."""
+    """The `toc` extension together with `attr_list` (#1705)."""
 
     maxDiff = None
     default_kwargs = {
@@ -1586,9 +1586,10 @@ class TestTOCWithAttrList(TestCase):
     }
 
     def testBareIdAttribute(self):
-        # attr_list writes bare attributes with a value of None. A valueless
-        # id is no id at all, so toc generates a slug for it like for any
-        # other id-less heading instead of crashing with a TypeError.
+        # The `attr_list` extension writes bare attributes with a value of
+        # None. A valueless `id` is no id at all, so `toc` generates a slug
+        # for it like for any other id-less heading instead of raising a
+        # `TypeError`.
         self.assertMarkdownRenders(
             '#d {id}',
             '<h1 id="d">d</h1>'

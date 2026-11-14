@@ -401,7 +401,7 @@ class TocTreeprocessor(Treeprocessor):
 
                 # Do not override pre-existing ids
                 if not el.attrib.get("id"):
-                    # The attr_list extension writes bare attributes with a
+                    # The `attr_list` extension writes bare attributes with a
                     # value of None. A valueless id is no id at all, so a slug
                     # is generated for it like for any other id-less heading.
                     el.attrib["id"] = unique(self.slugify(html.unescape(name), self.sep), used_ids, id_counters)
