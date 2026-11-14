@@ -97,6 +97,7 @@ class BlockParser:
         self.state = State()
         self.md = md
         self._depth = 0
+        self._outer: etree.Element | None = None
 
     def parseDocument(self, lines: Iterable[str]) -> etree.ElementTree:
         """ Parse a Markdown document into an `ElementTree`.
@@ -154,6 +155,9 @@ class BlockParser:
             blocks: The blocks of text to parse.
 
         """
+        if not self._depth:
+            # The element the outermost call parses into. Anything held for a later call must be under it.
+            self._outer = parent
         self._depth += 1
         try:
             while blocks:
@@ -162,6 +166,8 @@ class BlockParser:
                         if processor.run(parent, blocks) is not False:
                             # run returns True or None
                             break
+            for processor in self.blockprocessors:
+                processor.end_blocks(parent)
         finally:
             self._depth -= 1
         if not self._depth:

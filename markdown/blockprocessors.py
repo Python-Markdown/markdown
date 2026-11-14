@@ -158,6 +158,14 @@ class BlockProcessor:
         """
         pass
 
+    def end_blocks(self, parent: etree.Element) -> None:
+        """ Called when a call to the parser that parsed blocks into `parent` is done. Does nothing unless overridden.
+
+        A processor which holds on to blocks for `parent` until a later call, and can not be sure there will be one,
+        must release them here.
+        """
+        pass
+
 
 class HeldBlocks(list):
     """ Blocks which are held back until it is known whether they are raw HTML, and the parser state they are in. """
@@ -194,6 +202,8 @@ class RawHtmlBlockProcessor(BlockProcessor):
         self.open: dict[etree.Element, Any] = {}
         self.flushing = False
         self._root: etree.Element | None = None
+        # Containers with an open block that are known to be in the tree the outermost call is parsing into.
+        self.anchored: set[etree.Element] = set()
 
     def get_extractor(self):
         """ Get an extractor to collect a raw block with. """
@@ -214,6 +224,7 @@ class RawHtmlBlockProcessor(BlockProcessor):
             # A new document. Discard anything a document that failed to parse left behind.
             self._root = root
             self.open = {}
+            self.anchored = set()
         if parent in self.open:
             return True
         if self.parser.state.isstate('list') or self.parser.state.isstate('looselist'):
@@ -244,6 +255,7 @@ class RawHtmlBlockProcessor(BlockProcessor):
             if self.unterminated(block):
                 return True
             del self.open[parent]
+            self.anchored.discard(parent)
             extractor = None
         elif extractor is None and parent is not self.parser.root and self.unterminated(block):
             self.open[parent] = HeldBlocks(original, self.parser.state)
@@ -258,6 +270,7 @@ class RawHtmlBlockProcessor(BlockProcessor):
             self.open[parent] = extractor
             return True
         self.open.pop(parent, None)
+        self.anchored.discard(parent)
         result = self.collect(extractor)
         if result == block.strip('\n').split('\n\n'):
             # Not something the extractor treats as raw HTML (a bogus comment, for example)
@@ -272,31 +285,61 @@ class RawHtmlBlockProcessor(BlockProcessor):
         extractor.close()
         return ''.join(extractor.cleandoc).strip('\n').split('\n\n')
 
+    def anchored_in_outer(self, parent: etree.Element) -> bool:
+        """
+        Is `parent` where a later call will find it: on the last-child path of the element the outermost call is
+        parsing into? The container being parsed is always at the end of the content parsed so far, so a container
+        that will be handed more blocks is on that path. An element an extension parses into on its own (to move
+        what is parsed somewhere else, for example) is not.
+        """
+        el = getattr(self.parser, '_outer', None)
+        while el is not None:
+            if el is parent:
+                return True
+            el = el[-1] if len(el) else None
+        return False
+
+    def end_blocks(self, parent: etree.Element) -> None:
+        """ Release an open block of `parent` now, unless a later call can be counted on to find `parent` again. """
+        if self.flushing or parent not in self.open or parent in self.anchored:
+            return
+        if self.anchored_in_outer(parent):
+            self.anchored.add(parent)
+            return
+        # The caller may do anything with `parent` once this call returns, so its content must be in it by then.
+        # The parser state is still the one the block was held in.
+        self.flush(parent, self.open.pop(parent), keep_state=True)
+
+    def flush(self, parent: etree.Element, item: Any, keep_state: bool = False) -> None:
+        """ Parse a raw block which was never closed, or a comment which was not, into `parent`. """
+        state = self.parser.state
+        self.flushing = True
+        try:
+            if isinstance(item, HeldBlocks):
+                # Parse the blocks as they would have been had they never been held. A list item hands the
+                # blocks of its content on one at a time, each in its own `detabbed` state, so they are not
+                # parsed in that state all at once.
+                names = [] if keep_state else [name for name in item.state if name != 'detabbed']
+                for name in names:
+                    state.set(name)
+                try:
+                    self.parser.parseBlocks(parent, list(item))
+                finally:
+                    for _ in names:
+                        state.reset()
+            else:
+                self.parser.parseBlocks(parent, self.collect(item))
+        finally:
+            self.flushing = False
+
     def finish(self) -> None:
         """ Parse what is left in each container: a raw block which was never closed, or a comment which was not. """
         if not self.open:
             return
         pending, self.open = self.open, {}
-        state = self.parser.state
-        self.flushing = True
-        try:
-            for parent, item in pending.items():
-                if isinstance(item, HeldBlocks):
-                    # Parse the blocks as they would have been had they never been held. A list item hands the
-                    # blocks of its content on one at a time, each in its own `detabbed` state, so they are not
-                    # parsed in that state all at once.
-                    names = [name for name in item.state if name != 'detabbed']
-                    for name in names:
-                        state.set(name)
-                    try:
-                        self.parser.parseBlocks(parent, list(item))
-                    finally:
-                        for _ in names:
-                            state.reset()
-                else:
-                    self.parser.parseBlocks(parent, self.collect(item))
-        finally:
-            self.flushing = False
+        self.anchored = set()
+        for parent, item in pending.items():
+            self.flush(parent, item)
 
 
 class ListIndentProcessor(BlockProcessor):
