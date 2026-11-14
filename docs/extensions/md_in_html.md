@@ -170,6 +170,27 @@ behavior. However, if the value of an element's `markdown` attribute is the same
 parent, the the child element's behavior is observed. For example, a `block` element may contain either `block`
 elements or `span` elements as children and each element will be parsed using the specified behavior.
 
+### In Lists and Other Blocks
+
+A raw HTML block nested in a list item, definition, blockquote, admonition or footnote may have a `markdown`
+attribute as well. Its content is parsed as it would be at the top level of the document, whatever block it is nested
+in. For example, a paragraph within it is wrapped in a `<p>` tag even in a tight list item, whose own text is not.
+
+``` md-render
+---
+extensions: [md_in_html]
+---
+* <div markdown="1">This is a *Markdown* paragraph.</div>
+* A tight list item.
+* Another list item.
+
+    <div markdown="1">
+    This is a *Markdown* paragraph too.
+    </div>
+```
+
+See [Raw HTML Blocks](../index.md#differences) for where a raw HTML block is recognized in nested content.
+
 ### Tag Normalization
 
 While the default behavior is for Markdown to not alter raw HTML, as this extension is parsing the content of raw HTML elements, it will do some normalization of the tags of block-level elements. For example:
