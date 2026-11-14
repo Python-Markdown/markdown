@@ -20,6 +20,10 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+import xml.etree.ElementTree as etree
+
+from markdown.blockprocessors import BlockProcessor
+from markdown.extensions import Extension
 from markdown.test_tools import TestCase
 
 
@@ -3419,4 +3423,120 @@ class TestIndentedHTMLBlocks(TestCase):
                 '''
             ),
             extensions=['admonition']
+        )
+
+
+class SectionProcessor(BlockProcessor):
+    """
+    Parse the indented blocks after `::: section` into an element of its own, then move what was parsed into a
+    `section`. The element parsed into is never part of the document and is not handed anything more once the call
+    to the parser returns.
+    """
+
+    def test(self, parent, block):
+        return block.split('\n', 1)[0] == '::: section'
+
+    def run(self, parent, blocks):
+        chunks = [blocks.pop(0).split('\n', 1)[1]]
+        while blocks and blocks[0].startswith('    '):
+            chunks.append(blocks.pop(0))
+        temp = etree.Element('div')
+        self.parser.parseChunk(temp, '\n'.join(line[4:] for line in '\n\n'.join(chunks).split('\n')))
+        section = etree.SubElement(parent, 'section')
+        for el in list(temp):
+            section.append(el)
+
+
+class SectionExtension(Extension):
+    def extendMarkdown(self, md):
+        md.parser.blockprocessors.register(SectionProcessor(md.parser), 'section', 105)
+
+
+class TestTemporaryParent(TestCase):
+    """
+    A raw block held open in an element an extension parses into on its own must be written out before the call to
+    the parser returns. Holding it until the end of the document puts it in an element nothing refers to by then.
+    """
+
+    def test_unclosed_raw_block(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ::: section
+                    <div>
+                    unclosed
+
+                    kept
+
+                after
+                '''
+            ),
+            self.dedent(
+                '''
+                <section>
+                <div>
+                unclosed
+
+                kept
+                </section>
+                <p>after</p>
+                '''
+            ),
+            extensions=[SectionExtension()]
+        )
+
+    def test_unterminated_comment(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ::: section
+                    <!-- open
+
+                    kept
+
+                after
+                '''
+            ),
+            self.dedent(
+                '''
+                <section>
+                <p>&lt;!-- open</p>
+                <p>kept</p>
+                </section>
+                <p>after</p>
+                '''
+            ),
+            extensions=[SectionExtension()]
+        )
+
+    def test_closed_raw_block_with_blank_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ::: section
+                    <div>
+                    one
+
+                    two
+                    </div>
+
+                    para
+
+                after
+                '''
+            ),
+            self.dedent(
+                '''
+                <section>
+                <div>
+                one
+
+                two
+                </div>
+                <p>para</p>
+                </section>
+                <p>after</p>
+                '''
+            ),
+            extensions=[SectionExtension()]
         )
