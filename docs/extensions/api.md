@@ -135,6 +135,12 @@ the time the call returns. If it parses into an element at the end of the tree b
 hand more blocks to (as a list item is), what is held for that element may be added to it after the call returns: once
 a later block closes it, or once the outermost call is done.
 
+!!! warning
+
+    The parser calls these methods from [`parseBlocks`][markdown.blockparser.BlockParser.parseBlocks]. A subclass of
+    `BlockParser` which overrides `parseBlocks` must call the parent class's `parseBlocks` to parse the blocks.
+    Otherwise, blocks held by a block processor are never released, and their content is lost from the output.
+
 #### Example
 
 This example calls out important paragraphs by giving them a border.  It looks for a fence line of exclamation points

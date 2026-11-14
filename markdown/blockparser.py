@@ -150,6 +150,13 @@ class BlockParser:
         additional `BlockProcessors` which call this method to recursively
         parse a nested block.
 
+        Once the blocks are parsed, this calls each processor's
+        [`end_blocks`][markdown.blockprocessors.BlockProcessor.end_blocks] (for a
+        nested call) or [`finish`][markdown.blockprocessors.BlockProcessor.finish]
+        (for the outermost call), so that a processor can release blocks it holds.
+        A subclass which overrides this method must call it to parse the blocks;
+        otherwise, held blocks are never released and their content is lost.
+
         Arguments:
             parent: The parent element.
             blocks: The blocks of text to parse.
