@@ -332,7 +332,7 @@ class OListProcessor(BlockProcessor):
     """ Process ordered list blocks. """
 
     TAG: str = 'ol'
-    """ The tag used for the the wrapping element. """
+    """ The tag used for the wrapping element. """
     STARTSWITH: str = '1'
     """
     The integer (as a string ) with which the list starts. For example, if a list is initialized as
@@ -455,7 +455,7 @@ class UListProcessor(OListProcessor):
     """ Process unordered list blocks. """
 
     TAG: str = 'ul'
-    """ The tag used for the the wrapping element. """
+    """ The tag used for the wrapping element. """
 
     def __init__(self, parser: BlockParser):
         super().__init__(parser)

@@ -14,7 +14,7 @@ parser. An extension will patch into one or more stages of the parser:
 * [*Postprocessors*](#postprocessors) munge of the output of the parser just before it is returned.
 
 The parser loads text, applies the preprocessors, creates and builds an [ElementTree][ElementTree] object from the
-block processors and inline processors, renders the ElementTree object as Unicode text, and then then applies the
+block processors and inline processors, renders the ElementTree object as Unicode text, and then applies the
 postprocessors.
 
 There are classes and helpers provided to ease writing your extension. Each part of the API is discussed in its
@@ -101,7 +101,7 @@ current [`BlockParser`][markdown.blockparser.BlockParser] instance.
 registered block processors.  You should never need to create your own instance; use `self.parser` instead.
 
 The `BlockParser` instance provides a stack of strings for its current state, which your processor can push with
-`self.parser.set(state)`,  pop with `self.parser.reset()`, or check the the top state with
+`self.parser.set(state)`,  pop with `self.parser.reset()`, or check the top state with
 `self.parser.isstate(state)`. Be sure your code pops the states it pushes.
 
 The `BlockParser` instance can also be called recursively, that is, to process blocks from within your block
@@ -323,7 +323,7 @@ The example output might display as follows:
       `First line of the block.\nThis is klzzwxh:0000.\nThis is --strike two--.\nEnd of the block.`
 
 Note the [placeholder][markdown.util.INLINE_PLACEHOLDER_PREFIX] token `klzzwxh:0000`. This allows the
-regular expression to be run against the entire block, not just the the text contained in an individual element.
+regular expression to be run against the entire block, not just the text contained in an individual element.
 The placeholders will later be swapped back out for the actual elements by the parser.
 
 Actually it would not be necessary to create the above inline processor. The fact is, that example is not very DRY
