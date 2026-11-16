@@ -351,4 +351,4 @@ for post in blog_posts:
 The [`convertFile`][markdown.Markdown.convertFile] method accepts the same
 arguments as the `markdown.markdownFromFile` function. There is little
 benefit in accessing this method directly and it remains for backward
-compatability puposes only.
+compatibility purposes only.

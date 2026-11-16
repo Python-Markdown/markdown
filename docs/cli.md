@@ -99,7 +99,7 @@ and `<body>` tags), it is generally expected that the command line interface
 will always be used to pipe output to a templating engine. In the event that
 no additional content is needed and the output only needs to be wrapped in
 otherwise empty `<html>`, `<head>`, and `<body>` tags, 
-[JustHTML](https://emilstenstrom.github.io/justhtml/) can do that with with
+[JustHTML](https://emilstenstrom.github.io/justhtml/) can do that with
 a single command:
 
 ``` shell { title="Console" }

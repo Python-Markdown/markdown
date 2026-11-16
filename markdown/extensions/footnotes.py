@@ -107,7 +107,7 @@ class FootnoteExtension(Extension):
         md.inlinePatterns.register(FootnoteInlineProcessor(FOOTNOTE_RE, self), 'footnote', 175)
         # Insert a tree-processor that would actually add the footnote div
         # This must be before all other tree-processors (i.e., `inline` and
-        # `codehilite`) so they can run on the the contents of the div.
+        # `codehilite`) so they can run on the contents of the div.
         md.treeprocessors.register(FootnoteTreeprocessor(self), 'footnote', 50)
 
         # Insert a tree-processor to reorder the footnotes if necessary. This must be after
