@@ -588,7 +588,7 @@ class EmptyBlockProcessor(BlockProcessor):
 class ReferenceProcessor(BlockProcessor):
     """ Process link references. """
     RE = re.compile(
-        r'^[ ]{0,3}\[([^\[\]]*)\]:[ ]*(?:\n[ ]*)?([^\s]+)[ ]*(?:\n[ ]*)?((["\'])(.*)\4[ ]*|\((.*)\)[ ]*)?$',
+        r'^[ ]{0,3}\[((?!\^)[^\[\]]*)\]:[ ]*(?:\n[ ]*)?([^\s]+)[ ]*(?:\n[ ]*)?((["\'])(.*)\4[ ]*|\((.*)\)[ ]*)?$',
         re.MULTILINE
     )
 
