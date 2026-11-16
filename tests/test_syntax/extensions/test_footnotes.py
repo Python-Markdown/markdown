@@ -629,6 +629,93 @@ class TestFootnotes(TestCase):
             '</div>'
         )
 
+    def test_indented_footnote_definition_within_footnote_definition(self):
+        """Test an indented footnote definition within a footnote definition."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Main[^1].
+
+                [^1]: First
+
+                    [^2]: Second
+                """
+            ),
+            '<p>Main<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>First&#160;<a class="footnote-backref" href="#fnref:1" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<p>Second&#160;<a class="footnote-backref" href="#fnref:2" '
+            'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_indented_footnote_definition_in_same_block(self):
+        """Test an indented footnote definition in the same block as its parent."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Main[^1].
+
+                [^1]: First
+                    [^2]: Second
+                """
+            ),
+            '<p>Main<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>First&#160;<a class="footnote-backref" href="#fnref:1" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<p>Second&#160;<a class="footnote-backref" href="#fnref:2" '
+            'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_indented_footnote_definition_referenced_by_parent(self):
+        """Test an indented footnote definition referenced by its parent footnote."""
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Main[^1].
+
+                [^1]: First [^2]
+
+                    [^2]: Second
+                """
+            ),
+            '<p>Main<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>First <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>&#160;'
+            '<a class="footnote-backref" href="#fnref:1" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '<li id="fn:2">\n'
+            '<p>Second&#160;<a class="footnote-backref" href="#fnref:2" '
+            'title="Jump back to footnote 2 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
     def test_footnote_reference_within_blockquote(self):
         """Test footnote reference within a blockquote."""
 

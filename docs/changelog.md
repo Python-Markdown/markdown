@@ -16,6 +16,10 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* Fix the `footnotes` extension silently dropping a footnote definition
+  which is indented as content of another footnote definition. The nested
+  definition is now registered and rendered like an un-indented one
+  (#1681).
 * The `toc` extension no longer raises `TypeError` for a heading whose `id`
   attribute is present but valueless, as the `attr_list` extension's
   bare-attribute syntax (`{id}`) writes it: like a heading with no `id` at

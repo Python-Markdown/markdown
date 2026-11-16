@@ -284,6 +284,13 @@ class FootnoteBlockProcessor(BlockProcessor):
                 fn_blocks[0] = '\n'.join([fn_blocks[0], self.detab(before)]).lstrip('\n')
                 # Add back to blocks everything from beginning of match forward for next iteration.
                 blocks.insert(0, therest[m2.start():])
+            elif (split := self.splitDetabbedFootnote(therest)) is not None:
+                # Another footnote is defined in the rest of this block,
+                # indented as content of this footnote.
+                before, rest = split
+                fn_blocks[0] = '\n'.join([fn_blocks[0], before]).lstrip('\n')
+                # Add back to blocks everything from the definition forward for next iteration.
+                blocks.insert(0, rest)
             else:
                 # All remaining lines of block are continuation of this footnote, which may be lazily indented.
                 fn_blocks[0] = '\n'.join([fn_blocks[0], self.detab(therest)]).strip('\n')
@@ -323,6 +330,15 @@ class FootnoteBlockProcessor(BlockProcessor):
                     blocks.insert(0, block[m.start():])
                     # End of this footnote.
                     break
+                elif (split := self.splitDetabbedFootnote(block)) is not None:
+                    # Another footnote is defined in this block, indented
+                    # as content of this footnote.
+                    before, rest = split
+                    fn_blocks.append(before)
+                    # Add back to blocks everything from the definition forward for next iteration.
+                    blocks.insert(0, rest)
+                    # End of this footnote.
+                    break
                 else:
                     # Entire block is part of this footnote.
                     fn_blocks.append(self.detab(block))
@@ -341,6 +357,30 @@ class FootnoteBlockProcessor(BlockProcessor):
             if line.startswith(' '*4):
                 lines[i] = line[4:]
         return '\n'.join(lines)
+
+    def splitDetabbedFootnote(self, block: str) -> tuple[str, str] | None:
+        """ Split a block at a footnote definition hidden by one level of indent.
+
+        The definition is searched for in the detabbed text, as a definition
+        which is indented as content of another footnote does not match
+        `RE` at its original indentation. When a definition is found, return
+        a tuple of the detabbed text which precedes it and the text from the
+        definition onward. Only the definition line is detabbed in the
+        second item so that any lines which follow it keep their original
+        indentation. Return `None` when the block contains no indented
+        definition.
+        """
+        detabbed = self.detab(block)
+        m = self.RE.search(detabbed)
+        if m is None:
+            return None
+        # The pattern is anchored at the start of a line, so the match
+        # begins at the start of the line which holds the definition.
+        def_line = detabbed[:m.start()].count('\n')
+        lines = block.split('\n')
+        before = self.detab('\n'.join(lines[:def_line]).rstrip('\n'))
+        rest = '\n'.join([detabbed.split('\n')[def_line]] + lines[def_line + 1:])
+        return before, rest
 
 
 class FootnoteInlineProcessor(InlineProcessor):
