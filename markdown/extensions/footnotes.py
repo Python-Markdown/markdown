@@ -134,6 +134,10 @@ class FootnoteExtension(Extension):
         self.found_refs = {}
         self.used_refs = set()
         self.last_refs = {}
+        # While footnote content is being rendered, definitions found in it
+        # are not recognized (matching PHP Markdown Extra): a definition
+        # nested in another footnote's content remains part of that content.
+        self.parsing_footnotes = False
 
     def unique_ref(self, reference: str, found: bool = False) -> str:
         """ Get a unique reference if there are duplicates. """
@@ -226,7 +230,11 @@ class FootnoteExtension(Extension):
             # Parse footnote with surrogate parent as `li` cannot be used.
             # List block handlers have special logic to deal with `li`.
             # When we are done parsing, we will copy everything over to `li`.
-            self.parser.parseChunk(surrogate_parent, self.footnotes[id])
+            self.parsing_footnotes = True
+            try:
+                self.parser.parseChunk(surrogate_parent, self.footnotes[id])
+            finally:
+                self.parsing_footnotes = False
             for el in list(surrogate_parent):
                 li.append(el)
                 surrogate_parent.remove(el)
@@ -265,6 +273,13 @@ class FootnoteBlockProcessor(BlockProcessor):
     def run(self, parent: etree.Element, blocks: list[str]) -> bool:
         """ Find, set, and remove footnote definitions. """
         block = blocks.pop(0)
+
+        if self.footnotes.parsing_footnotes:
+            # Footnote definitions are not recognized within a footnote
+            # definition. Leave the block as content of the footnote
+            # currently being rendered.
+            blocks.insert(0, block)
+            return False
 
         m = self.RE.search(block)
         if m:
