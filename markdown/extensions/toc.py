@@ -408,9 +408,14 @@ class TocTreeprocessor(Treeprocessor):
 
                 data_toc_label = ''
                 if 'data-toc-label' in el.attrib:
-                    data_toc_label = run_postprocessors(unescape(el.attrib['data-toc-label']), self.md)
-                    # Overwrite name with sanitized value of `data-toc-label`.
-                    name = escape_cdata(strip_tags(data_toc_label))
+                    # The `attr_list` extension writes a bare attribute with a
+                    # value of None. A valueless label is no label at all, so
+                    # the heading text is used and the attribute is dropped,
+                    # as a valueless id is treated above.
+                    if el.attrib['data-toc-label'] is not None:
+                        data_toc_label = run_postprocessors(unescape(el.attrib['data-toc-label']), self.md)
+                        # Overwrite name with sanitized value of `data-toc-label`.
+                        name = escape_cdata(strip_tags(data_toc_label))
                     # Remove the data-toc-label attribute as it is no longer needed
                     del el.attrib['data-toc-label']
 

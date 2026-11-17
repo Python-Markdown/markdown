@@ -203,6 +203,26 @@ class TestTOC(TestCase):
             extensions=[TocExtension(), 'attr_list']
         )
 
+    def testValuelessLabelAttribute(self):
+        # `attr_list` stores a bare attribute as None. A valueless
+        # `data-toc-label` is no label at all, so the heading text is used and
+        # the attribute is dropped instead of the render raising.
+        self.assertMarkdownRenders(
+            '# Python support {: data-toc-label }',
+            '<h1 id="python-support">Python support</h1>',
+            expected_attrs={
+                'toc_tokens': [{
+                    'level': 1,
+                    'id': 'python-support',
+                    'name': 'Python support',
+                    'html': 'Python support',
+                    'data-toc-label': '',
+                    'children': []
+                }]
+            },
+            extensions=[TocExtension(), 'attr_list']
+        )
+
     def testUniqueIds(self):
         self.assertMarkdownRenders(
             self.dedent(
