@@ -16,6 +16,10 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* The `toc` extension no longer raises `TypeError` for a heading whose
+  `data-toc-label` attribute is present but valueless, as the `attr_list`
+  extension's bare-attribute syntax (`{: data-toc-label }`) writes it: like a
+  heading with no `data-toc-label`, its text is used as the TOC name (#1712).
 * The `toc` extension no longer raises `TypeError` for a heading whose `id`
   attribute is present but valueless, as the `attr_list` extension's
   bare-attribute syntax (`{id}`) writes it: like a heading with no `id` at
