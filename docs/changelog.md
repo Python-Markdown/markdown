@@ -16,6 +16,9 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* The `fenced_code` extension no longer raises `TypeError` for `codehilite` options such as
+  `linenums` set in the `attr_list` of a code block when `codehilite` is not enabled;
+  these options are now omitted from the output (#1713).
 * The `toc` extension no longer raises `TypeError` for a heading whose `id`
   attribute is present but valueless, as the `attr_list` extension's
   bare-attribute syntax (`{id}`) writes it: like a heading with no `id` at

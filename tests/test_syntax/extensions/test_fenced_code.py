@@ -323,6 +323,16 @@ class TestFencedCode(TestCase):
             extensions=['fenced_code', 'attr_list']
         )
 
+    def testFencedCodeBoolOptionsOmittedNoCodehiliteWithAttrList(self):
+        # Options only used by `codehilite` must not crash serialization (see #1713).
+        for attrs in ('linenums', 'linenums=true', 'guess_lang noclasses=False', 'hl_lines="1"'):
+            with self.subTest(attrs=attrs):
+                self.assertMarkdownRenders(
+                    f'``` {{ .python {attrs} foo=bar }}\n# Some python code\n```',
+                    '<pre><code class="language-python" foo="bar"># Some python code\n</code></pre>',
+                    extensions=['fenced_code', 'attr_list']
+                )
+
     def testFencedLanguagePygmentsDisabledInAttrNoCodehiliteWithAttrList(self):
         self.assertMarkdownRenders(
             self.dedent(
