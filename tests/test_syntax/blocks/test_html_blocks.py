@@ -1867,6 +1867,17 @@ class TestHTMLBlocks(TestCase):
             '<p>' + '&lt;!--' * 50000 + '</p>'
         )
 
+    def test_many_unclosed_start_tags(self):
+        """Test that each unclosed start tag does not rescan the rest of the document."""
+        self.assertMarkdownRenders(
+            'a<b ' * 25000,
+            '<p>' + 'a&lt;b ' * 25000 + '</p>'
+        )
+        self.assertMarkdownRenders(
+            '<a@a' * 25000,
+            '<p>' + '&lt;a@a' * 25000 + '</p>'
+        )
+
     def test_no_hang_issue_1586(self):
         """Test no hang condition for issue #1586."""
 
