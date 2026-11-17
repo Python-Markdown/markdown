@@ -1578,7 +1578,7 @@ class testStripTags(TestCase):
 
 
 class TestTOCWithAttrList(TestCase):
-    """The `toc` extension together with `attr_list` (#1705)."""
+    """The `toc` extension together with `attr_list` (#1705, #1712)."""
 
     maxDiff = None
     default_kwargs = {
@@ -1602,6 +1602,41 @@ class TestTOCWithAttrList(TestCase):
                 [TOC]
 
                 # Heading One {id}
+                '''
+            ),
+            '<div class="toc">\n'
+              '<ul>\n'                                                 # noqa
+                '<li><a href="#heading-one">Heading One</a></li>\n'   # noqa
+              '</ul>\n'                                                # noqa
+            '</div>\n'
+            '<h1 id="heading-one">Heading One</h1>'
+        )
+
+    def testBareDataTocLabelAttribute(self):
+        # A valueless `data-toc-label` is treated like a missing one: the
+        # heading text is used as the TOC name and the attribute is removed.
+        self.assertMarkdownRenders(
+            '# Hello {: data-toc-label }',
+            '<h1 id="hello">Hello</h1>',
+            expected_attrs={
+                'toc_tokens': [{
+                    'level': 1,
+                    'id': 'hello',
+                    'name': 'Hello',
+                    'html': 'Hello',
+                    'data-toc-label': '',
+                    'children': []
+                }]
+            }
+        )
+
+    def testBareDataTocLabelAttributeWithTOCMarker(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+
+                # Heading One {: data-toc-label }
                 '''
             ),
             '<div class="toc">\n'
