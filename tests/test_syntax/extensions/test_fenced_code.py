@@ -455,6 +455,43 @@ class TestFencedCode(TestCase):
             extensions=['fenced_code', 'attr_list']
         )
 
+    def testFencedCodeBooleanAttrsWithoutCodehilite(self):
+        # Boolean options are serialized like `attr_list` attributes when `codehilite` is not enabled (#1713).
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```{.py linenums=true}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-py" linenums="linenums"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
+    def testFencedCodeFalseBooleanAttrWithoutCodehilite(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```{.py linenums=false}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-py"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
     def testMultipleFencedBlocks(self):
         self.assertMarkdownRenders(
             self.dedent(
