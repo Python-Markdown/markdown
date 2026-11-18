@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # Keep GitHub Actions up to date, including updating pinned commit SHAs.
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - '*'
+
+  # Keep pinned Python dependencies (e.g. the docs extra) up to date.
+  - package-ecosystem: pip
+    directory: '/'
+    schedule:
+      interval: weekly
