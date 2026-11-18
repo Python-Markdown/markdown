@@ -95,6 +95,9 @@ blank_line_re = re.compile(r'^([ ]*\n){2}')
 # Match a blank line anywhere in a run of text.
 inner_blank_line_re = re.compile(r'\n[ \t]*\n')
 
+# Match an end tag and capture its name.
+inline_endtag_re = re.compile(r'</\s*([^\s/>]+)\s*>')
+
 # Elements which never have an end tag and so cannot contain a comment.
 void_tags = frozenset([
     'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'
@@ -155,11 +158,19 @@ class HTMLExtractor(htmlparser.HTMLParser):
         self.intail = False
         self.stack: list[str] = []  # When `inraw==True`, stack contains a list of tags
         self.inline_stack: list[str] = []  # Unclosed raw inline tags in the current paragraph
+        self.inline_counts: dict[str, int] = {}  # Number of times each tag name is in `inline_stack`
         self._cache: list[str] = []
         self.cleandoc: list[str] = []
         self.lineno_start_cache = [0]
         # The `rawdata` and position of the last failed search for a comment close.
         self._no_commentclose: tuple[str | None, int] = (None, 0)
+        # The `rawdata`, start and end of the paragraph text last searched for end tags, the position
+        # of the last end tag of each name in it, the names whose last end tag has not been passed yet
+        # (latest first), and how many of those names are in `inline_stack`.
+        self._endtag_span: tuple[str | None, int, int] = (None, 0, 0)
+        self._endtags: dict[str, int] = {}
+        self._endtags_ahead: list[str] = []
+        self._open_with_endtag = 0
 
         super().reset()
 
@@ -273,20 +284,53 @@ class HTMLExtractor(htmlparser.HTMLParser):
         """ Track an unclosed raw inline tag so a comment inside it is not treated as a block. """
         if not self.md.is_block_level(tag) and tag not in void_tags:
             self.inline_stack.append(tag)
+            self._count_inline_tag(tag, 1)
 
     def close_inline_tag(self, tag: str):
         """ Stop tracking an inline tag and any unclosed inline tags opened after it. """
         if tag in self.inline_stack:
             while self.inline_stack:
-                if self.inline_stack.pop() == tag:
+                popped = self.inline_stack.pop()
+                self._count_inline_tag(popped, -1)
+                if popped == tag:
                     break
+
+    def clear_inline_tags(self):
+        """ Stop tracking all open inline tags. """
+        self.inline_stack = []
+        self.inline_counts = {}
+        self._open_with_endtag = 0
+
+    def _count_inline_tag(self, tag: str, delta: int):
+        """ Update the counts when `tag` is added to (`delta=1`) or removed from (`delta=-1`) `inline_stack`. """
+        count = self.inline_counts.get(tag, 0) + delta
+        self.inline_counts[tag] = count
+        if count == (delta > 0) and self._endtags.get(tag, -1) >= self._endtag_span[1]:
+            # The first open tag of this name, or the last one closed, and its end tag is still ahead.
+            self._open_with_endtag += delta
 
     def inline_close_follows(self, text: str) -> bool:
         """ Return `True` if an open inline tag is closed in the same paragraph after the comment `text`. """
         if not self.inline_stack:
             return False
-        rest = inner_blank_line_re.split(self.rawdata[self.line_offset + self.offset + len(text):], 1)[0]
-        return any(re.search(r'</\s*{}\s*>'.format(re.escape(tag)), rest, re.I) for tag in self.inline_stack)
+        pos = self.line_offset + self.offset + len(text)
+        # Searching the rest of the paragraph for each open tag after every comment is quadratic in the
+        # length of the paragraph, so the end tags are found once per paragraph. Later comments in it
+        # only drop names whose last end tag they have passed.
+        searched, start, end = self._endtag_span
+        if searched is not self.rawdata or not start <= pos <= end:
+            m = inner_blank_line_re.search(self.rawdata, pos)
+            end = m.start() if m else len(self.rawdata)
+            self._endtags = {}
+            for m in inline_endtag_re.finditer(self.rawdata, pos, end):
+                self._endtags[m.group(1).lower()] = m.start()
+            self._endtags_ahead = sorted(self._endtags, key=self._endtags.__getitem__, reverse=True)
+            self._open_with_endtag = sum(1 for tag in self._endtags if self.inline_counts.get(tag))
+        while self._endtags_ahead and self._endtags[self._endtags_ahead[-1]] < pos:
+            if self.inline_counts.get(self._endtags_ahead.pop()):
+                self._open_with_endtag -= 1
+        self._endtag_span = (self.rawdata, pos, end)
+        return self._open_with_endtag > 0
 
     def handle_data(self, data: str):
         if self.intail and '\n' in data:
@@ -296,7 +340,7 @@ class HTMLExtractor(htmlparser.HTMLParser):
         else:
             if inner_blank_line_re.search(data):
                 # A blank line ends the paragraph, so open inline tags no longer enclose what follows.
-                self.inline_stack = []
+                self.clear_inline_tags()
             self.cleandoc.append(data)
 
     def handle_empty_tag(self, data: str, is_block: bool):
