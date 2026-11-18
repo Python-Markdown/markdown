@@ -57,9 +57,19 @@ class LegacyAttrs(Treeprocessor):
 
     def handleAttributes(self, el: etree.Element, txt: str) -> str:
         """ Set attributes and return text without definitions. """
-        def attributeCallback(match: re.Match[str]):
-            el.set(sanitize_name(match.group(1)), match.group(2).replace('\n', ' '))
-        return ATTR_RE.sub(attributeCallback, txt)
+        # Neither part of a definition can contain `}`, so one that starts at `{@` ends at the next
+        # `}`, and if the first `{@` before a `}` does not match, no later one before it can. Matching
+        # only there avoids `ATTR_RE.sub` rescanning to the end of the text from every `{@`.
+        parts = txt.split('}')
+        for i in range(len(parts) - 1):
+            part = parts[i] + '}'
+            start = part.find('{@')
+            m = ATTR_RE.match(part, start) if start != -1 else None
+            if m:
+                el.set(sanitize_name(m.group(1)), m.group(2).replace('\n', ' '))
+                part = part[:start]
+            parts[i] = part
+        return ''.join(parts)
 
 
 class LegacyAttrExtension(Extension):

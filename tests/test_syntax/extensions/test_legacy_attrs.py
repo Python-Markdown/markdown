@@ -73,3 +73,12 @@ class TestLegacyAtrributes(TestCase):
             '<p x_svg_onload_alert_1_="y">text  more</p>',
             extensions=['legacy_attrs']
         )
+
+    def testLegacyAttrsManyUnclosed(self):
+        # Each `{@` with no closing `}` used to be rescanned to the end of the text for every `=`.
+        text = '{@a=' * 2000
+        self.assertMarkdownRenders(
+            text,
+            f'<p>{text}</p>',
+            extensions=['legacy_attrs']
+        )
