@@ -35,6 +35,9 @@ See the [Contributing Guide](contributing.md) for details.
   to many references to the same footnote (#1726).
 * Release the parsed tree and source lines in `reset()` so a reused `Markdown`
   instance no longer retains the last document in memory (#1725).
+* The `fenced_code` extension no longer raises `TypeError` for boolean options (e.g.
+  `linenums=true`) set with `attr_list` when `codehilite` is not enabled. The values
+  are now serialized like any other attribute (#1713).
 * The `toc` extension no longer raises `TypeError` for a heading whose
   `data-toc-label` attribute is present but valueless, as the `attr_list`
   extension's bare-attribute syntax (`{: data-toc-label }`) writes it: like a
