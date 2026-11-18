@@ -16,6 +16,9 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+* The `fenced_code` extension no longer raises `TypeError` for boolean options such as
+  `linenums` set in the `attr_list` of a code block when `codehilite` is not
+  enabled; they are now serialized the same way the serializer does (#1713).
 * The `toc` extension no longer raises `TypeError` for a heading whose
   `data-toc-label` attribute is present but valueless, as the `attr_list`
   extension's bare-attribute syntax (`{: data-toc-label }`) writes it: like a
