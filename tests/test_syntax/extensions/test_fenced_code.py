@@ -304,6 +304,56 @@ class TestFencedCode(TestCase):
             extensions=['fenced_code', 'attr_list']
         )
 
+    def testFencedCodeBoolAttrsNoCodehiliteWithAttrList(self):
+        # Boolean options are serialized like the serializer would (see #1713).
+        for output_format in ('html', 'xhtml'):
+            with self.subTest(output_format=output_format):
+                self.assertMarkdownRenders(
+                    self.dedent(
+                        '''
+                        ``` { .python linenums guess_lang=true noclasses=false }
+                        # Some python code
+                        ```
+                        '''
+                    ),
+                    self.dedent(
+                        '''
+                        <pre><code class="language-python" linenums guess_lang="guess_lang"># Some python code
+                        </code></pre>
+                        '''
+                    ),
+                    extensions=['fenced_code', 'attr_list'],
+                    output_format=output_format
+                )
+
+    def testFencedCodeBoolAttrsHtmlBooleanAttributes(self):
+        # A `True` value of an HTML boolean attribute is a bare key in `html` and `key="key"` in `xhtml`.
+        md = markdown.Markdown(extensions=['fenced_code', 'attr_list'], output_format='html')
+        pre = md.preprocessors['fenced_code_block']
+        self.assertEqual(pre._serialize_attr('hidden', True), ' hidden')
+        self.assertEqual(pre._serialize_attr('linenums', True), ' linenums="linenums"')
+        md = markdown.Markdown(extensions=['fenced_code', 'attr_list'], output_format='xhtml')
+        pre = md.preprocessors['fenced_code_block']
+        self.assertEqual(pre._serialize_attr('hidden', True), ' hidden="hidden"')
+
+    def testFencedCodeBoolAttrsCodehilite(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python linenums=false }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <div class="codehilite"><pre><span></span><code><span class="c1"># Some python code</span>
+                </code></pre></div>
+                '''
+            ),
+            extensions=['codehilite', 'fenced_code', 'attr_list']
+        )
+
     def testFencedCodeAttrNameSanitizedNoCodehiliteWithAttrList(self):
         # An attribute name is sanitized so it cannot break out of the `code` tag (see #1663).
         self.assertMarkdownRenders(

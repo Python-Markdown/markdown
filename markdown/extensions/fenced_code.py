@@ -27,7 +27,7 @@ from ..preprocessors import Preprocessor
 from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
 from .attr_list import get_attrs_and_remainder, sanitize_name, AttrListExtension
 from ..util import parseBoolValue
-from ..serializers import _escape_attrib_html
+from ..serializers import _escape_attrib_html, BOOLEAN_ATTRIBUTES
 import re
 from typing import TYPE_CHECKING, Any, Iterable
 
@@ -160,7 +160,7 @@ class FencedBlockPreprocessor(Preprocessor):
                         # pairs were defined on the code block, and the `use_pygments` key was not set to `True`. The
                         # `use_pygments` key could be either set to `False` or not defined. It is omitted from output.
                         kv_pairs = ''.join(
-                            f' {sanitize_name(k)}="{_escape_attrib_html(v)}"'
+                            self._serialize_attr(sanitize_name(k), v)
                             for k, v in config.items() if k != 'use_pygments'
                         )
                     code = self._escape(m.group('code'))
@@ -198,6 +198,18 @@ class FencedBlockPreprocessor(Preprocessor):
             else:
                 configs[k] = v
         return id, classes, configs
+
+    def _serialize_attr(self, key: str, value: Any) -> str:
+        """ Serialize an attribute the same way the serializer does. """
+        if value is None:
+            return f' {key}'
+        if value is True:
+            if self.md.output_format == 'html' and key in BOOLEAN_ATTRIBUTES['html']:
+                return f' {key}'
+            return f' {key}="{key}"'
+        if value is False:
+            return ''
+        return f' {key}="{_escape_attrib_html(value)}"'
 
     def _escape(self, txt: str) -> str:
         """ basic html escaping """

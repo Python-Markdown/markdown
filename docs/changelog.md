@@ -12,6 +12,14 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
+## Unreleased
+
+### Fixed
+
+* The `fenced_code` extension no longer raises `TypeError` for boolean options such as
+  `linenums` set in the `attr_list` of a code block when `codehilite` is not
+  enabled; they are now serialized the same way the serializer does (#1713).
+
 ## [3.11.4] - 2026-11-25
 
 ### Fixed
