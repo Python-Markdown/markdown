@@ -662,6 +662,8 @@ class DelimiterProcessor(InlineProcessor):
         self.stack: list[tuple[int, int, bool, int, int]] = []
         # Position of every delimiter token (valid or not) encountered while pairing, in ascending order.
         self.positions: list[int] = []
+        # For each token and run length, how deep the last failed rule of 3 search went and the entry at that depth.
+        self.searched: dict[tuple[str, int], tuple[int, tuple[int, int, bool, int, int]]] = {}
         self.tokens: list[str] = []
         self.delimiters: dict[str, Delimiter] = {}
         self.cache_index = 0
@@ -710,6 +712,7 @@ class DelimiterProcessor(InlineProcessor):
         self.cache.clear()
         self.stack.clear()
         self.positions.clear()
+        self.searched.clear()
         self.cache_index = 0
         self.cache_pos = 0
         self.remainder = None
@@ -994,12 +997,23 @@ class DelimiterProcessor(InlineProcessor):
                 stack and is_ambiguous and current != last and
                 self.rule_of_3(stack[-1][3], current)
             ):
-                for i in range(len(stack) - 2, -1, -1):
+                # Skip the entries an earlier search for this length already ruled out. They are unchanged
+                # as long as the last of them is still in place, as entries are only ever appended or popped.
+                lowest = 0
+                key = (token, current)
+                if key in self.searched:
+                    depth, entry = self.searched[key]
+                    if depth < len(stack) and stack[depth - 1] is entry:
+                        lowest = depth
+                for i in range(len(stack) - 2, lowest - 1, -1):
                     if stack[i][-1] == current and not self.rule_of_3(stack[i][3], current):
                         while len(stack) > i + 1:
                             stack.pop()
                         last = current
                         break
+                else:
+                    if len(stack) > 1:
+                        self.searched[key] = (len(stack) - 1, stack[-2])
 
             # Find closing tokens
             # Looking for:

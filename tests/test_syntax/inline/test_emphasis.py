@@ -944,6 +944,15 @@ class TestEmphasisRuleOfThree(TestCase):
             '<p><em><strong>a</strong>b</em>cd<em>e**f</em>g<em>h</em>**</p>'
         )
 
+    def test_rule_of_3_many_unclosed_openers(self):
+        """Test that unclosed openers rejected by the rule of 3 are not searched again for every closer."""
+
+        count = 10000
+        self.assertMarkdownRenders(
+            '*a **b*a **b' * count,
+            '<p>' + '<em>a **b</em>a **b' * count + '</p>'
+        )
+
 
 class TestProcessorRemoval(TestCase):
 
