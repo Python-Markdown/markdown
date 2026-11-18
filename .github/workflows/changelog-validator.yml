@@ -6,6 +6,9 @@ on:
     # Only run if changes were made to the changelog
     - 'docs/changelog.md'
 
+permissions:
+  contents: read
+
 jobs:
   validate-unreleased:
     # Validates changelog and confirms that an Unreleased entry exists.
@@ -13,10 +16,12 @@ jobs:
     if: ${{ ! contains(github.event.pull_request.labels.*.name, 'release') }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      with:
+        persist-credentials: false
     - name: Validate Changelog
       id: changelog_reader
-      uses: mindsers/changelog-reader-action@v2
+      uses: mindsers/changelog-reader-action@1faaf50aa09d5793d9a100819973df801febfb31 # v2.4.0
       with:
         validation_level: error
         path: docs/changelog.md
@@ -28,9 +33,11 @@ jobs:
     if: ${{ contains(github.event.pull_request.labels.*.name, 'release') }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      with:
+        persist-credentials: false
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4.9.1
       with:
         python-version: 3.11
     - name: Install Markdown
@@ -40,7 +47,7 @@ jobs:
       run: echo "version=$(python -c 'import markdown, semver; print(semver.Version.parse(markdown.__version__, optional_minor_and_patch=True))')" >> $GITHUB_OUTPUT
     - name: Validate Changelog
       id: changelog_reader
-      uses: mindsers/changelog-reader-action@v2
+      uses: mindsers/changelog-reader-action@1faaf50aa09d5793d9a100819973df801febfb31 # v2.4.0
       with:
         validation_level: error
         path: docs/changelog.md
