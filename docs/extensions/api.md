@@ -114,6 +114,33 @@ processor.  There are three methods:
 For perspective, Markdown calls `parseDocument` which calls `parseChunk` which calls `parseBlocks` which calls your
 block processor, which, in turn, might call one of these routines.
 
+#### Holding Blocks Across Calls
+
+A block which contains other blocks, such as a list item or an admonition, hands its content to the parser a block at a
+time, in a call for each. A block processor which needs to see a later block before it knows what to do with an
+earlier one may hold on to blocks across those calls, but must release them once no more are coming. The built-in
+processor for raw HTML blocks nested in other blocks does this for a raw HTML block with a blank line in it. Two
+methods of `BlockProcessor`, which do nothing unless overridden, are called for that:
+
+* [`end_blocks`][markdown.blockprocessors.BlockProcessor.end_blocks] is called with `parent` when a nested call to
+  the parser, which parsed blocks into `parent`, is done. The caller may do as it likes with `parent` once the call
+  returns, so anything held which no call still in progress can be counted on to hand more blocks to must be
+  released here.
+* [`finish`][markdown.blockprocessors.BlockProcessor.finish] is called when the outermost call to the parser is done.
+  Anything still held must be released here.
+
+This affects a block processor which calls the parser itself. If it parses into an element of its own, which is not in
+the tree being parsed (to move what is parsed somewhere else, for example), everything parsed is in that element by
+the time the call returns. If it parses into an element at the end of the tree being parsed, which a later call may
+hand more blocks to (as a list item is), what is held for that element may be added to it after the call returns: once
+a later block closes it, or once the outermost call is done.
+
+!!! warning
+
+    The parser calls these methods from [`parseBlocks`][markdown.blockparser.BlockParser.parseBlocks]. A subclass of
+    `BlockParser` which overrides `parseBlocks` must call the parent class's `parseBlocks` to parse the blocks.
+    Otherwise, blocks held by a block processor are never released, and their content is lost from the output.
+
 #### Example
 
 This example calls out important paragraphs by giving them a border.  It looks for a fence line of exclamation points
@@ -198,6 +225,7 @@ Some block processors in the Markdown source tree include:
 | [`HashHeaderProcessor`][markdown.blockprocessors.HashHeaderProcessor]            | built-in  |  Title hashes (`#`), which may split blocks |
 | [`HRProcessor`][markdown.blockprocessors.HRProcessor]                            | built-in  |  Horizontal lines, e.g., `---`              |
 | [`OListProcessor`][markdown.blockprocessors.OListProcessor]                      | built-in  |  Ordered lists; complex and using `state`   |
+| [`RawHtmlBlockProcessor`][markdown.blockprocessors.RawHtmlBlockProcessor]        | built-in  |  Nested raw HTML; holds blocks across calls |
 | [`AdmonitionProcessor`][markdown.extensions.admonition.AdmonitionProcessor]      | extension |  Render each [Admonition][] in a new `div`  |
 | [`FootnoteBlockProcessor`][markdown.extensions.footnotes.FootnoteBlockProcessor] | extension | Find footnote definitions and store for later use. |
 
