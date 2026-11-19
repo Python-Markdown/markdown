@@ -131,10 +131,11 @@ class InlineProcessor(Treeprocessor):
         """
         if not isinstance(data, util.AtomicString):
             startIndex = 0
-            count = len(self.inlinePatterns)
+            patterns = self.__patterns
+            count = len(patterns)
             while patternIndex < count:
                 data, matched, startIndex = self.__applyPattern(
-                    self.inlinePatterns[patternIndex], data, patternIndex, startIndex
+                    patterns[patternIndex], data, patternIndex, startIndex
                 )
                 if not matched:
                     patternIndex += 1
@@ -364,6 +365,9 @@ class InlineProcessor(Treeprocessor):
 
         """
         self.stashed_nodes: dict[str, etree.Element | str] = {}
+        # Get the sorted list of patterns once. Each index into the `Registry`
+        # checks the sort order and the key type, and looks up the item by name.
+        self.__patterns = list(self.inlinePatterns)
 
         # Ensure a valid parent list, but copy passed in lists
         # to ensure we don't have the user accidentally change it on us.
