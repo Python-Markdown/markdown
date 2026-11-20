@@ -50,6 +50,9 @@ See the [Contributing Guide](contributing.md) for details.
 * Fix quadratic processing time in emphasis handling for many unclosed openers
   which the rule of 3 keeps an ambiguous closer from pairing with, such as
   `*a **b` repeated.
+* Reduce processing time for inline patterns: the inline processor gets the
+  sorted list of patterns once for each document, instead of a look up in the
+  pattern registry for each pattern and each piece of text.
 
 ## [3.11.3] - 2026-11-05
 
