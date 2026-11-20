@@ -50,6 +50,10 @@ See the [Contributing Guide](contributing.md) for details.
 * Fix quadratic processing time in emphasis handling for many unclosed openers
   which the rule of 3 keeps an ambiguous closer from pairing with, such as
   `*a **b` repeated.
+* Abbreviation definitions in the `abbr` extension no longer span lines. A
+  line which starts with `*[` but is not a definition was read up to a later
+  definition in the same block, dropping the lines in between, and many such
+  lines in one block took quadratic time.
 
 ## [3.11.3] - 2026-11-05
 

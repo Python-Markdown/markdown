@@ -499,6 +499,35 @@ class TestAbbr(TestCase):
             )
         )
 
+    def test_abbr_after_bracket_line(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                *[sic]* marks a quoted error.
+                *[HTML]: Hyper Text Markup Language
+
+                HTML
+                """
+            ),
+            self.dedent(
+                """
+                <p><em>[sic]</em> marks a quoted error.</p>
+                <p><abbr title="Hyper Text Markup Language">HTML</abbr></p>
+                """
+            )
+        )
+
+    def test_abbr_many_bracket_lines(self):
+        """
+        Lines which start with `*[` but are not definitions should each be
+        checked on their own line rather than to the end of the block.
+        """
+        count = 20000
+        self.assertMarkdownRenders(
+            '*[a]\n' * count,
+            '<p>' + '*[a]\n' * (count - 1) + '*[a]</p>'
+        )
+
     def test_abbr_with_attr_list(self):
         self.assertMarkdownRenders(
             self.dedent(
