@@ -377,7 +377,7 @@ class TestErrors(unittest.TestCase):
         """ Test failure of an extension to load. """
         self.assertRaises(
             ImportError,
-            markdown.Markdown, extensions=['non_existant_ext']
+            markdown.Markdown, extensions=['non_existent_ext']
         )
 
     def testLoadBadExtension(self):
