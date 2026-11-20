@@ -141,7 +141,7 @@ class AbbrTreeprocessor(Treeprocessor):
 class AbbrBlockprocessor(BlockProcessor):
     """ Parse text for abbreviation references. """
 
-    RE = re.compile(r'^[*]\[(?P<abbr>[^\\]*?)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
+    RE = re.compile(r'^[*]\[(?P<abbr>[^\\\n]*?)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
 
     def __init__(self, parser: BlockParser, abbrs: dict):
         self.abbrs: dict = abbrs
