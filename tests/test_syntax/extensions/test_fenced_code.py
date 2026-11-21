@@ -336,24 +336,6 @@ class TestFencedCode(TestCase):
         pre = md.preprocessors['fenced_code_block']
         self.assertEqual(pre._serialize_attr('hidden', True), ' hidden="hidden"')
 
-    def testFencedCodeBoolAttrsCodehilite(self):
-        self.assertMarkdownRenders(
-            self.dedent(
-                '''
-                ``` { .python linenums=false }
-                # Some python code
-                ```
-                '''
-            ),
-            self.dedent(
-                '''
-                <div class="codehilite"><pre><span></span><code><span class="c1"># Some python code</span>
-                </code></pre></div>
-                '''
-            ),
-            extensions=['codehilite', 'fenced_code', 'attr_list']
-        )
-
     def testFencedCodeAttrNameSanitizedNoCodehiliteWithAttrList(self):
         # An attribute name is sanitized so it cannot break out of the `code` tag (see #1663).
         self.assertMarkdownRenders(
@@ -1199,4 +1181,29 @@ class TestFencedCodeWithCodehilite(TestCase):
                 ),
                 'fenced_code'
             ]
+        )
+
+    def test_bool_attrs(self):
+        # `False` is not passed on as an attribute when `codehilite` is enabled (see #1713).
+        if has_pygments:
+            expected = '''
+            <div class="codehilite"><pre><span></span><code><span class="c1"># Some python code</span>
+            </code></pre></div>
+            '''
+        else:
+            expected = '''
+            <pre class="codehilite"><code class="language-python"># Some python code
+            </code></pre>
+            '''
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ``` { .python linenums=false }
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(expected),
+            extensions=['codehilite', 'fenced_code', 'attr_list']
         )
