@@ -19,6 +19,8 @@ Copyright 2004 Manfred Stienstra (the original version)
 License: BSD (see LICENSE.md for details).
 """
 
+from markdown import Markdown
+from markdown.extensions.footnotes import FootnoteExtension
 from markdown.test_tools import TestCase
 
 
@@ -771,6 +773,16 @@ class TestFootnotes(TestCase):
             '</li>\n'
             '</ol>\n'
             '</div>'
+        )
+
+    def test_many_duplicate_footnote_references(self):
+        """Test that many references to one footnote get sequential ids."""
+        ext = FootnoteExtension()
+        Markdown(extensions=[ext]).convert('[^a]' * 2000 + '\n\n[^a]: A footnote.')
+        self.assertEqual(ext.found_refs, {'fnref:a': 2000})
+        self.assertEqual(
+            ext.used_refs,
+            {'fnref:a'} | {'fnref{}:a'.format(i) for i in range(2, 2001)}
         )
 
     def test_footnote_reference_without_definition(self):
