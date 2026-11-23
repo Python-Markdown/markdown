@@ -58,6 +58,24 @@ class TestMarkdownBasics(unittest.TestCase):
         """ Test simple input. """
         self.assertEqual(self.md.convert('foo'), '<p>foo</p>')
 
+    def testConvertReleasesDocument(self):
+        """ The parsed tree and source lines are not retained after convert(). """
+        from markdown.treeprocessors import InlineProcessor
+
+        md = markdown.Markdown(extensions=['extra', 'toc'])
+        doc = '# Title\n\nThis is a [link](https://example.com) with *emphasis*.\n'
+        first = md.convert(doc)
+        md.reset()
+        self.assertEqual(md.convert(doc), first)
+
+        self.assertEqual(md.lines, [])
+        self.assertIsNone(md.parser.root)
+        inline = next(
+            tp for tp in md.treeprocessors if isinstance(tp, InlineProcessor)
+        )
+        self.assertEqual(inline.parent_map, {})
+        self.assertEqual(inline.stashed_nodes, {})
+
     def testInstanceExtension(self):
         """ Test Extension loading with a class instance. """
         from markdown.extensions.footnotes import FootnoteExtension

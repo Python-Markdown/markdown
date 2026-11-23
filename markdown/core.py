@@ -368,6 +368,8 @@ class Markdown:
 
         # Parse the high-level elements.
         root = self.parser.parseDocument(self.lines).getroot()
+        # The source lines are no longer needed once parsed.
+        self.lines = []
 
         # Run the tree-processors
         for treeprocessor in self.treeprocessors:
@@ -377,6 +379,10 @@ class Markdown:
 
         # Serialize _properly_.  Strip top-level tags.
         output = self.serializer(root)
+        # The parsed tree is no longer needed once serialized.
+        root = None
+        newRoot = None
+        self.parser.root = None
         if self.stripTopLevelTags:
             try:
                 start = output.index(

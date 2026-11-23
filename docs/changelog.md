@@ -16,8 +16,13 @@ See the [Contributing Guide](contributing.md) for details.
 
 ### Fixed
 
+<<<<<<< HEAD
 * The `footnotes` extension no longer takes quadratic time to assign ids
   to many references to the same footnote.
+=======
+* Release the parsed tree and source lines after `convert()` so a reused `Markdown` instance no longer retains the last document in memory (#1725).
+
+>>>>>>> 3889b252 (Release parsed tree and source lines after convert() (#1725))
 * The `toc` extension no longer raises `TypeError` for a heading whose
   `data-toc-label` attribute is present but valueless, as the `attr_list`
   extension's bare-attribute syntax (`{: data-toc-label }`) writes it: like a
