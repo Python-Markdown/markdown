@@ -12,14 +12,14 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
-## [Unreleased]
+## [3.11.4] - 2026-11-25
 
 ### Fixed
 
 * Fix quadratic rendering time for many unclosed square brackets in links
   and images (#798).
 * The `footnotes` extension no longer takes quadratic time to assign ids
-  to many references to the same footnote.
+  to many references to the same footnote (#1726).
 * Release the parsed tree and source lines in `reset()` so a reused `Markdown`
   instance no longer retains the last document in memory (#1725).
 * The `toc` extension no longer raises `TypeError` for a heading whose
@@ -30,12 +30,13 @@ See the [Contributing Guide](contributing.md) for details.
   attribute is present but valueless, as the `attr_list` extension's
   bare-attribute syntax (`{id}`) writes it: like a heading with no `id` at
   all, it now gets a generated slug (#1705).
-* Fix for complex cases in new emphasis handling where text could be unexpectedly
-  dropped (#1694).
-* Fix rule of 3 handling in new emphasis handling where an opener skipped by the rule could still be paired
-  with the closer, dropping text.
-* Fix the unused part of a partially consumed closing delimiter run being classified using the replacement
-  placeholder instead of the text that preceded it.
+* Fix for complex cases in new emphasis handling where text could be
+  unexpectedly dropped (#1694).
+* Fix rule of 3 handling in new emphasis handling where an opener skipped by
+  the rule could still be paired with the closer, dropping text (#1694).
+* Fix the unused part of a partially consumed closing delimiter run being
+  classified using the replacement placeholder instead of the text that
+  preceded it (#1694).
 * Fix quadratic processing time in the `fenced_code` extension for documents
   with many fenced code blocks (#1660).
 * Reduce processing time for long blocks which are split into many smaller
@@ -46,7 +47,7 @@ See the [Contributing Guide](contributing.md) for details.
   nesting already is, instead of raising `RecursionError` on a deeply nested
   list. The markers which no longer nest are kept as text (#1679).
 * Fix quadratic-time splitting of a list block whose items span many lines,
-  which dominated the time taken to render a deeply nested list.
+  which dominated the time taken to render a deeply nested list (#1679).
 * Stop definition list nesting short of the recursion limit, so deeply nested
   definitions are kept as text instead of raising an uncaught
   `RecursionError` (#1700).
@@ -55,11 +56,11 @@ See the [Contributing Guide](contributing.md) for details.
   between them (#1704).
 * Fix quadratic processing time in emphasis handling for many unclosed openers
   which the rule of 3 keeps an ambiguous closer from pairing with, such as
-  `*a **b` repeated.
+  `*a **b` repeated (#1720).
 * Abbreviation definitions in the `abbr` extension no longer span lines. A
   line which starts with `*[` but is not a definition was read up to a later
   definition in the same block, dropping the lines in between, and many such
-  lines in one block took quadratic time.
+  lines in one block took quadratic time (#1728).
 
 ## [3.11.3] - 2026-11-05
 
@@ -68,26 +69,26 @@ See the [Contributing Guide](contributing.md) for details.
 * Fix cases in new emphasis handling that did not handle long chains of tokens
   like they should (#1690).
 * Fix quadratic-time parsing of many consecutive reference definitions, and of
-  many consecutive footnote definitions in the `footnotes` extension.
+  many consecutive footnote definitions in the `footnotes` extension (#1678).
 * Support automatic links with URL schemes other than HTTP and FTP, such as
   `<ssh://example.org>` (#1244).
 * Fix quadratic-time id generation in the `toc` extension when many headers
-  share the same text.
+  share the same text (#1673).
 * Ignore glossary abbreviations with empty definitions after inline elements,
-  consistently with abbreviations before inline elements.
+  consistently with abbreviations before inline elements (#1677).
 * Strip complete HTML tags with quoted `>` characters from `toc` labels and
-  generated heading IDs.
+  generated heading IDs (#1671).
 * Fix quadratic-time regex backtracking in `attr_list` when a block ends with an
   unclosed attribute list followed by a long run of spaces, e.g. a line
   consisting only of `{` and some text with many trailing spaces (#1656).
 * Fix quadratic-time regex backtracking in hash headers when a long run of `#`
-  characters is followed by more text on the same line.
+  characters is followed by more text on the same line (#1672).
 * Fix quadratic time when a document contains many unclosed HTML comments (`<!--`
-  with no matching `-->`).
-* Fix regression in `BacktickInlineProcessor` where text could be lost when opening
-  and closing backticks did not match (#1668).
-* Escape the language name in the `codehilite` extension's non-Pygments output to
-  maintain consistency with Pygments output.
+  with no matching `-->`) (#1676).
+* Fix regression in `BacktickInlineProcessor` where text could be lost when
+  opening and closing backticks did not match (#1668).
+* Escape the language name in the `codehilite` extension's non-Pygments output
+  to maintain consistency with Pygments output (#1667).
 * Preserve attributes without a value in the `attr_list` extension exactly as
   provided, rather than rendering them as `key="key"`, so the same source
   renders consistently under both the `html` and `xhtml` output formats
