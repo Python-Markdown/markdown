@@ -271,6 +271,12 @@ class Markdown:
         """
         self.htmlStash.reset()
         self.references.clear()
+        # The source lines and parsed tree of the last document are released
+        # here rather than in `convert`: both have long been reachable from
+        # the instance (`md.lines`, `md.parser.root`), and third-party
+        # extensions may read them until parsing is done.
+        self.lines = []
+        self.parser.root = None
 
         if self.delimiters is not None:
             self.delimiters.reset()
@@ -368,8 +374,6 @@ class Markdown:
 
         # Parse the high-level elements.
         root = self.parser.parseDocument(self.lines).getroot()
-        # The source lines are no longer needed once parsed.
-        self.lines = []
 
         # Run the tree-processors
         for treeprocessor in self.treeprocessors:
@@ -382,7 +386,6 @@ class Markdown:
         # The parsed tree is no longer needed once serialized.
         root = None
         newRoot = None
-        self.parser.root = None
         if self.stripTopLevelTags:
             try:
                 start = output.index(
