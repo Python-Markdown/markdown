@@ -492,6 +492,63 @@ class TestFencedCode(TestCase):
             extensions=['fenced_code', 'attr_list']
         )
 
+    def testFencedCodeBooleanAttrsHtmlOutput(self):
+        # Only `linenums` is parsed as a boolean; other values stay strings.
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```{.py hidden=true linenums=true}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-py" hidden="true" linenums="linenums"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list'],
+            output_format='html'
+        )
+
+    def testFencedCodeValuelessAttrWithoutCodehilite(self):
+        # A valueless attribute is written with its name as the value, like `attr_list` does.
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```{.py data-foo}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-py" data-foo="data-foo"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
+    def testFencedCodeBooleanAndStringAttrsMixed(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```{.py linenums=true title="a & b" nowrap=false}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-py" linenums="linenums" title="a &amp; b" nowrap="false"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
     def testMultipleFencedBlocks(self):
         self.assertMarkdownRenders(
             self.dedent(
