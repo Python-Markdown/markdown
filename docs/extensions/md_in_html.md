@@ -167,7 +167,7 @@ A Markdown paragraph.
 When the value of an element's `markdown` attribute is more permissive that its parent, then the parent's stricter
 behavior is enforced. For example, a `block` element nested within a `span` element will be parsed using the `span`
 behavior. However, if the value of an element's `markdown` attribute is the same as, or more restrictive than, its
-parent, the the child element's behavior is observed. For example, a `block` element may contain either `block`
+parent, the child element's behavior is observed. For example, a `block` element may contain either `block`
 elements or `span` elements as children and each element will be parsed using the specified behavior.
 
 ### Tag Normalization

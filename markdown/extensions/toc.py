@@ -400,16 +400,22 @@ class TocTreeprocessor(Treeprocessor):
                 name = strip_tags(innerhtml)
 
                 # Do not override pre-existing ids
-                if "id" not in el.attrib:
+                if not el.attrib.get("id"):
+                    # The `attr_list` extension writes bare attributes with a
+                    # value of None. A valueless id is no id at all, so a slug
+                    # is generated for it like for any other id-less heading.
                     el.attrib["id"] = unique(self.slugify(html.unescape(name), self.sep), used_ids, id_counters)
 
                 data_toc_label = ''
                 if 'data-toc-label' in el.attrib:
-                    data_toc_label = run_postprocessors(unescape(el.attrib['data-toc-label']), self.md)
-                    # Overwrite name with sanitized value of `data-toc-label`.
-                    name = escape_cdata(strip_tags(data_toc_label))
                     # Remove the data-toc-label attribute as it is no longer needed
-                    del el.attrib['data-toc-label']
+                    label = el.attrib.pop('data-toc-label')
+                    # The `attr_list` extension writes bare attributes with a value of
+                    # None. A valueless label is treated like a missing one.
+                    if label is not None:
+                        data_toc_label = run_postprocessors(unescape(label), self.md)
+                        # Overwrite name with sanitized value of `data-toc-label`.
+                        name = escape_cdata(strip_tags(data_toc_label))
 
                 if int(el.tag[-1]) >= self.toc_top and int(el.tag[-1]) <= self.toc_bottom:
                     toc_tokens.append({

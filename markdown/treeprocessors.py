@@ -416,6 +416,10 @@ class InlineProcessor(Treeprocessor):
                 for i, obj in enumerate(lst):
                     newChild = obj[0]
                     element.insert(i, newChild)
+        # The tree is fully processed; release the per-run caches so the
+        # parsed elements are not retained until the next convert().
+        self.parent_map = {}
+        self.stashed_nodes = {}
         return tree
 
 

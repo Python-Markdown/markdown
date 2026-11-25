@@ -263,3 +263,15 @@ class TestAdmonition(TestCase):
             ),
             extensions=['admonition']
         )
+
+    def test_many_lines_in_one_block(self):
+        """
+        Each header returns the rest of the block to be parsed again, so testing
+        the rest of the block for an admonition should not rescan it.
+        """
+        count = 3000
+        self.assertMarkdownRenders(
+            '# Header\n' * count,
+            '<h1>Header</h1>\n' * (count - 1) + '<h1>Header</h1>',
+            extensions=['admonition']
+        )

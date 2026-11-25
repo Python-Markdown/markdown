@@ -81,7 +81,7 @@ class TestCodeHiliteClass(TestCase):
                 '<pre class="codehilite"><code>&lt;?php print(&quot;Hello World&quot;); ?&gt;\n'
                 '</code></pre>'
             )
-        # Use PHP as the the starting `<?php` tag ensures an accurate guess.
+        # Use PHP as the starting `<?php` tag ensures an accurate guess.
         self.assertOutputEquals('<?php print("Hello World"); ?>', expected, guess_lang=True)
 
     def test_codehilite_guess_lang_plain_text(self):
@@ -742,7 +742,7 @@ class TestCodeHiliteExtension(TestCase):
                 '<pre class="codehilite"><code>&lt;?php print(&quot;Hello World&quot;); ?&gt;\n'
                 '</code></pre>'
             )
-        # Use PHP as the the starting `<?php` tag ensures an accurate guess.
+        # Use PHP as the starting `<?php` tag ensures an accurate guess.
         self.assertMarkdownRenders(
             '\t<?php print("Hello World"); ?>',
             expected,

@@ -22,6 +22,7 @@ License: BSD (see LICENSE.md for details).
 from markdown.test_tools import TestCase
 from markdown import Markdown
 from markdown.extensions.toc import TocExtension, strip_tags, unique
+from markdown.extensions.attr_list import AttrListExtension
 from markdown.extensions.nl2br import Nl2BrExtension
 
 
@@ -1573,4 +1574,75 @@ class testStripTags(TestCase):
         self.assertEqual(
             strip_tags('foo &lt; &amp; &lt; bar'),
             'foo &lt; &amp; &lt; bar'
+        )
+
+
+class TestTOCWithAttrList(TestCase):
+    """The `toc` extension together with `attr_list` (#1705, #1712)."""
+
+    maxDiff = None
+    default_kwargs = {
+        'extensions': [TocExtension(), AttrListExtension()]
+    }
+
+    def testBareIdAttribute(self):
+        # The `attr_list` extension writes bare attributes with a value of
+        # None. A valueless `id` is no id at all, so `toc` generates a slug
+        # for it like for any other id-less heading instead of raising a
+        # `TypeError`.
+        self.assertMarkdownRenders(
+            '#d {id}',
+            '<h1 id="d">d</h1>'
+        )
+
+    def testBareIdAttributeWithTOCMarker(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+
+                # Heading One {id}
+                '''
+            ),
+            '<div class="toc">\n'
+              '<ul>\n'                                                 # noqa
+                '<li><a href="#heading-one">Heading One</a></li>\n'   # noqa
+              '</ul>\n'                                                # noqa
+            '</div>\n'
+            '<h1 id="heading-one">Heading One</h1>'
+        )
+
+    def testBareDataTocLabelAttribute(self):
+        # A valueless `data-toc-label` is treated like a missing one: the
+        # heading text is used as the TOC name and the attribute is removed.
+        self.assertMarkdownRenders(
+            '# Hello {: data-toc-label }',
+            '<h1 id="hello">Hello</h1>',
+            expected_attrs={
+                'toc_tokens': [{
+                    'level': 1,
+                    'id': 'hello',
+                    'name': 'Hello',
+                    'html': 'Hello',
+                    'data-toc-label': '',
+                    'children': []
+                }]
+            }
+        )
+
+    def testBareDataTocLabelAttributeWithTOCMarker(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                [TOC]
+
+                # Heading One {: data-toc-label }
+                '''
+            ),
+            '<div class="toc">\n'
+              '<ul>\n'                                                 # noqa
+                '<li><a href="#heading-one">Heading One</a></li>\n'   # noqa
+              '</ul>\n'                                                # noqa
+            '</div>\n'
+            '<h1 id="heading-one">Heading One</h1>'
         )

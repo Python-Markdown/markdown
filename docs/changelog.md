@@ -17,7 +17,56 @@ See the [Contributing Guide](contributing.md) for details.
 ### Fixed
 
 * Fix quadratic rendering time for many unclosed square brackets in links
-  and images.
+  and images (#798).
+* The `footnotes` extension no longer takes quadratic time to assign ids
+  to many references to the same footnote.
+* Release the parsed tree and source lines in `reset()` so a reused `Markdown`
+  instance no longer retains the last document in memory (#1725).
+* The `toc` extension no longer raises `TypeError` for a heading whose
+  `data-toc-label` attribute is present but valueless, as the `attr_list`
+  extension's bare-attribute syntax (`{: data-toc-label }`) writes it: like a
+  heading with no `data-toc-label`, its text is used as the TOC name (#1712).
+* The `toc` extension no longer raises `TypeError` for a heading whose `id`
+  attribute is present but valueless, as the `attr_list` extension's
+  bare-attribute syntax (`{id}`) writes it: like a heading with no `id` at
+  all, it now gets a generated slug (#1705).
+* Fix for complex cases in new emphasis handling where text could be unexpectedly
+  dropped (#1694).
+* Fix rule of 3 handling in new emphasis handling where an opener skipped by the rule could still be paired
+  with the closer, dropping text.
+* Fix the unused part of a partially consumed closing delimiter run being classified using the replacement
+  placeholder instead of the text that preceded it.
+* Fix quadratic processing time in the `fenced_code` extension for documents
+  with many fenced code blocks (#1660).
+* Reduce processing time for long blocks which are split into many smaller
+  blocks: the rest of the block is no longer scanned with a regular expression
+  for a hash header or an admonition when it cannot contain one, and Setext
+  headers no longer split and rejoin the rest of the block (#1703).
+* Stop list nesting short of the interpreter's recursion limit, as blockquote
+  nesting already is, instead of raising `RecursionError` on a deeply nested
+  list. The markers which no longer nest are kept as text (#1679).
+* Fix quadratic-time splitting of a list block whose items span many lines,
+  which dominated the time taken to render a deeply nested list.
+* Stop definition list nesting short of the recursion limit, so deeply nested
+  definitions are kept as text instead of raising an uncaught
+  `RecursionError` (#1700).
+* Fix quadratic processing time in the `tables` extension for long blocks which
+  are split into many smaller blocks, such as many headers with no blank lines
+  between them (#1704).
+* Fix quadratic processing time in emphasis handling for many unclosed openers
+  which the rule of 3 keeps an ambiguous closer from pairing with, such as
+  `*a **b` repeated.
+* Abbreviation definitions in the `abbr` extension no longer span lines. A
+  line which starts with `*[` but is not a definition was read up to a later
+  definition in the same block, dropping the lines in between, and many such
+  lines in one block took quadratic time.
+
+## [3.11.3] - 2026-11-05
+
+### Fixed
+
+* Fix cases in new emphasis handling that did not handle long chains of tokens
+  like they should (#1690).
 * Fix quadratic-time parsing of many consecutive reference definitions, and of
   many consecutive footnote definitions in the `footnotes` extension.
 * Support automatic links with URL schemes other than HTTP and FTP, such as

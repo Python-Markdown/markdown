@@ -79,7 +79,7 @@ While Python-Markdown strives to fully implement markdown as described in the
 [syntax rules](https://daringfireball.net/projects/markdown/syntax), the rules
 can be interpreted in different ways and different implementations
 occasionally vary in their behavior (see the
-[Babelmark FAQ](https://johnmacfarlane.net/babelmark2/faq.html#what-are-some-examples-of-interesting-divergences-between-implementations)
+[Babelmark FAQ](https://babelmark.github.io/faq/#what-are-some-examples-of-interesting-divergences-between-implementations)
 for some examples). Known and intentional differences found in Python-Markdown
 are summarized below:
 

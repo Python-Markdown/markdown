@@ -76,6 +76,7 @@ class FootnoteExtension(Extension):
         self.unique_prefix = 0
         self.found_refs: dict[str, int] = {}
         self.used_refs: set[str] = set()
+        self.last_refs: dict[str, str] = {}
 
         # Backward compatibility with old '%d' placeholder
         self.setConfig('BACKLINK_TITLE', self.getConfig("BACKLINK_TITLE").replace("%d", "{}"))
@@ -107,7 +108,7 @@ class FootnoteExtension(Extension):
         md.inlinePatterns.register(FootnoteInlineProcessor(FOOTNOTE_RE, self), 'footnote', 175)
         # Insert a tree-processor that would actually add the footnote div
         # This must be before all other tree-processors (i.e., `inline` and
-        # `codehilite`) so they can run on the the contents of the div.
+        # `codehilite`) so they can run on the contents of the div.
         md.treeprocessors.register(FootnoteTreeprocessor(self), 'footnote', 50)
 
         # Insert a tree-processor to reorder the footnotes if necessary. This must be after
@@ -132,6 +133,7 @@ class FootnoteExtension(Extension):
         self.unique_prefix += 1
         self.found_refs = {}
         self.used_refs = set()
+        self.last_refs = {}
 
     def unique_ref(self, reference: str, found: bool = False) -> str:
         """ Get a unique reference if there are duplicates. """
@@ -139,6 +141,10 @@ class FootnoteExtension(Extension):
             return reference
 
         original_ref = reference
+        # Resume from the last reference issued for this footnote. Every reference
+        # before it is already in `used_refs`, so restarting from `original_ref` would
+        # only rebuild them all again, which is quadratic in the number of duplicates.
+        reference = self.last_refs.get(original_ref, original_ref)
         while reference in self.used_refs:
             ref, rest = reference.split(self.get_separator(), 1)
             m = RE_REF_ID.match(ref)
@@ -148,6 +154,7 @@ class FootnoteExtension(Extension):
                 reference = '%s%d%s%s' % (ref, 2, self.get_separator(), rest)
 
         self.used_refs.add(reference)
+        self.last_refs[original_ref] = reference
         if original_ref in self.found_refs:
             self.found_refs[original_ref] += 1
         else:

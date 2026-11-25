@@ -465,7 +465,7 @@ html = JustHTML(fragment).to_html()
 ```
 ///
 
-Each page contains it's own isolated environment. Objects defined on one page
+Each page contains its own isolated environment. Objects defined on one page
 will not be available on another page and would need to be redefined.
 
 Output will be generated if one of three conditions are met. Whichever

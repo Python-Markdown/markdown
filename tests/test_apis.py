@@ -58,6 +58,30 @@ class TestMarkdownBasics(unittest.TestCase):
         """ Test simple input. """
         self.assertEqual(self.md.convert('foo'), '<p>foo</p>')
 
+    def testConvertReleasesDocument(self):
+        """ The parsed tree and source lines are released by `reset()`. """
+        from markdown.treeprocessors import InlineProcessor
+
+        md = markdown.Markdown(extensions=['extra', 'toc'])
+        doc = '# Title\n\nThis is a [link](https://example.com) with *emphasis*.\n'
+        first = md.convert(doc)
+        # `md.lines` and `md.parser.root` stay available after parsing, as
+        # third-party extensions may read them, and are released by `reset()`.
+        self.assertTrue(md.lines)
+        self.assertIsNotNone(md.parser.root)
+        md.reset()
+        self.assertEqual(md.lines, [])
+        self.assertIsNone(md.parser.root)
+        self.assertEqual(md.convert(doc), first)
+        md.reset()
+        self.assertEqual(md.lines, [])
+        self.assertIsNone(md.parser.root)
+        inline = next(
+            tp for tp in md.treeprocessors if isinstance(tp, InlineProcessor)
+        )
+        self.assertEqual(inline.parent_map, {})
+        self.assertEqual(inline.stashed_nodes, {})
+
     def testInstanceExtension(self):
         """ Test Extension loading with a class instance. """
         from markdown.extensions.footnotes import FootnoteExtension
@@ -377,7 +401,7 @@ class TestErrors(unittest.TestCase):
         """ Test failure of an extension to load. """
         self.assertRaises(
             ImportError,
-            markdown.Markdown, extensions=['non_existant_ext']
+            markdown.Markdown, extensions=['non_existent_ext']
         )
 
     def testLoadBadExtension(self):
