@@ -164,6 +164,19 @@ class TestInlineLinks(TestCase):
             '<p><a href="?}]*+|&amp;)">test nonsense</a>.</p>'
         )
 
+    def test_unclosed_square_brackets(self):
+        self.assertMarkdownRenders(
+            '[[[Text](http://link.com) [more [text',
+            '<p>[[<a href="http://link.com">Text</a> [more [text</p>'
+        )
+
+    def test_many_unclosed_square_brackets(self):
+        # Each unclosed bracket used to rescan the rest of the text.
+        self.assertMarkdownRenders(
+            '[[' * 10000 + '[Text](http://link.com)',
+            '<p>' + '[[' * 10000 + '<a href="http://link.com">Text</a></p>'
+        )
+
 
 class TestReferenceLinks(TestCase):
 

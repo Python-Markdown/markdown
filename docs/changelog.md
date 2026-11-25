@@ -12,10 +12,12 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
-## Unreleased
+## [Unreleased]
 
 ### Fixed
 
+* Fix quadratic rendering time for many unclosed square brackets in links
+  and images (#798).
 * The `footnotes` extension no longer takes quadratic time to assign ids
   to many references to the same footnote.
 * Release the parsed tree and source lines in `reset()` so a reused `Markdown`
