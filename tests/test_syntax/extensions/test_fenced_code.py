@@ -535,18 +535,51 @@ class TestFencedCode(TestCase):
         self.assertMarkdownRenders(
             self.dedent(
                 '''
-                ```{.py linenums=true title="a & b" nowrap=false}
+                ```{.py linenums=true title="a & b" guess_lang=false}
                 # Some python code
                 ```
                 '''
             ),
             self.dedent(
                 '''
-                <pre><code class="language-py" linenums="linenums" title="a &amp; b" nowrap="false"># Some python code
+                <pre><code class="language-py" linenums="linenums" title="a &amp; b"># Some python code
                 </code></pre>
                 '''
             ),
             extensions=['fenced_code', 'attr_list']
+        )
+
+    def testFencedCodeBooleanAttrsXhtmlOutput(self):
+        # Explicit `xhtml` output: the same as the default.
+        self.assertMarkdownRenders(
+            '```{.py hidden=true linenums=true}\n# Some python code\n```',
+            '<pre><code class="language-py" hidden="true" linenums="linenums"># Some python code\n</code></pre>',
+            extensions=['fenced_code', 'attr_list'],
+            output_format='xhtml'
+        )
+
+    def testFencedCodeFalseBooleanAttrHtmlOutput(self):
+        self.assertMarkdownRenders(
+            '```{.py linenums=false}\n# Some python code\n```',
+            '<pre><code class="language-py"># Some python code\n</code></pre>',
+            extensions=['fenced_code', 'attr_list'],
+            output_format='html'
+        )
+
+    def testFencedCodeValuelessAttrHtmlOutput(self):
+        self.assertMarkdownRenders(
+            '```{.py data-foo}\n# Some python code\n```',
+            '<pre><code class="language-py" data-foo="data-foo"># Some python code\n</code></pre>',
+            extensions=['fenced_code', 'attr_list'],
+            output_format='html'
+        )
+
+    def testFencedCodeBooleanAndStringAttrsMixedHtmlOutput(self):
+        self.assertMarkdownRenders(
+            '```{.py linenums=true title="a & b" guess_lang=false}\n# Some python code\n```',
+            '<pre><code class="language-py" linenums="linenums" title="a &amp; b"># Some python code\n</code></pre>',
+            extensions=['fenced_code', 'attr_list'],
+            output_format='html'
         )
 
     def testMultipleFencedBlocks(self):
