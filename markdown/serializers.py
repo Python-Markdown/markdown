@@ -48,12 +48,12 @@ from __future__ import annotations
 from xml.etree.ElementTree import ProcessingInstruction
 from xml.etree.ElementTree import Comment, ElementTree, Element, QName, HTML_EMPTY
 import re
-from collections import deque
 from typing import Callable, Literal, NoReturn
 
 __all__ = ['to_html_string', 'to_xhtml_string']
 
 RE_AMP = re.compile(r'&(?!(?:\#[0-9]+|\#x[0-9a-f]+|[0-9a-z]+);)', re.I)
+_RAW_TEXT_TAGS = frozenset(('script', 'style'))
 
 # Known boolean attributes, whose presence alone carries the meaning and
 # which may therefore be rendered in the minimized (valueless) form. The
@@ -138,12 +138,16 @@ def _escape_attrib_html(text: str) -> str:
 
 
 def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal["html", "xhtml"]) -> None:
-    stack: deque[Element | str] = deque([elem])
+    stack: list[Element | str] = [elem]
+    is_html = format == "html"
+    is_xhtml = format == "xhtml"
+    html_bool_attrs = BOOLEAN_ATTRIBUTES['html']
+    append = stack.append
+    extend = stack.extend
+    pop = stack.pop
 
-    count = 0
     while stack:
-        count += 1
-        el = stack.popleft()
+        el = pop()
 
         if isinstance(el, str):
             write(el)
@@ -161,8 +165,9 @@ def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal
                 write(_escape_cdata(text))
             # Add the children in reverse order so we process them in the right order.
             if el.tail:
-                stack.appendleft(_escape_cdata(el.tail))
-            stack.extendleft(reversed(el))
+                append(_escape_cdata(el.tail))
+            if len(el):
+                extend(reversed(el))
             continue
         else:
             namespace_uri = None
@@ -172,47 +177,71 @@ def _serialize_html(write: Callable[[str], None], elem: Element, format: Literal
                     namespace_uri, tag = tag.text[1:].split("}", 1)
                 else:
                     raise ValueError('QName objects must define a tag.')
-            write(f"<{tag}")
-            items = el.items()
-            if items:
-                items = sorted(items)  # lexical order
-                for k, v in items:
-                    if isinstance(k, QName):
-                        # Assume a text only `QName`
-                        k = k.text
-                    if isinstance(v, QName):
-                        # Assume a text only `QName`
-                        v = v.text
-                    if v is None:
-                        # A valueless attribute is preserved exactly as it
-                        # was provided: render the bare attribute name.
-                        write(f" {k}")
-                    else:
-                        v = _escape_attrib_html(v)
-                        if k == v and format == 'html' and k in BOOLEAN_ATTRIBUTES['html']:
-                            # handle boolean attributes
-                            write(f" {v}")
+            tag_lower = tag.lower()
+            is_empty = tag_lower in HTML_EMPTY
+            attrib = el.attrib
+            if attrib or namespace_uri:
+                write(f"<{tag}")
+                if attrib:
+                    items = list(attrib.items())
+                    if len(items) > 1:
+                        items.sort()  # lexical order
+                    for k, v in items:
+                        if isinstance(k, QName):
+                            # Assume a text only `QName`
+                            k = k.text
+                        if isinstance(v, QName):
+                            # Assume a text only `QName`
+                            v = v.text
+                        if v is None:
+                            # A valueless attribute is preserved exactly as it
+                            # was provided: render the bare attribute name.
+                            write(f" {k}")
                         else:
-                            write(f' {k}="{v}"')
-            if namespace_uri:
-                write(f' xmlns="{_escape_attrib(namespace_uri)}"')
-            if format == "xhtml" and tag.lower() in HTML_EMPTY:
-                write(" />")
-            else:
+                            v = _escape_attrib_html(v)
+                            if k == v and is_html and k in html_bool_attrs:
+                                # handle boolean attributes
+                                write(f" {v}")
+                            else:
+                                write(f' {k}="{v}"')
+                if namespace_uri:
+                    write(f' xmlns="{_escape_attrib(namespace_uri)}"')
+                if is_xhtml and is_empty:
+                    write(" />")
+                    if el.tail:
+                        write(_escape_cdata(el.tail))
+                    continue
                 write(">")
-                if text:
-                    if tag.lower() in ["script", "style"]:
-                        write(text)
-                    else:
-                        write(_escape_cdata(text))
-                # Add the tail, end tag, and then the children in reverse order.
-                # Since we pop from the left, this will ensure results are ordered correctly.
+            elif is_xhtml and is_empty:
+                write(f"<{tag} />")
                 if el.tail:
-                    stack.appendleft(_escape_cdata(el.tail))
-                if tag.lower() not in HTML_EMPTY:
-                    stack.appendleft(f"</{tag}>")
-                stack.extendleft(reversed(el))
+                    write(_escape_cdata(el.tail))
                 continue
+            else:
+                write(f"<{tag}>")
+
+            if not len(el):
+                if text:
+                    escaped = text if tag_lower in _RAW_TEXT_TAGS else _escape_cdata(text)
+                    write(escaped if is_empty else f"{escaped}</{tag}>")
+                elif not is_empty:
+                    write(f"</{tag}>")
+                if el.tail:
+                    write(_escape_cdata(el.tail))
+                continue
+
+            if text:
+                if tag_lower in _RAW_TEXT_TAGS:
+                    write(text)
+                else:
+                    write(_escape_cdata(text))
+            # Push tail, end tag, and children in reverse order for LIFO traversal.
+            if el.tail:
+                append(_escape_cdata(el.tail))
+            if not is_empty:
+                append(f"</{tag}>")
+            extend(reversed(el))
+            continue
         if el.tail:
             write(_escape_cdata(el.tail))
 

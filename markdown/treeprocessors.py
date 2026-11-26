@@ -26,6 +26,7 @@ references, or last minute adjustments.
 
 from __future__ import annotations
 
+from collections import deque
 import re
 import xml.etree.ElementTree as etree
 from typing import TYPE_CHECKING, Any
@@ -86,6 +87,9 @@ class InlineProcessor(Treeprocessor):
         self.md = md
         self.inlinePatterns = md.inlinePatterns
         self.ancestors: list[str] = []
+        self._patterns: list[
+            tuple[inlinepatterns.Pattern, bool, re.Pattern[str], tuple[str, ...]]
+        ] | None = None
 
     def __makePlaceholder(self, type: str) -> tuple[str, str]:
         """ Generate a placeholder """
@@ -131,13 +135,24 @@ class InlineProcessor(Treeprocessor):
         """
         if not isinstance(data, util.AtomicString):
             startIndex = 0
-            count = len(self.inlinePatterns)
-            while patternIndex < count:
-                data, matched, startIndex = self.__applyPattern(
-                    self.inlinePatterns[patternIndex], data, patternIndex, startIndex
-                )
-                if not matched:
-                    patternIndex += 1
+            patterns = self._patterns
+            if patterns is not None:
+                count = len(patterns)
+                while patternIndex < count:
+                    pattern, new_style, compiled_re, excludes = patterns[patternIndex]
+                    data, matched, startIndex = self.__applyPattern(
+                        pattern, data, patternIndex, startIndex, new_style, compiled_re, excludes
+                    )
+                    if not matched:
+                        patternIndex += 1
+            else:  # pragma: no cover
+                count = len(self.inlinePatterns)
+                while patternIndex < count:
+                    data, matched, startIndex = self.__applyPattern(
+                        self.inlinePatterns[patternIndex], data, patternIndex, startIndex
+                    )
+                    if not matched:
+                        patternIndex += 1
         return data
 
     def __processElementText(self, node: etree.Element, subnode: etree.Element, isText: bool = True) -> None:
@@ -255,7 +270,10 @@ class InlineProcessor(Treeprocessor):
         pattern: inlinepatterns.Pattern,
         data: str,
         patternIndex: int,
-        startIndex: int = 0
+        startIndex: int = 0,
+        new_style: bool | None = None,
+        compiled_re: re.Pattern[str] | None = None,
+        excludes: tuple[str, ...] | None = None,
     ) -> tuple[str, bool, int]:
         """
         Check if the line fits the pattern, create the necessary
@@ -271,18 +289,28 @@ class InlineProcessor(Treeprocessor):
             String with placeholders instead of `ElementTree` elements.
 
         """
-        new_style = isinstance(pattern, inlinepatterns.InlineProcessor)
+        if new_style is None:
+            new_style = isinstance(pattern, inlinepatterns.InlineProcessor)
 
-        for exclude in pattern.ANCESTOR_EXCLUDES:
-            if exclude.lower() in self.ancestors:
-                return data, False, 0
+        if excludes is None:
+            for exclude in pattern.ANCESTOR_EXCLUDES:
+                if exclude.lower() in self.ancestors:
+                    return data, False, 0
+        elif excludes and self.ancestors:
+            ancestors = self.ancestors
+            for exclude in excludes:
+                if exclude in ancestors:
+                    return data, False, 0
+
+        if compiled_re is None:
+            compiled_re = pattern.getCompiledRegExp()
 
         if new_style:
             match = None
             # Since `handleMatch` may reject our first match,
             # we iterate over the buffer looking for matches
             # until we can't find any more.
-            for match in pattern.getCompiledRegExp().finditer(data, startIndex):
+            for match in compiled_re.finditer(data, startIndex):
                 node, start, end = pattern.handleMatch(match, data)
                 if start is None or end is None:
                     startIndex += match.end(0)
@@ -290,7 +318,7 @@ class InlineProcessor(Treeprocessor):
                     continue
                 break
         else:  # pragma: no cover
-            match = pattern.getCompiledRegExp().match(data[startIndex:])
+            match = compiled_re.match(data[startIndex:])
             leftData = data[:startIndex]
 
         if not match:
@@ -364,17 +392,26 @@ class InlineProcessor(Treeprocessor):
 
         """
         self.stashed_nodes: dict[str, etree.Element | str] = {}
+        self._patterns: list[tuple[inlinepatterns.Pattern, bool, re.Pattern[str], tuple[str, ...]]] | None = [
+            (
+                p,
+                isinstance(p, inlinepatterns.InlineProcessor),
+                p.getCompiledRegExp(),
+                tuple(e.lower() for e in p.ANCESTOR_EXCLUDES),
+            )
+            for p in self.inlinePatterns
+        ]
 
         # Ensure a valid parent list, but copy passed in lists
         # to ensure we don't have the user accidentally change it on us.
         tree_parents = [] if ancestors is None else ancestors[:]
 
         self.parent_map = {c: p for p in tree.iter() for c in p}
-        stack = [(tree, tree_parents)]
+        stack: deque[tuple[etree.Element, list[str]]] = deque([(tree, tree_parents)])
         self.__build_ancestors(tree, tree_parents)
 
         while stack:
-            currElement, parents = stack.pop(0)
+            currElement, parents = stack.popleft()
 
             self.ancestors = parents
             if currElement is not tree:
@@ -420,6 +457,7 @@ class InlineProcessor(Treeprocessor):
         # parsed elements are not retained until the next convert().
         self.parent_map = {}
         self.stashed_nodes = {}
+        self._patterns = None
         return tree
 
 
