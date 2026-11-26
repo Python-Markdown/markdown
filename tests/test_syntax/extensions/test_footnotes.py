@@ -631,6 +631,67 @@ class TestFootnotes(TestCase):
             '</div>'
         )
 
+    def test_indented_footnote_definition_within_footnote_definition(self):
+        """Test an indented footnote definition within a footnote definition.
+
+        Footnote definitions are not recognized within a footnote definition
+        (matching PHP Markdown Extra): the nested definition remains as text
+        in the parent footnote rather than being dropped or extracted.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Main[^1].
+
+                [^1]: First
+
+                    [^2]: Second
+                """
+            ),
+            '<p>Main<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>First</p>\n'
+            '<p>[^2]: Second&#160;<a class="footnote-backref" href="#fnref:1" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
+    def test_referenced_indented_footnote_definition_within_footnote_definition(self):
+        """Test a reference to an indented definition nested in a footnote.
+
+        As the nested definition is not recognized, the reference is not
+        resolved either and remains as text; no dead `#fn:2` anchor is made.
+        """
+
+        self.assertMarkdownRenders(
+            self.dedent(
+                """
+                Main[^1].
+
+                [^1]: First [^2]
+
+                    [^2]: Second
+                """
+            ),
+            '<p>Main<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>\n'
+            '<div class="footnote">\n'
+            '<hr />\n'
+            '<ol>\n'
+            '<li id="fn:1">\n'
+            '<p>First [^2]</p>\n'
+            '<p>[^2]: Second&#160;<a class="footnote-backref" href="#fnref:1" '
+            'title="Jump back to footnote 1 in the text">&#8617;</a></p>\n'
+            '</li>\n'
+            '</ol>\n'
+            '</div>'
+        )
+
     def test_footnote_reference_within_blockquote(self):
         """Test footnote reference within a blockquote."""
 

@@ -20,7 +20,7 @@ for details.
 from __future__ import annotations
 
 from . import Extension
-from ..blockprocessors import BlockProcessor
+from ..blockprocessors import BlockProcessor, ReferenceProcessor
 from ..inlinepatterns import InlineProcessor
 from ..treeprocessors import Treeprocessor
 from ..postprocessors import Postprocessor
@@ -89,6 +89,7 @@ class FootnoteExtension(Extension):
         | Class Instance                                                              | Registry                                                         | Name   | Priority |
         | --------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------ | :------: |
         | [`FootnoteBlockProcessor`][markdown.extensions.footnotes.FootnoteBlockProcessor] | [`blockprocessors`][markdown.blockprocessors.build_block_parser] | `footnote` | `17` |
+        | [`FootnoteReferenceProcessor`][markdown.extensions.footnotes.FootnoteReferenceProcessor] | [`blockprocessors`][markdown.blockprocessors.build_block_parser] | `reference` | `15` |
         | [`FootnoteInlineProcessor`][markdown.extensions.footnotes.FootnoteInlineProcessor] | [`inlinepatterns`][markdown.inlinepatterns.build_inlinepatterns] | `footnote` | `175` |
         | [`FootnoteTreeprocessor`][markdown.extensions.footnotes.FootnoteTreeprocessor] | [`treeprocessors`][markdown.treeprocessors.build_treeprocessors] | `footnote` | `50` |
         | [`FootnoteReorderingProcessor`][markdown.extensions.footnotes.FootnoteReorderingProcessor] | [`treeprocessors`][markdown.treeprocessors.build_treeprocessors] | `footnote-reorder` | `19` |
@@ -102,6 +103,12 @@ class FootnoteExtension(Extension):
         self.md = md
         # Insert a `blockprocessor` before `ReferencePreprocessor`
         md.parser.blockprocessors.register(FootnoteBlockProcessor(self), 'footnote', 17)
+
+        # Replace the core `ReferenceProcessor` (same name and priority)
+        # while this extension is loaded, so a definition starting with
+        # `^` is never taken as a link reference. Without the extension
+        # the core processor -- and its behavior -- is untouched.
+        md.parser.blockprocessors.register(FootnoteReferenceProcessor(md.parser), 'reference', 15)
 
         # Insert an inline pattern before `ImageReferencePattern`
         FOOTNOTE_RE = r'\[\^([^\]]*)\]'  # blah blah [^1] blah
@@ -134,6 +141,10 @@ class FootnoteExtension(Extension):
         self.found_refs = {}
         self.used_refs = set()
         self.last_refs = {}
+        # While footnote content is being rendered, definitions found in it
+        # are not recognized (matching PHP Markdown Extra): a definition
+        # nested in another footnote's content remains part of that content.
+        self.parsing_footnotes = False
 
     def unique_ref(self, reference: str, found: bool = False) -> str:
         """ Get a unique reference if there are duplicates. """
@@ -226,7 +237,11 @@ class FootnoteExtension(Extension):
             # Parse footnote with surrogate parent as `li` cannot be used.
             # List block handlers have special logic to deal with `li`.
             # When we are done parsing, we will copy everything over to `li`.
-            self.parser.parseChunk(surrogate_parent, self.footnotes[id])
+            self.parsing_footnotes = True
+            try:
+                self.parser.parseChunk(surrogate_parent, self.footnotes[id])
+            finally:
+                self.parsing_footnotes = False
             for el in list(surrogate_parent):
                 li.append(el)
                 surrogate_parent.remove(el)
@@ -250,6 +265,28 @@ class FootnoteExtension(Extension):
         return div
 
 
+class FootnoteReferenceProcessor(ReferenceProcessor):
+    """ Process link references, except footnote definitions.
+
+    The core knows nothing about extensions, so the core
+    `ReferenceProcessor` is replaced -- only while this extension is
+    loaded -- with one that does not treat a definition whose
+    identifier starts with `^` as a link reference: that is footnote
+    definition syntax. This matters inside footnote content, where
+    the `FootnoteBlockProcessor` is disabled: without this, a nested
+    definition would be swallowed as a link reference instead of
+    remaining as text in the parent footnote.
+
+    The pattern is `ReferenceProcessor.RE` with a negative look-ahead
+    for a leading `^` on the identifier; keep the two in sync.
+    """
+
+    RE = re.compile(
+        r'^[ ]{0,3}\[((?!\^)[^\[\]]*)\]:[ ]*(?:\n[ ]*)?([^\s]+)[ ]*(?:\n[ ]*)?((["\'])(.*)\4[ ]*|\((.*)\)[ ]*)?$',
+        re.MULTILINE
+    )
+
+
 class FootnoteBlockProcessor(BlockProcessor):
     """ Find footnote definitions and store for later use. """
 
@@ -265,6 +302,13 @@ class FootnoteBlockProcessor(BlockProcessor):
     def run(self, parent: etree.Element, blocks: list[str]) -> bool:
         """ Find, set, and remove footnote definitions. """
         block = blocks.pop(0)
+
+        if self.footnotes.parsing_footnotes:
+            # Footnote definitions are not recognized within a footnote
+            # definition. Leave the block as content of the footnote
+            # currently being rendered.
+            blocks.insert(0, block)
+            return False
 
         m = self.RE.search(block)
         if m:

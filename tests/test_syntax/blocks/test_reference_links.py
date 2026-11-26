@@ -30,6 +30,18 @@ class TestReferenceLinks(TestCase):
             '<p><a href="http://example.com">Text</a></p>'
         )
 
+    def test_reference_link_with_caret_id(self):
+        """A `^`-leading id is still a link reference without extensions.
+
+        The `footnotes` extension (see #1681) stops treating such ids as
+        link references while it is loaded, but the core must keep
+        working as normal on its own.
+        """
+        self.assertMarkdownRenders(
+            '[Text][^a]\n\n[^a]: http://example.com',
+            '<p><a href="http://example.com">Text</a></p>'
+        )
+
     def test_reference_link_split_across_lines(self):
         self.assertMarkdownRenders(
             '[Text][id]\n\n[id]:\nhttp://example.com',
