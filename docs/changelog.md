@@ -12,6 +12,19 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
+## Unreleased
+
+### Fixed
+
+* Footnote definitions are no longer recognized within a footnote definition,
+  matching PHP Markdown Extra: an indented definition nested in another
+  footnote's content now remains as text in the parent footnote instead of
+  being silently dropped and leaving references pointing at a missing
+  `#fn:` anchor (#1681). When the `footnotes` extension is enabled, link
+  reference definitions can no longer use an identifier starting with `^`,
+  which is footnote definition syntax; without the extension the core
+  behavior is unchanged.
+
 ## [3.11.4] - 2026-11-25
 
 ### Fixed
@@ -26,14 +39,6 @@ See the [Contributing Guide](contributing.md) for details.
   `data-toc-label` attribute is present but valueless, as the `attr_list`
   extension's bare-attribute syntax (`{: data-toc-label }`) writes it: like a
   heading with no `data-toc-label`, its text is used as the TOC name (#1712).
-* Footnote definitions are no longer recognized within a footnote definition,
-  matching PHP Markdown Extra: an indented definition nested in another
-  footnote's content now remains as text in the parent footnote instead of
-  being silently dropped and leaving references pointing at a missing
-  `#fn:` anchor (#1681). When the `footnotes` extension is enabled, link
-  reference definitions can no longer use an identifier starting with `^`,
-  which is footnote definition syntax; without the extension the core
-  behavior is unchanged.
 * The `toc` extension no longer raises `TypeError` for a heading whose `id`
   attribute is present but valueless, as the `attr_list` extension's
   bare-attribute syntax (`{id}`) writes it: like a heading with no `id` at
