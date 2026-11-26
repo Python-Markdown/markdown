@@ -277,7 +277,7 @@ class FootnoteReferenceProcessor(ReferenceProcessor):
     definition would be swallowed as a link reference instead of
     remaining as text in the parent footnote.
 
-    The pattern is `ReferenceProcessor.RE` with a negative lookahead
+    The pattern is `ReferenceProcessor.RE` with a negative look-ahead
     for a leading `^` on the identifier; keep the two in sync.
     """
 
