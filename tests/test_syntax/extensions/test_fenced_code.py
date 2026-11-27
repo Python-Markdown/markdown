@@ -455,6 +455,133 @@ class TestFencedCode(TestCase):
             extensions=['fenced_code', 'attr_list']
         )
 
+    def testFencedCodeBooleanAttrsWithoutCodehilite(self):
+        # Boolean options are serialized like `attr_list` attributes when `codehilite` is not enabled (#1713).
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```{.py linenums=true}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-py" linenums="linenums"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
+    def testFencedCodeFalseBooleanAttrWithoutCodehilite(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```{.py linenums=false}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-py"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
+    def testFencedCodeBooleanAttrsHtmlOutput(self):
+        # Only `linenums` is parsed as a boolean; other values stay strings.
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```{.py hidden=true linenums=true}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-py" hidden="true" linenums="linenums"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list'],
+            output_format='html'
+        )
+
+    def testFencedCodeValuelessAttrWithoutCodehilite(self):
+        # A valueless attribute is written with its name as the value, like `attr_list` does.
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```{.py data-foo}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-py" data-foo="data-foo"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
+    def testFencedCodeBooleanAndStringAttrsMixed(self):
+        self.assertMarkdownRenders(
+            self.dedent(
+                '''
+                ```{.py linenums=true title="a & b" guess_lang=false}
+                # Some python code
+                ```
+                '''
+            ),
+            self.dedent(
+                '''
+                <pre><code class="language-py" linenums="linenums" title="a &amp; b"># Some python code
+                </code></pre>
+                '''
+            ),
+            extensions=['fenced_code', 'attr_list']
+        )
+
+    def testFencedCodeBooleanAttrsXhtmlOutput(self):
+        # Explicit `xhtml` output: the same as the default.
+        self.assertMarkdownRenders(
+            '```{.py hidden=true linenums=true}\n# Some python code\n```',
+            '<pre><code class="language-py" hidden="true" linenums="linenums"># Some python code\n</code></pre>',
+            extensions=['fenced_code', 'attr_list'],
+            output_format='xhtml'
+        )
+
+    def testFencedCodeFalseBooleanAttrHtmlOutput(self):
+        self.assertMarkdownRenders(
+            '```{.py linenums=false}\n# Some python code\n```',
+            '<pre><code class="language-py"># Some python code\n</code></pre>',
+            extensions=['fenced_code', 'attr_list'],
+            output_format='html'
+        )
+
+    def testFencedCodeValuelessAttrHtmlOutput(self):
+        self.assertMarkdownRenders(
+            '```{.py data-foo}\n# Some python code\n```',
+            '<pre><code class="language-py" data-foo="data-foo"># Some python code\n</code></pre>',
+            extensions=['fenced_code', 'attr_list'],
+            output_format='html'
+        )
+
+    def testFencedCodeBooleanAndStringAttrsMixedHtmlOutput(self):
+        self.assertMarkdownRenders(
+            '```{.py linenums=true title="a & b" guess_lang=false}\n# Some python code\n```',
+            '<pre><code class="language-py" linenums="linenums" title="a &amp; b"># Some python code\n</code></pre>',
+            extensions=['fenced_code', 'attr_list'],
+            output_format='html'
+        )
+
     def testMultipleFencedBlocks(self):
         self.assertMarkdownRenders(
             self.dedent(

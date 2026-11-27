@@ -24,6 +24,9 @@ See the [Contributing Guide](contributing.md) for details.
   reference definitions can no longer use an identifier starting with `^`,
   which is footnote definition syntax; without the extension the core
   behavior is unchanged.
+* The `fenced_code` extension no longer raises `TypeError` for boolean options (e.g.
+  `linenums=true`) set with `attr_list` when `codehilite` is not enabled. The values
+  are now serialized like any other attribute (#1713).
 
 ## [3.11.4] - 2026-11-25
 
