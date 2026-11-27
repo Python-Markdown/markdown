@@ -14,6 +14,12 @@ See the [Contributing Guide](contributing.md) for details.
 
 ## Unreleased
 
+### Changed
+
+* Cache inline pattern metadata per `InlineProcessor.run()` call and use a
+  `collections.deque` queue instead of `list.pop(0)` during inline tree
+  traversal (#1730).
+
 ### Fixed
 
 * Footnote definitions are no longer recognized within a footnote definition,
