@@ -118,6 +118,35 @@ are summarized below:
     foreseeable future. That said, the [Sane List Extension](extensions/sane_lists.md)
     is available to provide a less surprising behavior.
 
+* __Raw HTML Blocks__
+
+    The [syntax rules](https://daringfireball.net/projects/markdown/syntax#html)
+    state that a block-level HTML element must be separated from surrounding
+    content by blank lines, and that its start and end tags should not be
+    indented. At the top level of a document, Python-Markdown is more lenient: a
+    line which starts with a block-level tag, or with a comment, processing
+    instruction, `CDATA` section or declaration, indented by no more than three
+    spaces, starts a raw HTML block, even when it directly follows a line of a
+    paragraph. The block continues, across blank lines, until its tags are closed,
+    and a tag which is never closed runs to the end of the document. Markdown is
+    not parsed within a raw HTML block (the
+    [Markdown in HTML Extension](extensions/md_in_html.md) can change that).
+
+    Nested in a list item, definition, blockquote, admonition or footnote, a raw
+    HTML block follows the same rules once the indentation of the nesting (or the
+    `>` of a blockquote) is removed, with two differences:
+
+    1. A raw HTML block must start a block of its own: after a blank line, right
+       after a list marker or the `:` of a definition, or on the first line of
+       the nested content. A block-level tag on a later line of a paragraph,
+       including a lazy continuation line, remains part of that paragraph. A
+       fenced code block is not recognized in nested content by the
+       [Fenced Code Blocks Extension](extensions/fenced_code_blocks.md), so
+       without this rule, the HTML of a code example in a list item would be
+       rendered rather than shown.
+    2. A tag which is never closed runs to the end of the list item (or other
+       nesting block) rather than to the end of the document.
+
 * __Automatic Links__
 
     Automatic links recognize URL schemes followed by `://`, including schemes
