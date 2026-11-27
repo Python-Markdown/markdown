@@ -12,6 +12,25 @@ and this project adheres to the
 [Python Version Specification](https://packaging.python.org/en/latest/specifications/version-specifiers/).
 See the [Contributing Guide](contributing.md) for details.
 
+## Unreleased
+
+### Changed
+
+* Cache inline pattern metadata per `InlineProcessor.run()` call and use a
+  `collections.deque` queue instead of `list.pop(0)` during inline tree
+  traversal (#1730).
+
+### Fixed
+
+* Footnote definitions are no longer recognized within a footnote definition,
+  matching PHP Markdown Extra: an indented definition nested in another
+  footnote's content now remains as text in the parent footnote instead of
+  being silently dropped and leaving references pointing at a missing
+  `#fn:` anchor (#1681). When the `footnotes` extension is enabled, link
+  reference definitions can no longer use an identifier starting with `^`,
+  which is footnote definition syntax; without the extension the core
+  behavior is unchanged.
+
 ## [3.11.4] - 2026-11-25
 
 ### Fixed
