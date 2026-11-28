@@ -5,14 +5,27 @@ on:
     tags:
     - '*'
 
+permissions:
+  contents: read
+
 jobs:
 
   pypi:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/Markdown
+    permissions:
+      # Required for PyPI Trusted Publishing (OIDC).
+      id-token: write
+      # Required to create the GitHub release.
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4.9.1
         with:
           python-version: 3.11
       - name: Install dependencies
@@ -23,23 +36,20 @@ jobs:
           python -m build
       - name: Publish to PyPI
         if: success()
-        uses: pypa/gh-action-pypi-publish@v1.12.4
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_PASSWORD }}
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
       - name: Normalize Version
         id: normalize
         run: echo "version=$(python -c 'import semver; print(semver.Version.parse("${{ github.ref_name }}", optional_minor_and_patch=True))')" >> $GITHUB_OUTPUT
       - name: Get Changelog Entry
         if: success()
         id: changelog_reader
-        uses: mindsers/changelog-reader-action@v2
+        uses: mindsers/changelog-reader-action@1faaf50aa09d5793d9a100819973df801febfb31 # v2.4.0
         with:
           version: ${{ steps.normalize.outputs.version }}
           path: ./docs/changelog.md
       - name: Release to GitHub
         if: success()
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1.21.0
         with:
           tag: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
@@ -53,17 +63,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           path: md
+          persist-credentials: false
       - name: Checkout Target Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ssh-key: ${{ secrets.PAGES_DEPLOY_KEY  }}
           repository: Python-Markdown/Python-Markdown.github.io
           path: target
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4.9.1
         with:
           python-version: 3.11
       - name: Install dependencies
