@@ -6,13 +6,17 @@ on:
     # Only run if changes were made in markdown/
     - 'markdown/**'
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   check-for-entry:
 
     runs-on: ubuntu-latest
     steps:
     - name: Ensure Changelog Entry Made
-      uses: dangoslen/changelog-enforcer@v3
+      uses: dangoslen/changelog-enforcer@204e7d3ef26579f4cd0fd759c57032656fdf23c7 # v3.6.1
       with:
         changeLogPath: 'docs/changelog.md'
         missingUpdateErrorMessage: |
